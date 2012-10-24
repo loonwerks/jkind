@@ -1,9 +1,8 @@
-// $ANTLR 3.4 Lustre.g 2012-10-24 11:00:50
+// $ANTLR 3.4 Lustre.g 2012-10-24 11:23:10
 
   package jkind.lustre;
   
   import java.math.BigDecimal;
-  import jkind.lustre.ast.*;
 
 
 import org.antlr.runtime.*;
@@ -88,7 +87,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "node"
-    // Lustre.g:26:1: node returns [Node n] : 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' ;
+    // Lustre.g:25:1: node returns [Node n] : 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' ;
     public final Node node() throws RecognitionException {
         Node n = null;
 
@@ -110,8 +109,8 @@ public class LustreParser extends Parser {
           List<String> properties = new ArrayList<String>();
 
         try {
-            // Lustre.g:31:2: ( 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' )
-            // Lustre.g:33:3: 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
+            // Lustre.g:30:2: ( 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' )
+            // Lustre.g:32:3: 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
             {
             match(input,36,FOLLOW_36_in_node64); if (state.failed) return n;
 
@@ -141,7 +140,7 @@ public class LustreParser extends Parser {
 
             match(input,21,FOLLOW_21_in_node88); if (state.failed) return n;
 
-            // Lustre.g:35:3: ( 'var' vars= varDeclList ';' )?
+            // Lustre.g:34:3: ( 'var' vars= varDeclList ';' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -150,7 +149,7 @@ public class LustreParser extends Parser {
             }
             switch (alt1) {
                 case 1 :
-                    // Lustre.g:35:4: 'var' vars= varDeclList ';'
+                    // Lustre.g:34:4: 'var' vars= varDeclList ';'
                     {
                     match(input,45,FOLLOW_45_in_node93); if (state.failed) return n;
 
@@ -162,7 +161,7 @@ public class LustreParser extends Parser {
 
                     match(input,21,FOLLOW_21_in_node99); if (state.failed) return n;
 
-                    if ( state.backtracking==0 ) { locals.addAll(vars.decls); }
+                    if ( state.backtracking==0 ) { locals.addAll(vars); }
 
                     }
                     break;
@@ -172,7 +171,7 @@ public class LustreParser extends Parser {
 
             match(input,35,FOLLOW_35_in_node130); if (state.failed) return n;
 
-            // Lustre.g:38:5: ( equation | property )*
+            // Lustre.g:37:5: ( equation | property )*
             loop2:
             do {
                 int alt2=3;
@@ -188,7 +187,7 @@ public class LustreParser extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // Lustre.g:38:7: equation
+            	    // Lustre.g:37:7: equation
             	    {
             	    pushFollow(FOLLOW_equation_in_node138);
             	    equation1=equation();
@@ -201,7 +200,7 @@ public class LustreParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // Lustre.g:39:7: property
+            	    // Lustre.g:38:7: property
             	    {
             	    pushFollow(FOLLOW_property_in_node182);
             	    property2=property();
@@ -224,7 +223,7 @@ public class LustreParser extends Parser {
 
             match(input,21,FOLLOW_21_in_node233); if (state.failed) return n;
 
-            if ( state.backtracking==0 ) { n = AST.node(inputs, outputs, locals, equations, properties); }
+            if ( state.backtracking==0 ) { n = new Node(inputs, outputs, locals, equations, properties); }
 
             }
 
@@ -244,7 +243,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "varDeclList"
-    // Lustre.g:46:1: varDeclList returns [List<VarDecl> decls] : (g1= varDeclGroup ( ';' g2= varDeclGroup )* )? ;
+    // Lustre.g:45:1: varDeclList returns [List<VarDecl> decls] : (g1= varDeclGroup ( ';' g2= varDeclGroup )* )? ;
     public final List<VarDecl> varDeclList() throws RecognitionException {
         List<VarDecl> decls = null;
 
@@ -256,10 +255,10 @@ public class LustreParser extends Parser {
 
          decls = new ArrayList<VarDecl>(); 
         try {
-            // Lustre.g:47:44: ( (g1= varDeclGroup ( ';' g2= varDeclGroup )* )? )
-            // Lustre.g:49:3: (g1= varDeclGroup ( ';' g2= varDeclGroup )* )?
+            // Lustre.g:46:44: ( (g1= varDeclGroup ( ';' g2= varDeclGroup )* )? )
+            // Lustre.g:48:3: (g1= varDeclGroup ( ';' g2= varDeclGroup )* )?
             {
-            // Lustre.g:49:3: (g1= varDeclGroup ( ';' g2= varDeclGroup )* )?
+            // Lustre.g:48:3: (g1= varDeclGroup ( ';' g2= varDeclGroup )* )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -268,7 +267,7 @@ public class LustreParser extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // Lustre.g:49:4: g1= varDeclGroup ( ';' g2= varDeclGroup )*
+                    // Lustre.g:48:4: g1= varDeclGroup ( ';' g2= varDeclGroup )*
                     {
                     pushFollow(FOLLOW_varDeclGroup_in_varDeclList260);
                     g1=varDeclGroup();
@@ -278,7 +277,7 @@ public class LustreParser extends Parser {
 
                     if ( state.backtracking==0 ) { decls.addAll(g1); }
 
-                    // Lustre.g:50:5: ( ';' g2= varDeclGroup )*
+                    // Lustre.g:49:5: ( ';' g2= varDeclGroup )*
                     loop3:
                     do {
                         int alt3=2;
@@ -297,7 +296,7 @@ public class LustreParser extends Parser {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // Lustre.g:50:6: ';' g2= varDeclGroup
+                    	    // Lustre.g:49:6: ';' g2= varDeclGroup
                     	    {
                     	    match(input,21,FOLLOW_21_in_varDeclList287); if (state.failed) return decls;
 
@@ -342,7 +341,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "varDeclGroup"
-    // Lustre.g:55:1: varDeclGroup returns [List<VarDecl> decls] : v1= ID ( ',' v2= ID )* ':' type ;
+    // Lustre.g:54:1: varDeclGroup returns [List<VarDecl> decls] : v1= ID ( ',' v2= ID )* ':' type ;
     public final List<VarDecl> varDeclGroup() throws RecognitionException {
         List<VarDecl> decls = null;
 
@@ -354,14 +353,14 @@ public class LustreParser extends Parser {
 
          List<String> names = new ArrayList<String>(); 
         try {
-            // Lustre.g:56:55: (v1= ID ( ',' v2= ID )* ':' type )
-            // Lustre.g:58:3: v1= ID ( ',' v2= ID )* ':' type
+            // Lustre.g:55:55: (v1= ID ( ',' v2= ID )* ':' type )
+            // Lustre.g:57:3: v1= ID ( ',' v2= ID )* ':' type
             {
             v1=(Token)match(input,ID,FOLLOW_ID_in_varDeclGroup342); if (state.failed) return decls;
 
             if ( state.backtracking==0 ) { names.add((v1!=null?v1.getText():null)); }
 
-            // Lustre.g:59:5: ( ',' v2= ID )*
+            // Lustre.g:58:5: ( ',' v2= ID )*
             loop5:
             do {
                 int alt5=2;
@@ -374,7 +373,7 @@ public class LustreParser extends Parser {
 
                 switch (alt5) {
             	case 1 :
-            	    // Lustre.g:59:6: ',' v2= ID
+            	    // Lustre.g:58:6: ',' v2= ID
             	    {
             	    match(input,15,FOLLOW_15_in_varDeclGroup364); if (state.failed) return decls;
 
@@ -401,7 +400,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { decls = new ArrayList<VarDecl>();
                 for (String name : names) {
-                  ids.add(new VarDecl(name, type3));
+                  decls.add(new VarDecl(name, type3));
                 }
               }
 
@@ -423,13 +422,13 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "type"
-    // Lustre.g:70:1: type returns [Type t] : ( 'int' | 'bool' | 'real' );
+    // Lustre.g:69:1: type returns [Type t] : ( 'int' | 'bool' | 'real' );
     public final Type type() throws RecognitionException {
         Type t = null;
 
 
         try {
-            // Lustre.g:70:22: ( 'int' | 'bool' | 'real' )
+            // Lustre.g:69:22: ( 'int' | 'bool' | 'real' )
             int alt6=3;
             switch ( input.LA(1) ) {
             case 34:
@@ -458,7 +457,7 @@ public class LustreParser extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // Lustre.g:71:3: 'int'
+                    // Lustre.g:70:3: 'int'
                     {
                     match(input,34,FOLLOW_34_in_type411); if (state.failed) return t;
 
@@ -467,7 +466,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:72:3: 'bool'
+                    // Lustre.g:71:3: 'bool'
                     {
                     match(input,30,FOLLOW_30_in_type421); if (state.failed) return t;
 
@@ -476,7 +475,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:73:3: 'real'
+                    // Lustre.g:72:3: 'real'
                     {
                     match(input,40,FOLLOW_40_in_type430); if (state.failed) return t;
 
@@ -502,7 +501,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "property"
-    // Lustre.g:76:1: property returns [String p] : '--%PROPERTY' ID ';' ;
+    // Lustre.g:75:1: property returns [String p] : '--%PROPERTY' ID ';' ;
     public final String property() throws RecognitionException {
         String p = null;
 
@@ -510,8 +509,8 @@ public class LustreParser extends Parser {
         Token ID4=null;
 
         try {
-            // Lustre.g:76:28: ( '--%PROPERTY' ID ';' )
-            // Lustre.g:77:3: '--%PROPERTY' ID ';'
+            // Lustre.g:75:28: ( '--%PROPERTY' ID ';' )
+            // Lustre.g:76:3: '--%PROPERTY' ID ';'
             {
             match(input,17,FOLLOW_17_in_property449); if (state.failed) return p;
 
@@ -539,7 +538,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "equation"
-    // Lustre.g:80:1: equation returns [Equation eq] : ID '=' expr ';' ;
+    // Lustre.g:79:1: equation returns [Equation eq] : ID '=' expr ';' ;
     public final Equation equation() throws RecognitionException {
         Equation eq = null;
 
@@ -549,8 +548,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:80:31: ( ID '=' expr ';' )
-            // Lustre.g:81:3: ID '=' expr ';'
+            // Lustre.g:79:31: ( ID '=' expr ';' )
+            // Lustre.g:80:3: ID '=' expr ';'
             {
             ID5=(Token)match(input,ID,FOLLOW_ID_in_equation479); if (state.failed) return eq;
 
@@ -584,7 +583,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "expr"
-    // Lustre.g:84:1: expr returns [Expr e] : arrowExpr ;
+    // Lustre.g:83:1: expr returns [Expr e] : arrowExpr ;
     public final Expr expr() throws RecognitionException {
         Expr e = null;
 
@@ -593,8 +592,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:84:22: ( arrowExpr )
-            // Lustre.g:85:3: arrowExpr
+            // Lustre.g:83:22: ( arrowExpr )
+            // Lustre.g:84:3: arrowExpr
             {
             pushFollow(FOLLOW_arrowExpr_in_expr516);
             arrowExpr7=arrowExpr();
@@ -622,14 +621,14 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "arrowOp"
-    // Lustre.g:88:1: arrowOp returns [BinaryOp op] : '->' ;
+    // Lustre.g:87:1: arrowOp returns [BinaryOp op] : '->' ;
     public final BinaryOp arrowOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:88:30: ( '->' )
-            // Lustre.g:89:3: '->'
+            // Lustre.g:87:30: ( '->' )
+            // Lustre.g:88:3: '->'
             {
             match(input,18,FOLLOW_18_in_arrowOp553); if (state.failed) return op;
 
@@ -653,7 +652,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "arrowExpr"
-    // Lustre.g:92:1: arrowExpr returns [Expr e] : e1= impliesExpr ( ( arrowOp )=> arrowOp e2= arrowExpr )? ;
+    // Lustre.g:91:1: arrowExpr returns [Expr e] : e1= impliesExpr ( ( arrowOp )=> arrowOp e2= arrowExpr )? ;
     public final Expr arrowExpr() throws RecognitionException {
         Expr e = null;
 
@@ -666,8 +665,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:92:27: (e1= impliesExpr ( ( arrowOp )=> arrowOp e2= arrowExpr )? )
-            // Lustre.g:93:3: e1= impliesExpr ( ( arrowOp )=> arrowOp e2= arrowExpr )?
+            // Lustre.g:91:27: (e1= impliesExpr ( ( arrowOp )=> arrowOp e2= arrowExpr )? )
+            // Lustre.g:92:3: e1= impliesExpr ( ( arrowOp )=> arrowOp e2= arrowExpr )?
             {
             pushFollow(FOLLOW_impliesExpr_in_arrowExpr571);
             e1=impliesExpr();
@@ -677,7 +676,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:94:5: ( ( arrowOp )=> arrowOp e2= arrowExpr )?
+            // Lustre.g:93:5: ( ( arrowOp )=> arrowOp e2= arrowExpr )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -690,7 +689,7 @@ public class LustreParser extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // Lustre.g:94:6: ( arrowOp )=> arrowOp e2= arrowExpr
+                    // Lustre.g:93:6: ( arrowOp )=> arrowOp e2= arrowExpr
                     {
                     pushFollow(FOLLOW_arrowOp_in_arrowExpr601);
                     arrowOp8=arrowOp();
@@ -730,14 +729,14 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "impliesOp"
-    // Lustre.g:99:1: impliesOp returns [BinaryOp op] : '=>' ;
+    // Lustre.g:98:1: impliesOp returns [BinaryOp op] : '=>' ;
     public final BinaryOp impliesOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:99:32: ( '=>' )
-            // Lustre.g:100:3: '=>'
+            // Lustre.g:98:32: ( '=>' )
+            // Lustre.g:99:3: '=>'
             {
             match(input,26,FOLLOW_26_in_impliesOp649); if (state.failed) return op;
 
@@ -761,7 +760,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "impliesExpr"
-    // Lustre.g:103:1: impliesExpr returns [Expr e] : e1= orExpr ( ( impliesOp )=> impliesOp e2= impliesExpr )? ;
+    // Lustre.g:102:1: impliesExpr returns [Expr e] : e1= orExpr ( ( impliesOp )=> impliesOp e2= impliesExpr )? ;
     public final Expr impliesExpr() throws RecognitionException {
         Expr e = null;
 
@@ -774,8 +773,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:103:29: (e1= orExpr ( ( impliesOp )=> impliesOp e2= impliesExpr )? )
-            // Lustre.g:104:3: e1= orExpr ( ( impliesOp )=> impliesOp e2= impliesExpr )?
+            // Lustre.g:102:29: (e1= orExpr ( ( impliesOp )=> impliesOp e2= impliesExpr )? )
+            // Lustre.g:103:3: e1= orExpr ( ( impliesOp )=> impliesOp e2= impliesExpr )?
             {
             pushFollow(FOLLOW_orExpr_in_impliesExpr667);
             e1=orExpr();
@@ -785,7 +784,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:105:5: ( ( impliesOp )=> impliesOp e2= impliesExpr )?
+            // Lustre.g:104:5: ( ( impliesOp )=> impliesOp e2= impliesExpr )?
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -798,7 +797,7 @@ public class LustreParser extends Parser {
             }
             switch (alt8) {
                 case 1 :
-                    // Lustre.g:105:6: ( impliesOp )=> impliesOp e2= impliesExpr
+                    // Lustre.g:104:6: ( impliesOp )=> impliesOp e2= impliesExpr
                     {
                     pushFollow(FOLLOW_impliesOp_in_impliesExpr702);
                     impliesOp9=impliesOp();
@@ -838,13 +837,13 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "orOp"
-    // Lustre.g:110:1: orOp returns [BinaryOp op] : ( 'or' | 'xor' );
+    // Lustre.g:109:1: orOp returns [BinaryOp op] : ( 'or' | 'xor' );
     public final BinaryOp orOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:110:27: ( 'or' | 'xor' )
+            // Lustre.g:109:27: ( 'or' | 'xor' )
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -864,7 +863,7 @@ public class LustreParser extends Parser {
             }
             switch (alt9) {
                 case 1 :
-                    // Lustre.g:111:3: 'or'
+                    // Lustre.g:110:3: 'or'
                     {
                     match(input,38,FOLLOW_38_in_orOp748); if (state.failed) return op;
 
@@ -873,7 +872,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:112:3: 'xor'
+                    // Lustre.g:111:3: 'xor'
                     {
                     match(input,46,FOLLOW_46_in_orOp754); if (state.failed) return op;
 
@@ -899,7 +898,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "orExpr"
-    // Lustre.g:115:1: orExpr returns [Expr e] : e1= andExpr ( ( orOp )=> ( orOp ) e2= andExpr )* ;
+    // Lustre.g:114:1: orExpr returns [Expr e] : e1= andExpr ( ( orOp )=> ( orOp ) e2= andExpr )* ;
     public final Expr orExpr() throws RecognitionException {
         Expr e = null;
 
@@ -912,8 +911,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:115:24: (e1= andExpr ( ( orOp )=> ( orOp ) e2= andExpr )* )
-            // Lustre.g:116:3: e1= andExpr ( ( orOp )=> ( orOp ) e2= andExpr )*
+            // Lustre.g:114:24: (e1= andExpr ( ( orOp )=> ( orOp ) e2= andExpr )* )
+            // Lustre.g:115:3: e1= andExpr ( ( orOp )=> ( orOp ) e2= andExpr )*
             {
             pushFollow(FOLLOW_andExpr_in_orExpr772);
             e1=andExpr();
@@ -923,7 +922,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:117:5: ( ( orOp )=> ( orOp ) e2= andExpr )*
+            // Lustre.g:116:5: ( ( orOp )=> ( orOp ) e2= andExpr )*
             loop10:
             do {
                 int alt10=2;
@@ -951,10 +950,10 @@ public class LustreParser extends Parser {
 
                 switch (alt10) {
             	case 1 :
-            	    // Lustre.g:117:6: ( orOp )=> ( orOp ) e2= andExpr
+            	    // Lustre.g:116:6: ( orOp )=> ( orOp ) e2= andExpr
             	    {
-            	    // Lustre.g:117:15: ( orOp )
-            	    // Lustre.g:117:16: orOp
+            	    // Lustre.g:116:15: ( orOp )
+            	    // Lustre.g:116:16: orOp
             	    {
             	    pushFollow(FOLLOW_orOp_in_orExpr806);
             	    orOp10=orOp();
@@ -1000,14 +999,14 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "andOp"
-    // Lustre.g:122:1: andOp returns [BinaryOp op] : 'and' ;
+    // Lustre.g:121:1: andOp returns [BinaryOp op] : 'and' ;
     public final BinaryOp andOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:122:28: ( 'and' )
-            // Lustre.g:123:3: 'and'
+            // Lustre.g:121:28: ( 'and' )
+            // Lustre.g:122:3: 'and'
             {
             match(input,29,FOLLOW_29_in_andOp855); if (state.failed) return op;
 
@@ -1031,7 +1030,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "andExpr"
-    // Lustre.g:126:1: andExpr returns [Expr e] : e1= relationalExpr ( ( andOp )=> andOp e2= relationalExpr )* ;
+    // Lustre.g:125:1: andExpr returns [Expr e] : e1= relationalExpr ( ( andOp )=> andOp e2= relationalExpr )* ;
     public final Expr andExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1044,8 +1043,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:126:25: (e1= relationalExpr ( ( andOp )=> andOp e2= relationalExpr )* )
-            // Lustre.g:127:3: e1= relationalExpr ( ( andOp )=> andOp e2= relationalExpr )*
+            // Lustre.g:125:25: (e1= relationalExpr ( ( andOp )=> andOp e2= relationalExpr )* )
+            // Lustre.g:126:3: e1= relationalExpr ( ( andOp )=> andOp e2= relationalExpr )*
             {
             pushFollow(FOLLOW_relationalExpr_in_andExpr873);
             e1=relationalExpr();
@@ -1055,7 +1054,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:128:5: ( ( andOp )=> andOp e2= relationalExpr )*
+            // Lustre.g:127:5: ( ( andOp )=> andOp e2= relationalExpr )*
             loop11:
             do {
                 int alt11=2;
@@ -1074,7 +1073,7 @@ public class LustreParser extends Parser {
 
                 switch (alt11) {
             	case 1 :
-            	    // Lustre.g:128:6: ( andOp )=> andOp e2= relationalExpr
+            	    // Lustre.g:127:6: ( andOp )=> andOp e2= relationalExpr
             	    {
             	    pushFollow(FOLLOW_andOp_in_andExpr903);
             	    andOp11=andOp();
@@ -1117,13 +1116,13 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "relationalOp"
-    // Lustre.g:133:1: relationalOp returns [BinaryOp op] : ( '<' | '<=' | '>' | '>=' | '=' | '<>' );
+    // Lustre.g:132:1: relationalOp returns [BinaryOp op] : ( '<' | '<=' | '>' | '>=' | '=' | '<>' );
     public final BinaryOp relationalOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:133:35: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
+            // Lustre.g:132:35: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
             int alt12=6;
             switch ( input.LA(1) ) {
             case 22:
@@ -1167,7 +1166,7 @@ public class LustreParser extends Parser {
 
             switch (alt12) {
                 case 1 :
-                    // Lustre.g:134:3: '<'
+                    // Lustre.g:133:3: '<'
                     {
                     match(input,22,FOLLOW_22_in_relationalOp948); if (state.failed) return op;
 
@@ -1176,7 +1175,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:135:3: '<='
+                    // Lustre.g:134:3: '<='
                     {
                     match(input,23,FOLLOW_23_in_relationalOp955); if (state.failed) return op;
 
@@ -1185,7 +1184,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:136:3: '>'
+                    // Lustre.g:135:3: '>'
                     {
                     match(input,27,FOLLOW_27_in_relationalOp961); if (state.failed) return op;
 
@@ -1194,7 +1193,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Lustre.g:137:3: '>='
+                    // Lustre.g:136:3: '>='
                     {
                     match(input,28,FOLLOW_28_in_relationalOp968); if (state.failed) return op;
 
@@ -1203,7 +1202,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Lustre.g:138:3: '='
+                    // Lustre.g:137:3: '='
                     {
                     match(input,25,FOLLOW_25_in_relationalOp974); if (state.failed) return op;
 
@@ -1212,7 +1211,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Lustre.g:139:3: '<>'
+                    // Lustre.g:138:3: '<>'
                     {
                     match(input,24,FOLLOW_24_in_relationalOp981); if (state.failed) return op;
 
@@ -1238,7 +1237,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "relationalExpr"
-    // Lustre.g:142:1: relationalExpr returns [Expr e] : e1= plusExpr ( ( relationalOp )=> relationalOp e2= plusExpr )? ;
+    // Lustre.g:141:1: relationalExpr returns [Expr e] : e1= plusExpr ( ( relationalOp )=> relationalOp e2= plusExpr )? ;
     public final Expr relationalExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1251,8 +1250,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:142:32: (e1= plusExpr ( ( relationalOp )=> relationalOp e2= plusExpr )? )
-            // Lustre.g:143:3: e1= plusExpr ( ( relationalOp )=> relationalOp e2= plusExpr )?
+            // Lustre.g:141:32: (e1= plusExpr ( ( relationalOp )=> relationalOp e2= plusExpr )? )
+            // Lustre.g:142:3: e1= plusExpr ( ( relationalOp )=> relationalOp e2= plusExpr )?
             {
             pushFollow(FOLLOW_plusExpr_in_relationalExpr999);
             e1=plusExpr();
@@ -1262,7 +1261,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:144:5: ( ( relationalOp )=> relationalOp e2= plusExpr )?
+            // Lustre.g:143:5: ( ( relationalOp )=> relationalOp e2= plusExpr )?
             int alt13=2;
             switch ( input.LA(1) ) {
                 case 22:
@@ -1323,7 +1322,7 @@ public class LustreParser extends Parser {
 
             switch (alt13) {
                 case 1 :
-                    // Lustre.g:144:6: ( relationalOp )=> relationalOp e2= plusExpr
+                    // Lustre.g:143:6: ( relationalOp )=> relationalOp e2= plusExpr
                     {
                     pushFollow(FOLLOW_relationalOp_in_relationalExpr1035);
                     relationalOp12=relationalOp();
@@ -1363,13 +1362,13 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "plusOp"
-    // Lustre.g:149:1: plusOp returns [BinaryOp op] : ( '+' | '-' );
+    // Lustre.g:148:1: plusOp returns [BinaryOp op] : ( '+' | '-' );
     public final BinaryOp plusOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:149:29: ( '+' | '-' )
+            // Lustre.g:148:29: ( '+' | '-' )
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -1389,7 +1388,7 @@ public class LustreParser extends Parser {
             }
             switch (alt14) {
                 case 1 :
-                    // Lustre.g:150:3: '+'
+                    // Lustre.g:149:3: '+'
                     {
                     match(input,14,FOLLOW_14_in_plusOp1086); if (state.failed) return op;
 
@@ -1398,7 +1397,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:151:3: '-'
+                    // Lustre.g:150:3: '-'
                     {
                     match(input,16,FOLLOW_16_in_plusOp1092); if (state.failed) return op;
 
@@ -1424,7 +1423,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "plusExpr"
-    // Lustre.g:154:1: plusExpr returns [Expr e] : e1= timesExpr ( ( plusOp )=> plusOp e2= timesExpr )* ;
+    // Lustre.g:153:1: plusExpr returns [Expr e] : e1= timesExpr ( ( plusOp )=> plusOp e2= timesExpr )* ;
     public final Expr plusExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1437,8 +1436,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:154:26: (e1= timesExpr ( ( plusOp )=> plusOp e2= timesExpr )* )
-            // Lustre.g:155:3: e1= timesExpr ( ( plusOp )=> plusOp e2= timesExpr )*
+            // Lustre.g:153:26: (e1= timesExpr ( ( plusOp )=> plusOp e2= timesExpr )* )
+            // Lustre.g:154:3: e1= timesExpr ( ( plusOp )=> plusOp e2= timesExpr )*
             {
             pushFollow(FOLLOW_timesExpr_in_plusExpr1110);
             e1=timesExpr();
@@ -1448,7 +1447,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:156:5: ( ( plusOp )=> plusOp e2= timesExpr )*
+            // Lustre.g:155:5: ( ( plusOp )=> plusOp e2= timesExpr )*
             loop15:
             do {
                 int alt15=2;
@@ -1476,7 +1475,7 @@ public class LustreParser extends Parser {
 
                 switch (alt15) {
             	case 1 :
-            	    // Lustre.g:156:6: ( plusOp )=> plusOp e2= timesExpr
+            	    // Lustre.g:155:6: ( plusOp )=> plusOp e2= timesExpr
             	    {
             	    pushFollow(FOLLOW_plusOp_in_plusExpr1146);
             	    plusOp13=plusOp();
@@ -1519,13 +1518,13 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "timesOp"
-    // Lustre.g:161:1: timesOp returns [BinaryOp op] : ( '*' | '/' );
+    // Lustre.g:160:1: timesOp returns [BinaryOp op] : ( '*' | '/' );
     public final BinaryOp timesOp() throws RecognitionException {
         BinaryOp op = null;
 
 
         try {
-            // Lustre.g:161:30: ( '*' | '/' )
+            // Lustre.g:160:30: ( '*' | '/' )
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -1545,7 +1544,7 @@ public class LustreParser extends Parser {
             }
             switch (alt16) {
                 case 1 :
-                    // Lustre.g:162:3: '*'
+                    // Lustre.g:161:3: '*'
                     {
                     match(input,13,FOLLOW_13_in_timesOp1197); if (state.failed) return op;
 
@@ -1554,7 +1553,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:163:3: '/'
+                    // Lustre.g:162:3: '/'
                     {
                     match(input,19,FOLLOW_19_in_timesOp1203); if (state.failed) return op;
 
@@ -1580,7 +1579,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "timesExpr"
-    // Lustre.g:166:1: timesExpr returns [Expr e] : e1= prefixExpr ( ( timesOp )=> timesOp e2= prefixExpr )* ;
+    // Lustre.g:165:1: timesExpr returns [Expr e] : e1= prefixExpr ( ( timesOp )=> timesOp e2= prefixExpr )* ;
     public final Expr timesExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1593,8 +1592,8 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:166:27: (e1= prefixExpr ( ( timesOp )=> timesOp e2= prefixExpr )* )
-            // Lustre.g:167:3: e1= prefixExpr ( ( timesOp )=> timesOp e2= prefixExpr )*
+            // Lustre.g:165:27: (e1= prefixExpr ( ( timesOp )=> timesOp e2= prefixExpr )* )
+            // Lustre.g:166:3: e1= prefixExpr ( ( timesOp )=> timesOp e2= prefixExpr )*
             {
             pushFollow(FOLLOW_prefixExpr_in_timesExpr1221);
             e1=prefixExpr();
@@ -1604,7 +1603,7 @@ public class LustreParser extends Parser {
 
             if ( state.backtracking==0 ) { e = e1; }
 
-            // Lustre.g:168:5: ( ( timesOp )=> timesOp e2= prefixExpr )*
+            // Lustre.g:167:5: ( ( timesOp )=> timesOp e2= prefixExpr )*
             loop17:
             do {
                 int alt17=2;
@@ -1632,7 +1631,7 @@ public class LustreParser extends Parser {
 
                 switch (alt17) {
             	case 1 :
-            	    // Lustre.g:168:6: ( timesOp )=> timesOp e2= prefixExpr
+            	    // Lustre.g:167:6: ( timesOp )=> timesOp e2= prefixExpr
             	    {
             	    pushFollow(FOLLOW_timesOp_in_timesExpr1251);
             	    timesOp14=timesOp();
@@ -1675,7 +1674,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "prefixExpr"
-    // Lustre.g:173:1: prefixExpr returns [Expr e] : ( '-' e1= prefixExpr | 'not' e2= prefixExpr | 'pre' e3= prefixExpr | atomicExpr );
+    // Lustre.g:172:1: prefixExpr returns [Expr e] : ( '-' e1= prefixExpr | 'not' e2= prefixExpr | 'pre' e3= prefixExpr | atomicExpr );
     public final Expr prefixExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1690,7 +1689,7 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:173:28: ( '-' e1= prefixExpr | 'not' e2= prefixExpr | 'pre' e3= prefixExpr | atomicExpr )
+            // Lustre.g:172:28: ( '-' e1= prefixExpr | 'not' e2= prefixExpr | 'pre' e3= prefixExpr | atomicExpr )
             int alt18=4;
             switch ( input.LA(1) ) {
             case 16:
@@ -1729,7 +1728,7 @@ public class LustreParser extends Parser {
 
             switch (alt18) {
                 case 1 :
-                    // Lustre.g:174:3: '-' e1= prefixExpr
+                    // Lustre.g:173:3: '-' e1= prefixExpr
                     {
                     match(input,16,FOLLOW_16_in_prefixExpr1298); if (state.failed) return e;
 
@@ -1744,7 +1743,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:175:3: 'not' e2= prefixExpr
+                    // Lustre.g:174:3: 'not' e2= prefixExpr
                     {
                     match(input,37,FOLLOW_37_in_prefixExpr1319); if (state.failed) return e;
 
@@ -1759,7 +1758,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:176:3: 'pre' e3= prefixExpr
+                    // Lustre.g:175:3: 'pre' e3= prefixExpr
                     {
                     match(input,39,FOLLOW_39_in_prefixExpr1338); if (state.failed) return e;
 
@@ -1774,7 +1773,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Lustre.g:177:3: atomicExpr
+                    // Lustre.g:176:3: atomicExpr
                     {
                     pushFollow(FOLLOW_atomicExpr_in_prefixExpr1357);
                     atomicExpr15=atomicExpr();
@@ -1804,7 +1803,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "atomicExpr"
-    // Lustre.g:180:1: atomicExpr returns [Expr e] : ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ') ' );
+    // Lustre.g:179:1: atomicExpr returns [Expr e] : ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ') ' );
     public final Expr atomicExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1825,7 +1824,7 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:180:28: ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ') ' )
+            // Lustre.g:179:28: ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ') ' )
             int alt19=6;
             switch ( input.LA(1) ) {
             case ID:
@@ -1880,7 +1879,7 @@ public class LustreParser extends Parser {
 
             switch (alt19) {
                 case 1 :
-                    // Lustre.g:181:3: ID
+                    // Lustre.g:180:3: ID
                     {
                     ID16=(Token)match(input,ID,FOLLOW_ID_in_atomicExpr1391); if (state.failed) return e;
 
@@ -1889,16 +1888,16 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:182:3: INT
+                    // Lustre.g:181:3: INT
                     {
                     INT17=(Token)match(input,INT,FOLLOW_INT_in_atomicExpr1422); if (state.failed) return e;
 
-                    if ( state.backtracking==0 ) { e = new IntExpr(Integer.parse((INT17!=null?INT17.getText():null))); }
+                    if ( state.backtracking==0 ) { e = new IntExpr(Integer.parseInt((INT17!=null?INT17.getText():null))); }
 
                     }
                     break;
                 case 3 :
-                    // Lustre.g:183:3: real
+                    // Lustre.g:182:3: real
                     {
                     pushFollow(FOLLOW_real_in_atomicExpr1452);
                     real18=real();
@@ -1911,7 +1910,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Lustre.g:184:3: bool
+                    // Lustre.g:183:3: bool
                     {
                     pushFollow(FOLLOW_bool_in_atomicExpr1481);
                     bool19=bool();
@@ -1924,7 +1923,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Lustre.g:185:3: 'if' e1= expr 'then' e2= expr 'else' e3= expr
+                    // Lustre.g:184:3: 'if' e1= expr 'then' e2= expr 'else' e3= expr
                     {
                     match(input,33,FOLLOW_33_in_atomicExpr1510); if (state.failed) return e;
 
@@ -1955,7 +1954,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Lustre.g:188:3: '(' p= expr ') '
+                    // Lustre.g:187:3: '(' p= expr ') '
                     {
                     match(input,10,FOLLOW_10_in_atomicExpr1563); if (state.failed) return e;
 
@@ -1992,15 +1991,15 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "real"
-    // Lustre.g:191:1: real : INT '.' INT ;
+    // Lustre.g:190:1: real : INT '.' INT ;
     public final LustreParser.real_return real() throws RecognitionException {
         LustreParser.real_return retval = new LustreParser.real_return();
         retval.start = input.LT(1);
 
 
         try {
-            // Lustre.g:191:5: ( INT '.' INT )
-            // Lustre.g:191:7: INT '.' INT
+            // Lustre.g:190:5: ( INT '.' INT )
+            // Lustre.g:190:7: INT '.' INT
             {
             match(input,INT,FOLLOW_INT_in_real1585); if (state.failed) return retval;
 
@@ -2029,13 +2028,13 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "bool"
-    // Lustre.g:193:1: bool returns [Boolean b] : ( 'true' | 'false' );
+    // Lustre.g:192:1: bool returns [Boolean b] : ( 'true' | 'false' );
     public final Boolean bool() throws RecognitionException {
         Boolean b = null;
 
 
         try {
-            // Lustre.g:193:25: ( 'true' | 'false' )
+            // Lustre.g:192:25: ( 'true' | 'false' )
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -2055,7 +2054,7 @@ public class LustreParser extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // Lustre.g:194:3: 'true'
+                    // Lustre.g:193:3: 'true'
                     {
                     match(input,44,FOLLOW_44_in_bool1602); if (state.failed) return b;
 
@@ -2064,7 +2063,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:195:3: 'false'
+                    // Lustre.g:194:3: 'false'
                     {
                     match(input,32,FOLLOW_32_in_bool1611); if (state.failed) return b;
 
@@ -2089,8 +2088,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred1_Lustre
     public final void synpred1_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:94:6: ( arrowOp )
-        // Lustre.g:94:7: arrowOp
+        // Lustre.g:93:6: ( arrowOp )
+        // Lustre.g:93:7: arrowOp
         {
         pushFollow(FOLLOW_arrowOp_in_synpred1_Lustre598);
         arrowOp();
@@ -2105,8 +2104,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred2_Lustre
     public final void synpred2_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:105:6: ( impliesOp )
-        // Lustre.g:105:7: impliesOp
+        // Lustre.g:104:6: ( impliesOp )
+        // Lustre.g:104:7: impliesOp
         {
         pushFollow(FOLLOW_impliesOp_in_synpred2_Lustre699);
         impliesOp();
@@ -2121,8 +2120,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred3_Lustre
     public final void synpred3_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:117:6: ( orOp )
-        // Lustre.g:117:7: orOp
+        // Lustre.g:116:6: ( orOp )
+        // Lustre.g:116:7: orOp
         {
         pushFollow(FOLLOW_orOp_in_synpred3_Lustre801);
         orOp();
@@ -2137,8 +2136,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred4_Lustre
     public final void synpred4_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:128:6: ( andOp )
-        // Lustre.g:128:7: andOp
+        // Lustre.g:127:6: ( andOp )
+        // Lustre.g:127:7: andOp
         {
         pushFollow(FOLLOW_andOp_in_synpred4_Lustre899);
         andOp();
@@ -2153,8 +2152,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred5_Lustre
     public final void synpred5_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:144:6: ( relationalOp )
-        // Lustre.g:144:7: relationalOp
+        // Lustre.g:143:6: ( relationalOp )
+        // Lustre.g:143:7: relationalOp
         {
         pushFollow(FOLLOW_relationalOp_in_synpred5_Lustre1031);
         relationalOp();
@@ -2169,8 +2168,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred6_Lustre
     public final void synpred6_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:156:6: ( plusOp )
-        // Lustre.g:156:7: plusOp
+        // Lustre.g:155:6: ( plusOp )
+        // Lustre.g:155:7: plusOp
         {
         pushFollow(FOLLOW_plusOp_in_synpred6_Lustre1142);
         plusOp();
@@ -2185,8 +2184,8 @@ public class LustreParser extends Parser {
 
     // $ANTLR start synpred7_Lustre
     public final void synpred7_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:168:6: ( timesOp )
-        // Lustre.g:168:7: timesOp
+        // Lustre.g:167:6: ( timesOp )
+        // Lustre.g:167:7: timesOp
         {
         pushFollow(FOLLOW_timesOp_in_synpred7_Lustre1247);
         timesOp();

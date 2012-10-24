@@ -8,7 +8,6 @@ options {
   package jkind.lustre;
   
   import java.math.BigDecimal;
-  import jkind.lustre.ast.*;
 }
 
 @lexer::header {
@@ -32,7 +31,7 @@ node returns [Node n]
 
   'node' ID '(' inputs=varDeclList ')'
   'returns' '(' outputs=varDeclList ')' ';'
-  ('var' vars=varDeclList ';'                    { locals.addAll(vars.decls); }
+  ('var' vars=varDeclList ';'                    { locals.addAll($vars.decls); }
    )?
   'let'
     ( equation                                   { equations.add($equation.eq); }
@@ -40,7 +39,7 @@ node returns [Node n]
     )*  
   'tel' ';'
 
-  { $n = AST.node($inputs.decls, $outputs.decls, locals, equations, properties); }
+  { $n = new Node($inputs.decls, $outputs.decls, locals, equations, properties); }
 ;
 
 varDeclList returns [List<VarDecl> decls]
@@ -62,7 +61,7 @@ varDeclGroup returns [List<VarDecl> decls]
   
   { $decls = new ArrayList<VarDecl>();
     for (String name : names) {
-      ids.add(new VarDecl(name, $type.t));
+      $decls.add(new VarDecl(name, $type.t));
     }
   }
 ;
@@ -179,7 +178,7 @@ prefixExpr returns [Expr e]:
 
 atomicExpr returns [Expr e]:
   ID                          { $e = new IdExpr($ID.text); }
-| INT                         { $e = new IntExpr(Integer.parse($INT.text)); }
+| INT                         { $e = new IntExpr(Integer.parseInt($INT.text)); }
 | real                        { $e = new RealExpr(new BigDecimal($real.text)); }
 | bool                        { $e = new BoolExpr($bool.b); }
 | 'if' e1=expr       
