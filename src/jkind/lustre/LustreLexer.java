@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Lustre.g 2012-10-24 11:23:11
+// $ANTLR 3.4 Lustre.g 2012-10-24 11:44:48
 
   package jkind.lustre;
 
@@ -47,7 +47,6 @@ public class LustreLexer extends Lexer {
     public static final int T__43=43;
     public static final int T__44=44;
     public static final int T__45=45;
-    public static final int T__46=46;
     public static final int ERROR=4;
     public static final int ID=5;
     public static final int INT=6;
@@ -99,12 +98,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__11;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:15:7: ( ') ' )
-            // Lustre.g:15:9: ') '
+            // Lustre.g:15:7: ( ')' )
+            // Lustre.g:15:9: ')'
             {
-            match(")       "); 
-
-
+            match(')'); 
 
             }
 
@@ -122,10 +119,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__12;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:16:7: ( ')' )
-            // Lustre.g:16:9: ')'
+            // Lustre.g:16:7: ( '*' )
+            // Lustre.g:16:9: '*'
             {
-            match(')'); 
+            match('*'); 
 
             }
 
@@ -143,10 +140,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__13;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:17:7: ( '*' )
-            // Lustre.g:17:9: '*'
+            // Lustre.g:17:7: ( '+' )
+            // Lustre.g:17:9: '+'
             {
-            match('*'); 
+            match('+'); 
 
             }
 
@@ -164,10 +161,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__14;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:18:7: ( '+' )
-            // Lustre.g:18:9: '+'
+            // Lustre.g:18:7: ( ',' )
+            // Lustre.g:18:9: ','
             {
-            match('+'); 
+            match(','); 
 
             }
 
@@ -185,10 +182,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__15;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:19:7: ( ',' )
-            // Lustre.g:19:9: ','
+            // Lustre.g:19:7: ( '-' )
+            // Lustre.g:19:9: '-'
             {
-            match(','); 
+            match('-'); 
 
             }
 
@@ -206,10 +203,12 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__16;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:20:7: ( '-' )
-            // Lustre.g:20:9: '-'
+            // Lustre.g:20:7: ( '--%PROPERTY' )
+            // Lustre.g:20:9: '--%PROPERTY'
             {
-            match('-'); 
+            match("--%PROPERTY"); 
+
+
 
             }
 
@@ -227,10 +226,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__17;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:21:7: ( '--%PROPERTY' )
-            // Lustre.g:21:9: '--%PROPERTY'
+            // Lustre.g:21:7: ( '->' )
+            // Lustre.g:21:9: '->'
             {
-            match("--%PROPERTY"); 
+            match("->"); 
 
 
 
@@ -250,12 +249,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__18;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:22:7: ( '->' )
-            // Lustre.g:22:9: '->'
+            // Lustre.g:22:7: ( '/' )
+            // Lustre.g:22:9: '/'
             {
-            match("->"); 
-
-
+            match('/'); 
 
             }
 
@@ -273,10 +270,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__19;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:23:7: ( '/' )
-            // Lustre.g:23:9: '/'
+            // Lustre.g:23:7: ( ':' )
+            // Lustre.g:23:9: ':'
             {
-            match('/'); 
+            match(':'); 
 
             }
 
@@ -294,10 +291,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__20;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:24:7: ( ':' )
-            // Lustre.g:24:9: ':'
+            // Lustre.g:24:7: ( ';' )
+            // Lustre.g:24:9: ';'
             {
-            match(':'); 
+            match(';'); 
 
             }
 
@@ -315,10 +312,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__21;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:25:7: ( ';' )
-            // Lustre.g:25:9: ';'
+            // Lustre.g:25:7: ( '<' )
+            // Lustre.g:25:9: '<'
             {
-            match(';'); 
+            match('<'); 
 
             }
 
@@ -336,10 +333,12 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:26:7: ( '<' )
-            // Lustre.g:26:9: '<'
+            // Lustre.g:26:7: ( '<=' )
+            // Lustre.g:26:9: '<='
             {
-            match('<'); 
+            match("<="); 
+
+
 
             }
 
@@ -357,10 +356,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:27:7: ( '<=' )
-            // Lustre.g:27:9: '<='
+            // Lustre.g:27:7: ( '<>' )
+            // Lustre.g:27:9: '<>'
             {
-            match("<="); 
+            match("<>"); 
 
 
 
@@ -380,12 +379,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__24;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:28:7: ( '<>' )
-            // Lustre.g:28:9: '<>'
+            // Lustre.g:28:7: ( '=' )
+            // Lustre.g:28:9: '='
             {
-            match("<>"); 
-
-
+            match('='); 
 
             }
 
@@ -403,10 +400,12 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__25;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:29:7: ( '=' )
-            // Lustre.g:29:9: '='
+            // Lustre.g:29:7: ( '=>' )
+            // Lustre.g:29:9: '=>'
             {
-            match('='); 
+            match("=>"); 
+
+
 
             }
 
@@ -424,12 +423,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__26;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:30:7: ( '=>' )
-            // Lustre.g:30:9: '=>'
+            // Lustre.g:30:7: ( '>' )
+            // Lustre.g:30:9: '>'
             {
-            match("=>"); 
-
-
+            match('>'); 
 
             }
 
@@ -447,10 +444,12 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__27;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:31:7: ( '>' )
-            // Lustre.g:31:9: '>'
+            // Lustre.g:31:7: ( '>=' )
+            // Lustre.g:31:9: '>='
             {
-            match('>'); 
+            match(">="); 
+
+
 
             }
 
@@ -468,10 +467,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__28;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:32:7: ( '>=' )
-            // Lustre.g:32:9: '>='
+            // Lustre.g:32:7: ( 'and' )
+            // Lustre.g:32:9: 'and'
             {
-            match(">="); 
+            match("and"); 
 
 
 
@@ -491,10 +490,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__29;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:33:7: ( 'and' )
-            // Lustre.g:33:9: 'and'
+            // Lustre.g:33:7: ( 'bool' )
+            // Lustre.g:33:9: 'bool'
             {
-            match("and"); 
+            match("bool"); 
 
 
 
@@ -514,10 +513,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__30;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:34:7: ( 'bool' )
-            // Lustre.g:34:9: 'bool'
+            // Lustre.g:34:7: ( 'else' )
+            // Lustre.g:34:9: 'else'
             {
-            match("bool"); 
+            match("else"); 
 
 
 
@@ -537,10 +536,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__31;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:35:7: ( 'else' )
-            // Lustre.g:35:9: 'else'
+            // Lustre.g:35:7: ( 'false' )
+            // Lustre.g:35:9: 'false'
             {
-            match("else"); 
+            match("false"); 
 
 
 
@@ -560,10 +559,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__32;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:36:7: ( 'false' )
-            // Lustre.g:36:9: 'false'
+            // Lustre.g:36:7: ( 'if' )
+            // Lustre.g:36:9: 'if'
             {
-            match("false"); 
+            match("if"); 
 
 
 
@@ -583,10 +582,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__33;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:37:7: ( 'if' )
-            // Lustre.g:37:9: 'if'
+            // Lustre.g:37:7: ( 'int' )
+            // Lustre.g:37:9: 'int'
             {
-            match("if"); 
+            match("int"); 
 
 
 
@@ -606,10 +605,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__34;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:38:7: ( 'int' )
-            // Lustre.g:38:9: 'int'
+            // Lustre.g:38:7: ( 'let' )
+            // Lustre.g:38:9: 'let'
             {
-            match("int"); 
+            match("let"); 
 
 
 
@@ -629,10 +628,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__35;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:39:7: ( 'let' )
-            // Lustre.g:39:9: 'let'
+            // Lustre.g:39:7: ( 'node' )
+            // Lustre.g:39:9: 'node'
             {
-            match("let"); 
+            match("node"); 
 
 
 
@@ -652,10 +651,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__36;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:40:7: ( 'node' )
-            // Lustre.g:40:9: 'node'
+            // Lustre.g:40:7: ( 'not' )
+            // Lustre.g:40:9: 'not'
             {
-            match("node"); 
+            match("not"); 
 
 
 
@@ -675,10 +674,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__37;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:41:7: ( 'not' )
-            // Lustre.g:41:9: 'not'
+            // Lustre.g:41:7: ( 'or' )
+            // Lustre.g:41:9: 'or'
             {
-            match("not"); 
+            match("or"); 
 
 
 
@@ -698,10 +697,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__38;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:42:7: ( 'or' )
-            // Lustre.g:42:9: 'or'
+            // Lustre.g:42:7: ( 'pre' )
+            // Lustre.g:42:9: 'pre'
             {
-            match("or"); 
+            match("pre"); 
 
 
 
@@ -721,10 +720,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__39;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:43:7: ( 'pre' )
-            // Lustre.g:43:9: 'pre'
+            // Lustre.g:43:7: ( 'real' )
+            // Lustre.g:43:9: 'real'
             {
-            match("pre"); 
+            match("real"); 
 
 
 
@@ -744,10 +743,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__40;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:44:7: ( 'real' )
-            // Lustre.g:44:9: 'real'
+            // Lustre.g:44:7: ( 'returns' )
+            // Lustre.g:44:9: 'returns'
             {
-            match("real"); 
+            match("returns"); 
 
 
 
@@ -767,10 +766,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__41;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:45:7: ( 'returns' )
-            // Lustre.g:45:9: 'returns'
+            // Lustre.g:45:7: ( 'tel' )
+            // Lustre.g:45:9: 'tel'
             {
-            match("returns"); 
+            match("tel"); 
 
 
 
@@ -790,10 +789,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__42;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:46:7: ( 'tel' )
-            // Lustre.g:46:9: 'tel'
+            // Lustre.g:46:7: ( 'then' )
+            // Lustre.g:46:9: 'then'
             {
-            match("tel"); 
+            match("then"); 
 
 
 
@@ -813,10 +812,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__43;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:47:7: ( 'then' )
-            // Lustre.g:47:9: 'then'
+            // Lustre.g:47:7: ( 'true' )
+            // Lustre.g:47:9: 'true'
             {
-            match("then"); 
+            match("true"); 
 
 
 
@@ -836,10 +835,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__44;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:48:7: ( 'true' )
-            // Lustre.g:48:9: 'true'
+            // Lustre.g:48:7: ( 'var' )
+            // Lustre.g:48:9: 'var'
             {
-            match("true"); 
+            match("var"); 
 
 
 
@@ -859,31 +858,8 @@ public class LustreLexer extends Lexer {
         try {
             int _type = T__45;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:49:7: ( 'var' )
-            // Lustre.g:49:9: 'var'
-            {
-            match("var"); 
-
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        	// do for sure before leaving
-        }
-    }
-    // $ANTLR end "T__45"
-
-    // $ANTLR start "T__46"
-    public final void mT__46() throws RecognitionException {
-        try {
-            int _type = T__46;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:50:7: ( 'xor' )
-            // Lustre.g:50:9: 'xor'
+            // Lustre.g:49:7: ( 'xor' )
+            // Lustre.g:49:9: 'xor'
             {
             match("xor"); 
 
@@ -898,7 +874,7 @@ public class LustreLexer extends Lexer {
         	// do for sure before leaving
         }
     }
-    // $ANTLR end "T__46"
+    // $ANTLR end "T__45"
 
     // $ANTLR start "INT"
     public final void mINT() throws RecognitionException {
@@ -1086,68 +1062,103 @@ public class LustreLexer extends Lexer {
         try {
             int _type = SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:204:11: ( '--' (~ ( '\\n' | '\\r' ) )* ( ( '\\r' )? '\\n' )? )
-            // Lustre.g:204:13: '--' (~ ( '\\n' | '\\r' ) )* ( ( '\\r' )? '\\n' )?
+            // Lustre.g:204:11: ( '--' (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |) ( ( '\\r' )? '\\n' )? )
+            // Lustre.g:204:13: '--' (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |) ( ( '\\r' )? '\\n' )?
             {
             match("--"); 
 
 
 
-            // Lustre.g:204:18: (~ ( '\\n' | '\\r' ) )*
-            loop4:
-            do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
+            // Lustre.g:204:18: (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |)
+            int alt5=2;
+            int LA5_0 = input.LA(1);
 
-                if ( ((LA4_0 >= '\u0000' && LA4_0 <= '\t')||(LA4_0 >= '\u000B' && LA4_0 <= '\f')||(LA4_0 >= '\u000E' && LA4_0 <= '\uFFFF')) ) {
-                    alt4=1;
-                }
-
-
-                switch (alt4) {
-            	case 1 :
-            	    // Lustre.g:
-            	    {
-            	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
-            	        input.consume();
-            	    }
-            	    else {
-            	        MismatchedSetException mse = new MismatchedSetException(null,input);
-            	        recover(mse);
-            	        throw mse;
-            	    }
-
-
-            	    }
-            	    break;
-
-            	default :
-            	    break loop4;
-                }
-            } while (true);
-
-
-            // Lustre.g:204:32: ( ( '\\r' )? '\\n' )?
-            int alt6=2;
-            int LA6_0 = input.LA(1);
-
-            if ( (LA6_0=='\n'||LA6_0=='\r') ) {
-                alt6=1;
+            if ( ((LA5_0 >= '\u0000' && LA5_0 <= '\t')||(LA5_0 >= '\u000B' && LA5_0 <= '\f')||(LA5_0 >= '\u000E' && LA5_0 <= '$')||(LA5_0 >= '&' && LA5_0 <= '\uFFFF')) ) {
+                alt5=1;
             }
-            switch (alt6) {
+            else {
+                alt5=2;
+            }
+            switch (alt5) {
                 case 1 :
-                    // Lustre.g:204:33: ( '\\r' )? '\\n'
+                    // Lustre.g:204:19: ~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )*
                     {
-                    // Lustre.g:204:33: ( '\\r' )?
-                    int alt5=2;
-                    int LA5_0 = input.LA(1);
-
-                    if ( (LA5_0=='\r') ) {
-                        alt5=1;
+                    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '$')||(input.LA(1) >= '&' && input.LA(1) <= '\uFFFF') ) {
+                        input.consume();
                     }
-                    switch (alt5) {
+                    else {
+                        MismatchedSetException mse = new MismatchedSetException(null,input);
+                        recover(mse);
+                        throw mse;
+                    }
+
+
+                    // Lustre.g:204:36: (~ ( '\\n' | '\\r' ) )*
+                    loop4:
+                    do {
+                        int alt4=2;
+                        int LA4_0 = input.LA(1);
+
+                        if ( ((LA4_0 >= '\u0000' && LA4_0 <= '\t')||(LA4_0 >= '\u000B' && LA4_0 <= '\f')||(LA4_0 >= '\u000E' && LA4_0 <= '\uFFFF')) ) {
+                            alt4=1;
+                        }
+
+
+                        switch (alt4) {
+                    	case 1 :
+                    	    // Lustre.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
+
+
+                    	    }
+                    	    break;
+
+                    	default :
+                    	    break loop4;
+                        }
+                    } while (true);
+
+
+                    }
+                    break;
+                case 2 :
+                    // Lustre.g:204:63: 
+                    {
+                    }
+                    break;
+
+            }
+
+
+            // Lustre.g:204:65: ( ( '\\r' )? '\\n' )?
+            int alt7=2;
+            int LA7_0 = input.LA(1);
+
+            if ( (LA7_0=='\n'||LA7_0=='\r') ) {
+                alt7=1;
+            }
+            switch (alt7) {
+                case 1 :
+                    // Lustre.g:204:66: ( '\\r' )? '\\n'
+                    {
+                    // Lustre.g:204:66: ( '\\r' )?
+                    int alt6=2;
+                    int LA6_0 = input.LA(1);
+
+                    if ( (LA6_0=='\r') ) {
+                        alt6=1;
+                    }
+                    switch (alt6) {
                         case 1 :
-                            // Lustre.g:204:33: '\\r'
+                            // Lustre.g:204:66: '\\r'
                             {
                             match('\r'); 
 
@@ -1191,29 +1202,29 @@ public class LustreLexer extends Lexer {
 
 
             // Lustre.g:205:18: ( options {greedy=false; } : . )*
-            loop7:
+            loop8:
             do {
-                int alt7=2;
-                int LA7_0 = input.LA(1);
+                int alt8=2;
+                int LA8_0 = input.LA(1);
 
-                if ( (LA7_0=='*') ) {
-                    int LA7_1 = input.LA(2);
+                if ( (LA8_0=='*') ) {
+                    int LA8_1 = input.LA(2);
 
-                    if ( (LA7_1=='/') ) {
-                        alt7=2;
+                    if ( (LA8_1=='/') ) {
+                        alt8=2;
                     }
-                    else if ( ((LA7_1 >= '\u0000' && LA7_1 <= '.')||(LA7_1 >= '0' && LA7_1 <= '\uFFFF')) ) {
-                        alt7=1;
+                    else if ( ((LA8_1 >= '\u0000' && LA8_1 <= '.')||(LA8_1 >= '0' && LA8_1 <= '\uFFFF')) ) {
+                        alt8=1;
                     }
 
 
                 }
-                else if ( ((LA7_0 >= '\u0000' && LA7_0 <= ')')||(LA7_0 >= '+' && LA7_0 <= '\uFFFF')) ) {
-                    alt7=1;
+                else if ( ((LA8_0 >= '\u0000' && LA8_0 <= ')')||(LA8_0 >= '+' && LA8_0 <= '\uFFFF')) ) {
+                    alt8=1;
                 }
 
 
-                switch (alt7) {
+                switch (alt8) {
             	case 1 :
             	    // Lustre.g:205:45: .
             	    {
@@ -1223,7 +1234,7 @@ public class LustreLexer extends Lexer {
             	    break;
 
             	default :
-            	    break loop7;
+            	    break loop8;
                 }
             } while (true);
 
@@ -1267,10 +1278,10 @@ public class LustreLexer extends Lexer {
     // $ANTLR end "ERROR"
 
     public void mTokens() throws RecognitionException {
-        // Lustre.g:1:8: ( T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | INT | ID | WS | SL_COMMENT | ML_COMMENT | ERROR )
-        int alt8=43;
-        alt8 = dfa8.predict(input);
-        switch (alt8) {
+        // Lustre.g:1:8: ( T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | INT | ID | WS | SL_COMMENT | ML_COMMENT | ERROR )
+        int alt9=42;
+        alt9 = dfa9.predict(input);
+        switch (alt9) {
             case 1 :
                 // Lustre.g:1:10: T__10
                 {
@@ -1560,55 +1571,47 @@ public class LustreLexer extends Lexer {
                 }
                 break;
             case 37 :
-                // Lustre.g:1:226: T__46
-                {
-                mT__46(); 
-
-
-                }
-                break;
-            case 38 :
-                // Lustre.g:1:232: INT
+                // Lustre.g:1:226: INT
                 {
                 mINT(); 
 
 
                 }
                 break;
-            case 39 :
-                // Lustre.g:1:236: ID
+            case 38 :
+                // Lustre.g:1:230: ID
                 {
                 mID(); 
 
 
                 }
                 break;
-            case 40 :
-                // Lustre.g:1:239: WS
+            case 39 :
+                // Lustre.g:1:233: WS
                 {
                 mWS(); 
 
 
                 }
                 break;
-            case 41 :
-                // Lustre.g:1:242: SL_COMMENT
+            case 40 :
+                // Lustre.g:1:236: SL_COMMENT
                 {
                 mSL_COMMENT(); 
 
 
                 }
                 break;
-            case 42 :
-                // Lustre.g:1:253: ML_COMMENT
+            case 41 :
+                // Lustre.g:1:247: ML_COMMENT
                 {
                 mML_COMMENT(); 
 
 
                 }
                 break;
-            case 43 :
-                // Lustre.g:1:264: ERROR
+            case 42 :
+                // Lustre.g:1:258: ERROR
                 {
                 mERROR(); 
 
@@ -1621,77 +1624,81 @@ public class LustreLexer extends Lexer {
     }
 
 
-    protected DFA8 dfa8 = new DFA8(this);
-    static final String DFA8_eotS =
-        "\2\uffff\1\37\3\uffff\1\42\1\44\2\uffff\1\47\1\51\1\53\15\33\6\uffff"+
-        "\1\75\13\uffff\4\33\1\102\3\33\1\107\7\33\1\75\1\uffff\1\121\3\33"+
-        "\1\uffff\1\125\1\126\1\33\1\130\1\uffff\1\131\2\33\1\134\2\33\1"+
-        "\137\1\140\1\75\1\uffff\1\142\1\143\1\33\2\uffff\1\145\2\uffff\1"+
-        "\146\1\33\1\uffff\1\150\1\151\2\uffff\1\75\2\uffff\1\153\2\uffff"+
-        "\1\33\2\uffff\1\75\1\uffff\1\33\1\75\1\160\1\75\1\uffff\2\75\1\164"+
-        "\1\uffff";
-    static final String DFA8_eofS =
-        "\165\uffff";
-    static final String DFA8_minS =
-        "\1\11\1\uffff\1\40\3\uffff\1\55\1\52\2\uffff\1\75\1\76\1\75\1\156"+
-        "\1\157\1\154\1\141\1\146\1\145\1\157\2\162\2\145\1\141\1\157\6\uffff"+
-        "\1\45\13\uffff\1\144\1\157\1\163\1\154\1\60\2\164\1\144\1\60\1\145"+
-        "\1\141\1\154\1\145\1\165\2\162\1\120\1\uffff\1\60\1\154\1\145\1"+
-        "\163\1\uffff\2\60\1\145\1\60\1\uffff\1\60\1\154\1\165\1\60\1\156"+
-        "\1\145\2\60\1\122\1\uffff\2\60\1\145\2\uffff\1\60\2\uffff\1\60\1"+
-        "\162\1\uffff\2\60\2\uffff\1\117\2\uffff\1\60\2\uffff\1\156\2\uffff"+
-        "\1\120\1\uffff\1\163\1\105\1\60\1\122\1\uffff\1\124\1\131\1\0\1"+
-        "\uffff";
-    static final String DFA8_maxS =
-        "\1\172\1\uffff\1\40\3\uffff\1\76\1\52\2\uffff\2\76\1\75\1\156\1"+
-        "\157\1\154\1\141\1\156\1\145\1\157\2\162\1\145\1\162\1\141\1\157"+
-        "\6\uffff\1\45\13\uffff\1\144\1\157\1\163\1\154\1\172\3\164\1\172"+
-        "\1\145\1\164\1\154\1\145\1\165\2\162\1\120\1\uffff\1\172\1\154\1"+
-        "\145\1\163\1\uffff\2\172\1\145\1\172\1\uffff\1\172\1\154\1\165\1"+
-        "\172\1\156\1\145\2\172\1\122\1\uffff\2\172\1\145\2\uffff\1\172\2"+
-        "\uffff\1\172\1\162\1\uffff\2\172\2\uffff\1\117\2\uffff\1\172\2\uffff"+
-        "\1\156\2\uffff\1\120\1\uffff\1\163\1\105\1\172\1\122\1\uffff\1\124"+
-        "\1\131\1\uffff\1\uffff";
-    static final String DFA8_acceptS =
-        "\1\uffff\1\1\1\uffff\1\4\1\5\1\6\2\uffff\1\13\1\14\20\uffff\1\46"+
-        "\1\47\1\50\1\53\1\2\1\3\1\uffff\1\11\1\7\1\52\1\12\1\16\1\17\1\15"+
-        "\1\21\1\20\1\23\1\22\21\uffff\1\51\4\uffff\1\30\4\uffff\1\35\11"+
-        "\uffff\1\24\3\uffff\1\31\1\32\1\uffff\1\34\1\36\2\uffff\1\41\2\uffff"+
-        "\1\44\1\45\1\uffff\1\25\1\26\1\uffff\1\33\1\37\1\uffff\1\42\1\43"+
-        "\1\uffff\1\27\4\uffff\1\40\3\uffff\1\10";
-    static final String DFA8_specialS =
-        "\163\uffff\1\0\1\uffff}>";
-    static final String[] DFA8_transitionS = {
+    protected DFA9 dfa9 = new DFA9(this);
+    static final String DFA9_eotS =
+        "\6\uffff\1\40\1\42\2\uffff\1\45\1\47\1\51\15\33\4\uffff\1\73\13"+
+        "\uffff\4\33\1\100\3\33\1\105\7\33\2\uffff\1\116\3\33\1\uffff\1\122"+
+        "\1\123\1\33\1\125\1\uffff\1\126\2\33\1\131\2\33\1\134\1\135\1\uffff"+
+        "\1\136\1\137\1\33\2\uffff\1\141\2\uffff\1\142\1\33\1\uffff\1\144"+
+        "\1\145\4\uffff\1\146\2\uffff\1\33\3\uffff\1\33\1\151\1\uffff";
+    static final String DFA9_eofS =
+        "\152\uffff";
+    static final String DFA9_minS =
+        "\1\11\5\uffff\1\55\1\52\2\uffff\1\75\1\76\1\75\1\156\1\157\1\154"+
+        "\1\141\1\146\1\145\1\157\2\162\2\145\1\141\1\157\4\uffff\1\45\13"+
+        "\uffff\1\144\1\157\1\163\1\154\1\60\2\164\1\144\1\60\1\145\1\141"+
+        "\1\154\1\145\1\165\2\162\2\uffff\1\60\1\154\1\145\1\163\1\uffff"+
+        "\2\60\1\145\1\60\1\uffff\1\60\1\154\1\165\1\60\1\156\1\145\2\60"+
+        "\1\uffff\2\60\1\145\2\uffff\1\60\2\uffff\1\60\1\162\1\uffff\2\60"+
+        "\4\uffff\1\60\2\uffff\1\156\3\uffff\1\163\1\60\1\uffff";
+    static final String DFA9_maxS =
+        "\1\172\5\uffff\1\76\1\52\2\uffff\2\76\1\75\1\156\1\157\1\154\1\141"+
+        "\1\156\1\145\1\157\2\162\1\145\1\162\1\141\1\157\4\uffff\1\45\13"+
+        "\uffff\1\144\1\157\1\163\1\154\1\172\3\164\1\172\1\145\1\164\1\154"+
+        "\1\145\1\165\2\162\2\uffff\1\172\1\154\1\145\1\163\1\uffff\2\172"+
+        "\1\145\1\172\1\uffff\1\172\1\154\1\165\1\172\1\156\1\145\2\172\1"+
+        "\uffff\2\172\1\145\2\uffff\1\172\2\uffff\1\172\1\162\1\uffff\2\172"+
+        "\4\uffff\1\172\2\uffff\1\156\3\uffff\1\163\1\172\1\uffff";
+    static final String DFA9_acceptS =
+        "\1\uffff\1\1\1\2\1\3\1\4\1\5\2\uffff\1\12\1\13\20\uffff\1\45\1\46"+
+        "\1\47\1\52\1\uffff\1\10\1\6\1\51\1\11\1\15\1\16\1\14\1\20\1\17\1"+
+        "\22\1\21\20\uffff\1\7\1\50\4\uffff\1\27\4\uffff\1\34\10\uffff\1"+
+        "\23\3\uffff\1\30\1\31\1\uffff\1\33\1\35\2\uffff\1\40\2\uffff\1\43"+
+        "\1\44\1\24\1\25\1\uffff\1\32\1\36\1\uffff\1\41\1\42\1\26\2\uffff"+
+        "\1\37";
+    static final String DFA9_specialS =
+        "\152\uffff}>";
+    static final String[] DFA9_transitionS = {
             "\2\34\1\uffff\2\34\22\uffff\1\34\7\uffff\1\1\1\2\1\3\1\4\1\5"+
             "\1\6\1\35\1\7\12\32\1\10\1\11\1\12\1\13\1\14\2\uffff\32\33\4"+
             "\uffff\1\33\1\uffff\1\15\1\16\2\33\1\17\1\20\2\33\1\21\2\33"+
             "\1\22\1\33\1\23\1\24\1\25\1\33\1\26\1\33\1\27\1\33\1\30\1\33"+
             "\1\31\2\33",
             "",
-            "\1\36",
             "",
             "",
             "",
-            "\1\40\20\uffff\1\41",
-            "\1\43",
+            "",
+            "\1\36\20\uffff\1\37",
+            "\1\41",
             "",
             "",
-            "\1\45\1\46",
+            "\1\43\1\44",
+            "\1\46",
             "\1\50",
             "\1\52",
+            "\1\53",
             "\1\54",
             "\1\55",
-            "\1\56",
-            "\1\57",
-            "\1\60\7\uffff\1\61",
+            "\1\56\7\uffff\1\57",
+            "\1\60",
+            "\1\61",
             "\1\62",
             "\1\63",
             "\1\64",
-            "\1\65",
-            "\1\66",
-            "\1\67\2\uffff\1\70\11\uffff\1\71",
+            "\1\65\2\uffff\1\66\11\uffff\1\67",
+            "\1\70",
+            "\1\71",
+            "",
+            "",
+            "",
+            "",
             "\1\72",
-            "\1\73",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -1699,145 +1706,103 @@ public class LustreLexer extends Lexer {
             "",
             "",
             "\1\74",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\75",
             "\1\76",
             "\1\77",
-            "\1\100",
+            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "\1\101",
+            "\1\102",
+            "\1\103\17\uffff\1\104",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\103",
-            "\1\104",
-            "\1\105\17\uffff\1\106",
-            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\110",
-            "\1\111\22\uffff\1\112",
+            "\1\106",
+            "\1\107\22\uffff\1\110",
+            "\1\111",
+            "\1\112",
             "\1\113",
             "\1\114",
             "\1\115",
-            "\1\116",
+            "",
+            "",
+            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "\1\117",
             "\1\120",
+            "\1\121",
             "",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\122",
-            "\1\123",
+            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "\1\124",
-            "",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
+            "",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "\1\127",
-            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "",
+            "\1\130",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "\1\132",
             "\1\133",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\135",
-            "\1\136",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\141",
             "",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\144",
+            "\1\140",
             "",
             "",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
             "",
             "",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
+            "\1\143",
+            "",
+            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
+            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
+            "",
+            "",
+            "",
+            "",
+            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
+            "",
+            "",
             "\1\147",
             "",
+            "",
+            "",
+            "\1\150",
             "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "",
-            "",
-            "\1\152",
-            "",
-            "",
-            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "",
-            "",
-            "\1\154",
-            "",
-            "",
-            "\1\155",
-            "",
-            "\1\156",
-            "\1\157",
-            "\12\33\7\uffff\32\33\4\uffff\1\33\1\uffff\32\33",
-            "\1\161",
-            "",
-            "\1\162",
-            "\1\163",
-            "\0\75",
             ""
     };
 
-    static final short[] DFA8_eot = DFA.unpackEncodedString(DFA8_eotS);
-    static final short[] DFA8_eof = DFA.unpackEncodedString(DFA8_eofS);
-    static final char[] DFA8_min = DFA.unpackEncodedStringToUnsignedChars(DFA8_minS);
-    static final char[] DFA8_max = DFA.unpackEncodedStringToUnsignedChars(DFA8_maxS);
-    static final short[] DFA8_accept = DFA.unpackEncodedString(DFA8_acceptS);
-    static final short[] DFA8_special = DFA.unpackEncodedString(DFA8_specialS);
-    static final short[][] DFA8_transition;
+    static final short[] DFA9_eot = DFA.unpackEncodedString(DFA9_eotS);
+    static final short[] DFA9_eof = DFA.unpackEncodedString(DFA9_eofS);
+    static final char[] DFA9_min = DFA.unpackEncodedStringToUnsignedChars(DFA9_minS);
+    static final char[] DFA9_max = DFA.unpackEncodedStringToUnsignedChars(DFA9_maxS);
+    static final short[] DFA9_accept = DFA.unpackEncodedString(DFA9_acceptS);
+    static final short[] DFA9_special = DFA.unpackEncodedString(DFA9_specialS);
+    static final short[][] DFA9_transition;
 
     static {
-        int numStates = DFA8_transitionS.length;
-        DFA8_transition = new short[numStates][];
+        int numStates = DFA9_transitionS.length;
+        DFA9_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA8_transition[i] = DFA.unpackEncodedString(DFA8_transitionS[i]);
+            DFA9_transition[i] = DFA.unpackEncodedString(DFA9_transitionS[i]);
         }
     }
 
-    class DFA8 extends DFA {
+    class DFA9 extends DFA {
 
-        public DFA8(BaseRecognizer recognizer) {
+        public DFA9(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 8;
-            this.eot = DFA8_eot;
-            this.eof = DFA8_eof;
-            this.min = DFA8_min;
-            this.max = DFA8_max;
-            this.accept = DFA8_accept;
-            this.special = DFA8_special;
-            this.transition = DFA8_transition;
+            this.decisionNumber = 9;
+            this.eot = DFA9_eot;
+            this.eof = DFA9_eof;
+            this.min = DFA9_min;
+            this.max = DFA9_max;
+            this.accept = DFA9_accept;
+            this.special = DFA9_special;
+            this.transition = DFA9_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | INT | ID | WS | SL_COMMENT | ML_COMMENT | ERROR );";
+            return "1:1: Tokens : ( T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | INT | ID | WS | SL_COMMENT | ML_COMMENT | ERROR );";
         }
-        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
-            IntStream input = _input;
-        	int _s = s;
-            switch ( s ) {
-                    case 0 : 
-                        int LA8_115 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA8_115 >= '\u0000' && LA8_115 <= '\uFFFF')) ) {s = 61;}
-
-                        else s = 116;
-
-                        if ( s>=0 ) return s;
-                        break;
-            }
-            NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 8, _s, input);
-            error(nvae);
-            throw nvae;
-        }
-
     }
  
 

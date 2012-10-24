@@ -184,7 +184,7 @@ atomicExpr returns [Expr e]:
 | 'if' e1=expr       
   'then' e2=expr       
   'else' e3=expr              { $e = new IfThenElseExpr($e1.e, $e2.e, $e3.e); }
-| '(' p=expr ')       '       { $e = $p.e; }
+| '(' p=expr ')'              { $e = $p.e; }
 ;
 
 real: INT '.' INT;
@@ -201,6 +201,6 @@ ID:
 
 WS: (' ' | '\t' | '\n' | '\r' | '\f')+ {$channel = HIDDEN;};
 
-SL_COMMENT: '--' ~('\n'|'\r')* ('\r'? '\n')? {$channel=HIDDEN;};
+SL_COMMENT: '--' (~('%'|'\n'|'\r') ~('\n'|'\r')* | /* empty */) ('\r'? '\n')? {$channel=HIDDEN;};
 ML_COMMENT: '/*' (options {greedy=false;} : .)* '*/' {$channel=HIDDEN;};
 ERROR: '.';

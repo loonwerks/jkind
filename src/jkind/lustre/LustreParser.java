@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Lustre.g 2012-10-24 11:23:10
+// $ANTLR 3.4 Lustre.g 2012-10-24 11:44:48
 
   package jkind.lustre;
   
@@ -15,7 +15,7 @@ import java.util.HashMap;
 @SuppressWarnings({"all", "warnings", "unchecked"})
 public class LustreParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "ERROR", "ID", "INT", "ML_COMMENT", "SL_COMMENT", "WS", "'('", "')       '", "')'", "'*'", "'+'", "','", "'-'", "'--%PROPERTY'", "'->'", "'/'", "':'", "';'", "'<'", "'<='", "'<>'", "'='", "'=>'", "'>'", "'>='", "'and'", "'bool'", "'else'", "'false'", "'if'", "'int'", "'let'", "'node'", "'not'", "'or'", "'pre'", "'real'", "'returns'", "'tel'", "'then'", "'true'", "'var'", "'xor'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "ERROR", "ID", "INT", "ML_COMMENT", "SL_COMMENT", "WS", "'('", "')'", "'*'", "'+'", "','", "'-'", "'--%PROPERTY'", "'->'", "'/'", "':'", "';'", "'<'", "'<='", "'<>'", "'='", "'=>'", "'>'", "'>='", "'and'", "'bool'", "'else'", "'false'", "'if'", "'int'", "'let'", "'node'", "'not'", "'or'", "'pre'", "'real'", "'returns'", "'tel'", "'then'", "'true'", "'var'", "'xor'"
     };
 
     public static final int EOF=-1;
@@ -55,7 +55,6 @@ public class LustreParser extends Parser {
     public static final int T__43=43;
     public static final int T__44=44;
     public static final int T__45=45;
-    public static final int T__46=46;
     public static final int ERROR=4;
     public static final int ID=5;
     public static final int INT=6;
@@ -112,7 +111,7 @@ public class LustreParser extends Parser {
             // Lustre.g:30:2: ( 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' )
             // Lustre.g:32:3: 'node' ID '(' inputs= varDeclList ')' 'returns' '(' outputs= varDeclList ')' ';' ( 'var' vars= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
             {
-            match(input,36,FOLLOW_36_in_node64); if (state.failed) return n;
+            match(input,35,FOLLOW_35_in_node64); if (state.failed) return n;
 
             match(input,ID,FOLLOW_ID_in_node66); if (state.failed) return n;
 
@@ -124,9 +123,9 @@ public class LustreParser extends Parser {
             state._fsp--;
             if (state.failed) return n;
 
-            match(input,12,FOLLOW_12_in_node74); if (state.failed) return n;
+            match(input,11,FOLLOW_11_in_node74); if (state.failed) return n;
 
-            match(input,41,FOLLOW_41_in_node78); if (state.failed) return n;
+            match(input,40,FOLLOW_40_in_node78); if (state.failed) return n;
 
             match(input,10,FOLLOW_10_in_node80); if (state.failed) return n;
 
@@ -136,22 +135,22 @@ public class LustreParser extends Parser {
             state._fsp--;
             if (state.failed) return n;
 
-            match(input,12,FOLLOW_12_in_node86); if (state.failed) return n;
+            match(input,11,FOLLOW_11_in_node86); if (state.failed) return n;
 
-            match(input,21,FOLLOW_21_in_node88); if (state.failed) return n;
+            match(input,20,FOLLOW_20_in_node88); if (state.failed) return n;
 
             // Lustre.g:34:3: ( 'var' vars= varDeclList ';' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
-            if ( (LA1_0==45) ) {
+            if ( (LA1_0==44) ) {
                 alt1=1;
             }
             switch (alt1) {
                 case 1 :
                     // Lustre.g:34:4: 'var' vars= varDeclList ';'
                     {
-                    match(input,45,FOLLOW_45_in_node93); if (state.failed) return n;
+                    match(input,44,FOLLOW_44_in_node93); if (state.failed) return n;
 
                     pushFollow(FOLLOW_varDeclList_in_node97);
                     vars=varDeclList();
@@ -159,7 +158,7 @@ public class LustreParser extends Parser {
                     state._fsp--;
                     if (state.failed) return n;
 
-                    match(input,21,FOLLOW_21_in_node99); if (state.failed) return n;
+                    match(input,20,FOLLOW_20_in_node99); if (state.failed) return n;
 
                     if ( state.backtracking==0 ) { locals.addAll(vars); }
 
@@ -169,7 +168,7 @@ public class LustreParser extends Parser {
             }
 
 
-            match(input,35,FOLLOW_35_in_node130); if (state.failed) return n;
+            match(input,34,FOLLOW_34_in_node130); if (state.failed) return n;
 
             // Lustre.g:37:5: ( equation | property )*
             loop2:
@@ -180,7 +179,7 @@ public class LustreParser extends Parser {
                 if ( (LA2_0==ID) ) {
                     alt2=1;
                 }
-                else if ( (LA2_0==17) ) {
+                else if ( (LA2_0==16) ) {
                     alt2=2;
                 }
 
@@ -219,9 +218,9 @@ public class LustreParser extends Parser {
             } while (true);
 
 
-            match(input,42,FOLLOW_42_in_node231); if (state.failed) return n;
+            match(input,41,FOLLOW_41_in_node231); if (state.failed) return n;
 
-            match(input,21,FOLLOW_21_in_node233); if (state.failed) return n;
+            match(input,20,FOLLOW_20_in_node233); if (state.failed) return n;
 
             if ( state.backtracking==0 ) { n = new Node(inputs, outputs, locals, equations, properties); }
 
@@ -283,7 +282,7 @@ public class LustreParser extends Parser {
                         int alt3=2;
                         int LA3_0 = input.LA(1);
 
-                        if ( (LA3_0==21) ) {
+                        if ( (LA3_0==20) ) {
                             int LA3_2 = input.LA(2);
 
                             if ( (LA3_2==ID) ) {
@@ -298,7 +297,7 @@ public class LustreParser extends Parser {
                     	case 1 :
                     	    // Lustre.g:49:6: ';' g2= varDeclGroup
                     	    {
-                    	    match(input,21,FOLLOW_21_in_varDeclList287); if (state.failed) return decls;
+                    	    match(input,20,FOLLOW_20_in_varDeclList287); if (state.failed) return decls;
 
                     	    pushFollow(FOLLOW_varDeclGroup_in_varDeclList291);
                     	    g2=varDeclGroup();
@@ -366,7 +365,7 @@ public class LustreParser extends Parser {
                 int alt5=2;
                 int LA5_0 = input.LA(1);
 
-                if ( (LA5_0==15) ) {
+                if ( (LA5_0==14) ) {
                     alt5=1;
                 }
 
@@ -375,7 +374,7 @@ public class LustreParser extends Parser {
             	case 1 :
             	    // Lustre.g:58:6: ',' v2= ID
             	    {
-            	    match(input,15,FOLLOW_15_in_varDeclGroup364); if (state.failed) return decls;
+            	    match(input,14,FOLLOW_14_in_varDeclGroup364); if (state.failed) return decls;
 
             	    v2=(Token)match(input,ID,FOLLOW_ID_in_varDeclGroup368); if (state.failed) return decls;
 
@@ -390,7 +389,7 @@ public class LustreParser extends Parser {
             } while (true);
 
 
-            match(input,20,FOLLOW_20_in_varDeclGroup388); if (state.failed) return decls;
+            match(input,19,FOLLOW_19_in_varDeclGroup388); if (state.failed) return decls;
 
             pushFollow(FOLLOW_type_in_varDeclGroup390);
             type3=type();
@@ -431,17 +430,17 @@ public class LustreParser extends Parser {
             // Lustre.g:69:22: ( 'int' | 'bool' | 'real' )
             int alt6=3;
             switch ( input.LA(1) ) {
-            case 34:
+            case 33:
                 {
                 alt6=1;
                 }
                 break;
-            case 30:
+            case 29:
                 {
                 alt6=2;
                 }
                 break;
-            case 40:
+            case 39:
                 {
                 alt6=3;
                 }
@@ -459,7 +458,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:70:3: 'int'
                     {
-                    match(input,34,FOLLOW_34_in_type411); if (state.failed) return t;
+                    match(input,33,FOLLOW_33_in_type411); if (state.failed) return t;
 
                     if ( state.backtracking==0 ) { t = Type.INT; }
 
@@ -468,7 +467,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:71:3: 'bool'
                     {
-                    match(input,30,FOLLOW_30_in_type421); if (state.failed) return t;
+                    match(input,29,FOLLOW_29_in_type421); if (state.failed) return t;
 
                     if ( state.backtracking==0 ) { t = Type.BOOL; }
 
@@ -477,7 +476,7 @@ public class LustreParser extends Parser {
                 case 3 :
                     // Lustre.g:72:3: 'real'
                     {
-                    match(input,40,FOLLOW_40_in_type430); if (state.failed) return t;
+                    match(input,39,FOLLOW_39_in_type430); if (state.failed) return t;
 
                     if ( state.backtracking==0 ) { t = Type.REAL; }
 
@@ -512,11 +511,11 @@ public class LustreParser extends Parser {
             // Lustre.g:75:28: ( '--%PROPERTY' ID ';' )
             // Lustre.g:76:3: '--%PROPERTY' ID ';'
             {
-            match(input,17,FOLLOW_17_in_property449); if (state.failed) return p;
+            match(input,16,FOLLOW_16_in_property449); if (state.failed) return p;
 
             ID4=(Token)match(input,ID,FOLLOW_ID_in_property451); if (state.failed) return p;
 
-            match(input,21,FOLLOW_21_in_property453); if (state.failed) return p;
+            match(input,20,FOLLOW_20_in_property453); if (state.failed) return p;
 
             if ( state.backtracking==0 ) { p = (ID4!=null?ID4.getText():null); }
 
@@ -553,7 +552,7 @@ public class LustreParser extends Parser {
             {
             ID5=(Token)match(input,ID,FOLLOW_ID_in_equation479); if (state.failed) return eq;
 
-            match(input,25,FOLLOW_25_in_equation481); if (state.failed) return eq;
+            match(input,24,FOLLOW_24_in_equation481); if (state.failed) return eq;
 
             pushFollow(FOLLOW_expr_in_equation483);
             expr6=expr();
@@ -561,7 +560,7 @@ public class LustreParser extends Parser {
             state._fsp--;
             if (state.failed) return eq;
 
-            match(input,21,FOLLOW_21_in_equation485); if (state.failed) return eq;
+            match(input,20,FOLLOW_20_in_equation485); if (state.failed) return eq;
 
             if ( state.backtracking==0 ) { eq = new Equation((ID5!=null?ID5.getText():null), expr6); }
 
@@ -630,7 +629,7 @@ public class LustreParser extends Parser {
             // Lustre.g:87:30: ( '->' )
             // Lustre.g:88:3: '->'
             {
-            match(input,18,FOLLOW_18_in_arrowOp553); if (state.failed) return op;
+            match(input,17,FOLLOW_17_in_arrowOp553); if (state.failed) return op;
 
             if ( state.backtracking==0 ) { op = BinaryOp.ARROW; }
 
@@ -680,7 +679,7 @@ public class LustreParser extends Parser {
             int alt7=2;
             int LA7_0 = input.LA(1);
 
-            if ( (LA7_0==18) ) {
+            if ( (LA7_0==17) ) {
                 int LA7_1 = input.LA(2);
 
                 if ( (synpred1_Lustre()) ) {
@@ -738,7 +737,7 @@ public class LustreParser extends Parser {
             // Lustre.g:98:32: ( '=>' )
             // Lustre.g:99:3: '=>'
             {
-            match(input,26,FOLLOW_26_in_impliesOp649); if (state.failed) return op;
+            match(input,25,FOLLOW_25_in_impliesOp649); if (state.failed) return op;
 
             if ( state.backtracking==0 ) { op = BinaryOp.IMPLIES; }
 
@@ -788,7 +787,7 @@ public class LustreParser extends Parser {
             int alt8=2;
             int LA8_0 = input.LA(1);
 
-            if ( (LA8_0==26) ) {
+            if ( (LA8_0==25) ) {
                 int LA8_1 = input.LA(2);
 
                 if ( (synpred2_Lustre()) ) {
@@ -847,10 +846,10 @@ public class LustreParser extends Parser {
             int alt9=2;
             int LA9_0 = input.LA(1);
 
-            if ( (LA9_0==38) ) {
+            if ( (LA9_0==37) ) {
                 alt9=1;
             }
-            else if ( (LA9_0==46) ) {
+            else if ( (LA9_0==45) ) {
                 alt9=2;
             }
             else {
@@ -865,7 +864,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:110:3: 'or'
                     {
-                    match(input,38,FOLLOW_38_in_orOp748); if (state.failed) return op;
+                    match(input,37,FOLLOW_37_in_orOp748); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.OR; }
 
@@ -874,7 +873,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:111:3: 'xor'
                     {
-                    match(input,46,FOLLOW_46_in_orOp754); if (state.failed) return op;
+                    match(input,45,FOLLOW_45_in_orOp754); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.XOR; }
 
@@ -928,7 +927,7 @@ public class LustreParser extends Parser {
                 int alt10=2;
                 int LA10_0 = input.LA(1);
 
-                if ( (LA10_0==38) ) {
+                if ( (LA10_0==37) ) {
                     int LA10_2 = input.LA(2);
 
                     if ( (synpred3_Lustre()) ) {
@@ -937,7 +936,7 @@ public class LustreParser extends Parser {
 
 
                 }
-                else if ( (LA10_0==46) ) {
+                else if ( (LA10_0==45) ) {
                     int LA10_3 = input.LA(2);
 
                     if ( (synpred3_Lustre()) ) {
@@ -1008,7 +1007,7 @@ public class LustreParser extends Parser {
             // Lustre.g:121:28: ( 'and' )
             // Lustre.g:122:3: 'and'
             {
-            match(input,29,FOLLOW_29_in_andOp855); if (state.failed) return op;
+            match(input,28,FOLLOW_28_in_andOp855); if (state.failed) return op;
 
             if ( state.backtracking==0 ) { op = BinaryOp.AND; }
 
@@ -1060,7 +1059,7 @@ public class LustreParser extends Parser {
                 int alt11=2;
                 int LA11_0 = input.LA(1);
 
-                if ( (LA11_0==29) ) {
+                if ( (LA11_0==28) ) {
                     int LA11_2 = input.LA(2);
 
                     if ( (synpred4_Lustre()) ) {
@@ -1125,32 +1124,32 @@ public class LustreParser extends Parser {
             // Lustre.g:132:35: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
             int alt12=6;
             switch ( input.LA(1) ) {
-            case 22:
+            case 21:
                 {
                 alt12=1;
                 }
                 break;
-            case 23:
+            case 22:
                 {
                 alt12=2;
                 }
                 break;
-            case 27:
+            case 26:
                 {
                 alt12=3;
                 }
                 break;
-            case 28:
+            case 27:
                 {
                 alt12=4;
                 }
                 break;
-            case 25:
+            case 24:
                 {
                 alt12=5;
                 }
                 break;
-            case 24:
+            case 23:
                 {
                 alt12=6;
                 }
@@ -1168,7 +1167,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:133:3: '<'
                     {
-                    match(input,22,FOLLOW_22_in_relationalOp948); if (state.failed) return op;
+                    match(input,21,FOLLOW_21_in_relationalOp948); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.LESS; }
 
@@ -1177,7 +1176,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:134:3: '<='
                     {
-                    match(input,23,FOLLOW_23_in_relationalOp955); if (state.failed) return op;
+                    match(input,22,FOLLOW_22_in_relationalOp955); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.LESSEQUAL; }
 
@@ -1186,7 +1185,7 @@ public class LustreParser extends Parser {
                 case 3 :
                     // Lustre.g:135:3: '>'
                     {
-                    match(input,27,FOLLOW_27_in_relationalOp961); if (state.failed) return op;
+                    match(input,26,FOLLOW_26_in_relationalOp961); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.GREATER; }
 
@@ -1195,7 +1194,7 @@ public class LustreParser extends Parser {
                 case 4 :
                     // Lustre.g:136:3: '>='
                     {
-                    match(input,28,FOLLOW_28_in_relationalOp968); if (state.failed) return op;
+                    match(input,27,FOLLOW_27_in_relationalOp968); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.GREATEREQUAL; }
 
@@ -1204,7 +1203,7 @@ public class LustreParser extends Parser {
                 case 5 :
                     // Lustre.g:137:3: '='
                     {
-                    match(input,25,FOLLOW_25_in_relationalOp974); if (state.failed) return op;
+                    match(input,24,FOLLOW_24_in_relationalOp974); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.EQUAL; }
 
@@ -1213,7 +1212,7 @@ public class LustreParser extends Parser {
                 case 6 :
                     // Lustre.g:138:3: '<>'
                     {
-                    match(input,24,FOLLOW_24_in_relationalOp981); if (state.failed) return op;
+                    match(input,23,FOLLOW_23_in_relationalOp981); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.NOTEQUAL; }
 
@@ -1264,7 +1263,7 @@ public class LustreParser extends Parser {
             // Lustre.g:143:5: ( ( relationalOp )=> relationalOp e2= plusExpr )?
             int alt13=2;
             switch ( input.LA(1) ) {
-                case 22:
+                case 21:
                     {
                     int LA13_1 = input.LA(2);
 
@@ -1273,7 +1272,7 @@ public class LustreParser extends Parser {
                     }
                     }
                     break;
-                case 23:
+                case 22:
                     {
                     int LA13_2 = input.LA(2);
 
@@ -1282,7 +1281,7 @@ public class LustreParser extends Parser {
                     }
                     }
                     break;
-                case 27:
+                case 26:
                     {
                     int LA13_3 = input.LA(2);
 
@@ -1291,7 +1290,7 @@ public class LustreParser extends Parser {
                     }
                     }
                     break;
-                case 28:
+                case 27:
                     {
                     int LA13_4 = input.LA(2);
 
@@ -1300,7 +1299,7 @@ public class LustreParser extends Parser {
                     }
                     }
                     break;
-                case 25:
+                case 24:
                     {
                     int LA13_5 = input.LA(2);
 
@@ -1309,7 +1308,7 @@ public class LustreParser extends Parser {
                     }
                     }
                     break;
-                case 24:
+                case 23:
                     {
                     int LA13_6 = input.LA(2);
 
@@ -1372,10 +1371,10 @@ public class LustreParser extends Parser {
             int alt14=2;
             int LA14_0 = input.LA(1);
 
-            if ( (LA14_0==14) ) {
+            if ( (LA14_0==13) ) {
                 alt14=1;
             }
-            else if ( (LA14_0==16) ) {
+            else if ( (LA14_0==15) ) {
                 alt14=2;
             }
             else {
@@ -1390,7 +1389,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:149:3: '+'
                     {
-                    match(input,14,FOLLOW_14_in_plusOp1086); if (state.failed) return op;
+                    match(input,13,FOLLOW_13_in_plusOp1086); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.PLUS; }
 
@@ -1399,7 +1398,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:150:3: '-'
                     {
-                    match(input,16,FOLLOW_16_in_plusOp1092); if (state.failed) return op;
+                    match(input,15,FOLLOW_15_in_plusOp1092); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.MINUS; }
 
@@ -1453,7 +1452,7 @@ public class LustreParser extends Parser {
                 int alt15=2;
                 int LA15_0 = input.LA(1);
 
-                if ( (LA15_0==14) ) {
+                if ( (LA15_0==13) ) {
                     int LA15_2 = input.LA(2);
 
                     if ( (synpred6_Lustre()) ) {
@@ -1462,7 +1461,7 @@ public class LustreParser extends Parser {
 
 
                 }
-                else if ( (LA15_0==16) ) {
+                else if ( (LA15_0==15) ) {
                     int LA15_3 = input.LA(2);
 
                     if ( (synpred6_Lustre()) ) {
@@ -1528,10 +1527,10 @@ public class LustreParser extends Parser {
             int alt16=2;
             int LA16_0 = input.LA(1);
 
-            if ( (LA16_0==13) ) {
+            if ( (LA16_0==12) ) {
                 alt16=1;
             }
-            else if ( (LA16_0==19) ) {
+            else if ( (LA16_0==18) ) {
                 alt16=2;
             }
             else {
@@ -1546,7 +1545,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:161:3: '*'
                     {
-                    match(input,13,FOLLOW_13_in_timesOp1197); if (state.failed) return op;
+                    match(input,12,FOLLOW_12_in_timesOp1197); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.MULTIPLY; }
 
@@ -1555,7 +1554,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:162:3: '/'
                     {
-                    match(input,19,FOLLOW_19_in_timesOp1203); if (state.failed) return op;
+                    match(input,18,FOLLOW_18_in_timesOp1203); if (state.failed) return op;
 
                     if ( state.backtracking==0 ) { op = BinaryOp.DIVIDE; }
 
@@ -1609,7 +1608,7 @@ public class LustreParser extends Parser {
                 int alt17=2;
                 int LA17_0 = input.LA(1);
 
-                if ( (LA17_0==13) ) {
+                if ( (LA17_0==12) ) {
                     int LA17_2 = input.LA(2);
 
                     if ( (synpred7_Lustre()) ) {
@@ -1618,7 +1617,7 @@ public class LustreParser extends Parser {
 
 
                 }
-                else if ( (LA17_0==19) ) {
+                else if ( (LA17_0==18) ) {
                     int LA17_3 = input.LA(2);
 
                     if ( (synpred7_Lustre()) ) {
@@ -1692,17 +1691,17 @@ public class LustreParser extends Parser {
             // Lustre.g:172:28: ( '-' e1= prefixExpr | 'not' e2= prefixExpr | 'pre' e3= prefixExpr | atomicExpr )
             int alt18=4;
             switch ( input.LA(1) ) {
-            case 16:
+            case 15:
                 {
                 alt18=1;
                 }
                 break;
-            case 37:
+            case 36:
                 {
                 alt18=2;
                 }
                 break;
-            case 39:
+            case 38:
                 {
                 alt18=3;
                 }
@@ -1710,9 +1709,9 @@ public class LustreParser extends Parser {
             case ID:
             case INT:
             case 10:
+            case 31:
             case 32:
-            case 33:
-            case 44:
+            case 43:
                 {
                 alt18=4;
                 }
@@ -1730,7 +1729,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:173:3: '-' e1= prefixExpr
                     {
-                    match(input,16,FOLLOW_16_in_prefixExpr1298); if (state.failed) return e;
+                    match(input,15,FOLLOW_15_in_prefixExpr1298); if (state.failed) return e;
 
                     pushFollow(FOLLOW_prefixExpr_in_prefixExpr1302);
                     e1=prefixExpr();
@@ -1745,7 +1744,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:174:3: 'not' e2= prefixExpr
                     {
-                    match(input,37,FOLLOW_37_in_prefixExpr1319); if (state.failed) return e;
+                    match(input,36,FOLLOW_36_in_prefixExpr1319); if (state.failed) return e;
 
                     pushFollow(FOLLOW_prefixExpr_in_prefixExpr1323);
                     e2=prefixExpr();
@@ -1760,7 +1759,7 @@ public class LustreParser extends Parser {
                 case 3 :
                     // Lustre.g:175:3: 'pre' e3= prefixExpr
                     {
-                    match(input,39,FOLLOW_39_in_prefixExpr1338); if (state.failed) return e;
+                    match(input,38,FOLLOW_38_in_prefixExpr1338); if (state.failed) return e;
 
                     pushFollow(FOLLOW_prefixExpr_in_prefixExpr1342);
                     e3=prefixExpr();
@@ -1803,7 +1802,7 @@ public class LustreParser extends Parser {
 
 
     // $ANTLR start "atomicExpr"
-    // Lustre.g:179:1: atomicExpr returns [Expr e] : ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ') ' );
+    // Lustre.g:179:1: atomicExpr returns [Expr e] : ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ')' );
     public final Expr atomicExpr() throws RecognitionException {
         Expr e = null;
 
@@ -1824,7 +1823,7 @@ public class LustreParser extends Parser {
 
 
         try {
-            // Lustre.g:179:28: ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ') ' )
+            // Lustre.g:179:28: ( ID | INT | real | bool | 'if' e1= expr 'then' e2= expr 'else' e3= expr | '(' p= expr ')' )
             int alt19=6;
             switch ( input.LA(1) ) {
             case ID:
@@ -1839,7 +1838,7 @@ public class LustreParser extends Parser {
                 if ( (LA19_2==ERROR) ) {
                     alt19=3;
                 }
-                else if ( (LA19_2==11||(LA19_2 >= 13 && LA19_2 <= 14)||LA19_2==16||(LA19_2 >= 18 && LA19_2 <= 19)||(LA19_2 >= 21 && LA19_2 <= 29)||LA19_2==31||LA19_2==38||LA19_2==43||LA19_2==46) ) {
+                else if ( ((LA19_2 >= 11 && LA19_2 <= 13)||LA19_2==15||(LA19_2 >= 17 && LA19_2 <= 18)||(LA19_2 >= 20 && LA19_2 <= 28)||LA19_2==30||LA19_2==37||LA19_2==42||LA19_2==45) ) {
                     alt19=2;
                 }
                 else {
@@ -1852,13 +1851,13 @@ public class LustreParser extends Parser {
                 }
                 }
                 break;
-            case 32:
-            case 44:
+            case 31:
+            case 43:
                 {
                 alt19=4;
                 }
                 break;
-            case 33:
+            case 32:
                 {
                 alt19=5;
                 }
@@ -1925,7 +1924,7 @@ public class LustreParser extends Parser {
                 case 5 :
                     // Lustre.g:184:3: 'if' e1= expr 'then' e2= expr 'else' e3= expr
                     {
-                    match(input,33,FOLLOW_33_in_atomicExpr1510); if (state.failed) return e;
+                    match(input,32,FOLLOW_32_in_atomicExpr1510); if (state.failed) return e;
 
                     pushFollow(FOLLOW_expr_in_atomicExpr1514);
                     e1=expr();
@@ -1933,7 +1932,7 @@ public class LustreParser extends Parser {
                     state._fsp--;
                     if (state.failed) return e;
 
-                    match(input,43,FOLLOW_43_in_atomicExpr1525); if (state.failed) return e;
+                    match(input,42,FOLLOW_42_in_atomicExpr1525); if (state.failed) return e;
 
                     pushFollow(FOLLOW_expr_in_atomicExpr1529);
                     e2=expr();
@@ -1941,7 +1940,7 @@ public class LustreParser extends Parser {
                     state._fsp--;
                     if (state.failed) return e;
 
-                    match(input,31,FOLLOW_31_in_atomicExpr1540); if (state.failed) return e;
+                    match(input,30,FOLLOW_30_in_atomicExpr1540); if (state.failed) return e;
 
                     pushFollow(FOLLOW_expr_in_atomicExpr1544);
                     e3=expr();
@@ -1954,7 +1953,7 @@ public class LustreParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Lustre.g:187:3: '(' p= expr ') '
+                    // Lustre.g:187:3: '(' p= expr ')'
                     {
                     match(input,10,FOLLOW_10_in_atomicExpr1563); if (state.failed) return e;
 
@@ -2001,11 +2000,11 @@ public class LustreParser extends Parser {
             // Lustre.g:190:5: ( INT '.' INT )
             // Lustre.g:190:7: INT '.' INT
             {
-            match(input,INT,FOLLOW_INT_in_real1585); if (state.failed) return retval;
+            match(input,INT,FOLLOW_INT_in_real1592); if (state.failed) return retval;
 
-            match(input,ERROR,FOLLOW_ERROR_in_real1587); if (state.failed) return retval;
+            match(input,ERROR,FOLLOW_ERROR_in_real1594); if (state.failed) return retval;
 
-            match(input,INT,FOLLOW_INT_in_real1589); if (state.failed) return retval;
+            match(input,INT,FOLLOW_INT_in_real1596); if (state.failed) return retval;
 
             }
 
@@ -2038,10 +2037,10 @@ public class LustreParser extends Parser {
             int alt20=2;
             int LA20_0 = input.LA(1);
 
-            if ( (LA20_0==44) ) {
+            if ( (LA20_0==43) ) {
                 alt20=1;
             }
-            else if ( (LA20_0==32) ) {
+            else if ( (LA20_0==31) ) {
                 alt20=2;
             }
             else {
@@ -2056,7 +2055,7 @@ public class LustreParser extends Parser {
                 case 1 :
                     // Lustre.g:193:3: 'true'
                     {
-                    match(input,44,FOLLOW_44_in_bool1602); if (state.failed) return b;
+                    match(input,43,FOLLOW_43_in_bool1609); if (state.failed) return b;
 
                     if ( state.backtracking==0 ) { b = true; }
 
@@ -2065,7 +2064,7 @@ public class LustreParser extends Parser {
                 case 2 :
                     // Lustre.g:194:3: 'false'
                     {
-                    match(input,32,FOLLOW_32_in_bool1611); if (state.failed) return b;
+                    match(input,31,FOLLOW_31_in_bool1618); if (state.failed) return b;
 
                     if ( state.backtracking==0 ) { b = false; }
 
@@ -2302,104 +2301,104 @@ public class LustreParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_36_in_node64 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_35_in_node64 = new BitSet(new long[]{0x0000000000000020L});
     public static final BitSet FOLLOW_ID_in_node66 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_10_in_node68 = new BitSet(new long[]{0x0000000000001020L});
-    public static final BitSet FOLLOW_varDeclList_in_node72 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_12_in_node74 = new BitSet(new long[]{0x0000020000000000L});
-    public static final BitSet FOLLOW_41_in_node78 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_10_in_node80 = new BitSet(new long[]{0x0000000000001020L});
-    public static final BitSet FOLLOW_varDeclList_in_node84 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_12_in_node86 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_node88 = new BitSet(new long[]{0x0000200800000000L});
-    public static final BitSet FOLLOW_45_in_node93 = new BitSet(new long[]{0x0000000000200020L});
-    public static final BitSet FOLLOW_varDeclList_in_node97 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_node99 = new BitSet(new long[]{0x0000000800000000L});
-    public static final BitSet FOLLOW_35_in_node130 = new BitSet(new long[]{0x0000040000020020L});
-    public static final BitSet FOLLOW_equation_in_node138 = new BitSet(new long[]{0x0000040000020020L});
-    public static final BitSet FOLLOW_property_in_node182 = new BitSet(new long[]{0x0000040000020020L});
-    public static final BitSet FOLLOW_42_in_node231 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_node233 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_varDeclGroup_in_varDeclList260 = new BitSet(new long[]{0x0000000000200002L});
-    public static final BitSet FOLLOW_21_in_varDeclList287 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_varDeclGroup_in_varDeclList291 = new BitSet(new long[]{0x0000000000200002L});
-    public static final BitSet FOLLOW_ID_in_varDeclGroup342 = new BitSet(new long[]{0x0000000000108000L});
-    public static final BitSet FOLLOW_15_in_varDeclGroup364 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_ID_in_varDeclGroup368 = new BitSet(new long[]{0x0000000000108000L});
-    public static final BitSet FOLLOW_20_in_varDeclGroup388 = new BitSet(new long[]{0x0000010440000000L});
+    public static final BitSet FOLLOW_10_in_node68 = new BitSet(new long[]{0x0000000000000820L});
+    public static final BitSet FOLLOW_varDeclList_in_node72 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_11_in_node74 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_node78 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_10_in_node80 = new BitSet(new long[]{0x0000000000000820L});
+    public static final BitSet FOLLOW_varDeclList_in_node84 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_11_in_node86 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_node88 = new BitSet(new long[]{0x0000100400000000L});
+    public static final BitSet FOLLOW_44_in_node93 = new BitSet(new long[]{0x0000000000100020L});
+    public static final BitSet FOLLOW_varDeclList_in_node97 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_node99 = new BitSet(new long[]{0x0000000400000000L});
+    public static final BitSet FOLLOW_34_in_node130 = new BitSet(new long[]{0x0000020000010020L});
+    public static final BitSet FOLLOW_equation_in_node138 = new BitSet(new long[]{0x0000020000010020L});
+    public static final BitSet FOLLOW_property_in_node182 = new BitSet(new long[]{0x0000020000010020L});
+    public static final BitSet FOLLOW_41_in_node231 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_node233 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_varDeclGroup_in_varDeclList260 = new BitSet(new long[]{0x0000000000100002L});
+    public static final BitSet FOLLOW_20_in_varDeclList287 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_varDeclGroup_in_varDeclList291 = new BitSet(new long[]{0x0000000000100002L});
+    public static final BitSet FOLLOW_ID_in_varDeclGroup342 = new BitSet(new long[]{0x0000000000084000L});
+    public static final BitSet FOLLOW_14_in_varDeclGroup364 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_ID_in_varDeclGroup368 = new BitSet(new long[]{0x0000000000084000L});
+    public static final BitSet FOLLOW_19_in_varDeclGroup388 = new BitSet(new long[]{0x0000008220000000L});
     public static final BitSet FOLLOW_type_in_varDeclGroup390 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_34_in_type411 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_type421 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_40_in_type430 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_17_in_property449 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_ID_in_property451 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_property453 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_equation479 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_25_in_equation481 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_expr_in_equation483 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_equation485 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_33_in_type411 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_29_in_type421 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_39_in_type430 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_16_in_property449 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_ID_in_property451 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_property453 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_equation479 = new BitSet(new long[]{0x0000000001000000L});
+    public static final BitSet FOLLOW_24_in_equation481 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_expr_in_equation483 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_equation485 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_arrowExpr_in_expr516 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_18_in_arrowOp553 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_impliesExpr_in_arrowExpr571 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_arrowOp_in_arrowExpr601 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_17_in_arrowOp553 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_impliesExpr_in_arrowExpr571 = new BitSet(new long[]{0x0000000000020002L});
+    public static final BitSet FOLLOW_arrowOp_in_arrowExpr601 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_arrowExpr_in_arrowExpr610 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_26_in_impliesOp649 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_orExpr_in_impliesExpr667 = new BitSet(new long[]{0x0000000004000002L});
-    public static final BitSet FOLLOW_impliesOp_in_impliesExpr702 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_25_in_impliesOp649 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_orExpr_in_impliesExpr667 = new BitSet(new long[]{0x0000000002000002L});
+    public static final BitSet FOLLOW_impliesOp_in_impliesExpr702 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_impliesExpr_in_impliesExpr711 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_38_in_orOp748 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_46_in_orOp754 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_andExpr_in_orExpr772 = new BitSet(new long[]{0x0000404000000002L});
-    public static final BitSet FOLLOW_orOp_in_orExpr806 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_andExpr_in_orExpr816 = new BitSet(new long[]{0x0000404000000002L});
-    public static final BitSet FOLLOW_29_in_andOp855 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_relationalExpr_in_andExpr873 = new BitSet(new long[]{0x0000000020000002L});
-    public static final BitSet FOLLOW_andOp_in_andExpr903 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_relationalExpr_in_andExpr913 = new BitSet(new long[]{0x0000000020000002L});
-    public static final BitSet FOLLOW_22_in_relationalOp948 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_23_in_relationalOp955 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_27_in_relationalOp961 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_28_in_relationalOp968 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_25_in_relationalOp974 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_24_in_relationalOp981 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_plusExpr_in_relationalExpr999 = new BitSet(new long[]{0x000000001BC00002L});
-    public static final BitSet FOLLOW_relationalOp_in_relationalExpr1035 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_37_in_orOp748 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_45_in_orOp754 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_andExpr_in_orExpr772 = new BitSet(new long[]{0x0000202000000002L});
+    public static final BitSet FOLLOW_orOp_in_orExpr806 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_andExpr_in_orExpr816 = new BitSet(new long[]{0x0000202000000002L});
+    public static final BitSet FOLLOW_28_in_andOp855 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_relationalExpr_in_andExpr873 = new BitSet(new long[]{0x0000000010000002L});
+    public static final BitSet FOLLOW_andOp_in_andExpr903 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_relationalExpr_in_andExpr913 = new BitSet(new long[]{0x0000000010000002L});
+    public static final BitSet FOLLOW_21_in_relationalOp948 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_22_in_relationalOp955 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_26_in_relationalOp961 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_27_in_relationalOp968 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_24_in_relationalOp974 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_23_in_relationalOp981 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_plusExpr_in_relationalExpr999 = new BitSet(new long[]{0x000000000DE00002L});
+    public static final BitSet FOLLOW_relationalOp_in_relationalExpr1035 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_plusExpr_in_relationalExpr1044 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_14_in_plusOp1086 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_16_in_plusOp1092 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timesExpr_in_plusExpr1110 = new BitSet(new long[]{0x0000000000014002L});
-    public static final BitSet FOLLOW_plusOp_in_plusExpr1146 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_timesExpr_in_plusExpr1155 = new BitSet(new long[]{0x0000000000014002L});
-    public static final BitSet FOLLOW_13_in_timesOp1197 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_19_in_timesOp1203 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_prefixExpr_in_timesExpr1221 = new BitSet(new long[]{0x0000000000082002L});
-    public static final BitSet FOLLOW_timesOp_in_timesExpr1251 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_prefixExpr_in_timesExpr1261 = new BitSet(new long[]{0x0000000000082002L});
-    public static final BitSet FOLLOW_16_in_prefixExpr1298 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_13_in_plusOp1086 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_15_in_plusOp1092 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timesExpr_in_plusExpr1110 = new BitSet(new long[]{0x000000000000A002L});
+    public static final BitSet FOLLOW_plusOp_in_plusExpr1146 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_timesExpr_in_plusExpr1155 = new BitSet(new long[]{0x000000000000A002L});
+    public static final BitSet FOLLOW_12_in_timesOp1197 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_18_in_timesOp1203 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_prefixExpr_in_timesExpr1221 = new BitSet(new long[]{0x0000000000041002L});
+    public static final BitSet FOLLOW_timesOp_in_timesExpr1251 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_prefixExpr_in_timesExpr1261 = new BitSet(new long[]{0x0000000000041002L});
+    public static final BitSet FOLLOW_15_in_prefixExpr1298 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_prefixExpr_in_prefixExpr1302 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_37_in_prefixExpr1319 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_36_in_prefixExpr1319 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_prefixExpr_in_prefixExpr1323 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_39_in_prefixExpr1338 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_38_in_prefixExpr1338 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_prefixExpr_in_prefixExpr1342 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_atomicExpr_in_prefixExpr1357 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ID_in_atomicExpr1391 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_INT_in_atomicExpr1422 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_real_in_atomicExpr1452 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_bool_in_atomicExpr1481 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_33_in_atomicExpr1510 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr1514 = new BitSet(new long[]{0x0000080000000000L});
-    public static final BitSet FOLLOW_43_in_atomicExpr1525 = new BitSet(new long[]{0x000010A300010460L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr1529 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_31_in_atomicExpr1540 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_32_in_atomicExpr1510 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr1514 = new BitSet(new long[]{0x0000040000000000L});
+    public static final BitSet FOLLOW_42_in_atomicExpr1525 = new BitSet(new long[]{0x0000085180008460L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr1529 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_30_in_atomicExpr1540 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_expr_in_atomicExpr1544 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_10_in_atomicExpr1563 = new BitSet(new long[]{0x000010A300010460L});
+    public static final BitSet FOLLOW_10_in_atomicExpr1563 = new BitSet(new long[]{0x0000085180008460L});
     public static final BitSet FOLLOW_expr_in_atomicExpr1567 = new BitSet(new long[]{0x0000000000000800L});
     public static final BitSet FOLLOW_11_in_atomicExpr1569 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_real1585 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_ERROR_in_real1587 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_INT_in_real1589 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_44_in_bool1602 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_32_in_bool1611 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_real1592 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_ERROR_in_real1594 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_INT_in_real1596 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_43_in_bool1609 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_31_in_bool1618 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_arrowOp_in_synpred1_Lustre598 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_impliesOp_in_synpred2_Lustre699 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_orOp_in_synpred3_Lustre801 = new BitSet(new long[]{0x0000000000000002L});
