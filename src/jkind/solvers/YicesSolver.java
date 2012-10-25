@@ -5,12 +5,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jkind.sexp.Sexp;
 import jkind.solvers.SolverResult.Result;
 
-public class YicesSolver {
+public class YicesSolver extends Solver {
 	private Process process;
 	private BufferedWriter toYices;
 	private BufferedReader fromYices;
@@ -36,14 +38,28 @@ public class YicesSolver {
 		process.destroy();
 		process = null;
 	}
-
-	public void send(String str) throws IOException {
+	
+	public void send(Sexp sexp) throws IOException {
+		send(sexp.toString());
+	}
+	
+	public void send(List<Sexp> sexps) throws IOException {
+		for (Sexp sexp : sexps) {
+			send(sexp);
+		}
+	}
+	
+	private void send(String str) throws IOException {
 		toYices.append(str);
 		toYices.newLine();
 		toYices.flush();
 	}
 
-	public SolverResult query(String str) throws IOException {
+	public SolverResult query(Sexp sexp) throws IOException {
+		return query(sexp.toString());
+	}
+	
+	private SolverResult query(String str) throws IOException {
 		send("(push)");
 		send("(assert " + str + ")");
 		send("(check)");
