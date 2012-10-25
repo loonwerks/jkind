@@ -9,3 +9,13 @@ Command line arguments
   - xml output (does nothing since it will be our default)
   
 Have failure of one process cause failure of others
+
+Support for subranges
+
+Support for asserts? (not compatible with Kind since theirs are broken)
+
+Allow --%MAIN
+
+Add timeout
+
+Handle missing values for variables
