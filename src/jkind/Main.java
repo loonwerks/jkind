@@ -5,7 +5,7 @@ import java.io.IOException;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
-import jkind.sexp.Sexp;
+import jkind.processes.BaseProcess;
 import jkind.translation.Lustre2Sexps;
 
 import org.antlr.runtime.ANTLRFileStream;
@@ -16,12 +16,10 @@ import org.antlr.runtime.RecognitionException;
 public class Main {
 	public static void main(String args[]) throws IOException, RecognitionException {
 		Node node = parseLustre(args[0]);
+		Lustre2Sexps translation = new Lustre2Sexps(node);
 		
-		Lustre2Sexps translator = new Lustre2Sexps(node);
-		for (Sexp def : translator.getDefinitions()) {
-			System.out.println(def);
-		}
-		System.out.println(translator.getTransition());
+		Thread baseThread = new Thread(new BaseProcess(node.properties, translation));
+		baseThread.start();
 	}
 
 	private static Node parseLustre(String filename) throws IOException, RecognitionException {

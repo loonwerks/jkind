@@ -2,6 +2,7 @@ package jkind.solvers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Model {
 	// Is there a nicer (and more general) way to represent models?
@@ -37,5 +38,9 @@ public class Model {
 	
 	public Value getFunctionValue(String fn, int arg) {
 		return getFunction(fn).get(arg);
+	}
+	
+	public Set<String> getFunctions() {
+		return functionAssignments.keySet();
 	}
 }

@@ -1,7 +1,7 @@
 package jkind.solvers;
 
 public class SolverResult {
-	enum Result {
+	public enum Result {
 		SAT, UNSAT
 	};
 
@@ -19,5 +19,10 @@ public class SolverResult {
 
 	public Model getModel() {
 		return model;
+	}
+	
+	@Override
+	public String toString() {
+		return result.toString();
 	}
 }

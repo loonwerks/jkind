@@ -1,3 +1,9 @@
-Static checks: typing, single variable declaration, all outputs assigned
+Static checks: typing, single variable declaration, all outputs assigned, properties unique
 
 Slicing / cone of influence
+
+Command line arguments
+  - max iterations
+  - bmc only
+  - scratch files
+  - xml output (does nothing since it will be our default)

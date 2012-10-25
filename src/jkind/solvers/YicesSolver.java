@@ -16,6 +16,7 @@ public class YicesSolver extends Solver {
 	private Process process;
 	private BufferedWriter toYices;
 	private BufferedReader fromYices;
+	private boolean debug = false;
 
 	final private static String DONE = "__DONE__";
 
@@ -50,6 +51,9 @@ public class YicesSolver extends Solver {
 	}
 	
 	private void send(String str) throws IOException {
+		if (debug) {
+			System.out.println("Sending: " + str);
+		}
 		toYices.append(str);
 		toYices.newLine();
 		toYices.flush();
@@ -78,8 +82,11 @@ public class YicesSolver extends Solver {
 		Model model = new Model();
 		while (true) {
 			String line = fromYices.readLine();
+			if (debug ) {
+				System.out.println("Read: " + line);
+			}
 			if (line == null) {
-				throw new IllegalStateException("Yices terminated unexpectedly");
+				throw new IllegalArgumentException("Yices terminated unexpectedly");
 			} else if (line.equals(DONE)) {
 				break;
 			} else if (line.equals("unsat")) {
@@ -87,7 +94,7 @@ public class YicesSolver extends Solver {
 			} else if (line.equals("sat")) {
 				result = Result.SAT;
 			} else if (line.startsWith("Error:")) {
-				throw new IllegalStateException("Yices error: " + line);
+				throw new IllegalArgumentException("Yices error: " + line);
 			} else {
 				Matcher m = valuePattern.matcher(line);
 				if (m.matches()) {
