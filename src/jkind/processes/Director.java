@@ -30,7 +30,7 @@ public class Director {
 
 	public void run() {
 		startThreads();
-		long timeout = System.currentTimeMillis() + 10 * 1000;
+		long timeout = System.currentTimeMillis() + 30 * 1000;
 		while (System.currentTimeMillis() < timeout && !propertiesLeft.isEmpty()) {
 			processMessages();
 			try {

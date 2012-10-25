@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jkind.sexp.Sexp;
-import jkind.solvers.SolverResult.Result;
+
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 
 public class YicesSolver extends Solver {
 	private Process process;
@@ -18,8 +20,8 @@ public class YicesSolver extends Solver {
 	private BufferedReader fromYices;
 	private boolean debug = false;
 
-	final private static String DONE = "__DONE__";
-
+	final private static String DONE = "@DONE";
+	
 	public YicesSolver() throws IOException {
 		ProcessBuilder pb = new ProcessBuilder("yices");
 		pb.redirectErrorStream(true);
@@ -73,52 +75,41 @@ public class YicesSolver extends Solver {
 		return readResult();
 	}
 
-	final private static Pattern valuePattern = Pattern.compile("\\(= (\\S+) (\\S+)\\)");
-	final private static Pattern functionPattern = Pattern
-			.compile("\\(= \\((\\S+) (\\S+)\\) (\\S+)\\)");
-
 	private SolverResult readResult() throws IOException {
-		Result result = null;
-		Model model = new Model();
-		while (true) {
-			String line = fromYices.readLine();
-			if (debug ) {
-				System.out.println("Read: " + line);
-			}
-			if (line == null) {
-				throw new IllegalArgumentException("Yices terminated unexpectedly");
-			} else if (line.equals(DONE)) {
-				break;
-			} else if (line.equals("unsat")) {
-				result = Result.UNSAT;
-			} else if (line.equals("sat")) {
-				result = Result.SAT;
-			} else if (line.startsWith("Error:")) {
-				throw new IllegalArgumentException("Yices error: " + line);
-			} else {
-				Matcher m = valuePattern.matcher(line);
-				if (m.matches()) {
-					model.addValue(m.group(1), parseValue(m.group(2)));
+		try {
+			String line;
+			StringBuilder content = new StringBuilder();
+			while (true) {
+				line = fromYices.readLine();
+				if (debug) {
+					System.out.println("Read: " + line);
+				}
+				if (line == null) {
+					throw new IllegalArgumentException("Yices terminated unexpectedly");
+				} else if (line.contains("Error:")) {
+					throw new IllegalArgumentException("Yices error: " + line);
+				} else if (line.startsWith("Logical context")) {
+					continue;
+				} else if (line.equals(DONE)) {
+					break;
 				} else {
-					m = functionPattern.matcher(line);
-					if (m.matches()) {
-						model.addFunctionValue(m.group(1), Integer.parseInt(m.group(2)),
-								parseValue(m.group(3)));
-					}
+					content.append(line);
+					content.append("\n");
 				}
 			}
-		}
-		return new SolverResult(result, model);
-	}
 
-	private Value parseValue(String str) {
-		if (str.equals("true")) {
-			return BoolValue.TRUE;
-		} else if (str.equals("false")) {
-			return BoolValue.FALSE;
-		} else {
-			return new NumericValue(str);
+			return parseYices(content.toString());
+		} catch (RecognitionException e) {
+			throw new IllegalArgumentException("Unexpected output format from Yices", e);
 		}
+	}
+	
+	private static SolverResult parseYices(String string) throws IOException, RecognitionException {
+		CharStream stream = new ANTLRStringStream(string);
+		YicesLexer lexer = new YicesLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		YicesParser parser = new YicesParser(tokens);
+		return parser.solverResult();
 	}
 
 	@Override

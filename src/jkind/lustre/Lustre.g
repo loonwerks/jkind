@@ -6,7 +6,7 @@ options {
 
 @header {
   package jkind.lustre;
-  
+
   import java.math.BigDecimal;
 }
 
@@ -36,7 +36,7 @@ node returns [Node n]
   'let'
     ( equation                                   { equations.add($equation.eq); }
     | property                                   { properties.add($property.p); }
-    )*  
+    )*
   'tel' ';'
 
   { $n = new Node($inputs.decls, $outputs.decls, locals, equations, properties); }
@@ -53,12 +53,12 @@ varDeclList returns [List<VarDecl> decls]
 
 varDeclGroup returns [List<VarDecl> decls]
 @init{ List<String> names = new ArrayList<String>(); }:
-  
+
   v1=ID              { names.add($v1.text); }
     (',' v2=ID       { names.add($v2.text); }
      )*
   ':' type
-  
+
   { $decls = new ArrayList<VarDecl>();
     for (String name : names) {
       $decls.add(new VarDecl(name, $type.t));
@@ -164,9 +164,9 @@ timesOp returns [BinaryOp op]:
 
 timesExpr returns [Expr e]:
   e1=prefixExpr                 { $e = $e1.e; }
-    ((timesOp)=> timesOp 
+    ((timesOp)=> timesOp
      e2=prefixExpr              { $e = new BinaryExpr($e, $timesOp.op, $e2.e); }
-    )* 
+    )*
 ;
 
 prefixExpr returns [Expr e]:
@@ -181,8 +181,8 @@ atomicExpr returns [Expr e]:
 | INT                         { $e = new IntExpr(Integer.parseInt($INT.text)); }
 | real                        { $e = new RealExpr(new BigDecimal($real.text)); }
 | bool                        { $e = new BoolExpr($bool.b); }
-| 'if' e1=expr       
-  'then' e2=expr       
+| 'if' e1=expr
+  'then' e2=expr
   'else' e3=expr              { $e = new IfThenElseExpr($e1.e, $e2.e, $e3.e); }
 | '(' p=expr ')'              { $e = $p.e; }
 ;
