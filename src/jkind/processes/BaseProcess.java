@@ -90,21 +90,19 @@ public class BaseProcess extends Process {
 				invalid = new ArrayList<String>();
 			}
 		} while (!properties.isEmpty() && result.getResult() == Result.SAT);
+		
+		sendBaseStep(i);
 	}
 
 	private void sendInvalid(List<String> invalid, int i, Model model) {
 		director.incomming.add(new CounterexampleMessage(invalid, i, model));
 		
 		if (inductiveProcess != null) {
-			/*
-			 * NOTE: Order is important here. We must send the invalid properties
-			 * before we notify the inductive process to move on to the next step.
-			 */
-			
-			if (!invalid.isEmpty()) {
-				inductiveProcess.incomming.add(new InvalidMessage(invalid));
-			}
-			inductiveProcess.incomming.add(new BaseStepMessage(i));
+			inductiveProcess.incomming.add(new InvalidMessage(invalid));
 		}
+	}
+	
+	private void sendBaseStep(int i) {
+		inductiveProcess.incomming.add(new BaseStepMessage(i));
 	}
 }
