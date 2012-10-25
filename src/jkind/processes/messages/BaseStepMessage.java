@@ -1,4 +1,4 @@
-package jkind.processes;
+package jkind.processes.messages;
 
 
 public class BaseStepMessage extends Message {

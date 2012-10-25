@@ -4,23 +4,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import jkind.processes.messages.BaseStepMessage;
+import jkind.processes.messages.CounterexampleMessage;
+import jkind.processes.messages.InvalidMessage;
+import jkind.processes.messages.Message;
+import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
-import jkind.solvers.Value;
 import jkind.translation.Keywords;
 import jkind.translation.Lustre2Sexps;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
 
-	public BaseProcess(List<String> properties, Lustre2Sexps translation) {
-		super(properties, translation);
+	public BaseProcess(List<String> properties, Lustre2Sexps translation, Director director) {
+		super(properties, translation, director);
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -51,9 +54,7 @@ public class BaseProcess extends Process {
 			Message message = incomming.poll();
 			if (message instanceof ValidMessage) {
 				ValidMessage validMessage = (ValidMessage) message;
-				for (String p : validMessage.valid) {
-					System.out.println("Property " + p + " is valid at k = " + validMessage.k);
-				}
+				properties.removeAll(validMessage.valid);
 			} else {
 				throw new IllegalArgumentException("Unknown message type in base process: "
 						+ message.getClass().getCanonicalName());
@@ -83,34 +84,23 @@ public class BaseProcess extends Process {
 					if (!v.getBool()) {
 						invalid.add(p);
 						iterator.remove();
-						printCounterexample(p, i, model);
 					}
 				}
+				sendInvalid(invalid, i, model);
+				invalid = new ArrayList<String>();
 			}
 		} while (!properties.isEmpty() && result.getResult() == Result.SAT);
-
-		sendMessage(i, invalid);
 	}
 
-	private void printCounterexample(String p, int i, Model model) {
-		System.out.println("Property " + p + " is invalid at step " + i);
-		for (String fn : model.getFunctions()) {
-			System.out.print(fn + ": ");
-			Map<Integer, Value> fnMap = model.getFunction(fn);
-			for (int j = 0; j <= i; j++) {
-				System.out.print("\t" + fnMap.get(j));
-			}
-			System.out.println();
-		}
-	}
-
-	private void sendMessage(int i, List<String> invalid) {
-		/*
-		 * NOTE: Order is important here. We must send the invalid properties
-		 * before we notify the inductive process to move on to the next step.
-		 */
-
+	private void sendInvalid(List<String> invalid, int i, Model model) {
+		director.incomming.add(new CounterexampleMessage(invalid, i, model));
+		
 		if (inductiveProcess != null) {
+			/*
+			 * NOTE: Order is important here. We must send the invalid properties
+			 * before we notify the inductive process to move on to the next step.
+			 */
+			
 			if (!invalid.isEmpty()) {
 				inductiveProcess.incomming.add(new InvalidMessage(invalid));
 			}

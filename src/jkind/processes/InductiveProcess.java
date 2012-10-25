@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jkind.processes.messages.BaseStepMessage;
+import jkind.processes.messages.InvalidMessage;
+import jkind.processes.messages.Message;
+import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -20,8 +24,8 @@ public class InductiveProcess extends Process {
 	private int kLimit = 0;
 	private BaseProcess baseProcess;
 
-	public InductiveProcess(List<String> properties, Lustre2Sexps translation) {
-		super(properties, translation);
+	public InductiveProcess(List<String> properties, Lustre2Sexps translation, Director director) {
+		super(properties, translation, director);
 	}
 
 	public void setBaseProcess(BaseProcess baseProcess) {
@@ -102,7 +106,7 @@ public class InductiveProcess extends Process {
 					}
 				}
 			} else if (result.getResult() == Result.UNSAT) {
-				sendMessage(k, possiblyValid);
+				sendValid(k, possiblyValid);
 				properties.removeAll(possiblyValid);
 				return;
 			}
@@ -128,7 +132,8 @@ public class InductiveProcess extends Process {
 		return new Cons("+", Keywords.N_SYM, Sexp.fromInt(i));
 	}
 
-	private void sendMessage(int k, List<String> valid) {
+	private void sendValid(int k, List<String> valid) {
 		baseProcess.incomming.add(new ValidMessage(k, valid));
+		director.incomming.add(new ValidMessage(k, valid));
 	}
 }
