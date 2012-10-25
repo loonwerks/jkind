@@ -12,4 +12,6 @@ public abstract class Solver {
 	public abstract SolverResult query(Sexp sexp) throws IOException;
 
 	public abstract void stop();
+	
+	public abstract void setDebug(boolean debug);
 }

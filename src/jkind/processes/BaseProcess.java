@@ -10,24 +10,21 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
-import jkind.solvers.Solver;
 import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.solvers.Value;
-import jkind.solvers.YicesSolver;
 import jkind.translation.Keywords;
 import jkind.translation.Lustre2Sexps;
 
-public class BaseProcess implements Runnable {
-	final private Lustre2Sexps translation;
-	private List<String> properties;
-	private Solver solver;
-
-	private int kMax = 200;
+public class BaseProcess extends Process {
+	private InductiveProcess inductiveProcess;
 
 	public BaseProcess(List<String> properties, Lustre2Sexps translation) {
-		this.properties = new ArrayList<String>(properties);
-		this.translation = translation;
+		super(properties, translation);
+	}
+
+	public void setInductiveProcess(InductiveProcess inductiveProcess) {
+		this.inductiveProcess = inductiveProcess;
 	}
 
 	@Override
@@ -49,14 +46,19 @@ public class BaseProcess implements Runnable {
 		}
 	}
 
-	private void initializeSolver() throws IOException {
-		solver = new YicesSolver();
-		solver.send(translation.getDefinitions());
-		solver.send(translation.getTransition());
-	}
-
 	private void processMessages() {
-		// TODO
+		while (!incomming.isEmpty()) {
+			Message message = incomming.poll();
+			if (message instanceof ValidMessage) {
+				ValidMessage validMessage = (ValidMessage) message;
+				for (String p : validMessage.valid) {
+					System.out.println("Property " + p + " is valid at k = " + validMessage.k);
+				}
+			} else {
+				throw new IllegalArgumentException("Unknown message type in base process: "
+						+ message.getClass().getCanonicalName());
+			}
+		}
 	}
 
 	private void assertTransition(int i) throws IOException {
@@ -68,7 +70,7 @@ public class BaseProcess implements Runnable {
 
 		SolverResult result;
 		do {
-			result = solver.query(Util.not(Util.conjoin(properties, i)));
+			result = solver.query(conjoin(properties, Sexp.fromInt(i)));
 
 			if (result.getResult() == null) {
 				throw new IllegalArgumentException("Unknown result from solver");
@@ -103,6 +105,16 @@ public class BaseProcess implements Runnable {
 	}
 
 	private void sendMessage(int i, List<String> invalid) {
-		// TODO
+		/*
+		 * NOTE: Order is important here. We must send the invalid properties
+		 * before we notify the inductive process to move on to the next step.
+		 */
+
+		if (inductiveProcess != null) {
+			if (!invalid.isEmpty()) {
+				inductiveProcess.incomming.add(new InvalidMessage(invalid));
+			}
+			inductiveProcess.incomming.add(new BaseStepMessage(i));
+		}
 	}
 }

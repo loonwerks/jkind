@@ -7,3 +7,5 @@ Command line arguments
   - bmc only
   - scratch files
   - xml output (does nothing since it will be our default)
+  
+Have failure of one process cause failure of others

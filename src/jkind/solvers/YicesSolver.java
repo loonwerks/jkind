@@ -65,7 +65,7 @@ public class YicesSolver extends Solver {
 	
 	private SolverResult query(String str) throws IOException {
 		send("(push)");
-		send("(assert " + str + ")");
+		send("(assert (not " + str + "))");
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
 		send("(pop)");
@@ -73,7 +73,7 @@ public class YicesSolver extends Solver {
 		return readResult();
 	}
 
-	final private static Pattern valuePattern = Pattern.compile("\\(= (\\S+) (\\S+) \\)");
+	final private static Pattern valuePattern = Pattern.compile("\\(= (\\S+) (\\S+)\\)");
 	final private static Pattern functionPattern = Pattern
 			.compile("\\(= \\((\\S+) (\\S+)\\) (\\S+)\\)");
 
@@ -119,5 +119,10 @@ public class YicesSolver extends Solver {
 		} else {
 			return new NumericValue(str);
 		}
+	}
+
+	@Override
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 }
