@@ -10,13 +10,12 @@ import org.antlr.runtime.RecognitionException;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
+import jkind.solvers.SolverResult;
+import jkind.solvers.YicesSolver;
 
 public class Main {
 	public static void main(String args[]) throws IOException, RecognitionException {
 		Node node = parseLustre(args[0]);
-		for (String p : node.properties) {
-			System.out.println(p);
-		}
 	}
 
 	private static Node parseLustre(String filename) throws IOException, RecognitionException {

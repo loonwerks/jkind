@@ -23,6 +23,8 @@ public class YicesSolver {
 		process = pb.start();
 		toYices = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		fromYices = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		
+		send("(set-evidence! true)");
 	}
 
 	public void stop() {
@@ -41,26 +43,35 @@ public class YicesSolver {
 		toYices.flush();
 	}
 
+	public SolverResult query(String str) throws IOException {
+		send("(push)");
+		send("(assert " + str + ")");
+		send("(check)");
+		send("(echo \"" + DONE + "\\n\")");
+		send("(pop)");
+
+		return readResult();
+	}
+
 	final private static Pattern valuePattern = Pattern.compile("\\(= (\\S+) (\\S+) \\)");
 	final private static Pattern functionPattern = Pattern
 			.compile("\\(= \\((\\S+) (\\S+)\\) (\\S+)\\)");
 
-	public SolverResult query(String str) throws IOException {
-		send("(push)");
-		send("(assert " + str + ")");
-		send("(echo \"" + DONE + "\")");
-		send("(pop)");
-
+	private SolverResult readResult() throws IOException {
 		Result result = null;
 		Model model = new Model();
 		while (true) {
 			String line = fromYices.readLine();
-			if (line.equals(DONE)) {
+			if (line == null) {
+				throw new IllegalStateException("Yices terminated unexpectedly");
+			} else if (line.equals(DONE)) {
 				break;
 			} else if (line.equals("unsat")) {
 				result = Result.UNSAT;
 			} else if (line.equals("sat")) {
 				result = Result.SAT;
+			} else if (line.startsWith("Error:")) {
+				throw new IllegalStateException("Yices error: " + line);
 			} else {
 				Matcher m = valuePattern.matcher(line);
 				if (m.matches()) {

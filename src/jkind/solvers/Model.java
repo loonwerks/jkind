@@ -21,6 +21,7 @@ public class Model {
 		Map<Integer, Value> fnMap = functionAssignments.get(fn);
 		if (fnMap == null) {
 			fnMap = new HashMap<Integer, Value>();
+			functionAssignments.put(fn, fnMap);
 		}
 		
 		fnMap.put(arg, v);
