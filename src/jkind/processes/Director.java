@@ -50,6 +50,10 @@ public class Director {
 			}
 		}
 		
+		if (!remainingProperties.isEmpty()) {
+			writer.writeTimeout(remainingProperties);
+		}
+		
 		writer.end();
 		printSummary();
 	}

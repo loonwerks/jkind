@@ -53,4 +53,8 @@ public class ConsoleWriter extends Writer {
 		writeLine();
 		System.out.println();
 	}
+
+	@Override
+	public void writeTimeout(List<String> props) {		
+	}
 }
