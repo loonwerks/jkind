@@ -42,6 +42,7 @@ public class BaseProcess extends Process {
 				}
 				assertTransition(k);
 				checkProperties(k);
+				assertProperties(k);
 			}
 		} catch (IOException e) {
 			System.out.println("Base process failed");
@@ -107,6 +108,14 @@ public class BaseProcess extends Process {
 	}
 	
 	private void sendBaseStep(int k) {
-		inductiveProcess.incomming.add(new BaseStepMessage(k));
+		if (inductiveProcess != null) {
+			inductiveProcess.incomming.add(new BaseStepMessage(k));
+		}
+	}
+	
+	private void assertProperties(int k) throws IOException {
+		if (!properties.isEmpty()) {
+			solver.send(new Cons("assert", conjoinIds(properties, Sexp.fromInt(-k))));
+		}
 	}
 }

@@ -19,3 +19,5 @@ Support for asserts? (not compatible with Kind since theirs are broken)
 Handle missing values for variables
 
 Add proved properties back as invariants?
+
+Reduce decimals (1.0000000 becomes huge fraction)
