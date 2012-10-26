@@ -94,7 +94,7 @@ public class XmlWriter extends Writer {
 		}
 	}
 
-	public void writeTimeout(List<String> props) {
+	public void writeUnknown(List<String> props) {
 		out.println("  <Property name=\"" + spaces(props) + "\">");
 		out.println("    <Answer>unknown</Answer>");
 		out.println("  </Property>");

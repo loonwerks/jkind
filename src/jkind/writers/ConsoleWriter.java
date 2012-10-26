@@ -55,6 +55,6 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeTimeout(List<String> props) {		
+	public void writeUnknown(List<String> props) {		
 	}
 }

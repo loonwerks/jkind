@@ -42,7 +42,8 @@ public class Director {
 		startThreads();
 		
 		long timeout = System.currentTimeMillis() + 100 * 1000;
-		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()) {
+		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
+				&& someThreadAlive()) {
 			processMessages();
 			try {
 				Thread.sleep(100);
@@ -51,11 +52,19 @@ public class Director {
 		}
 		
 		if (!remainingProperties.isEmpty()) {
-			writer.writeTimeout(remainingProperties);
+			writer.writeUnknown(remainingProperties);
 		}
 		
 		writer.end();
 		printSummary();
+	}
+
+	private boolean someThreadAlive() {
+		boolean result = baseThread.isAlive();
+		if (inductiveThread != null) {
+			result = result || inductiveThread.isAlive();
+		}
+		return result;
 	}
 
 	private void printHeader() {
@@ -118,7 +127,7 @@ public class Director {
 			System.out.println();
 		}
 		if (!remainingProperties.isEmpty()) {
-			System.out.println("TIMEOUT PROPERTIES: " + remainingProperties);
+			System.out.println("UNKNOWN PROPERTIES: " + remainingProperties);
 			System.out.println();
 		}
 	}
