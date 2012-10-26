@@ -49,7 +49,7 @@ public class Lustre2Sexps {
 			eqSexps.add(equation2Sexp(eq, iSym));
 		}
 		
-		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));
+		Sexp iType = new Cons(iSym, new Symbol("::"), new Symbol("nat"));
 		Sexp lambda = new Cons("lambda", iType, new Cons("and", eqSexps));
 		Sexp tType = new Cons("->", new Symbol("nat"), new Symbol("bool"));
 		transition = new Cons("define", Keywords.T_SYM, new Symbol("::"), tType, lambda);

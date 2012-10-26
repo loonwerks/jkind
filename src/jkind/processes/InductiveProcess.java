@@ -7,6 +7,7 @@ import java.util.List;
 
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InvalidMessage;
+import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
@@ -23,6 +24,7 @@ import jkind.translation.Lustre2Sexps;
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
 	private BaseProcess baseProcess;
+	private List<Sexp> invariants = new ArrayList<Sexp>();
 
 	public InductiveProcess(List<String> properties, Lustre2Sexps translation, Director director) {
 		super(properties, translation, director);
@@ -37,10 +39,10 @@ public class InductiveProcess extends Process {
 		try {
 			initializeSolver();
 
-			assertTransition(0);
+			assertTransitionAndInvariants(0);
 			for (int k = 1; k <= kMax; k++) {
 				processMessagesAndWait(k);
-				assertTransition(k);
+				assertTransitionAndInvariants(k);
 				checkProperties(k);
 				if (properties.isEmpty()) {
 					break;
@@ -50,6 +52,10 @@ public class InductiveProcess extends Process {
 			System.out.println("Inductive process failed");
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+		} finally {
+			if (solver != null) {
+				solver.stop();
+			}
 		}
 	}
 	
@@ -58,7 +64,7 @@ public class InductiveProcess extends Process {
 		solver.send(new Cons("define", Keywords.N_SYM, new Symbol("::"), new Symbol("nat")));
 	}
 
-	private void processMessagesAndWait(int k) throws InterruptedException {
+	private void processMessagesAndWait(int k) throws InterruptedException, IOException {
 		while (!incomming.isEmpty() || k > kLimit) {
 			Message message = incomming.take();
 			if (message instanceof InvalidMessage) {
@@ -67,6 +73,10 @@ public class InductiveProcess extends Process {
 			} else if (message instanceof BaseStepMessage) {
 				BaseStepMessage baseStepMessage = (BaseStepMessage) message;
 				kLimit = baseStepMessage.step;
+			} else if (message instanceof InvariantMessage) {
+				InvariantMessage invariantMessage = (InvariantMessage) message;
+				invariants.addAll(invariantMessage.invariants);
+				assertNewInvariants(invariantMessage.invariants, k);
 			} else {
 				throw new IllegalArgumentException("Unknown message type in inductive process: "
 						+ message.getClass().getCanonicalName());
@@ -74,9 +84,17 @@ public class InductiveProcess extends Process {
 		}
 	}
 
-	private void assertTransition(int offset) throws IOException {
-		Sexp i = new Cons("+", Keywords.N_SYM, Sexp.fromInt(offset));
-		solver.send(new Cons("assert", new Cons(Keywords.T, i)));
+	private void assertNewInvariants(List<Sexp> invariants, int k) throws IOException {
+		for (int i = 0; i < k; i++) {
+			solver.send(new Cons("assert", conjoin(invariants, getIndex(i))));
+		}
+	}
+
+	private void assertTransitionAndInvariants(int offset) throws IOException {
+		solver.send(new Cons("assert", new Cons(Keywords.T, getIndex(offset))));
+		if (!invariants.isEmpty()) {
+			solver.send(new Cons("assert", conjoin(invariants, getIndex(offset))));
+		}
 	}
 
 	private void checkProperties(int k) throws IOException {
@@ -84,7 +102,6 @@ public class InductiveProcess extends Process {
 
 		while (!possiblyValid.isEmpty()) {
 			SolverResult result = solver.query(getInductiveQuery(k, possiblyValid));
-			
 			
 			if (result.getResult() == null) {
 				throw new IllegalArgumentException("Unknown result from solver");
@@ -115,15 +132,15 @@ public class InductiveProcess extends Process {
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) throws IOException {
 		List<Sexp> hyps = new ArrayList<Sexp>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(conjoin(possiblyValid, getOffset(i)));
+			hyps.add(conjoinIds(possiblyValid, getIndex(i)));
 		}
-		Sexp conc = conjoin(possiblyValid, getOffset(k));
+		Sexp conc = conjoinIds(possiblyValid, getIndex(k));
 		
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}
 	
-	private Sexp getOffset(int i) {
-		return new Cons("+", Keywords.N_SYM, Sexp.fromInt(i));
+	private Sexp getIndex(int offset) {
+		return new Cons("+", Keywords.N_SYM, Sexp.fromInt(offset));
 	}
 
 	private void sendValid(int k, List<String> valid) {

@@ -32,16 +32,6 @@ public class YicesSolver extends Solver {
 		send("(set-evidence! true)");
 	}
 
-	public void stop() {
-		try {
-			toYices.close();
-			fromYices.close();
-		} catch (IOException e) {
-		}
-		process.destroy();
-		process = null;
-	}
-	
 	public void send(Sexp sexp) throws IOException {
 		send(sexp.toString());
 	}
@@ -66,11 +56,11 @@ public class YicesSolver extends Solver {
 	}
 	
 	private SolverResult query(String str) throws IOException {
-		send("(push)");
+		push();
 		send("(assert (not " + str + "))");
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
-		send("(pop)");
+		pop();
 
 		return readResult();
 	}
@@ -109,11 +99,36 @@ public class YicesSolver extends Solver {
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
-		return parser.solverResult();
+		SolverResult result = parser.solverResult();
+		if (parser.getNumberOfSyntaxErrors() > 0) {
+			throw new IllegalArgumentException("Error parsing Yices output");
+		}
+		return result;
 	}
 
 	@Override
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	@Override
+	public void push() throws IOException {
+		send("(push)");
+	}
+
+	@Override
+	public void pop() throws IOException {
+		send("(pop)");
+	}
+	
+	@Override
+	public void stop() {
+		try {
+			toYices.close();
+			fromYices.close();
+		} catch (IOException e) {
+		}
+		process.destroy();
+		process = null;
 	}
 }

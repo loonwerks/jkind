@@ -3,10 +3,12 @@ package jkind.processes;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.lustre.Node;
+import jkind.lustre.Type;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
@@ -20,10 +22,12 @@ public class Director {
 	private List<String> remainingProperties;
 	private List<String> validProperties;
 	private List<String> invalidProperties;
+	private Map<String, Type> typeMap;
 	private Writer writer;
 	
 	private Thread baseThread;
 	private Thread inductiveThread;
+	private Thread invariantThread;
 	protected BlockingQueue<Message> incomming;
 	
 	public Director(String filename, Node node) throws FileNotFoundException {
@@ -31,8 +35,9 @@ public class Director {
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
+		this.typeMap = Util.createTypeMap(node);
 		// this.writer = new ConsoleWriter();
-		this.writer = new XmlWriter(filename + ".xml", Util.createTypeMap(node));
+		this.writer = new XmlWriter(filename + ".xml", typeMap);
 		this.incomming = new LinkedBlockingQueue<Message>();
 	}
 
@@ -51,6 +56,7 @@ public class Director {
 			}
 		}
 		
+		processMessages();
 		if (!remainingProperties.isEmpty()) {
 			writer.writeUnknown(remainingProperties);
 		}
@@ -63,6 +69,9 @@ public class Director {
 		boolean result = baseThread.isAlive();
 		if (inductiveThread != null) {
 			result = result || inductiveThread.isAlive();
+		}
+		if (invariantThread != null) {
+			result = result || invariantThread.isAlive();
 		}
 		return result;
 	}
@@ -82,15 +91,19 @@ public class Director {
 		
 		BaseProcess base = new BaseProcess(node.properties, translation, this);
 		InductiveProcess inductive = new InductiveProcess(node.properties, translation, this);
+		InvariantProcess invariant = new InvariantProcess(translation, typeMap);
 		
 		base.setInductiveProcess(inductive);
 		inductive.setBaseProcess(base);
+		invariant.setInductiveProcess(inductive);
 		
 		baseThread = new Thread(base);
 		inductiveThread = new Thread(inductive);
+		invariantThread = new Thread(invariant);
 		
 		baseThread.start();
 		inductiveThread.start();
+		invariantThread.start();
 	}
 
 	private void processMessages() {

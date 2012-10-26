@@ -46,6 +46,10 @@ public class BaseProcess extends Process {
 		} catch (IOException e) {
 			System.out.println("Base process failed");
 			e.printStackTrace();
+		} finally {
+			if (solver != null) {
+				solver.stop();
+			}
 		}
 	}
 
@@ -71,7 +75,7 @@ public class BaseProcess extends Process {
 
 		SolverResult result;
 		do {
-			result = solver.query(conjoin(properties, Sexp.fromInt(k-1)));
+			result = solver.query(conjoinIds(properties, Sexp.fromInt(k-1)));
 
 			if (result.getResult() == null) {
 				throw new IllegalArgumentException("Unknown result from solver");

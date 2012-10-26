@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
 import jkind.solvers.Solver;
 import jkind.solvers.YicesSolver;
 import jkind.translation.Lustre2Sexps;
@@ -23,7 +24,9 @@ public abstract class Process implements Runnable {
 	protected int kMax = 200;
 
 	public Process(List<String> properties, Lustre2Sexps translation, Director director) {
-		this.properties = new ArrayList<String>(properties);
+		if (properties != null) {
+			this.properties = new ArrayList<String>(properties);
+		}
 		this.translation = translation;
 		this.director = director;
 	}
@@ -37,15 +40,23 @@ public abstract class Process implements Runnable {
 	
 	/** Utility functions */
 	
-	public static Sexp conjoin(List<String> ids, Sexp i) {
-		if (ids.isEmpty()) {
+	public static Sexp conjoin(List<Sexp> fns, Sexp i) {
+		if (fns.isEmpty()) {
 			throw new IllegalArgumentException("Cannot conjoin empty list");
 		}
 		
 		List<Sexp> args = new ArrayList<Sexp>();
-		for (String id : ids) {
-			args.add(new Cons(id, i));
+		for (Sexp fn : fns) {
+			args.add(new Cons(fn, i));
 		}
 		return new Cons("and", args);
+	}
+	
+	public static Sexp conjoinIds(List<String> ids, Sexp i) {
+		List<Sexp> symbols = new ArrayList<Sexp>();
+		for (String id : ids) {
+			symbols.add(new Symbol(id));
+		}
+		return conjoin(symbols, i);
 	}
 }

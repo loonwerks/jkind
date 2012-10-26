@@ -1,17 +1,21 @@
-Static checks: typing, single variable declaration, all outputs assigned, properties unique
+Create a generic jkind exception which can wrap IOException
+  Probably make it unchecked as it will only be caught at the top level
+  Replace illegal arg exception with jkind one
 
 Command line arguments
   - max iterations
   - bmc only
   - scratch files
   - xml output (does nothing since it will be our default)
-  
+
+Static checks: typing, single variable declaration, all outputs assigned, properties unique
+
 Have failure of one process cause failure of others
 
 Support for subranges
 
 Support for asserts? (not compatible with Kind since theirs are broken)
 
-Allow --%MAIN
-
 Handle missing values for variables
+
+Add proved properties back as invariants?

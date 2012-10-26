@@ -4,18 +4,27 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Cons extends Sexp {
-	private String head;
+	private Sexp head;
 	private List<Sexp> args;
 	
-	public Cons(String head, List<Sexp> args) {
+	public Cons(Sexp head, List<Sexp> args) {
 		this.head = head;
+		this.args = args;
+	}
+	
+	public Cons(Sexp head, Sexp... args) {
+		this(head, Arrays.asList(args));
+	}
+	
+	public Cons(String head, List<Sexp> args) {
+		this.head = new Symbol(head);
 		this.args = args;
 	}
 	
 	public Cons(String head, Sexp... args) {
 		this(head, Arrays.asList(args));
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -26,7 +35,7 @@ public class Cons extends Sexp {
 	@Override
 	protected void toBuilder(StringBuilder sb) {
 		sb.append("(");
-		sb.append(head);
+		head.toBuilder(sb);
 		for (Sexp arg : args) {
 			sb.append(" ");
 			arg.toBuilder(sb);
