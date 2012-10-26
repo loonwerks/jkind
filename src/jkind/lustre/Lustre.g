@@ -203,4 +203,6 @@ WS: (' ' | '\t' | '\n' | '\r' | '\f')+ {$channel = HIDDEN;};
 
 SL_COMMENT: '--' (~('%'|'\n'|'\r') ~('\n'|'\r')* | /* empty */) ('\r'? '\n')? {$channel=HIDDEN;};
 ML_COMMENT: '/*' (options {greedy=false;} : .)* '*/' {$channel=HIDDEN;};
+MAIN: '--%MAIN' {$channel=HIDDEN;};
+
 ERROR: '.';

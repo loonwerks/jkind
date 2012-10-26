@@ -26,6 +26,11 @@ public class Main {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
-		return parser.node();
+		Node node = parser.node();
+		if (parser.getNumberOfSyntaxErrors() > 0) {
+			System.out.println("Parse error in " + filename);
+			System.exit(-1);
+		}
+		return node;
 	}
 }
