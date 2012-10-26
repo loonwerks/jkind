@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.sexp.Symbol;
+
 public class Model {
 	// Is there a nicer (and more general) way to represent models?
 	private Map<String, Value> valueAssignments;
@@ -32,6 +34,10 @@ public class Model {
 		return valueAssignments.get(id);
 	}
 	
+	public Value getValue(Symbol sym) {
+		return getValue(sym.toString());
+	}
+
 	public Map<Integer, Value> getFunction(String fn) {
 		return functionAssignments.get(fn);
 	}

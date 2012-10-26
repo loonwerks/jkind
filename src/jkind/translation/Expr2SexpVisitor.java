@@ -57,7 +57,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(IdExpr e) {
-		return new Cons(e.id, new Cons("+", iSym, Sexp.fromInt(offset)));
+		return new Cons("$" + e.id, new Cons("+", iSym, Sexp.fromInt(offset)));
 	}
 
 	@Override

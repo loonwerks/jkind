@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Yices.g 2012-10-25 18:07:00
+// $ANTLR 3.4 Yices.g 2012-10-26 15:04:37
 
   package jkind.solvers;
 
@@ -245,7 +245,7 @@ public class YicesLexer extends Lexer {
     // $ANTLR start "DIGIT"
     public final void mDIGIT() throws RecognitionException {
         try {
-            // Yices.g:60:15: ( '0' .. '9' )
+            // Yices.g:59:15: ( '0' .. '9' )
             // Yices.g:
             {
             if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
@@ -271,10 +271,10 @@ public class YicesLexer extends Lexer {
     // $ANTLR start "SYMBOL"
     public final void mSYMBOL() throws RecognitionException {
         try {
-            // Yices.g:61:16: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '@' )
+            // Yices.g:60:16: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '@' | '$' )
             // Yices.g:
             {
-            if ( (input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            if ( input.LA(1)=='$'||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                 input.consume();
             }
             else {
@@ -299,19 +299,19 @@ public class YicesLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:63:3: ( SYMBOL ( SYMBOL | DIGIT )* )
-            // Yices.g:63:5: SYMBOL ( SYMBOL | DIGIT )*
+            // Yices.g:62:3: ( SYMBOL ( SYMBOL | DIGIT )* )
+            // Yices.g:62:5: SYMBOL ( SYMBOL | DIGIT )*
             {
             mSYMBOL(); 
 
 
-            // Yices.g:63:12: ( SYMBOL | DIGIT )*
+            // Yices.g:62:12: ( SYMBOL | DIGIT )*
             loop1:
             do {
                 int alt1=2;
                 int LA1_0 = input.LA(1);
 
-                if ( ((LA1_0 >= '0' && LA1_0 <= '9')||(LA1_0 >= '@' && LA1_0 <= 'Z')||LA1_0=='_'||(LA1_0 >= 'a' && LA1_0 <= 'z')) ) {
+                if ( (LA1_0=='$'||(LA1_0 >= '0' && LA1_0 <= '9')||(LA1_0 >= '@' && LA1_0 <= 'Z')||LA1_0=='_'||(LA1_0 >= 'a' && LA1_0 <= 'z')) ) {
                     alt1=1;
                 }
 
@@ -320,7 +320,7 @@ public class YicesLexer extends Lexer {
             	case 1 :
             	    // Yices.g:
             	    {
-            	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            	    if ( input.LA(1)=='$'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
             	        input.consume();
             	    }
             	    else {
@@ -355,10 +355,10 @@ public class YicesLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:64:4: ( ( DIGIT )+ )
-            // Yices.g:64:6: ( DIGIT )+
+            // Yices.g:63:4: ( ( DIGIT )+ )
+            // Yices.g:63:6: ( DIGIT )+
             {
-            // Yices.g:64:6: ( DIGIT )+
+            // Yices.g:63:6: ( DIGIT )+
             int cnt2=0;
             loop2:
             do {
@@ -413,10 +413,10 @@ public class YicesLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:66:3: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
-            // Yices.g:66:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+            // Yices.g:65:3: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
+            // Yices.g:65:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
             {
-            // Yices.g:66:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+            // Yices.g:65:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
             int cnt3=0;
             loop3:
             do {
@@ -473,8 +473,8 @@ public class YicesLexer extends Lexer {
         try {
             int _type = ERROR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:68:6: ( '.' )
-            // Yices.g:68:8: '.'
+            // Yices.g:67:6: ( '.' )
+            // Yices.g:67:8: '.'
             {
             match('.'); 
 
@@ -534,7 +534,7 @@ public class YicesLexer extends Lexer {
                         if ( (LA4_22=='e') ) {
                             int LA4_26 = input.LA(6);
 
-                            if ( ((LA4_26 >= '0' && LA4_26 <= '9')||(LA4_26 >= '@' && LA4_26 <= 'Z')||LA4_26=='_'||(LA4_26 >= 'a' && LA4_26 <= 'z')) ) {
+                            if ( (LA4_26=='$'||(LA4_26 >= '0' && LA4_26 <= '9')||(LA4_26 >= '@' && LA4_26 <= 'Z')||LA4_26=='_'||(LA4_26 >= 'a' && LA4_26 <= 'z')) ) {
                                 alt4=10;
                             }
                             else {
@@ -568,7 +568,7 @@ public class YicesLexer extends Lexer {
                 if ( (LA4_15=='t') ) {
                     int LA4_19 = input.LA(4);
 
-                    if ( ((LA4_19 >= '0' && LA4_19 <= '9')||(LA4_19 >= '@' && LA4_19 <= 'Z')||LA4_19=='_'||(LA4_19 >= 'a' && LA4_19 <= 'z')) ) {
+                    if ( (LA4_19=='$'||(LA4_19 >= '0' && LA4_19 <= '9')||(LA4_19 >= '@' && LA4_19 <= 'Z')||LA4_19=='_'||(LA4_19 >= 'a' && LA4_19 <= 'z')) ) {
                         alt4=10;
                     }
                     else {
@@ -597,7 +597,7 @@ public class YicesLexer extends Lexer {
                     if ( (LA4_20=='e') ) {
                         int LA4_24 = input.LA(5);
 
-                        if ( ((LA4_24 >= '0' && LA4_24 <= '9')||(LA4_24 >= '@' && LA4_24 <= 'Z')||LA4_24=='_'||(LA4_24 >= 'a' && LA4_24 <= 'z')) ) {
+                        if ( (LA4_24=='$'||(LA4_24 >= '0' && LA4_24 <= '9')||(LA4_24 >= '@' && LA4_24 <= 'Z')||LA4_24=='_'||(LA4_24 >= 'a' && LA4_24 <= 'z')) ) {
                             alt4=10;
                         }
                         else {
@@ -633,7 +633,7 @@ public class YicesLexer extends Lexer {
                         if ( (LA4_25=='t') ) {
                             int LA4_28 = input.LA(6);
 
-                            if ( ((LA4_28 >= '0' && LA4_28 <= '9')||(LA4_28 >= '@' && LA4_28 <= 'Z')||LA4_28=='_'||(LA4_28 >= 'a' && LA4_28 <= 'z')) ) {
+                            if ( (LA4_28=='$'||(LA4_28 >= '0' && LA4_28 <= '9')||(LA4_28 >= '@' && LA4_28 <= 'Z')||LA4_28=='_'||(LA4_28 >= 'a' && LA4_28 <= 'z')) ) {
                                 alt4=10;
                             }
                             else {
@@ -657,6 +657,7 @@ public class YicesLexer extends Lexer {
             }
             }
             break;
+        case '$':
         case '@':
         case 'A':
         case 'B':

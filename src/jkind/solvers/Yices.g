@@ -39,12 +39,12 @@ model returns [Model m]
   : (valueAssignment[m] | functionAssignment[m])+ ;
 
 valueAssignment[Model m]:
-    '(' '=' id value ')'     { $m.addValue($id.text, $value.v); }
+    '(' '=' ID value ')'     { $m.addValue($ID.text, $value.v); }
   ;
 
 functionAssignment[Model m]:
-    '(' '=' '(' id integer ')' value ')'
-    { $m.addFunctionValue($id.text, Integer.parseInt($integer.text), $value.v); }
+    '(' '=' '(' ID integer ')' value ')'
+    { $m.addFunctionValue($ID.text, Integer.parseInt($integer.text), $value.v); }
   ;
 
 value returns [Value v]:
@@ -53,12 +53,11 @@ value returns [Value v]:
   | numeric     { $v = new NumericValue($numeric.text); }
   ;
 
-id: ID | 'sat' | 'unsat';
 numeric: '-'? INT ('/' INT)?;
 integer: '-'? INT;
 
 fragment DIGIT: '0'..'9';
-fragment SYMBOL: 'a'..'z' | 'A'..'Z' | '_' | '@';
+fragment SYMBOL: 'a'..'z' | 'A'..'Z' | '_' | '@' | '$';
 
 ID: SYMBOL (SYMBOL | DIGIT)*;
 INT: DIGIT+;

@@ -2,6 +2,8 @@ Create a generic jkind exception which can wrap IOException
   Probably make it unchecked as it will only be caught at the top level
   Replace illegal arg exception with jkind one
 
+Using sexp can be messy - should we sometimes send direct strings?
+
 Command line arguments
   - max iterations
   - bmc only

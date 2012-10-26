@@ -76,7 +76,7 @@ public class BaseProcess extends Process {
 
 		SolverResult result;
 		do {
-			result = solver.query(conjoinIds(properties, Sexp.fromInt(k-1)));
+			result = solver.query(conjoinStreams(properties, Sexp.fromInt(k-1)));
 
 			if (result.getResult() == null) {
 				throw new IllegalArgumentException("Unknown result from solver");
@@ -85,7 +85,7 @@ public class BaseProcess extends Process {
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue(p, k-1);
+					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, k-1);
 					if (!v.getBool()) {
 						invalid.add(p);
 						iterator.remove();
@@ -115,7 +115,7 @@ public class BaseProcess extends Process {
 	
 	private void assertProperties(int k) throws IOException {
 		if (!properties.isEmpty()) {
-			solver.send(new Cons("assert", conjoinIds(properties, Sexp.fromInt(-k))));
+			solver.send(new Cons("assert", conjoinStreams(properties, Sexp.fromInt(k-1))));
 		}
 	}
 }

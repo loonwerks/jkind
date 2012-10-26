@@ -59,4 +59,12 @@ public abstract class Process implements Runnable {
 		}
 		return conjoin(symbols, i);
 	}
+	
+	public static Sexp conjoinStreams(List<String> ids, Sexp i) {
+		List<Sexp> symbols = new ArrayList<Sexp>();
+		for (String id : ids) {
+			symbols.add(new Symbol("$" + id));
+		}
+		return conjoin(symbols, i);
+	}
 }

@@ -18,7 +18,7 @@ public class YicesSolver extends Solver {
 	private Process process;
 	private BufferedWriter toYices;
 	private BufferedReader fromYices;
-	private boolean debug = false;
+	private boolean debug = true;
 
 	final private static String DONE = "@DONE";
 	

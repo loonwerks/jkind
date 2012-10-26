@@ -42,7 +42,7 @@ public class ConsoleWriter extends Writer {
 		System.out.println();
 		
 		for (String fn : sort(model.getFunctions())) {
-			System.out.format("%-25s ", fn);
+			System.out.format("%-25s ", fn.substring(1));
 			Map<Integer, Value> fnMap = model.getFunction(fn);
 			for (int i = 0; i < k; i++) {
 				System.out.format("%6s ", fnMap.get(i));

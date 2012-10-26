@@ -46,7 +46,7 @@ public class InvariantProcess extends Process {
 	@Override
 	protected void initializeSolver() throws IOException {
 		super.initializeSolver();
-		solver.send(new Cons("define", Keywords.N_SYM, new Symbol("::"), new Symbol("nat")));
+		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
 	}
 	
 	@Override
@@ -83,15 +83,14 @@ public class InvariantProcess extends Process {
 
 	private void createPossibleInvariants() throws IOException {
 		possibleInvariants = new ArrayList<Invariant>();
-		String i = "@i";
-		Sexp iSym = new Symbol(i);
-		Sexp iType = new Cons(iSym, new Symbol("::"), new Symbol("nat"));
+		Sexp i = new Symbol("i");
+		Sexp ty = new Cons(i, new Symbol("::"), new Symbol("nat"));
 
 		for (String id : typeMap.keySet()) {
 			if (typeMap.get(id) == Type.BOOL) {
-				possibleInvariants.add(createInvariant(new Cons("lambda", iType, new Cons(id, iSym))));
-				possibleInvariants.add(createInvariant(new Cons("lambda", iType, new Cons("not",
-						new Cons(id, iSym)))));
+				Sexp s = new Cons("$" + id, i);
+				possibleInvariants.add(createInvariant(new Cons("lambda", ty, s)));
+				possibleInvariants.add(createInvariant(new Cons("lambda", ty, new Cons("not", s))));
 			}
 		}
 
@@ -99,7 +98,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private Invariant createInvariant(Sexp sexp) {
-		return new Invariant("@inv" + invariantIndex++, sexp);
+		return new Invariant("inv" + invariantIndex++, sexp);
 	}
 
 	private void defineInvariants() throws IOException {
@@ -176,7 +175,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private Sexp getInductiveIndex(int offset) {
-		return new Cons("+", Keywords.N_SYM, Sexp.fromInt(offset));
+		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
 	private void refineInductiveInvariants(int k) throws IOException {
@@ -206,12 +205,12 @@ public class InvariantProcess extends Process {
 		return Integer.parseInt(value.toString());
 	}
 
-	private Sexp getInductiveQuery(int k, List<String> props) throws IOException {
+	private Sexp getInductiveQuery(int k, List<String> invs) throws IOException {
 		List<Sexp> hyps = new ArrayList<Sexp>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(conjoinIds(props, getInductiveIndex(i)));
+			hyps.add(conjoinIds(invs, getInductiveIndex(i)));
 		}
-		Sexp conc = conjoinIds(props, getInductiveIndex(k));
+		Sexp conc = conjoinIds(invs, getInductiveIndex(k));
 
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}

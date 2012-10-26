@@ -70,7 +70,9 @@ public class XmlWriter extends Writer {
 	}
 
 	private void writeSignal(String fn, int k, Model model) {
-		out.println("      <Signal name=\"" + fn + "\" type=\"" + types.get(fn) + "\">");
+		String name = fn.substring(1);
+		Type type = types.get(name);
+		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
 		Map<Integer, Value> fnMap = model.getFunction(fn);
 		for (int i = 0; i < k; i++) {
 			if (fnMap.containsKey(i)) {

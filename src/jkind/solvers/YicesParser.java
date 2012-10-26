@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Yices.g 2012-10-25 18:07:00
+// $ANTLR 3.4 Yices.g 2012-10-26 15:04:37
 
   package jkind.solvers;
 
@@ -207,11 +207,11 @@ public class YicesParser extends Parser {
                     if ( (LA3_2==14) ) {
                         int LA3_3 = input.LA(3);
 
-                        if ( (LA3_3==10) ) {
-                            alt3=2;
-                        }
-                        else if ( (LA3_3==ID||LA3_3==16||LA3_3==18) ) {
+                        if ( (LA3_3==ID) ) {
                             alt3=1;
+                        }
+                        else if ( (LA3_3==10) ) {
+                            alt3=2;
                         }
 
 
@@ -273,26 +273,21 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "valueAssignment"
-    // Yices.g:41:1: valueAssignment[Model m] : '(' '=' id value ')' ;
+    // Yices.g:41:1: valueAssignment[Model m] : '(' '=' ID value ')' ;
     public final void valueAssignment(Model m) throws RecognitionException {
-        YicesParser.id_return id3 =null;
-
+        Token ID3=null;
         Value value4 =null;
 
 
         try {
-            // Yices.g:41:25: ( '(' '=' id value ')' )
-            // Yices.g:42:5: '(' '=' id value ')'
+            // Yices.g:41:25: ( '(' '=' ID value ')' )
+            // Yices.g:42:5: '(' '=' ID value ')'
             {
             match(input,10,FOLLOW_10_in_valueAssignment149); 
 
             match(input,14,FOLLOW_14_in_valueAssignment151); 
 
-            pushFollow(FOLLOW_id_in_valueAssignment153);
-            id3=id();
-
-            state._fsp--;
-
+            ID3=(Token)match(input,ID,FOLLOW_ID_in_valueAssignment153); 
 
             pushFollow(FOLLOW_value_in_valueAssignment155);
             value4=value();
@@ -302,7 +297,7 @@ public class YicesParser extends Parser {
 
             match(input,11,FOLLOW_11_in_valueAssignment157); 
 
-             m.addValue((id3!=null?input.toString(id3.start,id3.stop):null), value4); 
+             m.addValue((ID3!=null?ID3.getText():null), value4); 
 
             }
 
@@ -322,18 +317,17 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "functionAssignment"
-    // Yices.g:45:1: functionAssignment[Model m] : '(' '=' '(' id integer ')' value ')' ;
+    // Yices.g:45:1: functionAssignment[Model m] : '(' '=' '(' ID integer ')' value ')' ;
     public final void functionAssignment(Model m) throws RecognitionException {
-        YicesParser.id_return id5 =null;
-
+        Token ID5=null;
         YicesParser.integer_return integer6 =null;
 
         Value value7 =null;
 
 
         try {
-            // Yices.g:45:28: ( '(' '=' '(' id integer ')' value ')' )
-            // Yices.g:46:5: '(' '=' '(' id integer ')' value ')'
+            // Yices.g:45:28: ( '(' '=' '(' ID integer ')' value ')' )
+            // Yices.g:46:5: '(' '=' '(' ID integer ')' value ')'
             {
             match(input,10,FOLLOW_10_in_functionAssignment178); 
 
@@ -341,11 +335,7 @@ public class YicesParser extends Parser {
 
             match(input,10,FOLLOW_10_in_functionAssignment182); 
 
-            pushFollow(FOLLOW_id_in_functionAssignment184);
-            id5=id();
-
-            state._fsp--;
-
+            ID5=(Token)match(input,ID,FOLLOW_ID_in_functionAssignment184); 
 
             pushFollow(FOLLOW_integer_in_functionAssignment186);
             integer6=integer();
@@ -363,7 +353,7 @@ public class YicesParser extends Parser {
 
             match(input,11,FOLLOW_11_in_functionAssignment192); 
 
-             m.addFunctionValue((id5!=null?input.toString(id5.start,id5.stop):null), Integer.parseInt((integer6!=null?input.toString(integer6.start,integer6.stop):null)), value7); 
+             m.addFunctionValue((ID5!=null?ID5.getText():null), Integer.parseInt((integer6!=null?input.toString(integer6.start,integer6.stop):null)), value7); 
 
             }
 
@@ -467,66 +457,22 @@ public class YicesParser extends Parser {
     // $ANTLR end "value"
 
 
-    public static class id_return extends ParserRuleReturnScope {
-    };
-
-
-    // $ANTLR start "id"
-    // Yices.g:56:1: id : ( ID | 'sat' | 'unsat' );
-    public final YicesParser.id_return id() throws RecognitionException {
-        YicesParser.id_return retval = new YicesParser.id_return();
-        retval.start = input.LT(1);
-
-
-        try {
-            // Yices.g:56:3: ( ID | 'sat' | 'unsat' )
-            // Yices.g:
-            {
-            if ( input.LA(1)==ID||input.LA(1)==16||input.LA(1)==18 ) {
-                input.consume();
-                state.errorRecovery=false;
-            }
-            else {
-                MismatchedSetException mse = new MismatchedSetException(null,input);
-                throw mse;
-            }
-
-
-            }
-
-            retval.stop = input.LT(-1);
-
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-
-        finally {
-        	// do for sure before leaving
-        }
-        return retval;
-    }
-    // $ANTLR end "id"
-
-
     public static class numeric_return extends ParserRuleReturnScope {
     };
 
 
     // $ANTLR start "numeric"
-    // Yices.g:57:1: numeric : ( '-' )? INT ( '/' INT )? ;
+    // Yices.g:56:1: numeric : ( '-' )? INT ( '/' INT )? ;
     public final YicesParser.numeric_return numeric() throws RecognitionException {
         YicesParser.numeric_return retval = new YicesParser.numeric_return();
         retval.start = input.LT(1);
 
 
         try {
-            // Yices.g:57:8: ( ( '-' )? INT ( '/' INT )? )
-            // Yices.g:57:10: ( '-' )? INT ( '/' INT )?
+            // Yices.g:56:8: ( ( '-' )? INT ( '/' INT )? )
+            // Yices.g:56:10: ( '-' )? INT ( '/' INT )?
             {
-            // Yices.g:57:10: ( '-' )?
+            // Yices.g:56:10: ( '-' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -535,9 +481,9 @@ public class YicesParser extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // Yices.g:57:10: '-'
+                    // Yices.g:56:10: '-'
                     {
-                    match(input,12,FOLLOW_12_in_numeric271); 
+                    match(input,12,FOLLOW_12_in_numeric257); 
 
                     }
                     break;
@@ -545,9 +491,9 @@ public class YicesParser extends Parser {
             }
 
 
-            match(input,INT,FOLLOW_INT_in_numeric274); 
+            match(input,INT,FOLLOW_INT_in_numeric260); 
 
-            // Yices.g:57:19: ( '/' INT )?
+            // Yices.g:56:19: ( '/' INT )?
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -556,11 +502,11 @@ public class YicesParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // Yices.g:57:20: '/' INT
+                    // Yices.g:56:20: '/' INT
                     {
-                    match(input,13,FOLLOW_13_in_numeric277); 
+                    match(input,13,FOLLOW_13_in_numeric263); 
 
-                    match(input,INT,FOLLOW_INT_in_numeric279); 
+                    match(input,INT,FOLLOW_INT_in_numeric265); 
 
                     }
                     break;
@@ -592,17 +538,17 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "integer"
-    // Yices.g:58:1: integer : ( '-' )? INT ;
+    // Yices.g:57:1: integer : ( '-' )? INT ;
     public final YicesParser.integer_return integer() throws RecognitionException {
         YicesParser.integer_return retval = new YicesParser.integer_return();
         retval.start = input.LT(1);
 
 
         try {
-            // Yices.g:58:8: ( ( '-' )? INT )
-            // Yices.g:58:10: ( '-' )? INT
+            // Yices.g:57:8: ( ( '-' )? INT )
+            // Yices.g:57:10: ( '-' )? INT
             {
-            // Yices.g:58:10: ( '-' )?
+            // Yices.g:57:10: ( '-' )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -611,9 +557,9 @@ public class YicesParser extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // Yices.g:58:10: '-'
+                    // Yices.g:57:10: '-'
                     {
-                    match(input,12,FOLLOW_12_in_integer287); 
+                    match(input,12,FOLLOW_12_in_integer273); 
 
                     }
                     break;
@@ -621,7 +567,7 @@ public class YicesParser extends Parser {
             }
 
 
-            match(input,INT,FOLLOW_INT_in_integer290); 
+            match(input,INT,FOLLOW_INT_in_integer276); 
 
             }
 
@@ -654,14 +600,14 @@ public class YicesParser extends Parser {
     public static final BitSet FOLLOW_valueAssignment_in_model128 = new BitSet(new long[]{0x0000000000000402L});
     public static final BitSet FOLLOW_functionAssignment_in_model133 = new BitSet(new long[]{0x0000000000000402L});
     public static final BitSet FOLLOW_10_in_valueAssignment149 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_valueAssignment151 = new BitSet(new long[]{0x0000000000050040L});
-    public static final BitSet FOLLOW_id_in_valueAssignment153 = new BitSet(new long[]{0x0000000000029080L});
+    public static final BitSet FOLLOW_14_in_valueAssignment151 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_ID_in_valueAssignment153 = new BitSet(new long[]{0x0000000000029080L});
     public static final BitSet FOLLOW_value_in_valueAssignment155 = new BitSet(new long[]{0x0000000000000800L});
     public static final BitSet FOLLOW_11_in_valueAssignment157 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_10_in_functionAssignment178 = new BitSet(new long[]{0x0000000000004000L});
     public static final BitSet FOLLOW_14_in_functionAssignment180 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_10_in_functionAssignment182 = new BitSet(new long[]{0x0000000000050040L});
-    public static final BitSet FOLLOW_id_in_functionAssignment184 = new BitSet(new long[]{0x0000000000001080L});
+    public static final BitSet FOLLOW_10_in_functionAssignment182 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_ID_in_functionAssignment184 = new BitSet(new long[]{0x0000000000001080L});
     public static final BitSet FOLLOW_integer_in_functionAssignment186 = new BitSet(new long[]{0x0000000000000800L});
     public static final BitSet FOLLOW_11_in_functionAssignment188 = new BitSet(new long[]{0x0000000000029080L});
     public static final BitSet FOLLOW_value_in_functionAssignment190 = new BitSet(new long[]{0x0000000000000800L});
@@ -669,11 +615,11 @@ public class YicesParser extends Parser {
     public static final BitSet FOLLOW_17_in_value216 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_15_in_value229 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_numeric_in_value241 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_12_in_numeric271 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_INT_in_numeric274 = new BitSet(new long[]{0x0000000000002002L});
-    public static final BitSet FOLLOW_13_in_numeric277 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_INT_in_numeric279 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_12_in_integer287 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_INT_in_integer290 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_12_in_numeric257 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_INT_in_numeric260 = new BitSet(new long[]{0x0000000000002002L});
+    public static final BitSet FOLLOW_13_in_numeric263 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_INT_in_numeric265 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_12_in_integer273 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_INT_in_integer276 = new BitSet(new long[]{0x0000000000000002L});
 
 }

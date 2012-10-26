@@ -61,7 +61,7 @@ public class InductiveProcess extends Process {
 	
 	protected void initializeSolver() throws IOException {
 		super.initializeSolver();
-		solver.send(new Cons("define", Keywords.N_SYM, new Symbol("::"), new Symbol("nat")));
+		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
 	}
 
 	private void processMessagesAndWait(int k) throws InterruptedException, IOException {
@@ -111,7 +111,7 @@ public class InductiveProcess extends Process {
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue(p, n+k);
+					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, n + k);
 					if (!v.getBool()) {
 						iterator.remove();
 					}
@@ -132,15 +132,15 @@ public class InductiveProcess extends Process {
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) throws IOException {
 		List<Sexp> hyps = new ArrayList<Sexp>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(conjoinIds(possiblyValid, getIndex(i)));
+			hyps.add(conjoinStreams(possiblyValid, getIndex(i)));
 		}
-		Sexp conc = conjoinIds(possiblyValid, getIndex(k));
+		Sexp conc = conjoinStreams(possiblyValid, getIndex(k));
 		
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}
 	
 	private Sexp getIndex(int offset) {
-		return new Cons("+", Keywords.N_SYM, Sexp.fromInt(offset));
+		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
 	private void sendValid(int k, List<String> valid) {
