@@ -1,5 +1,6 @@
 package jkind.processes;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -10,8 +11,9 @@ import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.translation.Lustre2Sexps;
-import jkind.writers.ConsoleWriter;
+import jkind.translation.Util;
 import jkind.writers.Writer;
+import jkind.writers.XmlWriter;
 
 public class Director {
 	private Node node;
@@ -24,18 +26,21 @@ public class Director {
 	private Thread inductiveThread;
 	protected BlockingQueue<Message> incomming;
 	
-	public Director(Node node) {
+	public Director(String filename, Node node) throws FileNotFoundException {
 		this.node = node;
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
-		this.writer = new ConsoleWriter();
+		// this.writer = new ConsoleWriter();
+		this.writer = new XmlWriter(filename + ".xml", Util.createTypeMap(node));
 		this.incomming = new LinkedBlockingQueue<Message>();
 	}
 
-	public void run() {
+	public void run() throws FileNotFoundException {
 		printHeader();
+		writer.begin();
 		startThreads();
+		
 		long timeout = System.currentTimeMillis() + 30 * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()) {
 			processMessages();
@@ -44,17 +49,14 @@ public class Director {
 			} catch (InterruptedException e) {
 			}
 		}
-
-		if (!remainingProperties.isEmpty()) {
-			System.out.println("Timeout on properties: " + remainingProperties);
-		}
-
+		
+		writer.end();
 		printSummary();
 	}
 
 	private void printHeader() {
 		System.out.println("==========================================");
-		System.out.println("  PARALLEL KIND (Java)");
+		System.out.println("  JAVA KIND");
 		System.out.println("==========================================");
 		System.out.println();
 		System.out.println("There are " + remainingProperties.size() + " properties to be checked.");

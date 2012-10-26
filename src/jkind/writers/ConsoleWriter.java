@@ -2,18 +2,23 @@ package jkind.writers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import jkind.solvers.Model;
 import jkind.solvers.Value;
 
 public class ConsoleWriter extends Writer {
+	@Override
+	public void begin() {
+	}
+
+	@Override
+	public void end() {
+	}
+	
 	private void writeLine() {
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
-	
+
 	@Override
 	public void writeValid(List<String> props, int k) {
 		writeLine();
@@ -47,9 +52,5 @@ public class ConsoleWriter extends Writer {
 		
 		writeLine();
 		System.out.println();
-	}
-	
-	private SortedSet<String> sort(Set<String> set) {
-		return new TreeSet<String>(set);
 	}
 }

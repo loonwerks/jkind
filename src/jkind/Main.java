@@ -15,7 +15,7 @@ import org.antlr.runtime.RecognitionException;
 public class Main {
 	public static void main(String args[]) throws IOException, RecognitionException, InterruptedException {
 		Node node = parseLustre(args[0]);
-		new Director(node).run();
+		new Director(args[0], node).run();
 		System.exit(0); // Kills all threads
 	}
 

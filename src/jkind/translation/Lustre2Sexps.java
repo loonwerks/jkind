@@ -21,7 +21,7 @@ public class Lustre2Sexps {
 	}
 
 	private void createDefinitions(Node node) {
-		for (VarDecl decl : getVarDecls(node)) {
+		for (VarDecl decl : Util.getVarDecls(node)) {
 			Sexp type = new Cons("->", new Symbol("nat"), typeToSymbol(decl.type));
 			Sexp def = new Cons("define", new Symbol(decl.id), new Symbol("::"), type);
 			definitions.add(def);
@@ -39,14 +39,6 @@ public class Lustre2Sexps {
 		default:
 			throw new IllegalArgumentException("Unknown type: " + type);
 		}
-	}
-
-	private List<VarDecl> getVarDecls(Node node) {
-		List<VarDecl> decls = new ArrayList<VarDecl>();
-		decls.addAll(node.inputs);
-		decls.addAll(node.outputs);
-		decls.addAll(node.locals);
-		return decls;
 	}
 
 	private void createTransition(List<Equation> equations) {
