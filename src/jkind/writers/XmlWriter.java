@@ -23,8 +23,8 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void begin() {
-		out.println("<?xml version='1.0'?>");
-		out.println("<Results xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>");
+		out.println("<?xml version=\"1.0\"?>");
+		out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, int k) {
-		out.println("  <Property name='" + spaces(props) + "'>");
+		out.println("  <Property name=\"" + spaces(props) + "\">");
 		out.println("    <K>" + k + "</K>");
 		out.println("    <Answer>valid</Answer>");
 		out.println("  </Property>");
@@ -54,7 +54,7 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeInvalid(List<String> props, int k, Model model) {
-		out.println("  <Property name='" + spaces(props) + "'>");
+		out.println("  <Property name=\"" + spaces(props) + "\">");
 		out.println("    <K>" + k + "</K>");
 		out.println("    <Answer>falsifiable</Answer>");
 		writeCounterexample(k, model);
@@ -70,11 +70,11 @@ public class XmlWriter extends Writer {
 	}
 
 	private void writeSignal(String fn, int k, Model model) {
-		out.println("      <Signal name='" + fn + "' type='" + types.get(fn) + "'>");
+		out.println("      <Signal name=\"" + fn + "\" type=\"" + types.get(fn) + "\">");
 		Map<Integer, Value> fnMap = model.getFunction(fn);
 		for (int i = 0; i < k; i++) {
 			if (fnMap.containsKey(i)) {
-				out.println("        <Value time='" + i + "'>" + formatValue(fnMap.get(i))
+				out.println("        <Value time=\"" + i + "\">" + formatValue(fnMap.get(i))
 						+ "</Value>");
 			}
 		}
@@ -95,7 +95,7 @@ public class XmlWriter extends Writer {
 	}
 
 	public void writeTimeout(List<String> props) {
-		out.println("  <Property name='" + spaces(props) + "'>");
+		out.println("  <Property name=\"" + spaces(props) + "\">");
 		out.println("    <Answer>unknown</Answer>");
 		out.println("  </Property>");
 	}
