@@ -32,12 +32,6 @@ public class InductiveProcess extends Process {
 		this.baseProcess = baseProcess;
 	}
 
-	/*
-	 * NOTE: The inductive process starts at k = 1 which is regular induction,
-	 * while the base process starts at step 0 which is the initial state. This
-	 * means some step values need to be converted when passed between
-	 * processes.
-	 */
 	@Override
 	public void run() {
 		try {
@@ -72,7 +66,7 @@ public class InductiveProcess extends Process {
 				properties.removeAll(invalidMessage.invalid);
 			} else if (message instanceof BaseStepMessage) {
 				BaseStepMessage baseStepMessage = (BaseStepMessage) message;
-				kLimit = baseStepMessage.step + 1;
+				kLimit = baseStepMessage.step;
 			} else {
 				throw new IllegalArgumentException("Unknown message type in inductive process: "
 						+ message.getClass().getCanonicalName());

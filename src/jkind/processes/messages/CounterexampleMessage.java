@@ -6,12 +6,12 @@ import jkind.solvers.Model;
 
 public class CounterexampleMessage extends Message {
 	final public List<String> invalid;
-	final public int length;
+	final public int k;
 	final public Model model;
 
-	public CounterexampleMessage(List<String> invalid, int length, Model model) {
+	public CounterexampleMessage(List<String> invalid, int k, Model model) {
 		this.invalid = invalid;
-		this.length = length;
+		this.k = k;
 		this.model = model;
 	}
 }

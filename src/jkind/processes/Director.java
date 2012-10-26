@@ -2,7 +2,6 @@ package jkind.processes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -10,28 +9,35 @@ import jkind.lustre.Node;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
-import jkind.solvers.Model;
-import jkind.solvers.Value;
 import jkind.translation.Lustre2Sexps;
+import jkind.writers.ConsoleWriter;
+import jkind.writers.Writer;
 
 public class Director {
 	private Node node;
-	private List<String> propertiesLeft;
+	private List<String> remainingProperties;
+	private List<String> validProperties;
+	private List<String> invalidProperties;
+	private Writer writer;
 	
 	private Thread baseThread;
 	private Thread inductiveThread;
-	
-	protected BlockingQueue<Message> incomming = new LinkedBlockingQueue<Message>();
+	protected BlockingQueue<Message> incomming;
 	
 	public Director(Node node) {
 		this.node = node;
-		propertiesLeft = new ArrayList<String>(node.properties);
+		this.remainingProperties = new ArrayList<String>(node.properties);
+		this.validProperties = new ArrayList<String>();
+		this.invalidProperties = new ArrayList<String>();
+		this.writer = new ConsoleWriter();
+		this.incomming = new LinkedBlockingQueue<Message>();
 	}
 
 	public void run() {
+		printHeader();
 		startThreads();
 		long timeout = System.currentTimeMillis() + 30 * 1000;
-		while (System.currentTimeMillis() < timeout && !propertiesLeft.isEmpty()) {
+		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()) {
 			processMessages();
 			try {
 				Thread.sleep(100);
@@ -39,9 +45,21 @@ public class Director {
 			}
 		}
 
-		if (!propertiesLeft.isEmpty()) {
-			System.out.println("Timeout on properties: " + propertiesLeft);
+		if (!remainingProperties.isEmpty()) {
+			System.out.println("Timeout on properties: " + remainingProperties);
 		}
+
+		printSummary();
+	}
+
+	private void printHeader() {
+		System.out.println("==========================================");
+		System.out.println("  PARALLEL KIND (Java)");
+		System.out.println("==========================================");
+		System.out.println();
+		System.out.println("There are " + remainingProperties.size() + " properties to be checked.");
+		System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
+		System.out.println();
 	}
 
 	private void startThreads() {
@@ -65,13 +83,14 @@ public class Director {
 			Message message = incomming.poll();
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
-				propertiesLeft.removeAll(vm.valid);
-				System.out.println("Valid properties at k = " + vm.k + ": " + vm.valid);
-				System.out.println();
+				remainingProperties.removeAll(vm.valid);
+				validProperties.addAll(vm.valid);
+				writer.writeValid(vm.valid, vm.k);
 			} else if (message instanceof CounterexampleMessage) {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
-				propertiesLeft.removeAll(cex.invalid);
-				printCounterexample(cex.invalid, cex.length, cex.model);
+				remainingProperties.removeAll(cex.invalid);
+				invalidProperties.addAll(cex.invalid);
+				writer.writeInvalid(cex.invalid, cex.k, cex.model);
 			} else {
 				throw new IllegalArgumentException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());
@@ -79,16 +98,22 @@ public class Director {
 		}
 	}
 
-	private void printCounterexample(List<String> invalid, int length, Model model) {
-		System.out.println("Properties " + invalid + " are invalid with length " + length);
-		for (String fn : model.getFunctions()) {
-			System.out.print(fn + ": ");
-			Map<Integer, Value> fnMap = model.getFunction(fn);
-			for (int i = 0; i <= length; i++) {
-				System.out.print("\t" + fnMap.get(i));
-			}
+	private void printSummary() {
+		System.out.println("    -------------------------------------");
+		System.out.println("    --^^--        SUMMARY          --^^--");
+		System.out.println("    -------------------------------------");
+		System.out.println();
+		if (!validProperties.isEmpty()) {
+			System.out.println("VALID PROPERTIES: " + validProperties);
 			System.out.println();
 		}
-		System.out.println();
+		if (!invalidProperties.isEmpty()) {
+			System.out.println("INVALID PROPERTIES: " + invalidProperties);
+			System.out.println();
+		}
+		if (!remainingProperties.isEmpty()) {
+			System.out.println("TIMEOUT PROPERTIES: " + remainingProperties);
+			System.out.println();
+		}
 	}
 }

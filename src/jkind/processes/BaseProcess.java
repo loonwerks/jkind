@@ -35,7 +35,7 @@ public class BaseProcess extends Process {
 		try {
 			initializeSolver();
 
-			for (int k = 0; k < kMax; k++) {
+			for (int k = 1; k <= kMax; k++) {
 				processMessages();
 				assertTransition(k);
 				checkProperties(k);
@@ -62,16 +62,16 @@ public class BaseProcess extends Process {
 		}
 	}
 
-	private void assertTransition(int i) throws IOException {
-		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(i))));
+	private void assertTransition(int k) throws IOException {
+		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(k-1))));
 	}
 
-	private void checkProperties(int i) throws IOException {
+	private void checkProperties(int k) throws IOException {
 		List<String> invalid = new ArrayList<String>();
 
 		SolverResult result;
 		do {
-			result = solver.query(conjoin(properties, Sexp.fromInt(i)));
+			result = solver.query(conjoin(properties, Sexp.fromInt(k-1)));
 
 			if (result.getResult() == null) {
 				throw new IllegalArgumentException("Unknown result from solver");
@@ -80,29 +80,29 @@ public class BaseProcess extends Process {
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue(p, i);
+					BoolValue v = (BoolValue) model.getFunctionValue(p, k-1);
 					if (!v.getBool()) {
 						invalid.add(p);
 						iterator.remove();
 					}
 				}
-				sendInvalid(invalid, i, model);
+				sendInvalid(invalid, k, model);
 				invalid = new ArrayList<String>();
 			}
 		} while (!properties.isEmpty() && result.getResult() == Result.SAT);
 		
-		sendBaseStep(i);
+		sendBaseStep(k);
 	}
 
-	private void sendInvalid(List<String> invalid, int i, Model model) {
-		director.incomming.add(new CounterexampleMessage(invalid, i+1, model));
+	private void sendInvalid(List<String> invalid, int k, Model model) {
+		director.incomming.add(new CounterexampleMessage(invalid, k, model));
 		
 		if (inductiveProcess != null) {
 			inductiveProcess.incomming.add(new InvalidMessage(invalid));
 		}
 	}
 	
-	private void sendBaseStep(int i) {
-		inductiveProcess.incomming.add(new BaseStepMessage(i));
+	private void sendBaseStep(int k) {
+		inductiveProcess.incomming.add(new BaseStepMessage(k));
 	}
 }
