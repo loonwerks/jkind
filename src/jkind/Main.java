@@ -6,6 +6,7 @@ import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
 import jkind.processes.Director;
+import jkind.slicing.Slicer;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
@@ -15,6 +16,7 @@ import org.antlr.runtime.RecognitionException;
 public class Main {
 	public static void main(String args[]) throws IOException, RecognitionException, InterruptedException {
 		Node node = parseLustre(args[0]);
+		node = Slicer.slice(node);
 		new Director(args[0], node).run();
 		System.exit(0); // Kills all threads
 	}

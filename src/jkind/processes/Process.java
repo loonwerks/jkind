@@ -38,6 +38,10 @@ public abstract class Process implements Runnable {
 	/** Utility functions */
 	
 	public static Sexp conjoin(List<String> ids, Sexp i) {
+		if (ids.isEmpty()) {
+			throw new IllegalArgumentException("Cannot conjoin empty list");
+		}
+		
 		List<Sexp> args = new ArrayList<Sexp>();
 		for (String id : ids) {
 			args.add(new Cons(id, i));

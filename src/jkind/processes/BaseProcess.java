@@ -37,11 +37,11 @@ public class BaseProcess extends Process {
 
 			for (int k = 1; k <= kMax; k++) {
 				processMessages();
-				assertTransition(k);
-				checkProperties(k);
 				if (properties.isEmpty()) {
 					break;
 				}
+				assertTransition(k);
+				checkProperties(k);
 			}
 		} catch (IOException e) {
 			System.out.println("Base process failed");

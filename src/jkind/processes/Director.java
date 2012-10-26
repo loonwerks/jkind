@@ -11,9 +11,8 @@ import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.translation.Lustre2Sexps;
-import jkind.translation.Util;
+import jkind.writers.ConsoleWriter;
 import jkind.writers.Writer;
-import jkind.writers.XmlWriter;
 
 public class Director {
 	private Node node;
@@ -31,8 +30,8 @@ public class Director {
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
-		// this.writer = new ConsoleWriter();
-		this.writer = new XmlWriter(filename + ".xml", Util.createTypeMap(node));
+		this.writer = new ConsoleWriter();
+		// this.writer = new XmlWriter(filename + ".xml", Util.createTypeMap(node));
 		this.incomming = new LinkedBlockingQueue<Message>();
 	}
 
@@ -41,7 +40,7 @@ public class Director {
 		writer.begin();
 		startThreads();
 		
-		long timeout = System.currentTimeMillis() + 30 * 1000;
+		long timeout = System.currentTimeMillis() + 100 * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()) {
 			processMessages();
 			try {
