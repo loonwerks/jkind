@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Lustre.g 2012-10-26 08:06:57
+// $ANTLR 3.4 Lustre.g 2012-10-27 06:53:16
 
   package jkind.lustre;
 
@@ -1262,11 +1262,30 @@ public class LustreLexer extends Lexer {
         try {
             int _type = MAIN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:206:5: ( '--%MAIN' )
-            // Lustre.g:206:7: '--%MAIN'
+            // Lustre.g:206:5: ( '--%MAIN' ( ';' )? )
+            // Lustre.g:206:7: '--%MAIN' ( ';' )?
             {
             match("--%MAIN"); 
 
+
+
+            // Lustre.g:206:17: ( ';' )?
+            int alt9=2;
+            int LA9_0 = input.LA(1);
+
+            if ( (LA9_0==';') ) {
+                alt9=1;
+            }
+            switch (alt9) {
+                case 1 :
+                    // Lustre.g:206:17: ';'
+                    {
+                    match(';'); 
+
+                    }
+                    break;
+
+            }
 
 
             _channel=HIDDEN;
@@ -1305,9 +1324,9 @@ public class LustreLexer extends Lexer {
 
     public void mTokens() throws RecognitionException {
         // Lustre.g:1:8: ( T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | INT | ID | WS | SL_COMMENT | ML_COMMENT | MAIN | ERROR )
-        int alt9=43;
-        alt9 = dfa9.predict(input);
-        switch (alt9) {
+        int alt10=43;
+        alt10 = dfa10.predict(input);
+        switch (alt10) {
             case 1 :
                 // Lustre.g:1:10: T__11
                 {
@@ -1658,16 +1677,16 @@ public class LustreLexer extends Lexer {
     }
 
 
-    protected DFA9 dfa9 = new DFA9(this);
-    static final String DFA9_eotS =
+    protected DFA10 dfa10 = new DFA10(this);
+    static final String DFA10_eotS =
         "\6\uffff\1\40\1\42\2\uffff\1\45\1\47\1\51\15\33\4\uffff\1\73\13"+
         "\uffff\4\33\1\100\3\33\1\105\7\33\2\uffff\1\120\3\33\1\uffff\1\124"+
         "\1\125\1\33\1\127\1\uffff\1\130\2\33\1\133\2\33\1\136\1\137\3\uffff"+
         "\1\140\1\141\1\33\2\uffff\1\143\2\uffff\1\144\1\33\1\uffff\1\146"+
         "\1\147\4\uffff\1\150\2\uffff\1\33\3\uffff\1\33\1\153\1\uffff";
-    static final String DFA9_eofS =
+    static final String DFA10_eofS =
         "\154\uffff";
-    static final String DFA9_minS =
+    static final String DFA10_minS =
         "\1\11\5\uffff\1\55\1\52\2\uffff\1\75\1\76\1\75\1\156\1\157\1\154"+
         "\1\141\1\146\1\145\1\157\2\162\2\145\1\141\1\157\4\uffff\1\45\13"+
         "\uffff\1\144\1\157\1\163\1\154\1\60\2\164\1\144\1\60\1\145\1\141"+
@@ -1675,7 +1694,7 @@ public class LustreLexer extends Lexer {
         "\uffff\2\60\1\145\1\60\1\uffff\1\60\1\154\1\165\1\60\1\156\1\145"+
         "\2\60\3\uffff\2\60\1\145\2\uffff\1\60\2\uffff\1\60\1\162\1\uffff"+
         "\2\60\4\uffff\1\60\2\uffff\1\156\3\uffff\1\163\1\60\1\uffff";
-    static final String DFA9_maxS =
+    static final String DFA10_maxS =
         "\1\172\5\uffff\1\76\1\52\2\uffff\2\76\1\75\1\156\1\157\1\154\1\141"+
         "\1\156\1\145\1\157\2\162\1\145\1\162\1\141\1\157\4\uffff\1\45\13"+
         "\uffff\1\144\1\157\1\163\1\154\1\172\3\164\1\172\1\145\1\164\1\154"+
@@ -1683,16 +1702,16 @@ public class LustreLexer extends Lexer {
         "\2\172\1\145\1\172\1\uffff\1\172\1\154\1\165\1\172\1\156\1\145\2"+
         "\172\3\uffff\2\172\1\145\2\uffff\1\172\2\uffff\1\172\1\162\1\uffff"+
         "\2\172\4\uffff\1\172\2\uffff\1\156\3\uffff\1\163\1\172\1\uffff";
-    static final String DFA9_acceptS =
+    static final String DFA10_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\5\2\uffff\1\12\1\13\20\uffff\1\45\1\46"+
         "\1\47\1\53\1\uffff\1\10\1\6\1\51\1\11\1\15\1\16\1\14\1\20\1\17\1"+
         "\22\1\21\21\uffff\1\50\4\uffff\1\27\4\uffff\1\34\10\uffff\1\7\1"+
         "\52\1\23\3\uffff\1\30\1\31\1\uffff\1\33\1\35\2\uffff\1\40\2\uffff"+
         "\1\43\1\44\1\24\1\25\1\uffff\1\32\1\36\1\uffff\1\41\1\42\1\26\2"+
         "\uffff\1\37";
-    static final String DFA9_specialS =
+    static final String DFA10_specialS =
         "\154\uffff}>";
-    static final String[] DFA9_transitionS = {
+    static final String[] DFA10_transitionS = {
             "\2\34\1\uffff\2\34\22\uffff\1\34\7\uffff\1\1\1\2\1\3\1\4\1\5"+
             "\1\6\1\35\1\7\12\32\1\10\1\11\1\12\1\13\1\14\2\uffff\32\33\4"+
             "\uffff\1\33\1\uffff\1\15\1\16\2\33\1\17\1\20\2\33\1\21\2\33"+
@@ -1807,34 +1826,34 @@ public class LustreLexer extends Lexer {
             ""
     };
 
-    static final short[] DFA9_eot = DFA.unpackEncodedString(DFA9_eotS);
-    static final short[] DFA9_eof = DFA.unpackEncodedString(DFA9_eofS);
-    static final char[] DFA9_min = DFA.unpackEncodedStringToUnsignedChars(DFA9_minS);
-    static final char[] DFA9_max = DFA.unpackEncodedStringToUnsignedChars(DFA9_maxS);
-    static final short[] DFA9_accept = DFA.unpackEncodedString(DFA9_acceptS);
-    static final short[] DFA9_special = DFA.unpackEncodedString(DFA9_specialS);
-    static final short[][] DFA9_transition;
+    static final short[] DFA10_eot = DFA.unpackEncodedString(DFA10_eotS);
+    static final short[] DFA10_eof = DFA.unpackEncodedString(DFA10_eofS);
+    static final char[] DFA10_min = DFA.unpackEncodedStringToUnsignedChars(DFA10_minS);
+    static final char[] DFA10_max = DFA.unpackEncodedStringToUnsignedChars(DFA10_maxS);
+    static final short[] DFA10_accept = DFA.unpackEncodedString(DFA10_acceptS);
+    static final short[] DFA10_special = DFA.unpackEncodedString(DFA10_specialS);
+    static final short[][] DFA10_transition;
 
     static {
-        int numStates = DFA9_transitionS.length;
-        DFA9_transition = new short[numStates][];
+        int numStates = DFA10_transitionS.length;
+        DFA10_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA9_transition[i] = DFA.unpackEncodedString(DFA9_transitionS[i]);
+            DFA10_transition[i] = DFA.unpackEncodedString(DFA10_transitionS[i]);
         }
     }
 
-    class DFA9 extends DFA {
+    class DFA10 extends DFA {
 
-        public DFA9(BaseRecognizer recognizer) {
+        public DFA10(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 9;
-            this.eot = DFA9_eot;
-            this.eof = DFA9_eof;
-            this.min = DFA9_min;
-            this.max = DFA9_max;
-            this.accept = DFA9_accept;
-            this.special = DFA9_special;
-            this.transition = DFA9_transition;
+            this.decisionNumber = 10;
+            this.eot = DFA10_eot;
+            this.eof = DFA10_eof;
+            this.min = DFA10_min;
+            this.max = DFA10_max;
+            this.accept = DFA10_accept;
+            this.special = DFA10_special;
+            this.transition = DFA10_transition;
         }
         public String getDescription() {
             return "1:1: Tokens : ( T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | INT | ID | WS | SL_COMMENT | ML_COMMENT | MAIN | ERROR );";
