@@ -1,6 +1,6 @@
-package jkind.misc;
+package jkind;
 
-public class JKindException extends Error {
+public class JKindException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public JKindException(String message) {

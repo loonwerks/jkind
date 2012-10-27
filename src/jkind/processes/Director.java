@@ -7,14 +7,16 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jkind.JKindException;
+import jkind.Settings;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
-import jkind.misc.JKindException;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.translation.Lustre2Sexps;
 import jkind.translation.Util;
+import jkind.writers.ConsoleWriter;
 import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
@@ -37,13 +39,20 @@ public class Director {
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
 		this.typeMap = Util.createTypeMap(node);
-		// this.writer = new ConsoleWriter();
-		try {
-			this.writer = new XmlWriter(filename + ".xml", typeMap);
-		} catch (FileNotFoundException e) {
-			throw new JKindException("Unable to open XML output file", e);
-		}
+		this.writer = getWriter(filename, typeMap);
 		this.incomming = new LinkedBlockingQueue<Message>();
+	}
+
+	private static Writer getWriter(String filename, Map<String, Type> typeMap) {
+		if (Settings.xml) {
+			try {
+				return new XmlWriter(filename + ".xml", typeMap);
+			} catch (FileNotFoundException e) {
+				throw new JKindException("Unable to open XML output file", e);
+			}
+		} else {
+			return new ConsoleWriter();
+		}
 	}
 
 	public void run() {
@@ -51,7 +60,7 @@ public class Director {
 		writer.begin();
 		startThreads();
 		
-		long timeout = System.currentTimeMillis() + 100 * 1000;
+		long timeout = System.currentTimeMillis() + Settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
 				&& someThreadAlive()) {
 			processMessages();
@@ -102,9 +111,9 @@ public class Director {
 		inductive.setBaseProcess(base);
 		invariant.setInductiveProcess(inductive);
 		
-		baseThread = new Thread(base);
-		inductiveThread = new Thread(inductive);
-		invariantThread = new Thread(invariant);
+		baseThread = new Thread(base, "base");
+		inductiveThread = new Thread(inductive, "inductive");
+		invariantThread = new Thread(invariant, "invariant");
 		
 		baseThread.start();
 		inductiveThread.start();

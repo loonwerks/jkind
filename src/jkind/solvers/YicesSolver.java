@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-import jkind.misc.JKindException;
+import jkind.JKindException;
 import jkind.sexp.Sexp;
 
 import org.antlr.runtime.ANTLRStringStream;

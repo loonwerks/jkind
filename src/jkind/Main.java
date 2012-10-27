@@ -1,5 +1,6 @@
 package jkind;
 
+import java.io.File;
 import java.io.IOException;
 
 import jkind.lustre.LustreLexer;
@@ -14,10 +15,18 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 
 public class Main {
+	final public static String VERSION = "0.1";
+	
 	public static void main(String args[]) throws IOException, RecognitionException, InterruptedException {
-		Node node = parseLustre(args[0]);
+		String filename = ArgumentParser.parse(args);
+		if (!new File(filename).exists()) {
+			System.out.println("Cannot find file " + filename);
+			System.exit(-1);
+		}
+		
+		Node node = parseLustre(filename);
 		node = Slicer.slice(node);
-		new Director(args[0], node).run();
+		new Director(filename, node).run();
 		System.exit(0); // Kills all threads
 	}
 

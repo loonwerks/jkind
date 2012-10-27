@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jkind.misc.JKindException;
+import jkind.JKindException;
+import jkind.Settings;
 import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -21,7 +22,7 @@ public abstract class Process implements Runnable {
 	
 	protected Solver solver;
 	protected BlockingQueue<Message> incomming = new LinkedBlockingQueue<Message>();
-	protected int kMax = 200;
+	protected int kMax = Settings.n;
 
 	public Process(List<String> properties, Lustre2Sexps translation, Director director) {
 		if (properties != null) {

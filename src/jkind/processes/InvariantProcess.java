@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import jkind.JKindException;
 import jkind.lustre.Type;
-import jkind.misc.JKindException;
 import jkind.processes.messages.InvariantMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -54,7 +54,10 @@ public class InvariantProcess extends Process {
 		try {
 			initializeSolver();
 			createPossibleInvariants();
-
+			if (possibleInvariants.isEmpty()) {
+				return;
+			}
+			
 			int k = basePhase();
 			if (possibleInvariants.isEmpty()) {
 				return;
@@ -117,7 +120,7 @@ public class InvariantProcess extends Process {
 		do {
 			k = k + 1;
 			assertBaseTransition(k);
-		} while (refineBaseInvariants(k));
+		} while (!possibleInvariants.isEmpty() && refineBaseInvariants(k));
 		solver.pop();
 
 		return k;

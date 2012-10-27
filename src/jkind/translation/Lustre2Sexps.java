@@ -3,11 +3,11 @@ package jkind.translation;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.JKindException;
 import jkind.lustre.Equation;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.misc.JKindException;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;

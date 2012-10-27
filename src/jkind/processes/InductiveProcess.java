@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jkind.misc.JKindException;
+import jkind.JKindException;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.InvariantMessage;
