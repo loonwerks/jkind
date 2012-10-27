@@ -70,12 +70,19 @@ public class YicesSolver extends Solver {
 		return query(sexp.toString());
 	}
 	
+	private int queryCount = 1;
+	
 	private SolverResult query(String str) {
-		push();
-		send("(assert (not " + str + "))");
+		/**
+		 * Using assert+ and retract seems to be much more efficient than push
+		 * and pop for some reason.
+		 */
+
+		send("(assert+ (not " + str + "))");
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
-		pop();
+		send("(retract " + queryCount + ")");
+		queryCount++;
 
 		SolverResult result = readResult();
 		if (result.getResult() == null) {
@@ -101,6 +108,8 @@ public class YicesSolver extends Solver {
 					continue;
 				} else if (line.equals(DONE)) {
 					break;
+				} else if (line.startsWith("unsat core ids")) {
+					continue;
 				} else {
 					content.append(line);
 					content.append("\n");
