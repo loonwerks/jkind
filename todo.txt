@@ -1,5 +1,7 @@
 Using sexp can be messy - should we sometimes send direct strings?
 
+Print runtime for properties
+
 Implement -scratch flag
 
 Static checks: typing, single variable declaration, all outputs assigned, properties unique,

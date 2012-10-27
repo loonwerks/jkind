@@ -26,8 +26,10 @@ public class InductiveProcess extends Process {
 	private BaseProcess baseProcess;
 	private List<Sexp> invariants = new ArrayList<Sexp>();
 
-	public InductiveProcess(List<String> properties, Lustre2Sexps translation, Director director) {
+	public InductiveProcess(String filename, List<String> properties, Lustre2Sexps translation,
+			Director director) {
 		super(properties, translation, director);
+		setScratch(filename + ".yc_induct");
 	}
 
 	public void setBaseProcess(BaseProcess baseProcess) {
@@ -57,7 +59,7 @@ public class InductiveProcess extends Process {
 			}
 		}
 	}
-	
+
 	protected void initializeSolver() {
 		super.initializeSolver();
 		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
@@ -105,7 +107,7 @@ public class InductiveProcess extends Process {
 
 		while (!possiblyValid.isEmpty()) {
 			SolverResult result = solver.query(getInductiveQuery(k, possiblyValid));
-			
+
 			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				int n = getN(model);
@@ -136,10 +138,10 @@ public class InductiveProcess extends Process {
 			hyps.add(conjoinStreams(possiblyValid, getIndex(i)));
 		}
 		Sexp conc = conjoinStreams(possiblyValid, getIndex(k));
-		
+
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}
-	
+
 	private Sexp getIndex(int offset) {
 		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}

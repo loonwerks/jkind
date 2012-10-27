@@ -21,6 +21,7 @@ import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
 public class Director {
+	private String filename;
 	private Node node;
 	private List<String> remainingProperties;
 	private List<String> validProperties;
@@ -34,16 +35,17 @@ public class Director {
 	protected BlockingQueue<Message> incomming;
 	
 	public Director(String filename, Node node) {
+		this.filename = filename;
 		this.node = node;
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
 		this.typeMap = Util.createTypeMap(node);
-		this.writer = getWriter(filename, typeMap);
+		this.writer = getWriter();
 		this.incomming = new LinkedBlockingQueue<Message>();
 	}
 
-	private static Writer getWriter(String filename, Map<String, Type> typeMap) {
+	private Writer getWriter() {
 		if (Settings.xml) {
 			try {
 				return new XmlWriter(filename + ".xml", typeMap);
@@ -103,10 +105,11 @@ public class Director {
 	private void startThreads() {
 		Lustre2Sexps translation = new Lustre2Sexps(node);
 		
-		BaseProcess base = new BaseProcess(node.properties, translation, this);
-		InductiveProcess inductive = new InductiveProcess(node.properties, translation, this);
-		InvariantProcess invariant = new InvariantProcess(translation, typeMap);
-		
+		BaseProcess base = new BaseProcess(filename, node.properties, translation, this);
+		InductiveProcess inductive = new InductiveProcess(filename, node.properties, translation,
+				this);
+		InvariantProcess invariant = new InvariantProcess(filename, translation, typeMap);
+
 		base.setInductiveProcess(inductive);
 		inductive.setBaseProcess(base);
 		invariant.setInductiveProcess(inductive);

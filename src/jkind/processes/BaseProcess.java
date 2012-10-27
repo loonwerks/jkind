@@ -22,8 +22,10 @@ import jkind.translation.Lustre2Sexps;
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
 
-	public BaseProcess(List<String> properties, Lustre2Sexps translation, Director director) {
+	public BaseProcess(String filename, List<String> properties, Lustre2Sexps translation,
+			Director director) {
 		super(properties, translation, director);
+		setScratch(filename + ".yc_base");
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {

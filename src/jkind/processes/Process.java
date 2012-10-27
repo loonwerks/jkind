@@ -1,5 +1,7 @@
 package jkind.processes;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -23,6 +25,8 @@ public abstract class Process implements Runnable {
 	protected Solver solver;
 	protected BlockingQueue<Message> incomming = new LinkedBlockingQueue<Message>();
 	protected int kMax = Settings.n;
+	
+	private PrintWriter scratch;
 
 	public Process(List<String> properties, Lustre2Sexps translation, Director director) {
 		if (properties != null) {
@@ -34,6 +38,10 @@ public abstract class Process implements Runnable {
 
 	protected void initializeSolver() {
 		solver = new YicesSolver();
+		if (Settings.scratch) {
+			solver.setDebug(scratch);
+		}
+		solver.initialize();
 		solver.send(translation.getDefinitions());
 		solver.send(translation.getTransition());
 	}
@@ -41,7 +49,7 @@ public abstract class Process implements Runnable {
 	
 	/** Utility functions */
 	
-	public static Sexp conjoin(List<Sexp> fns, Sexp i) {
+	protected static Sexp conjoin(List<Sexp> fns, Sexp i) {
 		if (fns.isEmpty()) {
 			throw new JKindException("Cannot conjoin empty list");
 		}
@@ -53,7 +61,7 @@ public abstract class Process implements Runnable {
 		return new Cons("and", args);
 	}
 	
-	public static Sexp conjoinIds(List<String> ids, Sexp i) {
+	protected static Sexp conjoinIds(List<String> ids, Sexp i) {
 		List<Sexp> symbols = new ArrayList<Sexp>();
 		for (String id : ids) {
 			symbols.add(new Symbol(id));
@@ -61,11 +69,32 @@ public abstract class Process implements Runnable {
 		return conjoin(symbols, i);
 	}
 	
-	public static Sexp conjoinStreams(List<String> ids, Sexp i) {
+	protected static Sexp conjoinStreams(List<String> ids, Sexp i) {
 		List<Sexp> symbols = new ArrayList<Sexp>();
 		for (String id : ids) {
 			symbols.add(new Symbol("$" + id));
 		}
 		return conjoin(symbols, i);
+	}
+	
+	
+	/** Debug methods */
+	
+	protected void setScratch(String filename) {
+		if (Settings.scratch) {
+			try {
+				scratch = new PrintWriter(filename);
+			} catch (FileNotFoundException e) {
+				throw new JKindException("Unable to open scratch file: " + filename, e);
+			}
+		}
+	}
+	
+	protected void debug(String str) {
+		if (scratch != null) {
+			scratch.print("; ");
+			scratch.println(str);
+			scratch.flush();
+		}
 	}
 }

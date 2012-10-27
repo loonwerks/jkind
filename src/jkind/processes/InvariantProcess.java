@@ -33,8 +33,9 @@ public class InvariantProcess extends Process {
 	private Map<String, Type> typeMap;
 	private int invariantIndex = 0;
 
-	public InvariantProcess(Lustre2Sexps translation, Map<String, Type> typeMap) {
+	public InvariantProcess(String filename, Lustre2Sexps translation, Map<String, Type> typeMap) {
 		super(null, translation, null);
+		setScratch(filename + ".yc_inv");
 		this.typeMap = typeMap;
 		this.incomming = null;
 	}
@@ -42,13 +43,13 @@ public class InvariantProcess extends Process {
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
 		this.inductiveProcess = inductiveProcess;
 	}
-	
+
 	@Override
 	protected void initializeSolver() {
 		super.initializeSolver();
 		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -57,7 +58,7 @@ public class InvariantProcess extends Process {
 			if (possibleInvariants.isEmpty()) {
 				return;
 			}
-			
+
 			int k = basePhase();
 			if (possibleInvariants.isEmpty()) {
 				return;

@@ -33,14 +33,19 @@ public class YicesSolver extends Solver {
 		}
 		toYices = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		fromYices = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		
+	}
+	
+	@Override
+	public void initialize() {
 		send("(set-evidence! true)");
 	}
-
+	
+	@Override
 	public void send(Sexp sexp) {
 		send(sexp.toString());
 	}
 	
+	@Override
 	public void send(List<Sexp> sexps) {
 		for (Sexp sexp : sexps) {
 			send(sexp);
@@ -60,6 +65,7 @@ public class YicesSolver extends Solver {
 		}
 	}
 
+	@Override
 	public SolverResult query(Sexp sexp) {
 		return query(sexp.toString());
 	}
@@ -119,11 +125,6 @@ public class YicesSolver extends Solver {
 			throw new JKindException("Error parsing Yices output");
 		}
 		return result;
-	}
-
-	@Override
-	public void setDebug(boolean debug) {
-		this.debug = debug;
 	}
 
 	@Override
