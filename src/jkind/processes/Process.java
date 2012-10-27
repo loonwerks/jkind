@@ -1,6 +1,7 @@
 package jkind.processes;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,7 @@ public abstract class Process implements Runnable {
 	protected void setScratch(String filename) {
 		if (Settings.scratch) {
 			try {
-				scratch = new PrintWriter(filename);
+				scratch = new PrintWriter(new FileOutputStream(filename), true);
 			} catch (FileNotFoundException e) {
 				throw new JKindException("Unable to open scratch file: " + filename, e);
 			}
@@ -94,7 +95,6 @@ public abstract class Process implements Runnable {
 		if (scratch != null) {
 			scratch.print("; ");
 			scratch.println(str);
-			scratch.flush();
 		}
 	}
 }

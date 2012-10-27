@@ -38,6 +38,7 @@ public class BaseProcess extends Process {
 			initializeSolver();
 
 			for (int k = 1; k <= kMax; k++) {
+				debug("K = " + k);
 				processMessages();
 				if (properties.isEmpty()) {
 					break;

@@ -43,6 +43,7 @@ public class InductiveProcess extends Process {
 
 			assertTransitionAndInvariants(0);
 			for (int k = 1; k <= kMax; k++) {
+				debug("K = " + k);
 				processMessagesAndWait(k);
 				assertTransitionAndInvariants(k);
 				checkProperties(k);
