@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
+import jkind.misc.JKindException;
 import jkind.sexp.Sexp;
 
 import org.antlr.runtime.ANTLRStringStream;
@@ -22,50 +23,62 @@ public class YicesSolver extends Solver {
 
 	final private static String DONE = "@DONE";
 	
-	public YicesSolver() throws IOException {
+	public YicesSolver() {
 		ProcessBuilder pb = new ProcessBuilder("yices");
 		pb.redirectErrorStream(true);
-		process = pb.start();
+		try {
+			process = pb.start();
+		} catch (IOException e) {
+			throw new JKindException("Unable to start yices", e);
+		}
 		toYices = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		fromYices = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		
 		send("(set-evidence! true)");
 	}
 
-	public void send(Sexp sexp) throws IOException {
+	public void send(Sexp sexp) {
 		send(sexp.toString());
 	}
 	
-	public void send(List<Sexp> sexps) throws IOException {
+	public void send(List<Sexp> sexps) {
 		for (Sexp sexp : sexps) {
 			send(sexp);
 		}
 	}
 	
-	private void send(String str) throws IOException {
+	private void send(String str) {
 		if (debug) {
 			System.out.println("Sending: " + str);
 		}
-		toYices.append(str);
-		toYices.newLine();
-		toYices.flush();
+		try {
+			toYices.append(str);
+			toYices.newLine();
+			toYices.flush();
+		} catch (IOException e) {
+			throw new JKindException("Unable to write to yices", e);
+		}
 	}
 
-	public SolverResult query(Sexp sexp) throws IOException {
+	public SolverResult query(Sexp sexp) {
 		return query(sexp.toString());
 	}
 	
-	private SolverResult query(String str) throws IOException {
+	private SolverResult query(String str) {
 		push();
 		send("(assert (not " + str + "))");
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
 		pop();
 
-		return readResult();
+		SolverResult result = readResult();
+		if (result.getResult() == null) {
+			throw new JKindException("Unknown result from yices");
+		}
+		return result;
 	}
 
-	private SolverResult readResult() throws IOException {
+	private SolverResult readResult() {
 		try {
 			String line;
 			StringBuilder content = new StringBuilder();
@@ -75,9 +88,9 @@ public class YicesSolver extends Solver {
 					System.out.println("Read: " + line);
 				}
 				if (line == null) {
-					throw new IllegalArgumentException("Yices terminated unexpectedly");
+					throw new JKindException("Yices terminated unexpectedly");
 				} else if (line.contains("Error:")) {
-					throw new IllegalArgumentException("Yices error: " + line);
+					throw new JKindException("Yices error: " + line);
 				} else if (line.startsWith("Logical context")) {
 					continue;
 				} else if (line.equals(DONE)) {
@@ -90,7 +103,9 @@ public class YicesSolver extends Solver {
 
 			return parseYices(content.toString());
 		} catch (RecognitionException e) {
-			throw new IllegalArgumentException("Unexpected output format from Yices", e);
+			throw new JKindException("Error parsing Yices output", e);
+		} catch (IOException e) {
+			throw new JKindException("Unable to read from yices", e);
 		}
 	}
 	
@@ -101,7 +116,7 @@ public class YicesSolver extends Solver {
 		YicesParser parser = new YicesParser(tokens);
 		SolverResult result = parser.solverResult();
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			throw new IllegalArgumentException("Error parsing Yices output");
+			throw new JKindException("Error parsing Yices output");
 		}
 		return result;
 	}
@@ -112,12 +127,12 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
-	public void push() throws IOException {
+	public void push() {
 		send("(push)");
 	}
 
 	@Override
-	public void pop() throws IOException {
+	public void pop() {
 		send("(pop)");
 	}
 	

@@ -1,11 +1,11 @@
 package jkind.processes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jkind.misc.JKindException;
 import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -31,7 +31,7 @@ public abstract class Process implements Runnable {
 		this.director = director;
 	}
 
-	protected void initializeSolver() throws IOException {
+	protected void initializeSolver() {
 		solver = new YicesSolver();
 		solver.send(translation.getDefinitions());
 		solver.send(translation.getTransition());
@@ -42,7 +42,7 @@ public abstract class Process implements Runnable {
 	
 	public static Sexp conjoin(List<Sexp> fns, Sexp i) {
 		if (fns.isEmpty()) {
-			throw new IllegalArgumentException("Cannot conjoin empty list");
+			throw new JKindException("Cannot conjoin empty list");
 		}
 		
 		List<Sexp> args = new ArrayList<Sexp>();

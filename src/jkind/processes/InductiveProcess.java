@@ -1,10 +1,10 @@
 package jkind.processes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jkind.misc.JKindException;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.InvariantMessage;
@@ -48,10 +48,9 @@ public class InductiveProcess extends Process {
 					break;
 				}
 			}
-		} catch (IOException e) {
-			System.out.println("Inductive process failed");
+		} catch (JKindException e) {
+			System.out.println("Inductive process failed: " + e.getMessage());
 			e.printStackTrace();
-		} catch (InterruptedException e) {
 		} finally {
 			if (solver != null) {
 				solver.stop();
@@ -59,53 +58,55 @@ public class InductiveProcess extends Process {
 		}
 	}
 	
-	protected void initializeSolver() throws IOException {
+	protected void initializeSolver() {
 		super.initializeSolver();
 		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
 	}
 
-	private void processMessagesAndWait(int k) throws InterruptedException, IOException {
-		while (!incomming.isEmpty() || k > kLimit) {
-			Message message = incomming.take();
-			if (message instanceof InvalidMessage) {
-				InvalidMessage invalidMessage = (InvalidMessage) message;
-				properties.removeAll(invalidMessage.invalid);
-			} else if (message instanceof BaseStepMessage) {
-				BaseStepMessage baseStepMessage = (BaseStepMessage) message;
-				kLimit = baseStepMessage.step;
-			} else if (message instanceof InvariantMessage) {
-				InvariantMessage invariantMessage = (InvariantMessage) message;
-				invariants.addAll(invariantMessage.invariants);
-				assertNewInvariants(invariantMessage.invariants, k);
-			} else {
-				throw new IllegalArgumentException("Unknown message type in inductive process: "
-						+ message.getClass().getCanonicalName());
+	private void processMessagesAndWait(int k) {
+		try {
+			while (!incomming.isEmpty() || k > kLimit) {
+				Message message = incomming.take();
+				if (message instanceof InvalidMessage) {
+					InvalidMessage invalidMessage = (InvalidMessage) message;
+					properties.removeAll(invalidMessage.invalid);
+				} else if (message instanceof BaseStepMessage) {
+					BaseStepMessage baseStepMessage = (BaseStepMessage) message;
+					kLimit = baseStepMessage.step;
+				} else if (message instanceof InvariantMessage) {
+					InvariantMessage invariantMessage = (InvariantMessage) message;
+					invariants.addAll(invariantMessage.invariants);
+					assertNewInvariants(invariantMessage.invariants, k);
+				} else {
+					throw new JKindException("Unknown message type in inductive process: "
+							+ message.getClass().getCanonicalName());
+				}
 			}
+		} catch (InterruptedException e) {
+			throw new JKindException("Interrupted while waiting for message", e);
 		}
 	}
 
-	private void assertNewInvariants(List<Sexp> invariants, int k) throws IOException {
+	private void assertNewInvariants(List<Sexp> invariants, int k) {
 		for (int i = 0; i < k; i++) {
 			solver.send(new Cons("assert", conjoin(invariants, getIndex(i))));
 		}
 	}
 
-	private void assertTransitionAndInvariants(int offset) throws IOException {
+	private void assertTransitionAndInvariants(int offset) {
 		solver.send(new Cons("assert", new Cons(Keywords.T, getIndex(offset))));
 		if (!invariants.isEmpty()) {
 			solver.send(new Cons("assert", conjoin(invariants, getIndex(offset))));
 		}
 	}
 
-	private void checkProperties(int k) throws IOException {
+	private void checkProperties(int k) {
 		List<String> possiblyValid = new ArrayList<String>(properties);
 
 		while (!possiblyValid.isEmpty()) {
 			SolverResult result = solver.query(getInductiveQuery(k, possiblyValid));
 			
-			if (result.getResult() == null) {
-				throw new IllegalArgumentException("Unknown result from solver");
-			} else if (result.getResult() == Result.SAT) {
+			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				int n = getN(model);
 				Iterator<String> iterator = possiblyValid.iterator();
@@ -129,7 +130,7 @@ public class InductiveProcess extends Process {
 		return Integer.parseInt(value.toString());
 	}
 
-	private Sexp getInductiveQuery(int k, List<String> possiblyValid) throws IOException {
+	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
 		List<Sexp> hyps = new ArrayList<Sexp>();
 		for (int i = 0; i < k; i++) {
 			hyps.add(conjoinStreams(possiblyValid, getIndex(i)));

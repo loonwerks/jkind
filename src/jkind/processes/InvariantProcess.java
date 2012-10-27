@@ -1,12 +1,12 @@
 package jkind.processes;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.Type;
+import jkind.misc.JKindException;
 import jkind.processes.messages.InvariantMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -44,7 +44,7 @@ public class InvariantProcess extends Process {
 	}
 	
 	@Override
-	protected void initializeSolver() throws IOException {
+	protected void initializeSolver() {
 		super.initializeSolver();
 		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
 	}
@@ -71,8 +71,8 @@ public class InvariantProcess extends Process {
 			}
 
 			sendInvariants(possibleInvariants);
-		} catch (IOException e) {
-			System.out.println("Invariant process failed");
+		} catch (JKindException e) {
+			System.out.println("Invariant process failed: " + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if (solver != null) {
@@ -81,7 +81,7 @@ public class InvariantProcess extends Process {
 		}
 	}
 
-	private void createPossibleInvariants() throws IOException {
+	private void createPossibleInvariants() {
 		possibleInvariants = new ArrayList<Invariant>();
 		Sexp i = new Symbol("i");
 		Sexp ty = new Cons(i, new Symbol("::"), new Symbol("nat"));
@@ -101,7 +101,7 @@ public class InvariantProcess extends Process {
 		return new Invariant("inv" + invariantIndex++, sexp);
 	}
 
-	private void defineInvariants() throws IOException {
+	private void defineInvariants() {
 		for (Invariant inv : possibleInvariants) {
 			Sexp type = new Cons("->", new Symbol("nat"), new Symbol("bool"));
 			Sexp def = new Cons("define", new Symbol(inv.id), new Symbol("::"), type);
@@ -110,7 +110,7 @@ public class InvariantProcess extends Process {
 		}
 	}
 
-	private int basePhase() throws IOException {
+	private int basePhase() {
 		int k = 0;
 
 		solver.push();
@@ -123,20 +123,18 @@ public class InvariantProcess extends Process {
 		return k;
 	}
 
-	private void assertBaseTransition(int k) throws IOException {
+	private void assertBaseTransition(int k) {
 		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(k - 1))));
 	}
 
-	private boolean refineBaseInvariants(int k) throws IOException {
+	private boolean refineBaseInvariants(int k) {
 		SolverResult result;
 		boolean refined = false;
 
 		do {
 			result = solver.query(conjoinIds(getInvariantIds(), Sexp.fromInt(k - 1)));
 
-			if (result.getResult() == null) {
-				throw new IllegalArgumentException("Unknown result from solver");
-			} else if (result.getResult() == Result.SAT) {
+			if (result.getResult() == Result.SAT) {
 				refined = true;
 				Model model = result.getModel();
 				Iterator<Invariant> iterator = possibleInvariants.iterator();
@@ -161,7 +159,7 @@ public class InvariantProcess extends Process {
 		return ids;
 	}
 
-	private void inductivePhase(int k) throws IOException {
+	private void inductivePhase(int k) {
 		solver.push();
 		for (int i = 0; i <= k; i++) {
 			assertInductiveTransition(i);
@@ -170,7 +168,7 @@ public class InvariantProcess extends Process {
 		solver.pop();
 	}
 
-	private void assertInductiveTransition(int k) throws IOException {
+	private void assertInductiveTransition(int k) {
 		solver.send(new Cons("assert", new Cons(Keywords.T, getInductiveIndex(k))));
 	}
 
@@ -178,13 +176,13 @@ public class InvariantProcess extends Process {
 		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
-	private void refineInductiveInvariants(int k) throws IOException {
+	private void refineInductiveInvariants(int k) {
 		SolverResult result;
 		do {
 			result = solver.query(getInductiveQuery(k, getInvariantIds()));
 
 			if (result.getResult() == null) {
-				throw new IllegalArgumentException("Unknown result from solver");
+				throw new JKindException("Unknown result from solver");
 			} else if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				int n = getN(model);
@@ -205,7 +203,7 @@ public class InvariantProcess extends Process {
 		return Integer.parseInt(value.toString());
 	}
 
-	private Sexp getInductiveQuery(int k, List<String> invs) throws IOException {
+	private Sexp getInductiveQuery(int k, List<String> invs) {
 		List<Sexp> hyps = new ArrayList<Sexp>();
 		for (int i = 0; i < k; i++) {
 			hyps.add(conjoinIds(invs, getInductiveIndex(i)));
@@ -215,7 +213,7 @@ public class InvariantProcess extends Process {
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}
 
-	private void removeTrivialInvariants() throws IOException {
+	private void removeTrivialInvariants() {
 		List<Invariant> nontrivial = new ArrayList<Invariant>();
 
 		assertInductiveTransition(0);
@@ -224,7 +222,7 @@ public class InvariantProcess extends Process {
 			result = solver.query(conjoinIds(getInvariantIds(), getInductiveIndex(0)));
 
 			if (result.getResult() == null) {
-				throw new IllegalArgumentException("Unknown result from solver");
+				throw new JKindException("Unknown result from solver");
 			} else if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				int n = getN(model);

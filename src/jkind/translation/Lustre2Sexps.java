@@ -7,6 +7,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import jkind.misc.JKindException;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -37,7 +38,7 @@ public class Lustre2Sexps {
 		case BOOL:
 			return new Symbol("bool");
 		default:
-			throw new IllegalArgumentException("Unknown type: " + type);
+			throw new JKindException("Unknown type: " + type);
 		}
 	}
 

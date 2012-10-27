@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.lustre.Node;
 import jkind.lustre.Type;
+import jkind.misc.JKindException;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
@@ -30,18 +31,22 @@ public class Director {
 	private Thread invariantThread;
 	protected BlockingQueue<Message> incomming;
 	
-	public Director(String filename, Node node) throws FileNotFoundException {
+	public Director(String filename, Node node) {
 		this.node = node;
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
 		this.typeMap = Util.createTypeMap(node);
 		// this.writer = new ConsoleWriter();
-		this.writer = new XmlWriter(filename + ".xml", typeMap);
+		try {
+			this.writer = new XmlWriter(filename + ".xml", typeMap);
+		} catch (FileNotFoundException e) {
+			throw new JKindException("Unable to open XML output file", e);
+		}
 		this.incomming = new LinkedBlockingQueue<Message>();
 	}
 
-	public void run() throws FileNotFoundException {
+	public void run() {
 		printHeader();
 		writer.begin();
 		startThreads();
@@ -120,7 +125,7 @@ public class Director {
 				invalidProperties.addAll(cex.invalid);
 				writer.writeInvalid(cex.invalid, cex.k, cex.model);
 			} else {
-				throw new IllegalArgumentException("Unknown message type in director: "
+				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());
 			}
 		}
