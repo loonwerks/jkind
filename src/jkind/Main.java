@@ -25,6 +25,11 @@ public class Main {
 		}
 		
 		Node node = parseLustre(filename);
+		if (node.properties.isEmpty()) {
+			System.out.println("No properties specified");
+			System.exit(0);
+		}
+		
 		node = Slicer.slice(node);
 		new Director(filename, node).run();
 		System.exit(0); // Kills all threads
