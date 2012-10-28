@@ -91,7 +91,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private void assertNewInvariants(List<Sexp> invariants, int k) {
-		for (int i = 0; i < k; i++) {
+		for (int i = 0; i <= k; i++) {
 			solver.send(new Cons("assert", conjoin(invariants, getIndex(i))));
 		}
 	}
@@ -123,9 +123,24 @@ public class InductiveProcess extends Process {
 			} else if (result.getResult() == Result.UNSAT) {
 				sendValid(k, possiblyValid);
 				properties.removeAll(possiblyValid);
+				addPropertiesAsInvariants(k, possiblyValid);
 				return;
 			}
 		}
+	}
+
+	private void addPropertiesAsInvariants(int k, List<String> possiblyValid) {
+		List<Sexp> propertiesAsInvariants = mapSymbol(mapStream(possiblyValid));
+		invariants.addAll(propertiesAsInvariants);
+		assertNewInvariants(propertiesAsInvariants, k);
+	}
+
+	private List<String> mapStream(List<String> ids) {
+		List<String> streams = new ArrayList<String>();
+		for (String id : ids) {
+			streams.add("$" + id);
+		}
+		return streams;
 	}
 
 	private int getN(Model model) {

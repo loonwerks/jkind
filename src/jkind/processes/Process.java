@@ -61,13 +61,17 @@ public abstract class Process implements Runnable {
 		}
 		return new Cons("and", args);
 	}
-	
+
 	protected static Sexp conjoinIds(List<String> ids, Sexp i) {
+		return conjoin(mapSymbol(ids), i);
+	}
+
+	protected static List<Sexp> mapSymbol(List<String> ids) {
 		List<Sexp> symbols = new ArrayList<Sexp>();
 		for (String id : ids) {
 			symbols.add(new Symbol(id));
 		}
-		return conjoin(symbols, i);
+		return symbols;
 	}
 	
 	protected static Sexp conjoinStreams(List<String> ids, Sexp i) {

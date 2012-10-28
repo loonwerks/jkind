@@ -1,5 +1,3 @@
-Add proved properties back as invariants?
-
 Have failure of one process cause failure of others
 
 
