@@ -19,7 +19,7 @@ import jkind.solvers.YicesSolver;
 import jkind.translation.Lustre2Sexps;
 
 public abstract class Process implements Runnable {
-	final private Lustre2Sexps translation;
+	private Lustre2Sexps translation;
 	protected List<String> properties;
 	protected Director director;
 	
@@ -28,6 +28,7 @@ public abstract class Process implements Runnable {
 	protected int kMax = Settings.n;
 	
 	private PrintWriter scratch;
+	private JKindException exception;
 
 	public Process(List<String> properties, Lustre2Sexps translation, Director director) {
 		if (properties != null) {
@@ -35,6 +36,22 @@ public abstract class Process implements Runnable {
 		}
 		this.translation = translation;
 		this.director = director;
+	}
+	
+	protected abstract void main();
+	
+	@Override
+	final public void run() {
+		try {
+			initializeSolver();
+			main();
+		} catch (JKindException e) {
+			exception = e;
+		} finally {
+			if (solver != null) {
+				solver.stop();
+			}
+		}
 	}
 
 	protected void initializeSolver() {
@@ -45,6 +62,10 @@ public abstract class Process implements Runnable {
 		solver.initialize();
 		solver.send(translation.getDefinitions());
 		solver.send(translation.getTransition());
+	}
+	
+	public JKindException getException() {
+		return exception;
 	}
 	
 	

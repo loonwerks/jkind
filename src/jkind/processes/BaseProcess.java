@@ -33,27 +33,16 @@ public class BaseProcess extends Process {
 	}
 
 	@Override
-	public void run() {
-		try {
-			initializeSolver();
-
-			for (int k = 1; k <= kMax; k++) {
-				debug("K = " + k);
-				processMessages();
-				if (properties.isEmpty()) {
-					break;
-				}
-				assertTransition(k);
-				checkProperties(k);
-				assertProperties(k);
+	public void main() {
+		for (int k = 1; k <= kMax; k++) {
+			debug("K = " + k);
+			processMessages();
+			if (properties.isEmpty()) {
+				break;
 			}
-		} catch (JKindException e) {
-			System.out.println("Base process failed: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (solver != null) {
-				solver.stop();
-			}
+			assertTransition(k);
+			checkProperties(k);
+			assertProperties(k);
 		}
 	}
 

@@ -37,26 +37,15 @@ public class InductiveProcess extends Process {
 	}
 
 	@Override
-	public void run() {
-		try {
-			initializeSolver();
-
-			assertTransitionAndInvariants(0);
-			for (int k = 1; k <= kMax; k++) {
-				debug("K = " + k);
-				processMessagesAndWait(k);
-				assertTransitionAndInvariants(k);
-				checkProperties(k);
-				if (properties.isEmpty()) {
-					break;
-				}
-			}
-		} catch (JKindException e) {
-			System.out.println("Inductive process failed: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (solver != null) {
-				solver.stop();
+	public void main() {
+		assertTransitionAndInvariants(0);
+		for (int k = 1; k <= kMax; k++) {
+			debug("K = " + k);
+			processMessagesAndWait(k);
+			assertTransitionAndInvariants(k);
+			checkProperties(k);
+			if (properties.isEmpty()) {
+				break;
 			}
 		}
 	}

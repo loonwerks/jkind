@@ -51,38 +51,28 @@ public class InvariantProcess extends Process {
 	}
 
 	@Override
-	public void run() {
-		try {
-			initializeSolver();
-			createPossibleInvariants();
-			if (possibleInvariants.isEmpty()) {
-				return;
-			}
-
-			int k = basePhase();
-			if (possibleInvariants.isEmpty()) {
-				return;
-			}
-
-			inductivePhase(k);
-			if (possibleInvariants.isEmpty()) {
-				return;
-			}
-
-			removeTrivialInvariants();
-			if (possibleInvariants.isEmpty()) {
-				return;
-			}
-
-			sendInvariants(possibleInvariants);
-		} catch (JKindException e) {
-			System.out.println("Invariant process failed: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (solver != null) {
-				solver.stop();
-			}
+	public void main() {
+		createPossibleInvariants();
+		if (possibleInvariants.isEmpty()) {
+			return;
 		}
+
+		int k = basePhase();
+		if (possibleInvariants.isEmpty()) {
+			return;
+		}
+
+		inductivePhase(k);
+		if (possibleInvariants.isEmpty()) {
+			return;
+		}
+
+		removeTrivialInvariants();
+		if (possibleInvariants.isEmpty()) {
+			return;
+		}
+
+		sendInvariants(possibleInvariants);
 	}
 
 	private void createPossibleInvariants() {

@@ -1,6 +1,3 @@
-Have failure of one process cause failure of others
-
-
 Differentiate unknown results (max iterations, timeout, failure) 
 
 Static checks: typing, single variable declaration, all outputs assigned, properties unique,
