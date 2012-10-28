@@ -16,6 +16,7 @@ options {
 
 @members {
   protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
+  private Map<String, Expr> consts = new HashMap<String, Expr>();
 }
 
 @lexer::members {
@@ -28,7 +29,7 @@ node returns [Node n]
   List<Equation> equations = new ArrayList<Equation>();
   List<String> properties = new ArrayList<String>();
 }:
-
+  constant*
   'node' ID '(' inputs=varDeclList ')'
   'returns' '(' outputs=varDeclList ')' ';'
   ('var' vars=varDeclList ';'                    { locals.addAll($vars.decls); }
@@ -40,6 +41,10 @@ node returns [Node n]
   'tel' ';'
 
   { $n = new Node($inputs.decls, $outputs.decls, locals, equations, properties); }
+;
+
+constant:
+  'const' ID '=' expr ';'          { consts.put($ID.text, $expr.e); }
 ;
 
 varDeclList returns [List<VarDecl> decls]
@@ -158,8 +163,9 @@ plusExpr returns [Expr e]:
 ;
 
 timesOp returns [BinaryOp op]:
-  '*' { $op = BinaryOp.MULTIPLY; }
-| '/' { $op = BinaryOp.DIVIDE; }
+  '*'   { $op = BinaryOp.MULTIPLY; }
+| '/'   { $op = BinaryOp.DIVIDE; }
+| 'div' { $op = BinaryOp.INT_DIVIDE; }
 ;
 
 timesExpr returns [Expr e]:
@@ -177,7 +183,12 @@ prefixExpr returns [Expr e]:
 ;
 
 atomicExpr returns [Expr e]:
-  ID                          { $e = new IdExpr($ID.text); }
+  ID                          { if (consts.containsKey($ID.text)) {
+                                  $e = consts.get($ID.text);
+                                } else {
+                                  $e = new IdExpr($ID.text);
+                                }
+                              }
 | INT                         { $e = new IntExpr(Integer.parseInt($INT.text)); }
 | real                        { $e = new RealExpr(new BigDecimal($real.text)); }
 | bool                        { $e = new BoolExpr($bool.b); }

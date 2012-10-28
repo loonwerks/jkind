@@ -5,6 +5,7 @@ public enum BinaryOp {
 	MINUS ("-"),
 	MULTIPLY ("*"),
 	DIVIDE ("/"),
+	INT_DIVIDE ("div"),
 	EQUAL ("="),
 	NOTEQUAL ("<>"),
 	GREATER (">"),
