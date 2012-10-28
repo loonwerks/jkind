@@ -33,8 +33,10 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k) {
+	public void writeValid(List<String> props, int k, long elapsed) {
 		out.println("  <Property name=\"" + spaces(props) + "\">");
+		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
+				+ "</Runtime>");
 		out.println("    <K>" + k + "</K>");
 		out.println("    <Answer>valid</Answer>");
 		out.println("  </Property>");
@@ -53,8 +55,10 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(List<String> props, int k, Model model) {
+	public void writeInvalid(List<String> props, int k, Model model, long elapsed) {
 		out.println("  <Property name=\"" + spaces(props) + "\">");
+		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
+				+ "</Runtime>");
 		out.println("    <K>" + k + "</K>");
 		out.println("    <Answer>falsifiable</Answer>");
 		writeCounterexample(k, model);

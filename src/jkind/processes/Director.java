@@ -33,6 +33,7 @@ public class Director {
 	private Thread inductiveThread;
 	private Thread invariantThread;
 	protected BlockingQueue<Message> incomming;
+	private long startTime;
 	
 	public Director(String filename, Node node) {
 		this.filename = filename;
@@ -62,7 +63,8 @@ public class Director {
 		writer.begin();
 		startThreads();
 		
-		long timeout = System.currentTimeMillis() + Settings.timeout * 1000;
+		startTime = System.currentTimeMillis();
+		long timeout = startTime + Settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
 				&& someThreadAlive()) {
 			processMessages();
@@ -126,16 +128,17 @@ public class Director {
 	private void processMessages() {
 		while (!incomming.isEmpty()) {
 			Message message = incomming.poll();
+			long elapsed = System.currentTimeMillis() - startTime;
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
 				remainingProperties.removeAll(vm.valid);
 				validProperties.addAll(vm.valid);
-				writer.writeValid(vm.valid, vm.k);
+				writer.writeValid(vm.valid, vm.k, elapsed);
 			} else if (message instanceof CounterexampleMessage) {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
 				remainingProperties.removeAll(cex.invalid);
 				invalidProperties.addAll(cex.invalid);
-				writer.writeInvalid(cex.invalid, cex.k, cex.model);
+				writer.writeInvalid(cex.invalid, cex.k, cex.model, elapsed);
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());

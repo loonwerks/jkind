@@ -14,23 +14,25 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void end() {
 	}
-	
+
 	private void writeLine() {
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k) {
+	public void writeValid(List<String> props, int k, long elapsed) {
 		writeLine();
-		System.out.println("VALID PROPERTIES: " + props + " || K = " + k);
+		System.out.println("VALID PROPERTIES: " + props + " || K = " + k + " || Time = " + elapsed
+				/ 1000.0);
 		writeLine();
 		System.out.println();
 	}
 
 	@Override
-	public void writeInvalid(List<String> props, int k, Model model) {
+	public void writeInvalid(List<String> props, int k, Model model, long elapsed) {
 		writeLine();
-		System.out.println("INVALID PROPERTIES: " + props + " || K = " + k);
+		System.out.println("INVALID PROPERTIES: " + props + " || K = " + k + " || Time = "
+				+ elapsed / 1000.0);
 
 		System.out.format("%25s %6s ", "", "Step");
 		System.out.println();
@@ -40,7 +42,7 @@ public class ConsoleWriter extends Writer {
 		}
 		System.out.println();
 		System.out.println();
-		
+
 		for (String fn : sort(model.getFunctions())) {
 			System.out.format("%-25s ", fn.substring(1));
 			Map<Integer, Value> fnMap = model.getFunction(fn);
@@ -49,12 +51,12 @@ public class ConsoleWriter extends Writer {
 			}
 			System.out.println();
 		}
-		
+
 		writeLine();
 		System.out.println();
 	}
 
 	@Override
-	public void writeUnknown(List<String> props) {		
+	public void writeUnknown(List<String> props) {
 	}
 }

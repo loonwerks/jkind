@@ -11,8 +11,8 @@ public abstract class Writer {
 	public abstract void begin();
 	public abstract void end();
 	
-	public abstract void writeValid(List<String> props, int k);
-	public abstract void writeInvalid(List<String> props, int k, Model model);
+	public abstract void writeValid(List<String> props, int k, long elapsed);
+	public abstract void writeInvalid(List<String> props, int k, Model model, long elapsed);
 	public abstract void writeUnknown(List<String> props);
 	
 	protected static SortedSet<String> sort(Set<String> set) {
