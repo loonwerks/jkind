@@ -2,14 +2,18 @@ Support constants better
   Don't inline right away since it will ruin error messages
   Check for shadowing
 
-Support for subranges
+Real support for subranges
   Subrange on input is an assert
-  What is subrange on local/output? What if you violate it?
+  Subrange on local/output is a suggested invariant?
 
-Static checks: typing, single variable declaration, all outputs assigned, properties unique,
-  no unguarded pres?, no alegbraic loops?, no non-linearities
-
-
+Static checks
+  Typing
+  Single variable declaration
+  All locals & outputs assigned
+  All properties unique
+  No non-linearities
+  No unguarded pres?
+  No alegbraic loops?
 
 Advanced invariant generation (need some examples)
 

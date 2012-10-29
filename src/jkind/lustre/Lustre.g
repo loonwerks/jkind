@@ -72,9 +72,10 @@ varDeclGroup returns [List<VarDecl> decls]
 ;
 
 type returns [Type t]:
-  'int'     { $t = Type.INT; }
-| 'bool'    { $t = Type.BOOL; }
-| 'real'    { $t = Type.REAL; }
+  'int'                                        { $t = Type.INT; }
+| 'subrange' '[' INT ',' INT ']' 'of' 'int'    { $t = Type.INT; }
+| 'bool'                                       { $t = Type.BOOL; }
+| 'real'                                       { $t = Type.REAL; }
 ;
 
 property returns [String p]:
