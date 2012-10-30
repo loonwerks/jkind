@@ -26,8 +26,7 @@ public class Main {
 		
 		Node node = parseLustre(filename);
 		if (node.properties.isEmpty()) {
-			System.out.println("No properties specified");
-			System.exit(0);
+			System.out.println("Warning: No properties specified");
 		}
 		
 		node = Slicer.slice(node);
