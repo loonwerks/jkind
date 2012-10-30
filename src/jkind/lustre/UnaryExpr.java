@@ -4,7 +4,8 @@ public class UnaryExpr extends Expr {
 	final public UnaryOp op;
 	final public Expr expr;
 
-	public UnaryExpr(UnaryOp op, Expr expr) {
+	public UnaryExpr(Location location, UnaryOp op, Expr expr) {
+		super(location);
 		this.op = op;
 		this.expr = expr;
 	}

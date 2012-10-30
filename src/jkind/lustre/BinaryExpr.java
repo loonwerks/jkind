@@ -5,7 +5,8 @@ public class BinaryExpr extends Expr {
 	final public BinaryOp op;
 	final public Expr right;
 	
-	public BinaryExpr(Expr left, BinaryOp op, Expr right) {
+	public BinaryExpr(Location location, Expr left, BinaryOp op, Expr right) {
+		super(location);
 		this.left = left;
 		this.op = op;
 		this.right = right;

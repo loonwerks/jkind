@@ -4,7 +4,8 @@ package jkind.lustre;
 public class IdExpr extends Expr {
 	final public String id;
 	
-	public IdExpr(String id) {
+	public IdExpr(Location location, String id) {
+		super(location);
 		this.id = id;
 	}
 	

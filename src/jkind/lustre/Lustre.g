@@ -2,12 +2,24 @@ grammar Lustre;
 
 options {
   language = Java;
+  output = AST;
+}
+
+tokens {
+  NODE;
+  CONSTANTS;
+  INPUTS;
+  OUTPUTS;
+  LOCALS;
+  EQUATIONS;
+  PROPERTIES;
+  REAL;
+  NEGATE;
+  IDENT;
 }
 
 @header {
   package jkind.lustre;
-
-  import java.math.BigDecimal;
 }
 
 @lexer::header {
@@ -17,195 +29,143 @@ options {
 @members {
   protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
   private Map<String, Expr> consts = new HashMap<String, Expr>();
+  
+  private CommonTree makeReal(String text) {
+    return new CommonTree(new CommonToken(REAL, text));
+  }
 }
 
 @lexer::members {
   protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
 }
 
-node returns [Node n]
-@init{
-  List<VarDecl> locals = new ArrayList<VarDecl>();
-  List<Equation> equations = new ArrayList<Equation>();
-  List<String> properties = new ArrayList<String>();
-}:
+node:
   constant*
-  'node' ID '(' inputs=varDeclList ')'
-  'returns' '(' outputs=varDeclList ')' ';'
-  ('var' vars=varDeclList ';'                    { locals.addAll($vars.decls); }
-   )?
+  'node' ID '(' inputs=varDeclList? ')'
+  'returns' '(' outputs=varDeclList? ')' ';'
+  ('var' locals=varDeclList ';')?
   'let'
-    ( equation                                   { equations.add($equation.eq); }
-    | property                                   { properties.add($property.p); }
-    )*
-  'tel' ';'
-
-  { $n = new Node($inputs.decls, $outputs.decls, locals, equations, properties); }
+    (equation | property)*
+  'tel' ';' ->
+    ^(NODE ID
+      ^(CONSTANTS constant*)
+      ^(INPUTS $inputs?)
+      ^(OUTPUTS $outputs?)
+      ^(LOCALS $locals?)
+      ^(EQUATIONS equation*)
+      ^(PROPERTIES property*))
 ;
 
 constant:
-  'const' ID '=' expr ';'          { consts.put($ID.text, $expr.e); }
+  'const' ID '=' expr ';' -> ^(ID expr)
 ;
 
-varDeclList returns [List<VarDecl> decls]
-@init{ $decls = new ArrayList<VarDecl>(); }:
-
-  (g1=varDeclGroup                   { decls.addAll($g1.decls); }
-    (';' g2=varDeclGroup             { decls.addAll($g2.decls); }
-     )*
-   )?
+varDeclList:
+  varDeclGroup (';' varDeclGroup)* -> varDeclGroup+
 ;
 
-varDeclGroup returns [List<VarDecl> decls]
-@init{ List<String> names = new ArrayList<String>(); }:
-
-  v1=ID              { names.add($v1.text); }
-    (',' v2=ID       { names.add($v2.text); }
-     )*
-  ':' type
-
-  { $decls = new ArrayList<VarDecl>();
-    for (String name : names) {
-      $decls.add(new VarDecl(name, $type.t));
-    }
-  }
+varDeclGroup:
+  ID (',' ID)* ':' type -> ^(ID type)*
 ;
 
-type returns [Type t]:
-  'int'                                        { $t = Type.INT; }
-| 'subrange' '[' INT ',' INT ']' 'of' 'int'    { $t = Type.INT; }
-| 'bool'                                       { $t = Type.BOOL; }
-| 'real'                                       { $t = Type.REAL; }
+type:
+  'int'^
+| 'subrange' '[' INT ',' INT ']' 'of' 'int' -> 'int'
+| 'bool'^
+| 'real'^
 ;
 
-property returns [String p]:
-  '--%PROPERTY' ID ';'           { $p = $ID.text; }
+property:
+  '--%PROPERTY' ID ';' -> ID
 ;
 
-equation returns [Equation eq]:
-  ID '=' expr ';'                { $eq = new Equation($ID.text, $expr.e); }
+equation:
+  ID '=' expr ';' -> ^(ID expr)
 ;
 
-expr returns [Expr e]:
-  arrowExpr                      { $e = $arrowExpr.e; }
+expr:
+  arrowExpr
 ;
 
-arrowOp returns [BinaryOp op]:
-  '->' { $op = BinaryOp.ARROW; }
+arrowOp:
+  '->'
 ;
 
-arrowExpr returns [Expr e]:
-  e1=impliesExpr                  { $e = $e1.e; }
-    ((arrowOp)=>arrowOp
-     e2=arrowExpr                 { $e = new BinaryExpr($e, $arrowOp.op, $e2.e); }
-    )?
+arrowExpr:
+  impliesExpr ((arrowOp)=>arrowOp^ arrowExpr)?
 ;
 
-impliesOp returns [BinaryOp op]:
-  '=>' { $op = BinaryOp.IMPLIES; }
+impliesOp:
+  '=>'
 ;
 
-impliesExpr returns [Expr e]:
-  e1=orExpr                       { $e = $e1.e; }
-    ((impliesOp)=>impliesOp
-     e2=impliesExpr               { $e = new BinaryExpr($e, $impliesOp.op, $e2.e); }
-    )?
+impliesExpr:
+  orExpr ((impliesOp)=>impliesOp^ impliesExpr)?
 ;
 
-orOp returns [BinaryOp op]:
-  'or' { $op = BinaryOp.OR; }
-| 'xor' { $op = BinaryOp.XOR; }
+orOp:
+  'or' | 'xor'
 ;
 
-orExpr returns [Expr e]:
-  e1=andExpr                    { $e = $e1.e; }
-    ((orOp)=> (orOp)
-     e2=andExpr                 { $e = new BinaryExpr($e, $orOp.op, $e2.e); }
-    )*
+orExpr:
+  andExpr ((orOp)=>orOp^ andExpr)*
 ;
 
-andOp returns [BinaryOp op]:
-  'and' { $op = BinaryOp.AND; }
+andOp:
+  'and'
 ;
 
-andExpr returns [Expr e]:
-  e1=relationalExpr                 { $e = $e1.e; }
-    ((andOp)=> andOp
-      e2=relationalExpr             { $e = new BinaryExpr($e, $andOp.op, $e2.e); }
-    )*
+andExpr:
+  relationalExpr ((andOp)=>andOp^ relationalExpr)*
 ;
 
-relationalOp returns [BinaryOp op]:
-  '<'  { $op = BinaryOp.LESS; }
-| '<=' { $op = BinaryOp.LESSEQUAL; }
-| '>'  { $op = BinaryOp.GREATER; }
-| '>=' { $op = BinaryOp.GREATEREQUAL; }
-| '='  { $op = BinaryOp.EQUAL; }
-| '<>' { $op = BinaryOp.NOTEQUAL; }
+relationalOp:
+  '<' | '<=' | '>' | '>=' | '=' | '<>'
 ;
 
-relationalExpr returns [Expr e]:
-  e1=plusExpr                       { $e = $e1.e; }
-    ((relationalOp)=> relationalOp
-     e2=plusExpr                    { $e = new BinaryExpr($e, $relationalOp.op, $e2.e); }
-    )?
+relationalExpr:
+  plusExpr ((relationalOp)=>relationalOp^ plusExpr)?
 ;
 
-plusOp returns [BinaryOp op]:
-  '+' { $op = BinaryOp.PLUS; }
-| '-' { $op = BinaryOp.MINUS; }
+plusOp:
+  '+' | '-'
 ;
 
-plusExpr returns [Expr e]:
-  e1=timesExpr                       { $e = $e1.e; }
-    ((plusOp)=> plusOp
-     e2=timesExpr                    { $e = new BinaryExpr($e, $plusOp.op, $e2.e); }
-    )*
+plusExpr:
+  timesExpr ((plusOp)=>plusOp^ timesExpr)*
 ;
 
-timesOp returns [BinaryOp op]:
-  '*'   { $op = BinaryOp.MULTIPLY; }
-| '/'   { $op = BinaryOp.DIVIDE; }
-| 'div' { $op = BinaryOp.INT_DIVIDE; }
+timesOp:
+  '*' | '/' | 'div'
 ;
 
-timesExpr returns [Expr e]:
-  e1=prefixExpr                 { $e = $e1.e; }
-    ((timesOp)=> timesOp
-     e2=prefixExpr              { $e = new BinaryExpr($e, $timesOp.op, $e2.e); }
-    )*
+timesExpr:
+  prefixExpr ((timesOp)=>timesOp^ prefixExpr)*
 ;
 
-prefixExpr returns [Expr e]:
-  '-' e1=prefixExpr            { $e = new UnaryExpr(UnaryOp.NEGATIVE, $e1.e); }
-| 'not' e2=prefixExpr          { $e = new UnaryExpr(UnaryOp.NOT, $e2.e); }
-| 'pre' e3=prefixExpr          { $e = new UnaryExpr(UnaryOp.PRE, $e3.e); }
-| atomicExpr                   { $e = $atomicExpr.e; }
+prefixExpr:
+  '-' prefixExpr -> ^(NEGATE prefixExpr)
+| NOT^ prefixExpr
+| PRE^ prefixExpr
+| atomicExpr
 ;
 
-atomicExpr returns [Expr e]:
-  ID                          { if (consts.containsKey($ID.text)) {
-                                  $e = consts.get($ID.text);
-                                } else {
-                                  $e = new IdExpr($ID.text);
-                                }
-                              }
-| INT                         { $e = new IntExpr(Integer.parseInt($INT.text)); }
-| real                        { $e = new RealExpr(new BigDecimal($real.text)); }
-| bool                        { $e = new BoolExpr($bool.b); }
-| 'if' e1=expr
-  'then' e2=expr
-  'else' e3=expr              { $e = new IfThenElseExpr($e1.e, $e2.e, $e3.e); }
-| '(' p=expr ')'              { $e = $p.e; }
+atomicExpr:
+  ID -> ^(IDENT ID)
+| INT
+| real
+| BOOL
+| IF^ expr 'then'! expr 'else'! expr
+| '(' expr ')' -> expr
 ;
 
-real: INT '.' INT;
+real: a=INT '.' b=INT -> {makeReal($a.text + "." + $b.text)};
 
-bool returns [Boolean b]:
-  'true'    { $b = true; }
-| 'false'   { $b = false; }
-;
+IF: 'if';
+NOT: 'not';
+PRE: 'pre';
 
+BOOL: 'true' | 'false';
 INT: ('0'..'9')+;
 ID:
   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*

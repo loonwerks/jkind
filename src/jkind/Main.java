@@ -3,8 +3,10 @@ package jkind;
 import java.io.File;
 import java.io.IOException;
 
+import jkind.lustre.Lustre2AST;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
+import jkind.lustre.LustreParser.node_return;
 import jkind.lustre.Node;
 import jkind.processes.Director;
 import jkind.slicing.Slicer;
@@ -13,6 +15,7 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.CommonTree;
 
 public class Main {
 	final public static String VERSION = "0.1";
@@ -29,6 +32,9 @@ public class Main {
 			System.out.println("Warning: No properties specified");
 		}
 		
+		/* TODO: Static checks */
+		/* TODO: inline constants? */
+		
 		node = Slicer.slice(node);
 		new Director(filename, node).run();
 		System.exit(0); // Kills all threads
@@ -39,11 +45,11 @@ public class Main {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
-		Node node = parser.node();
+		CommonTree tree = (CommonTree) parser.node().getTree();
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.out.println("Parse error in " + filename);
 			System.exit(-1);
 		}
-		return node;
+		return Lustre2AST.node(tree);
 	}
 }

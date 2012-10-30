@@ -1,6 +1,8 @@
 Support constants better
   Don't inline right away since it will ruin error messages
   Check for shadowing
+  Check types of constants if present
+  Slice away constants?
 
 Real support for subranges
   Subrange on input is an assert
@@ -14,6 +16,8 @@ Static checks
   No non-linearities
   No unguarded pres?
   No alegbraic loops?
+  
+Handle multi node if they are simple
 
 Advanced invariant generation (need some examples)
 

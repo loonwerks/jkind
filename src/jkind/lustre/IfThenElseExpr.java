@@ -6,7 +6,8 @@ public class IfThenElseExpr extends Expr {
 	final public Expr thenExpr;
 	final public Expr elseExpr;
 	
-	public IfThenElseExpr(Expr cond, Expr thenExpr, Expr elseExpr) {
+	public IfThenElseExpr(Location location, Expr cond, Expr thenExpr, Expr elseExpr) {
+		super(location);
 		this.cond = cond;
 		this.thenExpr = thenExpr;
 		this.elseExpr = elseExpr;

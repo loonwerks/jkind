@@ -23,13 +23,14 @@ public class Slicer {
 		}
 		return keep;
 	}
-	
+
 	private static Node sliceByKeep(Node node, Set<String> keep) {
 		List<VarDecl> inputs = sliceVarDecls(node.inputs, keep);
 		List<VarDecl> outputs = sliceVarDecls(node.outputs, keep);
 		List<VarDecl> locals = sliceVarDecls(node.locals, keep);
 		List<Equation> equations = sliceEquations(node.equations, keep);
-		return new Node(inputs, outputs, locals, equations, node.properties);
+		return new Node(node.location, node.constants, inputs, outputs, locals, equations,
+				node.properties);
 	}
 
 	private static List<VarDecl> sliceVarDecls(List<VarDecl> decls, Set<String> keep) {
