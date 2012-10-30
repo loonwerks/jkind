@@ -1,13 +1,3 @@
-Support constants better
-  Don't inline right away since it will ruin error messages
-  Check for shadowing
-  Check types of constants if present
-  Slice away constants?
-
-Real support for subranges
-  Subrange on input is an assert
-  Subrange on local/output is a suggested invariant?
-
 Static checks
   Typing
   Single variable declaration
@@ -17,6 +7,13 @@ Static checks
   No unguarded pres?
   No alegbraic loops?
   
+Get ANTLR to print to stdout instead of stderr
+
+Real support for subranges
+  Allow negative numbers in subranges
+  Subrange on input is an assert
+  Subrange on local/output is a suggested invariant?
+
 Handle multi node if they are simple
 
 Advanced invariant generation (need some examples)

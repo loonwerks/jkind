@@ -3,6 +3,7 @@ package jkind;
 import java.io.File;
 import java.io.IOException;
 
+import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Lustre2AST;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
@@ -32,7 +33,10 @@ public class Main {
 			System.out.println("Warning: No properties specified");
 		}
 		
-		/* TODO: Static checks */
+		if (!StaticAnalyzer.node(node)) {
+			System.exit(-1);
+		}
+
 		node = InlineConstants.node(node);
 		
 		node = Slicer.slice(node);
