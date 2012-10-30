@@ -6,10 +6,10 @@ import java.io.IOException;
 import jkind.lustre.Lustre2AST;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
-import jkind.lustre.LustreParser.node_return;
 import jkind.lustre.Node;
 import jkind.processes.Director;
 import jkind.slicing.Slicer;
+import jkind.translation.InlineConstants;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
@@ -33,7 +33,7 @@ public class Main {
 		}
 		
 		/* TODO: Static checks */
-		/* TODO: inline constants? */
+		node = InlineConstants.node(node);
 		
 		node = Slicer.slice(node);
 		new Director(filename, node).run();
