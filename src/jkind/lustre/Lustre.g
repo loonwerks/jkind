@@ -75,9 +75,13 @@ varDeclGroup:
 
 type:
   'int'^
-| 'subrange' '[' INT ',' INT ']' 'of' 'int' -> 'int'
+| 'subrange' '[' bound ',' bound ']' 'of' 'int' -> 'int'
 | 'bool'^
 | 'real'^
+;
+
+bound:
+  '-'? INT
 ;
 
 property:

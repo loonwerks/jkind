@@ -1,7 +1,6 @@
 Handle multi node if they are simple (e.g. abs(...))
 
 Real support for subranges
-  Allow negative numbers in subranges
   Subrange on input is an assert
   Subrange on local/output is a suggested invariant?
 
