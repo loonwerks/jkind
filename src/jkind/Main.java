@@ -36,10 +36,6 @@ public class Main {
 			System.exit(-1);
 		}
 		
-		if (program.main.properties.isEmpty()) {
-			System.out.println("Warning: No properties specified in main node");
-		}
-		
 		if (!StaticAnalyzer.check(program)) {
 			System.exit(-1);
 		}
