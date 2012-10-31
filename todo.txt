@@ -1,5 +1,4 @@
 Static checks
-  All properties unique
   No non-linearities
   No unguarded pres?
   No alegbraic loops?

@@ -10,7 +10,8 @@ import jkind.translation.Util;
 
 public class StaticAnalyzer {
 	public static boolean check(Node node) {
-		return TypeChecker.check(node) && variablesUnique(node) && assignmentsSound(node);
+		return TypeChecker.check(node) && variablesUnique(node) && assignmentsSound(node)
+				&& propertiesUnique(node);
 	}
 
 	private static boolean variablesUnique(Node node) {
@@ -40,19 +41,36 @@ public class StaticAnalyzer {
 				toAssign.remove(eq.id);
 				assigned.add(eq.id);
 			} else if (assigned.contains(eq.id)) {
-				System.out.println("Error at line " + eq.location + " variable cannot be reassigned");
+				System.out.println("Error at line " + eq.location
+						+ " variable cannot be reassigned");
 				sound = false;
 			} else {
 				System.out.println("Error at line " + eq.location + " variable cannot be assigned");
 				sound = false;
 			}
 		}
-		
+
 		if (!toAssign.isEmpty()) {
 			System.out.println("Error: variables must be assigned: " + toAssign);
 			sound = false;
 		}
 
 		return sound;
+	}
+	
+	private static boolean propertiesUnique(Node node) {
+		boolean unique = true;
+		Set<String> seen = new HashSet<String>();
+		
+		for (String prop : node.properties) {
+			if (seen.contains(prop)) {
+				System.out.println("Error: property " + prop + " declared multiple times");
+				unique = false;
+			} else {
+				seen.add(prop);
+			}
+		}
+		
+		return unique;
 	}
 }
