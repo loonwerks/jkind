@@ -47,7 +47,7 @@ tokens {
 }
 
 program:
-  (constant | node)* -> ^(PROGRAM ^(CONSTANTS constant*) ^(NODES node*))
+  (constant | node)* EOF -> ^(PROGRAM ^(CONSTANTS constant*) ^(NODES node*))
 ;
 
 node:
