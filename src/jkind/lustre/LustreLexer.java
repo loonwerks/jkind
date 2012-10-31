@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Lustre.g 2012-10-30 15:32:27
+// $ANTLR 3.4 Lustre.g 2012-10-30 19:38:25
 
   package jkind.lustre;
 
@@ -916,8 +916,8 @@ public class LustreLexer extends Lexer {
         try {
             int _type = IF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:164:3: ( 'if' )
-            // Lustre.g:164:5: 'if'
+            // Lustre.g:169:3: ( 'if' )
+            // Lustre.g:169:5: 'if'
             {
             match("if"); 
 
@@ -939,8 +939,8 @@ public class LustreLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:165:4: ( 'not' )
-            // Lustre.g:165:6: 'not'
+            // Lustre.g:170:4: ( 'not' )
+            // Lustre.g:170:6: 'not'
             {
             match("not"); 
 
@@ -962,8 +962,8 @@ public class LustreLexer extends Lexer {
         try {
             int _type = PRE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:166:4: ( 'pre' )
-            // Lustre.g:166:6: 'pre'
+            // Lustre.g:171:4: ( 'pre' )
+            // Lustre.g:171:6: 'pre'
             {
             match("pre"); 
 
@@ -985,7 +985,7 @@ public class LustreLexer extends Lexer {
         try {
             int _type = BOOL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:168:5: ( 'true' | 'false' )
+            // Lustre.g:173:5: ( 'true' | 'false' )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -1004,7 +1004,7 @@ public class LustreLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // Lustre.g:168:7: 'true'
+                    // Lustre.g:173:7: 'true'
                     {
                     match("true"); 
 
@@ -1013,7 +1013,7 @@ public class LustreLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:168:16: 'false'
+                    // Lustre.g:173:16: 'false'
                     {
                     match("false"); 
 
@@ -1037,10 +1037,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:169:4: ( ( '0' .. '9' )+ )
-            // Lustre.g:169:6: ( '0' .. '9' )+
+            // Lustre.g:174:4: ( ( '0' .. '9' )+ )
+            // Lustre.g:174:6: ( '0' .. '9' )+
             {
-            // Lustre.g:169:6: ( '0' .. '9' )+
+            // Lustre.g:174:6: ( '0' .. '9' )+
             int cnt2=0;
             loop2:
             do {
@@ -1095,8 +1095,8 @@ public class LustreLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:170:3: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // Lustre.g:171:3: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // Lustre.g:175:3: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // Lustre.g:176:3: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                 input.consume();
@@ -1108,7 +1108,7 @@ public class LustreLexer extends Lexer {
             }
 
 
-            // Lustre.g:171:27: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // Lustre.g:176:27: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop3:
             do {
                 int alt3=2;
@@ -1158,10 +1158,10 @@ public class LustreLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:174:3: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
-            // Lustre.g:174:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+            // Lustre.g:179:3: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
+            // Lustre.g:179:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
             {
-            // Lustre.g:174:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+            // Lustre.g:179:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
             int cnt4=0;
             loop4:
             do {
@@ -1218,14 +1218,14 @@ public class LustreLexer extends Lexer {
         try {
             int _type = SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:176:11: ( '--' (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |) ( ( '\\r' )? '\\n' )? )
-            // Lustre.g:176:13: '--' (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |) ( ( '\\r' )? '\\n' )?
+            // Lustre.g:181:11: ( '--' (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |) ( ( '\\r' )? '\\n' )? )
+            // Lustre.g:181:13: '--' (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |) ( ( '\\r' )? '\\n' )?
             {
             match("--"); 
 
 
 
-            // Lustre.g:176:18: (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |)
+            // Lustre.g:181:18: (~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )* |)
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -1237,7 +1237,7 @@ public class LustreLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // Lustre.g:176:19: ~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )*
+                    // Lustre.g:181:19: ~ ( '%' | '\\n' | '\\r' ) (~ ( '\\n' | '\\r' ) )*
                     {
                     if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '$')||(input.LA(1) >= '&' && input.LA(1) <= '\uFFFF') ) {
                         input.consume();
@@ -1249,7 +1249,7 @@ public class LustreLexer extends Lexer {
                     }
 
 
-                    // Lustre.g:176:36: (~ ( '\\n' | '\\r' ) )*
+                    // Lustre.g:181:36: (~ ( '\\n' | '\\r' ) )*
                     loop5:
                     do {
                         int alt5=2;
@@ -1286,7 +1286,7 @@ public class LustreLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:176:63: 
+                    // Lustre.g:181:63: 
                     {
                     }
                     break;
@@ -1294,7 +1294,7 @@ public class LustreLexer extends Lexer {
             }
 
 
-            // Lustre.g:176:65: ( ( '\\r' )? '\\n' )?
+            // Lustre.g:181:65: ( ( '\\r' )? '\\n' )?
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -1303,9 +1303,9 @@ public class LustreLexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // Lustre.g:176:66: ( '\\r' )? '\\n'
+                    // Lustre.g:181:66: ( '\\r' )? '\\n'
                     {
-                    // Lustre.g:176:66: ( '\\r' )?
+                    // Lustre.g:181:66: ( '\\r' )?
                     int alt7=2;
                     int LA7_0 = input.LA(1);
 
@@ -1314,7 +1314,7 @@ public class LustreLexer extends Lexer {
                     }
                     switch (alt7) {
                         case 1 :
-                            // Lustre.g:176:66: '\\r'
+                            // Lustre.g:181:66: '\\r'
                             {
                             match('\r'); 
 
@@ -1350,14 +1350,14 @@ public class LustreLexer extends Lexer {
         try {
             int _type = ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:177:11: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // Lustre.g:177:13: '/*' ( options {greedy=false; } : . )* '*/'
+            // Lustre.g:182:11: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // Lustre.g:182:13: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
 
 
-            // Lustre.g:177:18: ( options {greedy=false; } : . )*
+            // Lustre.g:182:18: ( options {greedy=false; } : . )*
             loop9:
             do {
                 int alt9=2;
@@ -1382,7 +1382,7 @@ public class LustreLexer extends Lexer {
 
                 switch (alt9) {
             	case 1 :
-            	    // Lustre.g:177:45: .
+            	    // Lustre.g:182:45: .
             	    {
             	    matchAny(); 
 
@@ -1417,14 +1417,14 @@ public class LustreLexer extends Lexer {
         try {
             int _type = MAIN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:178:5: ( '--%MAIN' ( ';' )? )
-            // Lustre.g:178:7: '--%MAIN' ( ';' )?
+            // Lustre.g:183:5: ( '--%MAIN' ( ';' )? )
+            // Lustre.g:183:7: '--%MAIN' ( ';' )?
             {
             match("--%MAIN"); 
 
 
 
-            // Lustre.g:178:17: ( ';' )?
+            // Lustre.g:183:17: ( ';' )?
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1433,7 +1433,7 @@ public class LustreLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // Lustre.g:178:17: ';'
+                    // Lustre.g:183:17: ';'
                     {
                     match(';'); 
 
@@ -1461,8 +1461,8 @@ public class LustreLexer extends Lexer {
         try {
             int _type = ERROR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Lustre.g:180:6: ( '.' )
-            // Lustre.g:180:8: '.'
+            // Lustre.g:185:6: ( '.' )
+            // Lustre.g:185:8: '.'
             {
             match('.'); 
 

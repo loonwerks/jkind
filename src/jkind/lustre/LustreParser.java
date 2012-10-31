@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Lustre.g 2012-10-30 15:32:27
+// $ANTLR 3.4 Lustre.g 2012-10-30 19:38:25
 
   package jkind.lustre;
 
@@ -112,6 +112,11 @@ public TreeAdaptor getTreeAdaptor() {
       private CommonTree makeReal(String text) {
         return new CommonTree(new CommonToken(REAL, text));
       }
+      
+      @Override
+      public void emitErrorMessage(String msg) {
+        System.out.println(msg);
+      }
 
 
     public static class node_return extends ParserRuleReturnScope {
@@ -121,7 +126,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "node"
-    // Lustre.g:42:1: node : ( constant )* 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) ;
+    // Lustre.g:47:1: node : ( constant )* 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) ;
     public final LustreParser.node_return node() throws RecognitionException {
         LustreParser.node_return retval = new LustreParser.node_return();
         retval.start = input.LT(1);
@@ -182,10 +187,10 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleSubtreeStream stream_varDeclList=new RewriteRuleSubtreeStream(adaptor,"rule varDeclList");
         RewriteRuleSubtreeStream stream_property=new RewriteRuleSubtreeStream(adaptor,"rule property");
         try {
-            // Lustre.g:42:5: ( ( constant )* 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) )
-            // Lustre.g:43:3: ( constant )* 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
+            // Lustre.g:47:5: ( ( constant )* 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) )
+            // Lustre.g:48:3: ( constant )* 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
             {
-            // Lustre.g:43:3: ( constant )*
+            // Lustre.g:48:3: ( constant )*
             loop1:
             do {
                 int alt1=2;
@@ -198,7 +203,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt1) {
             	case 1 :
-            	    // Lustre.g:43:3: constant
+            	    // Lustre.g:48:3: constant
             	    {
             	    pushFollow(FOLLOW_constant_in_node119);
             	    constant1=constant();
@@ -228,7 +233,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_25.add(char_literal4);
 
 
-            // Lustre.g:44:23: (inputs= varDeclList )?
+            // Lustre.g:49:23: (inputs= varDeclList )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -237,7 +242,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt2) {
                 case 1 :
-                    // Lustre.g:44:23: inputs= varDeclList
+                    // Lustre.g:49:23: inputs= varDeclList
                     {
                     pushFollow(FOLLOW_varDeclList_in_node132);
                     inputs=varDeclList();
@@ -264,7 +269,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_25.add(char_literal7);
 
 
-            // Lustre.g:45:24: (outputs= varDeclList )?
+            // Lustre.g:50:24: (outputs= varDeclList )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -273,7 +278,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt3) {
                 case 1 :
-                    // Lustre.g:45:24: outputs= varDeclList
+                    // Lustre.g:50:24: outputs= varDeclList
                     {
                     pushFollow(FOLLOW_varDeclList_in_node145);
                     outputs=varDeclList();
@@ -296,7 +301,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_35.add(char_literal9);
 
 
-            // Lustre.g:46:3: ( 'var' locals= varDeclList ';' )?
+            // Lustre.g:51:3: ( 'var' locals= varDeclList ';' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -305,7 +310,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt4) {
                 case 1 :
-                    // Lustre.g:46:4: 'var' locals= varDeclList ';'
+                    // Lustre.g:51:4: 'var' locals= varDeclList ';'
                     {
                     string_literal10=(Token)match(input,60,FOLLOW_60_in_node155); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_60.add(string_literal10);
@@ -332,7 +337,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_51.add(string_literal12);
 
 
-            // Lustre.g:48:5: ( equation | property )*
+            // Lustre.g:53:5: ( equation | property )*
             loop5:
             do {
                 int alt5=3;
@@ -348,7 +353,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt5) {
             	case 1 :
-            	    // Lustre.g:48:6: equation
+            	    // Lustre.g:53:6: equation
             	    {
             	    pushFollow(FOLLOW_equation_in_node174);
             	    equation13=equation();
@@ -360,7 +365,7 @@ public TreeAdaptor getTreeAdaptor() {
             	    }
             	    break;
             	case 2 :
-            	    // Lustre.g:48:17: property
+            	    // Lustre.g:53:17: property
             	    {
             	    pushFollow(FOLLOW_property_in_node178);
             	    property14=property();
@@ -402,9 +407,9 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_outputs=new RewriteRuleSubtreeStream(adaptor,"rule outputs",outputs!=null?outputs.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 49:13: -> ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
+            // 54:13: -> ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
             {
-                // Lustre.g:50:5: ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
+                // Lustre.g:55:5: ^( NODE ID ^( CONSTANTS ( constant )* ) ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
@@ -415,14 +420,14 @@ public TreeAdaptor getTreeAdaptor() {
                 stream_ID.nextNode()
                 );
 
-                // Lustre.g:51:7: ^( CONSTANTS ( constant )* )
+                // Lustre.g:56:7: ^( CONSTANTS ( constant )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(CONSTANTS, "CONSTANTS")
                 , root_2);
 
-                // Lustre.g:51:19: ( constant )*
+                // Lustre.g:56:19: ( constant )*
                 while ( stream_constant.hasNext() ) {
                     adaptor.addChild(root_2, stream_constant.nextTree());
 
@@ -432,14 +437,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:52:7: ^( INPUTS ( $inputs)? )
+                // Lustre.g:57:7: ^( INPUTS ( $inputs)? )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(INPUTS, "INPUTS")
                 , root_2);
 
-                // Lustre.g:52:17: ( $inputs)?
+                // Lustre.g:57:17: ( $inputs)?
                 if ( stream_inputs.hasNext() ) {
                     adaptor.addChild(root_2, stream_inputs.nextTree());
 
@@ -449,14 +454,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:53:7: ^( OUTPUTS ( $outputs)? )
+                // Lustre.g:58:7: ^( OUTPUTS ( $outputs)? )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(OUTPUTS, "OUTPUTS")
                 , root_2);
 
-                // Lustre.g:53:18: ( $outputs)?
+                // Lustre.g:58:18: ( $outputs)?
                 if ( stream_outputs.hasNext() ) {
                     adaptor.addChild(root_2, stream_outputs.nextTree());
 
@@ -466,14 +471,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:54:7: ^( LOCALS ( $locals)? )
+                // Lustre.g:59:7: ^( LOCALS ( $locals)? )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(LOCALS, "LOCALS")
                 , root_2);
 
-                // Lustre.g:54:17: ( $locals)?
+                // Lustre.g:59:17: ( $locals)?
                 if ( stream_locals.hasNext() ) {
                     adaptor.addChild(root_2, stream_locals.nextTree());
 
@@ -483,14 +488,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:55:7: ^( EQUATIONS ( equation )* )
+                // Lustre.g:60:7: ^( EQUATIONS ( equation )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(EQUATIONS, "EQUATIONS")
                 , root_2);
 
-                // Lustre.g:55:19: ( equation )*
+                // Lustre.g:60:19: ( equation )*
                 while ( stream_equation.hasNext() ) {
                     adaptor.addChild(root_2, stream_equation.nextTree());
 
@@ -500,14 +505,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:56:7: ^( PROPERTIES ( property )* )
+                // Lustre.g:61:7: ^( PROPERTIES ( property )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(PROPERTIES, "PROPERTIES")
                 , root_2);
 
-                // Lustre.g:56:20: ( property )*
+                // Lustre.g:61:20: ( property )*
                 while ( stream_property.hasNext() ) {
                     adaptor.addChild(root_2, stream_property.nextTree());
 
@@ -559,7 +564,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "constant"
-    // Lustre.g:59:1: constant : 'const' ID '=' expr ';' -> ^( ID expr ) ;
+    // Lustre.g:64:1: constant : 'const' ID '=' expr ';' -> ^( ID expr ) ;
     public final LustreParser.constant_return constant() throws RecognitionException {
         LustreParser.constant_return retval = new LustreParser.constant_return();
         retval.start = input.LT(1);
@@ -584,8 +589,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_39=new RewriteRuleTokenStream(adaptor,"token 39");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // Lustre.g:59:9: ( 'const' ID '=' expr ';' -> ^( ID expr ) )
-            // Lustre.g:60:3: 'const' ID '=' expr ';'
+            // Lustre.g:64:9: ( 'const' ID '=' expr ';' -> ^( ID expr ) )
+            // Lustre.g:65:3: 'const' ID '=' expr ';'
             {
             string_literal17=(Token)match(input,47,FOLLOW_47_in_constant289); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_47.add(string_literal17);
@@ -623,9 +628,9 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 60:27: -> ^( ID expr )
+            // 65:27: -> ^( ID expr )
             {
-                // Lustre.g:60:30: ^( ID expr )
+                // Lustre.g:65:30: ^( ID expr )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
@@ -676,7 +681,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "varDeclList"
-    // Lustre.g:63:1: varDeclList : varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ ;
+    // Lustre.g:68:1: varDeclList : varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ ;
     public final LustreParser.varDeclList_return varDeclList() throws RecognitionException {
         LustreParser.varDeclList_return retval = new LustreParser.varDeclList_return();
         retval.start = input.LT(1);
@@ -694,8 +699,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_35=new RewriteRuleTokenStream(adaptor,"token 35");
         RewriteRuleSubtreeStream stream_varDeclGroup=new RewriteRuleSubtreeStream(adaptor,"rule varDeclGroup");
         try {
-            // Lustre.g:63:12: ( varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ )
-            // Lustre.g:64:3: varDeclGroup ( ';' varDeclGroup )*
+            // Lustre.g:68:12: ( varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ )
+            // Lustre.g:69:3: varDeclGroup ( ';' varDeclGroup )*
             {
             pushFollow(FOLLOW_varDeclGroup_in_varDeclList315);
             varDeclGroup22=varDeclGroup();
@@ -704,7 +709,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_varDeclGroup.add(varDeclGroup22.getTree());
 
-            // Lustre.g:64:16: ( ';' varDeclGroup )*
+            // Lustre.g:69:16: ( ';' varDeclGroup )*
             loop6:
             do {
                 int alt6=2;
@@ -723,7 +728,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt6) {
             	case 1 :
-            	    // Lustre.g:64:17: ';' varDeclGroup
+            	    // Lustre.g:69:17: ';' varDeclGroup
             	    {
             	    char_literal23=(Token)match(input,35,FOLLOW_35_in_varDeclList318); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_35.add(char_literal23);
@@ -758,7 +763,7 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 64:36: -> ( varDeclGroup )+
+            // 69:36: -> ( varDeclGroup )+
             {
                 if ( !(stream_varDeclGroup.hasNext()) ) {
                     throw new RewriteEarlyExitException();
@@ -808,7 +813,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "varDeclGroup"
-    // Lustre.g:67:1: varDeclGroup : ID ( ',' ID )* ':' type -> ( ^( ID type ) )* ;
+    // Lustre.g:72:1: varDeclGroup : ID ( ',' ID )* ':' type -> ( ^( ID type ) )* ;
     public final LustreParser.varDeclGroup_return varDeclGroup() throws RecognitionException {
         LustreParser.varDeclGroup_return retval = new LustreParser.varDeclGroup_return();
         retval.start = input.LT(1);
@@ -832,14 +837,14 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_29=new RewriteRuleTokenStream(adaptor,"token 29");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
-            // Lustre.g:67:13: ( ID ( ',' ID )* ':' type -> ( ^( ID type ) )* )
-            // Lustre.g:68:3: ID ( ',' ID )* ':' type
+            // Lustre.g:72:13: ( ID ( ',' ID )* ':' type -> ( ^( ID type ) )* )
+            // Lustre.g:73:3: ID ( ',' ID )* ':' type
             {
             ID25=(Token)match(input,ID,FOLLOW_ID_in_varDeclGroup337); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_ID.add(ID25);
 
 
-            // Lustre.g:68:6: ( ',' ID )*
+            // Lustre.g:73:6: ( ',' ID )*
             loop7:
             do {
                 int alt7=2;
@@ -852,7 +857,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt7) {
             	case 1 :
-            	    // Lustre.g:68:7: ',' ID
+            	    // Lustre.g:73:7: ',' ID
             	    {
             	    char_literal26=(Token)match(input,29,FOLLOW_29_in_varDeclGroup340); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_29.add(char_literal26);
@@ -895,11 +900,11 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 68:25: -> ( ^( ID type ) )*
+            // 73:25: -> ( ^( ID type ) )*
             {
-                // Lustre.g:68:28: ( ^( ID type ) )*
+                // Lustre.g:73:28: ( ^( ID type ) )*
                 while ( stream_type.hasNext()||stream_ID.hasNext() ) {
-                    // Lustre.g:68:28: ^( ID type )
+                    // Lustre.g:73:28: ^( ID type )
                     {
                     Object root_1 = (Object)adaptor.nil();
                     root_1 = (Object)adaptor.becomeRoot(
@@ -954,7 +959,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "type"
-    // Lustre.g:71:1: type : ( 'int' ^| 'subrange' '[' INT ',' INT ']' 'of' 'int' -> 'int' | 'bool' ^| 'real' ^);
+    // Lustre.g:76:1: type : ( 'int' ^| 'subrange' '[' INT ',' INT ']' 'of' 'int' -> 'int' | 'bool' ^| 'real' ^);
     public final LustreParser.type_return type() throws RecognitionException {
         LustreParser.type_return retval = new LustreParser.type_return();
         retval.start = input.LT(1);
@@ -994,7 +999,7 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_50=new RewriteRuleTokenStream(adaptor,"token 50");
 
         try {
-            // Lustre.g:71:5: ( 'int' ^| 'subrange' '[' INT ',' INT ']' 'of' 'int' -> 'int' | 'bool' ^| 'real' ^)
+            // Lustre.g:76:5: ( 'int' ^| 'subrange' '[' INT ',' INT ']' 'of' 'int' -> 'int' | 'bool' ^| 'real' ^)
             int alt8=4;
             switch ( input.LA(1) ) {
             case 50:
@@ -1028,7 +1033,7 @@ public TreeAdaptor getTreeAdaptor() {
 
             switch (alt8) {
                 case 1 :
-                    // Lustre.g:72:3: 'int' ^
+                    // Lustre.g:77:3: 'int' ^
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -1044,7 +1049,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:73:3: 'subrange' '[' INT ',' INT ']' 'of' 'int'
+                    // Lustre.g:78:3: 'subrange' '[' INT ',' INT ']' 'of' 'int'
                     {
                     string_literal31=(Token)match(input,57,FOLLOW_57_in_type372); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_57.add(string_literal31);
@@ -1091,7 +1096,7 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 73:45: -> 'int'
+                    // 78:45: -> 'int'
                     {
                         adaptor.addChild(root_0, 
                         stream_50.nextNode()
@@ -1106,7 +1111,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:74:3: 'bool' ^
+                    // Lustre.g:79:3: 'bool' ^
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -1122,7 +1127,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 4 :
-                    // Lustre.g:75:3: 'real' ^
+                    // Lustre.g:80:3: 'real' ^
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -1170,7 +1175,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "property"
-    // Lustre.g:78:1: property : '--%PROPERTY' ID ';' -> ID ;
+    // Lustre.g:83:1: property : '--%PROPERTY' ID ';' -> ID ;
     public final LustreParser.property_return property() throws RecognitionException {
         LustreParser.property_return retval = new LustreParser.property_return();
         retval.start = input.LT(1);
@@ -1190,8 +1195,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_35=new RewriteRuleTokenStream(adaptor,"token 35");
 
         try {
-            // Lustre.g:78:9: ( '--%PROPERTY' ID ';' -> ID )
-            // Lustre.g:79:3: '--%PROPERTY' ID ';'
+            // Lustre.g:83:9: ( '--%PROPERTY' ID ';' -> ID )
+            // Lustre.g:84:3: '--%PROPERTY' ID ';'
             {
             string_literal41=(Token)match(input,31,FOLLOW_31_in_property410); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_31.add(string_literal41);
@@ -1218,7 +1223,7 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 79:24: -> ID
+            // 84:24: -> ID
             {
                 adaptor.addChild(root_0, 
                 stream_ID.nextNode()
@@ -1263,7 +1268,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "equation"
-    // Lustre.g:82:1: equation : ID '=' expr ';' -> ^( ID expr ) ;
+    // Lustre.g:87:1: equation : ID '=' expr ';' -> ^( ID expr ) ;
     public final LustreParser.equation_return equation() throws RecognitionException {
         LustreParser.equation_return retval = new LustreParser.equation_return();
         retval.start = input.LT(1);
@@ -1285,8 +1290,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_39=new RewriteRuleTokenStream(adaptor,"token 39");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // Lustre.g:82:9: ( ID '=' expr ';' -> ^( ID expr ) )
-            // Lustre.g:83:3: ID '=' expr ';'
+            // Lustre.g:87:9: ( ID '=' expr ';' -> ^( ID expr ) )
+            // Lustre.g:88:3: ID '=' expr ';'
             {
             ID44=(Token)match(input,ID,FOLLOW_ID_in_equation428); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_ID.add(ID44);
@@ -1320,9 +1325,9 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 83:19: -> ^( ID expr )
+            // 88:19: -> ^( ID expr )
             {
-                // Lustre.g:83:22: ^( ID expr )
+                // Lustre.g:88:22: ^( ID expr )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
@@ -1373,7 +1378,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "expr"
-    // Lustre.g:86:1: expr : arrowExpr ;
+    // Lustre.g:91:1: expr : arrowExpr ;
     public final LustreParser.expr_return expr() throws RecognitionException {
         LustreParser.expr_return retval = new LustreParser.expr_return();
         retval.start = input.LT(1);
@@ -1386,8 +1391,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:86:5: ( arrowExpr )
-            // Lustre.g:87:3: arrowExpr
+            // Lustre.g:91:5: ( arrowExpr )
+            // Lustre.g:92:3: arrowExpr
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1432,7 +1437,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "arrowOp"
-    // Lustre.g:90:1: arrowOp : '->' ;
+    // Lustre.g:95:1: arrowOp : '->' ;
     public final LustreParser.arrowOp_return arrowOp() throws RecognitionException {
         LustreParser.arrowOp_return retval = new LustreParser.arrowOp_return();
         retval.start = input.LT(1);
@@ -1445,8 +1450,8 @@ public TreeAdaptor getTreeAdaptor() {
         Object string_literal49_tree=null;
 
         try {
-            // Lustre.g:90:8: ( '->' )
-            // Lustre.g:91:3: '->'
+            // Lustre.g:95:8: ( '->' )
+            // Lustre.g:96:3: '->'
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1492,7 +1497,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "arrowExpr"
-    // Lustre.g:94:1: arrowExpr : impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? ;
+    // Lustre.g:99:1: arrowExpr : impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? ;
     public final LustreParser.arrowExpr_return arrowExpr() throws RecognitionException {
         LustreParser.arrowExpr_return retval = new LustreParser.arrowExpr_return();
         retval.start = input.LT(1);
@@ -1509,8 +1514,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:94:10: ( impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? )
-            // Lustre.g:95:3: impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )?
+            // Lustre.g:99:10: ( impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? )
+            // Lustre.g:100:3: impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )?
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1522,7 +1527,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, impliesExpr50.getTree());
 
-            // Lustre.g:95:15: ( ( arrowOp )=> arrowOp ^ arrowExpr )?
+            // Lustre.g:100:15: ( ( arrowOp )=> arrowOp ^ arrowExpr )?
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -1535,7 +1540,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt9) {
                 case 1 :
-                    // Lustre.g:95:16: ( arrowOp )=> arrowOp ^ arrowExpr
+                    // Lustre.g:100:16: ( arrowOp )=> arrowOp ^ arrowExpr
                     {
                     pushFollow(FOLLOW_arrowOp_in_arrowExpr479);
                     arrowOp51=arrowOp();
@@ -1590,7 +1595,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "impliesOp"
-    // Lustre.g:98:1: impliesOp : '=>' ;
+    // Lustre.g:103:1: impliesOp : '=>' ;
     public final LustreParser.impliesOp_return impliesOp() throws RecognitionException {
         LustreParser.impliesOp_return retval = new LustreParser.impliesOp_return();
         retval.start = input.LT(1);
@@ -1603,8 +1608,8 @@ public TreeAdaptor getTreeAdaptor() {
         Object string_literal53_tree=null;
 
         try {
-            // Lustre.g:98:10: ( '=>' )
-            // Lustre.g:99:3: '=>'
+            // Lustre.g:103:10: ( '=>' )
+            // Lustre.g:104:3: '=>'
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1650,7 +1655,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "impliesExpr"
-    // Lustre.g:102:1: impliesExpr : orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? ;
+    // Lustre.g:107:1: impliesExpr : orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? ;
     public final LustreParser.impliesExpr_return impliesExpr() throws RecognitionException {
         LustreParser.impliesExpr_return retval = new LustreParser.impliesExpr_return();
         retval.start = input.LT(1);
@@ -1667,8 +1672,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:102:12: ( orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? )
-            // Lustre.g:103:3: orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )?
+            // Lustre.g:107:12: ( orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? )
+            // Lustre.g:108:3: orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )?
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1680,7 +1685,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, orExpr54.getTree());
 
-            // Lustre.g:103:10: ( ( impliesOp )=> impliesOp ^ impliesExpr )?
+            // Lustre.g:108:10: ( ( impliesOp )=> impliesOp ^ impliesExpr )?
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1693,7 +1698,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt10) {
                 case 1 :
-                    // Lustre.g:103:11: ( impliesOp )=> impliesOp ^ impliesExpr
+                    // Lustre.g:108:11: ( impliesOp )=> impliesOp ^ impliesExpr
                     {
                     pushFollow(FOLLOW_impliesOp_in_impliesExpr511);
                     impliesOp55=impliesOp();
@@ -1748,7 +1753,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "orOp"
-    // Lustre.g:106:1: orOp : ( 'or' | 'xor' );
+    // Lustre.g:111:1: orOp : ( 'or' | 'xor' );
     public final LustreParser.orOp_return orOp() throws RecognitionException {
         LustreParser.orOp_return retval = new LustreParser.orOp_return();
         retval.start = input.LT(1);
@@ -1761,7 +1766,7 @@ public TreeAdaptor getTreeAdaptor() {
         Object set57_tree=null;
 
         try {
-            // Lustre.g:106:5: ( 'or' | 'xor' )
+            // Lustre.g:111:5: ( 'or' | 'xor' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -1817,7 +1822,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "orExpr"
-    // Lustre.g:110:1: orExpr : andExpr ( ( orOp )=> orOp ^ andExpr )* ;
+    // Lustre.g:115:1: orExpr : andExpr ( ( orOp )=> orOp ^ andExpr )* ;
     public final LustreParser.orExpr_return orExpr() throws RecognitionException {
         LustreParser.orExpr_return retval = new LustreParser.orExpr_return();
         retval.start = input.LT(1);
@@ -1834,8 +1839,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:110:7: ( andExpr ( ( orOp )=> orOp ^ andExpr )* )
-            // Lustre.g:111:3: andExpr ( ( orOp )=> orOp ^ andExpr )*
+            // Lustre.g:115:7: ( andExpr ( ( orOp )=> orOp ^ andExpr )* )
+            // Lustre.g:116:3: andExpr ( ( orOp )=> orOp ^ andExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1847,7 +1852,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, andExpr58.getTree());
 
-            // Lustre.g:111:11: ( ( orOp )=> orOp ^ andExpr )*
+            // Lustre.g:116:11: ( ( orOp )=> orOp ^ andExpr )*
             loop11:
             do {
                 int alt11=2;
@@ -1866,7 +1871,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt11) {
             	case 1 :
-            	    // Lustre.g:111:12: ( orOp )=> orOp ^ andExpr
+            	    // Lustre.g:116:12: ( orOp )=> orOp ^ andExpr
             	    {
             	    pushFollow(FOLLOW_orOp_in_orExpr547);
             	    orOp59=orOp();
@@ -1924,7 +1929,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "andOp"
-    // Lustre.g:114:1: andOp : 'and' ;
+    // Lustre.g:119:1: andOp : 'and' ;
     public final LustreParser.andOp_return andOp() throws RecognitionException {
         LustreParser.andOp_return retval = new LustreParser.andOp_return();
         retval.start = input.LT(1);
@@ -1937,8 +1942,8 @@ public TreeAdaptor getTreeAdaptor() {
         Object string_literal61_tree=null;
 
         try {
-            // Lustre.g:114:6: ( 'and' )
-            // Lustre.g:115:3: 'and'
+            // Lustre.g:119:6: ( 'and' )
+            // Lustre.g:120:3: 'and'
             {
             root_0 = (Object)adaptor.nil();
 
@@ -1984,7 +1989,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "andExpr"
-    // Lustre.g:118:1: andExpr : relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* ;
+    // Lustre.g:123:1: andExpr : relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* ;
     public final LustreParser.andExpr_return andExpr() throws RecognitionException {
         LustreParser.andExpr_return retval = new LustreParser.andExpr_return();
         retval.start = input.LT(1);
@@ -2001,8 +2006,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:118:8: ( relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* )
-            // Lustre.g:119:3: relationalExpr ( ( andOp )=> andOp ^ relationalExpr )*
+            // Lustre.g:123:8: ( relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* )
+            // Lustre.g:124:3: relationalExpr ( ( andOp )=> andOp ^ relationalExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
@@ -2014,7 +2019,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, relationalExpr62.getTree());
 
-            // Lustre.g:119:18: ( ( andOp )=> andOp ^ relationalExpr )*
+            // Lustre.g:124:18: ( ( andOp )=> andOp ^ relationalExpr )*
             loop12:
             do {
                 int alt12=2;
@@ -2033,7 +2038,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt12) {
             	case 1 :
-            	    // Lustre.g:119:19: ( andOp )=> andOp ^ relationalExpr
+            	    // Lustre.g:124:19: ( andOp )=> andOp ^ relationalExpr
             	    {
             	    pushFollow(FOLLOW_andOp_in_andExpr579);
             	    andOp63=andOp();
@@ -2091,7 +2096,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "relationalOp"
-    // Lustre.g:122:1: relationalOp : ( '<' | '<=' | '>' | '>=' | '=' | '<>' );
+    // Lustre.g:127:1: relationalOp : ( '<' | '<=' | '>' | '>=' | '=' | '<>' );
     public final LustreParser.relationalOp_return relationalOp() throws RecognitionException {
         LustreParser.relationalOp_return retval = new LustreParser.relationalOp_return();
         retval.start = input.LT(1);
@@ -2104,7 +2109,7 @@ public TreeAdaptor getTreeAdaptor() {
         Object set65_tree=null;
 
         try {
-            // Lustre.g:122:13: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
+            // Lustre.g:127:13: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -2160,7 +2165,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "relationalExpr"
-    // Lustre.g:126:1: relationalExpr : plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? ;
+    // Lustre.g:131:1: relationalExpr : plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? ;
     public final LustreParser.relationalExpr_return relationalExpr() throws RecognitionException {
         LustreParser.relationalExpr_return retval = new LustreParser.relationalExpr_return();
         retval.start = input.LT(1);
@@ -2177,8 +2182,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:126:15: ( plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? )
-            // Lustre.g:127:3: plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )?
+            // Lustre.g:131:15: ( plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? )
+            // Lustre.g:132:3: plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )?
             {
             root_0 = (Object)adaptor.nil();
 
@@ -2190,7 +2195,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, plusExpr66.getTree());
 
-            // Lustre.g:127:12: ( ( relationalOp )=> relationalOp ^ plusExpr )?
+            // Lustre.g:132:12: ( ( relationalOp )=> relationalOp ^ plusExpr )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -2203,7 +2208,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt13) {
                 case 1 :
-                    // Lustre.g:127:13: ( relationalOp )=> relationalOp ^ plusExpr
+                    // Lustre.g:132:13: ( relationalOp )=> relationalOp ^ plusExpr
                     {
                     pushFollow(FOLLOW_relationalOp_in_relationalExpr631);
                     relationalOp67=relationalOp();
@@ -2258,7 +2263,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "plusOp"
-    // Lustre.g:130:1: plusOp : ( '+' | '-' );
+    // Lustre.g:135:1: plusOp : ( '+' | '-' );
     public final LustreParser.plusOp_return plusOp() throws RecognitionException {
         LustreParser.plusOp_return retval = new LustreParser.plusOp_return();
         retval.start = input.LT(1);
@@ -2271,7 +2276,7 @@ public TreeAdaptor getTreeAdaptor() {
         Object set69_tree=null;
 
         try {
-            // Lustre.g:130:7: ( '+' | '-' )
+            // Lustre.g:135:7: ( '+' | '-' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -2327,7 +2332,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "plusExpr"
-    // Lustre.g:134:1: plusExpr : timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* ;
+    // Lustre.g:139:1: plusExpr : timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* ;
     public final LustreParser.plusExpr_return plusExpr() throws RecognitionException {
         LustreParser.plusExpr_return retval = new LustreParser.plusExpr_return();
         retval.start = input.LT(1);
@@ -2344,8 +2349,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:134:9: ( timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* )
-            // Lustre.g:135:3: timesExpr ( ( plusOp )=> plusOp ^ timesExpr )*
+            // Lustre.g:139:9: ( timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* )
+            // Lustre.g:140:3: timesExpr ( ( plusOp )=> plusOp ^ timesExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
@@ -2357,7 +2362,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, timesExpr70.getTree());
 
-            // Lustre.g:135:13: ( ( plusOp )=> plusOp ^ timesExpr )*
+            // Lustre.g:140:13: ( ( plusOp )=> plusOp ^ timesExpr )*
             loop14:
             do {
                 int alt14=2;
@@ -2376,7 +2381,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt14) {
             	case 1 :
-            	    // Lustre.g:135:14: ( plusOp )=> plusOp ^ timesExpr
+            	    // Lustre.g:140:14: ( plusOp )=> plusOp ^ timesExpr
             	    {
             	    pushFollow(FOLLOW_plusOp_in_plusExpr667);
             	    plusOp71=plusOp();
@@ -2434,7 +2439,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "timesOp"
-    // Lustre.g:138:1: timesOp : ( '*' | '/' | 'div' );
+    // Lustre.g:143:1: timesOp : ( '*' | '/' | 'div' );
     public final LustreParser.timesOp_return timesOp() throws RecognitionException {
         LustreParser.timesOp_return retval = new LustreParser.timesOp_return();
         retval.start = input.LT(1);
@@ -2447,7 +2452,7 @@ public TreeAdaptor getTreeAdaptor() {
         Object set73_tree=null;
 
         try {
-            // Lustre.g:138:8: ( '*' | '/' | 'div' )
+            // Lustre.g:143:8: ( '*' | '/' | 'div' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -2503,7 +2508,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "timesExpr"
-    // Lustre.g:142:1: timesExpr : prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* ;
+    // Lustre.g:147:1: timesExpr : prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* ;
     public final LustreParser.timesExpr_return timesExpr() throws RecognitionException {
         LustreParser.timesExpr_return retval = new LustreParser.timesExpr_return();
         retval.start = input.LT(1);
@@ -2520,8 +2525,8 @@ public TreeAdaptor getTreeAdaptor() {
 
 
         try {
-            // Lustre.g:142:10: ( prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* )
-            // Lustre.g:143:3: prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )*
+            // Lustre.g:147:10: ( prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* )
+            // Lustre.g:148:3: prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
@@ -2533,7 +2538,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr74.getTree());
 
-            // Lustre.g:143:14: ( ( timesOp )=> timesOp ^ prefixExpr )*
+            // Lustre.g:148:14: ( ( timesOp )=> timesOp ^ prefixExpr )*
             loop15:
             do {
                 int alt15=2;
@@ -2552,7 +2557,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt15) {
             	case 1 :
-            	    // Lustre.g:143:15: ( timesOp )=> timesOp ^ prefixExpr
+            	    // Lustre.g:148:15: ( timesOp )=> timesOp ^ prefixExpr
             	    {
             	    pushFollow(FOLLOW_timesOp_in_timesExpr707);
             	    timesOp75=timesOp();
@@ -2610,7 +2615,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "prefixExpr"
-    // Lustre.g:146:1: prefixExpr : ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr );
+    // Lustre.g:151:1: prefixExpr : ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr );
     public final LustreParser.prefixExpr_return prefixExpr() throws RecognitionException {
         LustreParser.prefixExpr_return retval = new LustreParser.prefixExpr_return();
         retval.start = input.LT(1);
@@ -2636,7 +2641,7 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_30=new RewriteRuleTokenStream(adaptor,"token 30");
         RewriteRuleSubtreeStream stream_prefixExpr=new RewriteRuleSubtreeStream(adaptor,"rule prefixExpr");
         try {
-            // Lustre.g:146:11: ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr )
+            // Lustre.g:151:11: ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr )
             int alt16=4;
             switch ( input.LA(1) ) {
             case 30:
@@ -2674,7 +2679,7 @@ public TreeAdaptor getTreeAdaptor() {
 
             switch (alt16) {
                 case 1 :
-                    // Lustre.g:147:3: '-' prefixExpr
+                    // Lustre.g:152:3: '-' prefixExpr
                     {
                     char_literal77=(Token)match(input,30,FOLLOW_30_in_prefixExpr722); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_30.add(char_literal77);
@@ -2700,9 +2705,9 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 147:18: -> ^( NEGATE prefixExpr )
+                    // 152:18: -> ^( NEGATE prefixExpr )
                     {
-                        // Lustre.g:147:21: ^( NEGATE prefixExpr )
+                        // Lustre.g:152:21: ^( NEGATE prefixExpr )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(
@@ -2723,7 +2728,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:148:3: NOT ^ prefixExpr
+                    // Lustre.g:153:3: NOT ^ prefixExpr
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -2746,7 +2751,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:149:3: PRE ^ prefixExpr
+                    // Lustre.g:154:3: PRE ^ prefixExpr
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -2769,7 +2774,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 4 :
-                    // Lustre.g:150:3: atomicExpr
+                    // Lustre.g:155:3: atomicExpr
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -2816,7 +2821,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "atomicExpr"
-    // Lustre.g:153:1: atomicExpr : ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | '(' expr ')' -> expr );
+    // Lustre.g:158:1: atomicExpr : ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | '(' expr ')' -> expr );
     public final LustreParser.atomicExpr_return atomicExpr() throws RecognitionException {
         LustreParser.atomicExpr_return retval = new LustreParser.atomicExpr_return();
         retval.start = input.LT(1);
@@ -2856,7 +2861,7 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_26=new RewriteRuleTokenStream(adaptor,"token 26");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // Lustre.g:153:11: ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | '(' expr ')' -> expr )
+            // Lustre.g:158:11: ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | '(' expr ')' -> expr )
             int alt17=6;
             switch ( input.LA(1) ) {
             case ID:
@@ -2910,7 +2915,7 @@ public TreeAdaptor getTreeAdaptor() {
 
             switch (alt17) {
                 case 1 :
-                    // Lustre.g:154:3: ID
+                    // Lustre.g:159:3: ID
                     {
                     ID84=(Token)match(input,ID,FOLLOW_ID_in_atomicExpr760); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_ID.add(ID84);
@@ -2929,9 +2934,9 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 154:6: -> ^( IDENT ID )
+                    // 159:6: -> ^( IDENT ID )
                     {
-                        // Lustre.g:154:9: ^( IDENT ID )
+                        // Lustre.g:159:9: ^( IDENT ID )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(
@@ -2954,7 +2959,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:155:3: INT
+                    // Lustre.g:160:3: INT
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -2970,7 +2975,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:156:3: real
+                    // Lustre.g:161:3: real
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -2985,7 +2990,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 4 :
-                    // Lustre.g:157:3: BOOL
+                    // Lustre.g:162:3: BOOL
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -3001,7 +3006,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 5 :
-                    // Lustre.g:158:3: IF ^ expr 'then' ! expr 'else' ! expr
+                    // Lustre.g:163:3: IF ^ expr 'then' ! expr 'else' ! expr
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -3042,7 +3047,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 6 :
-                    // Lustre.g:159:3: '(' expr ')'
+                    // Lustre.g:164:3: '(' expr ')'
                     {
                     char_literal94=(Token)match(input,25,FOLLOW_25_in_atomicExpr801); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_25.add(char_literal94);
@@ -3072,7 +3077,7 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 159:16: -> expr
+                    // 164:16: -> expr
                     {
                         adaptor.addChild(root_0, stream_expr.nextTree());
 
@@ -3117,7 +3122,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "real"
-    // Lustre.g:162:1: real : a= INT '.' b= INT ->;
+    // Lustre.g:167:1: real : a= INT '.' b= INT ->;
     public final LustreParser.real_return real() throws RecognitionException {
         LustreParser.real_return retval = new LustreParser.real_return();
         retval.start = input.LT(1);
@@ -3136,8 +3141,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_ERROR=new RewriteRuleTokenStream(adaptor,"token ERROR");
 
         try {
-            // Lustre.g:162:5: (a= INT '.' b= INT ->)
-            // Lustre.g:162:7: a= INT '.' b= INT
+            // Lustre.g:167:5: (a= INT '.' b= INT ->)
+            // Lustre.g:167:7: a= INT '.' b= INT
             {
             a=(Token)match(input,INT,FOLLOW_INT_in_real819); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_INT.add(a);
@@ -3164,7 +3169,7 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 162:23: ->
+            // 167:23: ->
             {
                 adaptor.addChild(root_0, makeReal((a!=null?a.getText():null) + "." + (b!=null?b.getText():null)));
 
@@ -3201,8 +3206,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred1_Lustre
     public final void synpred1_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:95:16: ( arrowOp )
-        // Lustre.g:95:17: arrowOp
+        // Lustre.g:100:16: ( arrowOp )
+        // Lustre.g:100:17: arrowOp
         {
         pushFollow(FOLLOW_arrowOp_in_synpred1_Lustre476);
         arrowOp();
@@ -3217,8 +3222,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred2_Lustre
     public final void synpred2_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:103:11: ( impliesOp )
-        // Lustre.g:103:12: impliesOp
+        // Lustre.g:108:11: ( impliesOp )
+        // Lustre.g:108:12: impliesOp
         {
         pushFollow(FOLLOW_impliesOp_in_synpred2_Lustre508);
         impliesOp();
@@ -3233,8 +3238,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred3_Lustre
     public final void synpred3_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:111:12: ( orOp )
-        // Lustre.g:111:13: orOp
+        // Lustre.g:116:12: ( orOp )
+        // Lustre.g:116:13: orOp
         {
         pushFollow(FOLLOW_orOp_in_synpred3_Lustre544);
         orOp();
@@ -3249,8 +3254,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred4_Lustre
     public final void synpred4_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:119:19: ( andOp )
-        // Lustre.g:119:20: andOp
+        // Lustre.g:124:19: ( andOp )
+        // Lustre.g:124:20: andOp
         {
         pushFollow(FOLLOW_andOp_in_synpred4_Lustre576);
         andOp();
@@ -3265,8 +3270,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred5_Lustre
     public final void synpred5_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:127:13: ( relationalOp )
-        // Lustre.g:127:14: relationalOp
+        // Lustre.g:132:13: ( relationalOp )
+        // Lustre.g:132:14: relationalOp
         {
         pushFollow(FOLLOW_relationalOp_in_synpred5_Lustre628);
         relationalOp();
@@ -3281,8 +3286,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred6_Lustre
     public final void synpred6_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:135:14: ( plusOp )
-        // Lustre.g:135:15: plusOp
+        // Lustre.g:140:14: ( plusOp )
+        // Lustre.g:140:15: plusOp
         {
         pushFollow(FOLLOW_plusOp_in_synpred6_Lustre664);
         plusOp();
@@ -3297,8 +3302,8 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred7_Lustre
     public final void synpred7_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:143:15: ( timesOp )
-        // Lustre.g:143:16: timesOp
+        // Lustre.g:148:15: ( timesOp )
+        // Lustre.g:148:16: timesOp
         {
         pushFollow(FOLLOW_timesOp_in_synpred7_Lustre704);
         timesOp();

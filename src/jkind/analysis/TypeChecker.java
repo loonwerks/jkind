@@ -147,7 +147,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		Type elseType = e.elseExpr.accept(this);
 
 		compareTypes(e.cond, Type.BOOL, condType);
-		compareTypes(e, thenType, elseType);
+		compareTypes(e.elseExpr, thenType, elseType);
 
 		return thenType;
 	}
@@ -203,6 +203,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private void error(AST ast, String message) {
 		passed = false;
 		System.out.println("Type error at line " + ast.location.line + ":"
-				+ ast.location.charPositionInLine + ": " + message);
+				+ ast.location.charPositionInLine + " " + message);
 	}
 }

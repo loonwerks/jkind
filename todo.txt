@@ -6,8 +6,6 @@ Static checks
   No non-linearities
   No unguarded pres?
   No alegbraic loops?
-  
-Get ANTLR to print to stdout instead of stderr
 
 Real support for subranges
   Allow negative numbers in subranges

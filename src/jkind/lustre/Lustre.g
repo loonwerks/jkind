@@ -33,6 +33,11 @@ tokens {
   private CommonTree makeReal(String text) {
     return new CommonTree(new CommonToken(REAL, text));
   }
+  
+  @Override
+  public void emitErrorMessage(String msg) {
+    System.out.println(msg);
+  }
 }
 
 @lexer::members {

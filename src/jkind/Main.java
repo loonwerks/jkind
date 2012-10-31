@@ -51,7 +51,6 @@ public class Main {
 		LustreParser parser = new LustreParser(tokens);
 		CommonTree tree = (CommonTree) parser.node().getTree();
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			System.out.println("Parse error in " + filename);
 			System.exit(-1);
 		}
 		return Lustre2AST.node(tree);
