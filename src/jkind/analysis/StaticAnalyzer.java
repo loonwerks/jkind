@@ -11,7 +11,7 @@ import jkind.translation.Util;
 public class StaticAnalyzer {
 	public static boolean check(Node node) {
 		return TypeChecker.check(node) && variablesUnique(node) && assignmentsSound(node)
-				&& propertiesUnique(node);
+				&& propertiesUnique(node) && LinearChecker.check(node);
 	}
 
 	private static boolean variablesUnique(Node node) {

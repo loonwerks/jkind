@@ -1,17 +1,16 @@
-Static checks
-  No non-linearities
-  No unguarded pres?
-  No alegbraic loops?
+Handle multi node if they are simple (e.g. abs(...))
 
 Real support for subranges
   Allow negative numbers in subranges
   Subrange on input is an assert
   Subrange on local/output is a suggested invariant?
 
-Handle multi node if they are simple
-
 Advanced invariant generation (need some examples)
 
 Differentiate unknown results (max iterations, timeout, failure) 
 
 Support for asserts? (not compatible with pkind since theirs are broken)
+
+Additional static checks
+  No unguarded pres?
+  No alegbraic loops?
