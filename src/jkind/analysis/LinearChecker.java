@@ -52,11 +52,16 @@ public class LinearChecker implements ExprVisitor<Void> {
 		
 		switch (e.op) {
 		case MULTIPLY:
+			if (!isConstant(e.left) && !isConstant(e.right)) {
+				System.out.println("Nonlinearity at line " + e.location);
+				passed = false;
+			}
+			break;
+
 		case DIVIDE:
 		case INT_DIVIDE:
-			if (!isConstant(e.left) && !isConstant(e.right)) {
-				System.out.println("Nonlinearity error at line " + e.location);
-				passed = false;
+			if (!isConstant(e.right)) {
+				System.out.println("Non-constant division at line " + e.location);
 			}
 		}
 		
