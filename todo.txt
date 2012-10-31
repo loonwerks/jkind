@@ -1,5 +1,4 @@
 Static checks
-  All locals & outputs assigned
   All properties unique
   No non-linearities
   No unguarded pres?

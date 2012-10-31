@@ -25,4 +25,12 @@ public class Util {
 		}
 		return map;
 	}
+
+	public static List<String> getIds(List<VarDecl> decls) {
+		List<String> ids = new ArrayList<String>();
+		for (VarDecl decl : decls) {
+			ids.add(decl.id);
+		}
+		return ids;
+	}
 }
