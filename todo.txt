@@ -1,6 +1,4 @@
 Static checks
-  Typing
-  Single variable declaration
   All locals & outputs assigned
   All properties unique
   No non-linearities

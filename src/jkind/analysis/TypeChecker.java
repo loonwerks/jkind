@@ -28,7 +28,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		this.passed = true;
 	}
 
-	public static boolean node(Node node) {
+	public static boolean check(Node node) {
 		return new TypeChecker().visitNode(node);
 	}
 
@@ -202,7 +202,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private void error(AST ast, String message) {
 		passed = false;
-		System.out.println("Type error at line " + ast.location.line + ":"
-				+ ast.location.charPositionInLine + " " + message);
+		System.out.println("Type error at line " + ast.location + " " + message);
 	}
 }

@@ -8,4 +8,9 @@ public class Location {
 		this.line = line;
 		this.charPositionInLine = charPositionInLine;
 	}
+	
+	@Override
+	public String toString() {
+		return line + ":" + charPositionInLine;
+	}
 }

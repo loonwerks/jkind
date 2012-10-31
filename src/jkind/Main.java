@@ -33,7 +33,7 @@ public class Main {
 			System.out.println("Warning: No properties specified");
 		}
 		
-		if (!StaticAnalyzer.node(node)) {
+		if (!StaticAnalyzer.check(node)) {
 			System.exit(-1);
 		}
 
