@@ -1,5 +1,6 @@
 package jkind.analysis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,35 +10,60 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
+import jkind.lustre.Expr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
+import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.VarDecl;
 import jkind.translation.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
-	private Map<String, Type> table;
+	private Map<String, Type> constantTable;
+	private Map<String, Type> variableTable;
+	private Map<String, Node> nodeTable;
 	private boolean passed;
 
 	public TypeChecker() {
-		this.table = new HashMap<String, Type>();
+		this.constantTable = new HashMap<String, Type>();
+		this.variableTable = new HashMap<String, Type>();
+		this.nodeTable = new HashMap<String, Node>();
 		this.passed = true;
 	}
 
-	public static boolean check(Node node) {
-		return new TypeChecker().visitNode(node);
+	public static boolean check(Program program) {
+		return new TypeChecker().visitProgram(program);
 	}
-
+	
+	public boolean visitProgram(Program program) {
+		populateConstantTable(program.constants);
+		nodeTable = Util.getNodeTable(program.nodes);
+		
+		for (Node node : program.nodes) {
+			visitNode(node);
+		}
+		
+		return passed;
+	}
+	
+	private void populateConstantTable(List<Constant> constants) {
+		for (Constant c : constants) {
+			constantTable.put(c.id, c.expr.accept(this));
+		}
+	}
+	
 	public boolean visitNode(Node node) {
-		addConstantsToTable(node.constants);
-		table.putAll(Util.createTypeMap(node));
+		variableTable.clear();
+		variableTable.putAll(Util.createTypeMap(node));
 
 		for (Equation eq : node.equations) {
-			Type expected = table.get(eq.id);
+			Type expected = lookup(eq.id);
 			Type actual = eq.expr.accept(this);
 			if (expected == null) {
 				error(eq, "unknown variable " + eq.id);
@@ -49,9 +75,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return passed;
 	}
 
-	private void addConstantsToTable(List<Constant> constants) {
-		for (Constant c : constants) {
-			table.put(c.id, c.expr.accept(this));
+	private Type lookup(String id) {
+		if (variableTable.containsKey(id)) {
+			return variableTable.get(id);
+		} else if (constantTable.containsKey(id)) {
+			return constantTable.get(id);
+		} else {
+			return null;
 		}
 	}
 
@@ -133,7 +163,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(IdExpr e) {
-		Type type = table.get(e.id);
+		Type type = lookup(e.id);
 		if (type == null) {
 			error(e, "unknown variable " + e.id);
 		}
@@ -157,6 +187,43 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return Type.INT;
 	}
 
+	@Override
+	public Type visit(NodeCallExpr e) {
+		Node node = nodeTable.get(e.node);
+		if (node == null) {
+			error(e, "unknown node " + e.node);
+		}
+		
+		List<Type> actual = new ArrayList<Type>();
+		for (Expr arg : e.args) {
+			actual.add(arg.accept(this));
+		}
+		
+		if (actual.contains(null)) {
+			return null;
+		}
+		
+		List<Type> expected = new ArrayList<Type>();
+		for (VarDecl input : node.inputs) {
+			expected.add(input.type);
+		}
+		
+		if (actual.size() != expected.size()) {
+			error(e, "expected " + expected.size() + " arguments, but found " + actual.size());
+		}
+		
+		for (int i = 0; i < expected.size(); i++) {
+			compareTypes(e.args.get(i), expected.get(i), actual.get(i));
+		}
+		
+		if (node.outputs.size() == 1) {
+			return node.outputs.get(0).type;
+		} else {
+			System.out.println("Error at line " + e.location + " unsupported return values from node");
+			return null;
+		}
+	}
+	
 	@Override
 	public Type visit(RealExpr e) {
 		return Type.REAL;

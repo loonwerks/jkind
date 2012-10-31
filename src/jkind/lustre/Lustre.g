@@ -6,7 +6,8 @@ options {
 }
 
 tokens {
-  NODE;
+  PROGRAM;
+  NODES;
   CONSTANTS;
   INPUTS;
   OUTPUTS;
@@ -16,6 +17,7 @@ tokens {
   REAL;
   NEGATE;
   IDENT;
+  NODECALL;
 }
 
 @header {
@@ -44,16 +46,18 @@ tokens {
   protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
 }
 
+program:
+  (constant | node)* -> ^(PROGRAM ^(CONSTANTS constant*) ^(NODES node*))
+;
+
 node:
-  constant*
   'node' ID '(' inputs=varDeclList? ')'
   'returns' '(' outputs=varDeclList? ')' ';'
   ('var' locals=varDeclList ';')?
   'let'
     (equation | property)*
   'tel' ';' ->
-    ^(NODE ID
-      ^(CONSTANTS constant*)
+    ^(ID
       ^(INPUTS $inputs?)
       ^(OUTPUTS $outputs?)
       ^(LOCALS $locals?)
@@ -165,6 +169,7 @@ atomicExpr:
 | real
 | BOOL
 | IF^ expr 'then'! expr 'else'! expr
+| ID '(' (expr (',' expr)*)? ')' -> ^(NODECALL ID expr*)
 | '(' expr ')' -> expr
 ;
 

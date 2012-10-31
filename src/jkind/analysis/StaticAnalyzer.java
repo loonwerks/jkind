@@ -3,15 +3,56 @@ package jkind.analysis;
 import java.util.HashSet;
 import java.util.Set;
 
+import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
 import jkind.translation.Util;
 
 public class StaticAnalyzer {
-	public static boolean check(Node node) {
-		return TypeChecker.check(node) && variablesUnique(node) && assignmentsSound(node)
-				&& propertiesUnique(node) && LinearChecker.check(node);
+	public static boolean check(Program program) {
+		return TypeChecker.check(program) && constantsUnique(program) && nodesUnique(program)
+				&& variablesUnique(program) && assignmentsSound(program)
+				&& propertiesUnique(program.main) && LinearChecker.check(program);
+	}
+
+	private static boolean constantsUnique(Program program) {
+		boolean unique = true;
+		Set<String> seen = new HashSet<String>();
+		for (Constant c : program.constants) {
+			if (seen.contains(c.id)) {
+				System.out.println("Error at line " + c.location + " constant " + c.id
+						+ " already declared");
+				unique = false;
+			} else {
+				seen.add(c.id);
+			}
+		}
+		return unique;
+	}
+	
+	private static boolean nodesUnique(Program program) {
+		boolean unique = true;
+		Set<String> seen = new HashSet<String>();
+		for (Node node : program.nodes) {
+			if (seen.contains(node.id)) {
+				System.out.println("Error at line " + node.location + " node " + node.id
+						+ " already declared");
+				unique = false;
+			} else {
+				seen.add(node.id);
+			}
+		}
+		return unique;
+	}
+	
+	private static boolean variablesUnique(Program program) {
+		boolean unique = true;
+		for (Node node : program.nodes) {
+			unique = unique && variablesUnique(node);
+		}
+		return unique;
 	}
 
 	private static boolean variablesUnique(Node node) {
@@ -27,6 +68,14 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
+	}
+
+	private static boolean assignmentsSound(Program program) {
+		boolean sound = true;
+		for (Node node : program.nodes) {
+			sound = sound && assignmentsSound(node);
+		}
+		return sound;
 	}
 
 	private static boolean assignmentsSound(Node node) {
@@ -51,17 +100,17 @@ public class StaticAnalyzer {
 		}
 
 		if (!toAssign.isEmpty()) {
-			System.out.println("Error: variables must be assigned: " + toAssign);
+			System.out.println("Error in node " + node.id + ": variables must be assigned: " + toAssign);
 			sound = false;
 		}
 
 		return sound;
 	}
-	
+
 	private static boolean propertiesUnique(Node node) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<String>();
-		
+
 		for (String prop : node.properties) {
 			if (seen.contains(prop)) {
 				System.out.println("Error: property " + prop + " declared multiple times");
@@ -70,7 +119,7 @@ public class StaticAnalyzer {
 				seen.add(prop);
 			}
 		}
-		
+
 		return unique;
 	}
 }

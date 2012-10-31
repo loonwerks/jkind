@@ -13,6 +13,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
@@ -21,9 +22,9 @@ import jkind.translation.Util;
 public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	private Set<String> constants;
 
-	public ConstantAnalyzer(Node node) {
+	public ConstantAnalyzer(Node node, List<Constant> constantDecls) {
 		constants = new HashSet<String>();
-		addConstantsToSet(node.constants);
+		addConstantsToSet(constantDecls);
 		removeShadowedConstants(Util.getVarDecls(node));
 	}
 	
@@ -68,6 +69,11 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 		return true;
 	}
 
+	@Override
+	public Boolean visit(NodeCallExpr e) {
+		return false;
+	}
+	
 	@Override
 	public Boolean visit(RealExpr e) {
 		return true;

@@ -8,15 +8,10 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 public class Lustre2AST {
-	public static Node node(CommonTree tree) {
+	public static Program program(CommonTree tree) {
 		List<Constant> constants = constants(getChild(tree, LustreParser.CONSTANTS));
-		List<VarDecl> inputs = varDecls(getChild(tree, LustreParser.INPUTS));
-		List<VarDecl> outputs = varDecls(getChild(tree, LustreParser.OUTPUTS));
-		List<VarDecl> locals = varDecls(getChild(tree, LustreParser.LOCALS));
-		List<Equation> equations = equations(getChild(tree, LustreParser.EQUATIONS));
-		List<String> properties = properties(getChild(tree, LustreParser.PROPERTIES));
-
-		return new Node(loc(tree), constants, inputs, outputs, locals, equations, properties);
+		List<Node> nodes = nodes(getChild(tree, LustreParser.NODES));
+		return new Program(loc(tree), constants, nodes);
 	}
 
 	private static List<Constant> constants(CommonTree tree) {
@@ -32,6 +27,31 @@ public class Lustre2AST {
 			constants.add(new Constant(loc(child), id, expr));
 		}
 		return constants;
+	}
+
+	private static List<Node> nodes(CommonTree tree) {
+		List<Node> nodes = new ArrayList<Node>();
+		if (tree == null || tree.getChildCount() == 0) {
+			return nodes;
+		}
+		
+		for (Object o : tree.getChildren()) {
+			CommonTree child = (CommonTree) o;
+			nodes.add(node(child));
+		}
+		
+		return nodes;
+	}
+
+	public static Node node(CommonTree tree) {
+		String id = tree.getText();
+		List<VarDecl> inputs = varDecls(getChild(tree, LustreParser.INPUTS));
+		List<VarDecl> outputs = varDecls(getChild(tree, LustreParser.OUTPUTS));
+		List<VarDecl> locals = varDecls(getChild(tree, LustreParser.LOCALS));
+		List<Equation> equations = equations(getChild(tree, LustreParser.EQUATIONS));
+		List<String> properties = properties(getChild(tree, LustreParser.PROPERTIES));
+
+		return new Node(loc(tree), id, inputs, outputs, locals, equations, properties);
 	}
 
 	private static List<VarDecl> varDecls(CommonTree tree) {
@@ -99,6 +119,8 @@ public class Lustre2AST {
 			return new UnaryExpr(loc(tree), UnaryOp.NOT, expr(tree.getChild(0)));
 		case LustreParser.PRE:
 			return new UnaryExpr(loc(tree), UnaryOp.PRE, expr(tree.getChild(0)));
+		case LustreParser.NODECALL:
+			return nodeCall(tree);
 		default:
 			return binaryExpr(tree);
 		}
@@ -147,6 +169,18 @@ public class Lustre2AST {
 		} else {
 			throw new IllegalArgumentException("Unknown binary operator");
 		}
+	}
+
+	private static Expr nodeCall(CommonTree tree) {
+		String node = tree.getChild(0).getText();
+		List<Expr> args = new ArrayList<Expr>();
+		
+		for (int i = 1; i < tree.getChildCount(); i++) {
+			CommonTree child = (CommonTree) tree.getChild(i);
+			args.add(expr(child));
+		}
+		
+		return new NodeCallExpr(loc(tree), node, args);
 	}
 
 	private static List<String> properties(CommonTree tree) {

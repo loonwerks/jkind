@@ -57,7 +57,7 @@ numeric: '-'? INT ('/' INT)?;
 integer: '-'? INT;
 
 fragment DIGIT: '0'..'9';
-fragment SYMBOL: 'a'..'z' | 'A'..'Z' | '_' | '@' | '$';
+fragment SYMBOL: 'a'..'z' | 'A'..'Z' | '_' | '@' | '$' | '#';
 
 ID: SYMBOL (SYMBOL | DIGIT)*;
 INT: DIGIT+;

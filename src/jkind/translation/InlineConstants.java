@@ -10,26 +10,38 @@ import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
 
 public class InlineConstants {
-	public static Node node(Node node) {
-		Map<String, Expr> constants = getConstantsMap(node);
+	public static Program program(Program program) {
+		Map<String, Expr> constants = getConstantsMap(program);
+		List<Constant> emptyConstants = Collections.emptyList();
+		List<Node> inlinedNodes = new ArrayList<Node>();
+		
+		for (Node node : program.nodes) {
+			inlinedNodes.add(node(node, constants));
+		}
+		
+		return new Program(program.location, emptyConstants, inlinedNodes);
+	}
+
+	public static Node node(Node node, Map<String, Expr> constants) {
 		removeShadowedConstants(constants, node);
-		InlineVisitor inliner = new InlineVisitor(constants);
+		SubstitutionVisitor inliner = new SubstitutionVisitor(constants);
 
 		List<Equation> equations = new ArrayList<Equation>();
 		for (Equation eq : node.equations) {
 			equations.add(new Equation(eq.location, eq.id, eq.expr.accept(inliner)));
 		}
-		
-		return new Node(node.location, Collections.<Constant> emptyList(), node.inputs,
-				node.outputs, node.locals, equations, node.properties);
+
+		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,
+				node.properties);
 	}
 
-	private static Map<String, Expr> getConstantsMap(Node node) {
+	private static Map<String, Expr> getConstantsMap(Program program) {
 		Map<String, Expr> constants = new HashMap<String, Expr>();
-		for (Constant c : node.constants) {
+		for (Constant c : program.constants) {
 			constants.put(c.id, c.expr);
 		}
 		return constants;

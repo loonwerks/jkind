@@ -15,7 +15,14 @@ public abstract class Writer {
 	public abstract void writeInvalid(List<String> props, int k, Model model, long elapsed);
 	public abstract void writeUnknown(List<String> props);
 	
-	protected static SortedSet<String> sort(Set<String> set) {
-		return new TreeSet<String>(set);
+	protected static SortedSet<String> getRelevantFunctions(Set<String> functions) {
+		SortedSet<String> relevant = new TreeSet<String>();
+		for (String fn : functions) {
+			if (!fn.startsWith("$#")) {
+				relevant.add(fn);
+			}
+		}
+		return relevant;
 	}
+
 }

@@ -67,7 +67,7 @@ public class XmlWriter extends Writer {
 
 	private void writeCounterexample(int k, Model model) {
 		out.println("    <Counterexample>");
-		for (String fn : sort(model.getFunctions())) {
+		for (String fn : getRelevantFunctions(model.getFunctions())) {
 			writeSignal(fn, k, model);
 		}
 		out.println("    </Counterexample>");

@@ -1,6 +1,7 @@
 package jkind.translation;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
@@ -9,16 +10,11 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 
-public class InlineVisitor implements ExprVisitor<Expr> {
-	private Map<String, Expr> map;
-
-	public InlineVisitor(Map<String, Expr> map) {
-		this.map = map;
-	}
-
+public class MapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(BinaryExpr e) {
 		return new BinaryExpr(e.location, e.left.accept(this), e.op, e.right.accept(this));
@@ -31,11 +27,7 @@ public class InlineVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(IdExpr e) {
-		if (map.containsKey(e.id)) {
-			return map.get(e.id);
-		} else {
-			return e;
-		}
+		return e;
 	}
 
 	@Override
@@ -49,6 +41,15 @@ public class InlineVisitor implements ExprVisitor<Expr> {
 		return e;
 	}
 
+	@Override
+	public Expr visit(NodeCallExpr e) {
+		List<Expr> newArgs = new ArrayList<Expr>();
+		for (Expr arg : e.args) {
+			newArgs.add(arg.accept(this));
+		}
+		return new NodeCallExpr(e.location, e.node, newArgs);
+	}
+	
 	@Override
 	public Expr visit(RealExpr e) {
 		return e;

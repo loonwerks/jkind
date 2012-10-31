@@ -29,8 +29,7 @@ public class Slicer {
 		List<VarDecl> outputs = sliceVarDecls(node.outputs, keep);
 		List<VarDecl> locals = sliceVarDecls(node.locals, keep);
 		List<Equation> equations = sliceEquations(node.equations, keep);
-		return new Node(node.location, node.constants, inputs, outputs, locals, equations,
-				node.properties);
+		return new Node(node.location, node.id, inputs, outputs, locals, equations, node.properties);
 	}
 
 	private static List<VarDecl> sliceVarDecls(List<VarDecl> decls, Set<String> keep) {

@@ -1,7 +1,10 @@
 package jkind.analysis;
 
+import java.util.List;
+
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.ExprVisitor;
@@ -9,6 +12,8 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
+import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 
@@ -20,18 +25,24 @@ public class LinearChecker implements ExprVisitor<Void> {
 		this.passed = true;
 	}
 
-	public static boolean check(Node node) {
-		return new LinearChecker().visitNode(node);
+	public static boolean check(Program program) {
+		return new LinearChecker().visitProgram(program);
 	}
+	
+	public boolean visitProgram(Program program) {
+		for (Node node : program.nodes) {
+			visitNode(node, program.constants);
+		}
 
-	public boolean visitNode(Node node) {
-		constantAnalyzer = new ConstantAnalyzer(node);
+		return passed;
+	}
+	
+	public void visitNode(Node node, List<Constant> constants) {
+		constantAnalyzer = new ConstantAnalyzer(node, constants);
 		
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
 		}
-
-		return passed;
 	}
 
 	@Override
@@ -79,6 +90,14 @@ public class LinearChecker implements ExprVisitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(NodeCallExpr e) {
+		for (Expr arg : e.args) {
+			arg.accept(this);
+		}
+		return null;
+	}
+	
 	@Override
 	public Void visit(RealExpr e) {
 		return null;

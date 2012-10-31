@@ -33,4 +33,12 @@ public class Util {
 		}
 		return ids;
 	}
+
+	public static Map<String, Node> getNodeTable(List<Node> nodes) {
+		Map<String, Node> nodeTable = new HashMap<String, Node>();
+		for (Node node : nodes) {
+			nodeTable.put(node.id, node);
+		}
+		return nodeTable;
+	}
 }

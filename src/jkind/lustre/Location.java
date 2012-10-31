@@ -13,4 +13,6 @@ public class Location {
 	public String toString() {
 		return line + ":" + charPositionInLine;
 	}
+	
+	final public static Location NULL = new Location(0, 0);
 }

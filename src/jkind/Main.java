@@ -8,9 +8,11 @@ import jkind.lustre.Lustre2AST;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.processes.Director;
 import jkind.slicing.Slicer;
 import jkind.translation.InlineConstants;
+import jkind.translation.InlineNodeCalls;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
@@ -28,31 +30,37 @@ public class Main {
 			System.exit(-1);
 		}
 		
-		Node node = parseLustre(filename);
-		if (node.properties.isEmpty()) {
-			System.out.println("Warning: No properties specified");
+		Program program = parseLustre(filename);
+		if (program.main == null) {
+			System.out.println("Error: no main node");
+			System.exit(-1);
 		}
 		
-		if (!StaticAnalyzer.check(node)) {
+		if (program.main.properties.isEmpty()) {
+			System.out.println("Warning: No properties specified in main node");
+		}
+		
+		if (!StaticAnalyzer.check(program)) {
 			System.exit(-1);
 		}
 
-		node = InlineConstants.node(node);
+		program = InlineConstants.program(program);
+		Node main = InlineNodeCalls.program(program);
 		
-		node = Slicer.slice(node);
-		new Director(filename, node).run();
+		main = Slicer.slice(main);
+		new Director(filename, main).run();
 		System.exit(0); // Kills all threads
 	}
 
-	private static Node parseLustre(String filename) throws IOException, RecognitionException {
+	private static Program parseLustre(String filename) throws IOException, RecognitionException {
 		CharStream stream = new ANTLRFileStream(filename);
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
-		CommonTree tree = (CommonTree) parser.node().getTree();
+		CommonTree tree = (CommonTree) parser.program().getTree();
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.exit(-1);
 		}
-		return Lustre2AST.node(tree);
+		return Lustre2AST.program(tree);
 	}
 }

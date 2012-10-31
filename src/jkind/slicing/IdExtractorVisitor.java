@@ -10,6 +10,7 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 
@@ -53,6 +54,14 @@ public class IdExtractorVisitor implements ExprVisitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(NodeCallExpr e) {
+		for (Expr arg : e.args) {
+			arg.accept(this);
+		}
+		return null;
+	}
+	
 	@Override
 	public Void visit(RealExpr e) {
 		return null;

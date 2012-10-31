@@ -1,4 +1,4 @@
-Handle multi node if they are simple (e.g. abs(...))
+Handle mutli nodes with multiple return values
 
 Real support for subranges
   Subrange on input is an assert

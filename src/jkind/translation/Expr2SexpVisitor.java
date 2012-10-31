@@ -8,6 +8,7 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.sexp.Cons;
@@ -72,6 +73,11 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	}
 
 	@Override
+	public Sexp visit(NodeCallExpr e) {
+		throw new IllegalArgumentException("Node calls must be inlined before translation to sexp");
+	}
+
+	@Override
 	public Sexp visit(RealExpr e) {
 		Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());
 		Sexp denominator = Sexp.fromBigInt(BigDecimal.TEN.pow(e.value.scale()).toBigInteger());
@@ -83,10 +89,10 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 		switch (e.op) {
 		case PRE:
 			return e.expr.accept(this.pre());
-			
+
 		case NEGATIVE:
 			return new Cons("-", new Symbol("0"), e.expr.accept(this));
-			
+
 		default:
 			return new Cons(e.op.toString(), e.expr.accept(this));
 		}

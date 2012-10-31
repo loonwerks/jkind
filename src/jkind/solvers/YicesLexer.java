@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Yices.g 2012-10-26 15:04:37
+// $ANTLR 3.4 Yices.g 2012-10-31 13:05:24
 
   package jkind.solvers;
 
@@ -271,10 +271,10 @@ public class YicesLexer extends Lexer {
     // $ANTLR start "SYMBOL"
     public final void mSYMBOL() throws RecognitionException {
         try {
-            // Yices.g:60:16: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '@' | '$' )
+            // Yices.g:60:16: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '@' | '$' | '#' )
             // Yices.g:
             {
-            if ( input.LA(1)=='$'||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            if ( (input.LA(1) >= '#' && input.LA(1) <= '$')||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                 input.consume();
             }
             else {
@@ -311,7 +311,7 @@ public class YicesLexer extends Lexer {
                 int alt1=2;
                 int LA1_0 = input.LA(1);
 
-                if ( (LA1_0=='$'||(LA1_0 >= '0' && LA1_0 <= '9')||(LA1_0 >= '@' && LA1_0 <= 'Z')||LA1_0=='_'||(LA1_0 >= 'a' && LA1_0 <= 'z')) ) {
+                if ( ((LA1_0 >= '#' && LA1_0 <= '$')||(LA1_0 >= '0' && LA1_0 <= '9')||(LA1_0 >= '@' && LA1_0 <= 'Z')||LA1_0=='_'||(LA1_0 >= 'a' && LA1_0 <= 'z')) ) {
                     alt1=1;
                 }
 
@@ -320,7 +320,7 @@ public class YicesLexer extends Lexer {
             	case 1 :
             	    // Yices.g:
             	    {
-            	    if ( input.LA(1)=='$'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            	    if ( (input.LA(1) >= '#' && input.LA(1) <= '$')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
             	        input.consume();
             	    }
             	    else {
@@ -534,7 +534,7 @@ public class YicesLexer extends Lexer {
                         if ( (LA4_22=='e') ) {
                             int LA4_26 = input.LA(6);
 
-                            if ( (LA4_26=='$'||(LA4_26 >= '0' && LA4_26 <= '9')||(LA4_26 >= '@' && LA4_26 <= 'Z')||LA4_26=='_'||(LA4_26 >= 'a' && LA4_26 <= 'z')) ) {
+                            if ( ((LA4_26 >= '#' && LA4_26 <= '$')||(LA4_26 >= '0' && LA4_26 <= '9')||(LA4_26 >= '@' && LA4_26 <= 'Z')||LA4_26=='_'||(LA4_26 >= 'a' && LA4_26 <= 'z')) ) {
                                 alt4=10;
                             }
                             else {
@@ -568,7 +568,7 @@ public class YicesLexer extends Lexer {
                 if ( (LA4_15=='t') ) {
                     int LA4_19 = input.LA(4);
 
-                    if ( (LA4_19=='$'||(LA4_19 >= '0' && LA4_19 <= '9')||(LA4_19 >= '@' && LA4_19 <= 'Z')||LA4_19=='_'||(LA4_19 >= 'a' && LA4_19 <= 'z')) ) {
+                    if ( ((LA4_19 >= '#' && LA4_19 <= '$')||(LA4_19 >= '0' && LA4_19 <= '9')||(LA4_19 >= '@' && LA4_19 <= 'Z')||LA4_19=='_'||(LA4_19 >= 'a' && LA4_19 <= 'z')) ) {
                         alt4=10;
                     }
                     else {
@@ -597,7 +597,7 @@ public class YicesLexer extends Lexer {
                     if ( (LA4_20=='e') ) {
                         int LA4_24 = input.LA(5);
 
-                        if ( (LA4_24=='$'||(LA4_24 >= '0' && LA4_24 <= '9')||(LA4_24 >= '@' && LA4_24 <= 'Z')||LA4_24=='_'||(LA4_24 >= 'a' && LA4_24 <= 'z')) ) {
+                        if ( ((LA4_24 >= '#' && LA4_24 <= '$')||(LA4_24 >= '0' && LA4_24 <= '9')||(LA4_24 >= '@' && LA4_24 <= 'Z')||LA4_24=='_'||(LA4_24 >= 'a' && LA4_24 <= 'z')) ) {
                             alt4=10;
                         }
                         else {
@@ -633,7 +633,7 @@ public class YicesLexer extends Lexer {
                         if ( (LA4_25=='t') ) {
                             int LA4_28 = input.LA(6);
 
-                            if ( (LA4_28=='$'||(LA4_28 >= '0' && LA4_28 <= '9')||(LA4_28 >= '@' && LA4_28 <= 'Z')||LA4_28=='_'||(LA4_28 >= 'a' && LA4_28 <= 'z')) ) {
+                            if ( ((LA4_28 >= '#' && LA4_28 <= '$')||(LA4_28 >= '0' && LA4_28 <= '9')||(LA4_28 >= '@' && LA4_28 <= 'Z')||LA4_28=='_'||(LA4_28 >= 'a' && LA4_28 <= 'z')) ) {
                                 alt4=10;
                             }
                             else {
@@ -657,6 +657,7 @@ public class YicesLexer extends Lexer {
             }
             }
             break;
+        case '#':
         case '$':
         case '@':
         case 'A':
