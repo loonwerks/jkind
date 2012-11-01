@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import jkind.lustre.Equation;
+import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 
 public class DependencyMap {
@@ -20,7 +21,10 @@ public class DependencyMap {
 
 	private void computeOneStepDependencies(Node node) {
 		for (Equation eq : node.equations) {
-			map.put(eq.lhs.get(0), IdExtractorVisitor.getIds(eq.expr));
+			Set<String> deps = IdExtractorVisitor.getIds(eq.expr);
+			for (IdExpr idExpr : eq.lhs) {
+				map.put(idExpr.id, deps);
+			}
 		}
 	}
 

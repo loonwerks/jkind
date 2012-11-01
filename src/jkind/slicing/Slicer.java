@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.Equation;
+import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
 
@@ -45,10 +46,19 @@ public class Slicer {
 	private static List<Equation> sliceEquations(List<Equation> equations, Set<String> keep) {
 		List<Equation> sliced = new ArrayList<Equation>();
 		for (Equation eq : equations) {
-			if (keep.contains(eq.lhs.get(0))) {
+			if (containsAny(keep, eq.lhs)) {
 				sliced.add(eq);
 			}
 		}
 		return sliced;
+	}
+
+	private static boolean containsAny(Set<String> keep, List<IdExpr> lhs) {
+		for (IdExpr idExpr : lhs) {
+			if (keep.contains(idExpr.id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

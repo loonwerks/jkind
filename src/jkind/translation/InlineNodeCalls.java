@@ -101,18 +101,18 @@ public class InlineNodeCalls extends MapVisitor {
 			Map<String, IdExpr> translation) {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation);
 		for (int i = 0; i < inputs.size(); i++) {
-			String id = translation.get(inputs.get(i).id).id;
+			IdExpr idExpr = translation.get(inputs.get(i).id);
 			Expr arg = args.get(i).accept(substitution);
-			queue.add(new Equation(Location.NULL, id, arg));
+			queue.add(new Equation(Location.NULL, idExpr, arg));
 		}
 	}
 
 	private void createAssignmentEquations(List<Equation> equations, Map<String, IdExpr> translation) {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation);
 		for (Equation eq : equations) {
-			List<String> lhs = new ArrayList<String>();
-			for (String id : eq.lhs) {
-				lhs.add(translation.get(id).id);
+			List<IdExpr> lhs = new ArrayList<IdExpr>();
+			for (IdExpr idExpr : eq.lhs) {
+				lhs.add(translation.get(idExpr.id));
 			}
 			Expr expr = eq.expr.accept(substitution);
 			queue.add(new Equation(eq.location, lhs, expr));

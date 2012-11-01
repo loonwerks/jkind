@@ -116,17 +116,17 @@ public class Director {
 		if (baseProcess.getException() != null) {
 			JKindException e = baseProcess.getException();
 			System.out.println("Base process failed");
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		if (inductiveThread != null && inductiveProcess.getException() != null) {
 			JKindException e = inductiveProcess.getException();
 			System.out.println("Inductive process failed");
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		if (invariantThread != null && invariantProcess.getException() != null) {
 			JKindException e = invariantProcess.getException();
 			System.out.println("Invariant process failed");
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}
 

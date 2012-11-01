@@ -21,7 +21,7 @@ public class YicesSolver extends Solver {
 	private BufferedReader fromYices;
 
 	final private static String DONE = "@DONE";
-	
+
 	public YicesSolver() {
 		ProcessBuilder pb = new ProcessBuilder("yices");
 		pb.redirectErrorStream(true);
@@ -33,24 +33,24 @@ public class YicesSolver extends Solver {
 		toYices = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		fromYices = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	}
-	
+
 	@Override
 	public void initialize() {
 		send("(set-evidence! true)");
 	}
-	
+
 	@Override
 	public void send(Sexp sexp) {
 		send(sexp.toString());
 	}
-	
+
 	@Override
 	public void send(List<Sexp> sexps) {
 		for (Sexp sexp : sexps) {
 			send(sexp);
 		}
 	}
-	
+
 	private void send(String str) {
 		debug(str);
 		try {
@@ -58,7 +58,8 @@ public class YicesSolver extends Solver {
 			toYices.newLine();
 			toYices.flush();
 		} catch (IOException e) {
-			throw new JKindException("Unable to write to yices", e);
+			throw new JKindException("Unable to write to yices, "
+					+ "probably due to internal JKind error", e);
 		}
 	}
 
@@ -66,9 +67,9 @@ public class YicesSolver extends Solver {
 	public SolverResult query(Sexp sexp) {
 		return query(sexp.toString());
 	}
-	
+
 	private int queryCount = 1;
-	
+
 	private SolverResult query(String str) {
 		/**
 		 * Using assert+ and retract seems to be much more efficient than push
@@ -118,7 +119,7 @@ public class YicesSolver extends Solver {
 			throw new JKindException("Unable to read from yices", e);
 		}
 	}
-	
+
 	private static SolverResult parseYices(String string) throws IOException, RecognitionException {
 		CharStream stream = new ANTLRStringStream(string);
 		YicesLexer lexer = new YicesLexer(stream);
@@ -140,7 +141,7 @@ public class YicesSolver extends Solver {
 	public void pop() {
 		send("(pop)");
 	}
-	
+
 	@Override
 	public void stop() {
 		try {

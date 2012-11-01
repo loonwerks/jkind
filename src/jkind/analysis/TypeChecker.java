@@ -58,13 +58,17 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
-			typeTable.put(def.id, def.type);
+			Type type = lookupBaseType(def.type);
+			if (type == null) {
+				error(def, "unknown type " + def.type.name);
+			}
+			typeTable.put(def.id, type);
 		}
 	}
 
 	private void populateConstantTable(List<Constant> constants) {
 		for (Constant c : constants) {
-			constantTable.put(c.id, getBaseType(c.expr));
+			constantTable.put(c.id, c.expr.accept(this));
 		}
 	}
 
@@ -82,14 +86,32 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return passed;
 	}
 
-	private void checkSingleAssignment(Equation eq) {
-		Type expected = lookup(eq.lhs.get(0));
-		Type actual = getBaseType(eq.expr);
-		if (expected == null) {
-			error(eq, "unknown variable " + eq.lhs.get(0));
-		} else {
-			compareTypes(eq, expected, actual);
+	private void repopulateVariableTable(Node node) {
+		variableTable.clear();
+		for (VarDecl v : Util.getVarDecls(node)) {
+			Type type = lookupBaseType(v.type);
+			if (type == null) {
+				error(v, "unknown type " + type);
+				type = null;
+			}
+			variableTable.put(v.id, type);
 		}
+	}
+
+	private Type lookupBaseType(Type type) {
+		if (type.isBase()) {
+			return type;
+		} else if (typeTable.containsKey(type.name)) {
+			return typeTable.get(type.name);
+		} else {
+			return null;
+		}
+	}
+
+	private void checkSingleAssignment(Equation eq) {
+		Type expected = eq.lhs.get(0).accept(this);
+		Type actual = eq.expr.accept(this);
+		compareTypes(eq, expected, actual);
 	}
 
 	private void checkNodeCallAssignment(Equation eq) {
@@ -97,11 +119,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 			NodeCallExpr call = (NodeCallExpr) eq.expr;
 
 			List<Type> expected = new ArrayList<Type>();
-			for (String id : eq.lhs) {
-				expected.add(lookup(id));
+			for (IdExpr idExpr : eq.lhs) {
+				expected.add(idExpr.accept(this));
 			}
 
 			List<Type> actual = visitNodeCallExpr(call);
+			if (actual == null) {
+				return;
+			}
 
 			if (expected.size() != actual.size()) {
 				error(eq, "expected " + expected.size() + " values but found " + actual.size());
@@ -109,7 +134,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 			
 			for (int i = 0; i < expected.size(); i++) {
-				compareTypes(eq, expected.get(i), actual.get(i));
+				compareTypes(eq.lhs.get(i), expected.get(i), actual.get(i));
 			}
 		} else {
 			error(eq.expr, "expected node call for multiple value assignment");
@@ -117,49 +142,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	private void repopulateVariableTable(Node node) {
-		variableTable.clear();
-		for (VarDecl v : Util.getVarDecls(node)) {
-			Type type = getBaseType(v.type);
-			if (!type.isBase()) {
-				error(v, "unknown type " + type);
-			}
-			variableTable.put(v.id, type);
-		}
-	}
-
-	private Type getBaseType(Expr e) {
-		Type type = e.accept(this);
-		if (type == null) {
-			return null;
-		} else {
-			return getBaseType(type);
-		}
-	}
-
-	private Type getBaseType(Type type) {
-		Type base = typeTable.get(type.name);
-		if (base == null) {
-			return type;
-		} else {
-			return getBaseType(base);
-		}
-	}
-
-	private Type lookup(String id) {
-		if (variableTable.containsKey(id)) {
-			return variableTable.get(id);
-		} else if (constantTable.containsKey(id)) {
-			return constantTable.get(id);
-		} else {
-			return null;
-		}
-	}
-
 	@Override
 	public Type visit(BinaryExpr e) {
-		Type left = getBaseType(e.left);
-		Type right = getBaseType(e.right);
+		Type left = e.left.accept(this);
+		Type right = e.right.accept(this);
 		if (left == null || right == null) {
 			return null;
 		}
@@ -234,18 +220,21 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(IdExpr e) {
-		Type type = lookup(e.id);
-		if (type == null) {
+		if (variableTable.containsKey(e.id)) {
+			return variableTable.get(e.id);
+		} else if (constantTable.containsKey(e.id)) {
+			return constantTable.get(e.id);
+		} else {
 			error(e, "unknown variable " + e.id);
+			return null;
 		}
-		return type;
 	}
 
 	@Override
 	public Type visit(IfThenElseExpr e) {
-		Type condType = getBaseType(e.cond);
-		Type thenType = getBaseType(e.thenExpr);
-		Type elseType = getBaseType(e.elseExpr);
+		Type condType = e.cond.accept(this);
+		Type thenType = e.thenExpr.accept(this);
+		Type elseType = e.elseExpr.accept(this);
 
 		compareTypes(e.cond, Type.BOOL, condType);
 		compareTypes(e.elseExpr, thenType, elseType);
@@ -262,7 +251,9 @@ public class TypeChecker implements ExprVisitor<Type> {
 	public Type visit(NodeCallExpr e) {
 		List<Type> result = visitNodeCallExpr(e);
 
-		if (result.size() == 1) {
+		if (result == null) {
+			return null;
+		} else if (result.size() == 1) {
 			return result.get(0);
 		} else {
 			error(e, "node returns multiple values");
@@ -274,24 +265,22 @@ public class TypeChecker implements ExprVisitor<Type> {
 		Node node = nodeTable.get(e.node);
 		if (node == null) {
 			error(e, "unknown node " + e.node);
+			return null;
 		}
 
 		List<Type> actual = new ArrayList<Type>();
 		for (Expr arg : e.args) {
-			actual.add(getBaseType(arg));
-		}
-
-		if (actual.contains(null)) {
-			return null;
+			actual.add(arg.accept(this));
 		}
 
 		List<Type> expected = new ArrayList<Type>();
 		for (VarDecl input : node.inputs) {
-			expected.add(input.type);
+			expected.add(lookupBaseType(input.type));
 		}
 
 		if (actual.size() != expected.size()) {
 			error(e, "expected " + expected.size() + " arguments, but found " + actual.size());
+			return null;
 		}
 
 		for (int i = 0; i < expected.size(); i++) {
@@ -300,7 +289,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		List<Type> result = new ArrayList<Type>();
 		for (VarDecl decl : node.outputs) {
-			result.add(getBaseType(decl.type));
+			result.add(lookupBaseType(decl.type));
 		}
 		return result;
 	}
@@ -312,7 +301,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(UnaryExpr e) {
-		Type type = getBaseType(e.expr);
+		Type type = e.expr.accept(this);
 		if (type == null) {
 			return null;
 		}

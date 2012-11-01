@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
+import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TypeDef;
@@ -102,11 +103,11 @@ public class StaticAnalyzer {
 		boolean sound = true;
 
 		for (Equation eq : node.equations) {
-			for (String id : eq.lhs) {
-				if (toAssign.contains(id)) {
-					toAssign.remove(id);
-					assigned.add(id);
-				} else if (assigned.contains(id)) {
+			for (IdExpr idExpr : eq.lhs) {
+				if (toAssign.contains(idExpr.id)) {
+					toAssign.remove(idExpr.id);
+					assigned.add(idExpr.id);
+				} else if (assigned.contains(idExpr.id)) {
 					System.out.println("Error at line " + eq.location
 							+ " variable cannot be reassigned");
 					sound = false;

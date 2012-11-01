@@ -1,4 +1,3 @@
-Check for cyclic user types
 Check for cyclic node calls
 Allow parens around multiple lhs
 
@@ -10,7 +9,7 @@ Advanced invariant generation (need some examples)
 
 Differentiate unknown results (max iterations, timeout, failure) 
 
-Support for asserts? (not compatible with pkind since theirs are broken)
+Support for asserts?
 
 Additional static checks
   No unguarded pres?
