@@ -37,7 +37,7 @@ public class Director {
 	private Thread inductiveThread;
 	private Thread invariantThread;
 	
-	protected BlockingQueue<Message> incomming;
+	protected BlockingQueue<Message> incoming;
 	private long startTime;
 	
 	public Director(String filename, Node node) {
@@ -48,7 +48,7 @@ public class Director {
 		this.invalidProperties = new ArrayList<String>();
 		this.typeMap = Util.createTypeMap(node);
 		this.writer = getWriter();
-		this.incomming = new LinkedBlockingQueue<Message>();
+		this.incoming = new LinkedBlockingQueue<Message>();
 	}
 
 	private Writer getWriter() {
@@ -162,8 +162,8 @@ public class Director {
 	}
 
 	private void processMessages() {
-		while (!incomming.isEmpty()) {
-			Message message = incomming.poll();
+		while (!incoming.isEmpty()) {
+			Message message = incoming.poll();
 			long elapsed = System.currentTimeMillis() - startTime;
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;

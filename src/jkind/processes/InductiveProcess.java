@@ -57,8 +57,8 @@ public class InductiveProcess extends Process {
 
 	private void processMessagesAndWait(int k) {
 		try {
-			while (!incomming.isEmpty() || k > kLimit) {
-				Message message = incomming.take();
+			while (!incoming.isEmpty() || k > kLimit) {
+				Message message = incoming.take();
 				if (message instanceof InvalidMessage) {
 					InvalidMessage invalidMessage = (InvalidMessage) message;
 					properties.removeAll(invalidMessage.invalid);
@@ -152,7 +152,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private void sendValid(int k, List<String> valid) {
-		baseProcess.incomming.add(new ValidMessage(k, valid));
-		director.incomming.add(new ValidMessage(k, valid));
+		baseProcess.incoming.add(new ValidMessage(k, valid));
+		director.incoming.add(new ValidMessage(k, valid));
 	}
 }

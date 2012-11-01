@@ -37,7 +37,7 @@ public class InvariantProcess extends Process {
 		super(null, translation, null);
 		setScratch(filename + ".yc_inv");
 		this.typeMap = typeMap;
-		this.incomming = null;
+		this.incoming = null;
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -240,6 +240,6 @@ public class InvariantProcess extends Process {
 		for (Invariant inv : invariants) {
 			sexps.add(inv.sexp);
 		}
-		inductiveProcess.incomming.add(new InvariantMessage(sexps));
+		inductiveProcess.incoming.add(new InvariantMessage(sexps));
 	}
 }

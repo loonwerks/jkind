@@ -47,8 +47,8 @@ public class BaseProcess extends Process {
 	}
 
 	private void processMessages() {
-		while (!incomming.isEmpty()) {
-			Message message = incomming.poll();
+		while (!incoming.isEmpty()) {
+			Message message = incoming.poll();
 			if (message instanceof ValidMessage) {
 				ValidMessage validMessage = (ValidMessage) message;
 				properties.removeAll(validMessage.valid);
@@ -90,16 +90,16 @@ public class BaseProcess extends Process {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		director.incomming.add(new CounterexampleMessage(invalid, k, model));
+		director.incoming.add(new CounterexampleMessage(invalid, k, model));
 
 		if (inductiveProcess != null) {
-			inductiveProcess.incomming.add(new InvalidMessage(invalid));
+			inductiveProcess.incoming.add(new InvalidMessage(invalid));
 		}
 	}
 
 	private void sendBaseStep(int k) {
 		if (inductiveProcess != null) {
-			inductiveProcess.incomming.add(new BaseStepMessage(k));
+			inductiveProcess.incoming.add(new BaseStepMessage(k));
 		}
 	}
 

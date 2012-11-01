@@ -24,7 +24,7 @@ public abstract class Process implements Runnable {
 	protected Director director;
 	
 	protected Solver solver;
-	protected BlockingQueue<Message> incomming = new LinkedBlockingQueue<Message>();
+	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<Message>();
 	protected int kMax = Settings.n;
 	
 	private PrintWriter scratch;
