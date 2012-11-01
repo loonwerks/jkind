@@ -33,7 +33,7 @@ public class StaticAnalyzer {
 		}
 		return unique;
 	}
-	
+
 	private static boolean constantsUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<String>();
@@ -108,18 +108,19 @@ public class StaticAnalyzer {
 					toAssign.remove(idExpr.id);
 					assigned.add(idExpr.id);
 				} else if (assigned.contains(idExpr.id)) {
-					System.out.println("Error at line " + eq.location
-							+ " variable cannot be reassigned");
+					System.out.println("Error at line " + idExpr.location + " variable '"
+							+ idExpr.id + "' cannot be reassigned");
 					sound = false;
 				} else {
-					System.out.println("Error at line " + eq.location + " variable cannot be assigned");
+					System.out.println("Error at line " + idExpr.location + " variable '"
+							+ idExpr.id + "' cannot be assigned");
 					sound = false;
 				}
 			}
 		}
 
 		if (!toAssign.isEmpty()) {
-			System.out.println("Error in node " + node.id + ": variables must be assigned: "
+			System.out.println("Error in node '" + node.id + "' variables must be assigned: "
 					+ toAssign);
 			sound = false;
 		}
