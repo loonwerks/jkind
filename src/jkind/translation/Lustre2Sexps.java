@@ -3,10 +3,8 @@ package jkind.translation;
 import java.util.ArrayList;
 import java.util.List;
 
-import jkind.JKindException;
 import jkind.lustre.Equation;
 import jkind.lustre.Node;
-import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -23,22 +21,9 @@ public class Lustre2Sexps {
 
 	private void createDefinitions(Node node) {
 		for (VarDecl decl : Util.getVarDecls(node)) {
-			Sexp type = new Cons("->", new Symbol("nat"), typeToSymbol(decl.type));
+			Sexp type = new Cons("->", new Symbol("nat"), new Symbol(decl.type.name));
 			Sexp def = new Cons("define", new Symbol("$" + decl.id), new Symbol("::"), type);
 			definitions.add(def);
-		}
-	}
-
-	private Symbol typeToSymbol(Type type) {
-		switch (type) {
-		case INT:
-			return new Symbol("int");
-		case REAL:
-			return new Symbol("real");
-		case BOOL:
-			return new Symbol("bool");
-		default:
-			throw new JKindException("Unknown type: " + type);
 		}
 	}
 

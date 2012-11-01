@@ -13,6 +13,7 @@ import jkind.processes.Director;
 import jkind.slicing.Slicer;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
+import jkind.translation.InlineTypes;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
@@ -40,6 +41,7 @@ public class Main {
 			System.exit(-1);
 		}
 
+		program = InlineTypes.program(program);
 		program = InlineConstants.program(program);
 		Node main = InlineNodeCalls.program(program);
 		

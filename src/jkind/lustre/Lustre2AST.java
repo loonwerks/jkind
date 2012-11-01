@@ -9,11 +9,27 @@ import org.antlr.runtime.tree.Tree;
 
 public class Lustre2AST {
 	public static Program program(CommonTree tree) {
+		List<TypeDef> types = types(getChild(tree, LustreParser.TYPES));
 		List<Constant> constants = constants(getChild(tree, LustreParser.CONSTANTS));
 		List<Node> nodes = nodes(getChild(tree, LustreParser.NODES));
-		return new Program(loc(tree), constants, nodes);
+		return new Program(loc(tree), types, constants, nodes);
 	}
 
+	private static List<TypeDef> types(CommonTree tree) {
+		List<TypeDef> types = new ArrayList<TypeDef>();
+		if (tree == null || tree.getChildCount() == 0) {
+			return types;
+		}
+
+		for (Object o : tree.getChildren()) {
+			CommonTree child = (CommonTree) o;
+			String id = child.getText();
+			Type type = type(child.getChild(0).getText());
+			types.add(new TypeDef(loc(child), id, type));
+		}
+		return types;
+	}
+	
 	private static List<Constant> constants(CommonTree tree) {
 		List<Constant> constants = new ArrayList<Constant>();
 		if (tree == null || tree.getChildCount() == 0) {
@@ -77,7 +93,7 @@ public class Lustre2AST {
 		} else if (text.equals("bool")) {
 			return Type.BOOL;
 		} else {
-			throw new IllegalArgumentException("Unknown type");
+			return new Type(text);
 		}
 	}
 

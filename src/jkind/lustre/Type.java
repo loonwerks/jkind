@@ -1,18 +1,22 @@
 package jkind.lustre;
 
-public enum Type {
-	REAL ("real"), 
-	BOOL ("bool"), 
-	INT ("int");
-
-	private String str;
-
-	private Type(String str) {
-		this.str = str;
+public class Type {
+	final public String name;
+	
+	public Type(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public String toString() {
-		return str;
+		return name;
+	}
+	
+	final public static Type REAL = new Type("real");
+	final public static Type BOOL = new Type("bool");
+	final public static Type INT = new Type("int");
+
+	public boolean isBase() {
+		return (this == REAL || this == BOOL || this == INT);
 	}
 }

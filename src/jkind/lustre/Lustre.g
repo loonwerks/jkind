@@ -7,6 +7,7 @@ options {
 
 tokens {
   PROGRAM;
+  TYPES;
   NODES;
   CONSTANTS;
   INPUTS;
@@ -47,7 +48,19 @@ tokens {
 }
 
 program:
-  (constant | node)* EOF -> ^(PROGRAM ^(CONSTANTS constant*) ^(NODES node*))
+  (typedef | constant | node)* EOF ->
+    ^(PROGRAM
+      ^(TYPES typedef*)
+      ^(CONSTANTS constant*)
+      ^(NODES node*))
+;
+
+typedef:
+  'type' ID '=' type ';' -> ^(ID type)
+;
+
+constant:
+  'const' ID '=' expr ';' -> ^(ID expr)
 ;
 
 node:
@@ -65,10 +78,6 @@ node:
       ^(PROPERTIES property*))
 ;
 
-constant:
-  'const' ID '=' expr ';' -> ^(ID expr)
-;
-
 varDeclList:
   varDeclGroup (';' varDeclGroup)* -> varDeclGroup+
 ;
@@ -82,6 +91,7 @@ type:
 | 'subrange' '[' bound ',' bound ']' 'of' 'int' -> 'int'
 | 'bool'^
 | 'real'^
+| ID^
 ;
 
 bound:
