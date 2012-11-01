@@ -46,7 +46,7 @@ public class Director {
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
-		this.typeMap = Util.createTypeMap(node);
+		this.typeMap = Util.getTypeMap(node);
 		this.writer = getWriter();
 		this.incoming = new LinkedBlockingQueue<Message>();
 	}

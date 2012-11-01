@@ -18,7 +18,7 @@ public class Util {
 		return decls;
 	}
 
-	public static Map<String, Type> createTypeMap(Node node) {
+	public static Map<String, Type> getTypeMap(Node node) {
 		Map<String, Type> map = new HashMap<String, Type>();
 		for (VarDecl v : getVarDecls(node)) {
 			map.put(v.id, v.type);

@@ -1,18 +1,8 @@
-package jkind.translation;
+package jkind.lustre;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.Expr;
-import jkind.lustre.ExprVisitor;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.RealExpr;
-import jkind.lustre.UnaryExpr;
 
 public class MapVisitor implements ExprVisitor<Expr> {
 	@Override
