@@ -1,4 +1,6 @@
-Handle mutli nodes with multiple return values
+Check for cyclic user types
+Check for cyclic node calls
+Allow parens around multiple lhs
 
 Real support for subranges
   Subrange on input is an assert

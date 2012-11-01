@@ -102,16 +102,18 @@ public class StaticAnalyzer {
 		boolean sound = true;
 
 		for (Equation eq : node.equations) {
-			if (toAssign.contains(eq.id)) {
-				toAssign.remove(eq.id);
-				assigned.add(eq.id);
-			} else if (assigned.contains(eq.id)) {
-				System.out.println("Error at line " + eq.location
-						+ " variable cannot be reassigned");
-				sound = false;
-			} else {
-				System.out.println("Error at line " + eq.location + " variable cannot be assigned");
-				sound = false;
+			for (String id : eq.lhs) {
+				if (toAssign.contains(id)) {
+					toAssign.remove(id);
+					assigned.add(id);
+				} else if (assigned.contains(id)) {
+					System.out.println("Error at line " + eq.location
+							+ " variable cannot be reassigned");
+					sound = false;
+				} else {
+					System.out.println("Error at line " + eq.location + " variable cannot be assigned");
+					sound = false;
+				}
 			}
 		}
 

@@ -20,7 +20,7 @@ public class DependencyMap {
 
 	private void computeOneStepDependencies(Node node) {
 		for (Equation eq : node.equations) {
-			map.put(eq.id, IdExtractorVisitor.getIds(eq.expr));
+			map.put(eq.lhs.get(0), IdExtractorVisitor.getIds(eq.expr));
 		}
 	}
 

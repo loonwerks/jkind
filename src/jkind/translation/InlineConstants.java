@@ -32,7 +32,7 @@ public class InlineConstants {
 
 		List<Equation> equations = new ArrayList<Equation>();
 		for (Equation eq : node.equations) {
-			equations.add(new Equation(eq.location, eq.id, eq.expr.accept(inliner)));
+			equations.add(new Equation(eq.location, eq.lhs, eq.expr.accept(inliner)));
 		}
 
 		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,

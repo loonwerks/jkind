@@ -105,11 +105,23 @@ public class Lustre2AST {
 
 		for (Object o : tree.getChildren()) {
 			CommonTree child = (CommonTree) o;
-			String id = child.getText();
-			Expr expr = expr(child.getChild(0));
-			equations.add(new Equation(loc(tree), id, expr));
+			List<String> lhs = lhs(child.getChild(0));
+			Expr expr = expr(child.getChild(1));
+			equations.add(new Equation(loc(tree), lhs, expr));
 		}
 		return equations;
+	}
+
+	private static List<String> lhs(Tree tree) {
+		CommonTree ctree = (CommonTree) tree;
+		List<String> lhs = new ArrayList<String>();
+		
+		for (Object o : ctree.getChildren()) {
+			CommonTree child = (CommonTree) o;
+			lhs.add(child.getText());
+		}
+		
+		return lhs;
 	}
 
 	private static Expr expr(Tree tree) {

@@ -14,6 +14,8 @@ tokens {
   OUTPUTS;
   LOCALS;
   EQUATIONS;
+  EQUATION;
+  LHS;
   PROPERTIES;
   REAL;
   NEGATE;
@@ -103,7 +105,7 @@ property:
 ;
 
 equation:
-  ID '=' expr ';' -> ^(ID expr)
+  ID (',' ID)* '=' expr ';' -> ^(EQUATION ^(LHS ID*) expr)
 ;
 
 expr:

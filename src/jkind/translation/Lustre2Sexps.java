@@ -42,7 +42,7 @@ public class Lustre2Sexps {
 	
 	private Sexp equation2Sexp(Equation eq, Symbol iSym) {
 		Sexp body = eq.expr.accept(new Expr2SexpVisitor(iSym));
-		return new Cons("=", new Cons("$" + eq.id, iSym), body);
+		return new Cons("=", new Cons("$" + eq.lhs.get(0), iSym), body);
 	}
 
 	public Sexp getTransition() {

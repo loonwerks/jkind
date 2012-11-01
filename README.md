@@ -20,7 +20,6 @@ Current Limitations
 - No abstraction
 - No path compression
 - No termination checking
-- Limited multi-node Lustre support
 - No inlining
 - No inductive counter-examples
 - Yices is the only supported back-end solver

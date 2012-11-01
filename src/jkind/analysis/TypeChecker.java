@@ -43,16 +43,16 @@ public class TypeChecker implements ExprVisitor<Type> {
 	public static boolean check(Program program) {
 		return new TypeChecker().visitProgram(program);
 	}
-	
+
 	public boolean visitProgram(Program program) {
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
 		nodeTable = Util.getNodeTable(program.nodes);
-		
+
 		for (Node node : program.nodes) {
 			visitNode(node);
 		}
-		
+
 		return passed;
 	}
 
@@ -61,29 +61,62 @@ public class TypeChecker implements ExprVisitor<Type> {
 			typeTable.put(def.id, def.type);
 		}
 	}
-	
+
 	private void populateConstantTable(List<Constant> constants) {
 		for (Constant c : constants) {
 			constantTable.put(c.id, getBaseType(c.expr));
 		}
 	}
-	
+
 	public boolean visitNode(Node node) {
 		repopulateVariableTable(node);
 
 		for (Equation eq : node.equations) {
-			Type expected = lookup(eq.id);
-			Type actual = getBaseType(eq.expr);
-			if (expected == null) {
-				error(eq, "unknown variable " + eq.id);
+			if (eq.lhs.size() == 1) {
+				checkSingleAssignment(eq);
 			} else {
-				compareTypes(eq, expected, actual);
+				checkNodeCallAssignment(eq);
 			}
 		}
 
 		return passed;
 	}
-	
+
+	private void checkSingleAssignment(Equation eq) {
+		Type expected = lookup(eq.lhs.get(0));
+		Type actual = getBaseType(eq.expr);
+		if (expected == null) {
+			error(eq, "unknown variable " + eq.lhs.get(0));
+		} else {
+			compareTypes(eq, expected, actual);
+		}
+	}
+
+	private void checkNodeCallAssignment(Equation eq) {
+		if (eq.expr instanceof NodeCallExpr) {
+			NodeCallExpr call = (NodeCallExpr) eq.expr;
+
+			List<Type> expected = new ArrayList<Type>();
+			for (String id : eq.lhs) {
+				expected.add(lookup(id));
+			}
+
+			List<Type> actual = visitNodeCallExpr(call);
+
+			if (expected.size() != actual.size()) {
+				error(eq, "expected " + expected.size() + " values but found " + actual.size());
+				return;
+			}
+			
+			for (int i = 0; i < expected.size(); i++) {
+				compareTypes(eq, expected.get(i), actual.get(i));
+			}
+		} else {
+			error(eq.expr, "expected node call for multiple value assignment");
+			return;
+		}
+	}
+
 	private void repopulateVariableTable(Node node) {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
@@ -101,9 +134,9 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return null;
 		} else {
 			return getBaseType(type);
-		}	
+		}
 	}
-	
+
 	private Type getBaseType(Type type) {
 		Type base = typeTable.get(type.name);
 		if (base == null) {
@@ -130,11 +163,11 @@ public class TypeChecker implements ExprVisitor<Type> {
 		if (left == null || right == null) {
 			return null;
 		}
-		
+
 		switch (e.op) {
 		case PLUS:
 		case MINUS:
-		case MULTIPLY:		
+		case MULTIPLY:
 			if (left == Type.REAL && right == Type.REAL) {
 				return Type.REAL;
 			}
@@ -142,26 +175,26 @@ public class TypeChecker implements ExprVisitor<Type> {
 				return Type.INT;
 			}
 			break;
-			
+
 		case DIVIDE:
 			if (left == Type.REAL && right == Type.REAL) {
 				return Type.REAL;
 			}
 			break;
-			
+
 		case INT_DIVIDE:
 			if (left == Type.INT && right == Type.INT) {
 				return Type.INT;
 			}
 			break;
-			
+
 		case EQUAL:
 		case NOTEQUAL:
 			if (left == right) {
 				return Type.BOOL;
 			}
 			break;
-			
+
 		case GREATER:
 		case LESS:
 		case GREATEREQUAL:
@@ -173,7 +206,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 				return Type.BOOL;
 			}
 			break;
-			
+
 		case OR:
 		case AND:
 		case XOR:
@@ -182,14 +215,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 				return Type.BOOL;
 			}
 			break;
-			
+
 		case ARROW:
 			if (left == right) {
 				return left;
 			}
 			break;
 		}
-		
+
 		error(e, "operator '" + e.op + "' not defined on types " + left + ", " + right);
 		return null;
 	}
@@ -227,41 +260,51 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(NodeCallExpr e) {
+		List<Type> result = visitNodeCallExpr(e);
+
+		if (result.size() == 1) {
+			return result.get(0);
+		} else {
+			error(e, "node returns multiple values");
+			return null;
+		}
+	}
+
+	public List<Type> visitNodeCallExpr(NodeCallExpr e) {
 		Node node = nodeTable.get(e.node);
 		if (node == null) {
 			error(e, "unknown node " + e.node);
 		}
-		
+
 		List<Type> actual = new ArrayList<Type>();
 		for (Expr arg : e.args) {
 			actual.add(getBaseType(arg));
 		}
-		
+
 		if (actual.contains(null)) {
 			return null;
 		}
-		
+
 		List<Type> expected = new ArrayList<Type>();
 		for (VarDecl input : node.inputs) {
 			expected.add(input.type);
 		}
-		
+
 		if (actual.size() != expected.size()) {
 			error(e, "expected " + expected.size() + " arguments, but found " + actual.size());
 		}
-		
+
 		for (int i = 0; i < expected.size(); i++) {
 			compareTypes(e.args.get(i), expected.get(i), actual.get(i));
 		}
-		
-		if (node.outputs.size() == 1) {
-			return node.outputs.get(0).type;
-		} else {
-			System.out.println("Error at line " + e.location + " unsupported return values from node");
-			return null;
+
+		List<Type> result = new ArrayList<Type>();
+		for (VarDecl decl : node.outputs) {
+			result.add(getBaseType(decl.type));
 		}
+		return result;
 	}
-	
+
 	@Override
 	public Type visit(RealExpr e) {
 		return Type.REAL;
@@ -273,24 +316,24 @@ public class TypeChecker implements ExprVisitor<Type> {
 		if (type == null) {
 			return null;
 		}
-		
+
 		switch (e.op) {
 		case NEGATIVE:
 			if (type == Type.INT || type == Type.REAL) {
 				return type;
 			}
 			break;
-			
+
 		case NOT:
 			if (type == Type.BOOL) {
 				return type;
 			}
 			break;
-			
+
 		case PRE:
 			return type;
 		}
-		
+
 		error(e, "operator '" + e.op + "' not defined on type " + type);
 		return null;
 	}

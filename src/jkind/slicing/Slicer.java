@@ -45,7 +45,7 @@ public class Slicer {
 	private static List<Equation> sliceEquations(List<Equation> equations, Set<String> keep) {
 		List<Equation> sliced = new ArrayList<Equation>();
 		for (Equation eq : equations) {
-			if (keep.contains(eq.id)) {
+			if (keep.contains(eq.lhs.get(0))) {
 				sliced.add(eq);
 			}
 		}
