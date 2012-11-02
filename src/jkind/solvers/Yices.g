@@ -36,7 +36,7 @@ model returns [Model m]
 @init{
   $m = new Model();
 }
-  : (valueAssignment[m] | functionAssignment[m])+ ;
+  : (valueAssignment[m] | functionAssignment[m] | builtinAssignment)+ ;
 
 valueAssignment[Model m]:
     '(' '=' ID value ')'     { $m.addValue($ID.text, $value.v); }
@@ -46,6 +46,12 @@ functionAssignment[Model m]:
     '(' '=' '(' ID integer ')' value ')'
     { $m.addFunctionValue($ID.text, Integer.parseInt($integer.text), $value.v); }
   ;
+  
+builtinAssignment:
+    '(' '=' '(' BUILT_IN integer integer ')' integer ')'
+  ;
+  
+BUILT_IN: 'mod' | 'div';
 
 value returns [Value v]:
     'true'      { $v = BoolValue.TRUE; }
