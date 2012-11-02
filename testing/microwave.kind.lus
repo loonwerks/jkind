@@ -1,3 +1,5 @@
+-- This file is translated from the Rockwell Collins microwave in Simulink.
+-- It lead to the discovery of issue #1.
 
 node microwave(KP_START: bool; 
       KP_CLEAR: bool; 

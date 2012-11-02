@@ -1,0 +1,23 @@
+-- This file contains a simple property which requires the invariant
+-- described by 'lemma' (either explicitly or through invariant
+-- generation)
+
+node main() returns (x: bool);
+var
+   count: int; 
+   prop: bool;
+   lemma: bool;
+let
+   count = 1 -> 
+      (if (pre(count) < 5)
+         then pre(count) + 1
+         else 5);
+
+   x = false -> ((not (count >= 5)) and (pre x));
+
+   prop = true -> ((not (pre x)) or x);
+   --%PROPERTY prop;
+
+   lemma = not x;
+   -- %PROPERTY lemma;
+tel;
