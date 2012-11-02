@@ -7,7 +7,7 @@ import java.util.List;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
-public class Lustre2AST {
+public class Antlr2Lustre {
 	public static Program program(CommonTree tree) {
 		List<TypeDef> types = types(getChild(tree, LustreParser.TYPES));
 		List<Constant> constants = constants(getChild(tree, LustreParser.CONSTANTS));

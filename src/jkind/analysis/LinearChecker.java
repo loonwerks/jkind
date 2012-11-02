@@ -55,7 +55,12 @@ public class LinearChecker extends IterVisitor {
 		case INT_DIVIDE:
 			if (!isConstant(e.right)) {
 				System.out.println("Non-constant division at line " + e.location);
+				passed = false;
 			}
+			break;
+			
+		default:
+			break;
 		}
 		
 		return null;

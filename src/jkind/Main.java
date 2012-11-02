@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.Lustre2AST;
+import jkind.lustre.Antlr2Lustre;
 import jkind.lustre.LustreLexer;
 import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
@@ -59,6 +59,6 @@ public class Main {
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.exit(-1);
 		}
-		return Lustre2AST.program(tree);
+		return Antlr2Lustre.program(tree);
 	}
 }
