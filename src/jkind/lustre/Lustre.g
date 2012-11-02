@@ -105,7 +105,16 @@ property:
 ;
 
 equation:
-  ID (',' ID)* '=' expr ';' -> ^(EQUATION ^(LHS ID*) expr)
+  lhs_opt_parens '=' expr ';' -> ^(EQUATION lhs_opt_parens expr)
+;
+
+lhs_opt_parens:
+  lhs
+| '(' lhs ')' -> lhs
+;
+
+lhs:
+  ID (',' ID)* -> ^(LHS ID*)
 ;
 
 expr:
