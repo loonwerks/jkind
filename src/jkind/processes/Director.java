@@ -75,7 +75,7 @@ public class Director {
 		startTime = System.currentTimeMillis();
 		long timeout = startTime + Settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
-				&& someThreadAlive() && !someThreadFailed()) {
+				&& someCriticalThreadAlive() && !someThreadFailed()) {
 			processMessages();
 			try {
 				Thread.sleep(100);
@@ -91,16 +91,12 @@ public class Director {
 		writer.end();
 		printSummary();
 		reportFailures();
-		
 	}
 
-	private boolean someThreadAlive() {
+	private boolean someCriticalThreadAlive() {
 		boolean result = baseThread.isAlive();
 		if (inductiveThread != null) {
 			result = result || inductiveThread.isAlive();
-		}
-		if (invariantThread != null) {
-			result = result || invariantThread.isAlive();
 		}
 		return result;
 	}
