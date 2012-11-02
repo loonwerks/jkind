@@ -144,21 +144,30 @@ public class Director {
 		Lustre2Sexps translation = new Lustre2Sexps(node);
 		
 		baseProcess = new BaseProcess(filename, node.properties, translation, this);
-		inductiveProcess = new InductiveProcess(filename, node.properties, translation,
-				this);
-		invariantProcess = new InvariantProcess(filename, translation, typeMap);
-
-		baseProcess.setInductiveProcess(inductiveProcess);
-		inductiveProcess.setBaseProcess(baseProcess);
-		invariantProcess.setInductiveProcess(inductiveProcess);
-		
 		baseThread = new Thread(baseProcess, "base");
-		inductiveThread = new Thread(inductiveProcess, "inductive");
-		invariantThread = new Thread(invariantProcess, "invariant");
+		
+		if (Settings.useInductiveProcess) {
+			inductiveProcess = new InductiveProcess(filename, node.properties, translation,
+					this);
+			baseProcess.setInductiveProcess(inductiveProcess);
+			inductiveProcess.setBaseProcess(baseProcess);
+			inductiveThread = new Thread(inductiveProcess, "inductive");
+		}
+		
+		if (Settings.useInvariantProcess) {
+			invariantProcess = new InvariantProcess(filename, translation, typeMap);
+			invariantProcess.setInductiveProcess(inductiveProcess);
+			invariantThread = new Thread(invariantProcess, "invariant");
+		}
+		
 		
 		baseThread.start();
-		inductiveThread.start();
-		invariantThread.start();
+		if (Settings.useInductiveProcess) {
+			inductiveThread.start();
+		}
+		if (Settings.useInvariantProcess) {
+			invariantThread.start();
+		}
 	}
 
 	private void processMessages() {
