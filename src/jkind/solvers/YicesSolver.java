@@ -93,6 +93,7 @@ public class YicesSolver extends Solver {
 		try {
 			String line;
 			StringBuilder content = new StringBuilder();
+			boolean seenContextError = false;
 			while (true) {
 				line = fromYices.readLine();
 				debug("; YICES: " + line);
@@ -101,6 +102,16 @@ public class YicesSolver extends Solver {
 				} else if (line.contains("Error:")) {
 					throw new JKindException("Yices error: " + line);
 				} else if (line.startsWith("Logical context")) {
+					/*
+					 * One instance of a 'Logical context' message may come from
+					 * the query we are asserting, but two instances indicates
+					 * that some assumption about the system is false
+					 */
+
+					if (seenContextError) {
+						throw new JKindException("Lustre program is inconsistent");
+					}
+					seenContextError = true;
 					continue;
 				} else if (line.equals(DONE)) {
 					break;
