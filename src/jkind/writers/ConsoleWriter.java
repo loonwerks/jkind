@@ -29,9 +29,9 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(List<String> props, int k, Model model, long elapsed) {
+	public void writeInvalid(String prop, int k, Model model, long elapsed) {
 		writeLine();
-		System.out.println("INVALID PROPERTIES: " + props + " || K = " + k + " || Time = "
+		System.out.println("INVALID PROPERTY: " + prop + " || K = " + k + " || Time = "
 				+ elapsed / 1000.0);
 
 		System.out.format("%25s %6s ", "", "Step");

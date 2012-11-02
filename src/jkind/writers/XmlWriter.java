@@ -3,7 +3,6 @@ package jkind.writers;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,13 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, int k, long elapsed) {
-		out.println("  <Property name=\"" + spaces(props) + "\">");
+		for (String prop : props) {
+			writeValid(prop, k, elapsed);
+		}
+	}
+
+	public void writeValid(String prop, int k, long elapsed) {
+		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
 				+ "</Runtime>");
 		out.println("    <K>" + k + "</K>");
@@ -42,21 +47,9 @@ public class XmlWriter extends Writer {
 		out.println("  </Property>");
 	}
 
-	private String spaces(List<String> strings) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<String> iterator = strings.iterator();
-		while (iterator.hasNext()) {
-			sb.append(iterator.next());
-			if (iterator.hasNext()) {
-				sb.append(" ");
-			}
-		}
-		return sb.toString();
-	}
-
 	@Override
-	public void writeInvalid(List<String> props, int k, Model model, long elapsed) {
-		out.println("  <Property name=\"" + spaces(props) + "\">");
+	public void writeInvalid(String prop, int k, Model model, long elapsed) {
+		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
 				+ "</Runtime>");
 		out.println("    <K>" + k + "</K>");
@@ -101,7 +94,13 @@ public class XmlWriter extends Writer {
 	}
 
 	public void writeUnknown(List<String> props) {
-		out.println("  <Property name=\"" + spaces(props) + "\">");
+		for (String prop : props) {
+			writeUnknown(prop);
+		}
+	}
+	
+	public void writeUnknown(String prop) {
+		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Answer>unknown</Answer>");
 		out.println("  </Property>");
 	}

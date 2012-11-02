@@ -10,7 +10,7 @@ import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.processes.Director;
-import jkind.slicing.Slicer;
+import jkind.slicing.LustreSlicer;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineTypes;
@@ -45,7 +45,7 @@ public class Main {
 		program = InlineConstants.program(program);
 		Node main = InlineNodeCalls.program(program);
 		
-		main = Slicer.slice(main);
+		main = LustreSlicer.slice(main);
 		new Director(filename, main).run();
 		System.exit(0); // Kills all threads
 	}

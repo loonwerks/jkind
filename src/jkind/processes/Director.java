@@ -14,6 +14,8 @@ import jkind.lustre.Type;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
+import jkind.slicing.CounterexampleSlicer;
+import jkind.solvers.Model;
 import jkind.translation.Lustre2Sexps;
 import jkind.translation.Util;
 import jkind.writers.ConsoleWriter;
@@ -27,6 +29,7 @@ public class Director {
 	private List<String> validProperties;
 	private List<String> invalidProperties;
 	private Map<String, Type> typeMap;
+	private CounterexampleSlicer cexSlicer;
 	private Writer writer;
 	
 	private BaseProcess baseProcess;
@@ -43,6 +46,7 @@ public class Director {
 	public Director(String filename, Node node) {
 		this.filename = filename;
 		this.node = node;
+		this.cexSlicer = new CounterexampleSlicer(node);
 		this.remainingProperties = new ArrayList<String>(node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
@@ -174,7 +178,10 @@ public class Director {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
 				remainingProperties.removeAll(cex.invalid);
 				invalidProperties.addAll(cex.invalid);
-				writer.writeInvalid(cex.invalid, cex.k, cex.model, elapsed);
+				for (String invalidProp : cex.invalid) {
+					Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
+					writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
+				}
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());

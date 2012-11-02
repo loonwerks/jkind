@@ -12,7 +12,7 @@ public abstract class Writer {
 	public abstract void end();
 	
 	public abstract void writeValid(List<String> props, int k, long elapsed);
-	public abstract void writeInvalid(List<String> props, int k, Model model, long elapsed);
+	public abstract void writeInvalid(String prop, int k, Model model, long elapsed);
 	public abstract void writeUnknown(List<String> props);
 	
 	protected static SortedSet<String> getRelevantFunctions(Set<String> functions) {
