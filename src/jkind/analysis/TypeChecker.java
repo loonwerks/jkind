@@ -91,7 +91,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (VarDecl v : Util.getVarDecls(node)) {
 			Type type = lookupBaseType(v.type);
 			if (type == null) {
-				error(v, "unknown type " + type);
+				error(v, "unknown type '" + v.type + "'");
 				type = null;
 			}
 			variableTable.put(v.id, type);
