@@ -74,6 +74,7 @@ public class InvariantProcess extends Process {
 
 		removeTrivialInvariants();
 		if (possibleInvariants.isEmpty()) {
+			debug("No invariants produced");
 			return;
 		}
 
@@ -246,6 +247,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private void sendInvariants(List<Invariant> invariants) {
+		debug("Sending " + invariants);
 		List<Sexp> sexps = new ArrayList<Sexp>();
 		for (Invariant inv : invariants) {
 			sexps.add(inv.sexp);

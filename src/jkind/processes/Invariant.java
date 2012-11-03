@@ -10,4 +10,9 @@ public class Invariant {
 		this.id = id;
 		this.sexp = sexp;
 	}
+	
+	@Override
+	public String toString() {
+		return id;
+	}
 }
