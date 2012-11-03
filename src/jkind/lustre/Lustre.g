@@ -19,7 +19,6 @@ tokens {
   PROPERTIES;
   REAL;
   NEGATE;
-  IDENT;
   NODECALL;
 }
 
@@ -33,7 +32,6 @@ tokens {
 
 @members {
   protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
-  private Map<String, Expr> consts = new HashMap<String, Expr>();
 
   @Override
   public void emitErrorMessage(String msg) {
@@ -181,7 +179,7 @@ prefixExpr:
 ;
 
 atomicExpr:
-  ID -> ^(IDENT ID)
+  ID
 | INT
 | real
 | BOOL
@@ -190,7 +188,7 @@ atomicExpr:
 | '(' expr ')' -> expr
 ;
 
-real: a=INT '.' b=INT -> REAL[$real.text];
+real: INT '.' INT -> REAL[$real.text];
 
 IF: 'if';
 NOT: 'not';

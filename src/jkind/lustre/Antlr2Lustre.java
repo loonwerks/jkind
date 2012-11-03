@@ -147,8 +147,8 @@ public class Antlr2Lustre {
 			return new IntExpr(loc(tree), Integer.parseInt(tree.getText()));
 		case LustreParser.REAL:
 			return new RealExpr(loc(tree), new BigDecimal(tree.getText()));
-		case LustreParser.IDENT:
-			return new IdExpr(loc(tree), tree.getChild(0).getText());
+		case LustreParser.ID:
+			return new IdExpr(loc(tree), tree.getText());
 		case LustreParser.IF:
 			return new IfThenElseExpr(loc(tree), expr(tree.getChild(0)), expr(tree.getChild(1)),
 					expr(tree.getChild(2)));
