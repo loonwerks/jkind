@@ -1,7 +1,7 @@
 package jkind.lustre;
 
 
-public class Constant extends AST {
+public class Constant extends Ast {
 	final public String id;
 	final public Expr expr;
 

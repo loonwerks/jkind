@@ -1,6 +1,6 @@
 package jkind.lustre;
 
-public class VarDecl extends AST {
+public class VarDecl extends Ast {
 	final public String id;
 	final public Type type;
 

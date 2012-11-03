@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class Equation extends AST {
+public class Equation extends Ast {
 	final public List<IdExpr> lhs;
 	final public Expr expr;
 

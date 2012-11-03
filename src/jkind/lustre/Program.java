@@ -3,7 +3,7 @@ package jkind.lustre;
 import java.util.Collections;
 import java.util.List;
 
-public class Program extends AST {
+public class Program extends Ast {
 	final public List<TypeDef> types;
 	final public List<Constant> constants;
 	final public List<Node> nodes;

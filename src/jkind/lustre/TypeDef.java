@@ -1,7 +1,7 @@
 package jkind.lustre;
 
 
-public class TypeDef extends AST {
+public class TypeDef extends Ast {
 	final public String id;
 	final public Type type;
 

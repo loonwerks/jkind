@@ -1,9 +1,9 @@
 package jkind.lustre;
 
-public abstract class AST {
+public abstract class Ast {
 	final public Location location;
 	
-	public AST(Location location) {
+	public Ast(Location location) {
 		this.location = location;
 	}
 }

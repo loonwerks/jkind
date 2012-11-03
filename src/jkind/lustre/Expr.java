@@ -1,6 +1,6 @@
 package jkind.lustre;
 
-public abstract class Expr extends AST {
+public abstract class Expr extends Ast {
 	public Expr(Location location) {
 		super(location);
 	}

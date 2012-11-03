@@ -3,7 +3,7 @@ package jkind.lustre;
 import java.util.Collections;
 import java.util.List;
 
-public class Node extends AST {
+public class Node extends Ast {
 	final public String id;
 	final public List<VarDecl> inputs;
 	final public List<VarDecl> outputs;

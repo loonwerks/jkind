@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.lustre.AST;
+import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Constant;
@@ -330,7 +330,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return null;
 	}
 
-	private void compareTypes(AST ast, Type expected, Type actual) {
+	private void compareTypes(Ast ast, Type expected, Type actual) {
 		if (expected == null || actual == null) {
 			return;
 		}
@@ -340,7 +340,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	private void error(AST ast, String message) {
+	private void error(Ast ast, String message) {
 		passed = false;
 		System.out.println("Type error at line " + ast.location + " " + message);
 	}
