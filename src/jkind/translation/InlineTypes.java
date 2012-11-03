@@ -37,15 +37,15 @@ public class InlineTypes {
 	private static List<VarDecl> varDecls(List<VarDecl> decls, Map<String, Type> types) {
 		List<VarDecl> inlinedDecls = new ArrayList<VarDecl>();
 		for (VarDecl decl : decls) {
-			Type base = getBaseType(decl.type, types);
+			Type base = getBuiltinType(decl.type, types);
 			inlinedDecls.add(new VarDecl(decl.location, decl.id, base));
 		}
 		return inlinedDecls;
 	}
 
-	private static Type getBaseType(Type type, Map<String, Type> types) {
+	private static Type getBuiltinType(Type type, Map<String, Type> types) {
 		Type curr = type;
-		while (!curr.isBase()) {
+		while (!curr.isBuiltin()) {
 			curr = types.get(curr.name);
 		}
 		return curr;

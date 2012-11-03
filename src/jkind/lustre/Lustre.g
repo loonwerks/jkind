@@ -34,11 +34,7 @@ tokens {
 @members {
   protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
   private Map<String, Expr> consts = new HashMap<String, Expr>();
-  
-  private CommonTree makeReal(String text) {
-    return new CommonTree(new CommonToken(REAL, text));
-  }
-  
+
   @Override
   public void emitErrorMessage(String msg) {
     System.out.println(msg);
@@ -90,14 +86,14 @@ varDeclGroup:
 
 type:
   'int'^
-| 'subrange' '[' bound ',' bound ']' 'of' 'int' -> 'int'
+| 'subrange' '[' low=bound ',' high=bound ']' 'of' 'int' -> ^('int' $low $high)
 | 'bool'^
 | 'real'^
 | ID^
 ;
 
 bound:
-  '-'? INT
+  '-'? INT -> INT[$bound.text]
 ;
 
 property:
@@ -194,7 +190,7 @@ atomicExpr:
 | '(' expr ')' -> expr
 ;
 
-real: a=INT '.' b=INT -> {makeReal($a.text + "." + $b.text)};
+real: a=INT '.' b=INT -> REAL[$real.text];
 
 IF: 'if';
 NOT: 'not';

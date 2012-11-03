@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Lustre.g 2012-11-01 19:55:43
+// $ANTLR 3.4 Lustre.g 2012-11-02 19:52:58
 
   package jkind.lustre;
 
@@ -114,11 +114,7 @@ public TreeAdaptor getTreeAdaptor() {
 
       protected void ignore(Stack<Void> stack, List<Void> list, ArrayList<Void> arraylist) {}
       private Map<String, Expr> consts = new HashMap<String, Expr>();
-      
-      private CommonTree makeReal(String text) {
-        return new CommonTree(new CommonToken(REAL, text));
-      }
-      
+
       @Override
       public void emitErrorMessage(String msg) {
         System.out.println(msg);
@@ -132,7 +128,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "program"
-    // Lustre.g:52:1: program : ( typedef | constant | node )* EOF -> ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) ) ;
+    // Lustre.g:48:1: program : ( typedef | constant | node )* EOF -> ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) ) ;
     public final LustreParser.program_return program() throws RecognitionException {
         LustreParser.program_return retval = new LustreParser.program_return();
         retval.start = input.LT(1);
@@ -154,10 +150,10 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleSubtreeStream stream_constant=new RewriteRuleSubtreeStream(adaptor,"rule constant");
         RewriteRuleSubtreeStream stream_typedef=new RewriteRuleSubtreeStream(adaptor,"rule typedef");
         try {
-            // Lustre.g:52:8: ( ( typedef | constant | node )* EOF -> ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) ) )
-            // Lustre.g:53:3: ( typedef | constant | node )* EOF
+            // Lustre.g:48:8: ( ( typedef | constant | node )* EOF -> ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) ) )
+            // Lustre.g:49:3: ( typedef | constant | node )* EOF
             {
-            // Lustre.g:53:3: ( typedef | constant | node )*
+            // Lustre.g:49:3: ( typedef | constant | node )*
             loop1:
             do {
                 int alt1=4;
@@ -182,7 +178,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt1) {
             	case 1 :
-            	    // Lustre.g:53:4: typedef
+            	    // Lustre.g:49:4: typedef
             	    {
             	    pushFollow(FOLLOW_typedef_in_program145);
             	    typedef1=typedef();
@@ -194,7 +190,7 @@ public TreeAdaptor getTreeAdaptor() {
             	    }
             	    break;
             	case 2 :
-            	    // Lustre.g:53:14: constant
+            	    // Lustre.g:49:14: constant
             	    {
             	    pushFollow(FOLLOW_constant_in_program149);
             	    constant2=constant();
@@ -206,7 +202,7 @@ public TreeAdaptor getTreeAdaptor() {
             	    }
             	    break;
             	case 3 :
-            	    // Lustre.g:53:25: node
+            	    // Lustre.g:49:25: node
             	    {
             	    pushFollow(FOLLOW_node_in_program153);
             	    node3=node();
@@ -241,23 +237,23 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 53:36: -> ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) )
+            // 49:36: -> ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) )
             {
-                // Lustre.g:54:5: ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) )
+                // Lustre.g:50:5: ^( PROGRAM ^( TYPES ( typedef )* ) ^( CONSTANTS ( constant )* ) ^( NODES ( node )* ) )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(PROGRAM, "PROGRAM")
                 , root_1);
 
-                // Lustre.g:55:7: ^( TYPES ( typedef )* )
+                // Lustre.g:51:7: ^( TYPES ( typedef )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(TYPES, "TYPES")
                 , root_2);
 
-                // Lustre.g:55:15: ( typedef )*
+                // Lustre.g:51:15: ( typedef )*
                 while ( stream_typedef.hasNext() ) {
                     adaptor.addChild(root_2, stream_typedef.nextTree());
 
@@ -267,14 +263,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:56:7: ^( CONSTANTS ( constant )* )
+                // Lustre.g:52:7: ^( CONSTANTS ( constant )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(CONSTANTS, "CONSTANTS")
                 , root_2);
 
-                // Lustre.g:56:19: ( constant )*
+                // Lustre.g:52:19: ( constant )*
                 while ( stream_constant.hasNext() ) {
                     adaptor.addChild(root_2, stream_constant.nextTree());
 
@@ -284,14 +280,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:57:7: ^( NODES ( node )* )
+                // Lustre.g:53:7: ^( NODES ( node )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(NODES, "NODES")
                 , root_2);
 
-                // Lustre.g:57:15: ( node )*
+                // Lustre.g:53:15: ( node )*
                 while ( stream_node.hasNext() ) {
                     adaptor.addChild(root_2, stream_node.nextTree());
 
@@ -343,7 +339,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "typedef"
-    // Lustre.g:60:1: typedef : 'type' ID '=' type ';' -> ^( ID type ) ;
+    // Lustre.g:56:1: typedef : 'type' ID '=' type ';' -> ^( ID type ) ;
     public final LustreParser.typedef_return typedef() throws RecognitionException {
         LustreParser.typedef_return retval = new LustreParser.typedef_return();
         retval.start = input.LT(1);
@@ -368,8 +364,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_65=new RewriteRuleTokenStream(adaptor,"token 65");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
-            // Lustre.g:60:8: ( 'type' ID '=' type ';' -> ^( ID type ) )
-            // Lustre.g:61:3: 'type' ID '=' type ';'
+            // Lustre.g:56:8: ( 'type' ID '=' type ';' -> ^( ID type ) )
+            // Lustre.g:57:3: 'type' ID '=' type ';'
             {
             string_literal5=(Token)match(input,65,FOLLOW_65_in_typedef216); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_65.add(string_literal5);
@@ -395,7 +391,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
             // AST REWRITE
-            // elements: ID, type
+            // elements: type, ID
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -407,9 +403,9 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 61:26: -> ^( ID type )
+            // 57:26: -> ^( ID type )
             {
-                // Lustre.g:61:29: ^( ID type )
+                // Lustre.g:57:29: ^( ID type )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
@@ -460,7 +456,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "constant"
-    // Lustre.g:64:1: constant : 'const' ID '=' expr ';' -> ^( ID expr ) ;
+    // Lustre.g:60:1: constant : 'const' ID '=' expr ';' -> ^( ID expr ) ;
     public final LustreParser.constant_return constant() throws RecognitionException {
         LustreParser.constant_return retval = new LustreParser.constant_return();
         retval.start = input.LT(1);
@@ -485,8 +481,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_52=new RewriteRuleTokenStream(adaptor,"token 52");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // Lustre.g:64:9: ( 'const' ID '=' expr ';' -> ^( ID expr ) )
-            // Lustre.g:65:3: 'const' ID '=' expr ';'
+            // Lustre.g:60:9: ( 'const' ID '=' expr ';' -> ^( ID expr ) )
+            // Lustre.g:61:3: 'const' ID '=' expr ';'
             {
             string_literal10=(Token)match(input,52,FOLLOW_52_in_constant242); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_52.add(string_literal10);
@@ -524,9 +520,9 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 65:27: -> ^( ID expr )
+            // 61:27: -> ^( ID expr )
             {
-                // Lustre.g:65:30: ^( ID expr )
+                // Lustre.g:61:30: ^( ID expr )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
@@ -577,7 +573,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "node"
-    // Lustre.g:68:1: node : 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) ;
+    // Lustre.g:64:1: node : 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) ;
     public final LustreParser.node_return node() throws RecognitionException {
         LustreParser.node_return retval = new LustreParser.node_return();
         retval.start = input.LT(1);
@@ -635,8 +631,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleSubtreeStream stream_varDeclList=new RewriteRuleSubtreeStream(adaptor,"rule varDeclList");
         RewriteRuleSubtreeStream stream_property=new RewriteRuleSubtreeStream(adaptor,"rule property");
         try {
-            // Lustre.g:68:5: ( 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) )
-            // Lustre.g:69:3: 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
+            // Lustre.g:64:5: ( 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';' -> ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) ) )
+            // Lustre.g:65:3: 'node' ID '(' (inputs= varDeclList )? ')' 'returns' '(' (outputs= varDeclList )? ')' ';' ( 'var' locals= varDeclList ';' )? 'let' ( equation | property )* 'tel' ';'
             {
             string_literal15=(Token)match(input,57,FOLLOW_57_in_node268); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_57.add(string_literal15);
@@ -650,7 +646,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_30.add(char_literal17);
 
 
-            // Lustre.g:69:23: (inputs= varDeclList )?
+            // Lustre.g:65:23: (inputs= varDeclList )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -659,7 +655,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt2) {
                 case 1 :
-                    // Lustre.g:69:23: inputs= varDeclList
+                    // Lustre.g:65:23: inputs= varDeclList
                     {
                     pushFollow(FOLLOW_varDeclList_in_node276);
                     inputs=varDeclList();
@@ -686,7 +682,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_30.add(char_literal20);
 
 
-            // Lustre.g:70:24: (outputs= varDeclList )?
+            // Lustre.g:66:24: (outputs= varDeclList )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -695,7 +691,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt3) {
                 case 1 :
-                    // Lustre.g:70:24: outputs= varDeclList
+                    // Lustre.g:66:24: outputs= varDeclList
                     {
                     pushFollow(FOLLOW_varDeclList_in_node289);
                     outputs=varDeclList();
@@ -718,7 +714,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_40.add(char_literal22);
 
 
-            // Lustre.g:71:3: ( 'var' locals= varDeclList ';' )?
+            // Lustre.g:67:3: ( 'var' locals= varDeclList ';' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -727,7 +723,7 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt4) {
                 case 1 :
-                    // Lustre.g:71:4: 'var' locals= varDeclList ';'
+                    // Lustre.g:67:4: 'var' locals= varDeclList ';'
                     {
                     string_literal23=(Token)match(input,66,FOLLOW_66_in_node299); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_66.add(string_literal23);
@@ -754,7 +750,7 @@ public TreeAdaptor getTreeAdaptor() {
             if ( state.backtracking==0 ) stream_56.add(string_literal25);
 
 
-            // Lustre.g:73:5: ( equation | property )*
+            // Lustre.g:69:5: ( equation | property )*
             loop5:
             do {
                 int alt5=3;
@@ -770,7 +766,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt5) {
             	case 1 :
-            	    // Lustre.g:73:6: equation
+            	    // Lustre.g:69:6: equation
             	    {
             	    pushFollow(FOLLOW_equation_in_node318);
             	    equation26=equation();
@@ -782,7 +778,7 @@ public TreeAdaptor getTreeAdaptor() {
             	    }
             	    break;
             	case 2 :
-            	    // Lustre.g:73:17: property
+            	    // Lustre.g:69:17: property
             	    {
             	    pushFollow(FOLLOW_property_in_node322);
             	    property27=property();
@@ -809,7 +805,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
             // AST REWRITE
-            // elements: outputs, equation, locals, ID, property, inputs
+            // elements: inputs, locals, property, outputs, equation, ID
             // token labels: 
             // rule labels: retval, inputs, locals, outputs
             // token list labels: 
@@ -824,23 +820,23 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_outputs=new RewriteRuleSubtreeStream(adaptor,"rule outputs",outputs!=null?outputs.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 74:13: -> ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
+            // 70:13: -> ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
             {
-                // Lustre.g:75:5: ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
+                // Lustre.g:71:5: ^( ID ^( INPUTS ( $inputs)? ) ^( OUTPUTS ( $outputs)? ) ^( LOCALS ( $locals)? ) ^( EQUATIONS ( equation )* ) ^( PROPERTIES ( property )* ) )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
                 stream_ID.nextNode()
                 , root_1);
 
-                // Lustre.g:76:7: ^( INPUTS ( $inputs)? )
+                // Lustre.g:72:7: ^( INPUTS ( $inputs)? )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(INPUTS, "INPUTS")
                 , root_2);
 
-                // Lustre.g:76:17: ( $inputs)?
+                // Lustre.g:72:17: ( $inputs)?
                 if ( stream_inputs.hasNext() ) {
                     adaptor.addChild(root_2, stream_inputs.nextTree());
 
@@ -850,14 +846,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:77:7: ^( OUTPUTS ( $outputs)? )
+                // Lustre.g:73:7: ^( OUTPUTS ( $outputs)? )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(OUTPUTS, "OUTPUTS")
                 , root_2);
 
-                // Lustre.g:77:18: ( $outputs)?
+                // Lustre.g:73:18: ( $outputs)?
                 if ( stream_outputs.hasNext() ) {
                     adaptor.addChild(root_2, stream_outputs.nextTree());
 
@@ -867,14 +863,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:78:7: ^( LOCALS ( $locals)? )
+                // Lustre.g:74:7: ^( LOCALS ( $locals)? )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(LOCALS, "LOCALS")
                 , root_2);
 
-                // Lustre.g:78:17: ( $locals)?
+                // Lustre.g:74:17: ( $locals)?
                 if ( stream_locals.hasNext() ) {
                     adaptor.addChild(root_2, stream_locals.nextTree());
 
@@ -884,14 +880,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:79:7: ^( EQUATIONS ( equation )* )
+                // Lustre.g:75:7: ^( EQUATIONS ( equation )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(EQUATIONS, "EQUATIONS")
                 , root_2);
 
-                // Lustre.g:79:19: ( equation )*
+                // Lustre.g:75:19: ( equation )*
                 while ( stream_equation.hasNext() ) {
                     adaptor.addChild(root_2, stream_equation.nextTree());
 
@@ -901,14 +897,14 @@ public TreeAdaptor getTreeAdaptor() {
                 adaptor.addChild(root_1, root_2);
                 }
 
-                // Lustre.g:80:7: ^( PROPERTIES ( property )* )
+                // Lustre.g:76:7: ^( PROPERTIES ( property )* )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(PROPERTIES, "PROPERTIES")
                 , root_2);
 
-                // Lustre.g:80:20: ( property )*
+                // Lustre.g:76:20: ( property )*
                 while ( stream_property.hasNext() ) {
                     adaptor.addChild(root_2, stream_property.nextTree());
 
@@ -960,7 +956,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "varDeclList"
-    // Lustre.g:83:1: varDeclList : varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ ;
+    // Lustre.g:79:1: varDeclList : varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ ;
     public final LustreParser.varDeclList_return varDeclList() throws RecognitionException {
         LustreParser.varDeclList_return retval = new LustreParser.varDeclList_return();
         retval.start = input.LT(1);
@@ -978,8 +974,8 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_40=new RewriteRuleTokenStream(adaptor,"token 40");
         RewriteRuleSubtreeStream stream_varDeclGroup=new RewriteRuleSubtreeStream(adaptor,"rule varDeclGroup");
         try {
-            // Lustre.g:83:12: ( varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ )
-            // Lustre.g:84:3: varDeclGroup ( ';' varDeclGroup )*
+            // Lustre.g:79:12: ( varDeclGroup ( ';' varDeclGroup )* -> ( varDeclGroup )+ )
+            // Lustre.g:80:3: varDeclGroup ( ';' varDeclGroup )*
             {
             pushFollow(FOLLOW_varDeclGroup_in_varDeclList418);
             varDeclGroup30=varDeclGroup();
@@ -988,7 +984,7 @@ public TreeAdaptor getTreeAdaptor() {
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_varDeclGroup.add(varDeclGroup30.getTree());
 
-            // Lustre.g:84:16: ( ';' varDeclGroup )*
+            // Lustre.g:80:16: ( ';' varDeclGroup )*
             loop6:
             do {
                 int alt6=2;
@@ -1007,7 +1003,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt6) {
             	case 1 :
-            	    // Lustre.g:84:17: ';' varDeclGroup
+            	    // Lustre.g:80:17: ';' varDeclGroup
             	    {
             	    char_literal31=(Token)match(input,40,FOLLOW_40_in_varDeclList421); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_40.add(char_literal31);
@@ -1042,7 +1038,7 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 84:36: -> ( varDeclGroup )+
+            // 80:36: -> ( varDeclGroup )+
             {
                 if ( !(stream_varDeclGroup.hasNext()) ) {
                     throw new RewriteEarlyExitException();
@@ -1092,7 +1088,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "varDeclGroup"
-    // Lustre.g:87:1: varDeclGroup : ID ( ',' ID )* ':' type -> ( ^( ID type ) )* ;
+    // Lustre.g:83:1: varDeclGroup : ID ( ',' ID )* ':' type -> ( ^( ID type ) )* ;
     public final LustreParser.varDeclGroup_return varDeclGroup() throws RecognitionException {
         LustreParser.varDeclGroup_return retval = new LustreParser.varDeclGroup_return();
         retval.start = input.LT(1);
@@ -1116,14 +1112,14 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_39=new RewriteRuleTokenStream(adaptor,"token 39");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
-            // Lustre.g:87:13: ( ID ( ',' ID )* ':' type -> ( ^( ID type ) )* )
-            // Lustre.g:88:3: ID ( ',' ID )* ':' type
+            // Lustre.g:83:13: ( ID ( ',' ID )* ':' type -> ( ^( ID type ) )* )
+            // Lustre.g:84:3: ID ( ',' ID )* ':' type
             {
             ID33=(Token)match(input,ID,FOLLOW_ID_in_varDeclGroup440); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_ID.add(ID33);
 
 
-            // Lustre.g:88:6: ( ',' ID )*
+            // Lustre.g:84:6: ( ',' ID )*
             loop7:
             do {
                 int alt7=2;
@@ -1136,7 +1132,7 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt7) {
             	case 1 :
-            	    // Lustre.g:88:7: ',' ID
+            	    // Lustre.g:84:7: ',' ID
             	    {
             	    char_literal34=(Token)match(input,34,FOLLOW_34_in_varDeclGroup443); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_34.add(char_literal34);
@@ -1179,11 +1175,11 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 88:25: -> ( ^( ID type ) )*
+            // 84:25: -> ( ^( ID type ) )*
             {
-                // Lustre.g:88:28: ( ^( ID type ) )*
+                // Lustre.g:84:28: ( ^( ID type ) )*
                 while ( stream_type.hasNext()||stream_ID.hasNext() ) {
-                    // Lustre.g:88:28: ^( ID type )
+                    // Lustre.g:84:28: ^( ID type )
                     {
                     Object root_1 = (Object)adaptor.nil();
                     root_1 = (Object)adaptor.becomeRoot(
@@ -1238,7 +1234,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "type"
-    // Lustre.g:91:1: type : ( 'int' ^| 'subrange' '[' bound ',' bound ']' 'of' 'int' -> 'int' | 'bool' ^| 'real' ^| ID ^);
+    // Lustre.g:87:1: type : ( 'int' ^| 'subrange' '[' low= bound ',' high= bound ']' 'of' 'int' -> ^( 'int' $low $high) | 'bool' ^| 'real' ^| ID ^);
     public final LustreParser.type_return type() throws RecognitionException {
         LustreParser.type_return retval = new LustreParser.type_return();
         retval.start = input.LT(1);
@@ -1249,28 +1245,28 @@ public TreeAdaptor getTreeAdaptor() {
         Token string_literal38=null;
         Token string_literal39=null;
         Token char_literal40=null;
+        Token char_literal41=null;
         Token char_literal42=null;
-        Token char_literal44=null;
+        Token string_literal43=null;
+        Token string_literal44=null;
         Token string_literal45=null;
         Token string_literal46=null;
-        Token string_literal47=null;
-        Token string_literal48=null;
-        Token ID49=null;
-        LustreParser.bound_return bound41 =null;
+        Token ID47=null;
+        LustreParser.bound_return low =null;
 
-        LustreParser.bound_return bound43 =null;
+        LustreParser.bound_return high =null;
 
 
         Object string_literal38_tree=null;
         Object string_literal39_tree=null;
         Object char_literal40_tree=null;
+        Object char_literal41_tree=null;
         Object char_literal42_tree=null;
-        Object char_literal44_tree=null;
+        Object string_literal43_tree=null;
+        Object string_literal44_tree=null;
         Object string_literal45_tree=null;
         Object string_literal46_tree=null;
-        Object string_literal47_tree=null;
-        Object string_literal48_tree=null;
-        Object ID49_tree=null;
+        Object ID47_tree=null;
         RewriteRuleTokenStream stream_49=new RewriteRuleTokenStream(adaptor,"token 49");
         RewriteRuleTokenStream stream_48=new RewriteRuleTokenStream(adaptor,"token 48");
         RewriteRuleTokenStream stream_58=new RewriteRuleTokenStream(adaptor,"token 58");
@@ -1279,7 +1275,7 @@ public TreeAdaptor getTreeAdaptor() {
         RewriteRuleTokenStream stream_34=new RewriteRuleTokenStream(adaptor,"token 34");
         RewriteRuleSubtreeStream stream_bound=new RewriteRuleSubtreeStream(adaptor,"rule bound");
         try {
-            // Lustre.g:91:5: ( 'int' ^| 'subrange' '[' bound ',' bound ']' 'of' 'int' -> 'int' | 'bool' ^| 'real' ^| ID ^)
+            // Lustre.g:87:5: ( 'int' ^| 'subrange' '[' low= bound ',' high= bound ']' 'of' 'int' -> ^( 'int' $low $high) | 'bool' ^| 'real' ^| ID ^)
             int alt8=5;
             switch ( input.LA(1) ) {
             case 55:
@@ -1318,7 +1314,7 @@ public TreeAdaptor getTreeAdaptor() {
 
             switch (alt8) {
                 case 1 :
-                    // Lustre.g:92:3: 'int' ^
+                    // Lustre.g:88:3: 'int' ^
                     {
                     root_0 = (Object)adaptor.nil();
 
@@ -1334,7 +1330,7 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:93:3: 'subrange' '[' bound ',' bound ']' 'of' 'int'
+                    // Lustre.g:89:3: 'subrange' '[' low= bound ',' high= bound ']' 'of' 'int'
                     {
                     string_literal39=(Token)match(input,62,FOLLOW_62_in_type475); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_62.add(string_literal39);
@@ -1344,40 +1340,40 @@ public TreeAdaptor getTreeAdaptor() {
                     if ( state.backtracking==0 ) stream_48.add(char_literal40);
 
 
-                    pushFollow(FOLLOW_bound_in_type479);
-                    bound41=bound();
+                    pushFollow(FOLLOW_bound_in_type481);
+                    low=bound();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_bound.add(bound41.getTree());
+                    if ( state.backtracking==0 ) stream_bound.add(low.getTree());
 
-                    char_literal42=(Token)match(input,34,FOLLOW_34_in_type481); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_34.add(char_literal42);
+                    char_literal41=(Token)match(input,34,FOLLOW_34_in_type483); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_34.add(char_literal41);
 
 
-                    pushFollow(FOLLOW_bound_in_type483);
-                    bound43=bound();
+                    pushFollow(FOLLOW_bound_in_type487);
+                    high=bound();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_bound.add(bound43.getTree());
+                    if ( state.backtracking==0 ) stream_bound.add(high.getTree());
 
-                    char_literal44=(Token)match(input,49,FOLLOW_49_in_type485); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_49.add(char_literal44);
-
-
-                    string_literal45=(Token)match(input,58,FOLLOW_58_in_type487); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_58.add(string_literal45);
+                    char_literal42=(Token)match(input,49,FOLLOW_49_in_type489); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_49.add(char_literal42);
 
 
-                    string_literal46=(Token)match(input,55,FOLLOW_55_in_type489); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_55.add(string_literal46);
+                    string_literal43=(Token)match(input,58,FOLLOW_58_in_type491); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_58.add(string_literal43);
+
+
+                    string_literal44=(Token)match(input,55,FOLLOW_55_in_type493); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_55.add(string_literal44);
 
 
                     // AST REWRITE
-                    // elements: 55
+                    // elements: low, high, 55
                     // token labels: 
-                    // rule labels: retval
+                    // rule labels: retval, high, low
                     // token list labels: 
                     // rule list labels: 
                     // wildcard labels: 
@@ -1385,13 +1381,25 @@ public TreeAdaptor getTreeAdaptor() {
 
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
+                    RewriteRuleSubtreeStream stream_high=new RewriteRuleSubtreeStream(adaptor,"rule high",high!=null?high.tree:null);
+                    RewriteRuleSubtreeStream stream_low=new RewriteRuleSubtreeStream(adaptor,"rule low",low!=null?low.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 93:49: -> 'int'
+                    // 89:58: -> ^( 'int' $low $high)
                     {
-                        adaptor.addChild(root_0, 
+                        // Lustre.g:89:61: ^( 'int' $low $high)
+                        {
+                        Object root_1 = (Object)adaptor.nil();
+                        root_1 = (Object)adaptor.becomeRoot(
                         stream_55.nextNode()
-                        );
+                        , root_1);
+
+                        adaptor.addChild(root_1, stream_low.nextTree());
+
+                        adaptor.addChild(root_1, stream_high.nextTree());
+
+                        adaptor.addChild(root_0, root_1);
+                        }
 
                     }
 
@@ -1402,49 +1410,49 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 3 :
-                    // Lustre.g:94:3: 'bool' ^
+                    // Lustre.g:90:3: 'bool' ^
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    string_literal47=(Token)match(input,51,FOLLOW_51_in_type497); if (state.failed) return retval;
+                    string_literal45=(Token)match(input,51,FOLLOW_51_in_type509); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    string_literal47_tree = 
-                    (Object)adaptor.create(string_literal47)
+                    string_literal45_tree = 
+                    (Object)adaptor.create(string_literal45)
                     ;
-                    root_0 = (Object)adaptor.becomeRoot(string_literal47_tree, root_0);
+                    root_0 = (Object)adaptor.becomeRoot(string_literal45_tree, root_0);
                     }
 
                     }
                     break;
                 case 4 :
-                    // Lustre.g:95:3: 'real' ^
+                    // Lustre.g:91:3: 'real' ^
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    string_literal48=(Token)match(input,60,FOLLOW_60_in_type502); if (state.failed) return retval;
+                    string_literal46=(Token)match(input,60,FOLLOW_60_in_type514); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    string_literal48_tree = 
-                    (Object)adaptor.create(string_literal48)
+                    string_literal46_tree = 
+                    (Object)adaptor.create(string_literal46)
                     ;
-                    root_0 = (Object)adaptor.becomeRoot(string_literal48_tree, root_0);
+                    root_0 = (Object)adaptor.becomeRoot(string_literal46_tree, root_0);
                     }
 
                     }
                     break;
                 case 5 :
-                    // Lustre.g:96:3: ID ^
+                    // Lustre.g:92:3: ID ^
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    ID49=(Token)match(input,ID,FOLLOW_ID_in_type507); if (state.failed) return retval;
+                    ID47=(Token)match(input,ID,FOLLOW_ID_in_type519); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    ID49_tree = 
-                    (Object)adaptor.create(ID49)
+                    ID47_tree = 
+                    (Object)adaptor.create(ID47)
                     ;
-                    root_0 = (Object)adaptor.becomeRoot(ID49_tree, root_0);
+                    root_0 = (Object)adaptor.becomeRoot(ID47_tree, root_0);
                     }
 
                     }
@@ -1482,7 +1490,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "bound"
-    // Lustre.g:99:1: bound : ( '-' )? INT ;
+    // Lustre.g:95:1: bound : ( '-' )? INT -> INT[$bound.text] ;
     public final LustreParser.bound_return bound() throws RecognitionException {
         LustreParser.bound_return retval = new LustreParser.bound_return();
         retval.start = input.LT(1);
@@ -1490,20 +1498,19 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token char_literal50=null;
-        Token INT51=null;
+        Token char_literal48=null;
+        Token INT49=null;
 
-        Object char_literal50_tree=null;
-        Object INT51_tree=null;
+        Object char_literal48_tree=null;
+        Object INT49_tree=null;
+        RewriteRuleTokenStream stream_INT=new RewriteRuleTokenStream(adaptor,"token INT");
+        RewriteRuleTokenStream stream_35=new RewriteRuleTokenStream(adaptor,"token 35");
 
         try {
-            // Lustre.g:99:6: ( ( '-' )? INT )
-            // Lustre.g:100:3: ( '-' )? INT
+            // Lustre.g:95:6: ( ( '-' )? INT -> INT[$bound.text] )
+            // Lustre.g:96:3: ( '-' )? INT
             {
-            root_0 = (Object)adaptor.nil();
-
-
-            // Lustre.g:100:3: ( '-' )?
+            // Lustre.g:96:3: ( '-' )?
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -1512,15 +1519,11 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt9) {
                 case 1 :
-                    // Lustre.g:100:3: '-'
+                    // Lustre.g:96:3: '-'
                     {
-                    char_literal50=(Token)match(input,35,FOLLOW_35_in_bound518); if (state.failed) return retval;
-                    if ( state.backtracking==0 ) {
-                    char_literal50_tree = 
-                    (Object)adaptor.create(char_literal50)
-                    ;
-                    adaptor.addChild(root_0, char_literal50_tree);
-                    }
+                    char_literal48=(Token)match(input,35,FOLLOW_35_in_bound530); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_35.add(char_literal48);
+
 
                     }
                     break;
@@ -1528,12 +1531,33 @@ public TreeAdaptor getTreeAdaptor() {
             }
 
 
-            INT51=(Token)match(input,INT,FOLLOW_INT_in_bound521); if (state.failed) return retval;
+            INT49=(Token)match(input,INT,FOLLOW_INT_in_bound533); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_INT.add(INT49);
+
+
+            // AST REWRITE
+            // elements: INT
+            // token labels: 
+            // rule labels: retval
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
-            INT51_tree = 
-            (Object)adaptor.create(INT51)
-            ;
-            adaptor.addChild(root_0, INT51_tree);
+
+            retval.tree = root_0;
+            RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
+
+            root_0 = (Object)adaptor.nil();
+            // 96:12: -> INT[$bound.text]
+            {
+                adaptor.addChild(root_0, 
+                (Object)adaptor.create(INT, input.toString(retval.start,input.LT(-1)))
+                );
+
+            }
+
+
+            retval.tree = root_0;
             }
 
             }
@@ -1569,7 +1593,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "property"
-    // Lustre.g:103:1: property : '--%PROPERTY' ID ';' -> ID ;
+    // Lustre.g:99:1: property : '--%PROPERTY' ID ';' -> ID ;
     public final LustreParser.property_return property() throws RecognitionException {
         LustreParser.property_return retval = new LustreParser.property_return();
         retval.start = input.LT(1);
@@ -1577,31 +1601,31 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token string_literal52=null;
-        Token ID53=null;
-        Token char_literal54=null;
+        Token string_literal50=null;
+        Token ID51=null;
+        Token char_literal52=null;
 
-        Object string_literal52_tree=null;
-        Object ID53_tree=null;
-        Object char_literal54_tree=null;
+        Object string_literal50_tree=null;
+        Object ID51_tree=null;
+        Object char_literal52_tree=null;
         RewriteRuleTokenStream stream_40=new RewriteRuleTokenStream(adaptor,"token 40");
         RewriteRuleTokenStream stream_ID=new RewriteRuleTokenStream(adaptor,"token ID");
         RewriteRuleTokenStream stream_36=new RewriteRuleTokenStream(adaptor,"token 36");
 
         try {
-            // Lustre.g:103:9: ( '--%PROPERTY' ID ';' -> ID )
-            // Lustre.g:104:3: '--%PROPERTY' ID ';'
+            // Lustre.g:99:9: ( '--%PROPERTY' ID ';' -> ID )
+            // Lustre.g:100:3: '--%PROPERTY' ID ';'
             {
-            string_literal52=(Token)match(input,36,FOLLOW_36_in_property531); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_36.add(string_literal52);
+            string_literal50=(Token)match(input,36,FOLLOW_36_in_property548); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_36.add(string_literal50);
 
 
-            ID53=(Token)match(input,ID,FOLLOW_ID_in_property533); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_ID.add(ID53);
+            ID51=(Token)match(input,ID,FOLLOW_ID_in_property550); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_ID.add(ID51);
 
 
-            char_literal54=(Token)match(input,40,FOLLOW_40_in_property535); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_40.add(char_literal54);
+            char_literal52=(Token)match(input,40,FOLLOW_40_in_property552); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_40.add(char_literal52);
 
 
             // AST REWRITE
@@ -1617,7 +1641,7 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 104:24: -> ID
+            // 100:24: -> ID
             {
                 adaptor.addChild(root_0, 
                 stream_ID.nextNode()
@@ -1662,7 +1686,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "equation"
-    // Lustre.g:107:1: equation : lhs_opt_parens '=' expr ';' -> ^( EQUATION lhs_opt_parens expr ) ;
+    // Lustre.g:103:1: equation : lhs_opt_parens '=' expr ';' -> ^( EQUATION lhs_opt_parens expr ) ;
     public final LustreParser.equation_return equation() throws RecognitionException {
         LustreParser.equation_return retval = new LustreParser.equation_return();
         retval.start = input.LT(1);
@@ -1670,43 +1694,43 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        Token char_literal54=null;
         Token char_literal56=null;
-        Token char_literal58=null;
-        LustreParser.lhs_opt_parens_return lhs_opt_parens55 =null;
+        LustreParser.lhs_opt_parens_return lhs_opt_parens53 =null;
 
-        LustreParser.expr_return expr57 =null;
+        LustreParser.expr_return expr55 =null;
 
 
+        Object char_literal54_tree=null;
         Object char_literal56_tree=null;
-        Object char_literal58_tree=null;
         RewriteRuleTokenStream stream_44=new RewriteRuleTokenStream(adaptor,"token 44");
         RewriteRuleTokenStream stream_40=new RewriteRuleTokenStream(adaptor,"token 40");
         RewriteRuleSubtreeStream stream_lhs_opt_parens=new RewriteRuleSubtreeStream(adaptor,"rule lhs_opt_parens");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // Lustre.g:107:9: ( lhs_opt_parens '=' expr ';' -> ^( EQUATION lhs_opt_parens expr ) )
-            // Lustre.g:108:3: lhs_opt_parens '=' expr ';'
+            // Lustre.g:103:9: ( lhs_opt_parens '=' expr ';' -> ^( EQUATION lhs_opt_parens expr ) )
+            // Lustre.g:104:3: lhs_opt_parens '=' expr ';'
             {
-            pushFollow(FOLLOW_lhs_opt_parens_in_equation549);
-            lhs_opt_parens55=lhs_opt_parens();
+            pushFollow(FOLLOW_lhs_opt_parens_in_equation566);
+            lhs_opt_parens53=lhs_opt_parens();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_lhs_opt_parens.add(lhs_opt_parens55.getTree());
+            if ( state.backtracking==0 ) stream_lhs_opt_parens.add(lhs_opt_parens53.getTree());
 
-            char_literal56=(Token)match(input,44,FOLLOW_44_in_equation551); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_44.add(char_literal56);
+            char_literal54=(Token)match(input,44,FOLLOW_44_in_equation568); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_44.add(char_literal54);
 
 
-            pushFollow(FOLLOW_expr_in_equation553);
-            expr57=expr();
+            pushFollow(FOLLOW_expr_in_equation570);
+            expr55=expr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) stream_expr.add(expr57.getTree());
+            if ( state.backtracking==0 ) stream_expr.add(expr55.getTree());
 
-            char_literal58=(Token)match(input,40,FOLLOW_40_in_equation555); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_40.add(char_literal58);
+            char_literal56=(Token)match(input,40,FOLLOW_40_in_equation572); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_40.add(char_literal56);
 
 
             // AST REWRITE
@@ -1722,9 +1746,9 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 108:31: -> ^( EQUATION lhs_opt_parens expr )
+            // 104:31: -> ^( EQUATION lhs_opt_parens expr )
             {
-                // Lustre.g:108:34: ^( EQUATION lhs_opt_parens expr )
+                // Lustre.g:104:34: ^( EQUATION lhs_opt_parens expr )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
@@ -1777,7 +1801,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "lhs_opt_parens"
-    // Lustre.g:111:1: lhs_opt_parens : ( lhs | '(' lhs ')' -> lhs );
+    // Lustre.g:107:1: lhs_opt_parens : ( lhs | '(' lhs ')' -> lhs );
     public final LustreParser.lhs_opt_parens_return lhs_opt_parens() throws RecognitionException {
         LustreParser.lhs_opt_parens_return retval = new LustreParser.lhs_opt_parens_return();
         retval.start = input.LT(1);
@@ -1785,20 +1809,20 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        Token char_literal58=null;
         Token char_literal60=null;
-        Token char_literal62=null;
+        LustreParser.lhs_return lhs57 =null;
+
         LustreParser.lhs_return lhs59 =null;
 
-        LustreParser.lhs_return lhs61 =null;
 
-
+        Object char_literal58_tree=null;
         Object char_literal60_tree=null;
-        Object char_literal62_tree=null;
         RewriteRuleTokenStream stream_30=new RewriteRuleTokenStream(adaptor,"token 30");
         RewriteRuleTokenStream stream_31=new RewriteRuleTokenStream(adaptor,"token 31");
         RewriteRuleSubtreeStream stream_lhs=new RewriteRuleSubtreeStream(adaptor,"rule lhs");
         try {
-            // Lustre.g:111:15: ( lhs | '(' lhs ')' -> lhs )
+            // Lustre.g:107:15: ( lhs | '(' lhs ')' -> lhs )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1818,36 +1842,36 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt10) {
                 case 1 :
-                    // Lustre.g:112:3: lhs
+                    // Lustre.g:108:3: lhs
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    pushFollow(FOLLOW_lhs_in_lhs_opt_parens575);
-                    lhs59=lhs();
+                    pushFollow(FOLLOW_lhs_in_lhs_opt_parens592);
+                    lhs57=lhs();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lhs59.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, lhs57.getTree());
 
                     }
                     break;
                 case 2 :
-                    // Lustre.g:113:3: '(' lhs ')'
+                    // Lustre.g:109:3: '(' lhs ')'
                     {
-                    char_literal60=(Token)match(input,30,FOLLOW_30_in_lhs_opt_parens579); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_30.add(char_literal60);
+                    char_literal58=(Token)match(input,30,FOLLOW_30_in_lhs_opt_parens596); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_30.add(char_literal58);
 
 
-                    pushFollow(FOLLOW_lhs_in_lhs_opt_parens581);
-                    lhs61=lhs();
+                    pushFollow(FOLLOW_lhs_in_lhs_opt_parens598);
+                    lhs59=lhs();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_lhs.add(lhs61.getTree());
+                    if ( state.backtracking==0 ) stream_lhs.add(lhs59.getTree());
 
-                    char_literal62=(Token)match(input,31,FOLLOW_31_in_lhs_opt_parens583); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_31.add(char_literal62);
+                    char_literal60=(Token)match(input,31,FOLLOW_31_in_lhs_opt_parens600); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_31.add(char_literal60);
 
 
                     // AST REWRITE
@@ -1863,7 +1887,7 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 113:15: -> lhs
+                    // 109:15: -> lhs
                     {
                         adaptor.addChild(root_0, stream_lhs.nextTree());
 
@@ -1908,7 +1932,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "lhs"
-    // Lustre.g:116:1: lhs : ID ( ',' ID )* -> ^( LHS ( ID )* ) ;
+    // Lustre.g:112:1: lhs : ID ( ',' ID )* -> ^( LHS ( ID )* ) ;
     public final LustreParser.lhs_return lhs() throws RecognitionException {
         LustreParser.lhs_return retval = new LustreParser.lhs_return();
         retval.start = input.LT(1);
@@ -1916,25 +1940,25 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        Token ID61=null;
+        Token char_literal62=null;
         Token ID63=null;
-        Token char_literal64=null;
-        Token ID65=null;
 
+        Object ID61_tree=null;
+        Object char_literal62_tree=null;
         Object ID63_tree=null;
-        Object char_literal64_tree=null;
-        Object ID65_tree=null;
         RewriteRuleTokenStream stream_ID=new RewriteRuleTokenStream(adaptor,"token ID");
         RewriteRuleTokenStream stream_34=new RewriteRuleTokenStream(adaptor,"token 34");
 
         try {
-            // Lustre.g:116:4: ( ID ( ',' ID )* -> ^( LHS ( ID )* ) )
-            // Lustre.g:117:3: ID ( ',' ID )*
+            // Lustre.g:112:4: ( ID ( ',' ID )* -> ^( LHS ( ID )* ) )
+            // Lustre.g:113:3: ID ( ',' ID )*
             {
-            ID63=(Token)match(input,ID,FOLLOW_ID_in_lhs597); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_ID.add(ID63);
+            ID61=(Token)match(input,ID,FOLLOW_ID_in_lhs614); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_ID.add(ID61);
 
 
-            // Lustre.g:117:6: ( ',' ID )*
+            // Lustre.g:113:6: ( ',' ID )*
             loop11:
             do {
                 int alt11=2;
@@ -1947,14 +1971,14 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt11) {
             	case 1 :
-            	    // Lustre.g:117:7: ',' ID
+            	    // Lustre.g:113:7: ',' ID
             	    {
-            	    char_literal64=(Token)match(input,34,FOLLOW_34_in_lhs600); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_34.add(char_literal64);
+            	    char_literal62=(Token)match(input,34,FOLLOW_34_in_lhs617); if (state.failed) return retval; 
+            	    if ( state.backtracking==0 ) stream_34.add(char_literal62);
 
 
-            	    ID65=(Token)match(input,ID,FOLLOW_ID_in_lhs602); if (state.failed) return retval; 
-            	    if ( state.backtracking==0 ) stream_ID.add(ID65);
+            	    ID63=(Token)match(input,ID,FOLLOW_ID_in_lhs619); if (state.failed) return retval; 
+            	    if ( state.backtracking==0 ) stream_ID.add(ID63);
 
 
             	    }
@@ -1979,16 +2003,16 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 117:16: -> ^( LHS ( ID )* )
+            // 113:16: -> ^( LHS ( ID )* )
             {
-                // Lustre.g:117:19: ^( LHS ( ID )* )
+                // Lustre.g:113:19: ^( LHS ( ID )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(
                 (Object)adaptor.create(LHS, "LHS")
                 , root_1);
 
-                // Lustre.g:117:25: ( ID )*
+                // Lustre.g:113:25: ( ID )*
                 while ( stream_ID.hasNext() ) {
                     adaptor.addChild(root_1, 
                     stream_ID.nextNode()
@@ -2039,7 +2063,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "expr"
-    // Lustre.g:120:1: expr : arrowExpr ;
+    // Lustre.g:116:1: expr : arrowExpr ;
     public final LustreParser.expr_return expr() throws RecognitionException {
         LustreParser.expr_return retval = new LustreParser.expr_return();
         retval.start = input.LT(1);
@@ -2047,23 +2071,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        LustreParser.arrowExpr_return arrowExpr66 =null;
+        LustreParser.arrowExpr_return arrowExpr64 =null;
 
 
 
         try {
-            // Lustre.g:120:5: ( arrowExpr )
-            // Lustre.g:121:3: arrowExpr
+            // Lustre.g:116:5: ( arrowExpr )
+            // Lustre.g:117:3: arrowExpr
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_arrowExpr_in_expr623);
-            arrowExpr66=arrowExpr();
+            pushFollow(FOLLOW_arrowExpr_in_expr640);
+            arrowExpr64=arrowExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, arrowExpr66.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, arrowExpr64.getTree());
 
             }
 
@@ -2098,7 +2122,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "arrowOp"
-    // Lustre.g:124:1: arrowOp : '->' ;
+    // Lustre.g:120:1: arrowOp : '->' ;
     public final LustreParser.arrowOp_return arrowOp() throws RecognitionException {
         LustreParser.arrowOp_return retval = new LustreParser.arrowOp_return();
         retval.start = input.LT(1);
@@ -2106,23 +2130,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token string_literal67=null;
+        Token string_literal65=null;
 
-        Object string_literal67_tree=null;
+        Object string_literal65_tree=null;
 
         try {
-            // Lustre.g:124:8: ( '->' )
-            // Lustre.g:125:3: '->'
+            // Lustre.g:120:8: ( '->' )
+            // Lustre.g:121:3: '->'
             {
             root_0 = (Object)adaptor.nil();
 
 
-            string_literal67=(Token)match(input,37,FOLLOW_37_in_arrowOp633); if (state.failed) return retval;
+            string_literal65=(Token)match(input,37,FOLLOW_37_in_arrowOp650); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            string_literal67_tree = 
-            (Object)adaptor.create(string_literal67)
+            string_literal65_tree = 
+            (Object)adaptor.create(string_literal65)
             ;
-            adaptor.addChild(root_0, string_literal67_tree);
+            adaptor.addChild(root_0, string_literal65_tree);
             }
 
             }
@@ -2158,7 +2182,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "arrowExpr"
-    // Lustre.g:128:1: arrowExpr : impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? ;
+    // Lustre.g:124:1: arrowExpr : impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? ;
     public final LustreParser.arrowExpr_return arrowExpr() throws RecognitionException {
         LustreParser.arrowExpr_return retval = new LustreParser.arrowExpr_return();
         retval.start = input.LT(1);
@@ -2166,29 +2190,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        LustreParser.impliesExpr_return impliesExpr68 =null;
+        LustreParser.impliesExpr_return impliesExpr66 =null;
 
-        LustreParser.arrowOp_return arrowOp69 =null;
+        LustreParser.arrowOp_return arrowOp67 =null;
 
-        LustreParser.arrowExpr_return arrowExpr70 =null;
+        LustreParser.arrowExpr_return arrowExpr68 =null;
 
 
 
         try {
-            // Lustre.g:128:10: ( impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? )
-            // Lustre.g:129:3: impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )?
+            // Lustre.g:124:10: ( impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )? )
+            // Lustre.g:125:3: impliesExpr ( ( arrowOp )=> arrowOp ^ arrowExpr )?
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_impliesExpr_in_arrowExpr643);
-            impliesExpr68=impliesExpr();
+            pushFollow(FOLLOW_impliesExpr_in_arrowExpr660);
+            impliesExpr66=impliesExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, impliesExpr68.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, impliesExpr66.getTree());
 
-            // Lustre.g:129:15: ( ( arrowOp )=> arrowOp ^ arrowExpr )?
+            // Lustre.g:125:15: ( ( arrowOp )=> arrowOp ^ arrowExpr )?
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -2201,21 +2225,21 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt12) {
                 case 1 :
-                    // Lustre.g:129:16: ( arrowOp )=> arrowOp ^ arrowExpr
+                    // Lustre.g:125:16: ( arrowOp )=> arrowOp ^ arrowExpr
                     {
-                    pushFollow(FOLLOW_arrowOp_in_arrowExpr650);
-                    arrowOp69=arrowOp();
+                    pushFollow(FOLLOW_arrowOp_in_arrowExpr667);
+                    arrowOp67=arrowOp();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(arrowOp69.getTree(), root_0);
+                    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(arrowOp67.getTree(), root_0);
 
-                    pushFollow(FOLLOW_arrowExpr_in_arrowExpr653);
-                    arrowExpr70=arrowExpr();
+                    pushFollow(FOLLOW_arrowExpr_in_arrowExpr670);
+                    arrowExpr68=arrowExpr();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, arrowExpr70.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, arrowExpr68.getTree());
 
                     }
                     break;
@@ -2256,7 +2280,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "impliesOp"
-    // Lustre.g:132:1: impliesOp : '=>' ;
+    // Lustre.g:128:1: impliesOp : '=>' ;
     public final LustreParser.impliesOp_return impliesOp() throws RecognitionException {
         LustreParser.impliesOp_return retval = new LustreParser.impliesOp_return();
         retval.start = input.LT(1);
@@ -2264,23 +2288,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token string_literal71=null;
+        Token string_literal69=null;
 
-        Object string_literal71_tree=null;
+        Object string_literal69_tree=null;
 
         try {
-            // Lustre.g:132:10: ( '=>' )
-            // Lustre.g:133:3: '=>'
+            // Lustre.g:128:10: ( '=>' )
+            // Lustre.g:129:3: '=>'
             {
             root_0 = (Object)adaptor.nil();
 
 
-            string_literal71=(Token)match(input,45,FOLLOW_45_in_impliesOp665); if (state.failed) return retval;
+            string_literal69=(Token)match(input,45,FOLLOW_45_in_impliesOp682); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            string_literal71_tree = 
-            (Object)adaptor.create(string_literal71)
+            string_literal69_tree = 
+            (Object)adaptor.create(string_literal69)
             ;
-            adaptor.addChild(root_0, string_literal71_tree);
+            adaptor.addChild(root_0, string_literal69_tree);
             }
 
             }
@@ -2316,7 +2340,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "impliesExpr"
-    // Lustre.g:136:1: impliesExpr : orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? ;
+    // Lustre.g:132:1: impliesExpr : orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? ;
     public final LustreParser.impliesExpr_return impliesExpr() throws RecognitionException {
         LustreParser.impliesExpr_return retval = new LustreParser.impliesExpr_return();
         retval.start = input.LT(1);
@@ -2324,29 +2348,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        LustreParser.orExpr_return orExpr72 =null;
+        LustreParser.orExpr_return orExpr70 =null;
 
-        LustreParser.impliesOp_return impliesOp73 =null;
+        LustreParser.impliesOp_return impliesOp71 =null;
 
-        LustreParser.impliesExpr_return impliesExpr74 =null;
+        LustreParser.impliesExpr_return impliesExpr72 =null;
 
 
 
         try {
-            // Lustre.g:136:12: ( orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? )
-            // Lustre.g:137:3: orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )?
+            // Lustre.g:132:12: ( orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )? )
+            // Lustre.g:133:3: orExpr ( ( impliesOp )=> impliesOp ^ impliesExpr )?
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_orExpr_in_impliesExpr675);
-            orExpr72=orExpr();
+            pushFollow(FOLLOW_orExpr_in_impliesExpr692);
+            orExpr70=orExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, orExpr72.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, orExpr70.getTree());
 
-            // Lustre.g:137:10: ( ( impliesOp )=> impliesOp ^ impliesExpr )?
+            // Lustre.g:133:10: ( ( impliesOp )=> impliesOp ^ impliesExpr )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -2359,21 +2383,21 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt13) {
                 case 1 :
-                    // Lustre.g:137:11: ( impliesOp )=> impliesOp ^ impliesExpr
+                    // Lustre.g:133:11: ( impliesOp )=> impliesOp ^ impliesExpr
                     {
-                    pushFollow(FOLLOW_impliesOp_in_impliesExpr682);
-                    impliesOp73=impliesOp();
+                    pushFollow(FOLLOW_impliesOp_in_impliesExpr699);
+                    impliesOp71=impliesOp();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(impliesOp73.getTree(), root_0);
+                    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(impliesOp71.getTree(), root_0);
 
-                    pushFollow(FOLLOW_impliesExpr_in_impliesExpr685);
-                    impliesExpr74=impliesExpr();
+                    pushFollow(FOLLOW_impliesExpr_in_impliesExpr702);
+                    impliesExpr72=impliesExpr();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, impliesExpr74.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, impliesExpr72.getTree());
 
                     }
                     break;
@@ -2414,7 +2438,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "orOp"
-    // Lustre.g:140:1: orOp : ( 'or' | 'xor' );
+    // Lustre.g:136:1: orOp : ( 'or' | 'xor' );
     public final LustreParser.orOp_return orOp() throws RecognitionException {
         LustreParser.orOp_return retval = new LustreParser.orOp_return();
         retval.start = input.LT(1);
@@ -2422,23 +2446,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token set75=null;
+        Token set73=null;
 
-        Object set75_tree=null;
+        Object set73_tree=null;
 
         try {
-            // Lustre.g:140:5: ( 'or' | 'xor' )
+            // Lustre.g:136:5: ( 'or' | 'xor' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
 
 
-            set75=(Token)input.LT(1);
+            set73=(Token)input.LT(1);
 
             if ( input.LA(1)==59||input.LA(1)==67 ) {
                 input.consume();
                 if ( state.backtracking==0 ) adaptor.addChild(root_0, 
-                (Object)adaptor.create(set75)
+                (Object)adaptor.create(set73)
                 );
                 state.errorRecovery=false;
                 state.failed=false;
@@ -2483,7 +2507,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "orExpr"
-    // Lustre.g:144:1: orExpr : andExpr ( ( orOp )=> orOp ^ andExpr )* ;
+    // Lustre.g:140:1: orExpr : andExpr ( ( orOp )=> orOp ^ andExpr )* ;
     public final LustreParser.orExpr_return orExpr() throws RecognitionException {
         LustreParser.orExpr_return retval = new LustreParser.orExpr_return();
         retval.start = input.LT(1);
@@ -2491,29 +2515,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        LustreParser.andExpr_return andExpr74 =null;
+
+        LustreParser.orOp_return orOp75 =null;
+
         LustreParser.andExpr_return andExpr76 =null;
-
-        LustreParser.orOp_return orOp77 =null;
-
-        LustreParser.andExpr_return andExpr78 =null;
 
 
 
         try {
-            // Lustre.g:144:7: ( andExpr ( ( orOp )=> orOp ^ andExpr )* )
-            // Lustre.g:145:3: andExpr ( ( orOp )=> orOp ^ andExpr )*
+            // Lustre.g:140:7: ( andExpr ( ( orOp )=> orOp ^ andExpr )* )
+            // Lustre.g:141:3: andExpr ( ( orOp )=> orOp ^ andExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_andExpr_in_orExpr711);
-            andExpr76=andExpr();
+            pushFollow(FOLLOW_andExpr_in_orExpr728);
+            andExpr74=andExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, andExpr76.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, andExpr74.getTree());
 
-            // Lustre.g:145:11: ( ( orOp )=> orOp ^ andExpr )*
+            // Lustre.g:141:11: ( ( orOp )=> orOp ^ andExpr )*
             loop14:
             do {
                 int alt14=2;
@@ -2532,21 +2556,21 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt14) {
             	case 1 :
-            	    // Lustre.g:145:12: ( orOp )=> orOp ^ andExpr
+            	    // Lustre.g:141:12: ( orOp )=> orOp ^ andExpr
             	    {
-            	    pushFollow(FOLLOW_orOp_in_orExpr718);
-            	    orOp77=orOp();
+            	    pushFollow(FOLLOW_orOp_in_orExpr735);
+            	    orOp75=orOp();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(orOp77.getTree(), root_0);
+            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(orOp75.getTree(), root_0);
 
-            	    pushFollow(FOLLOW_andExpr_in_orExpr721);
-            	    andExpr78=andExpr();
+            	    pushFollow(FOLLOW_andExpr_in_orExpr738);
+            	    andExpr76=andExpr();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, andExpr78.getTree());
+            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, andExpr76.getTree());
 
             	    }
             	    break;
@@ -2590,7 +2614,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "andOp"
-    // Lustre.g:148:1: andOp : 'and' ;
+    // Lustre.g:144:1: andOp : 'and' ;
     public final LustreParser.andOp_return andOp() throws RecognitionException {
         LustreParser.andOp_return retval = new LustreParser.andOp_return();
         retval.start = input.LT(1);
@@ -2598,23 +2622,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token string_literal79=null;
+        Token string_literal77=null;
 
-        Object string_literal79_tree=null;
+        Object string_literal77_tree=null;
 
         try {
-            // Lustre.g:148:6: ( 'and' )
-            // Lustre.g:149:3: 'and'
+            // Lustre.g:144:6: ( 'and' )
+            // Lustre.g:145:3: 'and'
             {
             root_0 = (Object)adaptor.nil();
 
 
-            string_literal79=(Token)match(input,50,FOLLOW_50_in_andOp733); if (state.failed) return retval;
+            string_literal77=(Token)match(input,50,FOLLOW_50_in_andOp750); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            string_literal79_tree = 
-            (Object)adaptor.create(string_literal79)
+            string_literal77_tree = 
+            (Object)adaptor.create(string_literal77)
             ;
-            adaptor.addChild(root_0, string_literal79_tree);
+            adaptor.addChild(root_0, string_literal77_tree);
             }
 
             }
@@ -2650,7 +2674,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "andExpr"
-    // Lustre.g:152:1: andExpr : relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* ;
+    // Lustre.g:148:1: andExpr : relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* ;
     public final LustreParser.andExpr_return andExpr() throws RecognitionException {
         LustreParser.andExpr_return retval = new LustreParser.andExpr_return();
         retval.start = input.LT(1);
@@ -2658,29 +2682,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        LustreParser.relationalExpr_return relationalExpr78 =null;
+
+        LustreParser.andOp_return andOp79 =null;
+
         LustreParser.relationalExpr_return relationalExpr80 =null;
-
-        LustreParser.andOp_return andOp81 =null;
-
-        LustreParser.relationalExpr_return relationalExpr82 =null;
 
 
 
         try {
-            // Lustre.g:152:8: ( relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* )
-            // Lustre.g:153:3: relationalExpr ( ( andOp )=> andOp ^ relationalExpr )*
+            // Lustre.g:148:8: ( relationalExpr ( ( andOp )=> andOp ^ relationalExpr )* )
+            // Lustre.g:149:3: relationalExpr ( ( andOp )=> andOp ^ relationalExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_relationalExpr_in_andExpr743);
-            relationalExpr80=relationalExpr();
+            pushFollow(FOLLOW_relationalExpr_in_andExpr760);
+            relationalExpr78=relationalExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, relationalExpr80.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, relationalExpr78.getTree());
 
-            // Lustre.g:153:18: ( ( andOp )=> andOp ^ relationalExpr )*
+            // Lustre.g:149:18: ( ( andOp )=> andOp ^ relationalExpr )*
             loop15:
             do {
                 int alt15=2;
@@ -2699,21 +2723,21 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt15) {
             	case 1 :
-            	    // Lustre.g:153:19: ( andOp )=> andOp ^ relationalExpr
+            	    // Lustre.g:149:19: ( andOp )=> andOp ^ relationalExpr
             	    {
-            	    pushFollow(FOLLOW_andOp_in_andExpr750);
-            	    andOp81=andOp();
+            	    pushFollow(FOLLOW_andOp_in_andExpr767);
+            	    andOp79=andOp();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(andOp81.getTree(), root_0);
+            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(andOp79.getTree(), root_0);
 
-            	    pushFollow(FOLLOW_relationalExpr_in_andExpr753);
-            	    relationalExpr82=relationalExpr();
+            	    pushFollow(FOLLOW_relationalExpr_in_andExpr770);
+            	    relationalExpr80=relationalExpr();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, relationalExpr82.getTree());
+            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, relationalExpr80.getTree());
 
             	    }
             	    break;
@@ -2757,7 +2781,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "relationalOp"
-    // Lustre.g:156:1: relationalOp : ( '<' | '<=' | '>' | '>=' | '=' | '<>' );
+    // Lustre.g:152:1: relationalOp : ( '<' | '<=' | '>' | '>=' | '=' | '<>' );
     public final LustreParser.relationalOp_return relationalOp() throws RecognitionException {
         LustreParser.relationalOp_return retval = new LustreParser.relationalOp_return();
         retval.start = input.LT(1);
@@ -2765,23 +2789,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token set83=null;
+        Token set81=null;
 
-        Object set83_tree=null;
+        Object set81_tree=null;
 
         try {
-            // Lustre.g:156:13: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
+            // Lustre.g:152:13: ( '<' | '<=' | '>' | '>=' | '=' | '<>' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
 
 
-            set83=(Token)input.LT(1);
+            set81=(Token)input.LT(1);
 
             if ( (input.LA(1) >= 41 && input.LA(1) <= 44)||(input.LA(1) >= 46 && input.LA(1) <= 47) ) {
                 input.consume();
                 if ( state.backtracking==0 ) adaptor.addChild(root_0, 
-                (Object)adaptor.create(set83)
+                (Object)adaptor.create(set81)
                 );
                 state.errorRecovery=false;
                 state.failed=false;
@@ -2826,7 +2850,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "relationalExpr"
-    // Lustre.g:160:1: relationalExpr : plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? ;
+    // Lustre.g:156:1: relationalExpr : plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? ;
     public final LustreParser.relationalExpr_return relationalExpr() throws RecognitionException {
         LustreParser.relationalExpr_return retval = new LustreParser.relationalExpr_return();
         retval.start = input.LT(1);
@@ -2834,29 +2858,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        LustreParser.plusExpr_return plusExpr82 =null;
+
+        LustreParser.relationalOp_return relationalOp83 =null;
+
         LustreParser.plusExpr_return plusExpr84 =null;
-
-        LustreParser.relationalOp_return relationalOp85 =null;
-
-        LustreParser.plusExpr_return plusExpr86 =null;
 
 
 
         try {
-            // Lustre.g:160:15: ( plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? )
-            // Lustre.g:161:3: plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )?
+            // Lustre.g:156:15: ( plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )? )
+            // Lustre.g:157:3: plusExpr ( ( relationalOp )=> relationalOp ^ plusExpr )?
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_plusExpr_in_relationalExpr795);
-            plusExpr84=plusExpr();
+            pushFollow(FOLLOW_plusExpr_in_relationalExpr812);
+            plusExpr82=plusExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, plusExpr84.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, plusExpr82.getTree());
 
-            // Lustre.g:161:12: ( ( relationalOp )=> relationalOp ^ plusExpr )?
+            // Lustre.g:157:12: ( ( relationalOp )=> relationalOp ^ plusExpr )?
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -2869,21 +2893,21 @@ public TreeAdaptor getTreeAdaptor() {
             }
             switch (alt16) {
                 case 1 :
-                    // Lustre.g:161:13: ( relationalOp )=> relationalOp ^ plusExpr
+                    // Lustre.g:157:13: ( relationalOp )=> relationalOp ^ plusExpr
                     {
-                    pushFollow(FOLLOW_relationalOp_in_relationalExpr802);
-                    relationalOp85=relationalOp();
+                    pushFollow(FOLLOW_relationalOp_in_relationalExpr819);
+                    relationalOp83=relationalOp();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(relationalOp85.getTree(), root_0);
+                    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(relationalOp83.getTree(), root_0);
 
-                    pushFollow(FOLLOW_plusExpr_in_relationalExpr805);
-                    plusExpr86=plusExpr();
+                    pushFollow(FOLLOW_plusExpr_in_relationalExpr822);
+                    plusExpr84=plusExpr();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, plusExpr86.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, plusExpr84.getTree());
 
                     }
                     break;
@@ -2924,7 +2948,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "plusOp"
-    // Lustre.g:164:1: plusOp : ( '+' | '-' );
+    // Lustre.g:160:1: plusOp : ( '+' | '-' );
     public final LustreParser.plusOp_return plusOp() throws RecognitionException {
         LustreParser.plusOp_return retval = new LustreParser.plusOp_return();
         retval.start = input.LT(1);
@@ -2932,23 +2956,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token set87=null;
+        Token set85=null;
 
-        Object set87_tree=null;
+        Object set85_tree=null;
 
         try {
-            // Lustre.g:164:7: ( '+' | '-' )
+            // Lustre.g:160:7: ( '+' | '-' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
 
 
-            set87=(Token)input.LT(1);
+            set85=(Token)input.LT(1);
 
             if ( input.LA(1)==33||input.LA(1)==35 ) {
                 input.consume();
                 if ( state.backtracking==0 ) adaptor.addChild(root_0, 
-                (Object)adaptor.create(set87)
+                (Object)adaptor.create(set85)
                 );
                 state.errorRecovery=false;
                 state.failed=false;
@@ -2993,7 +3017,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "plusExpr"
-    // Lustre.g:168:1: plusExpr : timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* ;
+    // Lustre.g:164:1: plusExpr : timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* ;
     public final LustreParser.plusExpr_return plusExpr() throws RecognitionException {
         LustreParser.plusExpr_return retval = new LustreParser.plusExpr_return();
         retval.start = input.LT(1);
@@ -3001,29 +3025,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        LustreParser.timesExpr_return timesExpr86 =null;
+
+        LustreParser.plusOp_return plusOp87 =null;
+
         LustreParser.timesExpr_return timesExpr88 =null;
-
-        LustreParser.plusOp_return plusOp89 =null;
-
-        LustreParser.timesExpr_return timesExpr90 =null;
 
 
 
         try {
-            // Lustre.g:168:9: ( timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* )
-            // Lustre.g:169:3: timesExpr ( ( plusOp )=> plusOp ^ timesExpr )*
+            // Lustre.g:164:9: ( timesExpr ( ( plusOp )=> plusOp ^ timesExpr )* )
+            // Lustre.g:165:3: timesExpr ( ( plusOp )=> plusOp ^ timesExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_timesExpr_in_plusExpr831);
-            timesExpr88=timesExpr();
+            pushFollow(FOLLOW_timesExpr_in_plusExpr848);
+            timesExpr86=timesExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, timesExpr88.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, timesExpr86.getTree());
 
-            // Lustre.g:169:13: ( ( plusOp )=> plusOp ^ timesExpr )*
+            // Lustre.g:165:13: ( ( plusOp )=> plusOp ^ timesExpr )*
             loop17:
             do {
                 int alt17=2;
@@ -3042,21 +3066,21 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt17) {
             	case 1 :
-            	    // Lustre.g:169:14: ( plusOp )=> plusOp ^ timesExpr
+            	    // Lustre.g:165:14: ( plusOp )=> plusOp ^ timesExpr
             	    {
-            	    pushFollow(FOLLOW_plusOp_in_plusExpr838);
-            	    plusOp89=plusOp();
+            	    pushFollow(FOLLOW_plusOp_in_plusExpr855);
+            	    plusOp87=plusOp();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(plusOp89.getTree(), root_0);
+            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(plusOp87.getTree(), root_0);
 
-            	    pushFollow(FOLLOW_timesExpr_in_plusExpr841);
-            	    timesExpr90=timesExpr();
+            	    pushFollow(FOLLOW_timesExpr_in_plusExpr858);
+            	    timesExpr88=timesExpr();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, timesExpr90.getTree());
+            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, timesExpr88.getTree());
 
             	    }
             	    break;
@@ -3100,7 +3124,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "timesOp"
-    // Lustre.g:172:1: timesOp : ( '*' | '/' | 'div' );
+    // Lustre.g:168:1: timesOp : ( '*' | '/' | 'div' );
     public final LustreParser.timesOp_return timesOp() throws RecognitionException {
         LustreParser.timesOp_return retval = new LustreParser.timesOp_return();
         retval.start = input.LT(1);
@@ -3108,23 +3132,23 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token set91=null;
+        Token set89=null;
 
-        Object set91_tree=null;
+        Object set89_tree=null;
 
         try {
-            // Lustre.g:172:8: ( '*' | '/' | 'div' )
+            // Lustre.g:168:8: ( '*' | '/' | 'div' )
             // Lustre.g:
             {
             root_0 = (Object)adaptor.nil();
 
 
-            set91=(Token)input.LT(1);
+            set89=(Token)input.LT(1);
 
             if ( input.LA(1)==32||input.LA(1)==38||input.LA(1)==53 ) {
                 input.consume();
                 if ( state.backtracking==0 ) adaptor.addChild(root_0, 
-                (Object)adaptor.create(set91)
+                (Object)adaptor.create(set89)
                 );
                 state.errorRecovery=false;
                 state.failed=false;
@@ -3169,7 +3193,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "timesExpr"
-    // Lustre.g:176:1: timesExpr : prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* ;
+    // Lustre.g:172:1: timesExpr : prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* ;
     public final LustreParser.timesExpr_return timesExpr() throws RecognitionException {
         LustreParser.timesExpr_return retval = new LustreParser.timesExpr_return();
         retval.start = input.LT(1);
@@ -3177,29 +3201,29 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
+        LustreParser.prefixExpr_return prefixExpr90 =null;
+
+        LustreParser.timesOp_return timesOp91 =null;
+
         LustreParser.prefixExpr_return prefixExpr92 =null;
-
-        LustreParser.timesOp_return timesOp93 =null;
-
-        LustreParser.prefixExpr_return prefixExpr94 =null;
 
 
 
         try {
-            // Lustre.g:176:10: ( prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* )
-            // Lustre.g:177:3: prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )*
+            // Lustre.g:172:10: ( prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )* )
+            // Lustre.g:173:3: prefixExpr ( ( timesOp )=> timesOp ^ prefixExpr )*
             {
             root_0 = (Object)adaptor.nil();
 
 
-            pushFollow(FOLLOW_prefixExpr_in_timesExpr871);
-            prefixExpr92=prefixExpr();
+            pushFollow(FOLLOW_prefixExpr_in_timesExpr888);
+            prefixExpr90=prefixExpr();
 
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr92.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr90.getTree());
 
-            // Lustre.g:177:14: ( ( timesOp )=> timesOp ^ prefixExpr )*
+            // Lustre.g:173:14: ( ( timesOp )=> timesOp ^ prefixExpr )*
             loop18:
             do {
                 int alt18=2;
@@ -3218,21 +3242,21 @@ public TreeAdaptor getTreeAdaptor() {
 
                 switch (alt18) {
             	case 1 :
-            	    // Lustre.g:177:15: ( timesOp )=> timesOp ^ prefixExpr
+            	    // Lustre.g:173:15: ( timesOp )=> timesOp ^ prefixExpr
             	    {
-            	    pushFollow(FOLLOW_timesOp_in_timesExpr878);
-            	    timesOp93=timesOp();
+            	    pushFollow(FOLLOW_timesOp_in_timesExpr895);
+            	    timesOp91=timesOp();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(timesOp93.getTree(), root_0);
+            	    if ( state.backtracking==0 ) root_0 = (Object)adaptor.becomeRoot(timesOp91.getTree(), root_0);
 
-            	    pushFollow(FOLLOW_prefixExpr_in_timesExpr881);
-            	    prefixExpr94=prefixExpr();
+            	    pushFollow(FOLLOW_prefixExpr_in_timesExpr898);
+            	    prefixExpr92=prefixExpr();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr94.getTree());
+            	    if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr92.getTree());
 
             	    }
             	    break;
@@ -3276,7 +3300,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "prefixExpr"
-    // Lustre.g:180:1: prefixExpr : ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr );
+    // Lustre.g:176:1: prefixExpr : ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr );
     public final LustreParser.prefixExpr_return prefixExpr() throws RecognitionException {
         LustreParser.prefixExpr_return retval = new LustreParser.prefixExpr_return();
         retval.start = input.LT(1);
@@ -3284,25 +3308,25 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token char_literal95=null;
-        Token NOT97=null;
-        Token PRE99=null;
+        Token char_literal93=null;
+        Token NOT95=null;
+        Token PRE97=null;
+        LustreParser.prefixExpr_return prefixExpr94 =null;
+
         LustreParser.prefixExpr_return prefixExpr96 =null;
 
         LustreParser.prefixExpr_return prefixExpr98 =null;
 
-        LustreParser.prefixExpr_return prefixExpr100 =null;
-
-        LustreParser.atomicExpr_return atomicExpr101 =null;
+        LustreParser.atomicExpr_return atomicExpr99 =null;
 
 
-        Object char_literal95_tree=null;
-        Object NOT97_tree=null;
-        Object PRE99_tree=null;
+        Object char_literal93_tree=null;
+        Object NOT95_tree=null;
+        Object PRE97_tree=null;
         RewriteRuleTokenStream stream_35=new RewriteRuleTokenStream(adaptor,"token 35");
         RewriteRuleSubtreeStream stream_prefixExpr=new RewriteRuleSubtreeStream(adaptor,"rule prefixExpr");
         try {
-            // Lustre.g:180:11: ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr )
+            // Lustre.g:176:11: ( '-' prefixExpr -> ^( NEGATE prefixExpr ) | NOT ^ prefixExpr | PRE ^ prefixExpr | atomicExpr )
             int alt19=4;
             switch ( input.LA(1) ) {
             case 35:
@@ -3340,18 +3364,18 @@ public TreeAdaptor getTreeAdaptor() {
 
             switch (alt19) {
                 case 1 :
-                    // Lustre.g:181:3: '-' prefixExpr
+                    // Lustre.g:177:3: '-' prefixExpr
                     {
-                    char_literal95=(Token)match(input,35,FOLLOW_35_in_prefixExpr893); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_35.add(char_literal95);
+                    char_literal93=(Token)match(input,35,FOLLOW_35_in_prefixExpr910); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_35.add(char_literal93);
 
 
-                    pushFollow(FOLLOW_prefixExpr_in_prefixExpr895);
-                    prefixExpr96=prefixExpr();
+                    pushFollow(FOLLOW_prefixExpr_in_prefixExpr912);
+                    prefixExpr94=prefixExpr();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_prefixExpr.add(prefixExpr96.getTree());
+                    if ( state.backtracking==0 ) stream_prefixExpr.add(prefixExpr94.getTree());
 
                     // AST REWRITE
                     // elements: prefixExpr
@@ -3366,9 +3390,9 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 181:18: -> ^( NEGATE prefixExpr )
+                    // 177:18: -> ^( NEGATE prefixExpr )
                     {
-                        // Lustre.g:181:21: ^( NEGATE prefixExpr )
+                        // Lustre.g:177:21: ^( NEGATE prefixExpr )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(
@@ -3389,20 +3413,43 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:182:3: NOT ^ prefixExpr
+                    // Lustre.g:178:3: NOT ^ prefixExpr
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    NOT97=(Token)match(input,NOT,FOLLOW_NOT_in_prefixExpr907); if (state.failed) return retval;
+                    NOT95=(Token)match(input,NOT,FOLLOW_NOT_in_prefixExpr924); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    NOT97_tree = 
-                    (Object)adaptor.create(NOT97)
+                    NOT95_tree = 
+                    (Object)adaptor.create(NOT95)
                     ;
-                    root_0 = (Object)adaptor.becomeRoot(NOT97_tree, root_0);
+                    root_0 = (Object)adaptor.becomeRoot(NOT95_tree, root_0);
                     }
 
-                    pushFollow(FOLLOW_prefixExpr_in_prefixExpr910);
+                    pushFollow(FOLLOW_prefixExpr_in_prefixExpr927);
+                    prefixExpr96=prefixExpr();
+
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr96.getTree());
+
+                    }
+                    break;
+                case 3 :
+                    // Lustre.g:179:3: PRE ^ prefixExpr
+                    {
+                    root_0 = (Object)adaptor.nil();
+
+
+                    PRE97=(Token)match(input,PRE,FOLLOW_PRE_in_prefixExpr931); if (state.failed) return retval;
+                    if ( state.backtracking==0 ) {
+                    PRE97_tree = 
+                    (Object)adaptor.create(PRE97)
+                    ;
+                    root_0 = (Object)adaptor.becomeRoot(PRE97_tree, root_0);
+                    }
+
+                    pushFollow(FOLLOW_prefixExpr_in_prefixExpr934);
                     prefixExpr98=prefixExpr();
 
                     state._fsp--;
@@ -3411,41 +3458,18 @@ public TreeAdaptor getTreeAdaptor() {
 
                     }
                     break;
-                case 3 :
-                    // Lustre.g:183:3: PRE ^ prefixExpr
-                    {
-                    root_0 = (Object)adaptor.nil();
-
-
-                    PRE99=(Token)match(input,PRE,FOLLOW_PRE_in_prefixExpr914); if (state.failed) return retval;
-                    if ( state.backtracking==0 ) {
-                    PRE99_tree = 
-                    (Object)adaptor.create(PRE99)
-                    ;
-                    root_0 = (Object)adaptor.becomeRoot(PRE99_tree, root_0);
-                    }
-
-                    pushFollow(FOLLOW_prefixExpr_in_prefixExpr917);
-                    prefixExpr100=prefixExpr();
-
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, prefixExpr100.getTree());
-
-                    }
-                    break;
                 case 4 :
-                    // Lustre.g:184:3: atomicExpr
+                    // Lustre.g:180:3: atomicExpr
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    pushFollow(FOLLOW_atomicExpr_in_prefixExpr921);
-                    atomicExpr101=atomicExpr();
+                    pushFollow(FOLLOW_atomicExpr_in_prefixExpr938);
+                    atomicExpr99=atomicExpr();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, atomicExpr101.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, atomicExpr99.getTree());
 
                     }
                     break;
@@ -3482,7 +3506,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "atomicExpr"
-    // Lustre.g:187:1: atomicExpr : ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | ID '(' ( expr ( ',' expr )* )? ')' -> ^( NODECALL ID ( expr )* ) | '(' expr ')' -> expr );
+    // Lustre.g:183:1: atomicExpr : ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | ID '(' ( expr ( ',' expr )* )? ')' -> ^( NODECALL ID ( expr )* ) | '(' expr ')' -> expr );
     public final LustreParser.atomicExpr_return atomicExpr() throws RecognitionException {
         LustreParser.atomicExpr_return retval = new LustreParser.atomicExpr_return();
         retval.start = input.LT(1);
@@ -3490,52 +3514,52 @@ public TreeAdaptor getTreeAdaptor() {
 
         Object root_0 = null;
 
-        Token ID102=null;
-        Token INT103=null;
-        Token BOOL105=null;
-        Token IF106=null;
+        Token ID100=null;
+        Token INT101=null;
+        Token BOOL103=null;
+        Token IF104=null;
+        Token string_literal106=null;
         Token string_literal108=null;
-        Token string_literal110=null;
-        Token ID112=null;
+        Token ID110=null;
+        Token char_literal111=null;
         Token char_literal113=null;
         Token char_literal115=null;
-        Token char_literal117=null;
+        Token char_literal116=null;
         Token char_literal118=null;
-        Token char_literal120=null;
-        LustreParser.real_return real104 =null;
+        LustreParser.real_return real102 =null;
+
+        LustreParser.expr_return expr105 =null;
 
         LustreParser.expr_return expr107 =null;
 
         LustreParser.expr_return expr109 =null;
 
-        LustreParser.expr_return expr111 =null;
+        LustreParser.expr_return expr112 =null;
 
         LustreParser.expr_return expr114 =null;
 
-        LustreParser.expr_return expr116 =null;
-
-        LustreParser.expr_return expr119 =null;
+        LustreParser.expr_return expr117 =null;
 
 
-        Object ID102_tree=null;
-        Object INT103_tree=null;
-        Object BOOL105_tree=null;
-        Object IF106_tree=null;
+        Object ID100_tree=null;
+        Object INT101_tree=null;
+        Object BOOL103_tree=null;
+        Object IF104_tree=null;
+        Object string_literal106_tree=null;
         Object string_literal108_tree=null;
-        Object string_literal110_tree=null;
-        Object ID112_tree=null;
+        Object ID110_tree=null;
+        Object char_literal111_tree=null;
         Object char_literal113_tree=null;
         Object char_literal115_tree=null;
-        Object char_literal117_tree=null;
+        Object char_literal116_tree=null;
         Object char_literal118_tree=null;
-        Object char_literal120_tree=null;
         RewriteRuleTokenStream stream_30=new RewriteRuleTokenStream(adaptor,"token 30");
         RewriteRuleTokenStream stream_31=new RewriteRuleTokenStream(adaptor,"token 31");
         RewriteRuleTokenStream stream_ID=new RewriteRuleTokenStream(adaptor,"token ID");
         RewriteRuleTokenStream stream_34=new RewriteRuleTokenStream(adaptor,"token 34");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // Lustre.g:187:11: ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | ID '(' ( expr ( ',' expr )* )? ')' -> ^( NODECALL ID ( expr )* ) | '(' expr ')' -> expr )
+            // Lustre.g:183:11: ( ID -> ^( IDENT ID ) | INT | real | BOOL | IF ^ expr 'then' ! expr 'else' ! expr | ID '(' ( expr ( ',' expr )* )? ')' -> ^( NODECALL ID ( expr )* ) | '(' expr ')' -> expr )
             int alt22=7;
             switch ( input.LA(1) ) {
             case ID:
@@ -3604,10 +3628,10 @@ public TreeAdaptor getTreeAdaptor() {
 
             switch (alt22) {
                 case 1 :
-                    // Lustre.g:188:3: ID
+                    // Lustre.g:184:3: ID
                     {
-                    ID102=(Token)match(input,ID,FOLLOW_ID_in_atomicExpr931); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_ID.add(ID102);
+                    ID100=(Token)match(input,ID,FOLLOW_ID_in_atomicExpr948); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_ID.add(ID100);
 
 
                     // AST REWRITE
@@ -3623,9 +3647,9 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 188:6: -> ^( IDENT ID )
+                    // 184:6: -> ^( IDENT ID )
                     {
-                        // Lustre.g:188:9: ^( IDENT ID )
+                        // Lustre.g:184:9: ^( IDENT ID )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(
@@ -3648,105 +3672,105 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 2 :
-                    // Lustre.g:189:3: INT
+                    // Lustre.g:185:3: INT
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    INT103=(Token)match(input,INT,FOLLOW_INT_in_atomicExpr943); if (state.failed) return retval;
+                    INT101=(Token)match(input,INT,FOLLOW_INT_in_atomicExpr960); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    INT103_tree = 
-                    (Object)adaptor.create(INT103)
+                    INT101_tree = 
+                    (Object)adaptor.create(INT101)
                     ;
-                    adaptor.addChild(root_0, INT103_tree);
+                    adaptor.addChild(root_0, INT101_tree);
                     }
 
                     }
                     break;
                 case 3 :
-                    // Lustre.g:190:3: real
+                    // Lustre.g:186:3: real
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    pushFollow(FOLLOW_real_in_atomicExpr947);
-                    real104=real();
+                    pushFollow(FOLLOW_real_in_atomicExpr964);
+                    real102=real();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, real104.getTree());
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, real102.getTree());
 
                     }
                     break;
                 case 4 :
-                    // Lustre.g:191:3: BOOL
+                    // Lustre.g:187:3: BOOL
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    BOOL105=(Token)match(input,BOOL,FOLLOW_BOOL_in_atomicExpr951); if (state.failed) return retval;
+                    BOOL103=(Token)match(input,BOOL,FOLLOW_BOOL_in_atomicExpr968); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    BOOL105_tree = 
-                    (Object)adaptor.create(BOOL105)
+                    BOOL103_tree = 
+                    (Object)adaptor.create(BOOL103)
                     ;
-                    adaptor.addChild(root_0, BOOL105_tree);
+                    adaptor.addChild(root_0, BOOL103_tree);
                     }
 
                     }
                     break;
                 case 5 :
-                    // Lustre.g:192:3: IF ^ expr 'then' ! expr 'else' ! expr
+                    // Lustre.g:188:3: IF ^ expr 'then' ! expr 'else' ! expr
                     {
                     root_0 = (Object)adaptor.nil();
 
 
-                    IF106=(Token)match(input,IF,FOLLOW_IF_in_atomicExpr955); if (state.failed) return retval;
+                    IF104=(Token)match(input,IF,FOLLOW_IF_in_atomicExpr972); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    IF106_tree = 
-                    (Object)adaptor.create(IF106)
+                    IF104_tree = 
+                    (Object)adaptor.create(IF104)
                     ;
-                    root_0 = (Object)adaptor.becomeRoot(IF106_tree, root_0);
+                    root_0 = (Object)adaptor.becomeRoot(IF104_tree, root_0);
                     }
 
-                    pushFollow(FOLLOW_expr_in_atomicExpr958);
+                    pushFollow(FOLLOW_expr_in_atomicExpr975);
+                    expr105=expr();
+
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) adaptor.addChild(root_0, expr105.getTree());
+
+                    string_literal106=(Token)match(input,64,FOLLOW_64_in_atomicExpr977); if (state.failed) return retval;
+
+                    pushFollow(FOLLOW_expr_in_atomicExpr980);
                     expr107=expr();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, expr107.getTree());
 
-                    string_literal108=(Token)match(input,64,FOLLOW_64_in_atomicExpr960); if (state.failed) return retval;
+                    string_literal108=(Token)match(input,54,FOLLOW_54_in_atomicExpr982); if (state.failed) return retval;
 
-                    pushFollow(FOLLOW_expr_in_atomicExpr963);
+                    pushFollow(FOLLOW_expr_in_atomicExpr985);
                     expr109=expr();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, expr109.getTree());
 
-                    string_literal110=(Token)match(input,54,FOLLOW_54_in_atomicExpr965); if (state.failed) return retval;
-
-                    pushFollow(FOLLOW_expr_in_atomicExpr968);
-                    expr111=expr();
-
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) adaptor.addChild(root_0, expr111.getTree());
-
                     }
                     break;
                 case 6 :
-                    // Lustre.g:193:3: ID '(' ( expr ( ',' expr )* )? ')'
+                    // Lustre.g:189:3: ID '(' ( expr ( ',' expr )* )? ')'
                     {
-                    ID112=(Token)match(input,ID,FOLLOW_ID_in_atomicExpr972); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_ID.add(ID112);
+                    ID110=(Token)match(input,ID,FOLLOW_ID_in_atomicExpr989); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_ID.add(ID110);
 
 
-                    char_literal113=(Token)match(input,30,FOLLOW_30_in_atomicExpr974); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_30.add(char_literal113);
+                    char_literal111=(Token)match(input,30,FOLLOW_30_in_atomicExpr991); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_30.add(char_literal111);
 
 
-                    // Lustre.g:193:10: ( expr ( ',' expr )* )?
+                    // Lustre.g:189:10: ( expr ( ',' expr )* )?
                     int alt21=2;
                     int LA21_0 = input.LA(1);
 
@@ -3755,16 +3779,16 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     switch (alt21) {
                         case 1 :
-                            // Lustre.g:193:11: expr ( ',' expr )*
+                            // Lustre.g:189:11: expr ( ',' expr )*
                             {
-                            pushFollow(FOLLOW_expr_in_atomicExpr977);
-                            expr114=expr();
+                            pushFollow(FOLLOW_expr_in_atomicExpr994);
+                            expr112=expr();
 
                             state._fsp--;
                             if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_expr.add(expr114.getTree());
+                            if ( state.backtracking==0 ) stream_expr.add(expr112.getTree());
 
-                            // Lustre.g:193:16: ( ',' expr )*
+                            // Lustre.g:189:16: ( ',' expr )*
                             loop20:
                             do {
                                 int alt20=2;
@@ -3777,18 +3801,18 @@ public TreeAdaptor getTreeAdaptor() {
 
                                 switch (alt20) {
                             	case 1 :
-                            	    // Lustre.g:193:17: ',' expr
+                            	    // Lustre.g:189:17: ',' expr
                             	    {
-                            	    char_literal115=(Token)match(input,34,FOLLOW_34_in_atomicExpr980); if (state.failed) return retval; 
-                            	    if ( state.backtracking==0 ) stream_34.add(char_literal115);
+                            	    char_literal113=(Token)match(input,34,FOLLOW_34_in_atomicExpr997); if (state.failed) return retval; 
+                            	    if ( state.backtracking==0 ) stream_34.add(char_literal113);
 
 
-                            	    pushFollow(FOLLOW_expr_in_atomicExpr982);
-                            	    expr116=expr();
+                            	    pushFollow(FOLLOW_expr_in_atomicExpr999);
+                            	    expr114=expr();
 
                             	    state._fsp--;
                             	    if (state.failed) return retval;
-                            	    if ( state.backtracking==0 ) stream_expr.add(expr116.getTree());
+                            	    if ( state.backtracking==0 ) stream_expr.add(expr114.getTree());
 
                             	    }
                             	    break;
@@ -3805,8 +3829,8 @@ public TreeAdaptor getTreeAdaptor() {
                     }
 
 
-                    char_literal117=(Token)match(input,31,FOLLOW_31_in_atomicExpr988); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_31.add(char_literal117);
+                    char_literal115=(Token)match(input,31,FOLLOW_31_in_atomicExpr1005); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_31.add(char_literal115);
 
 
                     // AST REWRITE
@@ -3822,9 +3846,9 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 193:34: -> ^( NODECALL ID ( expr )* )
+                    // 189:34: -> ^( NODECALL ID ( expr )* )
                     {
-                        // Lustre.g:193:37: ^( NODECALL ID ( expr )* )
+                        // Lustre.g:189:37: ^( NODECALL ID ( expr )* )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(
@@ -3835,7 +3859,7 @@ public TreeAdaptor getTreeAdaptor() {
                         stream_ID.nextNode()
                         );
 
-                        // Lustre.g:193:51: ( expr )*
+                        // Lustre.g:189:51: ( expr )*
                         while ( stream_expr.hasNext() ) {
                             adaptor.addChild(root_1, stream_expr.nextTree());
 
@@ -3854,21 +3878,21 @@ public TreeAdaptor getTreeAdaptor() {
                     }
                     break;
                 case 7 :
-                    // Lustre.g:194:3: '(' expr ')'
+                    // Lustre.g:190:3: '(' expr ')'
                     {
-                    char_literal118=(Token)match(input,30,FOLLOW_30_in_atomicExpr1003); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_30.add(char_literal118);
+                    char_literal116=(Token)match(input,30,FOLLOW_30_in_atomicExpr1020); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_30.add(char_literal116);
 
 
-                    pushFollow(FOLLOW_expr_in_atomicExpr1005);
-                    expr119=expr();
+                    pushFollow(FOLLOW_expr_in_atomicExpr1022);
+                    expr117=expr();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_expr.add(expr119.getTree());
+                    if ( state.backtracking==0 ) stream_expr.add(expr117.getTree());
 
-                    char_literal120=(Token)match(input,31,FOLLOW_31_in_atomicExpr1007); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_31.add(char_literal120);
+                    char_literal118=(Token)match(input,31,FOLLOW_31_in_atomicExpr1024); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_31.add(char_literal118);
 
 
                     // AST REWRITE
@@ -3884,7 +3908,7 @@ public TreeAdaptor getTreeAdaptor() {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 194:16: -> expr
+                    // 190:16: -> expr
                     {
                         adaptor.addChild(root_0, stream_expr.nextTree());
 
@@ -3929,7 +3953,7 @@ public TreeAdaptor getTreeAdaptor() {
 
 
     // $ANTLR start "real"
-    // Lustre.g:197:1: real : a= INT '.' b= INT ->;
+    // Lustre.g:193:1: real : a= INT '.' b= INT -> REAL[$real.text] ;
     public final LustreParser.real_return real() throws RecognitionException {
         LustreParser.real_return retval = new LustreParser.real_return();
         retval.start = input.LT(1);
@@ -3939,27 +3963,27 @@ public TreeAdaptor getTreeAdaptor() {
 
         Token a=null;
         Token b=null;
-        Token char_literal121=null;
+        Token char_literal119=null;
 
         Object a_tree=null;
         Object b_tree=null;
-        Object char_literal121_tree=null;
+        Object char_literal119_tree=null;
         RewriteRuleTokenStream stream_INT=new RewriteRuleTokenStream(adaptor,"token INT");
         RewriteRuleTokenStream stream_ERROR=new RewriteRuleTokenStream(adaptor,"token ERROR");
 
         try {
-            // Lustre.g:197:5: (a= INT '.' b= INT ->)
-            // Lustre.g:197:7: a= INT '.' b= INT
+            // Lustre.g:193:5: (a= INT '.' b= INT -> REAL[$real.text] )
+            // Lustre.g:193:7: a= INT '.' b= INT
             {
-            a=(Token)match(input,INT,FOLLOW_INT_in_real1021); if (state.failed) return retval; 
+            a=(Token)match(input,INT,FOLLOW_INT_in_real1038); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_INT.add(a);
 
 
-            char_literal121=(Token)match(input,ERROR,FOLLOW_ERROR_in_real1023); if (state.failed) return retval; 
-            if ( state.backtracking==0 ) stream_ERROR.add(char_literal121);
+            char_literal119=(Token)match(input,ERROR,FOLLOW_ERROR_in_real1040); if (state.failed) return retval; 
+            if ( state.backtracking==0 ) stream_ERROR.add(char_literal119);
 
 
-            b=(Token)match(input,INT,FOLLOW_INT_in_real1027); if (state.failed) return retval; 
+            b=(Token)match(input,INT,FOLLOW_INT_in_real1044); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_INT.add(b);
 
 
@@ -3976,9 +4000,11 @@ public TreeAdaptor getTreeAdaptor() {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 197:23: ->
+            // 193:23: -> REAL[$real.text]
             {
-                adaptor.addChild(root_0, makeReal((a!=null?a.getText():null) + "." + (b!=null?b.getText():null)));
+                adaptor.addChild(root_0, 
+                (Object)adaptor.create(REAL, input.toString(retval.start,input.LT(-1)))
+                );
 
             }
 
@@ -4013,10 +4039,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred1_Lustre
     public final void synpred1_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:129:16: ( arrowOp )
-        // Lustre.g:129:17: arrowOp
+        // Lustre.g:125:16: ( arrowOp )
+        // Lustre.g:125:17: arrowOp
         {
-        pushFollow(FOLLOW_arrowOp_in_synpred1_Lustre647);
+        pushFollow(FOLLOW_arrowOp_in_synpred1_Lustre664);
         arrowOp();
 
         state._fsp--;
@@ -4029,10 +4055,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred2_Lustre
     public final void synpred2_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:137:11: ( impliesOp )
-        // Lustre.g:137:12: impliesOp
+        // Lustre.g:133:11: ( impliesOp )
+        // Lustre.g:133:12: impliesOp
         {
-        pushFollow(FOLLOW_impliesOp_in_synpred2_Lustre679);
+        pushFollow(FOLLOW_impliesOp_in_synpred2_Lustre696);
         impliesOp();
 
         state._fsp--;
@@ -4045,10 +4071,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred3_Lustre
     public final void synpred3_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:145:12: ( orOp )
-        // Lustre.g:145:13: orOp
+        // Lustre.g:141:12: ( orOp )
+        // Lustre.g:141:13: orOp
         {
-        pushFollow(FOLLOW_orOp_in_synpred3_Lustre715);
+        pushFollow(FOLLOW_orOp_in_synpred3_Lustre732);
         orOp();
 
         state._fsp--;
@@ -4061,10 +4087,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred4_Lustre
     public final void synpred4_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:153:19: ( andOp )
-        // Lustre.g:153:20: andOp
+        // Lustre.g:149:19: ( andOp )
+        // Lustre.g:149:20: andOp
         {
-        pushFollow(FOLLOW_andOp_in_synpred4_Lustre747);
+        pushFollow(FOLLOW_andOp_in_synpred4_Lustre764);
         andOp();
 
         state._fsp--;
@@ -4077,10 +4103,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred5_Lustre
     public final void synpred5_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:161:13: ( relationalOp )
-        // Lustre.g:161:14: relationalOp
+        // Lustre.g:157:13: ( relationalOp )
+        // Lustre.g:157:14: relationalOp
         {
-        pushFollow(FOLLOW_relationalOp_in_synpred5_Lustre799);
+        pushFollow(FOLLOW_relationalOp_in_synpred5_Lustre816);
         relationalOp();
 
         state._fsp--;
@@ -4093,10 +4119,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred6_Lustre
     public final void synpred6_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:169:14: ( plusOp )
-        // Lustre.g:169:15: plusOp
+        // Lustre.g:165:14: ( plusOp )
+        // Lustre.g:165:15: plusOp
         {
-        pushFollow(FOLLOW_plusOp_in_synpred6_Lustre835);
+        pushFollow(FOLLOW_plusOp_in_synpred6_Lustre852);
         plusOp();
 
         state._fsp--;
@@ -4109,10 +4135,10 @@ public TreeAdaptor getTreeAdaptor() {
 
     // $ANTLR start synpred7_Lustre
     public final void synpred7_Lustre_fragment() throws RecognitionException {
-        // Lustre.g:177:15: ( timesOp )
-        // Lustre.g:177:16: timesOp
+        // Lustre.g:173:15: ( timesOp )
+        // Lustre.g:173:16: timesOp
         {
-        pushFollow(FOLLOW_timesOp_in_synpred7_Lustre875);
+        pushFollow(FOLLOW_timesOp_in_synpred7_Lustre892);
         timesOp();
 
         state._fsp--;
@@ -4270,91 +4296,91 @@ public TreeAdaptor getTreeAdaptor() {
     public static final BitSet FOLLOW_55_in_type470 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_62_in_type475 = new BitSet(new long[]{0x0001000000000000L});
     public static final BitSet FOLLOW_48_in_type477 = new BitSet(new long[]{0x0000000800002000L});
-    public static final BitSet FOLLOW_bound_in_type479 = new BitSet(new long[]{0x0000000400000000L});
-    public static final BitSet FOLLOW_34_in_type481 = new BitSet(new long[]{0x0000000800002000L});
-    public static final BitSet FOLLOW_bound_in_type483 = new BitSet(new long[]{0x0002000000000000L});
-    public static final BitSet FOLLOW_49_in_type485 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_58_in_type487 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_55_in_type489 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_51_in_type497 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_60_in_type502 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_type507 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_35_in_bound518 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_INT_in_bound521 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_36_in_property531 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_ID_in_property533 = new BitSet(new long[]{0x0000010000000000L});
-    public static final BitSet FOLLOW_40_in_property535 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lhs_opt_parens_in_equation549 = new BitSet(new long[]{0x0000100000000000L});
-    public static final BitSet FOLLOW_44_in_equation551 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_expr_in_equation553 = new BitSet(new long[]{0x0000010000000000L});
-    public static final BitSet FOLLOW_40_in_equation555 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lhs_in_lhs_opt_parens575 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_lhs_opt_parens579 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_lhs_in_lhs_opt_parens581 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_31_in_lhs_opt_parens583 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_lhs597 = new BitSet(new long[]{0x0000000400000002L});
-    public static final BitSet FOLLOW_34_in_lhs600 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_ID_in_lhs602 = new BitSet(new long[]{0x0000000400000002L});
-    public static final BitSet FOLLOW_arrowExpr_in_expr623 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_37_in_arrowOp633 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_impliesExpr_in_arrowExpr643 = new BitSet(new long[]{0x0000002000000002L});
-    public static final BitSet FOLLOW_arrowOp_in_arrowExpr650 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_arrowExpr_in_arrowExpr653 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_45_in_impliesOp665 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_orExpr_in_impliesExpr675 = new BitSet(new long[]{0x0000200000000002L});
-    public static final BitSet FOLLOW_impliesOp_in_impliesExpr682 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_impliesExpr_in_impliesExpr685 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_andExpr_in_orExpr711 = new BitSet(new long[]{0x0800000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_orOp_in_orExpr718 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_andExpr_in_orExpr721 = new BitSet(new long[]{0x0800000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_50_in_andOp733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_relationalExpr_in_andExpr743 = new BitSet(new long[]{0x0004000000000002L});
-    public static final BitSet FOLLOW_andOp_in_andExpr750 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_relationalExpr_in_andExpr753 = new BitSet(new long[]{0x0004000000000002L});
-    public static final BitSet FOLLOW_plusExpr_in_relationalExpr795 = new BitSet(new long[]{0x0000DE0000000002L});
-    public static final BitSet FOLLOW_relationalOp_in_relationalExpr802 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_plusExpr_in_relationalExpr805 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timesExpr_in_plusExpr831 = new BitSet(new long[]{0x0000000A00000002L});
-    public static final BitSet FOLLOW_plusOp_in_plusExpr838 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_timesExpr_in_plusExpr841 = new BitSet(new long[]{0x0000000A00000002L});
-    public static final BitSet FOLLOW_prefixExpr_in_timesExpr871 = new BitSet(new long[]{0x0020004100000002L});
-    public static final BitSet FOLLOW_timesOp_in_timesExpr878 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_prefixExpr_in_timesExpr881 = new BitSet(new long[]{0x0020004100000002L});
-    public static final BitSet FOLLOW_35_in_prefixExpr893 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_prefixExpr_in_prefixExpr895 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_in_prefixExpr907 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_prefixExpr_in_prefixExpr910 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PRE_in_prefixExpr914 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_prefixExpr_in_prefixExpr917 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_atomicExpr_in_prefixExpr921 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_atomicExpr931 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_atomicExpr943 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_real_in_atomicExpr947 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOL_in_atomicExpr951 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IF_in_atomicExpr955 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr958 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_64_in_atomicExpr960 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr963 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_atomicExpr965 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr968 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_atomicExpr972 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_30_in_atomicExpr974 = new BitSet(new long[]{0x00000008C0A02A10L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr977 = new BitSet(new long[]{0x0000000480000000L});
-    public static final BitSet FOLLOW_34_in_atomicExpr980 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr982 = new BitSet(new long[]{0x0000000480000000L});
-    public static final BitSet FOLLOW_31_in_atomicExpr988 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_atomicExpr1003 = new BitSet(new long[]{0x0000000840A02A10L});
-    public static final BitSet FOLLOW_expr_in_atomicExpr1005 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_31_in_atomicExpr1007 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_real1021 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_ERROR_in_real1023 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_INT_in_real1027 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arrowOp_in_synpred1_Lustre647 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_impliesOp_in_synpred2_Lustre679 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_orOp_in_synpred3_Lustre715 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_andOp_in_synpred4_Lustre747 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_relationalOp_in_synpred5_Lustre799 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_plusOp_in_synpred6_Lustre835 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timesOp_in_synpred7_Lustre875 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_bound_in_type481 = new BitSet(new long[]{0x0000000400000000L});
+    public static final BitSet FOLLOW_34_in_type483 = new BitSet(new long[]{0x0000000800002000L});
+    public static final BitSet FOLLOW_bound_in_type487 = new BitSet(new long[]{0x0002000000000000L});
+    public static final BitSet FOLLOW_49_in_type489 = new BitSet(new long[]{0x0400000000000000L});
+    public static final BitSet FOLLOW_58_in_type491 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_55_in_type493 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_51_in_type509 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_60_in_type514 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_type519 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_35_in_bound530 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_INT_in_bound533 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_36_in_property548 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_ID_in_property550 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_property552 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lhs_opt_parens_in_equation566 = new BitSet(new long[]{0x0000100000000000L});
+    public static final BitSet FOLLOW_44_in_equation568 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_expr_in_equation570 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_equation572 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lhs_in_lhs_opt_parens592 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_30_in_lhs_opt_parens596 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_lhs_in_lhs_opt_parens598 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_31_in_lhs_opt_parens600 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_lhs614 = new BitSet(new long[]{0x0000000400000002L});
+    public static final BitSet FOLLOW_34_in_lhs617 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_ID_in_lhs619 = new BitSet(new long[]{0x0000000400000002L});
+    public static final BitSet FOLLOW_arrowExpr_in_expr640 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_37_in_arrowOp650 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_impliesExpr_in_arrowExpr660 = new BitSet(new long[]{0x0000002000000002L});
+    public static final BitSet FOLLOW_arrowOp_in_arrowExpr667 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_arrowExpr_in_arrowExpr670 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_45_in_impliesOp682 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_orExpr_in_impliesExpr692 = new BitSet(new long[]{0x0000200000000002L});
+    public static final BitSet FOLLOW_impliesOp_in_impliesExpr699 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_impliesExpr_in_impliesExpr702 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_andExpr_in_orExpr728 = new BitSet(new long[]{0x0800000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_orOp_in_orExpr735 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_andExpr_in_orExpr738 = new BitSet(new long[]{0x0800000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_50_in_andOp750 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_relationalExpr_in_andExpr760 = new BitSet(new long[]{0x0004000000000002L});
+    public static final BitSet FOLLOW_andOp_in_andExpr767 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_relationalExpr_in_andExpr770 = new BitSet(new long[]{0x0004000000000002L});
+    public static final BitSet FOLLOW_plusExpr_in_relationalExpr812 = new BitSet(new long[]{0x0000DE0000000002L});
+    public static final BitSet FOLLOW_relationalOp_in_relationalExpr819 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_plusExpr_in_relationalExpr822 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timesExpr_in_plusExpr848 = new BitSet(new long[]{0x0000000A00000002L});
+    public static final BitSet FOLLOW_plusOp_in_plusExpr855 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_timesExpr_in_plusExpr858 = new BitSet(new long[]{0x0000000A00000002L});
+    public static final BitSet FOLLOW_prefixExpr_in_timesExpr888 = new BitSet(new long[]{0x0020004100000002L});
+    public static final BitSet FOLLOW_timesOp_in_timesExpr895 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_prefixExpr_in_timesExpr898 = new BitSet(new long[]{0x0020004100000002L});
+    public static final BitSet FOLLOW_35_in_prefixExpr910 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_prefixExpr_in_prefixExpr912 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_in_prefixExpr924 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_prefixExpr_in_prefixExpr927 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PRE_in_prefixExpr931 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_prefixExpr_in_prefixExpr934 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_atomicExpr_in_prefixExpr938 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_atomicExpr948 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_atomicExpr960 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_real_in_atomicExpr964 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOL_in_atomicExpr968 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IF_in_atomicExpr972 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr975 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_64_in_atomicExpr977 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr980 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_atomicExpr982 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr985 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_atomicExpr989 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_30_in_atomicExpr991 = new BitSet(new long[]{0x00000008C0A02A10L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr994 = new BitSet(new long[]{0x0000000480000000L});
+    public static final BitSet FOLLOW_34_in_atomicExpr997 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr999 = new BitSet(new long[]{0x0000000480000000L});
+    public static final BitSet FOLLOW_31_in_atomicExpr1005 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_30_in_atomicExpr1020 = new BitSet(new long[]{0x0000000840A02A10L});
+    public static final BitSet FOLLOW_expr_in_atomicExpr1022 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_31_in_atomicExpr1024 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_real1038 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_ERROR_in_real1040 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_INT_in_real1044 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arrowOp_in_synpred1_Lustre664 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_impliesOp_in_synpred2_Lustre696 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_orOp_in_synpred3_Lustre732 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_andOp_in_synpred4_Lustre764 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_relationalOp_in_synpred5_Lustre816 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_plusOp_in_synpred6_Lustre852 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timesOp_in_synpred7_Lustre892 = new BitSet(new long[]{0x0000000000000002L});
 
 }

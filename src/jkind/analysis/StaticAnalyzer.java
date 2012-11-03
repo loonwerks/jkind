@@ -8,16 +8,19 @@ import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.SubrangeIntType;
+import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 import jkind.translation.Util;
 
 public class StaticAnalyzer {
 	public static boolean check(Program program) {
-		return TypeChecker.check(program) && typesUnique(program) && constantsUnique(program)
-				&& nodesUnique(program) && NodeDependencyChecker.check(program)
-				&& variablesUnique(program) && assignmentsSound(program)
-				&& propertiesUnique(program.main) && LinearChecker.check(program);
+		return TypeChecker.check(program) && typesUnique(program) && subrangesNonempty(program)
+				&& constantsUnique(program) && nodesUnique(program)
+				&& NodeDependencyChecker.check(program) && variablesUnique(program)
+				&& assignmentsSound(program) && propertiesUnique(program.main)
+				&& LinearChecker.check(program);
 	}
 
 	private static boolean typesUnique(Program program) {
@@ -33,6 +36,38 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
+	}
+
+	private static boolean subrangesNonempty(Program program) {
+		boolean nonempty = true;
+		
+		for (TypeDef def : program.types) {
+			if (!checkSubrangeNonempty(def.type)) {
+				nonempty = false;
+			}
+		}
+		
+		for (Node node : program.nodes) {
+			for (VarDecl decl : Util.getVarDecls(node)) {
+				if (!checkSubrangeNonempty(decl.type)) {
+					nonempty = false;
+				}
+			}
+		}
+		
+		return nonempty;
+	}
+
+	private static boolean checkSubrangeNonempty(Type type) {
+		if (type instanceof SubrangeIntType) {
+			SubrangeIntType subrange = (SubrangeIntType) type;
+			if (subrange.high < subrange.low) {
+				System.out.println("Error at line " + subrange.location + " subrange is empty");
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	private static boolean constantsUnique(Program program) {

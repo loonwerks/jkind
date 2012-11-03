@@ -24,12 +24,12 @@ public class Antlr2Lustre {
 		for (Object o : tree.getChildren()) {
 			CommonTree child = (CommonTree) o;
 			String id = child.getText();
-			Type type = type(child.getChild(0).getText());
+			Type type = type(child.getChild(0));
 			types.add(new TypeDef(loc(child), id, type));
 		}
 		return types;
 	}
-	
+
 	private static List<Constant> constants(CommonTree tree) {
 		List<Constant> constants = new ArrayList<Constant>();
 		if (tree == null || tree.getChildCount() == 0) {
@@ -50,12 +50,12 @@ public class Antlr2Lustre {
 		if (tree == null || tree.getChildCount() == 0) {
 			return nodes;
 		}
-		
+
 		for (Object o : tree.getChildren()) {
 			CommonTree child = (CommonTree) o;
 			nodes.add(node(child));
 		}
-		
+
 		return nodes;
 	}
 
@@ -79,15 +79,26 @@ public class Antlr2Lustre {
 		for (Object o : tree.getChildren()) {
 			CommonTree child = (CommonTree) o;
 			String id = child.getText();
-			Type type = type(child.getChild(0).getText());
+			Type type = type(child.getChild(0));
 			decls.add(new VarDecl(loc(child), id, type));
 		}
 		return decls;
 	}
 
-	private static Type type(String text) {
+	private static Type type(Tree tree) {
+		return type((CommonTree) tree);
+	}
+
+	private static Type type(CommonTree tree) {
+		String text = tree.getText();
 		if (text.equals("int")) {
-			return Type.INT;
+			if (tree.getChildCount() == 2) {
+				int low = Integer.parseInt(tree.getChild(0).getText());
+				int high = Integer.parseInt(tree.getChild(1).getText());
+				return new SubrangeIntType(loc(tree), low, high);
+			} else {
+				return Type.INT;
+			}
 		} else if (text.equals("real")) {
 			return Type.REAL;
 		} else if (text.equals("bool")) {
@@ -115,12 +126,12 @@ public class Antlr2Lustre {
 	private static List<IdExpr> lhs(Tree tree) {
 		CommonTree ctree = (CommonTree) tree;
 		List<IdExpr> lhs = new ArrayList<IdExpr>();
-		
+
 		for (Object o : ctree.getChildren()) {
 			CommonTree child = (CommonTree) o;
 			lhs.add(new IdExpr(loc(child), child.getText()));
 		}
-		
+
 		return lhs;
 	}
 
@@ -202,12 +213,12 @@ public class Antlr2Lustre {
 	private static Expr nodeCall(CommonTree tree) {
 		String node = tree.getChild(0).getText();
 		List<Expr> args = new ArrayList<Expr>();
-		
+
 		for (int i = 1; i < tree.getChildCount(); i++) {
 			CommonTree child = (CommonTree) tree.getChild(i);
 			args.add(expr(child));
 		}
-		
+
 		return new NodeCallExpr(loc(tree), node, args);
 	}
 

@@ -19,4 +19,8 @@ public class Type {
 	public boolean isBase() {
 		return (this == REAL || this == BOOL || this == INT);
 	}
+	
+	public boolean isBuiltin() {
+		return isBase() || this instanceof SubrangeIntType;
+	}
 }

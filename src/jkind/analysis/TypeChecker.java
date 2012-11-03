@@ -19,6 +19,7 @@ import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
@@ -91,7 +92,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (VarDecl v : Util.getVarDecls(node)) {
 			Type type = lookupBaseType(v.type);
 			if (type == null) {
-				error(v, "unknown type '" + v.type + "'");
+				error(v, "unknown type " + v.type);
 				type = null;
 			}
 			variableTable.put(v.id, type);
@@ -101,6 +102,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private Type lookupBaseType(Type type) {
 		if (type.isBase()) {
 			return type;
+		} else if (type instanceof SubrangeIntType) {
+			return Type.INT;
 		} else if (typeTable.containsKey(type.name)) {
 			return typeTable.get(type.name);
 		} else {
