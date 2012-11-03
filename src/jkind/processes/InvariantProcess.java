@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.JKindException;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.processes.messages.InvariantMessage;
 import jkind.sexp.Cons;
@@ -18,6 +19,7 @@ import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.translation.Keywords;
 import jkind.translation.Lustre2Sexps;
+import jkind.translation.Util;
 
 /**
  * This process is based on:
@@ -31,13 +33,16 @@ public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
 	private List<Invariant> possibleInvariants;
 	private Map<String, Type> typeMap;
-	private int invariantIndex = 0;
+	private Sexp i;
+	private int invariantIndex;
 
 	public InvariantProcess(String filename, Lustre2Sexps translation, Map<String, Type> typeMap) {
 		super(null, translation, null);
 		setScratch(filename + ".yc_inv");
 		this.typeMap = typeMap;
 		this.incoming = null;
+		this.i = new Symbol("i");
+		this.invariantIndex = 0;
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -77,22 +82,27 @@ public class InvariantProcess extends Process {
 
 	private void createPossibleInvariants() {
 		possibleInvariants = new ArrayList<Invariant>();
-		Sexp i = new Symbol("i");
-		Sexp ty = new Cons(i, new Symbol("::"), new Symbol("nat"));
 
 		for (String id : typeMap.keySet()) {
-			if (typeMap.get(id) == Type.BOOL) {
+			Type type = typeMap.get(id);
+			if (type == Type.BOOL) {
 				Sexp s = new Cons("$" + id, i);
-				possibleInvariants.add(createInvariant(new Cons("lambda", ty, s)));
-				possibleInvariants.add(createInvariant(new Cons("lambda", ty, new Cons("not", s))));
+				addPossibleInvariant(s);
+				addPossibleInvariant(new Cons("not", s));
+			} else if (type instanceof SubrangeIntType) {
+				SubrangeIntType subrange = (SubrangeIntType) type;
+				addPossibleInvariant(Util.subrangeConstraint(id, i, subrange));
 			}
 		}
 
 		defineInvariants();
 	}
 
-	private Invariant createInvariant(Sexp sexp) {
-		return new Invariant("inv" + invariantIndex++, sexp);
+	private void addPossibleInvariant(Sexp s) {
+		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));
+		Invariant inv = new Invariant("inv" + invariantIndex, new Cons("lambda", iType, s));
+		invariantIndex++;
+		possibleInvariants.add(inv);
 	}
 
 	private void defineInvariants() {

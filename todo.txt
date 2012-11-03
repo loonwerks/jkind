@@ -1,7 +1,3 @@
-Real support for subranges
-  Subrange on input is an assert
-  Subrange on local/output is a suggested invariant?
-
 Advanced invariant generation (need some examples)
 
 Differentiate unknown results (max iterations, timeout, failure) 

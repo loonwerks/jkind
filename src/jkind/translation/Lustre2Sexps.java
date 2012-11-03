@@ -5,6 +5,7 @@ import java.util.List;
 
 import jkind.lustre.Equation;
 import jkind.lustre.Node;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -13,10 +14,10 @@ import jkind.sexp.Symbol;
 public class Lustre2Sexps {
 	private Sexp transition;
 	private List<Sexp> definitions = new ArrayList<Sexp>();
-	
+
 	public Lustre2Sexps(Node node) {
 		createDefinitions(node);
-		createTransition(node.equations);
+		createTransition(node.equations, node.inputs);
 	}
 
 	private void createDefinitions(Node node) {
@@ -27,19 +28,24 @@ public class Lustre2Sexps {
 		}
 	}
 
-	private void createTransition(List<Equation> equations) {
+	private void createTransition(List<Equation> equations, List<VarDecl> inputs) {
 		Symbol i = new Symbol("i");
-		List<Sexp> eqSexps = new ArrayList<Sexp>();
+		List<Sexp> conjuncts = new ArrayList<Sexp>();
 		for (Equation eq : equations) {
-			eqSexps.add(equation2Sexp(eq, i));
+			conjuncts.add(equation2Sexp(eq, i));
 		}
-		
+		for (VarDecl input : inputs) {
+			if (input.type instanceof SubrangeIntType) {
+				conjuncts.add(Util.subrangeConstraint(input.id, i, (SubrangeIntType) input.type));
+			}
+		}
+
 		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));
-		Sexp lambda = new Cons("lambda", iType, new Cons("and", eqSexps));
+		Sexp lambda = new Cons("lambda", iType, new Cons("and", conjuncts));
 		Sexp tType = new Cons("->", new Symbol("nat"), new Symbol("bool"));
 		transition = new Cons("define", Keywords.T, new Symbol("::"), tType, lambda);
 	}
-	
+
 	private Sexp equation2Sexp(Equation eq, Symbol iSym) {
 		Sexp body = eq.expr.accept(new Expr2SexpVisitor(iSym));
 		return new Cons("=", new Cons("$" + eq.lhs.get(0).id, iSym), body);
