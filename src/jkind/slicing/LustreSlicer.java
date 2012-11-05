@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.Equation;
+import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
@@ -30,7 +31,9 @@ public class LustreSlicer {
 		List<VarDecl> outputs = sliceVarDecls(node.outputs, keep);
 		List<VarDecl> locals = sliceVarDecls(node.locals, keep);
 		List<Equation> equations = sliceEquations(node.equations, keep);
-		return new Node(node.location, node.id, inputs, outputs, locals, equations, node.properties);
+		List<Expr> assertions = sliceAssertions(node.assertions, keep);
+		return new Node(node.location, node.id, inputs, outputs, locals, equations,
+				node.properties, assertions);
 	}
 
 	private static List<VarDecl> sliceVarDecls(List<VarDecl> decls, Set<String> keep) {
@@ -48,6 +51,17 @@ public class LustreSlicer {
 		for (Equation eq : equations) {
 			if (containsAny(keep, eq.lhs)) {
 				sliced.add(eq);
+			}
+		}
+		return sliced;
+	}
+	
+	private static List<Expr> sliceAssertions(List<Expr> assertions, Set<String> keep) {
+		List<Expr> sliced = new ArrayList<Expr>();
+		for (Expr assertion : assertions) {
+			Set<String> deps = IdExtractorVisitor.getIds(assertion);
+			if (deps.size() > 0 && keep.contains(deps.iterator().next())) {
+				sliced.add(assertion);
 			}
 		}
 		return sliced;

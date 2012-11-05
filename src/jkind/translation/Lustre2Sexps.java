@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.lustre.Equation;
+import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.VarDecl;
@@ -17,7 +18,7 @@ public class Lustre2Sexps {
 
 	public Lustre2Sexps(Node node) {
 		createDefinitions(node);
-		createTransition(node.equations, node.inputs);
+		createTransition(node);
 	}
 
 	private void createDefinitions(Node node) {
@@ -28,16 +29,19 @@ public class Lustre2Sexps {
 		}
 	}
 
-	private void createTransition(List<Equation> equations, List<VarDecl> inputs) {
+	private void createTransition(Node node) {
 		Symbol i = new Symbol("i");
 		List<Sexp> conjuncts = new ArrayList<Sexp>();
-		for (Equation eq : equations) {
+		for (Equation eq : node.equations) {
 			conjuncts.add(equation2Sexp(eq, i));
 		}
-		for (VarDecl input : inputs) {
+		for (VarDecl input : node.inputs) {
 			if (input.type instanceof SubrangeIntType) {
 				conjuncts.add(Util.subrangeConstraint(input.id, i, (SubrangeIntType) input.type));
 			}
+		}
+		for (Expr assertion : node.assertions) {
+			conjuncts.add(assertion.accept(new Expr2SexpVisitor(i)));
 		}
 
 		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));

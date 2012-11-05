@@ -10,9 +10,11 @@ public class Node extends Ast {
 	final public List<VarDecl> locals;
 	final public List<Equation> equations;
 	final public List<String> properties;
+	final public List<Expr> assertions;
 
 	public Node(Location location, String id, List<VarDecl> inputs, List<VarDecl> outputs,
-			List<VarDecl> locals, List<Equation> equations, List<String> properties) {
+			List<VarDecl> locals, List<Equation> equations, List<String> properties,
+			List<Expr> assertions) {
 		super(location);
 		this.id = id;
 		this.inputs = Collections.unmodifiableList(inputs);
@@ -20,5 +22,6 @@ public class Node extends Ast {
 		this.locals = Collections.unmodifiableList(locals);
 		this.equations = Collections.unmodifiableList(equations);
 		this.properties = Collections.unmodifiableList(properties);
+		this.assertions = Collections.unmodifiableList(assertions);
 	}
 }

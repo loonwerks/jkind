@@ -17,6 +17,7 @@ tokens {
   EQUATION;
   LHS;
   PROPERTIES;
+  ASSERTIONS;
   REAL;
   NEGATE;
   NODECALL;
@@ -64,14 +65,15 @@ node:
   'returns' '(' outputs=varDeclList? ')' ';'
   ('var' locals=varDeclList ';')?
   'let'
-    (equation | property)*
+    (equation | property | assertion)*
   'tel' ';' ->
     ^(ID
       ^(INPUTS $inputs?)
       ^(OUTPUTS $outputs?)
       ^(LOCALS $locals?)
       ^(EQUATIONS equation*)
-      ^(PROPERTIES property*))
+      ^(PROPERTIES property*)
+      ^(ASSERTIONS assertion*))
 ;
 
 varDeclList:
@@ -96,6 +98,10 @@ bound:
 
 property:
   '--%PROPERTY' ID ';' -> ID
+;
+
+assertion:
+  'assert' expr ';' -> expr
 ;
 
 equation:

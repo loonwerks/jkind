@@ -27,7 +27,7 @@ public class InlineNodeCalls extends MapVisitor {
 		locals.addAll(inliner.newLocals);
 
 		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				main.properties);
+				main.properties, main.assertions);
 	}
 	
 	private Map<String, Node> nodeTable;

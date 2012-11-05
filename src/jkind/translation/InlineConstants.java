@@ -18,11 +18,11 @@ public class InlineConstants {
 		Map<String, Expr> constants = getConstantsMap(program);
 		List<Constant> emptyConstants = Collections.emptyList();
 		List<Node> inlinedNodes = new ArrayList<Node>();
-		
+
 		for (Node node : program.nodes) {
 			inlinedNodes.add(node(node, constants));
 		}
-		
+
 		return new Program(program.location, program.types, emptyConstants, inlinedNodes);
 	}
 
@@ -35,8 +35,13 @@ public class InlineConstants {
 			equations.add(new Equation(eq.location, eq.lhs, eq.expr.accept(inliner)));
 		}
 
+		List<Expr> assertions = new ArrayList<Expr>();
+		for (Expr assertion : node.assertions) {
+			assertions.add(assertion.accept(inliner));
+		}
+
 		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties);
+				node.properties, assertions);
 	}
 
 	private static Map<String, Expr> getConstantsMap(Program program) {

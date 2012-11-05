@@ -66,8 +66,9 @@ public class Antlr2Lustre {
 		List<VarDecl> locals = varDecls(getChild(tree, LustreParser.LOCALS));
 		List<Equation> equations = equations(getChild(tree, LustreParser.EQUATIONS));
 		List<String> properties = properties(getChild(tree, LustreParser.PROPERTIES));
+		List<Expr> assertions = assertions(getChild(tree, LustreParser.ASSERTIONS));
 
-		return new Node(loc(tree), id, inputs, outputs, locals, equations, properties);
+		return new Node(loc(tree), id, inputs, outputs, locals, equations, properties, assertions);
 	}
 
 	private static List<VarDecl> varDecls(CommonTree tree) {
@@ -235,6 +236,19 @@ public class Antlr2Lustre {
 		return props;
 	}
 
+	private static List<Expr> assertions(CommonTree tree) {
+		List<Expr> assertions = new ArrayList<Expr>();
+		if (tree == null || tree.getChildCount() == 0) {
+			return assertions;
+		}
+
+		for (Object o : tree.getChildren()) {
+			CommonTree child = (CommonTree) o;
+			assertions.add(expr(child));
+		}
+		return assertions;
+	}
+	
 	private static CommonTree getChild(CommonTree tree, int type) {
 		for (Object o : tree.getChildren()) {
 			CommonTree child = (CommonTree) o;

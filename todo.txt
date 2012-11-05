@@ -2,8 +2,7 @@ Advanced invariant generation (need some examples)
 
 Differentiate unknown results (max iterations, timeout, failure) 
 
-Support for asserts?
-  What do asserts in subnodes mean?
+Turn assertions in subnodes into proposed invariants
 
 Additional static checks
   No unguarded pres?

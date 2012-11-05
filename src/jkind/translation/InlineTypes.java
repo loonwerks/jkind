@@ -17,11 +17,11 @@ public class InlineTypes {
 		Map<String, Type> types = getTypeMap(program);
 		List<TypeDef> emptyTypes = Collections.emptyList();
 		List<Node> inlinedNodes = new ArrayList<Node>();
-		
+
 		for (Node node : program.nodes) {
 			inlinedNodes.add(node(node, types));
 		}
-		
+
 		return new Program(program.location, emptyTypes, program.constants, inlinedNodes);
 	}
 
@@ -29,9 +29,9 @@ public class InlineTypes {
 		List<VarDecl> inputs = varDecls(node.inputs, types);
 		List<VarDecl> outputs = varDecls(node.outputs, types);
 		List<VarDecl> locals = varDecls(node.locals, types);
-		
+
 		return new Node(node.location, node.id, inputs, outputs, locals, node.equations,
-				node.properties);
+				node.properties, node.assertions);
 	}
 
 	private static List<VarDecl> varDecls(List<VarDecl> decls, Map<String, Type> types) {
