@@ -1,7 +1,8 @@
-// $ANTLR 3.4 Yices.g 2012-11-01 19:10:21
+// $ANTLR 3.4 Yices.g 2012-11-06 10:27:40
 
   package jkind.solvers;
 
+  import java.math.BigInteger;
   import jkind.solvers.SolverResult.Result;
 
 
@@ -58,7 +59,7 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "solverResult"
-    // Yices.g:25:1: solverResult returns [SolverResult sr] : result ( model )? EOF ;
+    // Yices.g:26:1: solverResult returns [SolverResult sr] : result ( model )? EOF ;
     public final SolverResult solverResult() throws RecognitionException {
         SolverResult sr = null;
 
@@ -69,8 +70,8 @@ public class YicesParser extends Parser {
 
 
         try {
-            // Yices.g:25:39: ( result ( model )? EOF )
-            // Yices.g:26:5: result ( model )? EOF
+            // Yices.g:26:39: ( result ( model )? EOF )
+            // Yices.g:27:5: result ( model )? EOF
             {
             pushFollow(FOLLOW_result_in_solverResult61);
             result1=result();
@@ -78,7 +79,7 @@ public class YicesParser extends Parser {
             state._fsp--;
 
 
-            // Yices.g:26:12: ( model )?
+            // Yices.g:27:12: ( model )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -87,7 +88,7 @@ public class YicesParser extends Parser {
             }
             switch (alt1) {
                 case 1 :
-                    // Yices.g:26:12: model
+                    // Yices.g:27:12: model
                     {
                     pushFollow(FOLLOW_model_in_solverResult63);
                     model2=model();
@@ -123,13 +124,13 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "result"
-    // Yices.g:30:1: result returns [Result r] : ( 'sat' | 'unsat' );
+    // Yices.g:31:1: result returns [Result r] : ( 'sat' | 'unsat' );
     public final Result result() throws RecognitionException {
         Result r = null;
 
 
         try {
-            // Yices.g:30:26: ( 'sat' | 'unsat' )
+            // Yices.g:31:26: ( 'sat' | 'unsat' )
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -148,7 +149,7 @@ public class YicesParser extends Parser {
             }
             switch (alt2) {
                 case 1 :
-                    // Yices.g:31:5: 'sat'
+                    // Yices.g:32:5: 'sat'
                     {
                     match(input,17,FOLLOW_17_in_result90); 
 
@@ -157,7 +158,7 @@ public class YicesParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Yices.g:32:5: 'unsat'
+                    // Yices.g:33:5: 'unsat'
                     {
                     match(input,19,FOLLOW_19_in_result102); 
 
@@ -183,7 +184,7 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "model"
-    // Yices.g:35:1: model returns [Model m] : ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+ ;
+    // Yices.g:36:1: model returns [Model m] : ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+ ;
     public final Model model() throws RecognitionException {
         Model m = null;
 
@@ -192,10 +193,10 @@ public class YicesParser extends Parser {
           m = new Model();
 
         try {
-            // Yices.g:39:3: ( ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+ )
-            // Yices.g:39:5: ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+
+            // Yices.g:40:3: ( ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+ )
+            // Yices.g:40:5: ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+
             {
-            // Yices.g:39:5: ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+
+            // Yices.g:40:5: ( valueAssignment[m] | functionAssignment[m] | builtinAssignment )+
             int cnt3=0;
             loop3:
             do {
@@ -233,7 +234,7 @@ public class YicesParser extends Parser {
 
                 switch (alt3) {
             	case 1 :
-            	    // Yices.g:39:6: valueAssignment[m]
+            	    // Yices.g:40:6: valueAssignment[m]
             	    {
             	    pushFollow(FOLLOW_valueAssignment_in_model128);
             	    valueAssignment(m);
@@ -244,7 +245,7 @@ public class YicesParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // Yices.g:39:27: functionAssignment[m]
+            	    // Yices.g:40:27: functionAssignment[m]
             	    {
             	    pushFollow(FOLLOW_functionAssignment_in_model133);
             	    functionAssignment(m);
@@ -255,7 +256,7 @@ public class YicesParser extends Parser {
             	    }
             	    break;
             	case 3 :
-            	    // Yices.g:39:51: builtinAssignment
+            	    // Yices.g:40:51: builtinAssignment
             	    {
             	    pushFollow(FOLLOW_builtinAssignment_in_model138);
             	    builtinAssignment();
@@ -294,15 +295,15 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "valueAssignment"
-    // Yices.g:41:1: valueAssignment[Model m] : '(' '=' ID value ')' ;
+    // Yices.g:42:1: valueAssignment[Model m] : '(' '=' ID value ')' ;
     public final void valueAssignment(Model m) throws RecognitionException {
         Token ID3=null;
         Value value4 =null;
 
 
         try {
-            // Yices.g:41:25: ( '(' '=' ID value ')' )
-            // Yices.g:42:5: '(' '=' ID value ')'
+            // Yices.g:42:25: ( '(' '=' ID value ')' )
+            // Yices.g:43:5: '(' '=' ID value ')'
             {
             match(input,11,FOLLOW_11_in_valueAssignment153); 
 
@@ -338,7 +339,7 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "functionAssignment"
-    // Yices.g:45:1: functionAssignment[Model m] : '(' '=' '(' ID integer ')' value ')' ;
+    // Yices.g:46:1: functionAssignment[Model m] : '(' '=' '(' ID integer ')' value ')' ;
     public final void functionAssignment(Model m) throws RecognitionException {
         Token ID5=null;
         YicesParser.integer_return integer6 =null;
@@ -347,8 +348,8 @@ public class YicesParser extends Parser {
 
 
         try {
-            // Yices.g:45:28: ( '(' '=' '(' ID integer ')' value ')' )
-            // Yices.g:46:5: '(' '=' '(' ID integer ')' value ')'
+            // Yices.g:46:28: ( '(' '=' '(' ID integer ')' value ')' )
+            // Yices.g:47:5: '(' '=' '(' ID integer ')' value ')'
             {
             match(input,11,FOLLOW_11_in_functionAssignment182); 
 
@@ -374,7 +375,7 @@ public class YicesParser extends Parser {
 
             match(input,12,FOLLOW_12_in_functionAssignment196); 
 
-             m.addFunctionValue((ID5!=null?ID5.getText():null), Integer.parseInt((integer6!=null?input.toString(integer6.start,integer6.stop):null)), value7); 
+             m.addFunctionValue((ID5!=null?ID5.getText():null), new BigInteger((integer6!=null?input.toString(integer6.start,integer6.stop):null)), value7); 
 
             }
 
@@ -394,11 +395,11 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "builtinAssignment"
-    // Yices.g:50:1: builtinAssignment : '(' '=' '(' BUILT_IN integer integer ')' integer ')' ;
+    // Yices.g:51:1: builtinAssignment : '(' '=' '(' BUILT_IN integer integer ')' integer ')' ;
     public final void builtinAssignment() throws RecognitionException {
         try {
-            // Yices.g:50:18: ( '(' '=' '(' BUILT_IN integer integer ')' integer ')' )
-            // Yices.g:51:5: '(' '=' '(' BUILT_IN integer integer ')' integer ')'
+            // Yices.g:51:18: ( '(' '=' '(' BUILT_IN integer integer ')' integer ')' )
+            // Yices.g:52:5: '(' '=' '(' BUILT_IN integer integer ')' integer ')'
             {
             match(input,11,FOLLOW_11_in_builtinAssignment218); 
 
@@ -448,7 +449,7 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "value"
-    // Yices.g:56:1: value returns [Value v] : ( 'true' | 'false' | numeric );
+    // Yices.g:57:1: value returns [Value v] : ( 'true' | 'false' | numeric );
     public final Value value() throws RecognitionException {
         Value v = null;
 
@@ -457,7 +458,7 @@ public class YicesParser extends Parser {
 
 
         try {
-            // Yices.g:56:24: ( 'true' | 'false' | numeric )
+            // Yices.g:57:24: ( 'true' | 'false' | numeric )
             int alt4=3;
             switch ( input.LA(1) ) {
             case 18:
@@ -486,7 +487,7 @@ public class YicesParser extends Parser {
 
             switch (alt4) {
                 case 1 :
-                    // Yices.g:57:5: 'true'
+                    // Yices.g:58:5: 'true'
                     {
                     match(input,18,FOLLOW_18_in_value265); 
 
@@ -495,7 +496,7 @@ public class YicesParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Yices.g:58:5: 'false'
+                    // Yices.g:59:5: 'false'
                     {
                     match(input,16,FOLLOW_16_in_value278); 
 
@@ -504,7 +505,7 @@ public class YicesParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Yices.g:59:5: numeric
+                    // Yices.g:60:5: numeric
                     {
                     pushFollow(FOLLOW_numeric_in_value290);
                     numeric8=numeric();
@@ -537,17 +538,17 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "numeric"
-    // Yices.g:62:1: numeric : ( '-' )? INT ( '/' INT )? ;
+    // Yices.g:63:1: numeric : ( '-' )? INT ( '/' INT )? ;
     public final YicesParser.numeric_return numeric() throws RecognitionException {
         YicesParser.numeric_return retval = new YicesParser.numeric_return();
         retval.start = input.LT(1);
 
 
         try {
-            // Yices.g:62:8: ( ( '-' )? INT ( '/' INT )? )
-            // Yices.g:62:10: ( '-' )? INT ( '/' INT )?
+            // Yices.g:63:8: ( ( '-' )? INT ( '/' INT )? )
+            // Yices.g:63:10: ( '-' )? INT ( '/' INT )?
             {
-            // Yices.g:62:10: ( '-' )?
+            // Yices.g:63:10: ( '-' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -556,7 +557,7 @@ public class YicesParser extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // Yices.g:62:10: '-'
+                    // Yices.g:63:10: '-'
                     {
                     match(input,13,FOLLOW_13_in_numeric306); 
 
@@ -568,7 +569,7 @@ public class YicesParser extends Parser {
 
             match(input,INT,FOLLOW_INT_in_numeric309); 
 
-            // Yices.g:62:19: ( '/' INT )?
+            // Yices.g:63:19: ( '/' INT )?
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -577,7 +578,7 @@ public class YicesParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // Yices.g:62:20: '/' INT
+                    // Yices.g:63:20: '/' INT
                     {
                     match(input,14,FOLLOW_14_in_numeric312); 
 
@@ -613,17 +614,17 @@ public class YicesParser extends Parser {
 
 
     // $ANTLR start "integer"
-    // Yices.g:63:1: integer : ( '-' )? INT ;
+    // Yices.g:64:1: integer : ( '-' )? INT ;
     public final YicesParser.integer_return integer() throws RecognitionException {
         YicesParser.integer_return retval = new YicesParser.integer_return();
         retval.start = input.LT(1);
 
 
         try {
-            // Yices.g:63:8: ( ( '-' )? INT )
-            // Yices.g:63:10: ( '-' )? INT
+            // Yices.g:64:8: ( ( '-' )? INT )
+            // Yices.g:64:10: ( '-' )? INT
             {
-            // Yices.g:63:10: ( '-' )?
+            // Yices.g:64:10: ( '-' )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -632,7 +633,7 @@ public class YicesParser extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // Yices.g:63:10: '-'
+                    // Yices.g:64:10: '-'
                     {
                     match(input,13,FOLLOW_13_in_integer322); 
 

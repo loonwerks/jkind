@@ -69,7 +69,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(IntExpr e) {
-		return Sexp.fromInt(e.value);
+		return Sexp.fromBigInt(e.value);
 	}
 
 	@Override

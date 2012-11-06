@@ -1,5 +1,6 @@
 package jkind.processes;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -142,10 +143,11 @@ public class InvariantProcess extends Process {
 			if (result.getResult() == Result.SAT) {
 				refined = true;
 				Model model = result.getModel();
+				BigInteger index = BigInteger.valueOf(k - 1);
 				Iterator<Invariant> iterator = possibleInvariants.iterator();
 				while (iterator.hasNext()) {
 					Invariant inv = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue(inv.id, k - 1);
+					BoolValue v = (BoolValue) model.getFunctionValue(inv.id, index);
 					if (!v.getBool()) {
 						iterator.remove();
 					}
@@ -190,11 +192,11 @@ public class InvariantProcess extends Process {
 				throw new JKindException("Unknown result from solver");
 			} else if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
-				int n = getN(model);
+				BigInteger index = getN(model).add(BigInteger.valueOf(k));
 				Iterator<Invariant> iterator = possibleInvariants.iterator();
 				while (iterator.hasNext()) {
 					Invariant inv = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue(inv.id, n + k);
+					BoolValue v = (BoolValue) model.getFunctionValue(inv.id, index);
 					if (!v.getBool()) {
 						iterator.remove();
 					}
@@ -203,9 +205,9 @@ public class InvariantProcess extends Process {
 		} while (!possibleInvariants.isEmpty() && result.getResult() != Result.UNSAT);
 	}
 
-	private int getN(Model model) {
+	private BigInteger getN(Model model) {
 		NumericValue value = (NumericValue) model.getValue(Keywords.N);
-		return Integer.parseInt(value.toString());
+		return new BigInteger(value.toString());
 	}
 
 	private Sexp getInductiveQuery(int k, List<String> invs) {
@@ -230,7 +232,7 @@ public class InvariantProcess extends Process {
 				throw new JKindException("Unknown result from solver");
 			} else if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
-				int n = getN(model);
+				BigInteger n = getN(model);
 				Iterator<Invariant> iterator = possibleInvariants.iterator();
 				while (iterator.hasNext()) {
 					Invariant inv = iterator.next();

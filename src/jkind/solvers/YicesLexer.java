@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Yices.g 2012-11-01 19:10:21
+// $ANTLR 3.4 Yices.g 2012-11-06 10:27:41
 
   package jkind.solvers;
 
@@ -248,7 +248,7 @@ public class YicesLexer extends Lexer {
         try {
             int _type = BUILT_IN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:54:9: ( 'mod' | 'div' )
+            // Yices.g:55:9: ( 'mod' | 'div' )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -267,7 +267,7 @@ public class YicesLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // Yices.g:54:11: 'mod'
+                    // Yices.g:55:11: 'mod'
                     {
                     match("mod"); 
 
@@ -276,7 +276,7 @@ public class YicesLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // Yices.g:54:19: 'div'
+                    // Yices.g:55:19: 'div'
                     {
                     match("div"); 
 
@@ -298,7 +298,7 @@ public class YicesLexer extends Lexer {
     // $ANTLR start "DIGIT"
     public final void mDIGIT() throws RecognitionException {
         try {
-            // Yices.g:65:15: ( '0' .. '9' )
+            // Yices.g:66:15: ( '0' .. '9' )
             // Yices.g:
             {
             if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
@@ -324,7 +324,7 @@ public class YicesLexer extends Lexer {
     // $ANTLR start "SYMBOL"
     public final void mSYMBOL() throws RecognitionException {
         try {
-            // Yices.g:66:16: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '@' | '$' | '#' )
+            // Yices.g:67:16: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '@' | '$' | '#' )
             // Yices.g:
             {
             if ( (input.LA(1) >= '#' && input.LA(1) <= '$')||(input.LA(1) >= '@' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -352,13 +352,13 @@ public class YicesLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:68:3: ( SYMBOL ( SYMBOL | DIGIT )* )
-            // Yices.g:68:5: SYMBOL ( SYMBOL | DIGIT )*
+            // Yices.g:69:3: ( SYMBOL ( SYMBOL | DIGIT )* )
+            // Yices.g:69:5: SYMBOL ( SYMBOL | DIGIT )*
             {
             mSYMBOL(); 
 
 
-            // Yices.g:68:12: ( SYMBOL | DIGIT )*
+            // Yices.g:69:12: ( SYMBOL | DIGIT )*
             loop2:
             do {
                 int alt2=2;
@@ -408,10 +408,10 @@ public class YicesLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:69:4: ( ( DIGIT )+ )
-            // Yices.g:69:6: ( DIGIT )+
+            // Yices.g:70:4: ( ( DIGIT )+ )
+            // Yices.g:70:6: ( DIGIT )+
             {
-            // Yices.g:69:6: ( DIGIT )+
+            // Yices.g:70:6: ( DIGIT )+
             int cnt3=0;
             loop3:
             do {
@@ -466,10 +466,10 @@ public class YicesLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:71:3: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
-            // Yices.g:71:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+            // Yices.g:72:3: ( ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+ )
+            // Yices.g:72:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
             {
-            // Yices.g:71:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
+            // Yices.g:72:5: ( ' ' | '\\t' | '\\n' | '\\r' | '\\f' )+
             int cnt4=0;
             loop4:
             do {
@@ -526,8 +526,8 @@ public class YicesLexer extends Lexer {
         try {
             int _type = ERROR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Yices.g:73:6: ( '.' )
-            // Yices.g:73:8: '.'
+            // Yices.g:74:6: ( '.' )
+            // Yices.g:74:8: '.'
             {
             match('.'); 
 

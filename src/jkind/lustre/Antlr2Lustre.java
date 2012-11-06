@@ -1,6 +1,7 @@
 package jkind.lustre;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,8 +95,8 @@ public class Antlr2Lustre {
 		String text = tree.getText();
 		if (text.equals("int")) {
 			if (tree.getChildCount() == 2) {
-				int low = Integer.parseInt(tree.getChild(0).getText());
-				int high = Integer.parseInt(tree.getChild(1).getText());
+				BigInteger low = new BigInteger(tree.getChild(0).getText());
+				BigInteger high = new BigInteger(tree.getChild(1).getText());
 				return new SubrangeIntType(loc(tree), low, high);
 			} else {
 				return Type.INT;
@@ -145,7 +146,7 @@ public class Antlr2Lustre {
 		case LustreParser.BOOL:
 			return new BoolExpr(loc(tree), tree.getText().equals("true"));
 		case LustreParser.INT:
-			return new IntExpr(loc(tree), Integer.parseInt(tree.getText()));
+			return new IntExpr(loc(tree), new BigInteger(tree.getText()));
 		case LustreParser.REAL:
 			return new RealExpr(loc(tree), new BigDecimal(tree.getText()));
 		case LustreParser.ID:

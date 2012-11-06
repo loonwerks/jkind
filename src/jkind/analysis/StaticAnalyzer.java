@@ -61,7 +61,7 @@ public class StaticAnalyzer {
 	private static boolean checkSubrangeNonempty(Type type) {
 		if (type instanceof SubrangeIntType) {
 			SubrangeIntType subrange = (SubrangeIntType) type;
-			if (subrange.high < subrange.low) {
+			if (subrange.high.compareTo(subrange.low) < 0) {
 				System.out.println("Error at line " + subrange.location + " subrange is empty");
 				return false;
 			}

@@ -3,6 +3,7 @@ package jkind.writers;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -70,10 +71,11 @@ public class XmlWriter extends Writer {
 		String name = fn.substring(1);
 		Type type = types.get(name);
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
-		Map<Integer, Value> fnMap = model.getFunction(fn);
+		Map<BigInteger, Value> fnMap = model.getFunction(fn);
 		for (int i = 0; i < k; i++) {
-			if (fnMap.containsKey(i)) {
-				out.println("        <Value time=\"" + i + "\">" + formatValue(fnMap.get(i))
+			BigInteger key = BigInteger.valueOf(i);
+			if (fnMap.containsKey(key)) {
+				out.println("        <Value time=\"" + i + "\">" + formatValue(fnMap.get(key))
 						+ "</Value>");
 			}
 		}

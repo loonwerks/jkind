@@ -1,5 +1,3 @@
-Change from int to BigInteger as needed
-
 Switch to incremental invariant generation
 
 Differentiate unknown results (max iterations, timeout, failure) 

@@ -7,6 +7,7 @@ options {
 @header {
   package jkind.solvers;
 
+  import java.math.BigInteger;
   import jkind.solvers.SolverResult.Result;
 }
 
@@ -44,7 +45,7 @@ valueAssignment[Model m]:
 
 functionAssignment[Model m]:
     '(' '=' '(' ID integer ')' value ')'
-    { $m.addFunctionValue($ID.text, Integer.parseInt($integer.text), $value.v); }
+    { $m.addFunctionValue($ID.text, new BigInteger($integer.text), $value.v); }
   ;
   
 builtinAssignment:

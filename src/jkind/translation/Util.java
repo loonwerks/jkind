@@ -47,8 +47,8 @@ public class Util {
 
 	public static Sexp subrangeConstraint(String id, Sexp index, SubrangeIntType subrange) {
 		Sexp var = new Cons("$" + id, index);
-		Sexp low = new Cons("<=", Sexp.fromInt(subrange.low), var);
-		Sexp high = new Cons("<=", var, Sexp.fromInt(subrange.high));
+		Sexp low = new Cons("<=", Sexp.fromBigInt(subrange.low), var);
+		Sexp high = new Cons("<=", var, Sexp.fromBigInt(subrange.high));
 		return new Cons("and", low, high);
 	}
 }

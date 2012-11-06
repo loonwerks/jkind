@@ -1,9 +1,11 @@
 package jkind.lustre;
 
-public class IntExpr extends Expr {
-	final public int value;
+import java.math.BigInteger;
 
-	public IntExpr(Location location, int value) {
+public class IntExpr extends Expr {
+	final public BigInteger value;
+
+	public IntExpr(Location location, BigInteger value) {
 		super(location);
 		this.value = value;
 	}

@@ -1,5 +1,6 @@
 package jkind.writers;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +46,9 @@ public class ConsoleWriter extends Writer {
 
 		for (String fn : getRelevantFunctions(model.getFunctions())) {
 			System.out.format("%-25s ", fn.substring(1));
-			Map<Integer, Value> fnMap = model.getFunction(fn);
+			Map<BigInteger, Value> fnMap = model.getFunction(fn);
 			for (int i = 0; i < k; i++) {
-				Value value = fnMap.get(i);
+				Value value = fnMap.get(BigInteger.valueOf(i));
 				System.out.format("%6s ", value != null ? value : "-");
 			}
 			System.out.println();

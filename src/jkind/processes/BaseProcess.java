@@ -1,5 +1,6 @@
 package jkind.processes;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -73,9 +74,10 @@ public class BaseProcess extends Process {
 			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				Iterator<String> iterator = properties.iterator();
+				BigInteger index = BigInteger.valueOf(k - 1);
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, k - 1);
+					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
 					if (!v.getBool()) {
 						invalid.add(p);
 						iterator.remove();

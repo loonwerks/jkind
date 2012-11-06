@@ -1,5 +1,6 @@
 package jkind.processes;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -100,11 +101,12 @@ public class InductiveProcess extends Process {
 
 			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
-				int n = getN(model);
+				BigInteger n = getN(model);
+				BigInteger index = n.add(BigInteger.valueOf(k));
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, n + k);
+					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
 					if (!v.getBool()) {
 						iterator.remove();
 					}
@@ -132,9 +134,9 @@ public class InductiveProcess extends Process {
 		return streams;
 	}
 
-	private int getN(Model model) {
+	private BigInteger getN(Model model) {
 		NumericValue value = (NumericValue) model.getValue(Keywords.N);
-		return Integer.parseInt(value.toString());
+		return new BigInteger(value.toString());
 	}
 
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
