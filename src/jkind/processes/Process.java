@@ -28,7 +28,7 @@ public abstract class Process implements Runnable {
 	protected int kMax = Settings.n;
 	
 	private PrintWriter scratch;
-	private JKindException exception;
+	private Throwable throwable;
 
 	public Process(List<String> properties, Lustre2Sexps translation, Director director) {
 		if (properties != null) {
@@ -45,8 +45,8 @@ public abstract class Process implements Runnable {
 		try {
 			initializeSolver();
 			main();
-		} catch (JKindException e) {
-			exception = e;
+		} catch (Throwable t) {
+			throwable = t;
 		} finally {
 			if (solver != null) {
 				solver.stop();
@@ -64,8 +64,8 @@ public abstract class Process implements Runnable {
 		solver.send(translation.getTransition());
 	}
 	
-	public JKindException getException() {
-		return exception;
+	public Throwable getThrowable() {
+		return throwable;
 	}
 	
 	

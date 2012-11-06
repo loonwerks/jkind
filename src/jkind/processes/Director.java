@@ -102,31 +102,31 @@ public class Director {
 	}
 
 	private boolean someThreadFailed() {
-		boolean result = baseProcess.getException() != null;
+		boolean result = baseProcess.getThrowable() != null;
 		if (inductiveThread != null) {
-			result = result || inductiveProcess.getException() != null;
+			result = result || inductiveProcess.getThrowable() != null;
 		}
 		if (invariantThread != null) {
-			result = result || invariantProcess.getException() != null;
+			result = result || invariantProcess.getThrowable() != null;
 		}
 		return result;
 	}
 
 	private void reportFailures() {
-		if (baseProcess.getException() != null) {
-			JKindException e = baseProcess.getException();
+		if (baseProcess.getThrowable() != null) {
+			Throwable t = baseProcess.getThrowable();
 			System.out.println("Base process failed");
-			e.printStackTrace(System.out);
+			t.printStackTrace(System.out);
 		}
-		if (inductiveThread != null && inductiveProcess.getException() != null) {
-			JKindException e = inductiveProcess.getException();
+		if (inductiveThread != null && inductiveProcess.getThrowable() != null) {
+			Throwable t = inductiveProcess.getThrowable();
 			System.out.println("Inductive process failed");
-			e.printStackTrace(System.out);
+			t.printStackTrace(System.out);
 		}
-		if (invariantThread != null && invariantProcess.getException() != null) {
-			JKindException e = invariantProcess.getException();
+		if (invariantThread != null && invariantProcess.getThrowable() != null) {
+			Throwable t = invariantProcess.getThrowable();
 			System.out.println("Invariant process failed");
-			e.printStackTrace(System.out);
+			t.printStackTrace(System.out);
 		}
 	}
 
