@@ -50,6 +50,10 @@ public abstract class Process implements Runnable {
 		} finally {
 			if (solver != null) {
 				solver.stop();
+				solver = null;
+			}
+			if (scratch != null) {
+				scratch.close();
 			}
 		}
 	}
@@ -62,6 +66,13 @@ public abstract class Process implements Runnable {
 		solver.initialize();
 		solver.send(translation.getDefinitions());
 		solver.send(translation.getTransition());
+	}
+	
+	public void stopSolver() {
+		if (solver != null) {
+			solver.stop();
+			solver = null;
+		}
 	}
 	
 	public Throwable getThrowable() {

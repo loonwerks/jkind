@@ -155,13 +155,15 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
-	public void stop() {
-		try {
-			toYices.close();
-			fromYices.close();
-		} catch (IOException e) {
+	public synchronized void stop() {
+		/**
+		 * This must be synchronized since two threads (a worked and the
+		 * director) may try to stop the solver at the same time
+		 */
+
+		if (process != null) {
+			process.destroy();
+			process = null;
 		}
-		process.destroy();
-		process = null;
 	}
 }

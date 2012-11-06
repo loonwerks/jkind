@@ -82,7 +82,7 @@ public class Director {
 			} catch (InterruptedException e) {
 			}
 		}
-		
+
 		processMessages();
 		if (!remainingProperties.isEmpty()) {
 			writer.writeUnknown(remainingProperties);
@@ -91,6 +91,8 @@ public class Director {
 		writer.end();
 		printSummary();
 		reportFailures();
+
+		stopSolvers(); // Should do this after reportFailures as it may trigger spurious failures
 	}
 
 	private boolean someCriticalThreadAlive() {
@@ -167,6 +169,16 @@ public class Director {
 		}
 		if (Settings.useInvariantProcess) {
 			invariantThread.start();
+		}
+	}
+
+	private void stopSolvers() {
+		baseProcess.stopSolver();
+		if (inductiveProcess != null) {
+			inductiveProcess.stopSolver();
+		}
+		if (invariantProcess != null) {
+			invariantProcess.stopSolver();
 		}
 	}
 
