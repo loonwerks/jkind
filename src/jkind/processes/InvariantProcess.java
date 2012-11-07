@@ -188,9 +188,7 @@ public class InvariantProcess extends Process {
 		do {
 			result = solver.query(getInductiveQuery(k, getInvariantIds()));
 
-			if (result.getResult() == null) {
-				throw new JKindException("Unknown result from solver");
-			} else if (result.getResult() == Result.SAT) {
+			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				BigInteger index = getN(model).add(BigInteger.valueOf(k));
 				Iterator<Invariant> iterator = possibleInvariants.iterator();
@@ -228,9 +226,7 @@ public class InvariantProcess extends Process {
 		do {
 			result = solver.query(conjoinIds(getInvariantIds(), getInductiveIndex(0)));
 
-			if (result.getResult() == null) {
-				throw new JKindException("Unknown result from solver");
-			} else if (result.getResult() == Result.SAT) {
+			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
 				BigInteger n = getN(model);
 				Iterator<Invariant> iterator = possibleInvariants.iterator();
