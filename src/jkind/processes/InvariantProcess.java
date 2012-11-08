@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import jkind.JKindException;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.processes.messages.InvariantMessage;
