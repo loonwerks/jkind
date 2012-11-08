@@ -15,7 +15,7 @@ public class DependencyMap {
 	private Map<String, Set<String>> map;
 
 	public DependencyMap(Node node) {
-		map = new HashMap<String, Set<String>>();
+		this.map = new HashMap<String, Set<String>>();
 		computeOneStepDependencies(node);
 		closeDependencies();
 	}
@@ -31,7 +31,9 @@ public class DependencyMap {
 		for (Expr assertion : node.assertions) {
 			Set<String> deps = IdExtractorVisitor.getIds(assertion);
 			for (String id : deps) {
-				map.put(id, deps);
+				if (map.containsKey(id)) {
+					map.get(id).addAll(deps);
+				}
 			}
 		}
 	}
