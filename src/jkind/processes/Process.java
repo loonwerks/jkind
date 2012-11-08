@@ -68,13 +68,6 @@ public abstract class Process implements Runnable {
 		solver.send(translation.getTransition());
 	}
 	
-	public void stopSolver() {
-		if (solver != null) {
-			solver.stop();
-			solver = null;
-		}
-	}
-	
 	public Throwable getThrowable() {
 		return throwable;
 	}

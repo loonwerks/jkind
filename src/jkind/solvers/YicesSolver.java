@@ -30,6 +30,7 @@ public class YicesSolver extends Solver {
 		} catch (IOException e) {
 			throw new JKindException("Unable to start yices", e);
 		}
+		addShutdownHook();
 		toYices = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		fromYices = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	}
@@ -157,13 +158,22 @@ public class YicesSolver extends Solver {
 	@Override
 	public synchronized void stop() {
 		/**
-		 * This must be synchronized since two threads (a worked and the
-		 * director) may try to stop the solver at the same time
+		 * This must be synchronized since two threads (a Process or a shutdown
+		 * hook) may try to stop the solver at the same time
 		 */
 
 		if (process != null) {
 			process.destroy();
 			process = null;
 		}
+	}
+
+	private void addShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				YicesSolver.this.stop();
+			}
+		});
 	}
 }
