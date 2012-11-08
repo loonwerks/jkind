@@ -19,4 +19,4 @@ KIND. Differences between JKind and pkind are described
 Installation Notes
 ------------------
 
-JKind requires yices to be installed on your PATH.
+JKind requires yices (version 1) to be installed on your PATH.
