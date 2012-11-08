@@ -169,7 +169,7 @@ public class YicesSolver extends Solver {
 	}
 
 	private void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {
 			@Override
 			public void run() {
 				YicesSolver.this.stop();
