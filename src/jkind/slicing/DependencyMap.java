@@ -33,6 +33,8 @@ public class DependencyMap {
 			for (String id : deps) {
 				if (map.containsKey(id)) {
 					map.get(id).addAll(deps);
+				} else {
+					map.put(id, new HashSet<String>(deps));
 				}
 			}
 		}
