@@ -1,0 +1,216 @@
+package jkind.invariant;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import jkind.sexp.Cons;
+import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
+import jkind.solvers.Model;
+
+public class Graph {
+	private List<Node> nodes;
+	private Map<Node, Set<Node>> incoming;
+	private Map<Node, Set<Node>> outgoing;
+
+	public Graph(List<Candidate> candidates) {
+		this.nodes = new ArrayList<Node>();
+		nodes.add(new Node(candidates));
+		this.incoming = new HashMap<Node, Set<Node>>();
+		this.outgoing = new HashMap<Node, Set<Node>>();
+	}
+	
+	public int size() {
+		return nodes.size();
+	}
+
+	public boolean isTrivial() {
+		return nodes.isEmpty() || (nodes.size() == 1 && nodes.get(0).isSingleton());
+	}
+
+	private void addEdge(Node source, Node destination) {
+		safeGet(outgoing, source).add(destination);
+		safeGet(incoming, destination).add(source);
+	}
+
+	private Set<Node> safeGet(Map<Node, Set<Node>> map, Node node) {
+		Set<Node> result = map.get(node);
+		if (result == null) {
+			result = new HashSet<Node>();
+			map.put(node, result);
+		}
+		return result;
+	}
+
+	private Set<Edge> getEdges() {
+		Set<Edge> edges = new HashSet<Edge>();
+		for (Entry<Node, Set<Node>> entry : outgoing.entrySet()) {
+			Node source = entry.getKey();
+			for (Node destination : entry.getValue()) {
+				edges.add(new Edge(source, destination));
+			}
+		}
+		return edges;
+	}
+
+	private void setEdges(List<Edge> edges) {
+		incoming.clear();
+		outgoing.clear();
+		for (Edge edge : edges) {
+			addEdge(edge.source, edge.destination);
+		}
+	}
+
+	public Sexp toInvariant(Sexp index) {
+		return toInvariant(index, false);
+	}
+
+	public Sexp toFinalInvariant(Sexp index) {
+		removeTrivialInvariants();
+		if (isTrivial()) {
+			return new Symbol("true");
+		} else {
+			return toInvariant(index, true);
+		}
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("digraph {\n");
+		for (Node node : nodes) {
+			sb.append("  \"" + node + "\";\n");
+		}
+		for (Edge edge : getEdges()) {
+			sb.append("  \"" + edge.source + "\" -> \"" + edge.destination + "\";\n");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+
+	private void removeTrivialInvariants() {
+		for (Node node : nodes) {
+			if (node.getRepresentative() == Candidate.TRUE) {
+				Set<Node> in = safeGet(incoming, node);
+				for (Node other : in) {
+					safeGet(outgoing, other).remove(node);
+				}
+				in.clear();
+			} else if (node.getRepresentative() == Candidate.FALSE) {
+				Set<Node> out = safeGet(outgoing, node);
+				for (Node other : out) {
+					safeGet(incoming, other).remove(node);
+				}
+				out.clear();
+			}
+		}
+
+		removeUselessNodes();
+	}
+
+	private Sexp toInvariant(Sexp index, boolean pure) {
+		List<Sexp> conjuncts = new ArrayList<Sexp>();
+		for (Node node : nodes) {
+			conjuncts.addAll(node.toInvariants(index, pure));
+		}
+		for (Edge edge : getEdges()) {
+			conjuncts.add(edge.toInvariant(index, pure));
+		}
+		return new Cons("and", conjuncts);
+	}
+
+	public void refine(Model model, BigInteger k) {
+		splitNodes(model, k);
+		removeEmptyNodes();
+		removeUselessNodes();
+	}
+
+	private void splitNodes(Model model, BigInteger k) {
+		List<Node> newNodes = new ArrayList<Node>();
+		List<Edge> newEdges = new ArrayList<Edge>();
+		Map<Node, List<Node>> chains = new HashMap<Node, List<Node>>();
+
+		// Split nodes into chains
+		for (Node curr : nodes) {
+			List<Node> chain = curr.split(model, k);
+			chains.put(curr, chain);
+			newNodes.addAll(chain);
+			if (!chain.get(0).isEmpty() && !chain.get(1).isEmpty()) {
+				newEdges.add(new Edge(chain.get(0), chain.get(1)));
+			}
+		}
+
+		// Join chains based on previous edges
+		for (Edge edge : getEdges()) {
+			List<Node> sourceChain = chains.get(edge.source);
+			List<Node> destinationChain = chains.get(edge.destination);
+			newEdges.add(new Edge(sourceChain.get(0), destinationChain.get(0)));
+			newEdges.add(new Edge(sourceChain.get(1), destinationChain.get(1)));
+			if (sourceChain.get(1).isEmpty() && destinationChain.get(0).isEmpty()) {
+				newEdges.add(new Edge(sourceChain.get(0), destinationChain.get(1)));
+			}
+		}
+
+		nodes = newNodes;
+		setEdges(newEdges);
+	}
+
+	private void removeEmptyNodes() {
+		Iterator<Node> iterator = nodes.iterator();
+		while (iterator.hasNext()) {
+			Node node = iterator.next();
+			if (node.isEmpty()) {
+				iterator.remove();
+				rerouteEdgesAroundNode(node);
+			}
+		}
+	}
+
+	private void rerouteEdgesAroundNode(Node node) {
+		Set<Node> in = incoming(node);
+		Set<Node> out = outgoing(node);
+
+		incoming.remove(node);
+		outgoing.remove(node);
+
+		for (Node source : in) {
+			safeGet(outgoing, source).remove(node);
+		}
+		for (Node destination : out) {
+			safeGet(incoming, destination).remove(node);
+		}
+
+		for (Node source : in) {
+			for (Node destination : out) {
+				addEdge(source, destination);
+			}
+		}
+	}
+
+	private Set<Node> incoming(Node destination) {
+		return safeGet(incoming, destination);
+	}
+
+	private Set<Node> outgoing(Node source) {
+		return safeGet(outgoing, source);
+	}
+
+	private void removeUselessNodes() {
+		Iterator<Node> iterator = nodes.iterator();
+		while (iterator.hasNext()) {
+			Node node = iterator.next();
+			if (node.isSingleton() && incoming(node).isEmpty() && outgoing(node).isEmpty()) {
+				iterator.remove();
+				incoming.remove(node);
+				outgoing.remove(node);
+			}
+		}
+	}
+}

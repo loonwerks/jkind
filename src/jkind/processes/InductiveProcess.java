@@ -2,6 +2,7 @@ package jkind.processes;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,8 +69,8 @@ public class InductiveProcess extends Process {
 					kLimit = baseStepMessage.step;
 				} else if (message instanceof InvariantMessage) {
 					InvariantMessage invariantMessage = (InvariantMessage) message;
-					invariants.addAll(invariantMessage.invariants);
-					assertNewInvariants(invariantMessage.invariants, k);
+					invariants.add(invariantMessage.invariant);
+					assertNewInvariant(invariantMessage.invariant, k);
 				} else {
 					throw new JKindException("Unknown message type in inductive process: "
 							+ message.getClass().getCanonicalName());
@@ -85,7 +86,11 @@ public class InductiveProcess extends Process {
 			solver.send(new Cons("assert", conjoin(invariants, getIndex(i))));
 		}
 	}
-
+	
+	private void assertNewInvariant(Sexp invariant, int k) {
+		assertNewInvariants(Collections.singletonList(invariant), k);
+	}
+	
 	private void assertTransitionAndInvariants(int offset) {
 		solver.send(new Cons("assert", new Cons(Keywords.T, getIndex(offset))));
 		if (!invariants.isEmpty()) {
