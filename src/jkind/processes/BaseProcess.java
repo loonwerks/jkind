@@ -65,16 +65,15 @@ public class BaseProcess extends Process {
 	}
 
 	private void checkProperties(int k) {
-		List<String> invalid = new ArrayList<String>();
-
 		SolverResult result;
 		do {
 			result = solver.query(conjoinStreams(properties, Sexp.fromInt(k - 1)));
 
 			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
-				Iterator<String> iterator = properties.iterator();
 				BigInteger index = BigInteger.valueOf(k - 1);
+				List<String> invalid = new ArrayList<String>();
+				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
 					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
@@ -84,7 +83,6 @@ public class BaseProcess extends Process {
 					}
 				}
 				sendInvalid(invalid, k, model);
-				invalid = new ArrayList<String>();
 			}
 		} while (!properties.isEmpty() && result.getResult() == Result.SAT);
 
