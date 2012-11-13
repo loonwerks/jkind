@@ -66,7 +66,8 @@ public class InvariantProcess extends Process {
 	}
 
 	private void createGraph() {
-		List<Candidate> candidates = new CandidateGenerator(spec.typeMap, i).generate();
+		List<Candidate> candidates = new CandidateGenerator(spec, i).generate();
+		debug("Proposed " + candidates.size() + " candidates");
 		graph = new Graph(candidates);
 		defineCandidates(candidates);
 	}

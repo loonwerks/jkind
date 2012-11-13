@@ -3,23 +3,24 @@ package jkind.invariant;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.translation.Specification;
 import jkind.translation.Util;
 
 public class CandidateGenerator {
-	private Map<String, Type> typeMap;
+	private Specification spec;
 	private Sexp i;
+
 	private List<Candidate> candidates;
 	private int candidateIndex;
 
-	public CandidateGenerator(Map<String, Type> typeMap, Sexp i) {
-		this.typeMap = typeMap;
+	public CandidateGenerator(Specification spec, Sexp i) {
+		this.spec = spec;
 		this.i = i;
 	}
 
@@ -30,8 +31,14 @@ public class CandidateGenerator {
 		candidates.add(Candidate.TRUE);
 		candidates.add(Candidate.FALSE);
 		
-		for (String id : typeMap.keySet()) {
-			Type type = typeMap.get(id);
+		CombinatorialInfo info = new CombinatorialInfo(spec.node);
+		
+		for (String id : spec.typeMap.keySet()) {
+			if (info.isCombinatorial(id)) {
+				continue;
+			}
+			
+			Type type = spec.typeMap.get(id);
 			if (type == Type.BOOL) {
 				Sexp s = new Cons("$" + id, i);
 				addCandidate(s);
