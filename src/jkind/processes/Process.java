@@ -16,12 +16,12 @@ import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Solver;
 import jkind.solvers.YicesSolver;
-import jkind.translation.Lustre2Sexps;
+import jkind.translation.Specification;
 
 public abstract class Process implements Runnable {
-	private Lustre2Sexps translation;
-	protected List<String> properties;
+	protected Specification spec;
 	protected Director director;
+	protected List<String> properties;
 	
 	protected Solver solver;
 	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<Message>();
@@ -29,15 +29,13 @@ public abstract class Process implements Runnable {
 	
 	private PrintWriter scratch;
 	private Throwable throwable;
-
-	public Process(List<String> properties, Lustre2Sexps translation, Director director) {
-		if (properties != null) {
-			this.properties = new ArrayList<String>(properties);
-		}
-		this.translation = translation;
-		this.director = director;
-	}
 	
+	public Process(Specification spec, Director director) {
+		this.spec = spec;
+		this.director = director;
+		this.properties = new ArrayList<String>(spec.node.properties);
+	}
+
 	protected abstract void main();
 	
 	@Override
@@ -64,8 +62,8 @@ public abstract class Process implements Runnable {
 			solver.setDebug(scratch);
 		}
 		solver.initialize();
-		solver.send(translation.getDefinitions());
-		solver.send(translation.getTransition());
+		solver.send(spec.translation.getDefinitions());
+		solver.send(spec.translation.getTransition());
 	}
 	
 	public Throwable getThrowable() {

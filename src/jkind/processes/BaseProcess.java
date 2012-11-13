@@ -18,15 +18,14 @@ import jkind.solvers.Model;
 import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.translation.Keywords;
-import jkind.translation.Lustre2Sexps;
+import jkind.translation.Specification;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
 
-	public BaseProcess(String filename, List<String> properties, Lustre2Sexps translation,
-			Director director) {
-		super(properties, translation, director);
-		setScratch(filename + ".yc_base");
+	public BaseProcess(Specification spec, Director director) {
+		super(spec, director);
+		setScratch(spec.filename + ".yc_base");
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {

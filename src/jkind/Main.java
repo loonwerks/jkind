@@ -14,6 +14,7 @@ import jkind.slicing.LustreSlicer;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineTypes;
+import jkind.translation.Specification;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
@@ -46,7 +47,8 @@ public class Main {
 		Node main = InlineNodeCalls.program(program);
 		
 		main = LustreSlicer.slice(main);
-		new Director(filename, main).run();
+		Specification spec = new Specification(filename, main);
+		new Director(spec).run();
 		System.exit(0); // Kills all threads
 	}
 

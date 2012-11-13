@@ -3,12 +3,10 @@ package jkind.processes;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
-import jkind.lustre.Type;
 import jkind.processes.messages.InvariantMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -18,18 +16,16 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.translation.Keywords;
-import jkind.translation.Lustre2Sexps;
+import jkind.translation.Specification;
 
 public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
 	private Graph graph;
-	private Map<String, Type> typeMap;
 	private Sexp i;
 
-	public InvariantProcess(String filename, Lustre2Sexps translation, Map<String, Type> typeMap) {
-		super(null, translation, null);
-		setScratch(filename + ".yc_inv");
-		this.typeMap = typeMap;
+	public InvariantProcess(Specification spec) {
+		super(spec, null);
+		setScratch(spec.filename + ".yc_inv");
 		this.incoming = null;
 		this.i = new Symbol("i");
 	}
@@ -70,7 +66,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private void createGraph() {
-		List<Candidate> candidates = new CandidateGenerator(typeMap, i).generate();
+		List<Candidate> candidates = new CandidateGenerator(spec.typeMap, i).generate();
 		graph = new Graph(candidates);
 		defineCandidates(candidates);
 	}

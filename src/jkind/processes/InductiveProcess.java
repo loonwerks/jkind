@@ -21,17 +21,16 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.translation.Keywords;
-import jkind.translation.Lustre2Sexps;
+import jkind.translation.Specification;
 
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
 	private BaseProcess baseProcess;
 	private List<Sexp> invariants = new ArrayList<Sexp>();
 
-	public InductiveProcess(String filename, List<String> properties, Lustre2Sexps translation,
-			Director director) {
-		super(properties, translation, director);
-		setScratch(filename + ".yc_induct");
+	public InductiveProcess(Specification spec, Director director) {
+		super(spec, director);
+		setScratch(spec.filename + ".yc_induct");
 	}
 
 	public void setBaseProcess(BaseProcess baseProcess) {

@@ -3,32 +3,26 @@ package jkind.processes;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.Settings;
-import jkind.lustre.Node;
-import jkind.lustre.Type;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.slicing.CounterexampleSlicer;
 import jkind.solvers.Model;
-import jkind.translation.Lustre2Sexps;
-import jkind.translation.Util;
+import jkind.translation.Specification;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
 public class Director {
-	private String filename;
-	private Node node;
+	private Specification spec;
 	private List<String> remainingProperties;
 	private List<String> validProperties;
 	private List<String> invalidProperties;
-	private Map<String, Type> typeMap;
 	private CounterexampleSlicer cexSlicer;
 	private Writer writer;
 	
@@ -43,14 +37,12 @@ public class Director {
 	protected BlockingQueue<Message> incoming;
 	private long startTime;
 	
-	public Director(String filename, Node node) {
-		this.filename = filename;
-		this.node = node;
-		this.cexSlicer = new CounterexampleSlicer(node);
-		this.remainingProperties = new ArrayList<String>(node.properties);
+	public Director(Specification spec) {
+		this.spec = spec;
+		this.cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
+		this.remainingProperties = new ArrayList<String>(spec.node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
-		this.typeMap = Util.getTypeMap(node);
 		this.writer = getWriter();
 		this.incoming = new LinkedBlockingQueue<Message>();
 	}
@@ -58,7 +50,7 @@ public class Director {
 	private Writer getWriter() {
 		if (Settings.xml) {
 			try {
-				return new XmlWriter(filename + ".xml", typeMap);
+				return new XmlWriter(spec.filename + ".xml", spec.typeMap);
 			} catch (FileNotFoundException e) {
 				throw new JKindException("Unable to open XML output file", e);
 			}
@@ -141,21 +133,18 @@ public class Director {
 	}
 
 	private void startThreads() {
-		Lustre2Sexps translation = new Lustre2Sexps(node);
-		
-		baseProcess = new BaseProcess(filename, node.properties, translation, this);
+		baseProcess = new BaseProcess(spec, this);
 		baseThread = new Thread(baseProcess, "base");
 		
 		if (Settings.useInductiveProcess) {
-			inductiveProcess = new InductiveProcess(filename, node.properties, translation,
-					this);
+			inductiveProcess = new InductiveProcess(spec, this);
 			baseProcess.setInductiveProcess(inductiveProcess);
 			inductiveProcess.setBaseProcess(baseProcess);
 			inductiveThread = new Thread(inductiveProcess, "inductive");
 		}
 		
 		if (Settings.useInvariantProcess) {
-			invariantProcess = new InvariantProcess(filename, translation, typeMap);
+			invariantProcess = new InvariantProcess(spec);
 			invariantProcess.setInductiveProcess(inductiveProcess);
 			invariantThread = new Thread(invariantProcess, "invariant");
 		}

@@ -4,15 +4,14 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.Node;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
 
 public class CounterexampleSlicer {
 	private DependencyMap dependencyMap;
 	
-	public CounterexampleSlicer(Node node) {
-		dependencyMap = new DependencyMap(node);
+	public CounterexampleSlicer(DependencyMap dependencyMap) {
+		this.dependencyMap = dependencyMap;
 	}
 
 	public Model slice(String prop, Model model) {
