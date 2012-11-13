@@ -23,7 +23,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 
 public class Main {
-	final public static String VERSION = "0.2";
+	final public static String VERSION = "0.3";
 	
 	public static void main(String args[]) throws IOException, RecognitionException, InterruptedException {
 		String filename = ArgumentParser.parse(args);
