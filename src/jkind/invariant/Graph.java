@@ -213,4 +213,18 @@ public class Graph {
 			}
 		}
 	}
+
+	public Graph(Graph other) {
+		this.nodes = new ArrayList<Node>(other.nodes);
+		this.incoming = new HashMap<Node, Set<Node>>();
+		this.outgoing = new HashMap<Node, Set<Node>>();
+		copy(other.incoming, incoming);
+		copy(other.outgoing, outgoing);
+	}
+
+	private static void copy(Map<Node, Set<Node>> src, Map<Node, Set<Node>> dst) {
+		for (Entry<Node, Set<Node>> entry : src.entrySet()) {
+			dst.put(entry.getKey(), new HashSet<Node>(entry.getValue()));
+		}
+	}
 }
