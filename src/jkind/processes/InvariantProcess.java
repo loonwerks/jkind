@@ -46,8 +46,7 @@ public class InvariantProcess extends Process {
 			debug("No invariants proposed");
 			return;
 		}
-		
-		assertInductiveTransition(0);
+
 		for (int k = 1; k <= kMax; k++) {
 			debug("K = " + k);
 
@@ -77,39 +76,38 @@ public class InvariantProcess extends Process {
 		}
 	}
 
-	private void assertInductiveTransition(int k) {
-		solver.send(new Cons("assert", new Cons(Keywords.T, getInductiveIndex(k))));
-	}
-
-	private Sexp getInductiveIndex(int offset) {
-		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
-	}
-
-	private boolean refineBaseStep(int k, Graph graph) {
+	private void refineBaseStep(int k, Graph graph) {
+		solver.push();
 		SolverResult result;
-		boolean refined = false;
+		
+		for (int i = 0; i < k; i++) {
+			assertBaseTransition(i);
+		}
 
 		do {
-			result = solver.query(getBaseQuery(k, graph));
+			result = solver.query(graph.toInvariant(Sexp.fromInt(k - 1)));
 
 			if (result.getResult() == Result.SAT) {
-				refined = true;
 				graph.refine(result.getModel(), BigInteger.valueOf(k - 1));
 				debug("Base step refinement, graph size = " + graph.size());
 			}
 		} while (!graph.isTrivial() && result.getResult() == Result.SAT);
-
-		return refined;
+		
+		solver.pop();
 	}
 
-	private Sexp getBaseQuery(int k, Graph graph) {
-		Sexp inv = graph.toInvariant(Sexp.fromInt(k - 1));
-		return new Cons("=>", new Cons("=", Keywords.N, Sexp.fromInt(k - 1)), inv);
+	private void assertBaseTransition(int i) {
+		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(i))));
 	}
 
 	private Graph refineInductiveStep(int k, Graph original) {
+		solver.push();
 		Graph graph = new Graph(original);
 		SolverResult result;
+		
+		for (int i = 0; i <= k; i++) {
+			assertInductiveTransition(i);
+		}
 		
 		do {
 			result = solver.query(getInductiveQuery(k, graph));
@@ -122,7 +120,16 @@ public class InvariantProcess extends Process {
 			}
 		} while (!graph.isTrivial() && result.getResult() != Result.UNSAT);
 		
+		solver.pop();
 		return graph;
+	}
+
+	private void assertInductiveTransition(int k) {
+		solver.send(new Cons("assert", new Cons(Keywords.T, getInductiveIndex(k))));
+	}
+
+	private Sexp getInductiveIndex(int offset) {
+		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
 	private BigInteger getN(Model model) {
