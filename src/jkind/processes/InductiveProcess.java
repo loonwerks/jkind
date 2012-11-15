@@ -39,8 +39,7 @@ public class InductiveProcess extends Process {
 
 	@Override
 	public void main() {
-		assertTransitionAndInvariants(0);
-		for (int k = 1; k <= kMax; k++) {
+		for (int k = 0; k <= kMax; k++) {
 			debug("K = " + k);
 			processMessagesAndWait(k);
 			assertTransitionAndInvariants(k);
@@ -150,7 +149,11 @@ public class InductiveProcess extends Process {
 		}
 		Sexp conc = conjoinStreams(possiblyValid, getIndex(k));
 
-		return new Cons("=>", new Cons("and", hyps), conc);
+		if (hyps.isEmpty()) {
+			return conc;
+		} else {
+			return new Cons("=>", new Cons("and", hyps), conc);
+		}
 	}
 
 	private Sexp getIndex(int offset) {
