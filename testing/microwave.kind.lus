@@ -1,6 +1,9 @@
 -- This file is translated from the Rockwell Collins microwave in Simulink.
 -- It lead to the discovery of issue #1.
 
+-- This file has 13 properties, all of them valid.
+-- Properties r2 and r7 require invariant generation.
+
 node microwave(KP_START: bool; 
       KP_CLEAR: bool; 
       KP_0: bool; 

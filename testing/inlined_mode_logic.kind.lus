@@ -1,3 +1,5 @@
+-- This is a mode logic example developed by Steve Miller for a NASA
+-- project. There are 4 properties, all of which are valid.
 
 node Mode_Logic(Pilot_Flying_Side: bool; 
       Is_AP_Engaged: bool; 
