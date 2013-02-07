@@ -1,5 +1,3 @@
-Switch to incremental invariant generation
-
 Differentiate unknown results (max iterations, timeout, failure) 
 
 Turn assertions in subnodes into proposed invariants
