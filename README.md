@@ -5,6 +5,9 @@ JKind is a Java implementation of the [KIND model
 checker](http://clc.cs.uiowa.edu/Kind/). KIND is a parallel
 multi-property k-induction based model checker for Lustre programs.
 
+Downloads
+---------
+[JKind 1.0](https://github.com/agacek/jkind/blob/uploads/jkind-1.0.zip?raw=true)
 
 Design Goals
 ------------
