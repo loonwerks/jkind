@@ -1,0 +1,330 @@
+-- This is a mode logic example developed by Steve Miller for a NASA
+-- project. There are 4 properties, all of which are valid. 
+
+-- Proving property LAPPR_Active_When_Capture_Cond_Met required
+-- slightly expanding candidate generation for invariants.
+
+node SubmodeExample(APPR_Switch: bool; 
+      LAPPR_Capture_Cond_Met: bool; 
+      New_Lateral_Mode_Activated: bool)
+   returns (LAPPR_Selected: bool; 
+      LAPPR_Active: bool);
+
+var
+   RISING_p2: bool; 
+   SubmodeExample_RISING_Logical_Operator1: bool; 
+   SubmodeExample_RISING_Logical_Operator2: bool; 
+   SubmodeExample_RISING_Unit_Delay: bool; 
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR: subrange [0, 1] of int; 
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state26_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state26_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state26_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state19_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state19_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state6_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state4_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state4_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state18_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state18_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_simp_rlt_node_state25_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state25_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state25_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR: subrange [0, 1] of int; 
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR_LAPPR: subrange [0, 2] of int; 
+   LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR: subrange [0, 1] of int; 
+   LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR_LAPPR_SELECTED: subrange [0, 2] of int; 
+   LAPPR_main_rlt_state_in_rlt_chart_data_outports_LAPPR_Selected: bool; 
+   LAPPR_main_rlt_state_in_rlt_chart_data_outports_LAPPR_Active: bool; 
+   LAPPR_main_rlt__ARROW: bool; 
+   LAPPR_Selected_If_LAPPR_Active: bool; 
+   APPR_Switch_Pressed_Selects_LAPPR: bool; 
+   LAPPR_Active_When_Capture_Cond_Met: bool; 
+   APPR_Switch_Pressed_Clears_LAPPR: bool;
+
+
+let --%MAIN
+   LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = (0 -> ( pre LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR_LAPPR_SELECTED));
+
+   LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR = (0 -> ( pre LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR));
+
+   LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR_LAPPR = (0 -> ( pre LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR_LAPPR));
+
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Active = 
+      (if (not (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 0))
+         then LAPPR_main_simp_rlt_node_state28_rlt_chart_data_outports_LAPPR_Active
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Selected = 
+      (if (not (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 0))
+         then LAPPR_main_simp_rlt_node_state28_rlt_chart_data_outports_LAPPR_Selected
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (not (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 0))
+         then LAPPR_main_simp_rlt_node_state28_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR = 
+      (if (not (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 0))
+         then LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR
+         else 1);
+
+   LAPPR_main_simp_rlt_node_state31_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if (not (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 0))
+         then LAPPR_main_simp_rlt_node_state28_rlt_chart_data_states_LAPPR_LAPPR
+         else 2);
+
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if LAPPR_main_rlt__ARROW
+         then 0
+         else LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 
+      (if LAPPR_main_rlt__ARROW
+         then 0
+         else LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR);
+
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if LAPPR_main_rlt__ARROW
+         then 0
+         else LAPPR_main_rlt_state_in_rlt_chart_data_states_LAPPR_LAPPR);
+
+   LAPPR_main_simp_rlt_node_state6_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state4_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 2)
+         then 0
+         else LAPPR_main_simp_rlt_node_state4_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state4_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 1)
+         then 0
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if New_Lateral_Mode_Activated
+         then 0
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_outports_LAPPR_Selected = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state27_rlt_chart_data_outports_LAPPR_Selected
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state4_rlt_chart_data_outports_LAPPR_Active = ((not (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 1)) and 
+      LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state26_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 2)
+         then LAPPR_main_simp_rlt_node_state25_rlt_chart_data_states_LAPPR_LAPPR
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR);
+
+   RISING_p2 = (false -> (( not ( pre APPR_Switch)) and 
+      APPR_Switch));
+
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state27_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_rlt_state_in_rlt_chart_data_outports_LAPPR_Selected = (false -> ( pre LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Selected));
+
+   LAPPR_main_rlt__ARROW = (true -> false);
+
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state27_rlt_chart_data_states_LAPPR_LAPPR
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR);
+
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_outports_LAPPR_Active = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state21_rlt_chart_data_outports_LAPPR_Active
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_outports_LAPPR_Selected = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 1)
+         then LAPPR_main_simp_rlt_node_state15_rlt_chart_data_outports_LAPPR_Selected
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_outports_LAPPR_Selected = (( not SubmodeExample_RISING_Logical_Operator1) and 
+      LAPPR_main_simp_rlt_node_state20_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active = (( not LAPPR_main_rlt__ARROW) and 
+      LAPPR_main_rlt_state_in_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 1)
+         then LAPPR_main_simp_rlt_node_state15_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state19_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if SubmodeExample_RISING_Logical_Operator1
+         then LAPPR_main_simp_rlt_node_state6_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state20_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   SubmodeExample_RISING_Unit_Delay = (false -> ( pre APPR_Switch));
+
+   SubmodeExample_RISING_Logical_Operator2 = ( not SubmodeExample_RISING_Unit_Delay);
+
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_outports_LAPPR_Active = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 1)
+         then LAPPR_main_simp_rlt_node_state15_rlt_chart_data_outports_LAPPR_Active
+         else LAPPR_main_simp_rlt_node_state19_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_outports_LAPPR_Selected = (( not New_Lateral_Mode_Activated) and 
+      LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state20_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 1)
+         then LAPPR_main_simp_rlt_node_state15_rlt_chart_data_states_LAPPR_LAPPR
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR);
+
+   APPR_Switch_Pressed_Clears_LAPPR = (( not (( pre LAPPR_Selected) and 
+      RISING_p2)) or 
+      ( not LAPPR_Selected));
+
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_outports_LAPPR_Active = (( not New_Lateral_Mode_Activated) and 
+      LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state18_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if LAPPR_Capture_Cond_Met
+         then 1
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state18_rlt_chart_data_outports_LAPPR_Active = (LAPPR_Capture_Cond_Met or 
+      LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state19_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 2)
+         then LAPPR_main_simp_rlt_node_state18_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state19_rlt_chart_data_outports_LAPPR_Active = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 2)
+         then LAPPR_main_simp_rlt_node_state18_rlt_chart_data_outports_LAPPR_Active
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state25_rlt_chart_data_outports_LAPPR_Selected = (SubmodeExample_RISING_Logical_Operator1 or 
+      LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_Active_When_Capture_Cond_Met = (true -> (( not (((( pre LAPPR_Selected) and 
+      ( not ( pre LAPPR_Active))) and 
+      ( not RISING_p2)) and 
+      LAPPR_Capture_Cond_Met)) or 
+      LAPPR_Active));
+
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_outports_LAPPR_Active = 
+      (if SubmodeExample_RISING_Logical_Operator1
+         then LAPPR_main_simp_rlt_node_state4_rlt_chart_data_outports_LAPPR_Active
+         else LAPPR_main_simp_rlt_node_state20_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state26_rlt_chart_data_outports_LAPPR_Selected = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 2)
+         then LAPPR_main_simp_rlt_node_state25_rlt_chart_data_outports_LAPPR_Selected
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected);
+
+   APPR_Switch_Pressed_Selects_LAPPR = (( not (( not ( pre LAPPR_Selected)) and 
+      RISING_p2)) or 
+      LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state28_rlt_chart_data_outports_LAPPR_Active = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state27_rlt_chart_data_outports_LAPPR_Active
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Active);
+
+   LAPPR_main_simp_rlt_node_state15_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if New_Lateral_Mode_Activated
+         then 2
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR);
+
+   LAPPR_Selected = LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Selected;
+
+   LAPPR_main_simp_rlt_node_state1_rlt_chart_data_outports_LAPPR_Selected = (( not LAPPR_main_rlt__ARROW) and 
+      LAPPR_main_rlt_state_in_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_main_rlt_state_in_rlt_chart_data_outports_LAPPR_Active = (false -> ( pre LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Active));
+
+   SubmodeExample_RISING_Logical_Operator1 = (SubmodeExample_RISING_Logical_Operator2 and 
+      APPR_Switch);
+
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state21_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state26_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_Active = LAPPR_main_simp_rlt_node_state31_rlt_chart_data_outports_LAPPR_Active;
+
+   LAPPR_main_simp_rlt_node_state26_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 2)
+         then LAPPR_main_simp_rlt_node_state25_rlt_chart_data_states_LAPPR_LAPPR_SELECTED
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state25_rlt_chart_data_states_LAPPR_LAPPR_SELECTED = 
+      (if SubmodeExample_RISING_Logical_Operator1
+         then 2
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR_SELECTED);
+
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_outports_LAPPR_Selected = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state21_rlt_chart_data_outports_LAPPR_Selected
+         else LAPPR_main_simp_rlt_node_state26_rlt_chart_data_outports_LAPPR_Selected);
+
+   LAPPR_Selected_If_LAPPR_Active = (( not LAPPR_Active) or 
+      LAPPR_Selected);
+
+   LAPPR_main_simp_rlt_node_state21_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if SubmodeExample_RISING_Logical_Operator1
+         then 2
+         else LAPPR_main_simp_rlt_node_state20_rlt_chart_data_states_LAPPR_LAPPR);
+
+   LAPPR_main_simp_rlt_node_state27_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if (LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR = 1)
+         then LAPPR_main_simp_rlt_node_state21_rlt_chart_data_states_LAPPR_LAPPR
+         else LAPPR_main_simp_rlt_node_state26_rlt_chart_data_states_LAPPR_LAPPR);
+
+   LAPPR_main_simp_rlt_node_state25_rlt_chart_data_states_LAPPR_LAPPR = 
+      (if SubmodeExample_RISING_Logical_Operator1
+         then 1
+         else LAPPR_main_simp_rlt_node_state1_rlt_chart_data_states_LAPPR_LAPPR);
+
+   --Line 21
+--%PROPERTY LAPPR_Selected_If_LAPPR_Active; 
+
+   --Line 30
+--%PROPERTY APPR_Switch_Pressed_Selects_LAPPR; 
+
+   --Line 41
+--%PROPERTY LAPPR_Active_When_Capture_Cond_Met; 
+
+   --Line 50
+--%PROPERTY APPR_Switch_Pressed_Clears_LAPPR;
+
+tel;
+
+

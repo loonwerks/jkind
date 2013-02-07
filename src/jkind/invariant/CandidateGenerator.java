@@ -42,7 +42,7 @@ public class CandidateGenerator {
 			if (type == Type.BOOL) {
 				Sexp s = new Cons("$" + id, i);
 				addCandidate(s);
-				// addCandidate(new Cons("not", s));
+				addCandidate(new Cons("not", s));
 			} else if (type instanceof SubrangeIntType) {
 				SubrangeIntType subrange = (SubrangeIntType) type;
 				addCandidate(Util.subrangeConstraint(id, i, subrange));
