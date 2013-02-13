@@ -1,3 +1,5 @@
+-- This file has 2 properties, both valid.
+
 node integ(x : int) returns (sum : int);
 let
   sum = x + (0 -> pre sum);
