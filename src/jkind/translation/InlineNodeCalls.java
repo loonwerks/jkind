@@ -100,10 +100,9 @@ public class InlineNodeCalls extends MapVisitor {
 
 	private void createInputEquations(List<VarDecl> inputs, List<Expr> args,
 			Map<String, IdExpr> translation) {
-		SubstitutionVisitor substitution = new SubstitutionVisitor(translation);
 		for (int i = 0; i < inputs.size(); i++) {
 			IdExpr idExpr = translation.get(inputs.get(i).id);
-			Expr arg = args.get(i).accept(substitution);
+			Expr arg = args.get(i);
 			queue.add(new Equation(Location.NULL, idExpr, arg));
 		}
 	}
