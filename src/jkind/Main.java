@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.Antlr2Lustre;
 import jkind.lustre.LustreLexer;
-import jkind.lustre.LustreParser;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.parsing.LustreParser;
+import jkind.lustre.parsing.LustreParser.ProgramContext;
+import jkind.lustre.parsing.LustreToAstVisitor;
+import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.processes.Director;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.InlineConstants;
@@ -16,11 +18,10 @@ import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineTypes;
 import jkind.translation.Specification;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonTree;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 
 public class Main {
 	final public static String VERSION = "1.0.1";
@@ -57,10 +58,15 @@ public class Main {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
-		CommonTree tree = (CommonTree) parser.program().getTree();
+		
+		parser.removeErrorListeners();
+		parser.addErrorListener(new StdoutErrorListener());
+		
+		ProgramContext program = parser.program();
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.exit(-1);
 		}
-		return Antlr2Lustre.program(tree);
+		
+		return new LustreToAstVisitor().program(program);
 	}
 }

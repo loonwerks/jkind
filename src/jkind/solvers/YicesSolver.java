@@ -9,11 +9,13 @@ import java.util.List;
 
 import jkind.JKindException;
 import jkind.sexp.Sexp;
+import jkind.solvers.YicesParser.SolverResultContext;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends Solver {
 	private Process process;
@@ -133,16 +135,21 @@ public class YicesSolver extends Solver {
 	}
 
 	private static SolverResult parseYices(String string) throws IOException, RecognitionException {
-		CharStream stream = new ANTLRStringStream(string);
+		CharStream stream = new ANTLRInputStream(string);
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
-		SolverResult result = parser.solverResult();
+		SolverResultContext ctx = parser.solverResult();
+		
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.out.println(string);
 			throw new JKindException("Error parsing Yices output");
 		}
-		return result;
+		
+		ParseTreeWalker walker = new ParseTreeWalker();
+		ResultExtractorListener extractor = new ResultExtractorListener();
+		walker.walk(extractor, ctx);
+		return extractor.getSolverResult();
 	}
 
 	@Override

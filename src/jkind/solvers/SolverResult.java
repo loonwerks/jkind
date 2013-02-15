@@ -5,8 +5,8 @@ public class SolverResult {
 		SAT, UNSAT
 	};
 
-	private Result result;
-	private Model model;
+	final private Result result;
+	final private Model model;
 
 	public SolverResult(Result result, Model model) {
 		this.result = result;
