@@ -80,8 +80,9 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Constant> constants = new ArrayList<Constant>();
 		for (ConstantContext ctx : ctxs) {
 			String id = ctx.ID().getText();
+			Type type = ctx.type() == null ? null : type(ctx.type());
 			Expr expr = expr(ctx.expr());
-			constants.add(new Constant(loc(ctx), id, expr));
+			constants.add(new Constant(loc(ctx), id, type, expr));
 		}
 		return constants;
 	}

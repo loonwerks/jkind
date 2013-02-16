@@ -69,7 +69,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private void populateConstantTable(List<Constant> constants) {
 		for (Constant c : constants) {
-			constantTable.put(c.id, c.expr.accept(this));
+			Type actual = c.expr.accept(this);
+			if (c.type == null) {
+				constantTable.put(c.id, actual);
+			} else {
+				Type expected = lookupBaseType(c.type);
+				compareTypes(c.expr, expected, actual);
+				constantTable.put(c.id, expected);
+			}
 		}
 	}
 

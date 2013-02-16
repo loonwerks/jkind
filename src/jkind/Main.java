@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.LustreLexer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.parsing.LustreLexer;
 import jkind.lustre.parsing.LustreParser;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;

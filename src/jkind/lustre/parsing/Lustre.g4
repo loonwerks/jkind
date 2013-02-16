@@ -4,7 +4,7 @@ program: (typedef | constant | node)* EOF;
 
 typedef: 'type' ID '=' type ';';
 
-constant: 'const' ID '=' expr ';';
+constant: 'const' ID (':' type)? '=' expr ';';
 
 node:
   'node' ID '(' varDeclList? ')'
