@@ -7,9 +7,9 @@ typedef: 'type' ID '=' type ';';
 constant: 'const' ID (':' type)? '=' expr ';';
 
 node:
-  'node' ID '(' varDeclList? ')'
-  'returns' '(' varDeclList? ')' ';'
-  ('var' varDeclList ';')?
+  'node' ID '(' input=varDeclList? ')'
+  'returns' '(' output=varDeclList? ')' ';'
+  ('var' local=varDeclList ';')?
   'let'
     (equation | property | assertion)*
   'tel' ';'

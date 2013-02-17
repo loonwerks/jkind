@@ -97,9 +97,9 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	private Node node(NodeContext ctx) {
 		String id = ctx.ID().getText();
-		List<VarDecl> inputs = varDecls(ctx.varDeclList(0));
-		List<VarDecl> outputs = varDecls(ctx.varDeclList(1));
-		List<VarDecl> locals = varDecls(ctx.varDeclList(2));
+		List<VarDecl> inputs = varDecls(ctx.input);
+		List<VarDecl> outputs = varDecls(ctx.output);
+		List<VarDecl> locals = varDecls(ctx.local);
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());

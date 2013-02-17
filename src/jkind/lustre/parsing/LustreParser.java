@@ -233,6 +233,9 @@ public class LustreParser extends Parser {
 	}
 
 	public static class NodeContext extends ParserRuleContext {
+		public VarDeclListContext input;
+		public VarDeclListContext output;
+		public VarDeclListContext local;
 		public PropertyContext property(int i) {
 			return getRuleContext(PropertyContext.class,i);
 		}
@@ -283,7 +286,7 @@ public class LustreParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==ID) {
 				{
-				setState(55); varDeclList();
+				setState(55); ((NodeContext)_localctx).input = varDeclList();
 				}
 			}
 
@@ -294,7 +297,7 @@ public class LustreParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==ID) {
 				{
-				setState(61); varDeclList();
+				setState(61); ((NodeContext)_localctx).output = varDeclList();
 				}
 			}
 
@@ -305,7 +308,7 @@ public class LustreParser extends Parser {
 			if (_la==16) {
 				{
 				setState(66); match(16);
-				setState(67); varDeclList();
+				setState(67); ((NodeContext)_localctx).local = varDeclList();
 				setState(68); match(32);
 				}
 			}
