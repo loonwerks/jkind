@@ -2,13 +2,16 @@ package jkind.processes;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.Settings;
 import jkind.processes.messages.CounterexampleMessage;
+import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.slicing.CounterexampleSlicer;
@@ -23,26 +26,28 @@ public class Director {
 	private List<String> remainingProperties;
 	private List<String> validProperties;
 	private List<String> invalidProperties;
+	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples;
 	private CounterexampleSlicer cexSlicer;
 	private Writer writer;
-	
+
 	private BaseProcess baseProcess;
 	private InductiveProcess inductiveProcess;
 	private InvariantProcess invariantProcess;
-	
+
 	private Thread baseThread;
 	private Thread inductiveThread;
 	private Thread invariantThread;
-	
+
 	protected BlockingQueue<Message> incoming;
 	private long startTime;
-	
+
 	public Director(Specification spec) {
 		this.spec = spec;
 		this.cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
 		this.remainingProperties = new ArrayList<String>(spec.node.properties);
 		this.validProperties = new ArrayList<String>();
 		this.invalidProperties = new ArrayList<String>();
+		this.inductiveCounterexamples = new HashMap<String, InductiveCounterexampleMessage>();
 		this.writer = getWriter();
 		this.incoming = new LinkedBlockingQueue<Message>();
 	}
@@ -63,7 +68,7 @@ public class Director {
 		printHeader();
 		writer.begin();
 		startThreads();
-		
+
 		startTime = System.currentTimeMillis();
 		long timeout = startTime + Settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
@@ -77,7 +82,8 @@ public class Director {
 
 		processMessages();
 		if (!remainingProperties.isEmpty()) {
-			writer.writeUnknown(remainingProperties);
+			sliceInductiveCounterexamples();
+			writer.writeUnknown(remainingProperties, inductiveCounterexamples);
 		}
 
 		writer.end();
@@ -127,7 +133,8 @@ public class Director {
 		System.out.println("  JAVA KIND");
 		System.out.println("==========================================");
 		System.out.println();
-		System.out.println("There are " + remainingProperties.size() + " properties to be checked.");
+		System.out
+				.println("There are " + remainingProperties.size() + " properties to be checked.");
 		System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
 		System.out.println();
 	}
@@ -135,21 +142,20 @@ public class Director {
 	private void startThreads() {
 		baseProcess = new BaseProcess(spec, this);
 		baseThread = new Thread(baseProcess, "base");
-		
+
 		if (Settings.useInductiveProcess) {
 			inductiveProcess = new InductiveProcess(spec, this);
 			baseProcess.setInductiveProcess(inductiveProcess);
 			inductiveProcess.setBaseProcess(baseProcess);
 			inductiveThread = new Thread(inductiveProcess, "inductive");
 		}
-		
+
 		if (Settings.useInvariantProcess) {
 			invariantProcess = new InvariantProcess(spec);
 			invariantProcess.setInductiveProcess(inductiveProcess);
 			invariantThread = new Thread(invariantProcess, "invariant");
 		}
-		
-		
+
 		baseThread.start();
 		if (Settings.useInductiveProcess) {
 			inductiveThread.start();
@@ -167,15 +173,20 @@ public class Director {
 				ValidMessage vm = (ValidMessage) message;
 				remainingProperties.removeAll(vm.valid);
 				validProperties.addAll(vm.valid);
+				inductiveCounterexamples.keySet().removeAll(vm.valid);
 				writer.writeValid(vm.valid, vm.k, elapsed);
 			} else if (message instanceof CounterexampleMessage) {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
 				remainingProperties.removeAll(cex.invalid);
 				invalidProperties.addAll(cex.invalid);
+				inductiveCounterexamples.keySet().removeAll(cex.invalid);
 				for (String invalidProp : cex.invalid) {
 					Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
 					writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
 				}
+			} else if (message instanceof InductiveCounterexampleMessage) {
+				InductiveCounterexampleMessage icm = (InductiveCounterexampleMessage) message;
+				inductiveCounterexamples.put(icm.property, icm);
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());
@@ -199,6 +210,16 @@ public class Director {
 		if (!remainingProperties.isEmpty()) {
 			System.out.println("UNKNOWN PROPERTIES: " + remainingProperties);
 			System.out.println();
+		}
+	}
+
+	private void sliceInductiveCounterexamples() {
+		for (String prop : inductiveCounterexamples.keySet()) {
+			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
+			Model slicedModel = cexSlicer.slice(icm.property, icm.model);
+			InductiveCounterexampleMessage slicedIcm = new InductiveCounterexampleMessage(
+					icm.property, icm.n, icm.k, slicedModel);
+			inductiveCounterexamples.put(prop, slicedIcm);
 		}
 	}
 }

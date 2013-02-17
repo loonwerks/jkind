@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
 
 public class ArgumentParser {
 	final private static String BMC = "bmc";
+	final private static String INDUCT_CEX = "induct_cex";
 	final private static String N = "n";
 	final private static String NO_INV_GEN = "no_inv_gen";
 	final private static String SCRATCH = "scratch";
@@ -19,6 +20,7 @@ public class ArgumentParser {
 	private static Options getOptions() {
 		Options options = new Options();
 		options.addOption(BMC, false, "bounded model checking only (implies -" + NO_INV_GEN + ")");
+		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(N, true, "number of iterations (default 200)");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
@@ -66,6 +68,10 @@ public class ArgumentParser {
 		if (line.hasOption(BMC)) {
 			Settings.useInductiveProcess = false;
 			Settings.useInvariantProcess = false;
+		}
+		
+		if (line.hasOption(INDUCT_CEX)) {
+			Settings.inductiveCounterexamples = true;
 		}
 		
 		if (line.hasOption(NO_INV_GEN)) {

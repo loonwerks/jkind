@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.Type;
+import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
@@ -43,8 +44,8 @@ public class XmlWriter extends Writer {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
 				+ "</Runtime>");
-		out.println("    <K>" + k + "</K>");
 		out.println("    <Answer>valid</Answer>");
+		out.println("    <K>" + k + "</K>");
 		out.println("  </Property>");
 	}
 
@@ -53,27 +54,27 @@ public class XmlWriter extends Writer {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
 				+ "</Runtime>");
-		out.println("    <K>" + k + "</K>");
 		out.println("    <Answer>falsifiable</Answer>");
-		writeCounterexample(k, model);
+		out.println("    <K>" + k + "</K>");
+		writeCounterexample(k, BigInteger.ZERO, model);
 		out.println("  </Property>");
 	}
 
-	private void writeCounterexample(int k, Model model) {
+	private void writeCounterexample(int k, BigInteger offset, Model model) {
 		out.println("    <Counterexample>");
 		for (String fn : getRelevantFunctions(model.getFunctions())) {
-			writeSignal(fn, k, model);
+			writeSignal(fn, k, offset, model);
 		}
 		out.println("    </Counterexample>");
 	}
 
-	private void writeSignal(String fn, int k, Model model) {
+	private void writeSignal(String fn, int k, BigInteger offset, Model model) {
 		String name = fn.substring(1);
 		Type type = types.get(name);
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
 		Map<BigInteger, Value> fnMap = model.getFunction(fn);
 		for (int i = 0; i < k; i++) {
-			BigInteger key = BigInteger.valueOf(i);
+			BigInteger key = BigInteger.valueOf(i).add(offset);
 			if (fnMap.containsKey(key)) {
 				out.println("        <Value time=\"" + i + "\">" + formatValue(fnMap.get(key))
 						+ "</Value>");
@@ -95,15 +96,21 @@ public class XmlWriter extends Writer {
 		}
 	}
 
-	public void writeUnknown(List<String> props) {
+	@Override
+	public void writeUnknown(List<String> props,
+			Map<String, InductiveCounterexampleMessage> inductiveCounterexamples) {
 		for (String prop : props) {
-			writeUnknown(prop);
+			writeUnknown(prop, inductiveCounterexamples.get(prop));
 		}
 	}
-	
-	public void writeUnknown(String prop) {
+
+	private void writeUnknown(String prop, InductiveCounterexampleMessage icm) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Answer>unknown</Answer>");
+		if (icm != null) {
+			out.println("    <K>" + icm.k + "</K>");
+			writeCounterexample(icm.k, icm.n, icm.model);
+		}
 		out.println("  </Property>");
 	}
 }

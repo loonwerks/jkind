@@ -7,7 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.Settings;
 import jkind.processes.messages.BaseStepMessage;
+import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
@@ -84,11 +86,11 @@ public class InductiveProcess extends Process {
 			solver.send(new Cons("assert", conjoin(invariants, getIndex(i))));
 		}
 	}
-	
+
 	private void assertNewInvariant(Sexp invariant, int k) {
 		assertNewInvariants(Collections.singletonList(invariant), k);
 	}
-	
+
 	private void assertTransitionAndInvariants(int offset) {
 		solver.send(new Cons("assert", new Cons(Keywords.T, getIndex(offset))));
 		if (!invariants.isEmpty()) {
@@ -111,6 +113,7 @@ public class InductiveProcess extends Process {
 					String p = iterator.next();
 					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
 					if (!v.getBool()) {
+						sendInductiveCounterexample(p, n, k, model);
 						iterator.remove();
 					}
 				}
@@ -163,5 +166,11 @@ public class InductiveProcess extends Process {
 	private void sendValid(int k, List<String> valid) {
 		baseProcess.incoming.add(new ValidMessage(k, valid));
 		director.incoming.add(new ValidMessage(k, valid));
+	}
+
+	private void sendInductiveCounterexample(String p, BigInteger n, int k, Model model) {
+		if (Settings.inductiveCounterexamples) {
+			director.incoming.add(new InductiveCounterexampleMessage(p, n, k, model));
+		}
 	}
 }

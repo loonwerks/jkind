@@ -7,4 +7,5 @@ public class Settings {
 	public static boolean scratch = false;
 	public static boolean useInductiveProcess = true;
 	public static boolean useInvariantProcess = true;
+	public static boolean inductiveCounterexamples = false;
 }
