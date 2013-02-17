@@ -46,6 +46,9 @@ public class ConsoleWriter extends Writer {
 			if (icm == null) {
 				continue;
 			}
+			
+			writeLine();
+			System.out.println("INDUCTIVE COUNTEREXAMPLE: " + prop + " || K = " + icm.k);
 			writeModel(icm.k, icm.n, icm.model);
 		}
 	}
