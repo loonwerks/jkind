@@ -113,7 +113,7 @@ public class InductiveProcess extends Process {
 					String p = iterator.next();
 					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
 					if (!v.getBool()) {
-						sendInductiveCounterexample(p, n, k, model);
+						sendInductiveCounterexample(p, n, k+1, model);
 						iterator.remove();
 					}
 				}
