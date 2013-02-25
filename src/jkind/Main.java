@@ -24,7 +24,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 
 public class Main {
-	final public static String VERSION = "1.0.1";
+	final public static String VERSION = "1.1";
 	
 	public static void main(String args[]) throws IOException, RecognitionException, InterruptedException {
 		String filename = ArgumentParser.parse(args);
