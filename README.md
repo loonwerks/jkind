@@ -7,7 +7,7 @@ multi-property k-induction based model checker for Lustre programs.
 
 Downloads
 ---------
-[JKind 1.0](https://github.com/agacek/jkind/blob/uploads/jkind-1.0.zip?raw=true)
+[JKind 1.1](https://github.com/agacek/jkind/blob/uploads/jkind-1.1.zip?raw=true)
 
 Design Goals
 ------------
