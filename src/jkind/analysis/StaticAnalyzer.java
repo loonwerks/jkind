@@ -20,7 +20,7 @@ public class StaticAnalyzer {
 				&& constantsUnique(program) && nodesUnique(program)
 				&& NodeDependencyChecker.check(program) && variablesUnique(program)
 				&& assignmentsSound(program) && propertiesUnique(program.main)
-				&& LinearChecker.check(program);
+				&& propertiesExist(program.main) && LinearChecker.check(program);
 	}
 
 	private static boolean typesUnique(Program program) {
@@ -178,5 +178,19 @@ public class StaticAnalyzer {
 		}
 
 		return unique;
+	}
+	
+	private static boolean propertiesExist(Node node) {
+		boolean exist = true;
+		
+		Set<String> variables = new HashSet<String>(Util.getIds(Util.getVarDecls(node)));
+		for (String prop : node.properties) {
+			if (!variables.contains(prop)) {
+				System.out.println("Error: property " + prop + " does not exist");
+				exist = false;
+			}
+		}
+		
+		return exist;
 	}
 }
