@@ -9,6 +9,8 @@ Downloads
 ---------
 [JKind 1.1](https://github.com/agacek/jkind/blob/uploads/jkind-1.1.zip?raw=true)
 
+[Lustre2excel 1.1](https://github.com/agacek/jkind/blob/uploads/lustre2excel-1.1.zip?raw=true) - an optional utility to convert Lustre programs to Excel spreadsheets
+
 Design Goals
 ------------
 
