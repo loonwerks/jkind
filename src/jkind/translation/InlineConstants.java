@@ -47,7 +47,8 @@ public class InlineConstants {
 	private static Map<String, Expr> getConstantsMap(Program program) {
 		Map<String, Expr> constants = new HashMap<String, Expr>();
 		for (Constant c : program.constants) {
-			constants.put(c.id, c.expr);
+			SubstitutionVisitor inliner = new SubstitutionVisitor(constants);
+			constants.put(c.id, c.expr.accept(inliner));
 		}
 		return constants;
 	}
