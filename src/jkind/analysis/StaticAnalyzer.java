@@ -1,6 +1,7 @@
 package jkind.analysis;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.Constant;
@@ -17,7 +18,7 @@ import jkind.translation.Util;
 public class StaticAnalyzer {
 	public static boolean check(Program program) {
 		return TypeChecker.check(program) && typesUnique(program) && subrangesNonempty(program)
-				&& constantsUnique(program) && nodesUnique(program)
+				&& constantsUnique(program) && constantsConstant(program) && nodesUnique(program)
 				&& NodeDependencyChecker.check(program) && variablesUnique(program)
 				&& assignmentsSound(program) && propertiesUnique(program.main)
 				&& propertiesExist(program.main) && LinearChecker.check(program);
@@ -83,6 +84,19 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
+	}
+	
+	private static boolean constantsConstant(Program program) {
+		boolean constant = true;
+		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
+		for (Constant c : program.constants) {
+			if (!c.expr.accept(constantAnalyzer)) {
+				System.out.println("Error at line " + c.location + " constant " + c.id
+						+ " does not have a constant value");
+				constant = false;
+			}
+		}
+		return constant;
 	}
 
 	private static boolean nodesUnique(Program program) {

@@ -28,6 +28,11 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 		removeShadowedConstants(Util.getVarDecls(node));
 	}
 	
+	public ConstantAnalyzer(List<Constant> constantDecls) {
+		constants = new HashSet<String>();
+		addConstantsToSet(constantDecls);
+	}
+	
 	private void addConstantsToSet(List<Constant> constantDecls) {
 		for (Constant c : constantDecls) {
 			constants.add(c.id);
