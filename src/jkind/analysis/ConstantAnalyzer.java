@@ -16,6 +16,7 @@ import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.translation.Util;
 
@@ -86,6 +87,10 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(UnaryExpr e) {
-		return e.expr.accept(this);
+		if (e.op == UnaryOp.PRE) {
+			return false;
+		} else {
+			return e.expr.accept(this);
+		}
 	}
 }
