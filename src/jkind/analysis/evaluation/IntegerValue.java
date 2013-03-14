@@ -1,0 +1,60 @@
+package jkind.analysis.evaluation;
+
+import java.math.BigInteger;
+
+import jkind.lustre.BinaryOp;
+import jkind.lustre.UnaryOp;
+
+public class IntegerValue extends Value {
+	final public BigInteger value;
+	
+	public IntegerValue(BigInteger value) {
+		if (value == null) {
+			throw new IllegalArgumentException("Cannot create null integer value");
+		}
+		this.value = value;
+	}
+
+	@Override
+	public Value applyBinaryOp(BinaryOp op, Value right) {
+		if (!(right instanceof IntegerValue)) {
+			return null;
+		}
+		BigInteger other = ((IntegerValue) right).value;
+
+		switch (op) {
+		case PLUS:
+			return new IntegerValue(value.add(other));
+		case MINUS:
+			return new IntegerValue(value.subtract(other));
+		case MULTIPLY:
+			return new IntegerValue(value.multiply(other));
+		case INT_DIVIDE:
+			return new IntegerValue(value.divide(other));
+		case EQUAL:
+			return BooleanValue.fromBoolean(value.compareTo(other) == 0);
+		case NOTEQUAL:
+			return BooleanValue.fromBoolean(value.compareTo(other) != 0);
+		case GREATER:
+			return BooleanValue.fromBoolean(value.compareTo(other) > 0);
+		case LESS:
+			return BooleanValue.fromBoolean(value.compareTo(other) < 0);
+		case GREATEREQUAL:
+			return BooleanValue.fromBoolean(value.compareTo(other) >= 0);
+		case LESSEQUAL:
+			return BooleanValue.fromBoolean(value.compareTo(other) <= 0);
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public Value applyUnaryOp(UnaryOp op) {
+		switch (op) {
+		case NEGATIVE:
+			return new IntegerValue(value.negate());
+		default:
+			return null;
+		}
+	}
+}

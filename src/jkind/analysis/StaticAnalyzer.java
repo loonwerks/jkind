@@ -3,6 +3,7 @@ package jkind.analysis;
 import java.util.HashSet;
 import java.util.Set;
 
+import jkind.analysis.evaluation.DivideByZeroChecker;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
@@ -20,7 +21,8 @@ public class StaticAnalyzer {
 				&& constantsUnique(program) && constantsConstant(program) && nodesUnique(program)
 				&& NodeDependencyChecker.check(program) && variablesUnique(program)
 				&& assignmentsSound(program) && propertiesUnique(program.main)
-				&& propertiesExist(program.main) && LinearChecker.check(program);
+				&& propertiesExist(program.main) && LinearChecker.check(program)
+				&& DivideByZeroChecker.check(program);
 	}
 
 	private static boolean typesUnique(Program program) {
@@ -40,13 +42,13 @@ public class StaticAnalyzer {
 
 	private static boolean subrangesNonempty(Program program) {
 		boolean nonempty = true;
-		
+
 		for (TypeDef def : program.types) {
 			if (!checkSubrangeNonempty(def.type)) {
 				nonempty = false;
 			}
 		}
-		
+
 		for (Node node : program.nodes) {
 			for (VarDecl decl : Util.getVarDecls(node)) {
 				if (!checkSubrangeNonempty(decl.type)) {
@@ -54,7 +56,7 @@ public class StaticAnalyzer {
 				}
 			}
 		}
-		
+
 		return nonempty;
 	}
 
@@ -66,7 +68,7 @@ public class StaticAnalyzer {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -84,7 +86,7 @@ public class StaticAnalyzer {
 		}
 		return unique;
 	}
-	
+
 	private static boolean constantsConstant(Program program) {
 		boolean constant = true;
 		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
@@ -192,10 +194,10 @@ public class StaticAnalyzer {
 
 		return unique;
 	}
-	
+
 	private static boolean propertiesExist(Node node) {
 		boolean exist = true;
-		
+
 		Set<String> variables = new HashSet<String>(Util.getIds(Util.getVarDecls(node)));
 		for (String prop : node.properties) {
 			if (!variables.contains(prop)) {
@@ -203,7 +205,7 @@ public class StaticAnalyzer {
 				exist = false;
 			}
 		}
-		
+
 		return exist;
 	}
 }
