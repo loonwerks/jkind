@@ -12,7 +12,7 @@ node:
   ('var' local=varDeclList ';')?
   'let'
     (equation | property | assertion)*
-  'tel' ';'
+  'tel' ';'?
 ;
 
 varDeclList: varDeclGroup (';' varDeclGroup)*;
