@@ -34,7 +34,7 @@ public class CandidateGenerator {
 		CombinatorialInfo info = new CombinatorialInfo(spec.node);
 		
 		for (String id : spec.typeMap.keySet()) {
-			if (info.isCombinatorial(id)) {
+			if (info.isCombinatorial(id) && !spec.node.properties.contains(id)) {
 				continue;
 			}
 			
