@@ -67,8 +67,7 @@ public class Main {
 		ProgramContext program;
 
 		// Due to performance issues in the Antlr 4.0 release, we use a 2-stage
-		// parsing approach. This may not be necessary in the future.
-		// https://github.com/antlr/antlr4/issues/192
+		// parsing approach.  https://github.com/antlr/antlr4/issues/192
 		parser.removeErrorListeners();
 		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
 		parser.setErrorHandler(new BailErrorStrategy());
