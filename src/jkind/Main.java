@@ -19,26 +19,31 @@ import jkind.translation.InlineTypes;
 import jkind.translation.Specification;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class Main {
 	final public static String VERSION = "1.1";
-	
-	public static void main(String args[]) throws IOException, RecognitionException, InterruptedException {
+
+	public static void main(String args[]) throws IOException, RecognitionException,
+			InterruptedException {
 		String filename = ArgumentParser.parse(args);
 		if (!new File(filename).exists()) {
 			System.out.println("Cannot find file " + filename);
 			System.exit(-1);
 		}
-		
+
 		Program program = parseLustre(filename);
 		if (program.main == null) {
 			System.out.println("Error: no main node");
 			System.exit(-1);
 		}
-		
+
 		if (!StaticAnalyzer.check(program)) {
 			System.exit(-1);
 		}
@@ -46,7 +51,7 @@ public class Main {
 		program = InlineTypes.program(program);
 		program = InlineConstants.program(program);
 		Node main = InlineNodeCalls.program(program);
-		
+
 		main = LustreSlicer.slice(main);
 		Specification spec = new Specification(filename, main);
 		new Director(spec).run();
@@ -58,15 +63,29 @@ public class Main {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
-		
+
+		ProgramContext program;
+
+		// Due to performance issues in the Antlr 4.0 release, we use a 2-stage
+		// parsing approach. This may not be necessary in the future.
+		// https://github.com/antlr/antlr4/issues/192
 		parser.removeErrorListeners();
-		parser.addErrorListener(new StdoutErrorListener());
-		
-		ProgramContext program = parser.program();
+		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+		parser.setErrorHandler(new BailErrorStrategy());
+		try {
+			program = parser.program();
+		} catch (ParseCancellationException e) {
+			tokens.reset();
+			parser.addErrorListener(new StdoutErrorListener());
+			parser.setErrorHandler(new DefaultErrorStrategy());
+			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
+			program = parser.program();
+		}
+
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.exit(-1);
 		}
-		
+
 		return new LustreToAstVisitor().program(program);
 	}
 }
