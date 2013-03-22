@@ -19,6 +19,7 @@ import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
+import jkind.translation.Util;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
@@ -66,7 +67,7 @@ public class BaseProcess extends Process {
 	private void checkProperties(int k) {
 		SolverResult result;
 		do {
-			result = solver.query(conjoinStreams(properties, Sexp.fromInt(k - 1)));
+			result = solver.query(Util.conjoinStreams(properties, Sexp.fromInt(k - 1)));
 
 			if (result.getResult() == Result.SAT) {
 				Model model = result.getModel();
@@ -104,7 +105,7 @@ public class BaseProcess extends Process {
 
 	private void assertProperties(int k) {
 		if (!properties.isEmpty()) {
-			solver.send(new Cons("assert", conjoinStreams(properties, Sexp.fromInt(k - 1))));
+			solver.send(new Cons("assert", Util.conjoinStreams(properties, Sexp.fromInt(k - 1))));
 		}
 	}
 }

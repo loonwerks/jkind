@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 import jkind.JKindException;
 import jkind.sexp.Sexp;
@@ -45,13 +44,6 @@ public class YicesSolver extends Solver {
 	@Override
 	public void send(Sexp sexp) {
 		send(sexp.toString());
-	}
-
-	@Override
-	public void send(List<Sexp> sexps) {
-		for (Sexp sexp : sexps) {
-			send(sexp);
-		}
 	}
 
 	private void send(String str) {

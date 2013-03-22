@@ -11,9 +11,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jkind.JKindException;
 import jkind.Settings;
 import jkind.processes.messages.Message;
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import jkind.solvers.Solver;
 import jkind.solvers.YicesSolver;
 import jkind.translation.Specification;
@@ -69,43 +66,7 @@ public abstract class Process implements Runnable {
 	public Throwable getThrowable() {
 		return throwable;
 	}
-	
-	
-	/** Utility functions */
-	
-	protected static Sexp conjoin(List<Sexp> fns, Sexp i) {
-		if (fns.isEmpty()) {
-			throw new JKindException("Cannot conjoin empty list");
-		}
-		
-		List<Sexp> args = new ArrayList<Sexp>();
-		for (Sexp fn : fns) {
-			args.add(new Cons(fn, i));
-		}
-		return new Cons("and", args);
-	}
 
-	protected static Sexp conjoinIds(List<String> ids, Sexp i) {
-		return conjoin(mapSymbol(ids), i);
-	}
-
-	protected static List<Sexp> mapSymbol(List<String> ids) {
-		List<Sexp> symbols = new ArrayList<Sexp>();
-		for (String id : ids) {
-			symbols.add(new Symbol(id));
-		}
-		return symbols;
-	}
-	
-	protected static Sexp conjoinStreams(List<String> ids, Sexp i) {
-		List<Sexp> symbols = new ArrayList<Sexp>();
-		for (String id : ids) {
-			symbols.add(new Symbol("$" + id));
-		}
-		return conjoin(symbols, i);
-	}
-	
-	
 	/** Debug methods */
 	
 	protected void setScratch(String filename) {

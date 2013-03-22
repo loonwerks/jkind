@@ -10,12 +10,18 @@ public abstract class Solver {
 	public abstract void stop();
 	
 	public abstract void send(Sexp sexp);
-	public abstract void send(List<Sexp> sexps);
 	public abstract SolverResult query(Sexp sexp);
 	
 	public abstract void push();
 	public abstract void pop();
 	
+	/** Utility */
+	
+	public void send(List<Sexp> sexps) {
+		for (Sexp sexp : sexps) {
+			send(sexp);
+		}
+	}
 	
 	/** Debugging */
 	

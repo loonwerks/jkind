@@ -2,12 +2,12 @@ package jkind.processes;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindException;
 import jkind.Settings;
+import jkind.invariant.Invariant;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -24,11 +24,12 @@ import jkind.solvers.SolverResult;
 import jkind.solvers.SolverResult.Result;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
+import jkind.translation.Util;
 
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
 	private BaseProcess baseProcess;
-	private List<Sexp> invariants = new ArrayList<Sexp>();
+	private List<Invariant> invariants = new ArrayList<Invariant>();
 
 	public InductiveProcess(Specification spec, Director director) {
 		super(spec, director);
@@ -69,8 +70,8 @@ public class InductiveProcess extends Process {
 					kLimit = baseStepMessage.step;
 				} else if (message instanceof InvariantMessage) {
 					InvariantMessage invariantMessage = (InvariantMessage) message;
-					invariants.add(invariantMessage.invariant);
-					assertNewInvariant(invariantMessage.invariant, k);
+					invariants.addAll(invariantMessage.invariants);
+					assertNewInvariants(invariantMessage.invariants, k-1);
 				} else {
 					throw new JKindException("Unknown message type in inductive process: "
 							+ message.getClass().getCanonicalName());
@@ -81,21 +82,25 @@ public class InductiveProcess extends Process {
 		}
 	}
 
-	private void assertNewInvariants(List<Sexp> invariants, int k) {
+	private void assertNewInvariants(List<Invariant> invariants, int k) {
 		for (int i = 0; i <= k; i++) {
-			solver.send(new Cons("assert", conjoin(invariants, getIndex(i))));
+			assertInvariants(invariants, i);
 		}
 	}
 
-	private void assertNewInvariant(Sexp invariant, int k) {
-		assertNewInvariants(Collections.singletonList(invariant), k);
+	private void assertInvariants(List<Invariant> invariants, int i) {
+		for (Invariant invariant : invariants) {
+			assertInvariant(invariant, i);
+		}
+	}
+
+	private void assertInvariant(Invariant invariant, int i) {
+		solver.send(new Cons("assert", new Cons(invariant.sexp, getIndex(i))));
 	}
 
 	private void assertTransitionAndInvariants(int offset) {
 		solver.send(new Cons("assert", new Cons(Keywords.T, getIndex(offset))));
-		if (!invariants.isEmpty()) {
-			solver.send(new Cons("assert", conjoin(invariants, getIndex(offset))));
-		}
+		assertInvariants(invariants, offset);
 	}
 
 	private void checkProperties(int k) {
@@ -113,7 +118,7 @@ public class InductiveProcess extends Process {
 					String p = iterator.next();
 					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
 					if (!v.getBool()) {
-						sendInductiveCounterexample(p, n, k+1, model);
+						sendInductiveCounterexample(p, n, k + 1, model);
 						iterator.remove();
 					}
 				}
@@ -126,18 +131,14 @@ public class InductiveProcess extends Process {
 		}
 	}
 
-	private void addPropertiesAsInvariants(int k, List<String> possiblyValid) {
-		List<Sexp> propertiesAsInvariants = mapSymbol(mapStream(possiblyValid));
+	private void addPropertiesAsInvariants(int k, List<String> valid) {
+		List<Invariant> propertiesAsInvariants = new ArrayList<Invariant>();
+		for (String property : valid) {
+			propertiesAsInvariants.add(new Invariant(new Symbol("$" + property), property));
+		}
+		
 		invariants.addAll(propertiesAsInvariants);
 		assertNewInvariants(propertiesAsInvariants, k);
-	}
-
-	private List<String> mapStream(List<String> ids) {
-		List<String> streams = new ArrayList<String>();
-		for (String id : ids) {
-			streams.add("$" + id);
-		}
-		return streams;
 	}
 
 	private BigInteger getN(Model model) {
@@ -148,9 +149,9 @@ public class InductiveProcess extends Process {
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
 		List<Sexp> hyps = new ArrayList<Sexp>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(conjoinStreams(possiblyValid, getIndex(i)));
+			hyps.add(Util.conjoinStreams(possiblyValid, getIndex(i)));
 		}
-		Sexp conc = conjoinStreams(possiblyValid, getIndex(k));
+		Sexp conc = Util.conjoinStreams(possiblyValid, getIndex(k));
 
 		if (hyps.isEmpty()) {
 			return conc;

@@ -1,11 +1,13 @@
 package jkind.processes.messages;
 
-import jkind.sexp.Sexp;
+import java.util.List;
+
+import jkind.invariant.Invariant;
 
 public class InvariantMessage extends Message {
-	public final Sexp invariant;
+	public final List<Invariant> invariants;
 
-	public InvariantMessage(Sexp invariant) {
-		this.invariant = invariant;
+	public InvariantMessage(List<Invariant> invariants) {
+		this.invariants = invariants;
 	}
 }

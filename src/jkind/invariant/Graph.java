@@ -10,10 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import jkind.solvers.Model;
+import jkind.translation.Util;
 
 public class Graph {
 	private List<Node> nodes;
@@ -69,30 +68,19 @@ public class Graph {
 	}
 
 	public Sexp toInvariant(Sexp index) {
-		return toInvariant(index, false);
+		List<Invariant> invariants = toInvariants(false);
+		
+		List<Sexp> sexps = new ArrayList<Sexp>();
+		for (Invariant invariant : invariants) {
+			sexps.add(invariant.sexp);
+		}
+		
+		return Util.conjoin(sexps, index);
 	}
 
-	public Sexp toFinalInvariant(Sexp index) {
+	public List<Invariant> toFinalInvariants() {
 		removeTrivialInvariants();
-		if (isTrivial()) {
-			return new Symbol("true");
-		} else {
-			return toInvariant(index, true);
-		}
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("digraph {\n");
-		for (Node node : nodes) {
-			sb.append("  \"" + node + "\";\n");
-		}
-		for (Edge edge : getEdges()) {
-			sb.append("  \"" + edge.source + "\" -> \"" + edge.destination + "\";\n");
-		}
-		sb.append("}");
-		return sb.toString();
+		return toInvariants(true);
 	}
 
 	private void removeTrivialInvariants() {
@@ -115,15 +103,15 @@ public class Graph {
 		removeUselessNodes();
 	}
 
-	private Sexp toInvariant(Sexp index, boolean pure) {
-		List<Sexp> conjuncts = new ArrayList<Sexp>();
+	private List<Invariant> toInvariants(boolean pure) {
+		List<Invariant> invariants = new ArrayList<Invariant>();
 		for (Node node : nodes) {
-			conjuncts.addAll(node.toInvariants(index, pure));
+			invariants.addAll(node.toInvariants(pure));
 		}
 		for (Edge edge : getEdges()) {
-			conjuncts.add(edge.toInvariant(index, pure));
+			invariants.add(edge.toInvariant(pure));
 		}
-		return new Cons("and", conjuncts);
+		return invariants;
 	}
 
 	public void refine(Model model, BigInteger k) {

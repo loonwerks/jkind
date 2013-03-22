@@ -7,6 +7,7 @@ import java.util.List;
 import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
+import jkind.invariant.Invariant;
 import jkind.processes.messages.InvariantMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -20,13 +21,11 @@ import jkind.translation.Specification;
 
 public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
-	private Sexp i;
 
 	public InvariantProcess(Specification spec) {
 		super(spec, null);
 		setScratch(spec.filename + ".yc_inv");
 		this.incoming = null;
-		this.i = new Symbol("i");
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -62,7 +61,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private Graph createGraph() {
-		List<Candidate> candidates = new CandidateGenerator(spec, i).generate();
+		List<Candidate> candidates = new CandidateGenerator(spec).generate();
 		debug("Proposed " + candidates.size() + " candidates");
 		Graph graph = new Graph(candidates);
 		defineCandidates(candidates);
@@ -148,9 +147,11 @@ public class InvariantProcess extends Process {
 	}
 
 	private void sendInvariant(Graph graph) {
-		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));
-		Sexp inv = new Cons("lambda", iType, graph.toFinalInvariant(i));
-		debug("Sending " + inv);
-		inductiveProcess.incoming.add(new InvariantMessage(inv));
+		List<Invariant> invs = graph.toFinalInvariants();
+		debug("Sending invariants:");
+		for (Invariant invariant : invs) {
+			debug("  " + invariant.toString());
+		}
+		inductiveProcess.incoming.add(new InvariantMessage(invs));
 	}
 }

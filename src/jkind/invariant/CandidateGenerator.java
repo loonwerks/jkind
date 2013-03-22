@@ -8,20 +8,17 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import jkind.translation.Specification;
 import jkind.translation.Util;
 
 public class CandidateGenerator {
 	private Specification spec;
-	private Sexp i;
 
 	private List<Candidate> candidates;
 	private int candidateIndex;
 
-	public CandidateGenerator(Specification spec, Sexp i) {
+	public CandidateGenerator(Specification spec) {
 		this.spec = spec;
-		this.i = i;
 	}
 
 	public List<Candidate> generate() {
@@ -40,17 +37,18 @@ public class CandidateGenerator {
 			
 			Type type = spec.typeMap.get(id);
 			if (type == Type.BOOL) {
-				Sexp s = new Cons("$" + id, i);
-				addCandidate(s);
-				addCandidate(new Cons("not", s));
+				Sexp s = new Cons("$" + id, Util.I);
+				addCandidate(s, id);
+				addCandidate(new Cons("not", s), "not " + id);
 			} else if (type instanceof SubrangeIntType) {
 				SubrangeIntType subrange = (SubrangeIntType) type;
-				addCandidate(Util.subrangeConstraint(id, i, subrange));
+				addCandidate(Util.subrangeConstraint(id, Util.I, subrange),
+						"(" + subrange.low + " <= " + id + " and " + id + " <= " + subrange.high + ")");
 
-				Sexp s = new Cons("$" + id, i);
+				Sexp s = new Cons("$" + id, Util.I);
 				for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r.add(BigInteger.ONE)) {
-					addCandidate(new Cons("=", s, Sexp.fromBigInt(r)));
-					// addCandidate(new Cons("/=", s, Sexp.fromBigInt(r)));
+					addCandidate(new Cons("=", s, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
+					// addCandidate(new Cons("/=", s, Sexp.fromBigInt(r)), "(" + id + " <> " + r + ")");
 				}
 			}
 		}
@@ -58,9 +56,8 @@ public class CandidateGenerator {
 		return candidates;
 	}
 
-	private void addCandidate(Sexp s) {
-		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));
-		Candidate candidate = new Candidate("can" + candidateIndex, new Cons("lambda", iType, s));
+	private void addCandidate(Sexp s, String text) {
+		Candidate candidate = new Candidate("can" + candidateIndex, Util.lambdaI(s), text);
 		candidateIndex++;
 		candidates.add(candidate);
 	}

@@ -30,22 +30,20 @@ public class Lustre2Sexps {
 	}
 
 	private void createTransition(Node node) {
-		Symbol i = new Symbol("i");
 		List<Sexp> conjuncts = new ArrayList<Sexp>();
 		for (Equation eq : node.equations) {
-			conjuncts.add(equation2Sexp(eq, i));
+			conjuncts.add(equation2Sexp(eq, Util.I));
 		}
 		for (VarDecl input : node.inputs) {
 			if (input.type instanceof SubrangeIntType) {
-				conjuncts.add(Util.subrangeConstraint(input.id, i, (SubrangeIntType) input.type));
+				conjuncts.add(Util.subrangeConstraint(input.id, Util.I, (SubrangeIntType) input.type));
 			}
 		}
 		for (Expr assertion : node.assertions) {
-			conjuncts.add(assertion.accept(new Expr2SexpVisitor(i)));
+			conjuncts.add(assertion.accept(new Expr2SexpVisitor(Util.I)));
 		}
 
-		Sexp iType = new Cons(i, new Symbol("::"), new Symbol("nat"));
-		Sexp lambda = new Cons("lambda", iType, new Cons("and", conjuncts));
+		Sexp lambda = Util.lambdaI(new Cons("and", conjuncts));
 		Sexp tType = new Cons("->", new Symbol("nat"), new Symbol("bool"));
 		transition = new Cons("define", Keywords.T, new Symbol("::"), tType, lambda);
 	}

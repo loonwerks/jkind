@@ -2,6 +2,7 @@ package jkind.invariant;
 
 import java.math.BigInteger;
 
+import jkind.translation.Util;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -11,10 +12,12 @@ import jkind.solvers.Model;
 public class Candidate {
 	final public String id;
 	final public Sexp sexp;
+	final public String text;
 
-	public Candidate(String id, Sexp sexp) {
+	public Candidate(String id, Sexp sexp, String text) {
 		this.id = id;
 		this.sexp = sexp;
+		this.text = text;
 	}
 
 	public boolean isTrue(Model model, BigInteger k) {
@@ -38,14 +41,14 @@ public class Candidate {
 			return new Cons(id, index);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
-		return id;
+		return text;
 	}
 
-	final public static Candidate TRUE = new Candidate("canTrue", new Cons("lambda", new Cons("i",
-			new Symbol("::"), new Symbol("nat")), new Symbol("true")));
-	final public static Candidate FALSE = new Candidate("canFalse", new Cons("lambda", new Cons("i",
-			new Symbol("::"), new Symbol("nat")), new Symbol("false")));
+	final public static Candidate TRUE = new Candidate("canTrue", Util.lambdaI(new Symbol("true")),
+			"true");
+	final public static Candidate FALSE = new Candidate("canFalse",
+			Util.lambdaI(new Symbol("false")), "false");
 }

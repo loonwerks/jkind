@@ -8,6 +8,7 @@ import java.util.List;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
+import jkind.translation.Util;
 
 public class Node {
 	private List<Candidate> candidates;
@@ -28,14 +29,21 @@ public class Node {
 		return candidates.size() <= 1;
 	}
 
-	public List<Sexp> toInvariants(Sexp index, boolean pure) {
-		List<Sexp> conjuncts = new ArrayList<Sexp>();
+	public List<Invariant> toInvariants(boolean pure) {
+		List<Invariant> invariants = new ArrayList<Invariant>();
+		
 		Iterator<Candidate> iterator = candidates.iterator();
-		Sexp rep = iterator.next().index(index, pure);
+		Candidate first = iterator.next();
+		Sexp firstSexp = first.index(Util.I, pure);
+		
 		while (iterator.hasNext()) {
-			conjuncts.add(new Cons("=", rep, iterator.next().index(index, pure)));
+			Candidate other = iterator.next();
+			Sexp sexp = Util.lambdaI(new Cons("=", firstSexp, other.index(Util.I, pure)));
+			String text = first + " = " + other;
+			invariants.add(new Invariant(sexp, text));
 		}
-		return conjuncts;
+		
+		return invariants;
 	}
 
 	public List<Node> split(Model model, BigInteger k) {
@@ -55,7 +63,7 @@ public class Node {
 		chain.add(new Node(trues));
 		return chain;
 	}
-	
+
 	@Override
 	public String toString() {
 		return candidates.toString();

@@ -11,6 +11,7 @@ import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
 
 public class Util {
 	public static List<VarDecl> getVarDecls(Node node) {
@@ -50,5 +51,31 @@ public class Util {
 		Sexp low = new Cons("<=", Sexp.fromBigInt(subrange.low), var);
 		Sexp high = new Cons("<=", var, Sexp.fromBigInt(subrange.high));
 		return new Cons("and", low, high);
+	}
+
+	public static Sexp conjoin(List<Sexp> fns, Sexp i) {
+		if (fns.isEmpty()) {
+			return new Symbol("true");
+		}
+		
+		List<Sexp> args = new ArrayList<Sexp>();
+		for (Sexp fn : fns) {
+			args.add(new Cons(fn, i));
+		}
+		return new Cons("and", args);
+	}
+
+	public static Sexp conjoinStreams(List<String> ids, Sexp i) {
+		List<Sexp> symbols = new ArrayList<Sexp>();
+		for (String id : ids) {
+			symbols.add(new Symbol("$" + id));
+		}
+		return conjoin(symbols, i);
+	}
+	
+	final public static Symbol I = new Symbol("i");
+	
+	public static Sexp lambdaI(Sexp body) {
+		return new Cons("lambda", new Cons(I, new Symbol("::"), new Symbol("nat")), body);
 	}
 }
