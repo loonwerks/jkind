@@ -15,6 +15,9 @@ public interface YicesListener extends ParseTreeListener {
 	void enterInteger(YicesParser.IntegerContext ctx);
 	void exitInteger(YicesParser.IntegerContext ctx);
 
+	void enterAlias(YicesParser.AliasContext ctx);
+	void exitAlias(YicesParser.AliasContext ctx);
+
 	void enterValue(YicesParser.ValueContext ctx);
 	void exitValue(YicesParser.ValueContext ctx);
 

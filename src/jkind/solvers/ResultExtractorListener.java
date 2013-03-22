@@ -3,6 +3,7 @@ package jkind.solvers;
 import java.math.BigInteger;
 
 import jkind.solvers.SolverResult.Result;
+import jkind.solvers.YicesParser.AliasContext;
 import jkind.solvers.YicesParser.FunctionContext;
 import jkind.solvers.YicesParser.ModelContext;
 import jkind.solvers.YicesParser.SolverResultContext;
@@ -26,6 +27,11 @@ public class ResultExtractorListener extends YicesBaseListener {
 	@Override
 	public void enterModel(ModelContext ctx) {
 		model = new Model();
+	}
+	
+	@Override
+	public void enterAlias(AliasContext ctx) {
+		model.addAlias(ctx.ID(0).getText(), ctx.ID(1).getText());
 	}
 
 	@Override

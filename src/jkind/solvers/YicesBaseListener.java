@@ -18,6 +18,9 @@ public class YicesBaseListener implements YicesListener {
 	@Override public void enterInteger(YicesParser.IntegerContext ctx) { }
 	@Override public void exitInteger(YicesParser.IntegerContext ctx) { }
 
+	@Override public void enterAlias(YicesParser.AliasContext ctx) { }
+	@Override public void exitAlias(YicesParser.AliasContext ctx) { }
+
 	@Override public void enterValue(YicesParser.ValueContext ctx) { }
 	@Override public void exitValue(YicesParser.ValueContext ctx) { }
 

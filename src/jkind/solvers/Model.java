@@ -2,19 +2,25 @@ package jkind.solvers;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import jkind.sexp.Symbol;
 
 public class Model {
-	// Is there a nicer (and more general) way to represent models?
+	private Map<String, String> aliases;
 	private Map<String, Value> valueAssignments;
 	private Map<String, Map<BigInteger, Value>> functionAssignments;
 
 	public Model() {
+		this.aliases = new HashMap<String, String>();
 		this.valueAssignments = new HashMap<String, Value>();
 		this.functionAssignments = new HashMap<String, Map<BigInteger, Value>>();
+	}
+	
+	public void addAlias(String from, String to) {
+		aliases.put(from, to);
 	}
 	
 	public void addValue(String id, Value v) {
@@ -31,8 +37,16 @@ public class Model {
 		fnMap.put(arg, v);
 	}
 	
+	private String getAlias(String id) {
+		String result = id;
+		while (aliases.containsKey(result)) {
+			result = aliases.get(result);
+		}
+		return result;
+	}
+	
 	public Value getValue(String id) {
-		return valueAssignments.get(id);
+		return valueAssignments.get(getAlias(id));
 	}
 	
 	public Value getValue(Symbol sym) {
@@ -40,7 +54,7 @@ public class Model {
 	}
 
 	public Map<BigInteger, Value> getFunction(String fn) {
-		return functionAssignments.get(fn);
+		return functionAssignments.get(getAlias(fn));
 	}
 	
 	public Value getFunctionValue(String fn, BigInteger index) {
@@ -48,6 +62,12 @@ public class Model {
 	}
 	
 	public Set<String> getFunctions() {
-		return functionAssignments.keySet();
+		Set<String> fns = new HashSet<String>(functionAssignments.keySet());
+		for (String alias : aliases.keySet()) {
+			if (getFunction(alias) != null) {
+				fns.add(alias);
+			}
+		}
+		return fns;
 	}
 }

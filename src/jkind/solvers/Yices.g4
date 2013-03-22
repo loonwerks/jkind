@@ -4,7 +4,9 @@ solverResult: RESULT model? EOF;
 
 RESULT: 'sat' | 'unsat';
 
-model: (variable | function | predefined)+;
+model: (alias | variable | function | predefined)+;
+
+alias: '(' '=' ID ID ')';
 
 variable: '(' '=' ID value ')';
 
