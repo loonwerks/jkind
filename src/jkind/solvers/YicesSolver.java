@@ -7,13 +7,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import jkind.JKindException;
+import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Sexp;
 import jkind.solvers.YicesParser.SolverResultContext;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends Solver {
@@ -131,8 +136,21 @@ public class YicesSolver extends Solver {
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
-		SolverResultContext ctx = parser.solverResult();
+		SolverResultContext ctx;
 		
+		parser.removeErrorListeners();
+		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+		parser.setErrorHandler(new BailErrorStrategy());
+		try {
+			ctx = parser.solverResult();
+		} catch (ParseCancellationException e) {
+			tokens.reset();
+			parser.addErrorListener(new StdoutErrorListener());
+			parser.setErrorHandler(new DefaultErrorStrategy());
+			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
+			ctx = parser.solverResult();
+		}
+
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.out.println(string);
 			throw new JKindException("Error parsing Yices output");
