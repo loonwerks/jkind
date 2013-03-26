@@ -5,6 +5,7 @@ import java.util.Map;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.slicing.DependencyMap;
+import jkind.util.Util;
 
 public class Specification {
 	final public String filename;

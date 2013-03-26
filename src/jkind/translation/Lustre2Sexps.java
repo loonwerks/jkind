@@ -11,6 +11,7 @@ import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.Util;
 
 public class Lustre2Sexps {
 	private Sexp transition;

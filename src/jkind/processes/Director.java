@@ -2,6 +2,7 @@ package jkind.processes;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +11,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.Settings;
+import jkind.invariant.Invariant;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
+import jkind.processes.messages.ValidMessage.Status;
 import jkind.slicing.CounterexampleSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
@@ -33,10 +36,12 @@ public class Director {
 	private BaseProcess baseProcess;
 	private InductiveProcess inductiveProcess;
 	private InvariantProcess invariantProcess;
+	private ReduceProcess reduceProcess;
 
 	private Thread baseThread;
 	private Thread inductiveThread;
 	private Thread invariantThread;
+	private Thread reduceThread;
 
 	protected BlockingQueue<Message> incoming;
 	private long startTime;
@@ -96,6 +101,9 @@ public class Director {
 		if (inductiveThread != null) {
 			result = result || inductiveThread.isAlive();
 		}
+		if (reduceThread != null) {
+			result = result || reduceThread.isAlive();
+		}
 		return result;
 	}
 
@@ -107,23 +115,23 @@ public class Director {
 		if (invariantThread != null) {
 			result = result || invariantProcess.getThrowable() != null;
 		}
+		if (reduceThread != null) {
+			result = result || reduceProcess.getThrowable() != null;
+		}
 		return result;
 	}
 
 	private void reportFailures() {
-		if (baseProcess.getThrowable() != null) {
-			Throwable t = baseProcess.getThrowable();
-			System.out.println("Base process failed");
-			t.printStackTrace(System.out);
-		}
-		if (inductiveThread != null && inductiveProcess.getThrowable() != null) {
-			Throwable t = inductiveProcess.getThrowable();
-			System.out.println("Inductive process failed");
-			t.printStackTrace(System.out);
-		}
-		if (invariantThread != null && invariantProcess.getThrowable() != null) {
-			Throwable t = invariantProcess.getThrowable();
-			System.out.println("Invariant process failed");
+		reportFailure(baseThread, baseProcess, "Base process failed");
+		reportFailure(inductiveThread, inductiveProcess, "Inductive process failed");
+		reportFailure(invariantThread, invariantProcess, "Invariant process failed");
+		reportFailure(reduceThread, reduceProcess, "Reduction process failed");
+	}
+
+	private void reportFailure(Thread thread, Process process, String message) {
+		if (thread != null && process.getThrowable() != null) {
+			Throwable t = process.getThrowable();
+			System.out.println(message);
 			t.printStackTrace(System.out);
 		}
 	}
@@ -153,15 +161,24 @@ public class Director {
 		if (Settings.useInvariantProcess) {
 			invariantProcess = new InvariantProcess(spec);
 			invariantProcess.setInductiveProcess(inductiveProcess);
+			inductiveProcess.setInvariantProcess(invariantProcess);
 			invariantThread = new Thread(invariantProcess, "invariant");
 		}
 
+		if (Settings.reduceInvariants) {
+			reduceProcess = new ReduceProcess(spec, this);
+			reduceThread = new Thread(reduceProcess, "reduce");
+		}
+
 		baseThread.start();
-		if (Settings.useInductiveProcess) {
+		if (inductiveThread != null) {
 			inductiveThread.start();
 		}
-		if (Settings.useInvariantProcess) {
+		if (invariantThread != null) {
 			invariantThread.start();
+		}
+		if (reduceThread != null) {
+			reduceThread.start();
 		}
 	}
 
@@ -171,10 +188,18 @@ public class Director {
 			long elapsed = System.currentTimeMillis() - startTime;
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
-				remainingProperties.removeAll(vm.valid);
-				validProperties.addAll(vm.valid);
-				inductiveCounterexamples.keySet().removeAll(vm.valid);
-				writer.writeValid(vm.valid, vm.k, elapsed);
+				if (reduceProcess != null && vm.status == Status.UNREDUCED) {
+					reduceProcess.incoming.add(message);
+				} else {
+					remainingProperties.removeAll(vm.valid);
+					validProperties.addAll(vm.valid);
+					inductiveCounterexamples.keySet().removeAll(vm.valid);
+					List<Invariant> invariants = vm.invariants;
+					if (reduceProcess == null) {
+						invariants = Collections.<Invariant> emptyList();
+					}
+					writer.writeValid(vm.valid, vm.k, elapsed, invariants);
+				}
 			} else if (message instanceof CounterexampleMessage) {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
 				remainingProperties.removeAll(cex.invalid);

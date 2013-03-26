@@ -11,6 +11,7 @@ public class ArgumentParser {
 	final private static String INDUCT_CEX = "induct_cex";
 	final private static String N = "n";
 	final private static String NO_INV_GEN = "no_inv_gen";
+	final private static String REDUCE_INV = "reduce_inv";
 	final private static String SCRATCH = "scratch";
 	final private static String TIMEOUT = "timeout";
 	final private static String XML = "xml";
@@ -23,6 +24,7 @@ public class ArgumentParser {
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(N, true, "number of iterations (default 200)");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
+		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
 		options.addOption(XML, false, "generate results in XML format");
@@ -80,6 +82,10 @@ public class ArgumentParser {
 		
 		if (line.hasOption(N)) {
 			Settings.n = Integer.parseInt(line.getOptionValue(N));
+		}
+		
+		if (line.hasOption(REDUCE_INV)) {
+			Settings.reduceInvariants = true;
 		}
 		
 		if (line.hasOption(TIMEOUT)) {

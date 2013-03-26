@@ -1,10 +1,12 @@
-package jkind.translation;
+package jkind.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.invariant.Invariant;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
@@ -53,7 +55,7 @@ public class Util {
 		return new Cons("and", low, high);
 	}
 
-	public static Sexp conjoin(List<Sexp> fns, Sexp i) {
+	public static Sexp conjoin(Collection<? extends Sexp> fns, Sexp i) {
 		if (fns.isEmpty()) {
 			return new Symbol("true");
 		}
@@ -65,12 +67,20 @@ public class Util {
 		return new Cons("and", args);
 	}
 
-	public static Sexp conjoinStreams(List<String> ids, Sexp i) {
+	public static Sexp conjoinStreams(Collection<String> ids, Sexp i) {
 		List<Sexp> symbols = new ArrayList<Sexp>();
 		for (String id : ids) {
 			symbols.add(new Symbol("$" + id));
 		}
 		return conjoin(symbols, i);
+	}
+	
+	public static Sexp conjoinInvariants(Collection<Invariant> invariants, Sexp i) {
+		List<Sexp> sexps = new ArrayList<Sexp>();
+		for (Invariant invariant : invariants) {
+			sexps.add(invariant.sexp);
+		}
+		return conjoin(sexps, i);
 	}
 	
 	final public static Symbol I = new Symbol("i");

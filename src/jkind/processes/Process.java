@@ -12,7 +12,7 @@ import jkind.JKindException;
 import jkind.Settings;
 import jkind.processes.messages.Message;
 import jkind.solvers.Solver;
-import jkind.solvers.YicesSolver;
+import jkind.solvers.yices.YicesSolver;
 import jkind.translation.Specification;
 
 public abstract class Process implements Runnable {

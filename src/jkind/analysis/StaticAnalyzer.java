@@ -13,7 +13,7 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class StaticAnalyzer {
 	public static boolean check(Program program) {

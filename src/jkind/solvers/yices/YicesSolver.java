@@ -1,15 +1,21 @@
-package jkind.solvers;
+package jkind.solvers.yices;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
 import jkind.JKindException;
 import jkind.lustre.parsing.StdoutErrorListener;
+import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.solvers.YicesParser.SolverResultContext;
+import jkind.solvers.Label;
+import jkind.solvers.Result;
+import jkind.solvers.Solver;
+import jkind.solvers.UnsatResult;
+import jkind.solvers.yices.YicesParser.ResultContext;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -63,33 +69,54 @@ public class YicesSolver extends Solver {
 		}
 	}
 
+	private int labelCount = 1;
+
 	@Override
-	public SolverResult query(Sexp sexp) {
-		return query(sexp.toString());
+	public IntLabel labelledAssert(Sexp sexp) {
+		debug("; id = " + labelCount);
+		send(new Cons("assert+", sexp));
+		return new IntLabel(labelCount++);
 	}
 
-	private int queryCount = 1;
+	@Override
+	public void retract(Label label) {
+		if (label instanceof IntLabel) {
+			IntLabel il = (IntLabel) label;
+			send(new Cons("retract", Sexp.fromInt(il.i)));
+		} else {
+			throw new IllegalArgumentException("Invalid label to retract in YicesSolver: "
+					+ label.getClass().getCanonicalName());
+		}
+	}
 
-	private SolverResult query(String str) {
+	@Override
+	public Result query(Sexp sexp) {
 		/**
 		 * Using assert+ and retract seems to be much more efficient than push
 		 * and pop for some reason.
 		 */
 
-		send("(assert+ (not " + str + "))");
+		Label label = labelledAssert(new Cons("not", sexp));
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
-		send("(retract " + queryCount + ")");
-		queryCount++;
+		retract(label);
 
-		SolverResult result = readResult();
-		if (result.getResult() == null) {
+		Result result = readResult();
+		if (result == null) {
 			throw new JKindException("Unknown result from yices");
+		}
+		if (result instanceof UnsatResult) {
+			List<Label> core = ((UnsatResult) result).getUnsatCore();
+			if (core.contains(label)) {
+				core.remove(label);
+			} else {
+				throw new JKindException("Unsat result did not depend on query");
+			}
 		}
 		return result;
 	}
 
-	private SolverResult readResult() {
+	private Result readResult() {
 		try {
 			String line;
 			StringBuilder content = new StringBuilder();
@@ -115,8 +142,6 @@ public class YicesSolver extends Solver {
 					continue;
 				} else if (line.equals(DONE)) {
 					break;
-				} else if (line.startsWith("unsat core ids")) {
-					continue;
 				} else {
 					content.append(line);
 					content.append("\n");
@@ -131,35 +156,35 @@ public class YicesSolver extends Solver {
 		}
 	}
 
-	private static SolverResult parseYices(String string) throws IOException, RecognitionException {
+	private static Result parseYices(String string) throws IOException, RecognitionException {
 		CharStream stream = new ANTLRInputStream(string);
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
-		SolverResultContext ctx;
-		
+		ResultContext ctx;
+
 		parser.removeErrorListeners();
 		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
 		parser.setErrorHandler(new BailErrorStrategy());
 		try {
-			ctx = parser.solverResult();
+			ctx = parser.result();
 		} catch (ParseCancellationException e) {
 			tokens.reset();
 			parser.addErrorListener(new StdoutErrorListener());
 			parser.setErrorHandler(new DefaultErrorStrategy());
 			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			ctx = parser.solverResult();
+			ctx = parser.result();
 		}
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.out.println(string);
 			throw new JKindException("Error parsing Yices output");
 		}
-		
+
 		ParseTreeWalker walker = new ParseTreeWalker();
 		ResultExtractorListener extractor = new ResultExtractorListener();
 		walker.walk(extractor, ctx);
-		return extractor.getSolverResult();
+		return extractor.getResult();
 	}
 
 	@Override

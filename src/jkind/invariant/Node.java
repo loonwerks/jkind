@@ -8,7 +8,7 @@ import java.util.List;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class Node {
 	private List<Candidate> candidates;

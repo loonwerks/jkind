@@ -13,23 +13,27 @@ import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
+import jkind.processes.messages.StopMessage;
 import jkind.processes.messages.ValidMessage;
+import jkind.processes.messages.ValidMessage.Status;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
-import jkind.solvers.SolverResult;
-import jkind.solvers.SolverResult.Result;
+import jkind.solvers.Result;
+import jkind.solvers.SatResult;
+import jkind.solvers.UnsatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
 	private BaseProcess baseProcess;
 	private List<Invariant> invariants = new ArrayList<Invariant>();
+	private InvariantProcess invariantProcess;
 
 	public InductiveProcess(Specification spec, Director director) {
 		super(spec, director);
@@ -38,6 +42,10 @@ public class InductiveProcess extends Process {
 
 	public void setBaseProcess(BaseProcess baseProcess) {
 		this.baseProcess = baseProcess;
+	}
+
+	public void setInvariantProcess(InvariantProcess invariantProcess) {
+		this.invariantProcess = invariantProcess;
 	}
 
 	@Override
@@ -51,6 +59,7 @@ public class InductiveProcess extends Process {
 				break;
 			}
 		}
+		sendStopMessage();
 	}
 
 	protected void initializeSolver() {
@@ -71,7 +80,7 @@ public class InductiveProcess extends Process {
 				} else if (message instanceof InvariantMessage) {
 					InvariantMessage invariantMessage = (InvariantMessage) message;
 					invariants.addAll(invariantMessage.invariants);
-					assertNewInvariants(invariantMessage.invariants, k-1);
+					assertNewInvariants(invariantMessage.invariants, k - 1);
 				} else {
 					throw new JKindException("Unknown message type in inductive process: "
 							+ message.getClass().getCanonicalName());
@@ -107,10 +116,10 @@ public class InductiveProcess extends Process {
 		List<String> possiblyValid = new ArrayList<String>(properties);
 
 		while (!possiblyValid.isEmpty()) {
-			SolverResult result = solver.query(getInductiveQuery(k, possiblyValid));
+			Result result = solver.query(getInductiveQuery(k, possiblyValid));
 
-			if (result.getResult() == Result.SAT) {
-				Model model = result.getModel();
+			if (result instanceof SatResult) {
+				Model model = ((SatResult) result).getModel();
 				BigInteger n = getN(model);
 				BigInteger index = n.add(BigInteger.valueOf(k));
 				Iterator<String> iterator = possiblyValid.iterator();
@@ -122,10 +131,10 @@ public class InductiveProcess extends Process {
 						iterator.remove();
 					}
 				}
-			} else if (result.getResult() == Result.UNSAT) {
-				sendValid(k, possiblyValid);
+			} else if (result instanceof UnsatResult) {
 				properties.removeAll(possiblyValid);
 				addPropertiesAsInvariants(k, possiblyValid);
+				sendValid(possiblyValid, k);
 				return;
 			}
 		}
@@ -136,7 +145,7 @@ public class InductiveProcess extends Process {
 		for (String property : valid) {
 			propertiesAsInvariants.add(new Invariant(new Symbol("$" + property), property));
 		}
-		
+
 		invariants.addAll(propertiesAsInvariants);
 		assertNewInvariants(propertiesAsInvariants, k);
 	}
@@ -164,14 +173,20 @@ public class InductiveProcess extends Process {
 		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
-	private void sendValid(int k, List<String> valid) {
-		baseProcess.incoming.add(new ValidMessage(k, valid));
-		director.incoming.add(new ValidMessage(k, valid));
+	private void sendValid(List<String> valid, int k) {
+		baseProcess.incoming.add(new ValidMessage(valid, k, invariants, Status.UNREDUCED));
+		director.incoming.add(new ValidMessage(valid, k, invariants, Status.UNREDUCED));
 	}
 
 	private void sendInductiveCounterexample(String p, BigInteger n, int k, Model model) {
 		if (Settings.inductiveCounterexamples) {
 			director.incoming.add(new InductiveCounterexampleMessage(p, n, k, model));
+		}
+	}
+
+	private void sendStopMessage() {
+		if (invariantProcess != null) {
+			invariantProcess.incoming.add(new StopMessage());
 		}
 	}
 }

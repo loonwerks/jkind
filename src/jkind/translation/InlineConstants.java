@@ -12,6 +12,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
+import jkind.util.Util;
 
 public class InlineConstants {
 	public static Program program(Program program) {

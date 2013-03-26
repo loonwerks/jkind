@@ -2,7 +2,7 @@ package jkind.invariant;
 
 import java.math.BigInteger;
 
-import jkind.translation.Util;
+import jkind.util.Util;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;

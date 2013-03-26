@@ -1,10 +1,14 @@
 grammar Yices;
 
-solverResult: RESULT model? EOF;
+result: (satResult | unsatResult) EOF;
 
-RESULT: 'sat' | 'unsat';
+satResult: 'sat' model?;
+
+unsatResult: 'unsat' unsatCore?;
 
 model: (alias | variable | function | predefined)+;
+
+unsatCore: 'unsat' 'core' 'ids' ':' INT+;
 
 alias: '(' '=' ID ID ')';
 

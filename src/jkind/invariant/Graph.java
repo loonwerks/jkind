@@ -12,7 +12,7 @@ import java.util.Set;
 
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class Graph {
 	private List<Node> nodes;
@@ -68,14 +68,7 @@ public class Graph {
 	}
 
 	public Sexp toInvariant(Sexp index) {
-		List<Invariant> invariants = toInvariants(false);
-		
-		List<Sexp> sexps = new ArrayList<Sexp>();
-		for (Invariant invariant : invariants) {
-			sexps.add(invariant.sexp);
-		}
-		
-		return Util.conjoin(sexps, index);
+		return Util.conjoinInvariants(toInvariants(false), index);
 	}
 
 	public List<Invariant> toFinalInvariants() {

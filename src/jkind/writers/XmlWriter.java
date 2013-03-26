@@ -4,9 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import jkind.invariant.Invariant;
 import jkind.lustre.Type;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.solvers.BoolValue;
@@ -34,18 +36,21 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, long elapsed) {
+	public void writeValid(List<String> props, int k, long elapsed, List<Invariant> invariants) {
 		for (String prop : props) {
-			writeValid(prop, k, elapsed);
+			writeValid(prop, k, elapsed, invariants);
 		}
 	}
 
-	public void writeValid(String prop, int k, long elapsed) {
+	public void writeValid(String prop, int k, long elapsed, Collection<Invariant> invariants) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
 				+ "</Runtime>");
 		out.println("    <Answer>valid</Answer>");
 		out.println("    <K>" + k + "</K>");
+		for (Invariant invariant : invariants) {
+			out.println("    <Invariant>" + invariant + "</Invariant>");
+		}
 		out.println("  </Property>");
 	}
 

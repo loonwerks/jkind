@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
+import jkind.invariant.Invariant;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
@@ -22,10 +23,16 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, long elapsed) {
+	public void writeValid(List<String> props, int k, long elapsed, List<Invariant> invariants) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || K = " + k + " || Time = " + elapsed
 				/ 1000.0);
+		if (!invariants.isEmpty()) {
+			System.out.println("INVARIANTS:");
+			for (Invariant invariant : invariants) {
+				System.out.println("  " + invariant);
+			}
+		}
 		writeLine();
 		System.out.println();
 	}
@@ -46,7 +53,7 @@ public class ConsoleWriter extends Writer {
 			if (icm == null) {
 				continue;
 			}
-			
+
 			writeLine();
 			System.out.println("INDUCTIVE COUNTEREXAMPLE: " + prop + " || K = " + icm.k);
 			writeModel(icm.k, icm.n, icm.model);

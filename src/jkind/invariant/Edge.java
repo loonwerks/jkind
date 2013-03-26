@@ -2,7 +2,7 @@ package jkind.invariant;
 
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class Edge {
 	final public Node source;

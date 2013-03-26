@@ -1,10 +1,13 @@
 // Generated from Yices.g4 by ANTLR 4.0
-package jkind.solvers;
+package jkind.solvers.yices;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 public interface YicesListener extends ParseTreeListener {
-	void enterSolverResult(YicesParser.SolverResultContext ctx);
-	void exitSolverResult(YicesParser.SolverResultContext ctx);
+	void enterUnsatCore(YicesParser.UnsatCoreContext ctx);
+	void exitUnsatCore(YicesParser.UnsatCoreContext ctx);
+
+	void enterResult(YicesParser.ResultContext ctx);
+	void exitResult(YicesParser.ResultContext ctx);
 
 	void enterModel(YicesParser.ModelContext ctx);
 	void exitModel(YicesParser.ModelContext ctx);
@@ -21,6 +24,9 @@ public interface YicesListener extends ParseTreeListener {
 	void enterValue(YicesParser.ValueContext ctx);
 	void exitValue(YicesParser.ValueContext ctx);
 
+	void enterUnsatResult(YicesParser.UnsatResultContext ctx);
+	void exitUnsatResult(YicesParser.UnsatResultContext ctx);
+
 	void enterPredefined(YicesParser.PredefinedContext ctx);
 	void exitPredefined(YicesParser.PredefinedContext ctx);
 
@@ -29,4 +35,7 @@ public interface YicesListener extends ParseTreeListener {
 
 	void enterFunction(YicesParser.FunctionContext ctx);
 	void exitFunction(YicesParser.FunctionContext ctx);
+
+	void enterSatResult(YicesParser.SatResultContext ctx);
+	void exitSatResult(YicesParser.SatResultContext ctx);
 }

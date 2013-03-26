@@ -10,7 +10,9 @@ public abstract class Solver {
 	public abstract void stop();
 	
 	public abstract void send(Sexp sexp);
-	public abstract SolverResult query(Sexp sexp);
+	public abstract Label labelledAssert(Sexp sexp);
+	public abstract void retract(Label label);
+	public abstract Result query(Sexp sexp);
 	
 	public abstract void push();
 	public abstract void pop();

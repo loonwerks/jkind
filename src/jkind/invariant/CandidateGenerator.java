@@ -9,7 +9,7 @@ import jkind.lustre.Type;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.translation.Specification;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class CandidateGenerator {
 	private Specification spec;

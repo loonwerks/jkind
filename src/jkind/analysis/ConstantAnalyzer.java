@@ -18,7 +18,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	private Set<String> constants;

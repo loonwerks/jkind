@@ -4,18 +4,21 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.JKindException;
 import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
 import jkind.invariant.Invariant;
 import jkind.processes.messages.InvariantMessage;
+import jkind.processes.messages.Message;
+import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
-import jkind.solvers.SolverResult;
-import jkind.solvers.SolverResult.Result;
+import jkind.solvers.Result;
+import jkind.solvers.SatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
@@ -25,7 +28,6 @@ public class InvariantProcess extends Process {
 	public InvariantProcess(Specification spec) {
 		super(spec, null);
 		setScratch(spec.filename + ".yc_inv");
-		this.incoming = null;
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -40,24 +42,44 @@ public class InvariantProcess extends Process {
 
 	@Override
 	public void main() {
-		Graph graph = createGraph();
-		if (graph.isTrivial()) {
-			debug("No invariants proposed");
-			return;
-		}
-
-		for (int k = 1; k <= kMax; k++) {
-			debug("K = " + k);
-
-			refineBaseStep(k, graph);
+		try {
+			Graph graph = createGraph();
 			if (graph.isTrivial()) {
-				debug("No invariants remaining after base step");
+				debug("No invariants proposed");
 				return;
 			}
-			
-			assertInductiveTransition(k);
-			sendInvariant(refineInductiveStep(k, graph));
+
+			for (int k = 1; k <= kMax; k++) {
+				debug("K = " + k);
+
+				refineBaseStep(k, graph);
+				if (graph.isTrivial()) {
+					debug("No invariants remaining after base step");
+					return;
+				}
+
+				assertInductiveTransition(k);
+				sendInvariant(refineInductiveStep(k, graph));
+			}
+		} catch (StopException se) {
 		}
+	}
+
+	private class StopException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+	};
+
+	private boolean checkForStopMessage() {
+		while (!incoming.isEmpty()) {
+			Message message = incoming.poll();
+			if (message instanceof StopMessage) {
+				throw new StopException();
+			} else {
+				throw new JKindException("Unknown message type in inductive process: "
+						+ message.getClass().getCanonicalName());
+			}
+		}
+		return false;
 	}
 
 	private Graph createGraph() {
@@ -77,21 +99,23 @@ public class InvariantProcess extends Process {
 
 	private void refineBaseStep(int k, Graph graph) {
 		solver.push();
-		SolverResult result;
-		
+		Result result;
+
 		for (int i = 0; i < k; i++) {
 			assertBaseTransition(i);
 		}
 
 		do {
+			checkForStopMessage();
 			result = solver.query(graph.toInvariant(Sexp.fromInt(k - 1)));
 
-			if (result.getResult() == Result.SAT) {
-				graph.refine(result.getModel(), BigInteger.valueOf(k - 1));
+			if (result instanceof SatResult) {
+				Model model = ((SatResult) result).getModel();
+				graph.refine(model, BigInteger.valueOf(k - 1));
 				debug("Base step refinement, graph size = " + graph.size());
 			}
-		} while (!graph.isTrivial() && result.getResult() == Result.SAT);
-		
+		} while (!graph.isTrivial() && result instanceof SatResult);
+
 		solver.pop();
 	}
 
@@ -102,23 +126,24 @@ public class InvariantProcess extends Process {
 	private Graph refineInductiveStep(int k, Graph original) {
 		solver.push();
 		Graph graph = new Graph(original);
-		SolverResult result;
-		
+		Result result;
+
 		for (int i = 0; i <= k; i++) {
 			assertInductiveTransition(i);
 		}
-		
+
 		do {
+			checkForStopMessage();
 			result = solver.query(getInductiveQuery(k, graph));
 
-			if (result.getResult() == Result.SAT) {
-				Model model = result.getModel();
+			if (result instanceof SatResult) {
+				Model model = ((SatResult) result).getModel();
 				BigInteger index = getN(model).add(BigInteger.valueOf(k));
 				graph.refine(model, index);
 				debug("Inductive step refinement, graph size = " + graph.size());
 			}
-		} while (!graph.isTrivial() && result.getResult() != Result.UNSAT);
-		
+		} while (!graph.isTrivial() && result instanceof SatResult);
+
 		solver.pop();
 		return graph;
 	}

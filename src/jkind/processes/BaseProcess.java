@@ -15,11 +15,11 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
-import jkind.solvers.SolverResult;
-import jkind.solvers.SolverResult.Result;
+import jkind.solvers.Result;
+import jkind.solvers.SatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
@@ -65,12 +65,12 @@ public class BaseProcess extends Process {
 	}
 
 	private void checkProperties(int k) {
-		SolverResult result;
+		Result result;
 		do {
 			result = solver.query(Util.conjoinStreams(properties, Sexp.fromInt(k - 1)));
 
-			if (result.getResult() == Result.SAT) {
-				Model model = result.getModel();
+			if (result instanceof SatResult) {
+				Model model = ((SatResult) result).getModel();
 				BigInteger index = BigInteger.valueOf(k - 1);
 				List<String> invalid = new ArrayList<String>();
 				Iterator<String> iterator = properties.iterator();
@@ -84,7 +84,7 @@ public class BaseProcess extends Process {
 				}
 				sendInvalid(invalid, k, model);
 			}
-		} while (!properties.isEmpty() && result.getResult() == Result.SAT);
+		} while (!properties.isEmpty() && result instanceof SatResult);
 
 		sendBaseStep(k);
 	}

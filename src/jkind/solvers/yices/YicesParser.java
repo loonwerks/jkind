@@ -1,5 +1,5 @@
 // Generated from Yices.g4 by ANTLR 4.0
-package jkind.solvers;
+package jkind.solvers.yices;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -15,19 +15,19 @@ public class YicesParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__4=1, T__3=2, T__2=3, T__1=4, T__0=5, RESULT=6, PREDEFINED_OP=7, BOOL=8, 
-		INT=9, ID=10, WS=11, ERROR=12;
+		T__9=1, T__8=2, T__7=3, T__6=4, T__5=5, T__4=6, T__3=7, T__2=8, T__1=9, 
+		T__0=10, PREDEFINED_OP=11, BOOL=12, INT=13, ID=14, WS=15, ERROR=16;
 	public static final String[] tokenNames = {
-		"<INVALID>", "')'", "'-'", "'('", "'/'", "'='", "RESULT", "PREDEFINED_OP", 
-		"BOOL", "INT", "ID", "WS", "ERROR"
+		"<INVALID>", "'sat'", "'ids'", "')'", "'-'", "':'", "'('", "'core'", "'/'", 
+		"'='", "'unsat'", "PREDEFINED_OP", "BOOL", "INT", "ID", "WS", "ERROR"
 	};
 	public static final int
-		RULE_solverResult = 0, RULE_model = 1, RULE_alias = 2, RULE_variable = 3, 
-		RULE_function = 4, RULE_predefined = 5, RULE_value = 6, RULE_integer = 7, 
-		RULE_numeric = 8;
+		RULE_result = 0, RULE_satResult = 1, RULE_unsatResult = 2, RULE_model = 3, 
+		RULE_unsatCore = 4, RULE_alias = 5, RULE_variable = 6, RULE_function = 7, 
+		RULE_predefined = 8, RULE_value = 9, RULE_integer = 10, RULE_numeric = 11;
 	public static final String[] ruleNames = {
-		"solverResult", "model", "alias", "variable", "function", "predefined", 
-		"value", "integer", "numeric"
+		"result", "satResult", "unsatResult", "model", "unsatCore", "alias", "variable", 
+		"function", "predefined", "value", "integer", "numeric"
 	};
 
 	@Override
@@ -46,43 +46,144 @@ public class YicesParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
-	public static class SolverResultContext extends ParserRuleContext {
-		public ModelContext model() {
-			return getRuleContext(ModelContext.class,0);
-		}
-		public TerminalNode RESULT() { return getToken(YicesParser.RESULT, 0); }
+	public static class ResultContext extends ParserRuleContext {
 		public TerminalNode EOF() { return getToken(YicesParser.EOF, 0); }
-		public SolverResultContext(ParserRuleContext parent, int invokingState) {
+		public UnsatResultContext unsatResult() {
+			return getRuleContext(UnsatResultContext.class,0);
+		}
+		public SatResultContext satResult() {
+			return getRuleContext(SatResultContext.class,0);
+		}
+		public ResultContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_solverResult; }
+		@Override public int getRuleIndex() { return RULE_result; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof YicesListener ) ((YicesListener)listener).enterSolverResult(this);
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).enterResult(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof YicesListener ) ((YicesListener)listener).exitSolverResult(this);
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).exitResult(this);
 		}
 	}
 
-	public final SolverResultContext solverResult() throws RecognitionException {
-		SolverResultContext _localctx = new SolverResultContext(_ctx, getState());
-		enterRule(_localctx, 0, RULE_solverResult);
+	public final ResultContext result() throws RecognitionException {
+		ResultContext _localctx = new ResultContext(_ctx, getState());
+		enterRule(_localctx, 0, RULE_result);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(26);
+			switch (_input.LA(1)) {
+			case 1:
+				{
+				setState(24); satResult();
+				}
+				break;
+			case 10:
+				{
+				setState(25); unsatResult();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+			setState(28); match(EOF);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class SatResultContext extends ParserRuleContext {
+		public ModelContext model() {
+			return getRuleContext(ModelContext.class,0);
+		}
+		public SatResultContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_satResult; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).enterSatResult(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).exitSatResult(this);
+		}
+	}
+
+	public final SatResultContext satResult() throws RecognitionException {
+		SatResultContext _localctx = new SatResultContext(_ctx, getState());
+		enterRule(_localctx, 2, RULE_satResult);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(18); match(RESULT);
-			setState(20);
+			setState(30); match(1);
+			setState(32);
 			_la = _input.LA(1);
-			if (_la==3) {
+			if (_la==6) {
 				{
-				setState(19); model();
+				setState(31); model();
 				}
 			}
 
-			setState(22); match(EOF);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class UnsatResultContext extends ParserRuleContext {
+		public UnsatCoreContext unsatCore() {
+			return getRuleContext(UnsatCoreContext.class,0);
+		}
+		public UnsatResultContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_unsatResult; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).enterUnsatResult(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).exitUnsatResult(this);
+		}
+	}
+
+	public final UnsatResultContext unsatResult() throws RecognitionException {
+		UnsatResultContext _localctx = new UnsatResultContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_unsatResult);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(34); match(10);
+			setState(36);
+			_la = _input.LA(1);
+			if (_la==10) {
+				{
+				setState(35); unsatCore();
+				}
+			}
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -137,47 +238,103 @@ public class YicesParser extends Parser {
 
 	public final ModelContext model() throws RecognitionException {
 		ModelContext _localctx = new ModelContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_model);
+		enterRule(_localctx, 6, RULE_model);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(28); 
+			setState(42); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
-				setState(28);
-				switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+				setState(42);
+				switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 				case 1:
 					{
-					setState(24); alias();
+					setState(38); alias();
 					}
 					break;
 
 				case 2:
 					{
-					setState(25); variable();
+					setState(39); variable();
 					}
 					break;
 
 				case 3:
 					{
-					setState(26); function();
+					setState(40); function();
 					}
 					break;
 
 				case 4:
 					{
-					setState(27); predefined();
+					setState(41); predefined();
 					}
 					break;
 				}
 				}
-				setState(30); 
+				setState(44); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( _la==3 );
+			} while ( _la==6 );
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class UnsatCoreContext extends ParserRuleContext {
+		public List<TerminalNode> INT() { return getTokens(YicesParser.INT); }
+		public TerminalNode INT(int i) {
+			return getToken(YicesParser.INT, i);
+		}
+		public UnsatCoreContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_unsatCore; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).enterUnsatCore(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof YicesListener ) ((YicesListener)listener).exitUnsatCore(this);
+		}
+	}
+
+	public final UnsatCoreContext unsatCore() throws RecognitionException {
+		UnsatCoreContext _localctx = new UnsatCoreContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_unsatCore);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(46); match(10);
+			setState(47); match(7);
+			setState(48); match(2);
+			setState(49); match(5);
+			setState(51); 
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			do {
+				{
+				{
+				setState(50); match(INT);
+				}
+				}
+				setState(53); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			} while ( _la==INT );
 			}
 		}
 		catch (RecognitionException re) {
@@ -212,15 +369,15 @@ public class YicesParser extends Parser {
 
 	public final AliasContext alias() throws RecognitionException {
 		AliasContext _localctx = new AliasContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_alias);
+		enterRule(_localctx, 10, RULE_alias);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(32); match(3);
-			setState(33); match(5);
-			setState(34); match(ID);
-			setState(35); match(ID);
-			setState(36); match(1);
+			setState(55); match(6);
+			setState(56); match(9);
+			setState(57); match(ID);
+			setState(58); match(ID);
+			setState(59); match(3);
 			}
 		}
 		catch (RecognitionException re) {
@@ -255,15 +412,15 @@ public class YicesParser extends Parser {
 
 	public final VariableContext variable() throws RecognitionException {
 		VariableContext _localctx = new VariableContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_variable);
+		enterRule(_localctx, 12, RULE_variable);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(38); match(3);
-			setState(39); match(5);
-			setState(40); match(ID);
-			setState(41); value();
-			setState(42); match(1);
+			setState(61); match(6);
+			setState(62); match(9);
+			setState(63); match(ID);
+			setState(64); value();
+			setState(65); match(3);
 			}
 		}
 		catch (RecognitionException re) {
@@ -301,18 +458,18 @@ public class YicesParser extends Parser {
 
 	public final FunctionContext function() throws RecognitionException {
 		FunctionContext _localctx = new FunctionContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_function);
+		enterRule(_localctx, 14, RULE_function);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(44); match(3);
-			setState(45); match(5);
-			setState(46); match(3);
-			setState(47); match(ID);
-			setState(48); integer();
-			setState(49); match(1);
-			setState(50); value();
-			setState(51); match(1);
+			setState(67); match(6);
+			setState(68); match(9);
+			setState(69); match(6);
+			setState(70); match(ID);
+			setState(71); integer();
+			setState(72); match(3);
+			setState(73); value();
+			setState(74); match(3);
 			}
 		}
 		catch (RecognitionException re) {
@@ -350,19 +507,19 @@ public class YicesParser extends Parser {
 
 	public final PredefinedContext predefined() throws RecognitionException {
 		PredefinedContext _localctx = new PredefinedContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_predefined);
+		enterRule(_localctx, 16, RULE_predefined);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(53); match(3);
-			setState(54); match(5);
-			setState(55); match(3);
-			setState(56); match(PREDEFINED_OP);
-			setState(57); integer();
-			setState(58); integer();
-			setState(59); match(1);
-			setState(60); integer();
-			setState(61); match(1);
+			setState(76); match(6);
+			setState(77); match(9);
+			setState(78); match(6);
+			setState(79); match(PREDEFINED_OP);
+			setState(80); integer();
+			setState(81); integer();
+			setState(82); match(3);
+			setState(83); integer();
+			setState(84); match(3);
 			}
 		}
 		catch (RecognitionException re) {
@@ -397,21 +554,21 @@ public class YicesParser extends Parser {
 
 	public final ValueContext value() throws RecognitionException {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_value);
+		enterRule(_localctx, 18, RULE_value);
 		try {
-			setState(65);
+			setState(88);
 			switch (_input.LA(1)) {
 			case BOOL:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(63); match(BOOL);
+				setState(86); match(BOOL);
 				}
 				break;
-			case 2:
+			case 4:
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(64); numeric();
+				setState(87); numeric();
 				}
 				break;
 			default:
@@ -447,20 +604,20 @@ public class YicesParser extends Parser {
 
 	public final IntegerContext integer() throws RecognitionException {
 		IntegerContext _localctx = new IntegerContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_integer);
+		enterRule(_localctx, 20, RULE_integer);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(68);
+			setState(91);
 			_la = _input.LA(1);
-			if (_la==2) {
+			if (_la==4) {
 				{
-				setState(67); match(2);
+				setState(90); match(4);
 				}
 			}
 
-			setState(70); match(INT);
+			setState(93); match(INT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -495,26 +652,26 @@ public class YicesParser extends Parser {
 
 	public final NumericContext numeric() throws RecognitionException {
 		NumericContext _localctx = new NumericContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_numeric);
+		enterRule(_localctx, 22, RULE_numeric);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(73);
-			_la = _input.LA(1);
-			if (_la==2) {
-				{
-				setState(72); match(2);
-				}
-			}
-
-			setState(75); match(INT);
-			setState(78);
+			setState(96);
 			_la = _input.LA(1);
 			if (_la==4) {
 				{
-				setState(76); match(4);
-				setState(77); match(INT);
+				setState(95); match(4);
+				}
+			}
+
+			setState(98); match(INT);
+			setState(101);
+			_la = _input.LA(1);
+			if (_la==8) {
+				{
+				setState(99); match(8);
+				setState(100); match(INT);
 				}
 			}
 
@@ -532,26 +689,31 @@ public class YicesParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\2\3\16S\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t"+
-		"\t\4\n\t\n\3\2\3\2\5\2\27\n\2\3\2\3\2\3\3\3\3\3\3\3\3\6\3\37\n\3\r\3\16"+
-		"\3 \3\4\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3"+
-		"\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\5\b"+
-		"D\n\b\3\t\5\tG\n\t\3\t\3\t\3\n\5\nL\n\n\3\n\3\n\3\n\5\nQ\n\n\3\n\2\13"+
-		"\2\4\6\b\n\f\16\20\22\2\2R\2\24\3\2\2\2\4\36\3\2\2\2\6\"\3\2\2\2\b(\3"+
-		"\2\2\2\n.\3\2\2\2\f\67\3\2\2\2\16C\3\2\2\2\20F\3\2\2\2\22K\3\2\2\2\24"+
-		"\26\7\b\2\2\25\27\5\4\3\2\26\25\3\2\2\2\26\27\3\2\2\2\27\30\3\2\2\2\30"+
-		"\31\7\1\2\2\31\3\3\2\2\2\32\37\5\6\4\2\33\37\5\b\5\2\34\37\5\n\6\2\35"+
-		"\37\5\f\7\2\36\32\3\2\2\2\36\33\3\2\2\2\36\34\3\2\2\2\36\35\3\2\2\2\37"+
-		" \3\2\2\2 \36\3\2\2\2 !\3\2\2\2!\5\3\2\2\2\"#\7\5\2\2#$\7\7\2\2$%\7\f"+
-		"\2\2%&\7\f\2\2&\'\7\3\2\2\'\7\3\2\2\2()\7\5\2\2)*\7\7\2\2*+\7\f\2\2+,"+
-		"\5\16\b\2,-\7\3\2\2-\t\3\2\2\2./\7\5\2\2/\60\7\7\2\2\60\61\7\5\2\2\61"+
-		"\62\7\f\2\2\62\63\5\20\t\2\63\64\7\3\2\2\64\65\5\16\b\2\65\66\7\3\2\2"+
-		"\66\13\3\2\2\2\678\7\5\2\289\7\7\2\29:\7\5\2\2:;\7\t\2\2;<\5\20\t\2<="+
-		"\5\20\t\2=>\7\3\2\2>?\5\20\t\2?@\7\3\2\2@\r\3\2\2\2AD\7\n\2\2BD\5\22\n"+
-		"\2CA\3\2\2\2CB\3\2\2\2D\17\3\2\2\2EG\7\4\2\2FE\3\2\2\2FG\3\2\2\2GH\3\2"+
-		"\2\2HI\7\13\2\2I\21\3\2\2\2JL\7\4\2\2KJ\3\2\2\2KL\3\2\2\2LM\3\2\2\2MP"+
-		"\7\13\2\2NO\7\6\2\2OQ\7\13\2\2PN\3\2\2\2PQ\3\2\2\2Q\23\3\2\2\2\t\26\36"+
-		" CFKP";
+		"\2\3\22j\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t"+
+		"\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\3\2\3\2\5\2\35\n\2\3\2\3\2\3\3\3"+
+		"\3\5\3#\n\3\3\4\3\4\5\4\'\n\4\3\5\3\5\3\5\3\5\6\5-\n\5\r\5\16\5.\3\6\3"+
+		"\6\3\6\3\6\3\6\6\6\66\n\6\r\6\16\6\67\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b"+
+		"\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3"+
+		"\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\5\13[\n\13\3\f\5\f^\n\f\3\f\3\f\3\r\5"+
+		"\rc\n\r\3\r\3\r\3\r\5\rh\n\r\3\r\2\16\2\4\6\b\n\f\16\20\22\24\26\30\2"+
+		"\2i\2\34\3\2\2\2\4 \3\2\2\2\6$\3\2\2\2\b,\3\2\2\2\n\60\3\2\2\2\f9\3\2"+
+		"\2\2\16?\3\2\2\2\20E\3\2\2\2\22N\3\2\2\2\24Z\3\2\2\2\26]\3\2\2\2\30b\3"+
+		"\2\2\2\32\35\5\4\3\2\33\35\5\6\4\2\34\32\3\2\2\2\34\33\3\2\2\2\35\36\3"+
+		"\2\2\2\36\37\7\1\2\2\37\3\3\2\2\2 \"\7\3\2\2!#\5\b\5\2\"!\3\2\2\2\"#\3"+
+		"\2\2\2#\5\3\2\2\2$&\7\f\2\2%\'\5\n\6\2&%\3\2\2\2&\'\3\2\2\2\'\7\3\2\2"+
+		"\2(-\5\f\7\2)-\5\16\b\2*-\5\20\t\2+-\5\22\n\2,(\3\2\2\2,)\3\2\2\2,*\3"+
+		"\2\2\2,+\3\2\2\2-.\3\2\2\2.,\3\2\2\2./\3\2\2\2/\t\3\2\2\2\60\61\7\f\2"+
+		"\2\61\62\7\t\2\2\62\63\7\4\2\2\63\65\7\7\2\2\64\66\7\17\2\2\65\64\3\2"+
+		"\2\2\66\67\3\2\2\2\67\65\3\2\2\2\678\3\2\2\28\13\3\2\2\29:\7\b\2\2:;\7"+
+		"\13\2\2;<\7\20\2\2<=\7\20\2\2=>\7\5\2\2>\r\3\2\2\2?@\7\b\2\2@A\7\13\2"+
+		"\2AB\7\20\2\2BC\5\24\13\2CD\7\5\2\2D\17\3\2\2\2EF\7\b\2\2FG\7\13\2\2G"+
+		"H\7\b\2\2HI\7\20\2\2IJ\5\26\f\2JK\7\5\2\2KL\5\24\13\2LM\7\5\2\2M\21\3"+
+		"\2\2\2NO\7\b\2\2OP\7\13\2\2PQ\7\b\2\2QR\7\r\2\2RS\5\26\f\2ST\5\26\f\2"+
+		"TU\7\5\2\2UV\5\26\f\2VW\7\5\2\2W\23\3\2\2\2X[\7\16\2\2Y[\5\30\r\2ZX\3"+
+		"\2\2\2ZY\3\2\2\2[\25\3\2\2\2\\^\7\6\2\2]\\\3\2\2\2]^\3\2\2\2^_\3\2\2\2"+
+		"_`\7\17\2\2`\27\3\2\2\2ac\7\6\2\2ba\3\2\2\2bc\3\2\2\2cd\3\2\2\2dg\7\17"+
+		"\2\2ef\7\n\2\2fh\7\17\2\2ge\3\2\2\2gh\3\2\2\2h\31\3\2\2\2\f\34\"&,.\67"+
+		"Z]bg";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

@@ -19,7 +19,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
 	private Map<String, Value> constants;

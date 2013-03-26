@@ -24,7 +24,7 @@ import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
-import jkind.translation.Util;
+import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
 	private Map<String, Type> typeTable;

@@ -16,6 +16,7 @@ import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
+import jkind.util.Util;
 
 public class InlineNodeCalls extends MapVisitor {
 	public static Node program(Program program) {
