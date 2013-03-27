@@ -28,7 +28,7 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class Main {
-	final public static String VERSION = "1.1";
+	final public static String VERSION = "1.2";
 
 	public static void main(String args[]) throws IOException, RecognitionException,
 			InterruptedException {
