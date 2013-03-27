@@ -35,7 +35,7 @@ public class InductiveProcess extends Process {
 	private InvariantProcess invariantProcess;
 
 	public InductiveProcess(Specification spec, Director director) {
-		super(spec, director);
+		super("Inductive", spec, director);
 		setScratch(spec.filename + ".yc_induct");
 	}
 

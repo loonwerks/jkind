@@ -37,12 +37,8 @@ public class Director {
 	private InvariantProcess invariantProcess;
 	private ReduceProcess reduceProcess;
 	private SmoothProcess smoothProcess;
-
-	private Thread baseThread;
-	private Thread inductiveThread;
-	private Thread invariantThread;
-	private Thread reduceThread;
-	private Thread smoothThread;
+	private List<Process> processes = new ArrayList<Process>();
+	private List<Thread> threads = new ArrayList<Thread>();
 
 	protected BlockingQueue<Message> incoming;
 	private long startTime;
@@ -78,7 +74,7 @@ public class Director {
 		startTime = System.currentTimeMillis();
 		long timeout = startTime + Settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
-				&& someCriticalThreadAlive() && !someThreadFailed()) {
+				&& someThreadAlive() && !someProcessFailed()) {
 			processMessages();
 			try {
 				Thread.sleep(100);
@@ -97,50 +93,33 @@ public class Director {
 		reportFailures();
 	}
 
-	private boolean someCriticalThreadAlive() {
-		boolean result = baseThread.isAlive();
-		if (inductiveThread != null) {
-			result = result || inductiveThread.isAlive();
+	private boolean someThreadAlive() {
+		for (Thread thread : threads) {
+			if (thread.isAlive()) {
+				return true;
+			}
 		}
-		if (reduceThread != null) {
-			result = result || reduceThread.isAlive();
-		}
-		if (smoothThread != null) {
-			result = result || smoothThread.isAlive();
-		}
-		return result;
+		
+		return false;
 	}
 
-	private boolean someThreadFailed() {
-		boolean result = baseProcess.getThrowable() != null;
-		if (inductiveThread != null) {
-			result = result || inductiveProcess.getThrowable() != null;
+	private boolean someProcessFailed() {
+		for (Process process : processes) {
+			if (process.getThrowable() != null) {
+				return true;
+			}
 		}
-		if (invariantThread != null) {
-			result = result || invariantProcess.getThrowable() != null;
-		}
-		if (reduceThread != null) {
-			result = result || reduceProcess.getThrowable() != null;
-		}
-		if (smoothThread != null) {
-			result = result || smoothProcess.getThrowable() != null;
-		}
-		return result;
+		
+		return false;
 	}
 
 	private void reportFailures() {
-		reportFailure(baseThread, baseProcess, "Base process failed");
-		reportFailure(inductiveThread, inductiveProcess, "Inductive process failed");
-		reportFailure(invariantThread, invariantProcess, "Invariant process failed");
-		reportFailure(reduceThread, reduceProcess, "Reduction process failed");
-		reportFailure(smoothThread, smoothProcess, "Smoothing process failed");
-	}
-
-	private void reportFailure(Thread thread, Process process, String message) {
-		if (thread != null && process.getThrowable() != null) {
-			Throwable t = process.getThrowable();
-			System.out.println(message);
-			t.printStackTrace(System.out);
+		for (Process process : processes) {
+			if (process.getThrowable() != null) {
+				Throwable t = process.getThrowable();
+				System.out.println(process.getName() + " process failed");
+				t.printStackTrace(System.out);
+			}
 		}
 	}
 
@@ -157,45 +136,40 @@ public class Director {
 
 	private void startThreads() {
 		baseProcess = new BaseProcess(spec, this);
-		baseThread = new Thread(baseProcess, "base");
+		registerProcess(baseProcess);
 
 		if (Settings.useInductiveProcess) {
 			inductiveProcess = new InductiveProcess(spec, this);
 			baseProcess.setInductiveProcess(inductiveProcess);
 			inductiveProcess.setBaseProcess(baseProcess);
-			inductiveThread = new Thread(inductiveProcess, "inductive");
+			registerProcess(inductiveProcess);
 		}
 
 		if (Settings.useInvariantProcess) {
 			invariantProcess = new InvariantProcess(spec);
 			invariantProcess.setInductiveProcess(inductiveProcess);
 			inductiveProcess.setInvariantProcess(invariantProcess);
-			invariantThread = new Thread(invariantProcess, "invariant");
+			registerProcess(invariantProcess);
 		}
 
 		if (Settings.reduceInvariants) {
 			reduceProcess = new ReduceProcess(spec, this);
-			reduceThread = new Thread(reduceProcess, "reduce");
+			registerProcess(reduceProcess);
 		}
 
 		if (Settings.smoothCounterexamples) {
 			smoothProcess = new SmoothProcess(spec, this);
-			smoothThread = new Thread(smoothProcess, "smooth");
+			registerProcess(smoothProcess);
 		}
 
-		baseThread.start();
-		if (inductiveThread != null) {
-			inductiveThread.start();
+		for (Thread thread : threads) {
+			thread.start();
 		}
-		if (invariantThread != null) {
-			invariantThread.start();
-		}
-		if (reduceThread != null) {
-			reduceThread.start();
-		}
-		if (smoothThread != null) {
-			smoothThread.start();
-		}
+	}
+
+	private void registerProcess(Process process) {
+		processes.add(process);
+		threads.add(new Thread(process, process.getName()));
 	}
 
 	private void processMessages() {

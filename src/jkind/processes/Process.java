@@ -24,10 +24,12 @@ public abstract class Process implements Runnable {
 	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<Message>();
 	protected int kMax = Settings.n;
 	
+	private String name;
 	private PrintWriter scratch;
 	private Throwable throwable;
 	
-	public Process(Specification spec, Director director) {
+	public Process(String name, Specification spec, Director director) {
+		this.name = name;
 		this.spec = spec;
 		this.director = director;
 		this.properties = new ArrayList<String>(spec.node.properties);
@@ -84,5 +86,9 @@ public abstract class Process implements Runnable {
 			scratch.print("; ");
 			scratch.println(str);
 		}
+	}
+	
+	public String getName() {
+		return name;
 	}
 }

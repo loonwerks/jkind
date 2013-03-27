@@ -26,7 +26,7 @@ public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
 
 	public InvariantProcess(Specification spec) {
-		super(spec, null);
+		super("Invariant", spec, null);
 		setScratch(spec.filename + ".yc_inv");
 	}
 

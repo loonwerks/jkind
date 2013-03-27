@@ -25,7 +25,7 @@ public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
 
 	public BaseProcess(Specification spec, Director director) {
-		super(spec, director);
+		super("Base", spec, director);
 		setScratch(spec.filename + ".yc_base");
 	}
 

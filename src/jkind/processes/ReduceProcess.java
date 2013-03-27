@@ -26,7 +26,7 @@ import jkind.util.Util;
 
 public class ReduceProcess extends Process {
 	public ReduceProcess(Specification spec, Director director) {
-		super(spec, director);
+		super("Reduction", spec, director);
 		setScratch(spec.filename + ".yc_reduce");
 	}
 
