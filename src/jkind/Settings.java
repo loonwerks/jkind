@@ -9,4 +9,5 @@ public class Settings {
 	public static boolean useInvariantProcess = true;
 	public static boolean inductiveCounterexamples = false;
 	public static boolean reduceInvariants = false;
+	public static boolean smoothCounterexamples = false;
 }

@@ -90,7 +90,7 @@ public class BaseProcess extends Process {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		director.incoming.add(new CounterexampleMessage(invalid, k, model));
+		director.incoming.add(new CounterexampleMessage(invalid, k, model, false));
 
 		if (inductiveProcess != null) {
 			inductiveProcess.incoming.add(new InvalidMessage(invalid));

@@ -13,6 +13,7 @@ public class ArgumentParser {
 	final private static String NO_INV_GEN = "no_inv_gen";
 	final private static String REDUCE_INV = "reduce_inv";
 	final private static String SCRATCH = "scratch";
+	final private static String SMOOTH = "smooth";
 	final private static String TIMEOUT = "timeout";
 	final private static String XML = "xml";
 	final private static String VERSION = "version";
@@ -26,6 +27,7 @@ public class ArgumentParser {
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
+		options.addOption(SMOOTH, false, "smooth counterexamples (minimum changes in values)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(VERSION, false, "display version information");
@@ -94,6 +96,10 @@ public class ArgumentParser {
 		
 		if (line.hasOption(SCRATCH)) {
 			Settings.scratch = true;
+		}
+		
+		if (line.hasOption(SMOOTH))	 {
+			Settings.smoothCounterexamples = true;
 		}
 		
 		if (line.hasOption(XML)) {

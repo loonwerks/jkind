@@ -90,6 +90,13 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
+	public Label weightedAssert(Sexp sexp, int weight) {
+		debug("; id = " + labelCount);
+		send(new Cons("assert+", sexp, Sexp.fromInt(weight)));
+		return new IntLabel(labelCount++);
+	}
+
+	@Override
 	public Result query(Sexp sexp) {
 		/**
 		 * Using assert+ and retract seems to be much more efficient than push
@@ -112,6 +119,20 @@ public class YicesSolver extends Solver {
 			} else {
 				throw new JKindException("Unsat result did not depend on query");
 			}
+		}
+		return result;
+	}
+
+	@Override
+	public Result maxsatQuery(Sexp sexp) {
+		Label label = labelledAssert(new Cons("not", sexp));
+		send("(max-sat)");
+		send("(echo \"" + DONE + "\\n\")");
+		retract(label);
+
+		Result result = readResult();
+		if (result == null) {
+			throw new JKindException("Unknown result from yices");
 		}
 		return result;
 	}

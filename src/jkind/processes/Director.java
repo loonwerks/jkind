@@ -37,11 +37,13 @@ public class Director {
 	private InductiveProcess inductiveProcess;
 	private InvariantProcess invariantProcess;
 	private ReduceProcess reduceProcess;
+	private SmoothProcess smoothProcess;
 
 	private Thread baseThread;
 	private Thread inductiveThread;
 	private Thread invariantThread;
 	private Thread reduceThread;
+	private Thread smoothThread;
 
 	protected BlockingQueue<Message> incoming;
 	private long startTime;
@@ -104,6 +106,9 @@ public class Director {
 		if (reduceThread != null) {
 			result = result || reduceThread.isAlive();
 		}
+		if (smoothThread != null) {
+			result = result || smoothThread.isAlive();
+		}
 		return result;
 	}
 
@@ -118,6 +123,9 @@ public class Director {
 		if (reduceThread != null) {
 			result = result || reduceProcess.getThrowable() != null;
 		}
+		if (smoothThread != null) {
+			result = result || smoothProcess.getThrowable() != null;
+		}
 		return result;
 	}
 
@@ -126,6 +134,7 @@ public class Director {
 		reportFailure(inductiveThread, inductiveProcess, "Inductive process failed");
 		reportFailure(invariantThread, invariantProcess, "Invariant process failed");
 		reportFailure(reduceThread, reduceProcess, "Reduction process failed");
+		reportFailure(smoothThread, smoothProcess, "Smoothing process failed");
 	}
 
 	private void reportFailure(Thread thread, Process process, String message) {
@@ -170,6 +179,11 @@ public class Director {
 			reduceThread = new Thread(reduceProcess, "reduce");
 		}
 
+		if (Settings.smoothCounterexamples) {
+			smoothProcess = new SmoothProcess(spec, this);
+			smoothThread = new Thread(smoothProcess, "smooth");
+		}
+
 		baseThread.start();
 		if (inductiveThread != null) {
 			inductiveThread.start();
@@ -179,6 +193,9 @@ public class Director {
 		}
 		if (reduceThread != null) {
 			reduceThread.start();
+		}
+		if (smoothThread != null) {
+			smoothThread.start();
 		}
 	}
 
@@ -202,12 +219,16 @@ public class Director {
 				}
 			} else if (message instanceof CounterexampleMessage) {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
-				remainingProperties.removeAll(cex.invalid);
-				invalidProperties.addAll(cex.invalid);
-				inductiveCounterexamples.keySet().removeAll(cex.invalid);
-				for (String invalidProp : cex.invalid) {
-					Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
-					writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
+				if (smoothProcess != null && !cex.smooth) {
+					smoothProcess.incoming.add(message);
+				} else {
+					remainingProperties.removeAll(cex.invalid);
+					invalidProperties.addAll(cex.invalid);
+					inductiveCounterexamples.keySet().removeAll(cex.invalid);
+					for (String invalidProp : cex.invalid) {
+						Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
+						writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
+					}
 				}
 			} else if (message instanceof InductiveCounterexampleMessage) {
 				InductiveCounterexampleMessage icm = (InductiveCounterexampleMessage) message;

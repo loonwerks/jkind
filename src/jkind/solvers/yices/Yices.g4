@@ -2,11 +2,15 @@ grammar Yices;
 
 result: (satResult | unsatResult) EOF;
 
-satResult: 'sat' model?;
+satResult: 'sat' unsatAssertions? model? cost?;
 
 unsatResult: 'unsat' unsatCore?;
 
 model: (alias | variable | function | predefined)+;
+
+unsatAssertions: 'unsatisfied' 'assertion' 'ids' ':' INT+; 
+
+cost: 'cost' ':' INT;
 
 unsatCore: 'unsat' 'core' 'ids' ':' INT+;
 
