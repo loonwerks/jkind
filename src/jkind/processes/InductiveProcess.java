@@ -58,7 +58,7 @@ public class InductiveProcess extends Process {
 				break;
 			}
 		}
-		sendStopMessage();
+		sendStop();
 	}
 
 	protected void initializeSolver() {
@@ -183,7 +183,7 @@ public class InductiveProcess extends Process {
 		}
 	}
 
-	private void sendStopMessage() {
+	private void sendStop() {
 		if (invariantProcess != null) {
 			invariantProcess.incoming.add(new StopMessage());
 		}
