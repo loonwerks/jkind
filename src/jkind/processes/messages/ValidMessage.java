@@ -8,16 +8,16 @@ public class ValidMessage extends Message {
 	final public List<String> valid;
 	final public int k;
 	final public List<Invariant> invariants;
-	final public Status status;
+	final public boolean reduced;
 
-	public ValidMessage(List<String> valid, int k, List<Invariant> invariants, Status status) {
+	public ValidMessage(List<String> valid, int k, List<Invariant> invariants, boolean reduced) {
 		this.valid = valid;
 		this.k = k;
 		this.invariants = invariants;
-		this.status = status;
+		this.reduced = reduced;
 	}
 	
-	public static enum Status {
-		REDUCED, UNREDUCED;
+	public ValidMessage(List<String> valid, int k, List<Invariant> invariants) {
+		this(valid, k, invariants, false);
 	}
 }

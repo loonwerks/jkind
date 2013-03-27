@@ -16,4 +16,8 @@ public class CounterexampleMessage extends Message {
 		this.model = model;
 		this.smooth = smooth;
 	}
+	
+	public CounterexampleMessage(List<String> invalid, int k, Model model) {
+		this(invalid, k, model, false);
+	}
 }

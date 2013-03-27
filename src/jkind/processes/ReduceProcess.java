@@ -12,7 +12,6 @@ import jkind.JKindException;
 import jkind.invariant.Invariant;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
-import jkind.processes.messages.ValidMessage.Status;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -185,6 +184,6 @@ public class ReduceProcess extends Process {
 		}
 
 		List<String> validList = Collections.singletonList(valid);
-		director.incoming.add(new ValidMessage(validList, k, reduced, Status.REDUCED));
+		director.incoming.add(new ValidMessage(validList, k, reduced, true));
 	}
 }

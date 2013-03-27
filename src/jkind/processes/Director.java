@@ -16,7 +16,6 @@ import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
-import jkind.processes.messages.ValidMessage.Status;
 import jkind.slicing.CounterexampleSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
@@ -205,7 +204,7 @@ public class Director {
 			long elapsed = System.currentTimeMillis() - startTime;
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
-				if (reduceProcess != null && vm.status == Status.UNREDUCED) {
+				if (reduceProcess != null && !vm.reduced) {
 					reduceProcess.incoming.add(message);
 				} else {
 					remainingProperties.removeAll(vm.valid);

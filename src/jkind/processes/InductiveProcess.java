@@ -15,7 +15,6 @@ import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
 import jkind.processes.messages.ValidMessage;
-import jkind.processes.messages.ValidMessage.Status;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -174,8 +173,8 @@ public class InductiveProcess extends Process {
 	}
 
 	private void sendValid(List<String> valid, int k) {
-		baseProcess.incoming.add(new ValidMessage(valid, k, invariants, Status.UNREDUCED));
-		director.incoming.add(new ValidMessage(valid, k, invariants, Status.UNREDUCED));
+		baseProcess.incoming.add(new ValidMessage(valid, k, invariants));
+		director.incoming.add(new ValidMessage(valid, k, invariants));
 	}
 
 	private void sendInductiveCounterexample(String p, BigInteger n, int k, Model model) {
