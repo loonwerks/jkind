@@ -25,12 +25,12 @@ import jkind.writers.XmlWriter;
 
 public class Director {
 	private Specification spec;
-	private List<String> remainingProperties;
-	private List<String> validProperties;
-	private List<String> invalidProperties;
-	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples;
-	private CounterexampleSlicer cexSlicer;
 	private Writer writer;
+
+	private List<String> remainingProperties = new ArrayList<String>();
+	private List<String> validProperties = new ArrayList<String>();
+	private List<String> invalidProperties = new ArrayList<String>();
+	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<String, InductiveCounterexampleMessage>();
 
 	private BaseProcess baseProcess;
 	private InductiveProcess inductiveProcess;
@@ -40,21 +40,15 @@ public class Director {
 	private List<Process> processes = new ArrayList<Process>();
 	private List<Thread> threads = new ArrayList<Thread>();
 
-	protected BlockingQueue<Message> incoming;
-	private long startTime;
+	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<Message>();
 
 	public Director(Specification spec) {
 		this.spec = spec;
-		this.cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
-		this.remainingProperties = new ArrayList<String>(spec.node.properties);
-		this.validProperties = new ArrayList<String>();
-		this.invalidProperties = new ArrayList<String>();
-		this.inductiveCounterexamples = new HashMap<String, InductiveCounterexampleMessage>();
-		this.writer = getWriter();
-		this.incoming = new LinkedBlockingQueue<Message>();
+		this.writer = getWriter(spec);
+		this.remainingProperties.addAll(spec.node.properties);
 	}
 
-	private Writer getWriter() {
+	private Writer getWriter(Specification spec) {
 		if (Settings.xml) {
 			try {
 				return new XmlWriter(spec.filename + ".xml", spec.typeMap);
@@ -71,18 +65,18 @@ public class Director {
 		writer.begin();
 		startThreads();
 
-		startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 		long timeout = startTime + Settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
 				&& someThreadAlive() && !someProcessFailed()) {
-			processMessages();
+			processMessages(startTime);
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 			}
 		}
 
-		processMessages();
+		processMessages(startTime);
 		if (!remainingProperties.isEmpty()) {
 			sliceInductiveCounterexamples();
 			writer.writeUnknown(remainingProperties, inductiveCounterexamples);
@@ -99,7 +93,7 @@ public class Director {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -109,7 +103,7 @@ public class Director {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -172,7 +166,7 @@ public class Director {
 		threads.add(new Thread(process, process.getName()));
 	}
 
-	private void processMessages() {
+	private void processMessages(long startTime) {
 		while (!incoming.isEmpty()) {
 			Message message = incoming.poll();
 			long elapsed = System.currentTimeMillis() - startTime;
@@ -198,6 +192,7 @@ public class Director {
 					remainingProperties.removeAll(cex.invalid);
 					invalidProperties.addAll(cex.invalid);
 					inductiveCounterexamples.keySet().removeAll(cex.invalid);
+					CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
 					for (String invalidProp : cex.invalid) {
 						Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
 						writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
@@ -233,6 +228,7 @@ public class Director {
 	}
 
 	private void sliceInductiveCounterexamples() {
+		CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
 			Model slicedModel = cexSlicer.slice(icm.property, icm.model);
