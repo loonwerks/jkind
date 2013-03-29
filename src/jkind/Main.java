@@ -30,32 +30,36 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 public class Main {
 	final public static String VERSION = "1.2";
 
-	public static void main(String args[]) throws IOException, RecognitionException,
-			InterruptedException {
-		String filename = ArgumentParser.parse(args);
-		if (!new File(filename).exists()) {
-			System.out.println("Cannot find file " + filename);
+	public static void main(String args[]) {
+		try {
+			String filename = ArgumentParser.parse(args);
+			if (!new File(filename).exists()) {
+				System.out.println("Cannot find file " + filename);
+				System.exit(-1);
+			}
+	
+			Program program = parseLustre(filename);
+			if (program.main == null) {
+				System.out.println("Error: no main node");
+				System.exit(-1);
+			}
+	
+			if (!StaticAnalyzer.check(program)) {
+				System.exit(-1);
+			}
+	
+			program = InlineTypes.program(program);
+			program = InlineConstants.program(program);
+			Node main = InlineNodeCalls.program(program);
+	
+			main = LustreSlicer.slice(main);
+			Specification spec = new Specification(filename, main);
+			new Director(spec).run();
+			System.exit(0); // Kills all threads
+		} catch (Exception e) {
+			e.printStackTrace();
 			System.exit(-1);
 		}
-
-		Program program = parseLustre(filename);
-		if (program.main == null) {
-			System.out.println("Error: no main node");
-			System.exit(-1);
-		}
-
-		if (!StaticAnalyzer.check(program)) {
-			System.exit(-1);
-		}
-
-		program = InlineTypes.program(program);
-		program = InlineConstants.program(program);
-		Node main = InlineNodeCalls.program(program);
-
-		main = LustreSlicer.slice(main);
-		Specification spec = new Specification(filename, main);
-		new Director(spec).run();
-		System.exit(0); // Kills all threads
 	}
 
 	private static Program parseLustre(String filename) throws IOException, RecognitionException {
