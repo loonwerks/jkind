@@ -1,7 +1,0 @@
-Differentiate unknown results (max iterations, timeout, failure) 
-
-Turn assertions in subnodes into proposed invariants
-
-Additional static checks
-  No unguarded pres?
-  No alegbraic loops?
