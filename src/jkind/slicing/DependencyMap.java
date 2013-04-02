@@ -10,6 +10,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
+import jkind.lustre.VarDecl;
 
 public class DependencyMap {
 	private Map<String, Set<String>> map;
@@ -21,6 +22,10 @@ public class DependencyMap {
 	}
 
 	private void computeOneStepDependencies(Node node) {
+		for (VarDecl input : node.inputs) {
+			map.put(input.id, new HashSet<String>());
+		}
+		
 		for (Equation eq : node.equations) {
 			Set<String> deps = IdExtractorVisitor.getIds(eq.expr);
 			for (IdExpr idExpr : eq.lhs) {
