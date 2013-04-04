@@ -1,6 +1,6 @@
 package jkind.processes;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import jkind.slicing.CounterexampleSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.writers.ConsoleWriter;
+import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
@@ -49,14 +50,16 @@ public class Director {
 	}
 
 	private Writer getWriter(Specification spec) {
-		if (Settings.xml) {
-			try {
+		try {
+			if (Settings.excel) {
+				return new ExcelWriter(spec.filename + ".xls", spec.node);
+			} else if (Settings.xml) {
 				return new XmlWriter(spec.filename + ".xml", spec.typeMap);
-			} catch (FileNotFoundException e) {
-				throw new JKindException("Unable to open XML output file", e);
+			} else {
+				return new ConsoleWriter();
 			}
-		} else {
-			return new ConsoleWriter();
+		} catch (IOException e) {
+			throw new JKindException("Unable to open output file", e);
 		}
 	}
 

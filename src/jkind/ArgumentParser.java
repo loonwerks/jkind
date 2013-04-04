@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
 
 public class ArgumentParser {
 	final private static String BMC = "bmc";
+	final private static String EXCEL = "excel";
 	final private static String INDUCT_CEX = "induct_cex";
 	final private static String N = "n";
 	final private static String NO_INV_GEN = "no_inv_gen";
@@ -22,6 +23,7 @@ public class ArgumentParser {
 	private static Options getOptions() {
 		Options options = new Options();
 		options.addOption(BMC, false, "bounded model checking only (implies -" + NO_INV_GEN + ")");
+		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(N, true, "number of iterations (default 200)");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
@@ -69,9 +71,18 @@ public class ArgumentParser {
 			System.exit(0);
 		}
 		
+		if (line.hasOption(EXCEL) && line.hasOption(XML)) {
+			System.out.println("Error: only one output format may be selected");
+			System.exit(-1);
+		}
+		
 		if (line.hasOption(BMC)) {
 			Settings.useInductiveProcess = false;
 			Settings.useInvariantProcess = false;
+		}
+		
+		if (line.hasOption(EXCEL)) {
+			Settings.excel = true;
 		}
 		
 		if (line.hasOption(INDUCT_CEX)) {
