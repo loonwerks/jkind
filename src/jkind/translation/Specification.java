@@ -14,10 +14,10 @@ public class Specification {
 	final public Map<String, Type> typeMap;
 	final public Lustre2Sexps translation;
 
-	public Specification(String filename, Node node) {
+	public Specification(String filename, Node node, DependencyMap dependencyMap) {
 		this.filename = filename;
 		this.node = node;
-		this.dependencyMap = new DependencyMap(node);
+		this.dependencyMap = dependencyMap;
 		this.typeMap = Util.getTypeMap(node);
 		this.translation = new Lustre2Sexps(node);
 	}

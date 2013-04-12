@@ -1,11 +1,13 @@
 package jkind.analysis;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jkind.analysis.evaluation.DivideByZeroChecker;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
+import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -13,6 +15,7 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
+import jkind.slicing.IdExtractorVisitor;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
@@ -22,7 +25,7 @@ public class StaticAnalyzer {
 				&& NodeDependencyChecker.check(program) && variablesUnique(program)
 				&& assignmentsSound(program) && propertiesUnique(program.main)
 				&& propertiesExist(program.main) && LinearChecker.check(program)
-				&& DivideByZeroChecker.check(program);
+				&& DivideByZeroChecker.check(program) && assertsOnlyUseInputs(program.main);
 	}
 
 	private static boolean typesUnique(Program program) {
@@ -207,5 +210,22 @@ public class StaticAnalyzer {
 		}
 
 		return exist;
+	}
+
+	private static boolean assertsOnlyUseInputs(Node node) {
+		boolean result = true;
+
+		List<String> inputs = Util.getIds(node.inputs);
+		for (Expr expr : node.assertions) {
+			Set<String> vars = IdExtractorVisitor.getIds(expr);
+			vars.removeAll(inputs);
+			if (!vars.isEmpty()) {
+				System.out.println("Error at line " + expr.location
+						+ " assertion refers to non-input variables: " + vars);
+				result = false;
+			}
+		}
+
+		return result;
 	}
 }

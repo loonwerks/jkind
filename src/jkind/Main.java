@@ -12,6 +12,7 @@ import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.processes.Director;
+import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
@@ -28,7 +29,7 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class Main {
-	final public static String VERSION = "1.2";
+	final public static String VERSION = "1.2.1";
 
 	public static void main(String args[]) {
 		try {
@@ -52,8 +53,9 @@ public class Main {
 			program = InlineConstants.program(program);
 			Node main = InlineNodeCalls.program(program);
 	
-			main = LustreSlicer.slice(main);
-			Specification spec = new Specification(filename, main);
+			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
+			main = LustreSlicer.slice(main, dependencyMap);
+			Specification spec = new Specification(filename, main, dependencyMap);
 			new Director(spec).run();
 			System.exit(0); // Kills all threads
 		} catch (Exception e) {

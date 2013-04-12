@@ -16,20 +16,10 @@ import jkind.lustre.VarDecl;
 public class DependencyMap {
 	private Map<String, Set<String>> map;
 
-	public DependencyMap(Node node) {
+	public DependencyMap(Node node, List<String> roots) {
 		this.map = new HashMap<String, Set<String>>();
-
 		computeOneStepDependencies(node);
-		closeDependencies();
-
-		/*
-		 * Assertions cause everything they (transitively) touch to be related
-		 * so we must handle them after computing the initial dependency map.
-		 * Then we must compute the closure again using dependency information
-		 * gained from assertions.
-		 */
-		analyzeAssertions(node.assertions);
-		closeDependencies();
+		closeDependencies(roots);
 	}
 
 	private void computeOneStepDependencies(Node node) {
@@ -43,11 +33,18 @@ public class DependencyMap {
 				map.put(idExpr.id, deps);
 			}
 		}
+		
+		for (Expr e : node.assertions) {
+			Set<String> ids = IdExtractorVisitor.getIds(e);
+			for (String id : ids) {
+				map.get(id).addAll(ids);
+			}
+		}
 	}
 
-	private void closeDependencies() {
+	private void closeDependencies(List<String> roots) {
 		Map<String, Set<String>> transMap = new HashMap<String, Set<String>>();
-		for (String root : map.keySet()) {
+		for (String root : roots) {
 			transMap.put(root, computeClosure(root));
 		}
 		map = transMap;
@@ -71,19 +68,6 @@ public class DependencyMap {
 			}
 		}
 		return closure;
-	}
-
-	private void analyzeAssertions(List<Expr> assertions) {
-		for (Expr assertion : assertions) {
-			Set<String> deps = new HashSet<String>();
-			for (String id : IdExtractorVisitor.getIds(assertion)) {
-				deps.addAll(map.get(id));
-			}
-
-			for (String id : deps) {
-				map.put(id, new HashSet<String>(deps));
-			}
-		}
 	}
 
 	public Set<String> get(String id) {

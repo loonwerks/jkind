@@ -12,10 +12,8 @@ import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
 
 public class LustreSlicer {
-	public static Node slice(Node node) {
-		DependencyMap depMap = new DependencyMap(node);
-		Set<String> keep = getPropertyDependencies(node, depMap);
-		return sliceByKeep(node, keep);
+	public static Node slice(Node node, DependencyMap depMap) {
+		return sliceByKeep(node, getPropertyDependencies(node, depMap));
 	}
 
 	private static Set<String> getPropertyDependencies(Node node, DependencyMap depMap) {
