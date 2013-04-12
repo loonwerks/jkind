@@ -25,7 +25,8 @@ public class StaticAnalyzer {
 				&& NodeDependencyChecker.check(program) && variablesUnique(program)
 				&& assignmentsSound(program) && propertiesUnique(program.main)
 				&& propertiesExist(program.main) && LinearChecker.check(program)
-				&& DivideByZeroChecker.check(program) && assertsOnlyUseInputs(program.main);
+				&& DivideByZeroChecker.check(program) && assertsOnlyUseInputs(program.main)
+				&& warnUnusedAssertsAndProperties(program);
 	}
 
 	private static boolean typesUnique(Program program) {
@@ -227,5 +228,25 @@ public class StaticAnalyzer {
 		}
 
 		return result;
+	}
+
+	private static boolean warnUnusedAssertsAndProperties(Program program) {
+		for (Node node : program.nodes) {
+			if (node == program.main) {
+				continue;
+			}
+
+			for (Expr expr : node.assertions) {
+				System.out.println("Warning at line " + expr.location
+						+ " assertion in subnode ignored");
+			}
+
+			for (String prop : node.properties) {
+				System.out.println("Warning: Property '" + prop + "' in subnode '" + node.id
+						+ "' is ignored");
+			}
+		}
+
+		return true;
 	}
 }
