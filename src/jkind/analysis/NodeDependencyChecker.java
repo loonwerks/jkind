@@ -23,7 +23,7 @@ public class NodeDependencyChecker {
 		return new NodeDependencyChecker(dependencies).check();
 	}
 
-	public static Set<String> getNodeDependencies(Node node) {
+	private static Set<String> getNodeDependencies(Node node) {
 		final Set<String> dependencies = new HashSet<String>();
 		IterVisitor nodeCallCollector = new IterVisitor() {
 			@Override
@@ -43,7 +43,7 @@ public class NodeDependencyChecker {
 	private Map<String, Set<String>> dependencies;
 	private Deque<String> callStack;
 
-	public NodeDependencyChecker(Map<String, Set<String>> dependencies) {
+	private NodeDependencyChecker(Map<String, Set<String>> dependencies) {
 		this.dependencies = dependencies;
 		this.callStack = new ArrayDeque<String>();
 	}
