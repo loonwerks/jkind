@@ -1,20 +1,21 @@
 package jkind.solvers.yices;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.lustre.Type;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.Solver;
+import jkind.solvers.StreamDecl;
+import jkind.solvers.StreamDef;
 import jkind.solvers.UnsatResult;
+import jkind.solvers.VarDecl;
 import jkind.solvers.yices.YicesParser.ResultContext;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -28,23 +29,10 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends Solver {
-	private Process process;
-	private BufferedWriter toYices;
-	private BufferedReader fromYices;
-
 	final private static String DONE = "@DONE";
 
 	public YicesSolver() {
-		ProcessBuilder pb = new ProcessBuilder("yices");
-		pb.redirectErrorStream(true);
-		try {
-			process = pb.start();
-		} catch (IOException e) {
-			throw new JKindException("Unable to start yices", e);
-		}
-		addShutdownHook();
-		toYices = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-		fromYices = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		super(new ProcessBuilder("yices"));
 	}
 
 	@Override
@@ -60,13 +48,43 @@ public class YicesSolver extends Solver {
 	private void send(String str) {
 		debug(str);
 		try {
-			toYices.append(str);
-			toYices.newLine();
-			toYices.flush();
+			toSolver.append(str);
+			toSolver.newLine();
+			toSolver.flush();
 		} catch (IOException e) {
 			throw new JKindException("Unable to write to yices, "
 					+ "probably due to internal JKind error", e);
 		}
+	}
+
+	@Override
+	public void send(StreamDecl decl) {
+		Sexp type = new Cons("->", new Symbol("int"), type(decl.getType()));
+		send(new Cons("define", decl.getId(), new Symbol("::"), type));
+	}
+
+	private Symbol type(Type type) {
+		return new Symbol(type.name);
+	}
+
+	@Override
+	public void send(StreamDef def) {
+		Sexp argType = new Cons(def.getArg(), new Symbol("::"), new Symbol("int"));
+		Sexp type = new Cons("->", new Symbol("int"), type(def.getType()));
+		Sexp lambda = new Cons("lambda", argType, def.getBody());
+		send(new Cons("define", def.getId(), new Symbol("::"), type, lambda));
+	}
+
+	public void sendAsAssertion(StreamDef def) {
+		send(def.getDecl());
+		Sexp argType = new Cons(def.getArg(), new Symbol("::"), new Symbol("int"));
+		Sexp lambda = new Cons("lambda", argType, def.getBody());
+		send(new Cons("assert", new Cons("=", def.getId(), lambda)));
+	}
+	
+	@Override
+	public void send(VarDecl decl) {
+		send(new Cons("define", decl.id, new Symbol("::"), type(decl.type)));
 	}
 
 	private int labelCount = 1;
@@ -143,7 +161,7 @@ public class YicesSolver extends Solver {
 			StringBuilder content = new StringBuilder();
 			boolean seenContextError = false;
 			while (true) {
-				line = fromYices.readLine();
+				line = fromSolver.readLine();
 				debug("; YICES: " + line);
 				if (line == null) {
 					throw new JKindException("Yices terminated unexpectedly");
@@ -216,27 +234,5 @@ public class YicesSolver extends Solver {
 	@Override
 	public void pop() {
 		send("(pop)");
-	}
-
-	@Override
-	public synchronized void stop() {
-		/**
-		 * This must be synchronized since two threads (a Process or a shutdown
-		 * hook) may try to stop the solver at the same time
-		 */
-
-		if (process != null) {
-			process.destroy();
-			process = null;
-		}
-	}
-
-	private void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {
-			@Override
-			public void run() {
-				YicesSolver.this.stop();
-			}
-		});
 	}
 }

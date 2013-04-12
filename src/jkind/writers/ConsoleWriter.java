@@ -72,9 +72,8 @@ public class ConsoleWriter extends Writer {
 
 		for (String fn : getRelevantFunctions(model.getFunctions())) {
 			System.out.format("%-25s ", fn.substring(1));
-			Map<BigInteger, Value> fnMap = model.getFunction(fn);
 			for (int i = 0; i < k; i++) {
-				Value value = fnMap.get(BigInteger.valueOf(i).add(offset));
+				Value value = model.getFunctionValue(fn, BigInteger.valueOf(i).add(offset));
 				System.out.format("%6s ", value != null ? value : "-");
 			}
 			System.out.println();

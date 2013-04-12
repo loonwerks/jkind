@@ -204,14 +204,13 @@ public class ExcelWriter extends Writer {
 	private void writeSignal(String input, int k, BigInteger offset, Model model)
 			throws WriteException {
 		currSheet.addCell(new Label(0, currRow, input.substring(1)));
-		Map<BigInteger, Value> fnMap = model.getFunction(input);
 		Value prev = null;
 		for (int i = 0; i < k; i++) {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
-			Value curr = fnMap.get(key);
+			Value curr = model.getFunctionValue(input, key);
 			if (curr != null) {
 				CellFormat format = curr.equals(prev) ? fadedFormat : defaultFormat;
-				writeValue(fnMap.get(key), i + 1, format);
+				writeValue(curr, i + 1, format);
 			}
 			prev = curr;
 		}

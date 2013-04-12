@@ -77,11 +77,11 @@ public class XmlWriter extends Writer {
 		String name = fn.substring(1);
 		Type type = types.get(name);
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
-		Map<BigInteger, Value> fnMap = model.getFunction(fn);
 		for (int i = 0; i < k; i++) {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
-			if (fnMap.containsKey(key)) {
-				out.println("        <Value time=\"" + i + "\">" + formatValue(fnMap.get(key))
+			Value value = model.getFunctionValue(fn, key);
+			if (value != null) {
+				out.println("        <Value time=\"" + i + "\">" + formatValue(value)
 						+ "</Value>");
 			}
 		}

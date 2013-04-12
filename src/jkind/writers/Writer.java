@@ -26,7 +26,7 @@ public abstract class Writer {
 	protected static SortedSet<String> getRelevantFunctions(Set<String> functions) {
 		SortedSet<String> relevant = new TreeSet<String>();
 		for (String fn : functions) {
-			if (!fn.startsWith("$#")) {
+			if (!fn.startsWith("$%")) {
 				relevant.add(fn);
 			}
 		}

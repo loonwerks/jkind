@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Cons extends Sexp {
-	private Sexp head;
-	private List<Sexp> args;
+	final public Sexp head;
+	final public List<Sexp> args;
 	
 	public Cons(Sexp head, List<Sexp> args) {
 		this.head = head;

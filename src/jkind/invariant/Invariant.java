@@ -1,18 +1,31 @@
 package jkind.invariant;
 
+import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
+import jkind.solvers.Lambda;
+import jkind.util.Util;
 
 public class Invariant {
-	final public Sexp sexp;
-	final public String text;
+	final private Lambda lambda;
+	final private String text;
 
-	public Invariant(Sexp sexp, String text) {
-		this.sexp = sexp;
+	public Invariant(Lambda lambda, String text) {
+		this.lambda = lambda;
 		this.text = text;
+	}
+	
+	public Invariant(String prop) {
+		this.lambda = new Lambda(Util.I, new Cons(new Symbol("$" + prop), Util.I));	
+		this.text = prop;
 	}
 	
 	@Override
 	public String toString() {
 		return text;
+	}
+
+	public Sexp instantiate(Sexp arg) {
+		return lambda.instantiate(arg);
 	}
 }

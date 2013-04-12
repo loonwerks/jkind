@@ -61,7 +61,7 @@ public class InlineNodeCalls extends MapVisitor {
 	}
 
 	private IdExpr newVar(VarDecl decl) {
-		VarDecl newDecl = new VarDecl(decl.location, "#inline" + newLocals.size(), decl.type);
+		VarDecl newDecl = new VarDecl(decl.location, "%inline" + newLocals.size(), decl.type);
 		newLocals.add(newDecl);
 		return new IdExpr(Location.NULL, newDecl.id);
 	}

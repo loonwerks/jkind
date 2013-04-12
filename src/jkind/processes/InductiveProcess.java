@@ -8,6 +8,7 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.Settings;
 import jkind.invariant.Invariant;
+import jkind.lustre.Type;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -17,13 +18,13 @@ import jkind.processes.messages.StopMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
+import jkind.solvers.VarDecl;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.Util;
@@ -36,7 +37,6 @@ public class InductiveProcess extends Process {
 
 	public InductiveProcess(Specification spec, Director director) {
 		super("Inductive", spec, director);
-		setScratch(spec.filename + ".yc_induct");
 	}
 
 	public void setBaseProcess(BaseProcess baseProcess) {
@@ -63,7 +63,7 @@ public class InductiveProcess extends Process {
 
 	protected void initializeSolver() {
 		super.initializeSolver();
-		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
+		solver.send(new VarDecl(Keywords.N, Type.INT));
 	}
 
 	private void processMessagesAndWait(int k) {
@@ -103,7 +103,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private void assertInvariant(Invariant invariant, int i) {
-		solver.send(new Cons("assert", new Cons(invariant.sexp, getIndex(i))));
+		solver.send(new Cons("assert", invariant.instantiate(getIndex(i))));
 	}
 
 	private void assertTransitionAndInvariants(int offset) {
@@ -142,7 +142,7 @@ public class InductiveProcess extends Process {
 	private void addPropertiesAsInvariants(int k, List<String> valid) {
 		List<Invariant> propertiesAsInvariants = new ArrayList<Invariant>();
 		for (String property : valid) {
-			propertiesAsInvariants.add(new Invariant(new Symbol("$" + property), property));
+			propertiesAsInvariants.add(new Invariant(property));
 		}
 
 		invariants.addAll(propertiesAsInvariants);

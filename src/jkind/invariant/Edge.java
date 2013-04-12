@@ -2,6 +2,7 @@ package jkind.invariant;
 
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.solvers.Lambda;
 import jkind.util.Util;
 
 public class Edge {
@@ -16,8 +17,12 @@ public class Edge {
 	public Invariant toInvariant(boolean pure) {
 		Candidate sRep = source.getRepresentative();
 		Candidate dRep = destination.getRepresentative();
-		Sexp sexp = Util.lambdaI(new Cons("=>", sRep.index(Util.I, pure), dRep.index(Util.I, pure)));
-		return new Invariant(sexp, sRep + " => " + dRep);
+
+		String text = sRep + " => " + dRep;
+		Sexp body = new Cons("=>", sRep.index(Util.I, pure), dRep.index(Util.I, pure));
+		Lambda lambda = new Lambda(Util.I, body);
+		
+		return new Invariant(lambda, text);
 	}
 	
 	@Override

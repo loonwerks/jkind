@@ -11,4 +11,7 @@ public class Settings {
 	public static boolean inductiveCounterexamples = false;
 	public static boolean reduceInvariants = false;
 	public static boolean smoothCounterexamples = false;
+	public static SolverOption solver = SolverOption.YICES;
+	
+	public static enum SolverOption { YICES, CVC4 };
 }

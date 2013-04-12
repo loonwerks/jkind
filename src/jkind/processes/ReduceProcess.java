@@ -10,15 +10,16 @@ import java.util.Set;
 
 import jkind.JKindException;
 import jkind.invariant.Invariant;
+import jkind.lustre.Type;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
+import jkind.solvers.VarDecl;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.BiMap;
@@ -27,13 +28,12 @@ import jkind.util.Util;
 public class ReduceProcess extends Process {
 	public ReduceProcess(Specification spec, Director director) {
 		super("Reduction", spec, director);
-		setScratch(spec.filename + ".yc_reduce");
 	}
 
 	@Override
 	protected void initializeSolver() {
 		super.initializeSolver();
-		solver.send(new Cons("define", Keywords.N, new Symbol("::"), new Symbol("nat")));
+		solver.send(new VarDecl(Keywords.N, Type.INT));
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ReduceProcess extends Process {
 
 	private Invariant getInvariantByName(String name, List<Invariant> invariants) {
 		for (Invariant invariant : invariants) {
-			if (invariant.text.equals(name)) {
+			if (invariant.toString().equals(name)) {
 				return invariant;
 			}
 		}
@@ -72,7 +72,7 @@ public class ReduceProcess extends Process {
 	}
 
 	private void reduce(Invariant property, List<Invariant> invariants) {
-		debug("Reducing: " + property.text);
+		debug("Reducing: " + property);
 		solver.push();
 
 		Set<Invariant> irreducible = new HashSet<Invariant>();
@@ -104,7 +104,7 @@ public class ReduceProcess extends Process {
 		solver.pop();
 		
 		irreducible.remove(property);
-		sendValid(property.text, k, new ArrayList<Invariant>(irreducible));
+		sendValid(property.toString(), k, new ArrayList<Invariant>(irreducible));
 	}
 
 	private void assertInvariants(int k, List<Invariant> invariants, BiMap<Label, Invariant> labelling) {
@@ -120,7 +120,7 @@ public class ReduceProcess extends Process {
 	private Sexp getInvariantAssertion(Invariant invariant, int k) {
 		List<Sexp> conjuncts = new ArrayList<Sexp>();
 		for (int i = 0; i <= k; i++) {
-			conjuncts.add(new Cons(invariant.sexp, getInductiveIndex(i)));
+			conjuncts.add(invariant.instantiate(getInductiveIndex(i)));
 		}
 		return new Cons("and", conjuncts);
 	}

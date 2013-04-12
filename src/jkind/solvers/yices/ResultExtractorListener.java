@@ -5,7 +5,6 @@ import java.util.List;
 
 import jkind.solvers.BoolValue;
 import jkind.solvers.Label;
-import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -23,7 +22,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ResultExtractorListener extends YicesBaseListener {
 	private Result result;
-	private Model model;
+	private YicesModel model;
 	
 	public Result getResult() {
 		return result;
@@ -31,9 +30,8 @@ public class ResultExtractorListener extends YicesBaseListener {
 
 	@Override
 	public void enterSatResult(SatResultContext ctx) {
-		SatResult sat = new SatResult();
-		model = sat.getModel();
-		result = sat;
+		model = new YicesModel();
+		result = new SatResult(model);
 	}
 	
 	@Override
@@ -69,7 +67,7 @@ public class ResultExtractorListener extends YicesBaseListener {
 
 	private Value value(ValueContext ctx) {
 		if (ctx.BOOL() != null) {
-			return ctx.BOOL().getText().equals("true") ? BoolValue.TRUE : BoolValue.FALSE;
+			return BoolValue.fromBool(ctx.BOOL().getText().equals("true"));
 		} else {
 			return new NumericValue(ctx.numeric().getText());
 		}

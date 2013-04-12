@@ -76,16 +76,16 @@ public class Util {
 	}
 	
 	public static Sexp conjoinInvariants(Collection<Invariant> invariants, Sexp i) {
+		if (invariants.isEmpty()) {
+			return new Symbol("true");
+		}
+		
 		List<Sexp> sexps = new ArrayList<Sexp>();
 		for (Invariant invariant : invariants) {
-			sexps.add(invariant.sexp);
+			sexps.add(invariant.instantiate(i));
 		}
-		return conjoin(sexps, i);
+		return new Cons("and", sexps);
 	}
 	
 	final public static Symbol I = new Symbol("i");
-	
-	public static Sexp lambdaI(Sexp body) {
-		return new Cons("lambda", new Cons(I, new Symbol("::"), new Symbol("nat")), body);
-	}
 }

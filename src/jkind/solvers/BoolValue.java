@@ -15,6 +15,10 @@ public class BoolValue extends Value {
 		return val;
 	}
 	
+	public static BoolValue fromBool(boolean b) {
+		return b ? BoolValue.TRUE : BoolValue.FALSE;
+	}
+	
 	@Override
 	public String toString() {
 		return Boolean.toString(val);

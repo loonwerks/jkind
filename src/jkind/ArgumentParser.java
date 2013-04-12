@@ -1,5 +1,7 @@
 package jkind;
 
+import jkind.Settings.SolverOption;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -15,6 +17,7 @@ public class ArgumentParser {
 	final private static String REDUCE_INV = "reduce_inv";
 	final private static String SCRATCH = "scratch";
 	final private static String SMOOTH = "smooth";
+	final private static String SOLVER = "solver";
 	final private static String TIMEOUT = "timeout";
 	final private static String XML = "xml";
 	final private static String VERSION = "version";
@@ -30,6 +33,7 @@ public class ArgumentParser {
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimum changes in values)");
+		options.addOption(SOLVER, true, "SMT solver (default: yices, alternative: cvc4)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(VERSION, false, "display version information");
@@ -42,6 +46,7 @@ public class ArgumentParser {
 		try {
 			CommandLine line = parser.parse(getOptions(), args);
 			setSettings(line);
+			checkSettings();
 			String[] input = line.getArgs();
 			if (input.length != 1) {
 				printHelp();
@@ -54,7 +59,7 @@ public class ArgumentParser {
 			return null;
 		}
 	}
-	
+
 	private static void printHelp() {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("jkind [options] <input>", getOptions());
@@ -113,8 +118,33 @@ public class ArgumentParser {
 			Settings.smoothCounterexamples = true;
 		}
 		
+		if (line.hasOption(SOLVER)) {
+			String solver = line.getOptionValue(SOLVER);
+			if (solver.equals("yices")) {
+				Settings.solver = SolverOption.YICES;
+			} else if (solver.equals("cvc4")) {
+				Settings.solver = SolverOption.CVC4;
+			} else {
+				System.out.println("Unknown solver: " + solver);
+				System.exit(-1);
+			}
+		}
+		
 		if (line.hasOption(XML)) {
 			Settings.xml = true;
+		}
+	}
+	
+	private static void checkSettings() {
+		if (Settings.solver == SolverOption.CVC4) {
+			if (Settings.smoothCounterexamples) {
+				System.out.println("Smoothing not supported with CVC4");
+				System.exit(-1);
+			}
+			if (Settings.reduceInvariants) {
+				System.out.println("Invariant reduction not supported with CVC4");
+				System.exit(-1);
+			}
 		}
 	}
 }
