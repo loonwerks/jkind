@@ -1,4 +1,4 @@
-grammar Cvc4;
+grammar SmtLib2;
 
 model: '(' 'model' (defval | defun)* ')' EOF;
 

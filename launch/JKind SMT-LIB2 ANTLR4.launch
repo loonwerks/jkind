@@ -17,7 +17,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.antlr.v4.Tool"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-package jkind.solvers.cvc4 Cvc4.g4"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-package jkind.solvers.smtlib2 SmtLib2.g4"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jkind"/>
-<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:jkind/src/jkind/solvers/cvc4}"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:jkind/src/jkind/solvers/smtlib2}"/>
 </launchConfiguration>

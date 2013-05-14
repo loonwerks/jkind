@@ -1,4 +1,4 @@
-package jkind.solvers.cvc4;
+package jkind.solvers.smtlib2;
 
 import java.util.ArrayList;
 import java.util.List;

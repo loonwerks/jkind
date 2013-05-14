@@ -1,5 +1,5 @@
-// Generated from Cvc4.g4 by ANTLR 4.0
-package jkind.solvers.cvc4;
+// Generated from SmtLib2.g4 by ANTLR 4.0
+package jkind.solvers.smtlib2;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class Cvc4Parser extends Parser {
+public class SmtLib2Parser extends Parser {
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -30,7 +30,7 @@ public class Cvc4Parser extends Parser {
 	};
 
 	@Override
-	public String getGrammarFileName() { return "Cvc4.g4"; }
+	public String getGrammarFileName() { return "SmtLib2.g4"; }
 
 	@Override
 	public String[] getTokenNames() { return tokenNames; }
@@ -41,7 +41,7 @@ public class Cvc4Parser extends Parser {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	public Cvc4Parser(TokenStream input) {
+	public SmtLib2Parser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
@@ -52,7 +52,7 @@ public class Cvc4Parser extends Parser {
 		public DefvalContext defval(int i) {
 			return getRuleContext(DefvalContext.class,i);
 		}
-		public TerminalNode EOF() { return getToken(Cvc4Parser.EOF, 0); }
+		public TerminalNode EOF() { return getToken(SmtLib2Parser.EOF, 0); }
 		public DefunContext defun(int i) {
 			return getRuleContext(DefunContext.class,i);
 		}
@@ -65,11 +65,11 @@ public class Cvc4Parser extends Parser {
 		@Override public int getRuleIndex() { return RULE_model; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterModel(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterModel(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitModel(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitModel(this);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class Cvc4Parser extends Parser {
 		public BodyContext body() {
 			return getRuleContext(BodyContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(Cvc4Parser.ID, 0); }
+		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -135,11 +135,11 @@ public class Cvc4Parser extends Parser {
 		@Override public int getRuleIndex() { return RULE_defval; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterDefval(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterDefval(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitDefval(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitDefval(this);
 		}
 	}
 
@@ -177,7 +177,7 @@ public class Cvc4Parser extends Parser {
 		public ArgContext arg() {
 			return getRuleContext(ArgContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(Cvc4Parser.ID, 0); }
+		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -187,11 +187,11 @@ public class Cvc4Parser extends Parser {
 		@Override public int getRuleIndex() { return RULE_defun; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterDefun(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterDefun(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitDefun(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitDefun(this);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class Cvc4Parser extends Parser {
 	}
 
 	public static class ArgContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(Cvc4Parser.ID, 0); }
+		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -234,11 +234,11 @@ public class Cvc4Parser extends Parser {
 		@Override public int getRuleIndex() { return RULE_arg; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterArg(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterArg(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitArg(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitArg(this);
 		}
 	}
 
@@ -272,11 +272,11 @@ public class Cvc4Parser extends Parser {
 		@Override public int getRuleIndex() { return RULE_type; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterType(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitType(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitType(this);
 		}
 	}
 
@@ -324,11 +324,11 @@ public class Cvc4Parser extends Parser {
 		public SymbolBodyContext(BodyContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterSymbolBody(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterSymbolBody(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitSymbolBody(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitSymbolBody(this);
 		}
 	}
 	public static class ConsBodyContext extends BodyContext {
@@ -344,11 +344,11 @@ public class Cvc4Parser extends Parser {
 		public ConsBodyContext(BodyContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterConsBody(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterConsBody(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitConsBody(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitConsBody(this);
 		}
 	}
 
@@ -412,11 +412,11 @@ public class Cvc4Parser extends Parser {
 		@Override public int getRuleIndex() { return RULE_fn; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterFn(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterFn(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitFn(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitFn(this);
 		}
 	}
 
@@ -447,20 +447,20 @@ public class Cvc4Parser extends Parser {
 	}
 
 	public static class SymbolContext extends ParserRuleContext {
-		public TerminalNode INT() { return getToken(Cvc4Parser.INT, 0); }
-		public TerminalNode ID() { return getToken(Cvc4Parser.ID, 0); }
-		public TerminalNode BOOL() { return getToken(Cvc4Parser.BOOL, 0); }
+		public TerminalNode INT() { return getToken(SmtLib2Parser.INT, 0); }
+		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
+		public TerminalNode BOOL() { return getToken(SmtLib2Parser.BOOL, 0); }
 		public SymbolContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_symbol; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).enterSymbol(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterSymbol(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Cvc4Listener ) ((Cvc4Listener)listener).exitSymbol(this);
+			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitSymbol(this);
 		}
 	}
 

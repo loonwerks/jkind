@@ -1,4 +1,4 @@
-package jkind.solvers.cvc4;
+package jkind.solvers.smtlib2;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -11,11 +11,11 @@ import jkind.solvers.Lambda;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
 
-public class Cvc4Model extends Model {
+public class SmtLib2Model extends Model {
 	private HashMap<String, Sexp> values;
 	private HashMap<String, Lambda> functions;
 
-	public Cvc4Model() {
+	public SmtLib2Model() {
 		this.values = new HashMap<String, Sexp>();
 		this.functions = new HashMap<String, Lambda>();
 	}

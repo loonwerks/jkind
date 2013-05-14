@@ -1,4 +1,4 @@
-package jkind.solvers.cvc4;
+package jkind.solvers.smtlib2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,23 +7,23 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Lambda;
-import jkind.solvers.cvc4.Cvc4Parser.BodyContext;
-import jkind.solvers.cvc4.Cvc4Parser.ConsBodyContext;
-import jkind.solvers.cvc4.Cvc4Parser.DefunContext;
-import jkind.solvers.cvc4.Cvc4Parser.DefvalContext;
-import jkind.solvers.cvc4.Cvc4Parser.ModelContext;
-import jkind.solvers.cvc4.Cvc4Parser.SymbolBodyContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.BodyContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.ConsBodyContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.DefunContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.DefvalContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.SymbolBodyContext;
 
-public class ModelExtractorListener extends Cvc4BaseListener {
-	private Cvc4Model model;
+public class ModelExtractorListener extends SmtLib2BaseListener {
+	private SmtLib2Model model;
 	
-	public Cvc4Model getModel() {
+	public SmtLib2Model getModel() {
 		return model;
 	}
 
 	@Override
 	public void enterModel(ModelContext ctx) {
-		model = new Cvc4Model();
+		model = new SmtLib2Model();
 	}
 	
 	@Override

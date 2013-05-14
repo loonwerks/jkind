@@ -1,5 +1,5 @@
-// Generated from Cvc4.g4 by ANTLR 4.0
-package jkind.solvers.cvc4;
+// Generated from SmtLib2.g4 by ANTLR 4.0
+package jkind.solvers.smtlib2;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class Cvc4Lexer extends Lexer {
+public class SmtLib2Lexer extends Lexer {
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -34,13 +34,13 @@ public class Cvc4Lexer extends Lexer {
 	};
 
 
-	public Cvc4Lexer(CharStream input) {
+	public SmtLib2Lexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "Cvc4.g4"; }
+	public String getGrammarFileName() { return "SmtLib2.g4"; }
 
 	@Override
 	public String[] getTokenNames() { return tokenNames; }
