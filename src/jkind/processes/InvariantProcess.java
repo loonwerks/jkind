@@ -121,15 +121,20 @@ public class InvariantProcess extends Process {
 			result = solver.query(graph.toInvariant(Sexp.fromInt(k - 1)));
 
 			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
-				model.setDefinitions(definitions);
-				model.setDeclarations(declarations);
+				Model model = getModel(result);
 				graph.refine(model, BigInteger.valueOf(k - 1));
 				debug("Base step refinement, graph size = " + graph.size());
 			}
 		} while (!graph.isTrivial() && result instanceof SatResult);
 
 		solver.pop();
+	}
+
+	private Model getModel(Result result) {
+		Model model = ((SatResult) result).getModel();
+		model.setDefinitions(definitions);
+		model.setDeclarations(declarations);
+		return model;
 	}
 
 	private void assertBaseTransition(int i) {
@@ -150,9 +155,7 @@ public class InvariantProcess extends Process {
 			result = solver.query(getInductiveQuery(k, graph));
 
 			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
-				model.setDefinitions(definitions);
-				model.setDeclarations(declarations);
+				Model model = getModel(result);
 				BigInteger index = getN(model).add(BigInteger.valueOf(k));
 				graph.refine(model, index);
 				debug("Inductive step refinement, graph size = " + graph.size());
