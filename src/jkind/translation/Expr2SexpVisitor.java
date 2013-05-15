@@ -2,6 +2,8 @@ package jkind.translation;
 
 import java.math.BigDecimal;
 
+import jkind.Settings;
+import jkind.Settings.SolverOption;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.ExprVisitor;
@@ -79,9 +81,13 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(RealExpr e) {
-		Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());
-		Sexp denominator = Sexp.fromBigInt(BigDecimal.TEN.pow(e.value.scale()).toBigInteger());
-		return new Cons("/", numerator, denominator);
+		if (Settings.solver == SolverOption.YICES) {
+			Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());
+			Sexp denominator = Sexp.fromBigInt(BigDecimal.TEN.pow(e.value.scale()).toBigInteger());
+			return new Cons("/", numerator, denominator);
+		} else {
+			return new Symbol(e.value.toPlainString());
+		}
 	}
 
 	@Override

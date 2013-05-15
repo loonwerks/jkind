@@ -2,7 +2,9 @@ package jkind.processes;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
 import jkind.invariant.Candidate;
@@ -19,16 +21,24 @@ import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.StreamDecl;
+import jkind.solvers.StreamDef;
 import jkind.solvers.VarDecl;
-import jkind.solvers.yices.YicesSolver;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
+	private Map<String, StreamDef> definitions;
+	private Map<String, StreamDecl> declarations;
 
 	public InvariantProcess(Specification spec) {
 		super("Invariant", spec, null);
+		definitions = new HashMap<String, StreamDef>();
+		declarations = new HashMap<String, StreamDecl>();
+		for (StreamDecl decl : spec.translation.getDeclarations()) {
+			declarations.put(decl.getId().toString(), decl);
+		}
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -93,13 +103,8 @@ public class InvariantProcess extends Process {
 
 	private void defineCandidates(List<Candidate> candidates) {
 		for (Candidate candidate : candidates) {
-			if (solver instanceof YicesSolver) {
-				// Yices won't report defined values, only declared ones
-				YicesSolver yicesSolver = (YicesSolver) solver;
-				yicesSolver.sendAsAssertion(candidate.def);
-			} else {
-				solver.send(candidate.def);
-			}
+			definitions.put(candidate.def.getId().toString(), candidate.def);
+			solver.send(candidate.def);
 		}
 	}
 
@@ -117,6 +122,8 @@ public class InvariantProcess extends Process {
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
+				model.setDefinitions(definitions);
+				model.setDeclarations(declarations);
 				graph.refine(model, BigInteger.valueOf(k - 1));
 				debug("Base step refinement, graph size = " + graph.size());
 			}
@@ -144,6 +151,8 @@ public class InvariantProcess extends Process {
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
+				model.setDefinitions(definitions);
+				model.setDeclarations(declarations);
 				BigInteger index = getN(model).add(BigInteger.valueOf(k));
 				graph.refine(model, index);
 				debug("Inductive step refinement, graph size = " + graph.size());

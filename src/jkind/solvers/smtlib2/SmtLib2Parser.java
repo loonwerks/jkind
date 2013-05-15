@@ -16,17 +16,18 @@ public class SmtLib2Parser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__12=1, T__11=2, T__10=3, T__9=4, T__8=5, T__7=6, T__6=7, T__5=8, T__4=9, 
-		T__3=10, T__2=11, T__1=12, T__0=13, BOOL=14, INT=15, ID=16, WS=17, ERROR=18;
+		T__3=10, T__2=11, T__1=12, T__0=13, BOOL=14, INT=15, REAL=16, ID=17, WS=18, 
+		ERROR=19;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'define-fun'", "')'", "'-'", "'ite'", "'('", "'not'", "'='", 
 		"'Int'", "'Bool'", "'and'", "'Real'", "'model'", "'/'", "BOOL", "INT", 
-		"ID", "WS", "ERROR"
+		"REAL", "ID", "WS", "ERROR"
 	};
 	public static final int
-		RULE_model = 0, RULE_defval = 1, RULE_defun = 2, RULE_arg = 3, RULE_type = 4, 
-		RULE_body = 5, RULE_fn = 6, RULE_symbol = 7;
+		RULE_model = 0, RULE_define = 1, RULE_arg = 2, RULE_type = 3, RULE_body = 4, 
+		RULE_fn = 5, RULE_symbol = 6;
 	public static final String[] ruleNames = {
-		"model", "defval", "defun", "arg", "type", "body", "fn", "symbol"
+		"model", "define", "arg", "type", "body", "fn", "symbol"
 	};
 
 	@Override
@@ -46,31 +47,17 @@ public class SmtLib2Parser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class ModelContext extends ParserRuleContext {
-		public List<DefunContext> defun() {
-			return getRuleContexts(DefunContext.class);
-		}
-		public DefvalContext defval(int i) {
-			return getRuleContext(DefvalContext.class,i);
+		public List<DefineContext> define() {
+			return getRuleContexts(DefineContext.class);
 		}
 		public TerminalNode EOF() { return getToken(SmtLib2Parser.EOF, 0); }
-		public DefunContext defun(int i) {
-			return getRuleContext(DefunContext.class,i);
-		}
-		public List<DefvalContext> defval() {
-			return getRuleContexts(DefvalContext.class);
+		public DefineContext define(int i) {
+			return getRuleContext(DefineContext.class,i);
 		}
 		public ModelContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_model; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterModel(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitModel(this);
-		}
 	}
 
 	public final ModelContext model() throws RecognitionException {
@@ -80,34 +67,23 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(16); match(5);
-			setState(17); match(12);
-			setState(22);
+			setState(14); match(5);
+			setState(15); match(12);
+			setState(19);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==5) {
 				{
-				setState(20);
-				switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
-				case 1:
-					{
-					setState(18); defval();
-					}
-					break;
-
-				case 2:
-					{
-					setState(19); defun();
-					}
-					break;
+				{
+				setState(16); define();
 				}
 				}
-				setState(24);
+				setState(21);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(25); match(2);
-			setState(26); match(EOF);
+			setState(22); match(2);
+			setState(23); match(EOF);
 			}
 		}
 		catch (RecognitionException re) {
@@ -121,7 +97,10 @@ public class SmtLib2Parser extends Parser {
 		return _localctx;
 	}
 
-	public static class DefvalContext extends ParserRuleContext {
+	public static class DefineContext extends ParserRuleContext {
+		public ArgContext arg() {
+			return getRuleContext(ArgContext.class,0);
+		}
 		public BodyContext body() {
 			return getRuleContext(BodyContext.class,0);
 		}
@@ -129,87 +108,35 @@ public class SmtLib2Parser extends Parser {
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
-		public DefvalContext(ParserRuleContext parent, int invokingState) {
+		public DefineContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_defval; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterDefval(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitDefval(this);
-		}
+		@Override public int getRuleIndex() { return RULE_define; }
 	}
 
-	public final DefvalContext defval() throws RecognitionException {
-		DefvalContext _localctx = new DefvalContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_defval);
+	public final DefineContext define() throws RecognitionException {
+		DefineContext _localctx = new DefineContext(_ctx, getState());
+		enterRule(_localctx, 2, RULE_define);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
+			setState(25); match(5);
+			setState(26); match(1);
+			setState(27); match(ID);
 			setState(28); match(5);
-			setState(29); match(1);
-			setState(30); match(ID);
-			setState(31); match(5);
+			setState(30);
+			_la = _input.LA(1);
+			if (_la==5) {
+				{
+				setState(29); arg();
+				}
+			}
+
 			setState(32); match(2);
 			setState(33); type();
 			setState(34); body();
 			setState(35); match(2);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class DefunContext extends ParserRuleContext {
-		public BodyContext body() {
-			return getRuleContext(BodyContext.class,0);
-		}
-		public ArgContext arg() {
-			return getRuleContext(ArgContext.class,0);
-		}
-		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
-		public TypeContext type() {
-			return getRuleContext(TypeContext.class,0);
-		}
-		public DefunContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_defun; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterDefun(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitDefun(this);
-		}
-	}
-
-	public final DefunContext defun() throws RecognitionException {
-		DefunContext _localctx = new DefunContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_defun);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(37); match(5);
-			setState(38); match(1);
-			setState(39); match(ID);
-			setState(40); match(5);
-			setState(41); arg();
-			setState(42); match(2);
-			setState(43); type();
-			setState(44); body();
-			setState(45); match(2);
 			}
 		}
 		catch (RecognitionException re) {
@@ -232,26 +159,18 @@ public class SmtLib2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arg; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterArg(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitArg(this);
-		}
 	}
 
 	public final ArgContext arg() throws RecognitionException {
 		ArgContext _localctx = new ArgContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_arg);
+		enterRule(_localctx, 4, RULE_arg);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(47); match(5);
-			setState(48); match(ID);
-			setState(49); type();
-			setState(50); match(2);
+			setState(37); match(5);
+			setState(38); match(ID);
+			setState(39); type();
+			setState(40); match(2);
 			}
 		}
 		catch (RecognitionException re) {
@@ -270,24 +189,16 @@ public class SmtLib2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitType(this);
-		}
 	}
 
 	public final TypeContext type() throws RecognitionException {
 		TypeContext _localctx = new TypeContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_type);
+		enterRule(_localctx, 6, RULE_type);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(52);
+			setState(42);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 8) | (1L << 9) | (1L << 11))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -322,14 +233,6 @@ public class SmtLib2Parser extends Parser {
 			return getRuleContext(SymbolContext.class,0);
 		}
 		public SymbolBodyContext(BodyContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterSymbolBody(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitSymbolBody(this);
-		}
 	}
 	public static class ConsBodyContext extends BodyContext {
 		public List<BodyContext> body() {
@@ -342,52 +245,45 @@ public class SmtLib2Parser extends Parser {
 			return getRuleContext(BodyContext.class,i);
 		}
 		public ConsBodyContext(BodyContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterConsBody(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitConsBody(this);
-		}
 	}
 
 	public final BodyContext body() throws RecognitionException {
 		BodyContext _localctx = new BodyContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_body);
+		enterRule(_localctx, 8, RULE_body);
 		int _la;
 		try {
-			setState(65);
+			setState(55);
 			switch (_input.LA(1)) {
 			case BOOL:
 			case INT:
+			case REAL:
 			case ID:
 				_localctx = new SymbolBodyContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(54); symbol();
+				setState(44); symbol();
 				}
 				break;
 			case 5:
 				_localctx = new ConsBodyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(55); match(5);
-				setState(56); fn();
-				setState(60);
+				setState(45); match(5);
+				setState(46); fn();
+				setState(50);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 5) | (1L << BOOL) | (1L << INT) | (1L << ID))) != 0)) {
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 5) | (1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) {
 					{
 					{
-					setState(57); body();
+					setState(47); body();
 					}
 					}
-					setState(62);
+					setState(52);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(63); match(2);
+				setState(53); match(2);
 				}
 				break;
 			default:
@@ -410,24 +306,16 @@ public class SmtLib2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_fn; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterFn(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitFn(this);
-		}
 	}
 
 	public final FnContext fn() throws RecognitionException {
 		FnContext _localctx = new FnContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_fn);
+		enterRule(_localctx, 10, RULE_fn);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(67);
+			setState(57);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 3) | (1L << 4) | (1L << 6) | (1L << 7) | (1L << 10) | (1L << 13))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -447,6 +335,7 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static class SymbolContext extends ParserRuleContext {
+		public TerminalNode REAL() { return getToken(SmtLib2Parser.REAL, 0); }
 		public TerminalNode INT() { return getToken(SmtLib2Parser.INT, 0); }
 		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
 		public TerminalNode BOOL() { return getToken(SmtLib2Parser.BOOL, 0); }
@@ -454,26 +343,18 @@ public class SmtLib2Parser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_symbol; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).enterSymbol(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SmtLib2Listener ) ((SmtLib2Listener)listener).exitSymbol(this);
-		}
 	}
 
 	public final SymbolContext symbol() throws RecognitionException {
 		SymbolContext _localctx = new SymbolContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_symbol);
+		enterRule(_localctx, 12, RULE_symbol);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(69);
+			setState(59);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BOOL) | (1L << INT) | (1L << ID))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			consume();
@@ -491,23 +372,22 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\2\3\24J\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t"+
-		"\t\3\2\3\2\3\2\3\2\7\2\27\n\2\f\2\16\2\32\13\2\3\2\3\2\3\2\3\3\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\5\3"+
-		"\5\3\5\3\5\3\5\3\6\3\6\3\7\3\7\3\7\3\7\7\7=\n\7\f\7\16\7@\13\7\3\7\3\7"+
-		"\5\7D\n\7\3\b\3\b\3\t\3\t\3\t\2\n\2\4\6\b\n\f\16\20\2\5\4\n\13\r\r\6\5"+
-		"\6\b\t\f\f\17\17\3\20\22E\2\22\3\2\2\2\4\36\3\2\2\2\6\'\3\2\2\2\b\61\3"+
-		"\2\2\2\n\66\3\2\2\2\fC\3\2\2\2\16E\3\2\2\2\20G\3\2\2\2\22\23\7\7\2\2\23"+
-		"\30\7\16\2\2\24\27\5\4\3\2\25\27\5\6\4\2\26\24\3\2\2\2\26\25\3\2\2\2\27"+
-		"\32\3\2\2\2\30\26\3\2\2\2\30\31\3\2\2\2\31\33\3\2\2\2\32\30\3\2\2\2\33"+
-		"\34\7\4\2\2\34\35\7\1\2\2\35\3\3\2\2\2\36\37\7\7\2\2\37 \7\3\2\2 !\7\22"+
-		"\2\2!\"\7\7\2\2\"#\7\4\2\2#$\5\n\6\2$%\5\f\7\2%&\7\4\2\2&\5\3\2\2\2\'"+
-		"(\7\7\2\2()\7\3\2\2)*\7\22\2\2*+\7\7\2\2+,\5\b\5\2,-\7\4\2\2-.\5\n\6\2"+
-		"./\5\f\7\2/\60\7\4\2\2\60\7\3\2\2\2\61\62\7\7\2\2\62\63\7\22\2\2\63\64"+
-		"\5\n\6\2\64\65\7\4\2\2\65\t\3\2\2\2\66\67\t\2\2\2\67\13\3\2\2\28D\5\20"+
-		"\t\29:\7\7\2\2:>\5\16\b\2;=\5\f\7\2<;\3\2\2\2=@\3\2\2\2><\3\2\2\2>?\3"+
-		"\2\2\2?A\3\2\2\2@>\3\2\2\2AB\7\4\2\2BD\3\2\2\2C8\3\2\2\2C9\3\2\2\2D\r"+
-		"\3\2\2\2EF\t\3\2\2F\17\3\2\2\2GH\t\4\2\2H\21\3\2\2\2\6\26\30>C";
+		"\2\3\25@\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3"+
+		"\2\3\2\7\2\24\n\2\f\2\16\2\27\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3"+
+		"!\n\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\6\3\6\3\6\3\6"+
+		"\7\6\63\n\6\f\6\16\6\66\13\6\3\6\3\6\5\6:\n\6\3\7\3\7\3\b\3\b\3\b\2\t"+
+		"\2\4\6\b\n\f\16\2\5\4\n\13\r\r\6\5\6\b\t\f\f\17\17\3\20\23<\2\20\3\2\2"+
+		"\2\4\33\3\2\2\2\6\'\3\2\2\2\b,\3\2\2\2\n9\3\2\2\2\f;\3\2\2\2\16=\3\2\2"+
+		"\2\20\21\7\7\2\2\21\25\7\16\2\2\22\24\5\4\3\2\23\22\3\2\2\2\24\27\3\2"+
+		"\2\2\25\23\3\2\2\2\25\26\3\2\2\2\26\30\3\2\2\2\27\25\3\2\2\2\30\31\7\4"+
+		"\2\2\31\32\7\1\2\2\32\3\3\2\2\2\33\34\7\7\2\2\34\35\7\3\2\2\35\36\7\23"+
+		"\2\2\36 \7\7\2\2\37!\5\6\4\2 \37\3\2\2\2 !\3\2\2\2!\"\3\2\2\2\"#\7\4\2"+
+		"\2#$\5\b\5\2$%\5\n\6\2%&\7\4\2\2&\5\3\2\2\2\'(\7\7\2\2()\7\23\2\2)*\5"+
+		"\b\5\2*+\7\4\2\2+\7\3\2\2\2,-\t\2\2\2-\t\3\2\2\2.:\5\16\b\2/\60\7\7\2"+
+		"\2\60\64\5\f\7\2\61\63\5\n\6\2\62\61\3\2\2\2\63\66\3\2\2\2\64\62\3\2\2"+
+		"\2\64\65\3\2\2\2\65\67\3\2\2\2\66\64\3\2\2\2\678\7\4\2\28:\3\2\2\29.\3"+
+		"\2\2\29/\3\2\2\2:\13\3\2\2\2;<\t\3\2\2<\r\3\2\2\2=>\t\4\2\2>\17\3\2\2"+
+		"\2\6\25 \649";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

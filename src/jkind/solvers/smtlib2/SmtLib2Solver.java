@@ -27,7 +27,6 @@ import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public abstract class SmtLib2Solver extends Solver {
 	final private static String DONE = "@DONE";
@@ -127,12 +126,15 @@ public abstract class SmtLib2Solver extends Solver {
 				debug("; " + name + ": " + line);
 				if (line == null) {
 					throw new JKindException(name + " terminated unexpectedly");
-				} else if (line.contains("define-fun " + Keywords.T)) {
+				} else if (line.contains("define-fun " + Keywords.T + " ")) {
 					// No need to parse the transition relation
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the rest of the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {
 						debug("; " + name + ": " + line);
+						if (line.contains(DONE)) {
+							break;
+						}
 					}
 					throw new JKindException(name + " error (see scratch file for details)");
 				} else if (line.contains(DONE)) {
@@ -176,10 +178,7 @@ public abstract class SmtLib2Solver extends Solver {
 			throw new JKindException("Error parsing " + name + " output");
 		}
 
-		ParseTreeWalker walker = new ParseTreeWalker();
-	    ModelExtractorListener extractor = new ModelExtractorListener();
-		walker.walk(extractor, ctx);
-		return extractor.getModel();
+		return ModelExtractor.getModel(ctx);
 	}
 
 	@Override

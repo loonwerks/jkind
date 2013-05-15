@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Eval;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
 
@@ -58,7 +60,15 @@ public class YicesModel extends Model {
 	
 	@Override
 	public Value getFunctionValue(String fn, BigInteger index) {
-		return getFunction(fn).get(index);
+		fn = getAlias(fn);
+		if (functionAssignments.containsKey(fn)) {
+			return functionAssignments.get(fn).get(index);
+		} else if (definitions.containsKey(fn)) {
+			Sexp s = definitions.get(fn).getLambda().instantiate(new Symbol(index.toString()));
+			return new Eval(this).eval(s);
+		} else {
+			throw new IllegalArgumentException("Unknown function: " + fn);
+		}
 	}
 
 	@Override

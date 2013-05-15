@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import jkind.lustre.Type;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Eval;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
+import jkind.util.Util;
 
 public class SmtLib2Model extends Model {
 	private HashMap<String, Sexp> values;
@@ -30,12 +33,30 @@ public class SmtLib2Model extends Model {
 
 	@Override
 	public Value getValue(Symbol sym) {
-		return Eval.eval(values.get(sym.toString()));
+		return new Eval(this).eval(values.get(sym.toString()));
 	}
 
 	@Override
 	public Value getFunctionValue(String fn, BigInteger index) {
-		return Eval.eval(functions.get(fn).instantiate(new Symbol(index.toString())));
+		Lambda lambda;
+		if (functions.containsKey(fn)) {
+			lambda = functions.get(fn);
+		} else if (definitions.containsKey(fn)) {
+			lambda = definitions.get(fn).getLambda();
+		} else {
+			lambda = new Lambda(Util.I, getDefaultValue(fn));
+			functions.put(fn, lambda);
+		}
+		
+		return new Eval(this).eval(lambda.instantiate(new Symbol(index.toString())));
+	}
+
+	private Symbol getDefaultValue(String fn) {
+		if (declarations.get(fn).getType() == Type.BOOL) {
+			return new Symbol("true");
+		} else {
+			return new Symbol("0");
+		}
 	}
 
 	

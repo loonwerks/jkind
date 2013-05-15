@@ -33,7 +33,7 @@ public class ArgumentParser {
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimum changes in values)");
-		options.addOption(SOLVER, true, "SMT solver (default: yices, alternative: cvc4)");
+		options.addOption(SOLVER, true, "SMT solver (default: yices, alternatives: cvc4, z3)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(VERSION, false, "display version information");
@@ -124,6 +124,8 @@ public class ArgumentParser {
 				Settings.solver = SolverOption.YICES;
 			} else if (solver.equals("cvc4")) {
 				Settings.solver = SolverOption.CVC4;
+			} else if (solver.equals("z3")) {
+				Settings.solver = SolverOption.Z3;
 			} else {
 				System.out.println("Unknown solver: " + solver);
 				System.exit(-1);
@@ -143,6 +145,16 @@ public class ArgumentParser {
 			}
 			if (Settings.reduceInvariants) {
 				System.out.println("Invariant reduction not supported with CVC4");
+				System.exit(-1);
+			}
+		}
+		if (Settings.solver == SolverOption.Z3) {
+			if (Settings.smoothCounterexamples) {
+				System.out.println("Smoothing not supported with Z3");
+				System.exit(-1);
+			}
+			if (Settings.reduceInvariants) {
+				System.out.println("Invariant reduction not supported with Z3");
 				System.exit(-1);
 			}
 		}

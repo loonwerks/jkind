@@ -75,13 +75,6 @@ public class YicesSolver extends Solver {
 		send(new Cons("define", def.getId(), new Symbol("::"), type, lambda));
 	}
 
-	public void sendAsAssertion(StreamDef def) {
-		send(def.getDecl());
-		Sexp argType = new Cons(def.getArg(), new Symbol("::"), new Symbol("int"));
-		Sexp lambda = new Cons("lambda", argType, def.getBody());
-		send(new Cons("assert", new Cons("=", def.getId(), lambda)));
-	}
-	
 	@Override
 	public void send(VarDecl decl) {
 		send(new Cons("define", decl.id, new Symbol("::"), type(decl.type)));

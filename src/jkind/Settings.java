@@ -13,5 +13,5 @@ public class Settings {
 	public static boolean smoothCounterexamples = false;
 	public static SolverOption solver = SolverOption.YICES;
 	
-	public static enum SolverOption { YICES, CVC4 };
+	public static enum SolverOption { YICES, CVC4, Z3 };
 }

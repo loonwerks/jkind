@@ -14,6 +14,7 @@ import jkind.processes.messages.Message;
 import jkind.solvers.Solver;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.yices.YicesSolver;
+import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Specification;
 
 public abstract class Process implements Runnable {
@@ -55,6 +56,7 @@ public abstract class Process implements Runnable {
 		case YICES:
 			return "yc";
 		case CVC4:
+		case Z3:
 			return "smt2";
 		}
 		return null;
@@ -88,6 +90,10 @@ public abstract class Process implements Runnable {
 
 		case CVC4:
 			solver = new Cvc4Solver();
+			break;
+
+		case Z3:
+			solver = new Z3Solver();
 			break;
 		}
 

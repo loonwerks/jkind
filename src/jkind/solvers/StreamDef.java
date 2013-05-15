@@ -21,6 +21,10 @@ public class StreamDef {
 		return decl.getId();
 	}
 	
+	public Lambda getLambda() {
+		return lambda;
+	}
+	
 	public Sexp instantiate(Sexp arg) {
 		return lambda.instantiate(arg);
 	}

@@ -1,10 +1,8 @@
 grammar SmtLib2;
 
-model: '(' 'model' (defval | defun)* ')' EOF;
+model: '(' 'model' define* ')' EOF;
 
-defval: '(' 'define-fun' ID '(' ')' type body ')';
-
-defun: '(' 'define-fun' ID '(' arg ')' type body ')';
+define: '(' 'define-fun' ID '(' arg? ')' type body ')';
 
 arg: '(' ID type ')';
 
@@ -16,7 +14,7 @@ body: symbol                               # symbolBody
 
 fn: '=' | '-' | '/' | 'and' | 'ite' | 'not';
 
-symbol: ID | BOOL | INT;
+symbol: ID | BOOL | INT | REAL;
 
 BOOL: 'true' | 'false';
 
@@ -24,6 +22,7 @@ fragment DIGIT: [0-9];
 fragment SYMBOL: [a-zA-Z_@$#%!];
 
 INT: DIGIT+;
+REAL: DIGIT+ '.' DIGIT+;
 ID: SYMBOL (SYMBOL | DIGIT)*;
 
 WS: [ \t\n\r\f]+ -> skip;
