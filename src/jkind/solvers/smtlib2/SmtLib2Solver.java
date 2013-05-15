@@ -62,25 +62,29 @@ public abstract class SmtLib2Solver extends Solver {
 	private Symbol type(Type type) {
 		return new Symbol(capitalize(type.name));
 	}
-	
+
 	private String capitalize(String name) {
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
-	
+
 	@Override
 	public void send(StreamDef def) {
 		Sexp arg = new Cons(def.getArg(), new Symbol("Int"));
 		send(new Cons("define-fun", def.getId(), new Cons(arg), type(def.getType()), def.getBody()));
 	}
-	
+
 	@Override
 	public void send(VarDecl decl) {
 		send(new Cons("declare-fun", decl.id, new Symbol("()"), type(decl.type)));
 	}
-	
+
+	private int labelCount = 1;
+
 	@Override
 	public Label labelledAssert(Sexp sexp) {
-		throw new UnsupportedOperationException();
+		String name = "a" + labelCount++;
+		send(new Cons("assert", new Cons("!", sexp, new Symbol(":named"), new Symbol(name))));
+		return new Label(name);
 	}
 
 	@Override
@@ -97,7 +101,7 @@ public abstract class SmtLib2Solver extends Solver {
 	public Result query(Sexp sexp) {
 		Result result;
 		push();
-		
+
 		send(new Cons("assert", new Cons("not", sexp)));
 		send("(check-sat)");
 		send("(echo \"" + DONE + "\")");
@@ -129,7 +133,7 @@ public abstract class SmtLib2Solver extends Solver {
 				} else if (line.contains("define-fun " + Keywords.T + " ")) {
 					// No need to parse the transition relation
 				} else if (line.contains("error \"") || line.contains("Error:")) {
-					// Flush the rest of the output since errors span multiple lines
+					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {
 						debug("; " + name + ": " + line);
 						if (line.contains(DONE)) {

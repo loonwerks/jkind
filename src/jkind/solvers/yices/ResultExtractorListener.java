@@ -43,7 +43,7 @@ public class ResultExtractorListener extends YicesBaseListener {
 	public void enterUnsatCore(UnsatCoreContext ctx) {
 		List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
 		for (TerminalNode node : ctx.INT()) {
-			unsatCore.add(new IntLabel(Integer.parseInt(node.getText())));
+			unsatCore.add(new Label(node.getText()));
 		}
 	}
 

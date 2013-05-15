@@ -83,28 +83,22 @@ public class YicesSolver extends Solver {
 	private int labelCount = 1;
 
 	@Override
-	public IntLabel labelledAssert(Sexp sexp) {
+	public Label labelledAssert(Sexp sexp) {
 		debug("; id = " + labelCount);
 		send(new Cons("assert+", sexp));
-		return new IntLabel(labelCount++);
+		return new Label(labelCount++);
 	}
 
 	@Override
 	public void retract(Label label) {
-		if (label instanceof IntLabel) {
-			IntLabel il = (IntLabel) label;
-			send(new Cons("retract", Sexp.fromInt(il.i)));
-		} else {
-			throw new IllegalArgumentException("Invalid label to retract in YicesSolver: "
-					+ label.getClass().getCanonicalName());
-		}
+		send(new Cons("retract", new Symbol(label.toString())));
 	}
 
 	@Override
 	public Label weightedAssert(Sexp sexp, int weight) {
 		debug("; id = " + labelCount);
 		send(new Cons("assert+", sexp, Sexp.fromInt(weight)));
-		return new IntLabel(labelCount++);
+		return new Label(labelCount++);
 	}
 
 	@Override
