@@ -63,18 +63,14 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 				if (right.equals(new Symbol("1"))) {
 					return left;
 				} else {
-					StreamDecl modDecl = new StreamDecl("%mod" + sideConditionCounter, Type.INT);
 					StreamDecl divDecl = new StreamDecl("%div" + sideConditionCounter, Type.INT);
-					Sexp mod = new Cons(modDecl.getId(), iSym);
 					Sexp div = new Cons(divDecl.getId(), iSym);
 					sideConditionCounter++;
 
-					sideConditionDeclarations.add(modDecl);
 					sideConditionDeclarations.add(divDecl);
-					sideConditions.add(new Cons("<=", new Symbol("0"), mod));
-					sideConditions.add(new Cons("<", mod, right));
-					sideConditions.add(new Cons("=", left, new Cons("+", new Cons("*", div, right),
-							mod)));
+					sideConditions.add(new Cons("<=", new Cons("*", div, right), left));
+					sideConditions.add(new Cons("<", left, new Cons("+", new Cons("*", div, right),
+							right)));
 
 					return div;
 				}
