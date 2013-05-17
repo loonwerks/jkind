@@ -28,31 +28,40 @@ public class Lustre2Sexps {
 
 	private void createDefinitions(Node node) {
 		for (VarDecl decl : Util.getVarDecls(node)) {
-			declarations.add(new StreamDecl(new Symbol("$" + decl.id), decl.type));
+			declarations.add(new StreamDecl("$" + decl.id, decl.type));
 		}
 	}
 
 	private void createTransition(Node node) {
+		Expr2SexpVisitor visitor = new Expr2SexpVisitor(Util.I);
 		List<Sexp> conjuncts = new ArrayList<Sexp>();
+		
 		for (Equation eq : node.equations) {
-			conjuncts.add(equation2Sexp(eq, Util.I));
+			conjuncts.add(equation2Sexp(eq, Util.I, visitor));
 		}
+		
 		for (VarDecl input : node.inputs) {
 			if (input.type instanceof SubrangeIntType) {
 				conjuncts.add(Util.subrangeConstraint(input.id, Util.I,
 						(SubrangeIntType) input.type));
 			}
 		}
+		
 		for (Expr assertion : node.assertions) {
 			conjuncts.add(assertion.accept(new Expr2SexpVisitor(Util.I)));
+		}
+		
+		if (visitor.hasSideConditions()) {
+			declarations.addAll(visitor.getSideConditionDeclarations());
+			conjuncts.addAll(visitor.getSideConditions());
 		}
 
 		Lambda lambda = new Lambda(Util.I, new Cons("and", conjuncts));
 		transition = new StreamDef(Keywords.T, Type.BOOL, lambda);
 	}
 
-	private Sexp equation2Sexp(Equation eq, Symbol iSym) {
-		Sexp body = eq.expr.accept(new Expr2SexpVisitor(iSym));
+	private Sexp equation2Sexp(Equation eq, Symbol iSym, Expr2SexpVisitor visitor) {
+		Sexp body = eq.expr.accept(visitor);
 		return new Cons("=", new Cons("$" + eq.lhs.get(0).id, iSym), body);
 	}
 

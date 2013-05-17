@@ -11,6 +11,11 @@ public class StreamDecl {
 		this.id = id;
 		this.type = type;
 	}
+	
+	public StreamDecl(String id, Type type) {
+		this.id = new Symbol(id);
+		this.type = type;
+	}
 
 	public Symbol getId() {
 		return id;
