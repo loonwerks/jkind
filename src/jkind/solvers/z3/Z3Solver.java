@@ -10,6 +10,5 @@ public class Z3Solver extends SmtLib2Solver {
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
-		send("(set-option :produce-unsat-cores true)");
 	}
 }
