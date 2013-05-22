@@ -52,7 +52,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 		switch (e.op) {
 		case NOTEQUAL:
 		case XOR:
-			return new Cons("/=", left, right);
+			return new Cons("not", new Cons("=", left, right));
 
 		case ARROW:
 			Sexp cond = new Cons("=", iSym, Sexp.fromInt(-offset));
