@@ -1,18 +1,33 @@
 package jkind.analysis.evaluation;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 
-public class RealValue extends Value {
-	final public BigDecimal value;
-	
-	public RealValue(BigDecimal value) {
-		if (value == null) {
-			throw new IllegalArgumentException("Cannot create null real value");
+public class RealValue extends Value implements Comparable<RealValue> {
+	final public BigInteger num;
+	final public BigInteger denom; // Always positive
+
+	public RealValue(BigInteger num, BigInteger denom) {
+		if (denom.equals(BigInteger.ZERO)) {
+			throw new ArithmeticException("Divide by zero");
 		}
-		this.value = value;
+
+		if (denom.compareTo(BigInteger.ZERO) > 0) {
+			this.num = num;
+			this.denom = denom;
+		} else {
+			this.num = num.negate();
+			this.denom = denom.negate();
+		}
+	}
+
+	public RealValue(BigDecimal value) {
+		BigInteger TEN = BigInteger.valueOf(10);
+		this.num = value.unscaledValue();
+		this.denom = TEN.pow(value.scale());
 	}
 
 	@Override
@@ -20,39 +35,46 @@ public class RealValue extends Value {
 		if (!(right instanceof RealValue)) {
 			return null;
 		}
-		BigDecimal other = ((RealValue) right).value;
+		RealValue other = (RealValue) right;
 
 		switch (op) {
 		case PLUS:
-			return new RealValue(value.add(other));
-		case MINUS:
-			return new RealValue(value.subtract(other));
+			return new RealValue(num.multiply(other.denom).add(
+					other.num.multiply(denom)), denom.multiply(other.denom));
+		case MINUS:			
+			return new RealValue(num.multiply(other.denom).subtract(
+				other.num.multiply(denom)), denom.multiply(other.denom));
 		case MULTIPLY:
-			return new RealValue(value.multiply(other));
+			return new RealValue(num.multiply(other.num), denom.multiply(other.denom));
 		case DIVIDE:
-			return new RealValue(value.divide(other));
+			return new RealValue(num.multiply(other.denom), denom.multiply(other.num));
 		case EQUAL:
-			return BooleanValue.fromBoolean(value.compareTo(other) == 0);
+			return BooleanValue.fromBoolean(compareTo(other) == 0);
 		case NOTEQUAL:
-			return BooleanValue.fromBoolean(value.compareTo(other) != 0);
+			return BooleanValue.fromBoolean(compareTo(other) != 0);
 		case GREATER:
-			return BooleanValue.fromBoolean(value.compareTo(other) > 0);
+			return BooleanValue.fromBoolean(compareTo(other) > 0);
 		case LESS:
-			return BooleanValue.fromBoolean(value.compareTo(other) < 0);
+			return BooleanValue.fromBoolean(compareTo(other) < 0);
 		case GREATEREQUAL:
-			return BooleanValue.fromBoolean(value.compareTo(other) >= 0);
+			return BooleanValue.fromBoolean(compareTo(other) >= 0);
 		case LESSEQUAL:
-			return BooleanValue.fromBoolean(value.compareTo(other) <= 0);
+			return BooleanValue.fromBoolean(compareTo(other) <= 0);
 		default:
 			return null;
 		}
 	}
-	
+
+	@Override
+	public int compareTo(RealValue other) {
+		return num.multiply(other.denom).compareTo(other.num.multiply(denom));
+	}
+
 	@Override
 	public Value applyUnaryOp(UnaryOp op) {
 		switch (op) {
 		case NEGATIVE:
-			return new RealValue(value.negate());
+			return new RealValue(num.negate(), denom);
 		default:
 			return null;
 		}

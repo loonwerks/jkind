@@ -2,7 +2,6 @@ package jkind.writers;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
@@ -234,12 +233,12 @@ public class ExcelWriter extends Writer {
 			throw new JKindException("Unable to parse numeric value: " + str);
 		}
 
-		BigDecimal result = new BigDecimal(strs[0]);
+		double result = Double.parseDouble(strs[0]);
 		if (strs.length > 1) {
-			result = result.divide(new BigDecimal(strs[1]));
+			result = result / Double.parseDouble(strs[1]);
 		}
 
-		return result.doubleValue();
+		return result;
 	}
 
 	@Override

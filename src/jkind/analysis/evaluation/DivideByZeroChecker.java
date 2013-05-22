@@ -1,6 +1,5 @@
 package jkind.analysis.evaluation;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import jkind.lustre.BinaryExpr;
@@ -58,7 +57,7 @@ public class DivideByZeroChecker extends IterVisitor {
 			return (iv.value.compareTo(BigInteger.ZERO) == 0);
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			return (rv.value.compareTo(BigDecimal.ZERO) == 0);
+			return (rv.num.equals(BigInteger.ZERO));
 		} else {
 			return false;
 		}
