@@ -1,0 +1,58 @@
+-- This file has a single property which is false at K = 8
+
+-- This is an encoding of the wolf/goat/cabbage river crossing puzzle
+
+type payload = subrange [0, 3] of int;
+
+const EMPTY : payload = 0;
+const WOLF : payload = 1;
+const GOAT : payload = 2;
+const CABBAGE : payload = 3;
+
+type side = bool;
+
+const LEFT : side = false;
+const RIGHT : side = true;
+
+node swap(side : side) returns (other : side);
+let
+  other = if side = LEFT then RIGHT else LEFT;
+tel;
+
+node boat(choice, object : payload; farmer : side) returns (result : side);
+let
+  result = LEFT -> if pre(choice) = object
+                   then swap(pre(result))
+                   else pre(result);
+tel;
+
+node historically(x : bool) returns (holds : bool);
+let
+  holds = x and (true -> pre holds);
+tel;
+
+node farmer(choice : payload) returns (wolf, goat, cabbage, farmer : side);
+var
+    solved : bool;
+    nothing_eaten : bool;
+    wellformed : bool;
+    prop : bool;
+let
+    wolf = boat(choice, WOLF, farmer);
+    goat = boat(choice, GOAT, farmer);
+    cabbage = boat(choice, CABBAGE, farmer);
+    farmer = LEFT -> swap(pre(farmer));
+
+    nothing_eaten = (wolf = goat => farmer = goat) and
+                    (goat = cabbage => farmer = cabbage);
+
+    wellformed = (choice = WOLF => farmer = wolf) and
+                 (choice = GOAT => farmer = goat) and
+                 (choice = CABBAGE => farmer = cabbage);
+
+    solved = wolf = RIGHT and goat = RIGHT and
+             cabbage = RIGHT and farmer = RIGHT;
+
+    prop = not (historically(nothing_eaten and wellformed) and solved);
+    --%PROPERTY prop;
+tel;

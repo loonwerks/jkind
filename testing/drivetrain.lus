@@ -1,0 +1,828 @@
+-- Expected output:
+--   VALID PROPERTIES: [no_stall_A1, no_chatter_B1]
+--   INVALID PROPERTIES: [no_stall_B1, no_chatter_A1]
+
+-- This model uses real numbers.
+
+node system(throttle_in: real; 
+      slope_in: real)
+   returns (transmission_rotation_out: real; 
+      load_out: real; 
+      gear_out: int);
+
+var
+   chatter_counter1: int; 
+   always_holds3: bool; 
+   always_holds2: bool; 
+   always_holds1: bool; 
+   always_holds: bool; 
+   rlt_check_2: bool; 
+   rlt_check_1: bool; 
+   rlt_check_: bool; 
+   no_stall_A: bool; 
+   no_stall_B: bool; 
+   no_chatter_A: bool; 
+   no_chatter_B: bool; 
+   always: bool; 
+   always1: bool; 
+   always2: bool; 
+   no_stall_A1: bool; 
+   no_stall_B1: bool; 
+   no_chatter_A1: bool; 
+   no_chatter_B1: bool;
+
+
+let
+   gear_out = (
+      (if (
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) < 424.52830260)
+         then 1
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) >= 424.52830260) and 
+         (
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) < 590.16393360))
+         then 2
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) >= 590.16393360) and 
+         (
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) < 775.86206940))
+         then 3
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) >= 775.86206940) and 
+         (
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) < 1077.84431100))
+         then 4
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) >= 1077.84431100) and 
+         (
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) < 1800.00000000))
+         then 5
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) >= 1800.00000000) and 
+         (
+         (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+            then ((120.00000000 * throttle_in) - (0.23584906 * load_out))
+            else 0.00000000) < 99999.00000000))
+         then 6
+         else 1)))))) -> 
+      (if (
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) < 424.52830260)
+         then 1
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) >= 424.52830260) and 
+         (
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) < 590.16393360))
+         then 2
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) >= 590.16393360) and 
+         (
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) < 775.86206940))
+         then 3
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) >= 775.86206940) and 
+         (
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) < 1077.84431100))
+         then 4
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) >= 1077.84431100) and 
+         (
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) < 1800.00000000))
+         then 5
+         else 
+      (if ((
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) >= 1800.00000000) and 
+         (
+         (if (((120.00000000 * throttle_in) - 
+            (if (gear_out = 1)
+               then (0.23584906 * load_out)
+               else 
+            (if (gear_out = 2)
+               then (0.32786885 * load_out)
+               else 
+            (if (gear_out = 3)
+               then (0.43103448 * load_out)
+               else 
+            (if (gear_out = 4)
+               then (0.59880239 * load_out)
+               else 
+            (if (gear_out = 5)
+               then (1.00000000 * load_out)
+               else 
+            (if (gear_out = 6)
+               then (1.38888889 * load_out)
+               else (1.00000000 * load_out)))))))) > 0.00000000)
+            then ((120.00000000 * throttle_in) - 
+                  (if (gear_out = 1)
+                     then (0.23584906 * load_out)
+                     else 
+                  (if (gear_out = 2)
+                     then (0.32786885 * load_out)
+                     else 
+                  (if (gear_out = 3)
+                     then (0.43103448 * load_out)
+                     else 
+                  (if (gear_out = 4)
+                     then (0.59880239 * load_out)
+                     else 
+                  (if (gear_out = 5)
+                     then (1.00000000 * load_out)
+                     else 
+                  (if (gear_out = 6)
+                     then (1.38888889 * load_out)
+                     else (1.00000000 * load_out))))))))
+            else 0.00000000) < 99999.00000000))
+         then 6
+         else 1)))))));
+
+   chatter_counter1 = (0 -> 
+      (if (not (gear_out = ( pre gear_out)))
+         then (( pre chatter_counter1) + 1)
+         else 0));
+
+   transmission_rotation_out = (
+      (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
+         then (((120.00000000 * throttle_in) - (0.23584906 * load_out)) * 0.23584906)
+         else (0.00000000 * 0.23584906)) -> 
+      (if (((120.00000000 * throttle_in) - 
+         (if (gear_out = 1)
+            then (0.23584906 * load_out)
+            else 
+         (if (gear_out = 2)
+            then (0.32786885 * load_out)
+            else 
+         (if (gear_out = 3)
+            then (0.43103448 * load_out)
+            else 
+         (if (gear_out = 4)
+            then (0.59880239 * load_out)
+            else 
+         (if (gear_out = 5)
+            then (1.00000000 * load_out)
+            else 
+         (if (gear_out = 6)
+            then (1.38888889 * load_out)
+            else (1.00000000 * load_out)))))))) > 0.00000000)
+         then 
+               (if (gear_out = 1)
+                  then (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 0.23584906)
+                  else 
+               (if (gear_out = 2)
+                  then (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 0.32786885)
+                  else 
+               (if (gear_out = 3)
+                  then (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 0.43103448)
+                  else 
+               (if (gear_out = 4)
+                  then (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 0.59880239)
+                  else 
+               (if (gear_out = 5)
+                  then (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 1.00000000)
+                  else 
+               (if (gear_out = 6)
+                  then (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 1.38888889)
+                  else (((120.00000000 * throttle_in) - 
+                        (if (gear_out = 1)
+                           then (0.23584906 * load_out)
+                           else 
+                        (if (gear_out = 2)
+                           then (0.32786885 * load_out)
+                           else 
+                        (if (gear_out = 3)
+                           then (0.43103448 * load_out)
+                           else 
+                        (if (gear_out = 4)
+                           then (0.59880239 * load_out)
+                           else 
+                        (if (gear_out = 5)
+                           then (1.00000000 * load_out)
+                           else 
+                        (if (gear_out = 6)
+                           then (1.38888889 * load_out)
+                           else (1.00000000 * load_out)))))))) * 1.00000000)))))))
+         else 
+      (if (gear_out = 1)
+         then (0.00000000 * 0.23584906)
+         else 
+      (if (gear_out = 2)
+         then (0.00000000 * 0.32786885)
+         else 
+      (if (gear_out = 3)
+         then (0.00000000 * 0.43103448)
+         else 
+      (if (gear_out = 4)
+         then (0.00000000 * 0.59880239)
+         else 
+      (if (gear_out = 5)
+         then (0.00000000 * 1.00000000)
+         else 
+      (if (gear_out = 6)
+         then (0.00000000 * 1.38888889)
+         else (0.00000000 * 1.00000000)))))))));
+
+   always_holds1 = ((throttle_in >= 18.00000000) -> ((throttle_in >= 18.00000000) and 
+      ( pre always_holds1)));
+
+   always_holds2 = (((((throttle_in = 15.00000000) and 
+      (-0.20000000 <= slope_in)) and 
+      (slope_in <= 0.20000000)) and 
+      (slope_in <= 0.05000000)) -> (((((throttle_in = 15.00000000) and 
+      (-0.20000000 <= slope_in)) and 
+      (slope_in <= 0.20000000)) and 
+      ((slope_in - ( pre slope_in)) <= 0.05000000)) and 
+      ( pre always_holds2)));
+
+   always_holds3 = (((((throttle_in = 15.00000000) and 
+      (-0.03000000 <= slope_in)) and 
+      (slope_in <= 0.03000000)) and 
+      (slope_in <= 0.01000000)) -> (((((throttle_in = 15.00000000) and 
+      (-0.03000000 <= slope_in)) and 
+      (slope_in <= 0.03000000)) and 
+      ((slope_in - ( pre slope_in)) <= 0.01000000)) and 
+      ( pre always_holds3)));
+
+   no_chatter_A = (( not always_holds2) or 
+      (chatter_counter1 < 5));
+
+   load_out = (500.00000000 + (10000.00000000 * slope_in));
+
+   no_stall_B = (( not always_holds1) or 
+      (transmission_rotation_out > 0.00000000));
+
+   rlt_check_1 = ((slope_in = 0.00000000) -> ((-0.25000000 <= (slope_in - ( pre slope_in))) and 
+      ((slope_in - ( pre slope_in)) <= 0.25000000)));
+
+   always_holds = ((throttle_in >= 19.00000000) -> ((throttle_in >= 19.00000000) and 
+      ( pre always_holds)));
+
+   no_stall_A = (( not always_holds) or 
+      (transmission_rotation_out > 0.00000000));
+
+   rlt_check_ = ((0.00000000 <= throttle_in) and 
+      (throttle_in <= 25.00000000));
+
+   rlt_check_2 = ((-0.86600000 <= slope_in) and 
+      (slope_in <= 0.86600000));
+
+   no_chatter_B = (( not always_holds3) or 
+      (chatter_counter1 < 5));
+
+   always = (rlt_check_2 and 
+      (true -> ( pre always)));
+
+   always1 = (rlt_check_1 and 
+      (true -> ( pre always1)));
+
+   always2 = (rlt_check_ and 
+      (true -> ( pre always2)));
+
+   no_stall_A1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      no_stall_A);
+
+   no_stall_B1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      no_stall_B);
+
+   no_chatter_A1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      no_chatter_A);
+
+   no_chatter_B1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      no_chatter_B);
+
+   --Line 128
+--%PROPERTY no_stall_A1; 
+
+   --Line 131
+--%PROPERTY no_stall_B1; 
+
+   --Line 134
+--%PROPERTY no_chatter_A1; 
+
+   --Line 138
+--%PROPERTY no_chatter_B1; 
+tel;
+
+

@@ -1,0 +1,106 @@
+-- This file has one property which is false with K = 25
+
+-- The peg swap puzzle. You have have the following board
+--  B B B B . R R R R
+-- Where B is a blue peg, R is a red peg, and . is empty.
+-- Blue pegs only move right. Red pegs only move left.
+-- A peg can move to an empty space next to it,
+-- or hop over a single peg next to it into an empty space.
+-- The game is won if you can reach the configuration:
+--  R R R R . B B B B
+-- This puzzle is sometimes called "8 men on a raft"
+
+node historically(x : bool) returns (holds : bool);
+let
+  holds = x and (true -> pre holds);
+tel;
+
+node valid(loc : int) returns (v : bool);
+let
+  v = (loc = 1 or loc = 2 or loc = 3 or loc = 4 or loc = 5 or loc = 6 or loc = 7 or loc = 8 or loc = 9);
+tel;
+
+node blue_peg(in : int; init : int; p1, p2, p3, p4, p5, p6, p7 : int) returns (b : int);
+let
+  b = init -> if pre(in) = init then
+                if pre(b) + 1 <> pre(p1) and
+                   pre(b) + 1 <> pre(p2) and
+                   pre(b) + 1 <> pre(p3) and
+                   pre(b) + 1 <> pre(p4) and
+                   pre(b) + 1 <> pre(p5) and
+                   pre(b) + 1 <> pre(p6) and
+                   pre(b) + 1 <> pre(p7) then pre(b) + 1 else pre(b) + 2
+              else pre(b);
+tel;
+
+node red_peg(in : int; init : int; p1, p2, p3, p4, p5, p6, p7 : int) returns (r : int);
+let
+  r = init -> if pre(in) = init then
+                if pre(r) - 1 <> pre(p1) and
+                   pre(r) - 1 <> pre(p2) and
+                   pre(r) - 1 <> pre(p3) and
+                   pre(r) - 1 <> pre(p4) and
+                   pre(r) - 1 <> pre(p5) and
+                   pre(r) - 1 <> pre(p6) and
+                   pre(r) - 1 <> pre(p7) then pre(r) - 1 else pre(r) - 2
+              else pre(r);
+tel;
+
+node distinct8(p1, p2, p3, p4, p5, p6, p7, p8 : int) returns (distinct : bool);
+let
+  distinct = p1 <> p2 and p1 <> p3 and p1 <> p4 and p1 <> p5 and p1 <> p6 and p1 <> p7 and p1 <> p8 and
+             p2 <> p3 and p2 <> p4 and p2 <> p5 and p2 <> p6 and p2 <> p7 and p2 <> p8 and
+             p3 <> p4 and p3 <> p5 and p3 <> p6 and p3 <> p7 and p3 <> p8 and
+             p4 <> p5 and p4 <> p6 and p4 <> p7 and p4 <> p8 and
+             p5 <> p6 and p5 <> p7 and p5 <> p8 and
+             p6 <> p7 and p6 <> p8 and
+             p7 <> p8;
+tel;
+
+node blue_start_position(p : int) returns (holds : bool);
+let
+  holds = p = 1 or p = 2 or p = 3 or p = 4;
+tel;
+
+node red_start_position(p : int) returns (holds : bool);
+let
+  holds = p = 6 or p = 7 or p = 8 or p = 9;
+tel;
+
+node peg(in : int) returns (b1, b2, b3, b4, r6, r7, r8, r9 : int);
+var
+    solved, wellformed, prop : bool;
+    distinct, bounded : bool;
+    blue_turn, red_turn, some_turn, blue_start : bool;
+let
+    b1 = blue_peg(in, 1, b2, b3, b4, r6, r7, r8, r9);
+    b2 = blue_peg(in, 2, b1, b3, b4, r6, r7, r8, r9);
+    b3 = blue_peg(in, 3, b1, b2, b4, r6, r7, r8, r9);
+    b4 = blue_peg(in, 4, b1, b2, b3, r6, r7, r8, r9);
+
+    r6 = red_peg(in, 6, b1, b2, b3, b4, r7, r8, r9);
+    r7 = red_peg(in, 7, b1, b2, b3, b4, r6, r8, r9);
+    r8 = red_peg(in, 8, b1, b2, b3, b4, r6, r7, r9);
+    r9 = red_peg(in, 9, b1, b2, b3, b4, r6, r7, r8);
+
+    distinct = distinct8(b1, b2, b3, b4, r6, r7, r8, r9);
+
+    bounded = valid(b1) and valid(b2) and valid(b3) and valid(b4) and
+              valid(r6) and valid(r7) and valid(r8) and valid(r9);
+
+    blue_turn = blue_start_position(in);
+    red_turn = red_start_position(in);
+
+    -- This is not needed, but cuts the analysis roughly in half
+    blue_start = blue_turn -> true;
+
+    some_turn = blue_turn or red_turn;
+              
+    wellformed = distinct and bounded and blue_start and some_turn;
+
+    solved = red_start_position(b1) and red_start_position(b2) and red_start_position(b3) and red_start_position(b4) and
+             blue_start_position(r6) and blue_start_position(r7) and blue_start_position(r8) and blue_start_position(r9);
+
+    prop = not (historically(wellformed) and solved);
+    --%PROPERTY prop;
+tel;
