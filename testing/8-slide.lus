@@ -1,94 +1,62 @@
 -- Expected output:
 --   VALID PROPERTIES: [only_change_on_blank, distinct]
---   INVALID PROPERTIES: [not_solved]
+--   INVALID PROPERTIES: [prop]
 -- K = 19
 
-node puzzle(in : int) returns ();
+type loc = subrange [-1, 8] of int;
+
+const OFF : loc = -1; -- An invalid location, used to mark edges
+
+type dir = subrange [0, 3] of int;
+
+const RIGHT : dir = 0;
+const DOWN : dir = 1;
+const LEFT : dir = 2;
+const UP : dir = 3;
+
+node square(in : dir; init : loc; right, down, left, up : loc) returns (s : loc);
+let
+  s = init -> if pre(s) = 0 and pre(in) = RIGHT and right <> OFF then pre(right)
+              else if pre(s) = 0 and pre(in) = DOWN and down <> OFF then pre(down)
+              else if pre(s) = 0 and pre(in) = LEFT and left <> OFF then pre(left)
+              else if pre(s) = 0 and pre(in) = UP and up <> OFF then pre(up)
+              else if pre(left) = 0 and pre(in) = RIGHT then 0
+              else if pre(up) = 0 and pre(in) = DOWN then 0
+              else if pre(right) = 0 and pre(in) = LEFT then 0
+              else if pre(down) = 0 and pre(in) = UP then 0
+              else pre(s);
+tel;
+
+node puzzle(in : dir) returns (p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc);
 var
-    p1, p2, p3, p4, p5, p6, p7, p8, p9 : int;
     solved : bool;
-    not_solved : bool;
+    prop : bool;
     distinct : bool;
     only_change_on_blank : bool;
 let
-    -- in = 0   Move empty right
-    -- in = 1   Move empty down
-    -- in = 2   Move empty left
-    -- in = 3   Move empty up
+    -- Board layout:
+    -- p1 p2 p3
+    -- p4 p5 p6
+    -- p7 p8 p9
 
+    -- Initial configuration:
     -- 5 2 3
     -- 4   8
     -- 1 6 7
 
-    p1 = 5 -> if pre(p1) = 0 and pre(in) = 0 then pre(p2)
-              else if pre(p1) = 0 and pre(in) = 1 then pre(p4)
-              else if pre(p2) = 0 and pre(in) = 2 then 0
-              else if pre(p4) = 0 and pre(in) = 3 then 0
-              else pre(p1);
-
-    p2 = 2 -> if pre(p2) = 0 and pre(in) = 0 then pre(p3)
-              else if pre(p2) = 0 and pre(in) = 1 then pre(p5)
-              else if pre(p2) = 0 and pre(in) = 2 then pre(p1)
-              else if pre(p3) = 0 and pre(in) = 2 then 0
-              else if pre(p5) = 0 and pre(in) = 3 then 0
-              else if pre(p1) = 0 and pre(in) = 0 then 0
-              else pre(p2);
-
-    p3 = 3 -> if pre(p3) = 0 and pre(in) = 1 then pre(p6)
-              else if pre(p3) = 0 and pre(in) = 2 then pre(p2)
-              else if pre(p6) = 0 and pre(in) = 3 then 0
-              else if pre(p2) = 0 and pre(in) = 0 then 0
-              else pre(p3);
-
-    p4 = 4 -> if pre(p4) = 0 and pre(in) = 0 then pre(p5)
-              else if pre(p4) = 0 and pre(in) = 1 then pre(p7)
-              else if pre(p4) = 0 and pre(in) = 3 then pre(p1)
-              else if pre(p5) = 0 and pre(in) = 2 then 0
-              else if pre(p7) = 0 and pre(in) = 3 then 0
-              else if pre(p1) = 0 and pre(in) = 1 then 0
-              else pre(p4);
-
-    p5 = 0 -> if pre(p5) = 0 and pre(in) = 0 then pre(p6)
-              else if pre(p5) = 0 and pre(in) = 1 then pre(p8)
-              else if pre(p5) = 0 and pre(in) = 2 then pre(p4)
-              else if pre(p5) = 0 and pre(in) = 3 then pre(p2)
-              else if pre(p6) = 0 and pre(in) = 2 then 0
-              else if pre(p8) = 0 and pre(in) = 3 then 0
-              else if pre(p4) = 0 and pre(in) = 0 then 0
-              else if pre(p2) = 0 and pre(in) = 1 then 0
-              else pre(p5);
-
-    p6 = 8 -> if pre(p6) = 0 and pre(in) = 1 then pre(p9)
-              else if pre(p6) = 0 and pre(in) = 2 then pre(p5)
-              else if pre(p6) = 0 and pre(in) = 3 then pre(p3)
-              else if pre(p9) = 0 and pre(in) = 3 then 0
-              else if pre(p5) = 0 and pre(in) = 0 then 0
-              else if pre(p3) = 0 and pre(in) = 1 then 0
-              else pre(p6);
-
-    p7 = 1 -> if pre(p7) = 0 and pre(in) = 0 then pre(p8)
-              else if pre(p7) = 0 and pre(in) = 3 then pre(p4)
-              else if pre(p8) = 0 and pre(in) = 2 then 0
-              else if pre(p4) = 0 and pre(in) = 1 then 0
-              else pre(p7);
-
-    p8 = 6 -> if pre(p8) = 0 and pre(in) = 0 then pre(p9)
-              else if pre(p8) = 0 and pre(in) = 2 then pre(p7)
-              else if pre(p8) = 0 and pre(in) = 3 then pre(p5)
-              else if pre(p9) = 0 and pre(in) = 2 then 0
-              else if pre(p7) = 0 and pre(in) = 0 then 0
-              else if pre(p5) = 0 and pre(in) = 1 then 0
-              else pre(p8);
-
-    p9 = 7 -> if pre(p9) = 0 and pre(in) = 2 then pre(p8)
-              else if pre(p9) = 0 and pre(in) = 3 then pre(p6)
-              else if pre(p8) = 0 and pre(in) = 0 then 0
-              else if pre(p6) = 0 and pre(in) = 1 then 0
-              else pre(p9);
+    p1 = square(in, 5, p2, p4, OFF, OFF);
+    p2 = square(in, 2, p3, p5, p1, OFF);
+    p3 = square(in, 3, OFF, p6, p2, OFF);
+    p4 = square(in, 4, p5, p7, OFF, p1);
+    p5 = square(in, 0, p6, p8, p4, p2);
+    p6 = square(in, 8, OFF, p9, p5, p3);
+    p7 = square(in, 1, p8, OFF, OFF, p4);
+    p8 = square(in, 6, p9, OFF, p7, p5);
+    p9 = square(in, 7, OFF, OFF, p8, p6);
 
     solved = p1 = 1 and p2 = 2 and p3 = 3 and p4 = 4 and p5 = 5 and p6 = 6 and p7 = 7 and p8 = 8 and p9 = 0;
-    not_solved = not(solved);
-    --%PROPERTY not_solved;
+    prop = not solved;
+    --%PROPERTY prop;
 
     distinct = p1 <> p2 and p1 <> p3 and p1 <> p4 and p1 <> p5 and
                p1 <> p6 and p1 <> p7 and p1 <> p8 and p1 <> p9 and

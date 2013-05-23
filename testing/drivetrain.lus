@@ -1,8 +1,9 @@
 -- Expected output:
---   VALID PROPERTIES: [no_stall_A1, no_chatter_B1]
---   INVALID PROPERTIES: [no_stall_B1, no_chatter_A1]
+-- VALID PROPERTIES: [no_stall_A1, sweet_spot_max_throttleA1,
+--                    no_chatter_B1, sweet_spot_no_chatter1]
+-- INVALID PROPERTIES: [sweet_spot_max_throttleB1, no_stall_B1, no_chatter_A1]
 
--- This model uses real numbers.
+-- This model uses real numbers
 
 node system(throttle_in: real; 
       slope_in: real)
@@ -11,7 +12,10 @@ node system(throttle_in: real;
       gear_out: int);
 
 var
-   chatter_counter1: int; 
+   always_holds6: bool; 
+   always_holds5: bool; 
+   chatter_counter2: int; 
+   always_holds4: bool; 
    always_holds3: bool; 
    always_holds2: bool; 
    always_holds1: bool; 
@@ -23,16 +27,22 @@ var
    no_stall_B: bool; 
    no_chatter_A: bool; 
    no_chatter_B: bool; 
+   sweet_spot_no_chatter: bool; 
+   sweet_spot_max_throttleA: bool; 
+   sweet_spot_max_throttleB: bool; 
    always: bool; 
    always1: bool; 
    always2: bool; 
    no_stall_A1: bool; 
    no_stall_B1: bool; 
    no_chatter_A1: bool; 
-   no_chatter_B1: bool;
+   no_chatter_B1: bool; 
+   sweet_spot_no_chatter1: bool; 
+   sweet_spot_max_throttleA1: bool; 
+   sweet_spot_max_throttleB1: bool;
 
 
-let
+let --%MAIN
    gear_out = (
       (if (
          (if (((120.00000000 * throttle_in) - (0.23584906 * load_out)) > 0.00000000)
@@ -543,9 +553,9 @@ let
          then 6
          else 1)))))));
 
-   chatter_counter1 = (0 -> 
+   chatter_counter2 = (0 -> 
       (if (not (gear_out = ( pre gear_out)))
-         then (( pre chatter_counter1) + 1)
+         then (( pre chatter_counter2) + 1)
          else 0));
 
    transmission_rotation_out = (
@@ -758,9 +768,26 @@ let
       ( pre always_holds3)));
 
    no_chatter_A = (( not always_holds2) or 
-      (chatter_counter1 < 5));
+      (chatter_counter2 < 5));
+
+   always_holds5 = (((-0.05000000 <= slope_in) and 
+      (slope_in <= 0.05000000)) -> (((((1100.00000000 <= transmission_rotation_out) and 
+      (transmission_rotation_out <= 1800.00000000)) and 
+      (-0.05000000 <= slope_in)) and 
+      (slope_in <= 0.05000000)) and 
+      ( pre always_holds5)));
+
+   always_holds6 = (((-0.10000000 <= slope_in) and 
+      (slope_in <= 0.10000000)) -> (((((1100.00000000 <= transmission_rotation_out) and 
+      (transmission_rotation_out <= 1800.00000000)) and 
+      (-0.10000000 <= slope_in)) and 
+      (slope_in <= 0.10000000)) and 
+      ( pre always_holds6)));
 
    load_out = (500.00000000 + (10000.00000000 * slope_in));
+
+   sweet_spot_max_throttleA = (true -> (( not always_holds5) or 
+      (throttle_in < 25.00000000)));
 
    no_stall_B = (( not always_holds1) or 
       (transmission_rotation_out > 0.00000000));
@@ -768,11 +795,21 @@ let
    rlt_check_1 = ((slope_in = 0.00000000) -> ((-0.25000000 <= (slope_in - ( pre slope_in))) and 
       ((slope_in - ( pre slope_in)) <= 0.25000000)));
 
+   sweet_spot_no_chatter = (( not always_holds4) or 
+      (chatter_counter2 < 5));
+
    always_holds = ((throttle_in >= 19.00000000) -> ((throttle_in >= 19.00000000) and 
       ( pre always_holds)));
 
    no_stall_A = (( not always_holds) or 
       (transmission_rotation_out > 0.00000000));
+
+   sweet_spot_max_throttleB = (true -> (( not always_holds6) or 
+      (throttle_in < 25.00000000)));
+
+   always_holds4 = (true -> (((1100.00000000 <= transmission_rotation_out) and 
+      (transmission_rotation_out <= 1800.00000000)) and 
+      ( pre always_holds4)));
 
    rlt_check_ = ((0.00000000 <= throttle_in) and 
       (throttle_in <= 25.00000000));
@@ -781,7 +818,7 @@ let
       (slope_in <= 0.86600000));
 
    no_chatter_B = (( not always_holds3) or 
-      (chatter_counter1 < 5));
+      (chatter_counter2 < 5));
 
    always = (rlt_check_2 and 
       (true -> ( pre always)));
@@ -812,6 +849,21 @@ let
       always2))) or 
       no_chatter_B);
 
+   sweet_spot_no_chatter1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      sweet_spot_no_chatter);
+
+   sweet_spot_max_throttleA1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      sweet_spot_max_throttleA);
+
+   sweet_spot_max_throttleB1 = (( not (always and 
+      (always1 and 
+      always2))) or 
+      sweet_spot_max_throttleB);
+
    --Line 128
 --%PROPERTY no_stall_A1; 
 
@@ -823,6 +875,16 @@ let
 
    --Line 138
 --%PROPERTY no_chatter_B1; 
+
+   --Line 142
+--%PROPERTY sweet_spot_no_chatter1; 
+
+   --Line 145
+--%PROPERTY sweet_spot_max_throttleA1; 
+
+   --Line 149
+--%PROPERTY sweet_spot_max_throttleB1;
+
 tel;
 
 
