@@ -29,8 +29,8 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public abstract class SmtLib2Solver extends Solver {
-	final private static String DONE = "@DONE";
-	final private String name;
+	final protected static String DONE = "@DONE";
+	final protected String name;
 
 	public SmtLib2Solver(ProcessBuilder pb, String name) {
 		super(pb);
@@ -117,11 +117,11 @@ public abstract class SmtLib2Solver extends Solver {
 		return result;
 	}
 
-	private boolean isSat(String output) {
+	protected boolean isSat(String output) {
 		return !output.contains("unsat");
 	}
 
-	private String readFromSolver() {
+	protected String readFromSolver() {
 		try {
 			String line;
 			StringBuilder content = new StringBuilder();
@@ -157,7 +157,7 @@ public abstract class SmtLib2Solver extends Solver {
 		}
 	}
 
-	private SmtLib2Model parseModel(String string) {
+	protected SmtLib2Model parseModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
