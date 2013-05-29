@@ -29,7 +29,7 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class Main {
-	final public static String VERSION = "1.3";
+	final public static String VERSION = "1.3.1";
 
 	public static void main(String args[]) {
 		try {
