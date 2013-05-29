@@ -6,10 +6,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.lustre.Type;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.BoolValue;
 import jkind.solvers.Eval;
 import jkind.solvers.Model;
+import jkind.solvers.NumericValue;
 import jkind.solvers.Value;
 
 public class YicesModel extends Model {
@@ -67,7 +70,17 @@ public class YicesModel extends Model {
 			Sexp s = definitions.get(fn).getLambda().instantiate(new Symbol(index.toString()));
 			return new Eval(this).eval(s);
 		} else {
-			throw new IllegalArgumentException("Unknown function: " + fn);
+			Value value = getDefaultValue(fn);
+			addFunctionValue(fn, index, value);
+			return value;
+		}
+	}
+	
+	private Value getDefaultValue(String fn) {
+		if (declarations.get(fn).getType() == Type.BOOL) {
+			return BoolValue.TRUE;
+		} else {
+			return new NumericValue("0");
 		}
 	}
 
