@@ -10,7 +10,6 @@ import java.util.Set;
 
 import jkind.JKindException;
 import jkind.invariant.Invariant;
-import jkind.lustre.Type;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
@@ -19,7 +18,6 @@ import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.VarDecl;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.BiMap;
@@ -33,7 +31,7 @@ public class ReduceProcess extends Process {
 	@Override
 	protected void initializeSolver() {
 		super.initializeSolver();
-		solver.send(new VarDecl(Keywords.N, Type.INT));
+		declareN();
 	}
 
 	@Override

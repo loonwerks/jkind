@@ -11,7 +11,6 @@ import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
 import jkind.invariant.Invariant;
-import jkind.lustre.Type;
 import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
@@ -23,7 +22,6 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.StreamDecl;
 import jkind.solvers.StreamDef;
-import jkind.solvers.VarDecl;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
@@ -48,7 +46,7 @@ public class InvariantProcess extends Process {
 	@Override
 	protected void initializeSolver() {
 		super.initializeSolver();
-		solver.send(new VarDecl(Keywords.N, Type.INT));
+		declareN();
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.Settings;
 import jkind.invariant.Invariant;
-import jkind.lustre.Type;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -24,7 +23,6 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.VarDecl;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.Util;
@@ -63,7 +61,7 @@ public class InductiveProcess extends Process {
 
 	protected void initializeSolver() {
 		super.initializeSolver();
-		solver.send(new VarDecl(Keywords.N, Type.INT));
+		declareN();
 	}
 
 	private void processMessagesAndWait(int k) {

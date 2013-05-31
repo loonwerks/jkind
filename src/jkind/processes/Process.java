@@ -10,11 +10,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.Settings;
+import jkind.lustre.Type;
 import jkind.processes.messages.Message;
+import jkind.sexp.Cons;
+import jkind.sexp.Sexp;
 import jkind.solvers.Solver;
+import jkind.solvers.VarDecl;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.yices.YicesSolver;
 import jkind.solvers.z3.Z3Solver;
+import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public abstract class Process implements Runnable {
@@ -104,6 +109,11 @@ public abstract class Process implements Runnable {
 		solver.initialize();
 		solver.send(spec.translation.getDeclarations());
 		solver.send(spec.translation.getTransition());
+	}
+	
+	protected void declareN() {
+		solver.send(new VarDecl(Keywords.N, Type.INT));
+		solver.send(new Cons("assert", new Cons(">=", Keywords.N, Sexp.fromInt(0))));
 	}
 
 	public Throwable getThrowable() {
