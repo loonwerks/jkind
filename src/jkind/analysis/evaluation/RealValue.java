@@ -39,11 +39,11 @@ public class RealValue extends Value implements Comparable<RealValue> {
 
 		switch (op) {
 		case PLUS:
-			return new RealValue(num.multiply(other.denom).add(
-					other.num.multiply(denom)), denom.multiply(other.denom));
-		case MINUS:			
-			return new RealValue(num.multiply(other.denom).subtract(
-				other.num.multiply(denom)), denom.multiply(other.denom));
+			return new RealValue(num.multiply(other.denom).add(other.num.multiply(denom)),
+					denom.multiply(other.denom));
+		case MINUS:
+			return new RealValue(num.multiply(other.denom).subtract(other.num.multiply(denom)),
+					denom.multiply(other.denom));
 		case MULTIPLY:
 			return new RealValue(num.multiply(other.num), denom.multiply(other.denom));
 		case DIVIDE:

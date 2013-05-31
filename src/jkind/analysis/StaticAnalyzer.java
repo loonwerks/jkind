@@ -1,7 +1,10 @@
 package jkind.analysis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jkind.analysis.evaluation.DivideByZeroChecker;
@@ -20,13 +23,34 @@ import jkind.util.Util;
 
 public class StaticAnalyzer {
 	public static boolean check(Program program) {
-		return TypeChecker.check(program) && typesUnique(program) && subrangesNonempty(program)
-				&& constantsUnique(program) && constantsConstant(program) && nodesUnique(program)
-				&& NodeDependencyChecker.check(program) && variablesUnique(program)
-				&& assignmentsSound(program) && propertiesUnique(program.main)
-				&& propertiesExist(program.main) && LinearChecker.check(program)
-				&& DivideByZeroChecker.check(program) && assertsOnlyUseInputs(program.main)
-				&& warnUnusedAssertsAndProperties(program);
+		return checkErrors(program) && checkWarnings(program);
+	}
+
+	private static boolean checkErrors(Program program) {
+		boolean result = true;
+		result = result && TypeChecker.check(program);
+		result = result && typesUnique(program);
+		result = result && subrangesNonempty(program);
+		result = result && constantsUnique(program);
+		result = result && constantsConstant(program);
+		result = result && nodesUnique(program);
+		result = result && NodeDependencyChecker.check(program);
+		result = result && variablesUnique(program);
+		result = result && assignmentsSound(program);
+		result = result && propertiesUnique(program.main);
+		result = result && propertiesExist(program.main);
+		result = result && LinearChecker.check(program);
+		result = result && DivideByZeroChecker.check(program);
+		result = result && assertsDoNotUseComputedValues(program.main);
+		return result;
+	}
+
+	private static boolean checkWarnings(Program program) {
+		warnUnusedAssertsAndProperties(program);
+		warnAlgebraicLoops(program);
+		WarnUnguardedPreVisitor.check(program);
+
+		return true;
 	}
 
 	private static boolean typesUnique(Program program) {
@@ -122,7 +146,7 @@ public class StaticAnalyzer {
 	private static boolean variablesUnique(Program program) {
 		boolean unique = true;
 		for (Node node : program.nodes) {
-			unique = unique && variablesUnique(node);
+			unique = variablesUnique(node) && unique;
 		}
 		return unique;
 	}
@@ -145,7 +169,7 @@ public class StaticAnalyzer {
 	private static boolean assignmentsSound(Program program) {
 		boolean sound = true;
 		for (Node node : program.nodes) {
-			sound = sound && assignmentsSound(node);
+			sound = assignmentsSound(node) && sound;
 		}
 		return sound;
 	}
@@ -213,13 +237,16 @@ public class StaticAnalyzer {
 		return exist;
 	}
 
-	private static boolean assertsOnlyUseInputs(Node node) {
+	private static boolean assertsDoNotUseComputedValues(Node node) {
 		boolean result = true;
 
-		List<String> inputs = Util.getIds(node.inputs);
+		List<String> computed = new ArrayList<String>();
+		computed.addAll(Util.getIds(node.locals));
+		computed.addAll(Util.getIds(node.outputs));
+		
 		for (Expr expr : node.assertions) {
 			Set<String> vars = IdExtractorVisitor.getIds(expr);
-			vars.removeAll(inputs);
+			vars.retainAll(computed);
 			if (!vars.isEmpty()) {
 				System.out.println("Error at line " + expr.location
 						+ " assertion refers to non-input variables: " + vars);
@@ -230,7 +257,7 @@ public class StaticAnalyzer {
 		return result;
 	}
 
-	private static boolean warnUnusedAssertsAndProperties(Program program) {
+	private static void warnUnusedAssertsAndProperties(Program program) {
 		for (Node node : program.nodes) {
 			if (node == program.main) {
 				continue;
@@ -246,7 +273,55 @@ public class StaticAnalyzer {
 						+ "' is ignored");
 			}
 		}
+	}
 
-		return true;
+	private static void warnAlgebraicLoops(Program program) {
+		for (Node node : program.nodes) {
+			Map<String, Set<String>> directDepends = new HashMap<String, Set<String>>();
+			for (Equation eq : node.equations) {
+				Set<String> set = CurrIdExtractorVisitor.getCurrIds(eq.expr);
+				for (IdExpr idExpr : eq.lhs) {
+					directDepends.put(idExpr.id, set);
+				}
+			}
+
+			List<String> covered = new ArrayList<String>();
+			for (Equation eq : node.equations) {
+				List<String> stack = new ArrayList<String>();
+				for (IdExpr idExpr : eq.lhs) {
+					checkAlgebraicLoops(node.id, idExpr.id, stack, covered, directDepends);
+				}
+			}
+		}
+	}
+
+	private static boolean checkAlgebraicLoops(String node, String id, List<String> stack,
+			List<String> covered, Map<String, Set<String>> directDepends) {
+		if (stack.contains(id)) {
+			System.out.print("Warning in node '" + node + "' possible algebraic loop: ");
+			for (String s : stack.subList(stack.indexOf(id), stack.size())) {
+				System.out.print(s + " -> ");
+			}
+			System.out.println(id);
+			return true;
+		}
+
+		if (covered.contains(id)) {
+			return false;
+		} else {
+			covered.add(id);
+		}
+
+		if (directDepends.containsKey(id)) {
+			stack.add(id);
+			for (String next : directDepends.get(id)) {
+				if (checkAlgebraicLoops(node, next, stack, covered, directDepends)) {
+					return true;
+				}
+			}
+			stack.remove(stack.size() - 1);
+		}
+
+		return false;
 	}
 }

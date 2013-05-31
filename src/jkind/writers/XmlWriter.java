@@ -81,8 +81,7 @@ public class XmlWriter extends Writer {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
 			Value value = model.getFunctionValue(fn, key);
 			if (value != null) {
-				out.println("        <Value time=\"" + i + "\">" + formatValue(value)
-						+ "</Value>");
+				out.println("        <Value time=\"" + i + "\">" + formatValue(value) + "</Value>");
 			}
 		}
 		out.println("      </Signal>");

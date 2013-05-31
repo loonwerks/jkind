@@ -64,7 +64,7 @@ public class NodeDependencyChecker {
 			while (!curr.equals(callStack.peekFirst())) {
 				callStack.removeFirst();
 			}
-			System.out.println("Recursive node calls: " + callStack);
+			System.out.println("Error: recursive node calls: " + callStack);
 			return false;
 		}
 

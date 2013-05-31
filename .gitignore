@@ -1,5 +1,6 @@
 bin
 *.xml
-*.yc_base
-*.yc_induct
-*.yc_inv
+*.yc
+*.yc
+*.yc
+*.smt2

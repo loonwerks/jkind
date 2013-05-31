@@ -240,7 +240,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		String op = ctx.op.getText();
 		Expr left = expr(ctx.expr(0));
 		Expr right = expr(ctx.expr(1));
-		return new BinaryExpr(loc(ctx), left, binaryOp(op), right);
+		return new BinaryExpr(loc(ctx.op), left, binaryOp(op), right);
 	}
 
 	private static BinaryOp binaryOp(String op) {

@@ -46,7 +46,7 @@ public class LinearChecker extends IterVisitor {
 		switch (e.op) {
 		case MULTIPLY:
 			if (!isConstant(e.left) && !isConstant(e.right)) {
-				System.out.println("Nonlinearity at line " + e.location);
+				System.out.println("Error at line " + e.location + " nonlinearity");
 				passed = false;
 			}
 			break;
@@ -54,7 +54,7 @@ public class LinearChecker extends IterVisitor {
 		case DIVIDE:
 		case INT_DIVIDE:
 			if (!isConstant(e.right)) {
-				System.out.println("Non-constant division at line " + e.location);
+				System.out.println("Error at line " + e.location + " non-constant division");
 				passed = false;
 			}
 			break;
