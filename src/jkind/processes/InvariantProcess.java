@@ -67,7 +67,6 @@ public class InvariantProcess extends Process {
 					return;
 				}
 
-				assertInductiveTransition(k);
 				sendInvariant(refineInductiveStep(k, graph));
 			}
 		} catch (StopException se) {
