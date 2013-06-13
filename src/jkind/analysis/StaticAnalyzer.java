@@ -39,6 +39,7 @@ public class StaticAnalyzer {
 		result = result && assignmentsSound(program);
 		result = result && propertiesUnique(program.main);
 		result = result && propertiesExist(program.main);
+		result = result && propertiesBoolean(program.main);
 		result = result && LinearChecker.check(program);
 		result = result && DivideByZeroChecker.check(program);
 		result = result && assertsDoNotUseComputedValues(program.main);
@@ -213,7 +214,7 @@ public class StaticAnalyzer {
 
 		for (String prop : node.properties) {
 			if (seen.contains(prop)) {
-				System.out.println("Error: property " + prop + " declared multiple times");
+				System.out.println("Error: property '" + prop + "' declared multiple times");
 				unique = false;
 			} else {
 				seen.add(prop);
@@ -229,12 +230,32 @@ public class StaticAnalyzer {
 		Set<String> variables = new HashSet<String>(Util.getIds(Util.getVarDecls(node)));
 		for (String prop : node.properties) {
 			if (!variables.contains(prop)) {
-				System.out.println("Error: property " + prop + " does not exist");
+				System.out.println("Error: property '" + prop + "' does not exist");
 				exist = false;
 			}
 		}
 
 		return exist;
+	}
+	
+	private static boolean propertiesBoolean(Node node) {
+		boolean allBoolean = true;
+
+		Set<String> booleans = new HashSet<String>();
+		for (VarDecl varDecl : Util.getVarDecls(node)) {
+			if (varDecl.type == Type.BOOL) {
+				booleans.add(varDecl.id);
+			}
+		}
+		
+		for (String prop : node.properties) {
+			if (!booleans.contains(prop)) {
+				System.out.println("Error: property '" + prop + "' does not have type bool");
+				allBoolean = false;
+			}
+		}
+
+		return allBoolean;
 	}
 
 	private static boolean assertsDoNotUseComputedValues(Node node) {
