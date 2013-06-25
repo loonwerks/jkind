@@ -2,8 +2,6 @@
 --   VALID PROPERTIES: [prop, odd_inversions, distinct]
 -- K = 1
 
--- This problem requires a long time (15m with yices on an i7)
-
 type loc = subrange [-1, 8] of int;
 
 const OFF : loc = -1; -- An invalid location, used to mark edges
@@ -28,34 +26,29 @@ let
               else pre(s);
 tel;
 
-node inv(p, q : loc) returns (inv : int);
+node inv(p, q : loc) returns (inv : bool);
 let
-  inv = if p <> 0 and q <> 0 and p > q then 1 else 0;
+  inv = p <> 0 and q <> 0 and p > q;
 tel;
 
-node inversions(p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc) returns (invs : int);
+node inverted(p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc) returns (inv : bool);
 let
-  invs = inv(p1, p2) + inv(p1, p3) + inv(p1, p4) + inv(p1, p5) +
-         inv(p1, p6) + inv(p1, p7) + inv(p1, p8) + inv(p1, p9) +
-         inv(p2, p3) + inv(p2, p4) + inv(p2, p5) + inv(p2, p6) +
-         inv(p2, p7) + inv(p2, p8) + inv(p2, p9) + inv(p3, p4) +
-         inv(p3, p5) + inv(p3, p6) + inv(p3, p7) + inv(p3, p8) +
-         inv(p3, p9) + inv(p4, p5) + inv(p4, p6) + inv(p4, p7) +
-         inv(p4, p8) + inv(p4, p9) + inv(p5, p6) + inv(p5, p7) +
-         inv(p5, p8) + inv(p5, p9) + inv(p6, p7) + inv(p6, p8) +
-         inv(p6, p9) + inv(p7, p8) + inv(p7, p9) + inv(p8, p9);
-tel;
-
-node is_odd(x : int) returns (odd : bool);
-let
-  odd = 2 * (x div 2) <> x;
+  inv = inv(p1, p2) xor inv(p1, p3) xor inv(p1, p4) xor inv(p1, p5) xor
+        inv(p1, p6) xor inv(p1, p7) xor inv(p1, p8) xor inv(p1, p9) xor
+        inv(p2, p3) xor inv(p2, p4) xor inv(p2, p5) xor inv(p2, p6) xor
+        inv(p2, p7) xor inv(p2, p8) xor inv(p2, p9) xor inv(p3, p4) xor
+        inv(p3, p5) xor inv(p3, p6) xor inv(p3, p7) xor inv(p3, p8) xor
+        inv(p3, p9) xor inv(p4, p5) xor inv(p4, p6) xor inv(p4, p7) xor
+        inv(p4, p8) xor inv(p4, p9) xor inv(p5, p6) xor inv(p5, p7) xor
+        inv(p5, p8) xor inv(p5, p9) xor inv(p6, p7) xor inv(p6, p8) xor
+        inv(p6, p9) xor inv(p7, p8) xor inv(p7, p9) xor inv(p8, p9);
 tel;
 
 node puzzle(in : dir) returns (p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc);
 var
     solved : bool;
     prop : bool;
-    odd_inversions : bool;
+    inverted : bool;
     distinct : bool;
 let
     -- Board layout:
@@ -82,8 +75,8 @@ let
     prop = not solved;
     --%PROPERTY prop;
 
-    odd_inversions = is_odd(inversions(p1, p2, p3, p4, p5, p6, p7, p8, p9));
-    --%PROPERTY odd_inversions;
+    inverted = inverted(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+    --%PROPERTY inverted;
 
     distinct = p1 <> p2 and p1 <> p3 and p1 <> p4 and p1 <> p5 and
                p1 <> p6 and p1 <> p7 and p1 <> p8 and p1 <> p9 and
