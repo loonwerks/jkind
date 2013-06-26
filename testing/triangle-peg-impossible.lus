@@ -1,0 +1,121 @@
+-- Expected output:
+--   VALID PROPERTIES: [prop]
+-- K = 8
+
+-- The 10-peg triangle peg board game:
+--
+--           1
+--         2   3
+--       4   5   6
+--     7   8   9   10
+--
+-- This file shows that there is no solution
+
+type peg = bool;
+
+type loc = subrange [0, 10] of int;
+const INVALID : loc = 0;
+
+node peg(loc : loc; p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 : peg)
+returns (p : peg);
+let
+  p = if loc = 1 then p1 else
+      if loc = 2 then p2 else
+      if loc = 3 then p3 else
+      if loc = 4 then p4 else
+      if loc = 5 then p5 else
+      if loc = 6 then p6 else
+      if loc = 7 then p7 else
+      if loc = 8 then p8 else
+      if loc = 9 then p9 else
+      if loc = 10 then p10 else
+      false;
+tel;
+
+node mid(a, b : loc) returns (mid : loc);
+let
+  mid = if a = 1 and b = 4 then 2 else
+        if a = 1 and b = 6 then 3 else
+        if a = 2 and b = 7 then 4 else
+        if a = 2 and b = 9 then 5 else
+        if a = 3 and b = 8 then 5 else
+        if a = 3 and b = 10 then 6 else
+        if a = 4 and b = 1 then 2 else
+        if a = 4 and b = 6 then 5 else
+        if a = 6 and b = 1 then 3 else
+        if a = 6 and b = 4 then 5 else
+        if a = 7 and b = 2 then 4 else
+        if a = 7 and b = 9 then 8 else
+        if a = 8 and b = 3 then 5 else
+        if a = 8 and b = 10 then 9 else
+        if a = 9 and b = 2 then 5 else
+        if a = 9 and b = 7 then 8 else
+        if a = 10 and b = 3 then 6 else
+        if a = 10 and b = 8 then 9 else
+        INVALID;
+tel;
+
+node initial(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 : peg)
+returns (initial : bool);
+let
+  initial = (not p1) and p2 and p3 and p4 and p5 and p6 and p7 and p8 and p9 and p10;
+tel;
+
+node b2i(x : bool) returns (y : int);
+let
+  y = if x then 1 else 0;
+tel;
+
+node solved(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 : peg)
+returns (solved : bool);
+let
+  solved = (b2i(p1) + b2i(p2) + b2i(p3) + b2i(p4) + b2i(p5) +
+            b2i(p6) + b2i(p7) + b2i(p8) + b2i(p9) + b2i(p10) = 1);
+tel;
+
+node unchanged_but(a, b, c : loc;
+                   p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 : peg)
+returns (constraint : bool);
+let
+  constraint = true -> ((a = 1 or b = 1 or c = 1 or p1 = pre(p1)) and
+                        (a = 2 or b = 2 or c = 2 or p2 = pre(p2)) and
+                        (a = 3 or b = 3 or c = 3 or p3 = pre(p3)) and
+                        (a = 4 or b = 4 or c = 4 or p4 = pre(p4)) and
+                        (a = 5 or b = 5 or c = 5 or p5 = pre(p5)) and
+                        (a = 6 or b = 6 or c = 6 or p6 = pre(p6)) and
+                        (a = 7 or b = 7 or c = 7 or p7 = pre(p7)) and
+                        (a = 8 or b = 8 or c = 8 or p8 = pre(p8)) and
+                        (a = 9 or b = 9 or c = 9 or p9 = pre(p9)) and
+                        (a = 10 or b = 10 or c = 10 or p10 = pre(p10)));
+tel;
+
+node historically(x : bool) returns (holds : bool);
+let
+  holds = x and (true -> pre holds);
+tel;
+
+node puzzle(a, b : loc; p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 : peg)
+returns ();
+var
+    initial, valid_move, solved, prop : bool;
+    mid : loc;
+let
+    initial = initial(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
+    solved = solved(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
+
+    mid = mid(a, b);
+    valid_move = true ->
+      (peg(a, pre p1, pre p2, pre p3, pre p4, pre p5,
+              pre p6, pre p7, pre p8, pre p9, pre p10) and
+       peg(mid, pre p1, pre p2, pre p3, pre p4, pre p5,
+                pre p6, pre p7, pre p8, pre p9, pre p10) and
+       not(peg(b, pre p1, pre p2, pre p3, pre p4, pre p5,
+                  pre p6, pre p7, pre p8, pre p9, pre p10)) and
+       not peg(a, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10) and
+       not peg(mid, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10) and
+       peg(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10) and
+       unchanged_but(a, b, mid, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10));
+
+    prop = not (historically(initial -> true) and historically(valid_move) and solved);
+    --%PROPERTY prop;
+tel;
