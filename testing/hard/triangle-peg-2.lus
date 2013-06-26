@@ -1,0 +1,145 @@
+-- Expected output:
+--   INVALID PROPERTIES: [prop]
+-- K = 14
+
+-- This problem requires a long time (28m with yices on an i7)
+
+-- The 15-peg triangle peg board game:
+--
+--           1
+--         2   3
+--       4   5   6
+--     7   8   9   10
+--   11  12  13  14  15
+
+type peg = bool;
+
+type loc = subrange [0, 15] of int;
+const INVALID : loc = 0;
+
+node peg(loc : loc;
+         p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 : peg)
+returns (p : peg);
+let
+  p = if loc = 1 then p1 else
+      if loc = 2 then p2 else
+      if loc = 3 then p3 else
+      if loc = 4 then p4 else
+      if loc = 5 then p5 else
+      if loc = 6 then p6 else
+      if loc = 7 then p7 else
+      if loc = 8 then p8 else
+      if loc = 9 then p9 else
+      if loc = 10 then p10 else
+      if loc = 11 then p11 else
+      if loc = 12 then p12 else
+      if loc = 13 then p13 else
+      if loc = 14 then p14 else
+      if loc = 15 then p15 else
+      false;
+tel;
+
+node mid(a, b : loc) returns (mid : loc);
+let
+  mid = if a = 1 and b = 4 then 2 else
+        if a = 1 and b = 6 then 3 else
+        if a = 2 and b = 7 then 4 else
+        if a = 2 and b = 9 then 5 else
+        if a = 3 and b = 8 then 5 else
+        if a = 3 and b = 10 then 6 else
+        if a = 4 and b = 1 then 2 else
+        if a = 4 and b = 6 then 5 else
+        if a = 4 and b = 11 then 7 else
+        if a = 4 and b = 13 then 8 else
+        if a = 5 and b = 12 then 8 else
+        if a = 5 and b = 14 then 9 else
+        if a = 6 and b = 1 then 3 else
+        if a = 6 and b = 4 then 5 else
+        if a = 6 and b = 13 then 9 else
+        if a = 6 and b = 15 then 10 else
+        if a = 7 and b = 2 then 4 else
+        if a = 7 and b = 9 then 8 else
+        if a = 8 and b = 3 then 5 else
+        if a = 8 and b = 10 then 9 else
+        if a = 9 and b = 2 then 5 else
+        if a = 9 and b = 7 then 8 else
+        if a = 10 and b = 3 then 6 else
+        if a = 10 and b = 8 then 9 else
+        if a = 11 and b = 4 then 7 else
+        if a = 11 and b = 13 then 12 else
+        if a = 12 and b = 5 then 8 else
+        if a = 12 and b = 14 then 13 else
+        if a = 13 and b = 4 then 8 else
+        if a = 13 and b = 6 then 9 else
+        if a = 13 and b = 11 then 12 else
+        if a = 13 and b = 15 then 14 else
+        if a = 14 and b = 5 then 9 else
+        if a = 14 and b = 12 then 13 else
+        if a = 15 and b = 6 then 10 else
+        if a = 15 and b = 13 then 14 else
+        INVALID;
+tel;
+
+node b2i(x : bool) returns (y : int);
+let
+  y = if x then 1 else 0;
+tel;
+
+node solved(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 : peg)
+returns (solved : bool);
+let
+  solved = (b2i(p1) + b2i(p2) + b2i(p3) + b2i(p4) + b2i(p5) +
+            b2i(p6) + b2i(p7) + b2i(p8) + b2i(p9) + b2i(p10) +
+            b2i(p11) + b2i(p12) + b2i(p13) + b2i(p14) + b2i(p15) = 1);
+tel;
+
+node historically(x : bool) returns (holds : bool);
+let
+  holds = x and (true -> pre holds);
+tel;
+
+node rule(a, mid, b : loc; curr : loc; prev : peg) returns (peg : peg);
+let
+  peg = (prev and a <> curr and mid <> curr) or (curr = b);
+tel;
+
+node puzzle(a, b : loc)
+returns (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 : peg);
+var
+    valid_move, solved, prop : bool;
+    mid : loc;
+let
+    mid = mid(a, b);
+
+    p1 = false -> rule(a, mid, b, 1, pre(p1));
+    p2 = true -> rule(a, mid, b, 2, pre(p2));
+    p3 = true -> rule(a, mid, b, 3, pre(p3));
+    p4 = true -> rule(a, mid, b, 4, pre(p4));
+    p5 = true -> rule(a, mid, b, 5, pre(p5));
+    p6 = true -> rule(a, mid, b, 6, pre(p6));
+    p7 = true -> rule(a, mid, b, 7, pre(p7));
+    p8 = true -> rule(a, mid, b, 8, pre(p8));
+    p9 = true -> rule(a, mid, b, 9, pre(p9));
+    p10 = true -> rule(a, mid, b, 10, pre(p10));
+    p11 = true -> rule(a, mid, b, 11, pre(p11));
+    p12 = true -> rule(a, mid, b, 12, pre(p12));
+    p13 = true -> rule(a, mid, b, 13, pre(p13));
+    p14 = true -> rule(a, mid, b, 14, pre(p14));
+    p15 = true -> rule(a, mid, b, 15, pre(p15));
+
+    solved = solved(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
+
+    valid_move = true ->
+      (peg(a, pre p1, pre p2, pre p3, pre p4, pre p5, pre p6, pre p7, pre p8,
+              pre p9, pre p10, pre p11, pre p12, pre p13, pre p14, pre p15) and
+       peg(mid, pre p1, pre p2, pre p3, pre p4, pre p5, pre p6, pre p7, pre p8,
+                pre p9, pre p10, pre p11, pre p12, pre p13, pre p14, pre p15) and
+       not(peg(b, pre p1, pre p2, pre p3, pre p4, pre p5, pre p6, pre p7, pre p8,
+                  pre p9, pre p10, pre p11, pre p12, pre p13, pre p14, pre p15)) and
+       not peg(a, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15) and
+       not peg(mid, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15) and
+       peg(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+
+    prop = not (historically(valid_move) and solved);
+    --%PROPERTY prop;
+tel;
