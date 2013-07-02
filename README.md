@@ -9,7 +9,7 @@ Downloads
 ---------
 The latest release of JKind is available [here](https://github.com/agacek/jkind/releases).
 
-Lustre2excel is an optional utility to convert Lustre programs to Excel spreadsheets. It is updated infrequently, so the latest version is somewhere down the releases page (here)[https://github.com/agacek/jkind/releases].
+Lustre2excel is an optional utility to convert Lustre programs to Excel spreadsheets. It is updated infrequently, so the latest version is somewhere down the [releases page](https://github.com/agacek/jkind/releases).
 
 Design Goals
 ------------
