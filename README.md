@@ -7,18 +7,20 @@ multi-property k-induction based model checker for Lustre programs.
 
 Downloads
 ---------
-The latest release of JKind is available [here](https://github.com/agacek/jkind/releases).
+The latest release of JKind is available on the [releases page](https://github.com/agacek/jkind/releases).
 
-Lustre2excel is an optional utility to convert Lustre programs to Excel spreadsheets. It is updated infrequently, so the latest version is somewhere down the [releases page](https://github.com/agacek/jkind/releases).
+Lustre2excel is an optional utility to convert Lustre programs to Excel spreadsheets.
+It is updated infrequently, so the latest version is somewhere down the
+[releases page](https://github.com/agacek/jkind/releases).
 
 Design Goals
 ------------
 
 JKind is designed to be cross-platform, reliable, and easy to extend.
 Power and performance are secondary goals. Additionally, JKind
-attempts to be compatible with pkind, the standard implementation of
-KIND. Differences between JKind and pkind are described
-[here](https://github.com/agacek/jkind/wiki/Differences-with-pkind).
+attempts to be mostly compatible with pkind, the standard implementation of
+KIND. Differences between JKind and pkind are described on the
+[wiki](https://github.com/agacek/jkind/wiki/Differences-with-pkind).
 
 
 Installation Notes
