@@ -24,7 +24,7 @@ public class CandidateGenerator {
 	}
 
 	public List<Candidate> generate() {
-		candidates = new ArrayList<Candidate>();
+		candidates = new ArrayList<>();
 		candidateIndex = 0;
 
 		candidates.add(Candidate.TRUE);

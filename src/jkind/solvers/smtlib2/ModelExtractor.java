@@ -41,7 +41,7 @@ public class ModelExtractor {
 			return new Symbol(parse(sbc.symbol().getText()));
 		} else if (ctx instanceof ConsBodyContext) {
 			ConsBodyContext cbc = (ConsBodyContext) ctx;
-			List<Sexp> args = new ArrayList<Sexp>();
+			List<Sexp> args = new ArrayList<>();
 			for (BodyContext sub : cbc.body()) {
 				args.add(sexp(sub));
 			}

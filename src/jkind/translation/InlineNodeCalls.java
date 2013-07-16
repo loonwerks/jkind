@@ -24,7 +24,7 @@ public class InlineNodeCalls extends MapVisitor {
 		Node main = program.main;
 		List<Equation> equations = inliner.visit(main);
 
-		List<VarDecl> locals = new ArrayList<VarDecl>(main.locals);
+		List<VarDecl> locals = new ArrayList<>(main.locals);
 		locals.addAll(inliner.newLocals);
 
 		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
@@ -37,13 +37,13 @@ public class InlineNodeCalls extends MapVisitor {
 
 	private InlineNodeCalls(Map<String, Node> nodeTable) {
 		this.nodeTable = nodeTable;
-		this.newLocals = new ArrayList<VarDecl>();
-		this.queue = new ArrayDeque<Equation>();
+		this.newLocals = new ArrayList<>();
+		this.queue = new ArrayDeque<>();
 	}
 
 	private List<Equation> visit(Node node) {
 		queue.addAll(node.equations);
-		List<Equation> result = new ArrayList<Equation>();
+		List<Equation> result = new ArrayList<>();
 
 		while (!queue.isEmpty()) {
 			Equation eq = queue.poll();
@@ -84,7 +84,7 @@ public class InlineNodeCalls extends MapVisitor {
 		createInputEquations(node.inputs, e.args, translation);
 		createAssignmentEquations(node.equations, translation);
 
-		List<IdExpr> result = new ArrayList<IdExpr>();
+		List<IdExpr> result = new ArrayList<>();
 		for (VarDecl decl : node.outputs) {
 			result.add(translation.get(decl.id));
 		}
@@ -92,7 +92,7 @@ public class InlineNodeCalls extends MapVisitor {
 	}
 
 	private Map<String, IdExpr> getTranslation(Node node) {
-		Map<String, IdExpr> translation = new HashMap<String, IdExpr>();
+		Map<String, IdExpr> translation = new HashMap<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			translation.put(decl.id, newVar(decl));
 		}
@@ -111,7 +111,7 @@ public class InlineNodeCalls extends MapVisitor {
 	private void createAssignmentEquations(List<Equation> equations, Map<String, IdExpr> translation) {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation);
 		for (Equation eq : equations) {
-			List<IdExpr> lhs = new ArrayList<IdExpr>();
+			List<IdExpr> lhs = new ArrayList<>();
 			for (IdExpr idExpr : eq.lhs) {
 				lhs.add(translation.get(idExpr.id));
 			}

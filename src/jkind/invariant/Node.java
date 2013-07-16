@@ -31,7 +31,7 @@ public class Node {
 	}
 
 	public List<Invariant> toInvariants(boolean pure) {
-		List<Invariant> invariants = new ArrayList<Invariant>();
+		List<Invariant> invariants = new ArrayList<>();
 		
 		Iterator<Candidate> iterator = candidates.iterator();
 		Candidate first = iterator.next();
@@ -48,8 +48,8 @@ public class Node {
 	}
 
 	public List<Node> split(Model model, BigInteger k) {
-		List<Candidate> falses = new ArrayList<Candidate>();
-		List<Candidate> trues = new ArrayList<Candidate>();
+		List<Candidate> falses = new ArrayList<>();
+		List<Candidate> trues = new ArrayList<>();
 		
 		for (Candidate candidate : candidates) {
 			if (candidate.isTrue(model, k)) {
@@ -59,7 +59,7 @@ public class Node {
 			}
 		}
 
-		List<Node> chain = new ArrayList<Node>(2);
+		List<Node> chain = new ArrayList<>(2);
 		chain.add(new Node(falses));
 		chain.add(new Node(trues));
 		return chain;

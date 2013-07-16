@@ -11,8 +11,8 @@ public class BiMap<K, V> implements Map<K, V> {
 	private Map<V, K> inverse;
 	
 	public BiMap() {
-		this.map = new HashMap<K, V>();
-		this.inverse = new HashMap<V, K>();
+		this.map = new HashMap<>();
+		this.inverse = new HashMap<>();
 	}
 	
 	private BiMap(Map<K, V> map, Map<V, K> inverse) {
@@ -21,7 +21,7 @@ public class BiMap<K, V> implements Map<K, V> {
 	}
 	
 	public BiMap<V, K> inverse() {
-		return new BiMap<V, K>(inverse, map);
+		return new BiMap<>(inverse, map);
 	}
 	
 	@Override

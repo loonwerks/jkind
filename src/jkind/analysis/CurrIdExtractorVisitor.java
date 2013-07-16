@@ -16,7 +16,7 @@ public class CurrIdExtractorVisitor extends IterVisitor {
 		return visitor.set;
 	}
 	
-	private Set<String> set = new HashSet<String>();
+	private Set<String> set = new HashSet<>();
 	
 	@Override
 	public Void visit(UnaryExpr e) {

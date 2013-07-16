@@ -73,12 +73,12 @@ public class ReduceProcess extends Process {
 		debug("Reducing: " + property);
 		solver.push();
 
-		Set<Invariant> irreducible = new HashSet<Invariant>();
+		Set<Invariant> irreducible = new HashSet<>();
 		irreducible.add(property);
 
 		int k = 0;
 
-		BiMap<Label, Invariant> labelling = new BiMap<Label, Invariant>();
+		BiMap<Label, Invariant> labelling = new BiMap<>();
 
 		while (true) {
 			Sexp query = getUnsatCoreQuery(k, irreducible);
@@ -102,7 +102,7 @@ public class ReduceProcess extends Process {
 		solver.pop();
 		
 		irreducible.remove(property);
-		sendValid(property.toString(), k, new ArrayList<Invariant>(irreducible));
+		sendValid(property.toString(), k, new ArrayList<>(irreducible));
 	}
 
 	private void assertInvariants(int k, List<Invariant> invariants, BiMap<Label, Invariant> labelling) {
@@ -116,7 +116,7 @@ public class ReduceProcess extends Process {
 	}
 
 	private Sexp getInvariantAssertion(Invariant invariant, int k) {
-		List<Sexp> conjuncts = new ArrayList<Sexp>();
+		List<Sexp> conjuncts = new ArrayList<>();
 		for (int i = 0; i <= k; i++) {
 			conjuncts.add(invariant.instantiate(getInductiveIndex(i)));
 		}
@@ -128,7 +128,7 @@ public class ReduceProcess extends Process {
 	}
 
 	private Set<Invariant> getInvariants(List<Label> unsatCore, BiMap<Label, Invariant> labelling) {
-		Set<Invariant> result = new HashSet<Invariant>();
+		Set<Invariant> result = new HashSet<>();
 		for (Label label : unsatCore) {
 			result.add(labelling.get(label));
 		}
@@ -136,7 +136,7 @@ public class ReduceProcess extends Process {
 	}
 
 	private Sexp getUnsatCoreQuery(int k, Collection<Invariant> irreducible) {
-		List<Sexp> hyps = new ArrayList<Sexp>();
+		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i <= k; i++) {
 			hyps.add(new Cons(Keywords.T, getInductiveIndex(i)));
 			if (i < k) {

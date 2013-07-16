@@ -17,7 +17,7 @@ import jkind.sexp.Symbol;
 
 public class Util {
 	public static List<VarDecl> getVarDecls(Node node) {
-		List<VarDecl> decls = new ArrayList<VarDecl>();
+		List<VarDecl> decls = new ArrayList<>();
 		decls.addAll(node.inputs);
 		decls.addAll(node.outputs);
 		decls.addAll(node.locals);
@@ -25,7 +25,7 @@ public class Util {
 	}
 
 	public static Map<String, Type> getTypeMap(Node node) {
-		Map<String, Type> map = new HashMap<String, Type>();
+		Map<String, Type> map = new HashMap<>();
 		for (VarDecl v : getVarDecls(node)) {
 			map.put(v.id, v.type);
 		}
@@ -33,7 +33,7 @@ public class Util {
 	}
 
 	public static List<String> getIds(List<VarDecl> decls) {
-		List<String> ids = new ArrayList<String>();
+		List<String> ids = new ArrayList<>();
 		for (VarDecl decl : decls) {
 			ids.add(decl.id);
 		}
@@ -41,7 +41,7 @@ public class Util {
 	}
 
 	public static Map<String, Node> getNodeTable(List<Node> nodes) {
-		Map<String, Node> nodeTable = new HashMap<String, Node>();
+		Map<String, Node> nodeTable = new HashMap<>();
 		for (Node node : nodes) {
 			nodeTable.put(node.id, node);
 		}
@@ -60,7 +60,7 @@ public class Util {
 			return new Symbol("true");
 		}
 		
-		List<Sexp> args = new ArrayList<Sexp>();
+		List<Sexp> args = new ArrayList<>();
 		for (Sexp fn : fns) {
 			args.add(new Cons(fn, i));
 		}
@@ -68,7 +68,7 @@ public class Util {
 	}
 
 	public static Sexp conjoinStreams(Collection<String> ids, Sexp i) {
-		List<Sexp> symbols = new ArrayList<Sexp>();
+		List<Sexp> symbols = new ArrayList<>();
 		for (String id : ids) {
 			symbols.add(new Symbol("$" + id));
 		}
@@ -80,7 +80,7 @@ public class Util {
 			return new Symbol("true");
 		}
 		
-		List<Sexp> sexps = new ArrayList<Sexp>();
+		List<Sexp> sexps = new ArrayList<>();
 		for (Invariant invariant : invariants) {
 			sexps.add(invariant.instantiate(i));
 		}

@@ -32,8 +32,8 @@ public class InvariantProcess extends Process {
 
 	public InvariantProcess(Specification spec) {
 		super("Invariant", spec, null);
-		definitions = new HashMap<String, StreamDef>();
-		declarations = new HashMap<String, StreamDecl>();
+		definitions = new HashMap<>();
+		declarations = new HashMap<>();
 		for (StreamDecl decl : spec.translation.getDeclarations()) {
 			declarations.put(decl.getId().toString(), decl);
 		}
@@ -177,7 +177,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private Sexp getInductiveQuery(int k, Graph graph) {
-		List<Sexp> hyps = new ArrayList<Sexp>();
+		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
 			hyps.add(graph.toInvariant(getInductiveIndex(i)));
 		}

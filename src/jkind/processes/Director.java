@@ -28,20 +28,20 @@ public class Director {
 	private Specification spec;
 	private Writer writer;
 
-	private List<String> remainingProperties = new ArrayList<String>();
-	private List<String> validProperties = new ArrayList<String>();
-	private List<String> invalidProperties = new ArrayList<String>();
-	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<String, InductiveCounterexampleMessage>();
+	private List<String> remainingProperties = new ArrayList<>();
+	private List<String> validProperties = new ArrayList<>();
+	private List<String> invalidProperties = new ArrayList<>();
+	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<>();
 
 	private BaseProcess baseProcess;
 	private InductiveProcess inductiveProcess;
 	private InvariantProcess invariantProcess;
 	private ReduceProcess reduceProcess;
 	private SmoothProcess smoothProcess;
-	private List<Process> processes = new ArrayList<Process>();
-	private List<Thread> threads = new ArrayList<Thread>();
+	private List<Process> processes = new ArrayList<>();
+	private List<Thread> threads = new ArrayList<>();
 
-	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<Message>();
+	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
 
 	public Director(Specification spec) {
 		this.spec = spec;

@@ -18,7 +18,7 @@ public class InlineConstants {
 	public static Program program(Program program) {
 		Map<String, Expr> constants = getConstantsMap(program);
 		List<Constant> emptyConstants = Collections.emptyList();
-		List<Node> inlinedNodes = new ArrayList<Node>();
+		List<Node> inlinedNodes = new ArrayList<>();
 
 		for (Node node : program.nodes) {
 			inlinedNodes.add(node(node, constants));
@@ -31,12 +31,12 @@ public class InlineConstants {
 		removeShadowedConstants(constants, node);
 		SubstitutionVisitor inliner = new SubstitutionVisitor(constants);
 
-		List<Equation> equations = new ArrayList<Equation>();
+		List<Equation> equations = new ArrayList<>();
 		for (Equation eq : node.equations) {
 			equations.add(new Equation(eq.location, eq.lhs, eq.expr.accept(inliner)));
 		}
 
-		List<Expr> assertions = new ArrayList<Expr>();
+		List<Expr> assertions = new ArrayList<>();
 		for (Expr assertion : node.assertions) {
 			assertions.add(assertion.accept(inliner));
 		}
@@ -46,7 +46,7 @@ public class InlineConstants {
 	}
 
 	private static Map<String, Expr> getConstantsMap(Program program) {
-		Map<String, Expr> constants = new HashMap<String, Expr>();
+		Map<String, Expr> constants = new HashMap<>();
 		for (Constant c : program.constants) {
 			SubstitutionVisitor inliner = new SubstitutionVisitor(constants);
 			constants.put(c.id, c.expr.accept(inliner));

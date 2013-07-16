@@ -56,7 +56,7 @@ public class StaticAnalyzer {
 
 	private static boolean typesUnique(Program program) {
 		boolean unique = true;
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		for (TypeDef def : program.types) {
 			if (seen.contains(def.id)) {
 				System.out.println("Error at line " + def.location + " type " + def.id
@@ -103,7 +103,7 @@ public class StaticAnalyzer {
 
 	private static boolean constantsUnique(Program program) {
 		boolean unique = true;
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		for (Constant c : program.constants) {
 			if (seen.contains(c.id)) {
 				System.out.println("Error at line " + c.location + " constant " + c.id
@@ -131,7 +131,7 @@ public class StaticAnalyzer {
 
 	private static boolean nodesUnique(Program program) {
 		boolean unique = true;
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		for (Node node : program.nodes) {
 			if (seen.contains(node.id)) {
 				System.out.println("Error at line " + node.location + " node " + node.id
@@ -154,7 +154,7 @@ public class StaticAnalyzer {
 
 	private static boolean variablesUnique(Node node) {
 		boolean unique = true;
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			if (seen.contains(decl.id)) {
 				System.out.println("Error at line " + decl.location + " variable " + decl.id
@@ -176,10 +176,10 @@ public class StaticAnalyzer {
 	}
 
 	private static boolean assignmentsSound(Node node) {
-		Set<String> toAssign = new HashSet<String>();
+		Set<String> toAssign = new HashSet<>();
 		toAssign.addAll(Util.getIds(node.outputs));
 		toAssign.addAll(Util.getIds(node.locals));
-		Set<String> assigned = new HashSet<String>();
+		Set<String> assigned = new HashSet<>();
 		boolean sound = true;
 
 		for (Equation eq : node.equations) {
@@ -210,7 +210,7 @@ public class StaticAnalyzer {
 
 	private static boolean propertiesUnique(Node node) {
 		boolean unique = true;
-		Set<String> seen = new HashSet<String>();
+		Set<String> seen = new HashSet<>();
 
 		for (String prop : node.properties) {
 			if (seen.contains(prop)) {
@@ -227,7 +227,7 @@ public class StaticAnalyzer {
 	private static boolean propertiesExist(Node node) {
 		boolean exist = true;
 
-		Set<String> variables = new HashSet<String>(Util.getIds(Util.getVarDecls(node)));
+		Set<String> variables = new HashSet<>(Util.getIds(Util.getVarDecls(node)));
 		for (String prop : node.properties) {
 			if (!variables.contains(prop)) {
 				System.out.println("Error: property '" + prop + "' does not exist");
@@ -241,7 +241,7 @@ public class StaticAnalyzer {
 	private static boolean propertiesBoolean(Node node) {
 		boolean allBoolean = true;
 
-		Set<String> booleans = new HashSet<String>();
+		Set<String> booleans = new HashSet<>();
 		for (VarDecl varDecl : Util.getVarDecls(node)) {
 			if (varDecl.type == Type.BOOL) {
 				booleans.add(varDecl.id);
@@ -261,7 +261,7 @@ public class StaticAnalyzer {
 	private static boolean assertsDoNotUseComputedValues(Node node) {
 		boolean result = true;
 
-		List<String> computed = new ArrayList<String>();
+		List<String> computed = new ArrayList<>();
 		computed.addAll(Util.getIds(node.locals));
 		computed.addAll(Util.getIds(node.outputs));
 		
@@ -298,7 +298,7 @@ public class StaticAnalyzer {
 
 	private static void warnAlgebraicLoops(Program program) {
 		for (Node node : program.nodes) {
-			Map<String, Set<String>> directDepends = new HashMap<String, Set<String>>();
+			Map<String, Set<String>> directDepends = new HashMap<>();
 			for (Equation eq : node.equations) {
 				Set<String> set = CurrIdExtractorVisitor.getCurrIds(eq.expr);
 				for (IdExpr idExpr : eq.lhs) {
@@ -306,9 +306,9 @@ public class StaticAnalyzer {
 				}
 			}
 
-			List<String> covered = new ArrayList<String>();
+			List<String> covered = new ArrayList<>();
 			for (Equation eq : node.equations) {
-				List<String> stack = new ArrayList<String>();
+				List<String> stack = new ArrayList<>();
 				for (IdExpr idExpr : eq.lhs) {
 					checkAlgebraicLoops(node.id, idExpr.id, stack, covered, directDepends);
 				}

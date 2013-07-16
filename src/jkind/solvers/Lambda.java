@@ -31,7 +31,7 @@ public class Lambda {
 	private static Sexp substitute(Sexp sexp, Sexp x, Sexp t) {
 		if (sexp instanceof Cons) {
 			Cons cons = (Cons) sexp;
-			List<Sexp> args = new ArrayList<Sexp>();
+			List<Sexp> args = new ArrayList<>();
 			for (Sexp arg : cons.args) {
 				args.add(substitute(arg, x, t));
 			}

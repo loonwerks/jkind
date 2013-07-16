@@ -16,7 +16,7 @@ public class InlineTypes {
 	public static Program program(Program program) {
 		Map<String, Type> types = getTypeMap(program);
 		List<TypeDef> emptyTypes = Collections.emptyList();
-		List<Node> inlinedNodes = new ArrayList<Node>();
+		List<Node> inlinedNodes = new ArrayList<>();
 
 		for (Node node : program.nodes) {
 			inlinedNodes.add(node(node, types));
@@ -35,7 +35,7 @@ public class InlineTypes {
 	}
 
 	private static List<VarDecl> varDecls(List<VarDecl> decls, Map<String, Type> types) {
-		List<VarDecl> inlinedDecls = new ArrayList<VarDecl>();
+		List<VarDecl> inlinedDecls = new ArrayList<>();
 		for (VarDecl decl : decls) {
 			Type base = getBuiltinType(decl.type, types);
 			inlinedDecls.add(new VarDecl(decl.location, decl.id, base));
@@ -52,7 +52,7 @@ public class InlineTypes {
 	}
 
 	private static Map<String, Type> getTypeMap(Program program) {
-		Map<String, Type> types = new HashMap<String, Type>();
+		Map<String, Type> types = new HashMap<>();
 		for (TypeDef def : program.types) {
 			types.put(def.id, def.type);
 		}

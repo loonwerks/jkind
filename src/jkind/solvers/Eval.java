@@ -48,7 +48,7 @@ public class Eval {
 			}
 		}
 		
-		List<Value> args = new ArrayList<Value>();
+		List<Value> args = new ArrayList<>();
 		for (Sexp arg : sexp.args) {
 			args.add(eval(arg));
 		}

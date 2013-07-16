@@ -34,10 +34,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private boolean passed;
 
 	public TypeChecker() {
-		this.typeTable = new HashMap<String, Type>();
-		this.constantTable = new HashMap<String, Type>();
-		this.variableTable = new HashMap<String, Type>();
-		this.nodeTable = new HashMap<String, Node>();
+		this.typeTable = new HashMap<>();
+		this.constantTable = new HashMap<>();
+		this.variableTable = new HashMap<>();
+		this.nodeTable = new HashMap<>();
 		this.passed = true;
 	}
 
@@ -128,7 +128,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		if (eq.expr instanceof NodeCallExpr) {
 			NodeCallExpr call = (NodeCallExpr) eq.expr;
 
-			List<Type> expected = new ArrayList<Type>();
+			List<Type> expected = new ArrayList<>();
 			for (IdExpr idExpr : eq.lhs) {
 				expected.add(idExpr.accept(this));
 			}
@@ -278,12 +278,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return null;
 		}
 
-		List<Type> actual = new ArrayList<Type>();
+		List<Type> actual = new ArrayList<>();
 		for (Expr arg : e.args) {
 			actual.add(arg.accept(this));
 		}
 
-		List<Type> expected = new ArrayList<Type>();
+		List<Type> expected = new ArrayList<>();
 		for (VarDecl input : node.inputs) {
 			expected.add(lookupBaseType(input.type));
 		}
@@ -297,7 +297,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			compareTypes(e.args.get(i), expected.get(i), actual.get(i));
 		}
 
-		List<Type> result = new ArrayList<Type>();
+		List<Type> result = new ArrayList<>();
 		for (VarDecl decl : node.outputs) {
 			result.add(lookupBaseType(decl.type));
 		}

@@ -32,8 +32,8 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	private Expr2SexpVisitor(Symbol iSym, int offset) {
 		this.iSym = iSym;
 		this.offset = offset;
-		this.sideConditionDeclarations = new ArrayList<StreamDecl>();
-		this.sideConditions = new ArrayList<Sexp>();
+		this.sideConditionDeclarations = new ArrayList<>();
+		this.sideConditions = new ArrayList<>();
 	}
 
 	public Expr2SexpVisitor(Symbol iSym) {

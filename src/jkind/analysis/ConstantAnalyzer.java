@@ -24,13 +24,13 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	private Set<String> constants;
 
 	public ConstantAnalyzer(Node node, List<Constant> constantDecls) {
-		constants = new HashSet<String>();
+		constants = new HashSet<>();
 		addConstantsToSet(constantDecls);
 		removeShadowedConstants(Util.getVarDecls(node));
 	}
 	
 	public ConstantAnalyzer(List<Constant> constantDecls) {
-		constants = new HashSet<String>();
+		constants = new HashSet<>();
 		addConstantsToSet(constantDecls);
 	}
 	

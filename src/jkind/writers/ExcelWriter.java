@@ -191,7 +191,7 @@ public class ExcelWriter extends Writer {
 	}
 
 	private SortedSet<String> getRelevantFunctions(Set<String> functions, List<String> idList) {
-		SortedSet<String> result = new TreeSet<String>();
+		SortedSet<String> result = new TreeSet<>();
 		for (String fn : getRelevantFunctions(functions)) {
 			if (idList.contains(fn.substring(1))) {
 				result.add(fn);

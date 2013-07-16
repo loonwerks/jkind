@@ -67,7 +67,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<TypeDef> types(List<TypedefContext> ctxs) {
-		List<TypeDef> types = new ArrayList<TypeDef>();
+		List<TypeDef> types = new ArrayList<>();
 		for (TypedefContext ctx : ctxs) {
 			String id = ctx.ID().getText();
 			Type type = type(ctx.type());
@@ -77,7 +77,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<Constant> constants(List<ConstantContext> ctxs) {
-		List<Constant> constants = new ArrayList<Constant>();
+		List<Constant> constants = new ArrayList<>();
 		for (ConstantContext ctx : ctxs) {
 			String id = ctx.ID().getText();
 			Type type = ctx.type() == null ? null : type(ctx.type());
@@ -88,7 +88,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<Node> nodes(List<NodeContext> ctxs) {
-		List<Node> nodes = new ArrayList<Node>();
+		List<Node> nodes = new ArrayList<>();
 		for (NodeContext ctx : ctxs) {
 			nodes.add(node(ctx));
 		}
@@ -107,7 +107,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
-		List<VarDecl> decls = new ArrayList<VarDecl>();
+		List<VarDecl> decls = new ArrayList<>();
 		if (listCtx == null) {
 			return decls;
 		}
@@ -122,7 +122,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<Equation> equations(List<EquationContext> ctxs) {
-		List<Equation> equations = new ArrayList<Equation>();
+		List<Equation> equations = new ArrayList<>();
 		for (EquationContext ctx : ctxs) {
 			List<IdExpr> lhs = lhs(ctx.lhs());
 			Expr expr = expr(ctx.expr());
@@ -132,7 +132,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<IdExpr> lhs(LhsContext ctx) {
-		List<IdExpr> lhs = new ArrayList<IdExpr>();
+		List<IdExpr> lhs = new ArrayList<>();
 		for (TerminalNode node : ctx.ID()) {
 			lhs.add(new IdExpr(loc(node), node.getText()));
 		}
@@ -140,7 +140,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<String> properties(List<PropertyContext> ctxs) {
-		List<String> props = new ArrayList<String>();
+		List<String> props = new ArrayList<>();
 		for (PropertyContext ctx : ctxs) {
 			props.add(ctx.ID().getText());
 		}
@@ -148,7 +148,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private List<Expr> assertions(List<AssertionContext> ctxs) {
-		List<Expr> assertions = new ArrayList<Expr>();
+		List<Expr> assertions = new ArrayList<>();
 		for (AssertionContext ctx : ctxs) {
 			assertions.add(expr(ctx.expr()));
 		}
@@ -213,7 +213,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	@Override
 	public Expr visitNodeCallExpr(NodeCallExprContext ctx) {
 		String node = ctx.ID().getText();
-		List<Expr> args = new ArrayList<Expr>();
+		List<Expr> args = new ArrayList<>();
 		for (ExprContext arg : ctx.expr()) {
 			args.add(expr(arg));
 		}

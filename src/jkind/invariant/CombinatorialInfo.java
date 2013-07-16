@@ -14,7 +14,7 @@ public class CombinatorialInfo {
 	private Set<String> combinatorialIds;
 	
 	public CombinatorialInfo(Node node) {
-		this.combinatorialIds = new HashSet<String>();
+		this.combinatorialIds = new HashSet<>();
 		for (Equation eq : node.equations) {
 			if (isCombinatorialExpr(eq.expr)) {
 				combinatorialIds.add(eq.lhs.get(0).id);

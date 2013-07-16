@@ -71,7 +71,7 @@ public class BaseProcess extends Process {
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
 				BigInteger index = BigInteger.valueOf(k - 1);
-				List<String> invalid = new ArrayList<String>();
+				List<String> invalid = new ArrayList<>();
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();

@@ -15,7 +15,7 @@ import jkind.lustre.Program;
 
 public class NodeDependencyChecker {
 	public static boolean check(Program program) {
-		Map<String, Set<String>> dependencies = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> dependencies = new HashMap<>();
 		for (Node node : program.nodes) {
 			dependencies.put(node.id, getNodeDependencies(node));
 		}
@@ -24,7 +24,7 @@ public class NodeDependencyChecker {
 	}
 
 	private static Set<String> getNodeDependencies(Node node) {
-		final Set<String> dependencies = new HashSet<String>();
+		final Set<String> dependencies = new HashSet<>();
 		IterVisitor nodeCallCollector = new IterVisitor() {
 			@Override
 			public Void visit(NodeCallExpr e) {
@@ -45,7 +45,7 @@ public class NodeDependencyChecker {
 
 	private NodeDependencyChecker(Map<String, Set<String>> dependencies) {
 		this.dependencies = dependencies;
-		this.callStack = new ArrayDeque<String>();
+		this.callStack = new ArrayDeque<>();
 	}
 
 	private boolean check() {

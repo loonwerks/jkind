@@ -28,7 +28,7 @@ public abstract class Process implements Runnable {
 	protected List<String> properties;
 
 	protected Solver solver;
-	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<Message>();
+	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
 	protected int kMax = Settings.n;
 
 	private String name;
@@ -39,7 +39,7 @@ public abstract class Process implements Runnable {
 		this.name = name;
 		this.spec = spec;
 		this.director = director;
-		this.properties = new ArrayList<String>(spec.node.properties);
+		this.properties = new ArrayList<>(spec.node.properties);
 		this.scratch = getScratch(spec.filename, name);
 	}
 

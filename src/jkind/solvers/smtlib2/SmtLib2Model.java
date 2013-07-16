@@ -19,8 +19,8 @@ public class SmtLib2Model extends Model {
 	private HashMap<String, Lambda> functions;
 
 	public SmtLib2Model() {
-		this.values = new HashMap<String, Sexp>();
-		this.functions = new HashMap<String, Lambda>();
+		this.values = new HashMap<>();
+		this.functions = new HashMap<>();
 	}
 
 	public void addValue(String id, Sexp sexp) {
@@ -66,6 +66,6 @@ public class SmtLib2Model extends Model {
 	
 	@Override
 	public Set<String> getFunctions() {
-		return new HashSet<String>(functions.keySet());
+		return new HashSet<>(functions.keySet());
 	}
 }

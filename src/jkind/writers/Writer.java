@@ -24,7 +24,7 @@ public abstract class Writer {
 			Map<String, InductiveCounterexampleMessage> inductiveCounterexamples);
 
 	protected static SortedSet<String> getRelevantFunctions(Set<String> functions) {
-		SortedSet<String> relevant = new TreeSet<String>();
+		SortedSet<String> relevant = new TreeSet<>();
 		for (String fn : functions) {
 			if (!fn.startsWith("$%")) {
 				relevant.add(fn);

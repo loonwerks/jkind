@@ -17,7 +17,7 @@ public class DependencyMap {
 	private Map<String, Set<String>> map;
 
 	public DependencyMap(Node node, List<String> roots) {
-		this.map = new HashMap<String, Set<String>>();
+		this.map = new HashMap<>();
 		computeOneStepDependencies(node);
 		closeDependencies(roots);
 	}
@@ -43,7 +43,7 @@ public class DependencyMap {
 	}
 
 	private void closeDependencies(List<String> roots) {
-		Map<String, Set<String>> transMap = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> transMap = new HashMap<>();
 		for (String root : roots) {
 			transMap.put(root, computeClosure(root));
 		}
@@ -51,9 +51,9 @@ public class DependencyMap {
 	}
 
 	private Set<String> computeClosure(String root) {
-		Set<String> closure = new HashSet<String>();
+		Set<String> closure = new HashSet<>();
 		closure.add(root);
-		Stack<String> todo = new Stack<String>();
+		Stack<String> todo = new Stack<>();
 		todo.push(root);
 
 		while (!todo.empty()) {

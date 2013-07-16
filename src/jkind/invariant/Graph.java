@@ -20,10 +20,10 @@ public class Graph {
 	private Map<Node, Set<Node>> outgoing;
 
 	public Graph(List<Candidate> candidates) {
-		this.nodes = new ArrayList<Node>();
+		this.nodes = new ArrayList<>();
 		nodes.add(new Node(candidates));
-		this.incoming = new HashMap<Node, Set<Node>>();
-		this.outgoing = new HashMap<Node, Set<Node>>();
+		this.incoming = new HashMap<>();
+		this.outgoing = new HashMap<>();
 	}
 	
 	public int size() {
@@ -42,14 +42,14 @@ public class Graph {
 	private Set<Node> safeGet(Map<Node, Set<Node>> map, Node node) {
 		Set<Node> result = map.get(node);
 		if (result == null) {
-			result = new HashSet<Node>();
+			result = new HashSet<>();
 			map.put(node, result);
 		}
 		return result;
 	}
 
 	private Set<Edge> getEdges() {
-		Set<Edge> edges = new HashSet<Edge>();
+		Set<Edge> edges = new HashSet<>();
 		for (Entry<Node, Set<Node>> entry : outgoing.entrySet()) {
 			Node source = entry.getKey();
 			for (Node destination : entry.getValue()) {
@@ -97,7 +97,7 @@ public class Graph {
 	}
 
 	private List<Invariant> toInvariants(boolean pure) {
-		List<Invariant> invariants = new ArrayList<Invariant>();
+		List<Invariant> invariants = new ArrayList<>();
 		for (Node node : nodes) {
 			invariants.addAll(node.toInvariants(pure));
 		}
@@ -114,9 +114,9 @@ public class Graph {
 	}
 
 	private void splitNodes(Model model, BigInteger k) {
-		List<Node> newNodes = new ArrayList<Node>();
-		List<Edge> newEdges = new ArrayList<Edge>();
-		Map<Node, List<Node>> chains = new HashMap<Node, List<Node>>();
+		List<Node> newNodes = new ArrayList<>();
+		List<Edge> newEdges = new ArrayList<>();
+		Map<Node, List<Node>> chains = new HashMap<>();
 
 		// Split nodes into chains
 		for (Node curr : nodes) {
@@ -196,16 +196,16 @@ public class Graph {
 	}
 
 	public Graph(Graph other) {
-		this.nodes = new ArrayList<Node>(other.nodes);
-		this.incoming = new HashMap<Node, Set<Node>>();
-		this.outgoing = new HashMap<Node, Set<Node>>();
+		this.nodes = new ArrayList<>(other.nodes);
+		this.incoming = new HashMap<>();
+		this.outgoing = new HashMap<>();
 		copy(other.incoming, incoming);
 		copy(other.outgoing, outgoing);
 	}
 
 	private static void copy(Map<Node, Set<Node>> src, Map<Node, Set<Node>> dst) {
 		for (Entry<Node, Set<Node>> entry : src.entrySet()) {
-			dst.put(entry.getKey(), new HashSet<Node>(entry.getValue()));
+			dst.put(entry.getKey(), new HashSet<>(entry.getValue()));
 		}
 	}
 }

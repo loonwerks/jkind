@@ -26,14 +26,14 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	private Set<String> hidden;
 
 	public ConstantEvaluator(List<Constant> constantDecls) {
-		constants = new HashMap<String, Value>();
+		constants = new HashMap<>();
 		for (Constant c : constantDecls) {
 			constants.put(c.id, eval(c.expr));
 		}
 	}
 
 	public void setHidden(Node node) {
-		hidden = new HashSet<String>();
+		hidden = new HashSet<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			hidden.add(decl.id);
 		}

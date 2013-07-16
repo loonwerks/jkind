@@ -19,7 +19,7 @@ import jkind.util.Util;
 
 public class Lustre2Sexps {
 	private StreamDef transition;
-	private List<StreamDecl> declarations = new ArrayList<StreamDecl>();
+	private List<StreamDecl> declarations = new ArrayList<>();
 
 	public Lustre2Sexps(Node node) {
 		createDefinitions(node);
@@ -34,7 +34,7 @@ public class Lustre2Sexps {
 
 	private void createTransition(Node node) {
 		Expr2SexpVisitor visitor = new Expr2SexpVisitor(Util.I);
-		List<Sexp> conjuncts = new ArrayList<Sexp>();
+		List<Sexp> conjuncts = new ArrayList<>();
 		
 		for (Equation eq : node.equations) {
 			conjuncts.add(equation2Sexp(eq, Util.I, visitor));

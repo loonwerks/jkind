@@ -21,9 +21,9 @@ public class YicesModel extends Model {
 	private Map<String, Map<BigInteger, Value>> functionAssignments;
 
 	public YicesModel() {
-		this.aliases = new HashMap<String, String>();
-		this.valueAssignments = new HashMap<String, Value>();
-		this.functionAssignments = new HashMap<String, Map<BigInteger, Value>>();
+		this.aliases = new HashMap<>();
+		this.valueAssignments = new HashMap<>();
+		this.functionAssignments = new HashMap<>();
 	}
 	
 	public void addAlias(String from, String to) {
@@ -37,7 +37,7 @@ public class YicesModel extends Model {
 	public void addFunctionValue(String fn, BigInteger arg, Value v) {
 		Map<BigInteger, Value> fnMap = functionAssignments.get(fn);
 		if (fnMap == null) {
-			fnMap = new HashMap<BigInteger, Value>();
+			fnMap = new HashMap<>();
 			functionAssignments.put(fn, fnMap);
 		}
 		
@@ -86,7 +86,7 @@ public class YicesModel extends Model {
 
 	@Override
 	public Set<String> getFunctions() {
-		Set<String> fns = new HashSet<String>(functionAssignments.keySet());
+		Set<String> fns = new HashSet<>(functionAssignments.keySet());
 		for (String alias : aliases.keySet()) {
 			if (getFunction(alias) != null) {
 				fns.add(alias);

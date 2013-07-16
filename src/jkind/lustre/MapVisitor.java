@@ -33,7 +33,7 @@ public class MapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(NodeCallExpr e) {
-		List<Expr> newArgs = new ArrayList<Expr>();
+		List<Expr> newArgs = new ArrayList<>();
 		for (Expr arg : e.args) {
 			newArgs.add(arg.accept(this));
 		}

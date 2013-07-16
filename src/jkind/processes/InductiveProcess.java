@@ -30,7 +30,7 @@ import jkind.util.Util;
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
 	private BaseProcess baseProcess;
-	private List<Invariant> invariants = new ArrayList<Invariant>();
+	private List<Invariant> invariants = new ArrayList<>();
 	private InvariantProcess invariantProcess;
 
 	public InductiveProcess(Specification spec, Director director) {
@@ -110,7 +110,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private void checkProperties(int k) {
-		List<String> possiblyValid = new ArrayList<String>(properties);
+		List<String> possiblyValid = new ArrayList<>(properties);
 
 		while (!possiblyValid.isEmpty()) {
 			Result result = solver.query(getInductiveQuery(k, possiblyValid));
@@ -138,7 +138,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private void addPropertiesAsInvariants(int k, List<String> valid) {
-		List<Invariant> propertiesAsInvariants = new ArrayList<Invariant>();
+		List<Invariant> propertiesAsInvariants = new ArrayList<>();
 		for (String property : valid) {
 			propertiesAsInvariants.add(new Invariant(property));
 		}
@@ -153,7 +153,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
-		List<Sexp> hyps = new ArrayList<Sexp>();
+		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
 			hyps.add(Util.conjoinStreams(possiblyValid, getIndex(i)));
 		}

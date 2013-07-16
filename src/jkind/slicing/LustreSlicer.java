@@ -17,7 +17,7 @@ public class LustreSlicer {
 	}
 
 	private static Set<String> getPropertyDependencies(Node node, DependencyMap depMap) {
-		Set<String> keep = new HashSet<String>();
+		Set<String> keep = new HashSet<>();
 		for (String prop : node.properties) {
 			keep.addAll(depMap.get(prop));
 		}
@@ -35,7 +35,7 @@ public class LustreSlicer {
 	}
 
 	private static List<VarDecl> sliceVarDecls(List<VarDecl> decls, Set<String> keep) {
-		List<VarDecl> sliced = new ArrayList<VarDecl>();
+		List<VarDecl> sliced = new ArrayList<>();
 		for (VarDecl decl : decls) {
 			if (keep.contains(decl.id)) {
 				sliced.add(decl);
@@ -45,7 +45,7 @@ public class LustreSlicer {
 	}
 
 	private static List<Equation> sliceEquations(List<Equation> equations, Set<String> keep) {
-		List<Equation> sliced = new ArrayList<Equation>();
+		List<Equation> sliced = new ArrayList<>();
 		for (Equation eq : equations) {
 			if (containsAny(keep, eq.lhs)) {
 				sliced.add(eq);
@@ -55,7 +55,7 @@ public class LustreSlicer {
 	}
 	
 	private static List<Expr> sliceAssertions(List<Expr> assertions, Set<String> keep) {
-		List<Expr> sliced = new ArrayList<Expr>();
+		List<Expr> sliced = new ArrayList<>();
 		for (Expr assertion : assertions) {
 			Set<String> deps = IdExtractorVisitor.getIds(assertion);
 			if (deps.size() > 0 && keep.contains(deps.iterator().next())) {
