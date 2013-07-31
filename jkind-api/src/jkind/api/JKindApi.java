@@ -29,16 +29,24 @@ public class JKindApi {
 		this.n = n;
 	}
 	
-	public JKindResult execute(Program program) throws IOException {
+	public JKindResult execute(Program program) {
 		return execute(program.toString());
 	}
 	
-	public JKindResult execute(String program) throws IOException {
-		String text = null;
+	public JKindResult execute(String program) {
 		File lustreFile = null;
-		File xmlFile = null;
 		try {
 			lustreFile = writeLustreFile(program);
+			return execute(lustreFile);
+		} finally {
+			safeDelete(lustreFile);
+		}
+	}
+	
+	public JKindResult execute(File lustreFile) {
+		String text = null;
+		File xmlFile = null;
+		try {
 			text = callJKind(lustreFile);
 			xmlFile = getXmlFile(lustreFile);
 			List<Property> properties = parseXmlFile(xmlFile);
@@ -46,19 +54,26 @@ public class JKindApi {
 		} catch (Throwable t) {
 			throw new JKindApiException(text, t);
 		} finally {
-			if (lustreFile != null && lustreFile.exists()) {
-				lustreFile.delete();
-			}
-			if (xmlFile != null && xmlFile.exists()) {
-				xmlFile.delete();
-			}
+			safeDelete(xmlFile);
 		}
 	}
 
-	private static File writeLustreFile(String program) throws IOException {
-		File file = File.createTempFile("jkind-api", ".lus");
-		writeToFile(program, file);
-		return file;
+	private static File writeLustreFile(String program) {
+		File file = null;
+		try {
+			file = File.createTempFile("jkind-api", ".lus");
+			writeToFile(program, file);
+			return file;
+		} catch (IOException e) {
+			safeDelete(file);
+			throw new JKindApiException("Cannot write to file: " + file, e);
+		}
+	}
+
+	private static void safeDelete(File file) {
+		if (file != null && file.exists()) {
+			file.delete();
+		}
 	}
 
 	private static void writeToFile(String content, File file) throws IOException {
