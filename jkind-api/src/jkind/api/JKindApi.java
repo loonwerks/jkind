@@ -17,19 +17,24 @@ import jkind.lustre.Program;
 
 import org.xml.sax.SAXException;
 
-public class JKind {
+public class JKindApi {
 	public static JKindResult execute(Program program) throws IOException {
-		File lustreFile = writeLustreFile(program);
-		String text = callJKind(lustreFile);
-		File xmlFile = getXmlFile(lustreFile);
-		List<Property> properties = parseXmlFile(xmlFile);
-		xmlFile.delete();
-		return new JKindResult(text, properties);
+		String text = null;
+		try {
+			File lustreFile = writeLustreFile(program);
+			text = callJKind(lustreFile);
+			File xmlFile = getXmlFile(lustreFile);
+			List<Property> properties = parseXmlFile(xmlFile);
+			lustreFile.delete();
+			xmlFile.delete();
+			return new JKindResult(text, properties);
+		} catch (Throwable t) {
+			throw new JKindApiException(text, t);
+		}
 	}
 
 	private static File writeLustreFile(Program program) throws IOException {
 		File file = File.createTempFile("jkind-api", ".lus");
-		file.deleteOnExit();
 		writeToFile(program.toString(), file);
 		return file;
 	}

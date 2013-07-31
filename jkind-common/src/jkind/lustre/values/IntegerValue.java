@@ -57,4 +57,9 @@ public class IntegerValue extends Value {
 			return null;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return value.toString();
+	}
 }

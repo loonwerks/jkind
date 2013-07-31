@@ -21,8 +21,8 @@ public class Signal {
 		values.put(key, value);
 	}
 
-	public Value get(int key) {
-		return values.get(key);
+	public Value get(int step) {
+		return values.get(step);
 	}
 
 	public Map<Integer, Value> getValues() {

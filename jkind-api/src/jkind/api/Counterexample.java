@@ -13,4 +13,14 @@ public class Counterexample {
 	public List<Signal> getSignals() {
 		return signals;
 	}
+	
+	public Signal getSignal(String name) {
+		for (Signal signal : signals) {
+			if (signal.getName().equals(name)) {
+				return signal;
+			}
+		}
+		
+		return null;
+	}
 }

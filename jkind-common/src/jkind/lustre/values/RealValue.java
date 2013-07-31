@@ -79,4 +79,17 @@ public class RealValue extends Value implements Comparable<RealValue> {
 			return null;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		BigInteger gcd = num.gcd(denom);
+		BigInteger reducedNum = num.divide(gcd);
+		BigInteger reducedDenom = denom.divide(gcd);
+		
+		if (reducedDenom.equals(BigInteger.ONE)) {
+			return reducedNum.toString();
+		} else {
+			return reducedNum.toString() + "/" + reducedDenom.toString();
+		}
+	}
 }
