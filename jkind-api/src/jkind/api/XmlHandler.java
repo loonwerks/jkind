@@ -16,7 +16,7 @@ public class XmlHandler extends DefaultHandler {
 	public List<Property> properties = new ArrayList<>();
 
 	private Counterexample cex;
-	private Signal signal;
+	private Signal<Value> signal;
 
 	private String propertyName;
 	private String answer;
@@ -39,7 +39,7 @@ public class XmlHandler extends DefaultHandler {
 		} else if (qName.equals("Counterexample")) {
 			cex = new Counterexample();
 		} else if (qName.equals("Signal")) {
-			signal = new Signal(attributes.getValue("name"));
+			signal = new Signal<Value>(attributes.getValue("name"));
 			type = attributes.getValue("type");
 			cex.addSignal(signal);
 		} else if (qName.equals("Value")) {

@@ -5,9 +5,9 @@ import java.util.Map;
 
 import jkind.lustre.values.Value;
 
-public class Signal {
+public class Signal<T extends Value> {
 	private final String name;
-	private final Map<Integer, Value> values = new HashMap<>();
+	private final Map<Integer, T> values = new HashMap<>();
 
 	public Signal(String name) {
 		this.name = name;
@@ -17,15 +17,15 @@ public class Signal {
 		return name;
 	}
 
-	public void putValue(int step, Value value) {
+	public void putValue(int step, T value) {
 		values.put(step, value);
 	}
 
-	public Value getValue(int step) {
+	public T getValue(int step) {
 		return values.get(step);
 	}
 
-	public Map<Integer, Value> getValues() {
+	public Map<Integer, T> getValues() {
 		return values;
 	}
 }

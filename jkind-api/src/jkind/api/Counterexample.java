@@ -5,36 +5,71 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 
 public class Counterexample {
-	private final List<Signal> signals = new ArrayList<>();
+	private final List<Signal<Value>> signals = new ArrayList<>();
 
-	public void addSignal(Signal signal) {
+	public void addSignal(Signal<Value> signal) {
 		signals.add(signal);
 	}
 
-	public List<Signal> getSignals() {
+	public List<Signal<Value>> getSignals() {
 		return signals;
 	}
-	
-	public Signal getSignal(String name) {
-		for (Signal signal : signals) {
+
+	public Signal<Value> getSignal(String name) {
+		for (Signal<Value> signal : signals) {
 			if (signal.getName().equals(name)) {
 				return signal;
 			}
 		}
 		return null;
 	}
-	
+
 	public Map<String, Value> getStep(int step) {
 		Map<String, Value> result = new HashMap<>();
-		for (Signal signal : signals) {
+		for (Signal<Value> signal : signals) {
 			Value value = signal.getValue(step);
 			if (value != null) {
 				result.put(signal.getName(), value);
 			}
 		}
 		return result;
+	}
+	
+	public Signal<IntegerValue> getIntegerSignal(String name) {
+		return getTypedSignal(name, IntegerValue.class);
+	}
+	
+	public Signal<BooleanValue> getBooleanSignal(String name) {
+		return getTypedSignal(name, BooleanValue.class);
+	}
+	
+	public Signal<RealValue> getRealSignal(String name) {
+		return getTypedSignal(name, RealValue.class);
+	}
+	 
+	private <T extends Value> Signal<T> getTypedSignal(String name, Class<T> klass) {
+		Signal<Value> signal = getSignal(name);
+		if (signal == null) {
+			return null;
+		}
+		
+		Signal<T> typedSignal = new Signal<T>(name);
+		Map<Integer, Value> values = signal.getValues();
+		for (Integer step : values.keySet()) {
+			Value value = values.get(step);
+			if (klass.isInstance(value)) {
+				typedSignal.putValue(step, klass.cast(value));
+			} else {
+				throw new JKindApiException("Cannot cast " + value.getClass().getSimpleName()
+						+ " to " + klass.getSimpleName());
+			}
+		}
+		return typedSignal;
 	}
 }
