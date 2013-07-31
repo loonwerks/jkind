@@ -9,4 +9,9 @@ public class VarDecl extends Ast {
 		this.id = id;
 		this.type = type;
 	}
+	
+	@Override
+	public <T> T accept(AstVisitor<T> visitor) {
+		return visitor.visit(this);
+	}
 }

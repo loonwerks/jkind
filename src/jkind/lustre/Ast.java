@@ -6,4 +6,13 @@ public abstract class Ast {
 	public Ast(Location location) {
 		this.location = location;
 	}
+	
+	@Override
+	public String toString() {
+		PrettyPrintVisitor visitor = new PrettyPrintVisitor();
+		accept(visitor);
+		return visitor.toString();
+	}
+	
+	public abstract <T> T accept(AstVisitor<T> visitor);
 }

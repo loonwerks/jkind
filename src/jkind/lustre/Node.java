@@ -24,4 +24,9 @@ public class Node extends Ast {
 		this.properties = Collections.unmodifiableList(properties);
 		this.assertions = Collections.unmodifiableList(assertions);
 	}
+	
+	@Override
+	public <T> T accept(AstVisitor<T> visitor) {
+		return visitor.visit(this);
+	}
 }

@@ -19,4 +19,9 @@ public class Equation extends Ast {
 		this.lhs = Collections.singletonList(id);
 		this.expr = expr;
 	}
+	
+	@Override
+	public <T> T accept(AstVisitor<T> visitor) {
+		return visitor.visit(this);
+	}
 }

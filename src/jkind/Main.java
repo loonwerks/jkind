@@ -48,7 +48,7 @@ public class Main {
 			if (!StaticAnalyzer.check(program)) {
 				System.exit(-1);
 			}
-	
+
 			program = InlineTypes.program(program);
 			program = InlineConstants.program(program);
 			Node main = InlineNodeCalls.program(program);
