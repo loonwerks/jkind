@@ -35,16 +35,23 @@ public class JKindApi {
 	
 	public JKindResult execute(String program) throws IOException {
 		String text = null;
+		File lustreFile = null;
+		File xmlFile = null;
 		try {
-			File lustreFile = writeLustreFile(program);
+			lustreFile = writeLustreFile(program);
 			text = callJKind(lustreFile);
-			File xmlFile = getXmlFile(lustreFile);
+			xmlFile = getXmlFile(lustreFile);
 			List<Property> properties = parseXmlFile(xmlFile);
-			lustreFile.delete();
-			xmlFile.delete();
 			return new JKindResult(text, properties);
 		} catch (Throwable t) {
 			throw new JKindApiException(text, t);
+		} finally {
+			if (lustreFile != null && lustreFile.exists()) {
+				lustreFile.delete();
+			}
+			if (xmlFile != null && xmlFile.exists()) {
+				xmlFile.delete();
+			}
 		}
 	}
 
