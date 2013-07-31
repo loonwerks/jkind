@@ -10,6 +10,7 @@ import jkind.api.JKindApiException;
 import jkind.api.JKindResult;
 import jkind.api.Property;
 import jkind.api.Signal;
+import jkind.api.UnknownProperty;
 import jkind.api.ValidProperty;
 import jkind.lustre.Constant;
 import jkind.lustre.Location;
@@ -34,17 +35,21 @@ public class ApiTest extends TestCase {
 		StringBuilder text = new StringBuilder();
 		text.append("node main() returns (counter : int);\n");
 		text.append("var\n");
-		text.append(" valid_prop, invalid_prop : bool;\n");
+		text.append(" valid_prop, invalid_prop, unknown_prop : bool;\n");
 		text.append("let\n");
 		text.append("  counter = 0 -> 1 + pre counter;\n");
 		text.append("  valid_prop = counter >= 0;\n");
 		text.append("  invalid_prop = counter < 10;\n");
+		text.append("  unknown_prop = counter < 1000;\n");
 		text.append("  --%PROPERTY valid_prop;\n");
 		text.append("  --%PROPERTY invalid_prop;\n");
+		text.append("  --%PROPERTY unknown_prop;\n");
 		text.append("tel;");
 		
 		Program program = parseLustre(text.toString());
-		JKindResult result = JKindApi.execute(program);
+		JKindApi api = new JKindApi();
+		api.setN(20);
+		JKindResult result = api.execute(program);
 		
 		Property validPropRaw = result.getProperty("valid_prop");
 		assertTrue(validPropRaw instanceof ValidProperty);
@@ -59,6 +64,14 @@ public class ApiTest extends TestCase {
 		for (int i = 0; i < 11; i++) {
 			assertEquals(Integer.toString(i), counterSignal.get(i).toString());
 		}
+		Signal invalidPropSignal = invalidProp.getCounterexample().getSignal("invalid_prop");
+		for (int i = 0; i < 10; i++) {
+			assertEquals("true", invalidPropSignal.get(i).toString());
+		}
+		assertEquals("false", invalidPropSignal.get(10).toString());
+		
+		Property unknownPropRaw = result.getProperty("unknown_prop");
+		assertTrue(unknownPropRaw instanceof UnknownProperty);
 	}
 	
 	@Test
@@ -68,7 +81,7 @@ public class ApiTest extends TestCase {
 		List<Node> nodes = Collections.emptyList();
 		Program program = new Program(Location.NULL, types, constants, nodes);
 		try {
-			JKindApi.execute(program);
+			new JKindApi().execute(program);
 			fail("Expected exception");
 		} catch (JKindApiException e) {
 			assertTrue(e.getMessage().contains("no main node"));

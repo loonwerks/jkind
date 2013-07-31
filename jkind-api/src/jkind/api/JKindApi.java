@@ -18,7 +18,18 @@ import jkind.lustre.Program;
 import org.xml.sax.SAXException;
 
 public class JKindApi {
-	public static JKindResult execute(Program program) throws IOException {
+	private Integer timeout = null;
+	private Integer n = null;
+	
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+	
+	public void setN(int n) {
+		this.n = n;
+	}
+	
+	public JKindResult execute(Program program) throws IOException {
 		String text = null;
 		try {
 			File lustreFile = writeLustreFile(program);
@@ -51,7 +62,7 @@ public class JKindApi {
 		}
 	}
 
-	private static String callJKind(File lustreFile) throws IOException {
+	private String callJKind(File lustreFile) throws IOException {
 		ProcessBuilder builder = getJKindProcessBuilder(lustreFile);
 		Process process = null;
 		StringBuilder result = new StringBuilder();
@@ -70,7 +81,7 @@ public class JKindApi {
 		return result.toString();
 	}
 
-	private static ProcessBuilder getJKindProcessBuilder(File lustreFile) throws IOException {
+	private ProcessBuilder getJKindProcessBuilder(File lustreFile) throws IOException {
 		List<String> args = new ArrayList<>();
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			args.add("cmd");
@@ -78,6 +89,14 @@ public class JKindApi {
 		}
 		args.add("jkind");
 		args.add("-xml");
+		if (timeout != null) {
+			args.add("-timeout");
+			args.add(timeout.toString());
+		}
+		if (n != null) {
+			args.add("-n");
+			args.add(n.toString());
+		}
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
