@@ -30,6 +30,10 @@ public class JKindApi {
 	}
 	
 	public JKindResult execute(Program program) throws IOException {
+		return execute(program.toString());
+	}
+	
+	public JKindResult execute(String program) throws IOException {
 		String text = null;
 		try {
 			File lustreFile = writeLustreFile(program);
@@ -44,9 +48,9 @@ public class JKindApi {
 		}
 	}
 
-	private static File writeLustreFile(Program program) throws IOException {
+	private static File writeLustreFile(String program) throws IOException {
 		File file = File.createTempFile("jkind-api", ".lus");
-		writeToFile(program.toString(), file);
+		writeToFile(program, file);
 		return file;
 	}
 
