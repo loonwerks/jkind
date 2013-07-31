@@ -3,21 +3,8 @@ package jkind.lustre;
 import java.util.Iterator;
 import java.util.List;
 
-public class PrettyPrintVisitor implements AstVisitor<Void> {
-	private StringBuilder sb;
-
-	public PrettyPrintVisitor() {
-		sb = new StringBuilder();
-	}
-
-	@Override
-	public String toString() {
-		return sb.toString();
-	}
-
-	private void write(Object o) {
-		sb.append(o);
-	}
+public abstract class PrettyPrintVisitor implements AstVisitor<Void> {
+	protected abstract void write(Object o);
 
 	private final static String seperator = System.getProperty("line.separator");
 
