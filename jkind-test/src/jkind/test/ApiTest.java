@@ -62,13 +62,13 @@ public class ApiTest extends TestCase {
 		assertEquals(11, invalidProp.getK());
 		Signal counterSignal = invalidProp.getCounterexample().getSignal("counter");
 		for (int i = 0; i < 11; i++) {
-			assertEquals(Integer.toString(i), counterSignal.get(i).toString());
+			assertEquals(Integer.toString(i), counterSignal.getValue(i).toString());
 		}
 		Signal invalidPropSignal = invalidProp.getCounterexample().getSignal("invalid_prop");
 		for (int i = 0; i < 10; i++) {
-			assertEquals("true", invalidPropSignal.get(i).toString());
+			assertEquals("true", invalidPropSignal.getValue(i).toString());
 		}
-		assertEquals("false", invalidPropSignal.get(10).toString());
+		assertEquals("false", invalidPropSignal.getValue(10).toString());
 		
 		Property unknownPropRaw = result.getProperty("unknown_prop");
 		assertTrue(unknownPropRaw instanceof UnknownProperty);

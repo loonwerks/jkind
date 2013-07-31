@@ -17,11 +17,11 @@ public class Signal {
 		return name;
 	}
 
-	public void put(int key, Value value) {
-		values.put(key, value);
+	public void putValue(int step, Value value) {
+		values.put(step, value);
 	}
 
-	public Value get(int step) {
+	public Value getValue(int step) {
 		return values.get(step);
 	}
 

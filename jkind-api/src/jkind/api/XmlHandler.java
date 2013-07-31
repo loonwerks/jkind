@@ -82,7 +82,7 @@ public class XmlHandler extends DefaultHandler {
 			readK = false;
 		} else if (readValue) {
 			Value value = readValue(new String(ch, start, length));
-			signal.put(time, value);
+			signal.putValue(time, value);
 			readValue = false;
 		}
 	}

@@ -25,7 +25,6 @@ public class JKindResult {
 				return property;
 			}
 		}
-
 		return null;
 	}
 }
