@@ -1,7 +1,5 @@
 package jkind.lustre;
 
-
-
 public class TypeDef extends Ast {
 	final public String id;
 	final public Type type;
@@ -10,6 +8,10 @@ public class TypeDef extends Ast {
 		super(location);
 		this.id = id;
 		this.type = type;
+	}
+	
+	public TypeDef(String id, Type type) {
+		this(Location.NULL, id, type);
 	}
 	
 	@Override

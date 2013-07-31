@@ -11,6 +11,10 @@ public class VarDecl extends Ast {
 		this.type = type;
 	}
 	
+	public VarDecl(String id, Type type) {
+		this(Location.NULL, id, type);
+	}
+	
 	@Override
 	public <T> T accept(AstVisitor<T> visitor) {
 		return visitor.visit(this);

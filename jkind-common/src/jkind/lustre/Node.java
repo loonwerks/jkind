@@ -25,6 +25,23 @@ public class Node extends Ast {
 		this.assertions = Collections.unmodifiableList(assertions);
 	}
 
+	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
+			List<Equation> equations, List<String> properties, List<Expr> assertions) {
+		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions);
+	}
+
+	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
+			List<Equation> equations, List<String> properties) {
+		this(Location.NULL, id, inputs, outputs, locals, equations, properties, Collections
+				.<Expr> emptyList());
+	}
+
+	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
+			List<Equation> equations) {
+		this(Location.NULL, id, inputs, outputs, locals, equations, Collections
+				.<String> emptyList(), Collections.<Expr> emptyList());
+	}
+
 	@Override
 	public <T> T accept(AstVisitor<T> visitor) {
 		return visitor.visit(this);

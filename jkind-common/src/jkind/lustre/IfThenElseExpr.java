@@ -12,6 +12,10 @@ public class IfThenElseExpr extends Expr {
 		this.thenExpr = thenExpr;
 		this.elseExpr = elseExpr;
 	}
+	
+	public IfThenElseExpr(Expr cond, Expr thenExpr, Expr elseExpr) {
+		this(Location.NULL, cond, thenExpr, elseExpr);
+	}
 
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {

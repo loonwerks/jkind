@@ -9,6 +9,10 @@ public class RealExpr extends Expr {
 		super(location);
 		this.value = value;
 	}
+	
+	public RealExpr(BigDecimal value) {
+		this(Location.NULL, value);
+	}
 
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {

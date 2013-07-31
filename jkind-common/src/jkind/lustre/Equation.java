@@ -12,13 +12,21 @@ public class Equation extends Ast {
 		this.lhs = Collections.unmodifiableList(lhs);
 		this.expr = expr;
 	}
-	
+
 	public Equation(Location location, IdExpr id, Expr expr) {
 		super(location);
 		this.lhs = Collections.singletonList(id);
 		this.expr = expr;
 	}
-	
+
+	public Equation(List<IdExpr> lhs, Expr expr) {
+		this(Location.NULL, lhs, expr);
+	}
+
+	public Equation(IdExpr id, Expr expr) {
+		this(Location.NULL, id, expr);
+	}
+
 	@Override
 	public <T> T accept(AstVisitor<T> visitor) {
 		return visitor.visit(this);

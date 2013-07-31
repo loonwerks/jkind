@@ -10,6 +10,10 @@ public class IntExpr extends Expr {
 		this.value = value;
 	}
 	
+	public IntExpr(BigInteger value) {
+		this(Location.NULL, value);
+	}
+	
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

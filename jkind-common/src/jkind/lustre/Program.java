@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,6 +21,19 @@ public class Program extends Ast {
 		} else {
 			main = null;
 		}
+	}
+
+	public Program(List<TypeDef> types, List<Constant> constants, List<Node> nodes) {
+		this(Location.NULL, types, constants, nodes);
+	}
+
+	public Program(List<Node> nodes) {
+		this(Location.NULL, Collections.<TypeDef>emptyList(), Collections.<Constant>emptyList(), nodes);
+	}
+
+	public Program(Node... nodes) {
+		this(Location.NULL, Collections.<TypeDef>emptyList(), Collections.<Constant>emptyList(), Arrays
+				.asList(nodes));
 	}
 
 	@Override

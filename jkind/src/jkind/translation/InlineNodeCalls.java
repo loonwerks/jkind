@@ -10,7 +10,6 @@ import java.util.Queue;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.Location;
 import jkind.lustre.MapVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
@@ -52,7 +51,7 @@ public class InlineNodeCalls extends MapVisitor {
 			} else {
 				List<IdExpr> outputs = visitNodeCallExpr((NodeCallExpr) eq.expr);
 				for (int i = 0; i < eq.lhs.size(); i++) {
-					result.add(new Equation(Location.NULL, eq.lhs.get(i), outputs.get(i)));
+					result.add(new Equation(eq.lhs.get(i), outputs.get(i)));
 				}
 			}
 		}
@@ -63,7 +62,7 @@ public class InlineNodeCalls extends MapVisitor {
 	private IdExpr newVar(VarDecl decl) {
 		VarDecl newDecl = new VarDecl(decl.location, "%inline" + newLocals.size(), decl.type);
 		newLocals.add(newDecl);
-		return new IdExpr(Location.NULL, newDecl.id);
+		return new IdExpr(newDecl.id);
 	}
 
 	@Override
@@ -104,7 +103,7 @@ public class InlineNodeCalls extends MapVisitor {
 		for (int i = 0; i < inputs.size(); i++) {
 			IdExpr idExpr = translation.get(inputs.get(i).id);
 			Expr arg = args.get(i);
-			queue.add(new Equation(Location.NULL, idExpr, arg));
+			queue.add(new Equation(idExpr, arg));
 		}
 	}
 

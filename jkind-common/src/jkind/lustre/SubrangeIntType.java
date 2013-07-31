@@ -13,6 +13,10 @@ public class SubrangeIntType extends Type {
 		this.low = low;
 		this.high = high;
 	}
+	
+	public SubrangeIntType(BigInteger low, BigInteger high) {
+		this(Location.NULL, low, high);
+	}
 
 	@Override
 	public String toString() {

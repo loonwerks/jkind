@@ -8,6 +8,10 @@ public class BoolExpr extends Expr {
 		this.value = value;
 	}
 	
+	public BoolExpr(boolean value) {
+		this(Location.NULL, value);
+	}
+	
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

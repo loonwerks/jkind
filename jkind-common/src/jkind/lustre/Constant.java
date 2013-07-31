@@ -13,6 +13,10 @@ public class Constant extends Ast {
 		this.expr = expr;
 	}
 	
+	public Constant(String id, Type type, Expr expr) {
+		this(Location.NULL, id, type, expr);
+	}
+	
 	@Override
 	public <T> T accept(AstVisitor<T> visitor) {
 		return visitor.visit(this);

@@ -9,6 +9,10 @@ public class IdExpr extends Expr {
 		this.id = id;
 	}
 	
+	public IdExpr(String id) {
+		this(Location.NULL, id);
+	}
+	
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

@@ -11,6 +11,10 @@ public class BinaryExpr extends Expr {
 		this.op = op;
 		this.right = right;
 	}
+	
+	public BinaryExpr(Expr left, BinaryOp op, Expr right) {
+		this(Location.NULL, left, op, right);
+	}
 
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {

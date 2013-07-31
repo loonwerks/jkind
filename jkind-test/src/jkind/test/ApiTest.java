@@ -1,8 +1,6 @@
 package jkind.test;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import jkind.api.Counterexample;
 import jkind.api.InvalidProperty;
@@ -13,11 +11,7 @@ import jkind.api.Property;
 import jkind.api.Signal;
 import jkind.api.UnknownProperty;
 import jkind.api.ValidProperty;
-import jkind.lustre.Constant;
-import jkind.lustre.Location;
-import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.lustre.TypeDef;
 import jkind.lustre.parsing.LustreLexer;
 import jkind.lustre.parsing.LustreParser;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
@@ -80,10 +74,7 @@ public class ApiTest extends TestCase {
 
 	@Test
 	public void testError() throws IOException {
-		List<TypeDef> types = Collections.emptyList();
-		List<Constant> constants = Collections.emptyList();
-		List<Node> nodes = Collections.emptyList();
-		Program program = new Program(Location.NULL, types, constants, nodes);
+		Program program = new Program();
 		try {
 			new JKindApi().execute(program);
 			fail("Expected exception");
