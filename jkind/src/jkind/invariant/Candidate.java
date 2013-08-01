@@ -10,7 +10,7 @@ import jkind.solvers.BoolValue;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
 import jkind.solvers.StreamDef;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class Candidate {
 	final public StreamDef def;
@@ -39,7 +39,7 @@ public class Candidate {
 	}
 
 	final public static Candidate TRUE = new Candidate(new StreamDef("canTrue", Type.BOOL,
-			new Lambda(Util.I, new Symbol("true"))), "true");
+			new Lambda(SexpUtil.I, new Symbol("true"))), "true");
 	final public static Candidate FALSE = new Candidate(new StreamDef("canFalse", Type.BOOL,
-			new Lambda(Util.I, new Symbol("false"))), "false");
+			new Lambda(SexpUtil.I, new Symbol("false"))), "false");
 }

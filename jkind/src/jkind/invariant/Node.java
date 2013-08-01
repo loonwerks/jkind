@@ -9,7 +9,7 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class Node {
 	private List<Candidate> candidates;
@@ -35,12 +35,12 @@ public class Node {
 		
 		Iterator<Candidate> iterator = candidates.iterator();
 		Candidate first = iterator.next();
-		Sexp firstSexp = first.index(Util.I, pure);
+		Sexp firstSexp = first.index(SexpUtil.I, pure);
 		
 		while (iterator.hasNext()) {
 			Candidate other = iterator.next();
 			String text = first + " = " + other;
-			Lambda lambda = new Lambda(Util.I, new Cons("=", firstSexp, other.index(Util.I, pure)));
+			Lambda lambda = new Lambda(SexpUtil.I, new Cons("=", firstSexp, other.index(SexpUtil.I, pure)));
 			invariants.add(new Invariant(lambda, text));
 		}
 		

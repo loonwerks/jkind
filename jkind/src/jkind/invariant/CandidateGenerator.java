@@ -11,7 +11,7 @@ import jkind.sexp.Sexp;
 import jkind.solvers.Lambda;
 import jkind.solvers.StreamDef;
 import jkind.translation.Specification;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class CandidateGenerator {
 	private Specification spec;
@@ -39,15 +39,15 @@ public class CandidateGenerator {
 
 			Type type = spec.typeMap.get(id);
 			if (type == Type.BOOL) {
-				Sexp s = new Cons("$" + id, Util.I);
+				Sexp s = new Cons("$" + id, SexpUtil.I);
 				addCandidate(s, id);
 				addCandidate(new Cons("not", s), "not " + id);
 			} else if (type instanceof SubrangeIntType) {
 				SubrangeIntType subrange = (SubrangeIntType) type;
-				addCandidate(Util.subrangeConstraint(id, Util.I, subrange), "(" + subrange.low
+				addCandidate(SexpUtil.subrangeConstraint(id, SexpUtil.I, subrange), "(" + subrange.low
 						+ " <= " + id + " and " + id + " <= " + subrange.high + ")");
 
-				Sexp s = new Cons("$" + id, Util.I);
+				Sexp s = new Cons("$" + id, SexpUtil.I);
 				for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r
 						.add(BigInteger.ONE)) {
 					addCandidate(new Cons("=", s, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
@@ -61,7 +61,7 @@ public class CandidateGenerator {
 	}
 
 	private void addCandidate(Sexp s, String text) {
-		StreamDef def = new StreamDef("can" + candidateIndex, Type.BOOL, new Lambda(Util.I, s));
+		StreamDef def = new StreamDef("can" + candidateIndex, Type.BOOL, new Lambda(SexpUtil.I, s));
 		candidateIndex++;
 		candidates.add(new Candidate(def, text));
 	}

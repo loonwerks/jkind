@@ -15,6 +15,7 @@ import jkind.sexp.Symbol;
 import jkind.solvers.Lambda;
 import jkind.solvers.StreamDecl;
 import jkind.solvers.StreamDef;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
 
 public class Lustre2Sexps {
@@ -33,22 +34,22 @@ public class Lustre2Sexps {
 	}
 
 	private void createTransition(Node node) {
-		Expr2SexpVisitor visitor = new Expr2SexpVisitor(Util.I);
+		Expr2SexpVisitor visitor = new Expr2SexpVisitor(SexpUtil.I);
 		List<Sexp> conjuncts = new ArrayList<>();
 		
 		for (Equation eq : node.equations) {
-			conjuncts.add(equation2Sexp(eq, Util.I, visitor));
+			conjuncts.add(equation2Sexp(eq, SexpUtil.I, visitor));
 		}
 		
 		for (VarDecl input : node.inputs) {
 			if (input.type instanceof SubrangeIntType) {
-				conjuncts.add(Util.subrangeConstraint(input.id, Util.I,
+				conjuncts.add(SexpUtil.subrangeConstraint(input.id, SexpUtil.I,
 						(SubrangeIntType) input.type));
 			}
 		}
 		
 		for (Expr assertion : node.assertions) {
-			conjuncts.add(assertion.accept(new Expr2SexpVisitor(Util.I)));
+			conjuncts.add(assertion.accept(new Expr2SexpVisitor(SexpUtil.I)));
 		}
 		
 		if (visitor.hasSideConditions()) {
@@ -56,7 +57,7 @@ public class Lustre2Sexps {
 			conjuncts.addAll(visitor.getSideConditions());
 		}
 
-		Lambda lambda = new Lambda(Util.I, new Cons("and", conjuncts));
+		Lambda lambda = new Lambda(SexpUtil.I, new Cons("and", conjuncts));
 		transition = new StreamDef(Keywords.T, Type.BOOL, lambda);
 	}
 

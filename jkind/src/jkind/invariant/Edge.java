@@ -3,7 +3,7 @@ package jkind.invariant;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Lambda;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class Edge {
 	final public Node source;
@@ -19,8 +19,8 @@ public class Edge {
 		Candidate dRep = destination.getRepresentative();
 
 		String text = sRep + " => " + dRep;
-		Sexp body = new Cons("=>", sRep.index(Util.I, pure), dRep.index(Util.I, pure));
-		Lambda lambda = new Lambda(Util.I, body);
+		Sexp body = new Cons("=>", sRep.index(SexpUtil.I, pure), dRep.index(SexpUtil.I, pure));
+		Lambda lambda = new Lambda(SexpUtil.I, body);
 		
 		return new Invariant(lambda, text);
 	}

@@ -12,7 +12,7 @@ import jkind.solvers.Eval;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
 import jkind.solvers.Value;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class SmtLib2Model extends Model {
 	private HashMap<String, Sexp> values;
@@ -44,7 +44,7 @@ public class SmtLib2Model extends Model {
 		} else if (definitions.containsKey(fn)) {
 			lambda = definitions.get(fn).getLambda();
 		} else {
-			lambda = new Lambda(Util.I, getDefaultValue(fn));
+			lambda = new Lambda(SexpUtil.I, getDefaultValue(fn));
 			functions.put(fn, lambda);
 		}
 		

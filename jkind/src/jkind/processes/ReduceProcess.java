@@ -21,7 +21,7 @@ import jkind.solvers.UnsatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.BiMap;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class ReduceProcess extends Process {
 	public ReduceProcess(Specification spec, Director director) {
@@ -140,11 +140,11 @@ public class ReduceProcess extends Process {
 		for (int i = 0; i <= k; i++) {
 			hyps.add(new Cons(Keywords.T, getInductiveIndex(i)));
 			if (i < k) {
-				hyps.add(Util.conjoinInvariants(irreducible, getInductiveIndex(i)));
+				hyps.add(SexpUtil.conjoinInvariants(irreducible, getInductiveIndex(i)));
 			}
 		}
 		
-		Sexp conc = Util.conjoinInvariants(irreducible, getInductiveIndex(k));
+		Sexp conc = SexpUtil.conjoinInvariants(irreducible, getInductiveIndex(k));
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}
 

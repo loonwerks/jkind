@@ -25,7 +25,7 @@ import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
@@ -155,9 +155,9 @@ public class InductiveProcess extends Process {
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(Util.conjoinStreams(possiblyValid, getIndex(i)));
+			hyps.add(SexpUtil.conjoinStreams(possiblyValid, getIndex(i)));
 		}
-		Sexp conc = Util.conjoinStreams(possiblyValid, getIndex(k));
+		Sexp conc = SexpUtil.conjoinStreams(possiblyValid, getIndex(k));
 
 		if (hyps.isEmpty()) {
 			return conc;

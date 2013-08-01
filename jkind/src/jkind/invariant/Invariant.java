@@ -4,7 +4,7 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Lambda;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class Invariant {
 	final private Lambda lambda;
@@ -16,7 +16,7 @@ public class Invariant {
 	}
 	
 	public Invariant(String prop) {
-		this.lambda = new Lambda(Util.I, new Cons(new Symbol("$" + prop), Util.I));	
+		this.lambda = new Lambda(SexpUtil.I, new Cons(new Symbol("$" + prop), SexpUtil.I));	
 		this.text = prop;
 	}
 	
