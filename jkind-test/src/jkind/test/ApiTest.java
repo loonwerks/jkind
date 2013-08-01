@@ -1,12 +1,17 @@
 package jkind.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import jkind.api.Counterexample;
 import jkind.api.InvalidProperty;
 import jkind.api.JKindApi;
 import jkind.api.JKindApiException;
 import jkind.api.JKindResult;
+import jkind.api.MapRenaming;
 import jkind.api.Property;
 import jkind.api.Signal;
 import jkind.api.UnknownProperty;
@@ -18,6 +23,7 @@ import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.Value;
 import junit.framework.TestCase;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -81,6 +87,43 @@ public class ApiTest extends TestCase {
 		} catch (JKindApiException e) {
 			assertTrue(e.getMessage().contains("no main node"));
 		}
+	}
+
+	@Test
+	public void testRenamingProperties() {
+		Property property1 = new UnknownProperty("property1");
+		Property property2 = new UnknownProperty("property2");
+		List<Property> properties = new ArrayList<>();
+		properties.add(property1);
+		properties.add(property2);
+		JKindResult original = new JKindResult("", properties);
+
+		Map<String, String> map = new HashMap<>();
+		map.put("property1", "prop1");
+		JKindResult revised = original.rename(new MapRenaming(map));
+
+		assertEquals(1, revised.getProperties().size());
+		assertNull(revised.getProperty("property1"));
+		assertNull(revised.getProperty("property2"));
+		assertNotNull(revised.getProperty("prop1"));
+	}
+
+	@Test
+	public void testRenamingCounterexample() {
+		Signal<Value> signal1 = new Signal<>("signal1");
+		Signal<Value> signal2 = new Signal<>("signal2");
+		Counterexample original = new Counterexample();
+		original.addSignal(signal1);
+		original.addSignal(signal2);
+
+		Map<String, String> map = new HashMap<>();
+		map.put("signal1", "sig1");
+		Counterexample revised = original.rename(new MapRenaming(map));
+
+		assertEquals(1, revised.getSignals().size());
+		assertNull(revised.getSignal("signal1"));
+		assertNull(revised.getSignal("signal2"));
+		assertNotNull(revised.getSignal("sig1"));
 	}
 
 	private static Program parseLustre(String content) throws IOException, RecognitionException {

@@ -1,5 +1,6 @@
 package jkind.api;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,5 +28,16 @@ public final class JKindResult {
 			}
 		}
 		return null;
+	}
+	
+	public JKindResult rename(Renaming renaming) {
+		List<Property> renamedProperties = new ArrayList<>();
+		for (Property property : properties) {
+			Property newProperty = property.rename(renaming);
+			if (newProperty != null) {
+				renamedProperties.add(newProperty);
+			}
+		}
+		return new JKindResult(text, renamedProperties);
 	}
 }

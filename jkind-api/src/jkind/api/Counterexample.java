@@ -61,4 +61,15 @@ public final class Counterexample {
 		}
 		return signal.cast(klass);
 	}
+
+	public Counterexample rename(Renaming renaming) {
+		Counterexample result = new Counterexample();
+		for (Signal<Value> signal : signals) {
+			Signal<Value> newSignal = signal.rename(renaming);
+			if (newSignal != null) {
+				result.addSignal(newSignal);
+			}
+		}
+		return result;
+	}
 }

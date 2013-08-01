@@ -17,4 +17,14 @@ public final class InvalidProperty extends Property {
 	public Counterexample getCounterexample() {
 		return cex;
 	}
+	
+	@Override
+	public Property rename(Renaming renaming) {
+		String newName = renaming.rename(name);
+		if (newName == null) {
+			return null;
+		}
+		
+		return new InvalidProperty(newName, k, cex.rename(renaming));
+	}
 }

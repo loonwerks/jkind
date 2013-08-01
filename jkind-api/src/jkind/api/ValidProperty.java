@@ -11,4 +11,14 @@ public final class ValidProperty extends Property {
 	public int getK() {
 		return k;
 	}
+
+	@Override
+	public Property rename(Renaming renaming) {
+		String newName = renaming.rename(name);
+		if (newName == null) {
+			return null;
+		}
+		
+		return new ValidProperty(newName, k);
+	}
 }

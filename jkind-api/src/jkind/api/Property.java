@@ -10,4 +10,6 @@ public abstract class Property {
 	public String getName() {
 		return name;
 	}
+
+	public abstract Property rename(Renaming renaming);
 }
