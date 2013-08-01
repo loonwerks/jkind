@@ -26,19 +26,31 @@ class XmlHandler extends DefaultHandler {
 	private Signal<Value> signal;
 
 	private String propertyName;
+	private double runtime;
 	private String answer;
 	private int k;
+	private List<String> invariants;
+	
 	private String type;
 	private int time;
 
+	private boolean readRuntime = false;
 	private boolean readAnswer = false;
 	private boolean readK = false;
 	private boolean readValue = false;
+	private boolean readInvariant = false;
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) {
 		if (qName.equals("Property")) {
 			propertyName = attributes.getValue("name");
+			runtime = 0;
+			invariants = new ArrayList<>();
+			answer = null;
+			k = 0;
+			cex = null;
+		} else if (qName.equals("Runtime")) {
+			readRuntime = true;
 		} else if (qName.equals("Answer")) {
 			readAnswer = true;
 		} else if (qName.equals("K")) {
@@ -52,6 +64,8 @@ class XmlHandler extends DefaultHandler {
 		} else if (qName.equals("Value")) {
 			readValue = true;
 			time = Integer.parseInt(attributes.getValue("time"));
+		} else if (qName.equals("Invariant")) {
+			readInvariant = true;
 		}
 	}
 
@@ -61,15 +75,15 @@ class XmlHandler extends DefaultHandler {
 			Property prop;
 			switch (answer) {
 			case "valid":
-				prop = new ValidProperty(propertyName, k);
+				prop = new ValidProperty(propertyName, k, invariants, runtime);
 				break;
 
 			case "falsifiable":
-				prop = new InvalidProperty(propertyName, k, cex);
+				prop = new InvalidProperty(propertyName, k, cex, runtime);
 				break;
 
 			case "unknown":
-				prop = new UnknownProperty(propertyName);
+				prop = new UnknownProperty(propertyName, k, cex);
 				break;
 
 			default:
@@ -81,7 +95,10 @@ class XmlHandler extends DefaultHandler {
 
 	@Override
 	public void characters(char ch[], int start, int length) {
-		if (readAnswer) {
+		if (readRuntime) {
+			runtime = Double.parseDouble(new String(ch, start, length));
+			readRuntime = false;
+		} else if (readAnswer) {
 			answer = new String(ch, start, length);
 			readAnswer = false;
 		} else if (readK) {
@@ -91,6 +108,9 @@ class XmlHandler extends DefaultHandler {
 			Value value = readValue(new String(ch, start, length));
 			signal.putValue(time, value);
 			readValue = false;
+		} else if (readInvariant) {
+			invariants.add(new String(ch, start, length));
+			readInvariant = false;
 		}
 	}
 

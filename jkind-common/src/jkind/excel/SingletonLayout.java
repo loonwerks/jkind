@@ -1,4 +1,4 @@
-package jkind.excel.layout;
+package jkind.excel;
 
 import java.util.Collections;
 import java.util.List;

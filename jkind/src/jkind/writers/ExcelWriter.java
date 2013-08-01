@@ -178,7 +178,7 @@ public class ExcelWriter extends Writer {
 		}
 	}
 
-	private int writeSection(String header, List<String> idList, int k, BigInteger offset,
+	private void writeSection(String header, List<String> idList, int k, BigInteger offset,
 			Model model) throws WriteException {
 		currRow++;
 		currSheet.addCell(new Label(0, currRow, header, boldFormat));
@@ -187,7 +187,6 @@ public class ExcelWriter extends Writer {
 			writeSignal(input, k, offset, model);
 			currRow++;
 		}
-		return currRow;
 	}
 
 	private SortedSet<String> getRelevantFunctions(Set<String> functions, List<String> idList) {

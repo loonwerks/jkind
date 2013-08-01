@@ -38,7 +38,7 @@ public class ApiTest extends TestCase {
 		StringBuilder text = new StringBuilder();
 		text.append("node main() returns (counter : int);\n");
 		text.append("var\n");
-		text.append(" valid_prop, invalid_prop, unknown_prop : bool;\n");
+		text.append("  valid_prop, invalid_prop, unknown_prop : bool;\n");
 		text.append("let\n");
 		text.append("  counter = 0 -> 1 + pre counter;\n");
 		text.append("  valid_prop = counter >= 0;\n");
@@ -91,8 +91,8 @@ public class ApiTest extends TestCase {
 
 	@Test
 	public void testRenamingProperties() {
-		Property property1 = new UnknownProperty("property1");
-		Property property2 = new UnknownProperty("property2");
+		Property property1 = new UnknownProperty("property1", 0, null);
+		Property property2 = new UnknownProperty("property2", 0, null);
 		List<Property> properties = new ArrayList<>();
 		properties.add(property1);
 		properties.add(property2);
@@ -124,6 +124,29 @@ public class ApiTest extends TestCase {
 		assertNull(revised.getSignal("signal1"));
 		assertNull(revised.getSignal("signal2"));
 		assertNotNull(revised.getSignal("sig1"));
+	}
+	
+	@Test
+	public void testInvariantReduction() throws IOException {
+		StringBuilder text = new StringBuilder();
+		text.append("node main() returns (counter : int);\n");
+		text.append("var\n");
+		text.append(" x, inv_gen_prop : bool;\n");
+		text.append("let\n");
+		text.append("  counter = 1 -> if pre counter < 5 then pre counter + 1 else 5;\n");
+		text.append("  x = false -> not (counter >= 5) and pre x;\n");
+		text.append("  inv_gen_prop = true -> not pre x or x;\n");
+		text.append("  --%PROPERTY inv_gen_prop;\n");
+		text.append("tel;");
+
+		Program program = parseLustre(text.toString());
+		JKindApi api = new JKindApi();
+		api.setReduceInvariants();
+		JKindResult result = api.execute(program);
+		Property prop = result.getProperty("inv_gen_prop");
+		assertTrue(prop instanceof ValidProperty);
+		ValidProperty validProp = (ValidProperty) prop;
+		assertEquals(1, validProp.getInvariants().size());
 	}
 
 	private static Program parseLustre(String content) throws IOException, RecognitionException {

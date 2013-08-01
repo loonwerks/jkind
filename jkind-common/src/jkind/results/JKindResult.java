@@ -1,8 +1,13 @@
 package jkind.results;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import jkind.excel.ExcelFormatter;
+import jkind.excel.Layout;
+import jkind.excel.SingletonLayout;
 
 public final class JKindResult {
 	private String text;
@@ -39,5 +44,15 @@ public final class JKindResult {
 			}
 		}
 		return new JKindResult(text, renamedProperties);
+	}
+	
+	public void toExcel(File file, Layout layout) {
+		ExcelFormatter formatter = new ExcelFormatter(file, layout);
+		formatter.write(this);
+		formatter.close();
+	}
+	
+	public void toExcel(File file) {
+		toExcel(file, new SingletonLayout("Signals"));
 	}
 }

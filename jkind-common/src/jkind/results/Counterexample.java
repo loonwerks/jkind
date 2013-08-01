@@ -19,7 +19,7 @@ public final class Counterexample {
 	}
 
 	public List<Signal<Value>> getSignals() {
-		return signals;
+		return Collections.unmodifiableList(signals);
 	}
 
 	public Signal<Value> getSignal(String name) {

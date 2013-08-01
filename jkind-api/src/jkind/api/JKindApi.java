@@ -23,19 +23,29 @@ import org.xml.sax.SAXException;
 public class JKindApi {
 	private Integer timeout = null;
 	private Integer n = null;
-	
+	private boolean inductiveCounterexamples = false;
+	private boolean reduceInvariants = false;
+
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
-	
+
 	public void setN(int n) {
 		this.n = n;
 	}
-	
+
+	public void setInductiveCounterexamples() {
+		inductiveCounterexamples = true;
+	}
+
+	public void setReduceInvariants() {
+		reduceInvariants = true;
+	}
+
 	public JKindResult execute(Program program) {
 		return execute(program.toString());
 	}
-	
+
 	public JKindResult execute(String program) {
 		File lustreFile = null;
 		try {
@@ -45,7 +55,7 @@ public class JKindApi {
 			safeDelete(lustreFile);
 		}
 	}
-	
+
 	public JKindResult execute(File lustreFile) {
 		String text = null;
 		File xmlFile = null;
@@ -126,6 +136,12 @@ public class JKindApi {
 			args.add("-n");
 			args.add(n.toString());
 		}
+		if (inductiveCounterexamples) {
+			args.add("-induct_cex");
+		}
+		if (reduceInvariants) {
+			args.add("-reduce_inv");
+		}
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
@@ -144,9 +160,7 @@ public class JKindApi {
 			XmlHandler handler = new XmlHandler();
 			saxParser.parse(xmlFile, handler);
 			return handler.properties;
-		} catch (ParserConfigurationException e) {
-			throw new JKindException("Error parsing XML", e);
-		} catch (SAXException e) {
+		} catch (ParserConfigurationException | SAXException e) {
 			throw new JKindException("Error parsing XML", e);
 		}
 	}
