@@ -58,18 +58,6 @@ public class Counterexample {
 		if (signal == null) {
 			return null;
 		}
-		
-		Signal<T> typedSignal = new Signal<T>(name);
-		Map<Integer, Value> values = signal.getValues();
-		for (Integer step : values.keySet()) {
-			Value value = values.get(step);
-			if (klass.isInstance(value)) {
-				typedSignal.putValue(step, klass.cast(value));
-			} else {
-				throw new JKindApiException("Cannot cast " + value.getClass().getSimpleName()
-						+ " to " + klass.getSimpleName());
-			}
-		}
-		return typedSignal;
+		return signal.cast(klass);
 	}
 }

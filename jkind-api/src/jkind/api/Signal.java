@@ -28,4 +28,18 @@ public class Signal<T extends Value> {
 	public Map<Integer, T> getValues() {
 		return values;
 	}
+	
+	public <S extends T> Signal<S> cast(Class<S> klass) {
+		Signal<S> castSignal = new Signal<S>(name);
+		for (Integer step : values.keySet()) {
+			Value value = values.get(step);
+			if (klass.isInstance(value)) {
+				castSignal.putValue(step, klass.cast(value));
+			} else {
+				throw new JKindApiException("Cannot cast " + value.getClass().getSimpleName()
+						+ " to " + klass.getSimpleName());
+			}
+		}
+		return castSignal;
+	}
 }
