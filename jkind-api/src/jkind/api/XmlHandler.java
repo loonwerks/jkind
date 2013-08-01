@@ -4,15 +4,22 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.JKindException;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.results.Counterexample;
+import jkind.results.InvalidProperty;
+import jkind.results.Property;
+import jkind.results.Signal;
+import jkind.results.UnknownProperty;
+import jkind.results.ValidProperty;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class XmlHandler extends DefaultHandler {
+class XmlHandler extends DefaultHandler {
 	public List<Property> properties = new ArrayList<>();
 
 	private Counterexample cex;
@@ -66,7 +73,7 @@ public class XmlHandler extends DefaultHandler {
 				break;
 
 			default:
-				throw new JKindApiException("Unknown property answer in XML file: " + answer);
+				throw new JKindException("Unknown property answer in XML file: " + answer);
 			}
 			properties.add(prop);
 		}

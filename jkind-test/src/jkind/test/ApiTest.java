@@ -6,16 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.api.Counterexample;
-import jkind.api.InvalidProperty;
+import jkind.JKindException;
 import jkind.api.JKindApi;
-import jkind.api.JKindApiException;
-import jkind.api.JKindResult;
-import jkind.api.MapRenaming;
-import jkind.api.Property;
-import jkind.api.Signal;
-import jkind.api.UnknownProperty;
-import jkind.api.ValidProperty;
 import jkind.lustre.Program;
 import jkind.lustre.parsing.LustreLexer;
 import jkind.lustre.parsing.LustreParser;
@@ -24,6 +16,14 @@ import jkind.lustre.parsing.LustreToAstVisitor;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
+import jkind.results.Counterexample;
+import jkind.results.InvalidProperty;
+import jkind.results.JKindResult;
+import jkind.results.MapRenaming;
+import jkind.results.Property;
+import jkind.results.Signal;
+import jkind.results.UnknownProperty;
+import jkind.results.ValidProperty;
 import junit.framework.TestCase;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -84,7 +84,7 @@ public class ApiTest extends TestCase {
 		try {
 			new JKindApi().execute(program);
 			fail("Expected exception");
-		} catch (JKindApiException e) {
+		} catch (JKindException e) {
 			assertTrue(e.getMessage().contains("no main node"));
 		}
 	}

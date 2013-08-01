@@ -1,4 +1,5 @@
-package jkind.api;
+package jkind.results;
+
 
 public abstract class Property {
 	protected final String name;

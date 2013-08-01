@@ -1,4 +1,4 @@
-package jkind.api;
+package jkind.results;
 
 /**
  * An interface for renaming and removing variables

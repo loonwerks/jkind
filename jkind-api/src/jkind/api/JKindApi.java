@@ -13,7 +13,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import jkind.JKindException;
 import jkind.lustre.Program;
+import jkind.results.JKindResult;
+import jkind.results.Property;
 
 import org.xml.sax.SAXException;
 
@@ -52,7 +55,7 @@ public class JKindApi {
 			List<Property> properties = parseXmlFile(xmlFile);
 			return new JKindResult(text, properties);
 		} catch (Throwable t) {
-			throw new JKindApiException(text, t);
+			throw new JKindException(text, t);
 		} finally {
 			safeDelete(xmlFile);
 		}
@@ -66,7 +69,7 @@ public class JKindApi {
 			return file;
 		} catch (IOException e) {
 			safeDelete(file);
-			throw new JKindApiException("Cannot write to file: " + file, e);
+			throw new JKindException("Cannot write to file: " + file, e);
 		}
 	}
 
@@ -142,9 +145,9 @@ public class JKindApi {
 			saxParser.parse(xmlFile, handler);
 			return handler.properties;
 		} catch (ParserConfigurationException e) {
-			throw new JKindApiException("Error parsing XML", e);
+			throw new JKindException("Error parsing XML", e);
 		} catch (SAXException e) {
-			throw new JKindApiException("Error parsing XML", e);
+			throw new JKindException("Error parsing XML", e);
 		}
 	}
 

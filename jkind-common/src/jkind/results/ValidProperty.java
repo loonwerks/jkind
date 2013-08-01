@@ -1,4 +1,4 @@
-package jkind.api;
+package jkind.results;
 
 public final class ValidProperty extends Property {
 	private final int k;

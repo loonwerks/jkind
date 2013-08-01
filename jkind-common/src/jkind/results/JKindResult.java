@@ -1,4 +1,4 @@
-package jkind.api;
+package jkind.results;
 
 import java.util.ArrayList;
 import java.util.Collections;

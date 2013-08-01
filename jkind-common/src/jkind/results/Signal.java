@@ -1,9 +1,10 @@
-package jkind.api;
+package jkind.results;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import jkind.JKindException;
 import jkind.lustre.values.Value;
 
 public final class Signal<T extends Value> {
@@ -43,7 +44,7 @@ public final class Signal<T extends Value> {
 			if (klass.isInstance(value)) {
 				castSignal.putValue(step, klass.cast(value));
 			} else {
-				throw new JKindApiException("Cannot cast " + value.getClass().getSimpleName()
+				throw new JKindException("Cannot cast " + value.getClass().getSimpleName()
 						+ " to " + klass.getSimpleName());
 			}
 		}

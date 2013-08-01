@@ -1,4 +1,4 @@
-package jkind.api;
+package jkind.excel.layout;
 
 import java.util.List;
 
