@@ -1,6 +1,7 @@
 package jkind.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 
-public class Counterexample {
+public final class Counterexample {
 	private final List<Signal<Value>> signals = new ArrayList<>();
 
 	public void addSignal(Signal<Value> signal) {
@@ -38,7 +39,7 @@ public class Counterexample {
 				result.put(signal.getName(), value);
 			}
 		}
-		return result;
+		return Collections.unmodifiableMap(result);
 	}
 	
 	public Signal<IntegerValue> getIntegerSignal(String name) {

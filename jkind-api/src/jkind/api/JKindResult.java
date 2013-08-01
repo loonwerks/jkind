@@ -1,8 +1,9 @@
 package jkind.api;
 
+import java.util.Collections;
 import java.util.List;
 
-public class JKindResult {
+public final class JKindResult {
 	private String text;
 	private List<Property> properties;
 
@@ -16,7 +17,7 @@ public class JKindResult {
 	}
 
 	public List<Property> getProperties() {
-		return properties;
+		return Collections.unmodifiableList(properties);
 	}
 
 	public Property getProperty(String name) {

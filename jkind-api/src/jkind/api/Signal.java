@@ -1,11 +1,12 @@
 package jkind.api;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import jkind.lustre.values.Value;
 
-public class Signal<T extends Value> {
+public final class Signal<T extends Value> {
 	private final String name;
 	private final Map<Integer, T> values = new HashMap<>();
 
@@ -26,7 +27,7 @@ public class Signal<T extends Value> {
 	}
 
 	public Map<Integer, T> getValues() {
-		return values;
+		return Collections.unmodifiableMap(values);
 	}
 	
 	public <S extends T> Signal<S> cast(Class<S> klass) {

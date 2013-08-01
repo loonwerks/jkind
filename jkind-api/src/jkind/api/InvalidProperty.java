@@ -1,6 +1,6 @@
 package jkind.api;
 
-public class InvalidProperty extends Property {
+public final class InvalidProperty extends Property {
 	private final int k;
 	private final Counterexample cex;
 
