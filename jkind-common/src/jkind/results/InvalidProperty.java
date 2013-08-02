@@ -4,14 +4,10 @@ public final class InvalidProperty extends Property {
 	private final Counterexample cex;
 	private final double runtime;
 
-	public InvalidProperty(String name, int k, Counterexample cex, double runtime) {
-		super(name, k);
+	public InvalidProperty(String name, Counterexample cex, double runtime) {
+		super(name);
 		this.runtime = runtime;
 		this.cex = cex;
-	}
-
-	public int getK() {
-		return k;
 	}
 
 	public Counterexample getCounterexample() {
@@ -25,7 +21,7 @@ public final class InvalidProperty extends Property {
 			return null;
 		}
 		
-		return new InvalidProperty(newName, k, cex.rename(renaming), runtime);
+		return new InvalidProperty(newName, cex.rename(renaming), runtime);
 	}
 
 	public double getRuntime() {

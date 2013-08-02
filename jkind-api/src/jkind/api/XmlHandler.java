@@ -1,13 +1,9 @@
 package jkind.api;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
@@ -15,6 +11,7 @@ import jkind.results.Property;
 import jkind.results.Signal;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
+import jkind.util.Util;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -30,7 +27,7 @@ class XmlHandler extends DefaultHandler {
 	private String answer;
 	private int k;
 	private List<String> invariants;
-	
+
 	private String type;
 	private int time;
 
@@ -56,7 +53,7 @@ class XmlHandler extends DefaultHandler {
 		} else if (qName.equals("K")) {
 			readK = true;
 		} else if (qName.equals("Counterexample")) {
-			cex = new Counterexample();
+			cex = new Counterexample(k);
 		} else if (qName.equals("Signal")) {
 			signal = new Signal<Value>(attributes.getValue("name"));
 			type = attributes.getValue("type");
@@ -75,15 +72,15 @@ class XmlHandler extends DefaultHandler {
 			Property prop;
 			switch (answer) {
 			case "valid":
-				prop = new ValidProperty(propertyName, k, invariants, runtime);
+				prop = new ValidProperty(propertyName, k, runtime, invariants);
 				break;
 
 			case "falsifiable":
-				prop = new InvalidProperty(propertyName, k, cex, runtime);
+				prop = new InvalidProperty(propertyName, cex, runtime);
 				break;
 
 			case "unknown":
-				prop = new UnknownProperty(propertyName, k, cex);
+				prop = new UnknownProperty(propertyName, cex);
 				break;
 
 			default:
@@ -105,33 +102,11 @@ class XmlHandler extends DefaultHandler {
 			k = Integer.parseInt(new String(ch, start, length));
 			readK = false;
 		} else if (readValue) {
-			Value value = readValue(new String(ch, start, length));
-			signal.putValue(time, value);
+			signal.putValue(time, Util.parseValue(type, new String(ch, start, length)));
 			readValue = false;
 		} else if (readInvariant) {
 			invariants.add(new String(ch, start, length));
 			readInvariant = false;
 		}
-	}
-
-	private Value readValue(String str) {
-		if (type.equals("bool")) {
-			if (str.equals("0")) {
-				return BooleanValue.FALSE;
-			} else if (str.equals("1")) {
-				return BooleanValue.TRUE;
-			}
-		} else if (type.equals("int")) {
-			return new IntegerValue(new BigInteger(str));
-		} else if (type.equals("real")) {
-			String[] strs = str.split("/");
-			if (strs.length <= 2) {
-				BigInteger num = new BigInteger(strs[0]);
-				BigInteger denom = strs.length > 1 ? new BigInteger(strs[1]) : BigInteger.ONE;
-				return new RealValue(num, denom);
-			}
-		}
-
-		throw new IllegalArgumentException("Unable to parse " + str + " as " + type);
 	}
 }

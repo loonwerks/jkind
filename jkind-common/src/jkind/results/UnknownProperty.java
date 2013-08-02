@@ -3,8 +3,8 @@ package jkind.results;
 public final class UnknownProperty extends Property {
 	private final Counterexample cex;
 
-	public UnknownProperty(String name, int k, Counterexample cex) {
-		super(name, k);
+	public UnknownProperty(String name, Counterexample cex) {
+		super(name);
 		this.cex = cex;
 	}
 
@@ -19,6 +19,6 @@ public final class UnknownProperty extends Property {
 			return null;
 		}
 		
-		return new UnknownProperty(newName, k, cex);
+		return new UnknownProperty(newName, cex);
 	}
 }

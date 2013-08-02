@@ -3,17 +3,15 @@ package jkind.writers;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import jkind.invariant.Invariant;
 import jkind.lustre.Type;
-import jkind.processes.messages.InductiveCounterexampleMessage;
-import jkind.solvers.BoolValue;
-import jkind.solvers.Model;
-import jkind.solvers.Value;
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.Value;
+import jkind.results.Counterexample;
+import jkind.results.Signal;
 
 public class XmlWriter extends Writer {
 	private PrintWriter out;
@@ -36,16 +34,15 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, long elapsed, List<Invariant> invariants) {
+	public void writeValid(List<String> props, int k, double runtime, List<Invariant> invariants) {
 		for (String prop : props) {
-			writeValid(prop, k, elapsed, invariants);
+			writeValid(prop, k, runtime, invariants);
 		}
 	}
 
-	public void writeValid(String prop, int k, long elapsed, Collection<Invariant> invariants) {
+	public void writeValid(String prop, int k, double runtime, List<Invariant> invariants) {
 		out.println("  <Property name=\"" + prop + "\">");
-		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
-				+ "</Runtime>");
+		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + runtime + "</Runtime>");
 		out.println("    <Answer>valid</Answer>");
 		out.println("    <K>" + k + "</K>");
 		for (Invariant invariant : invariants) {
@@ -53,33 +50,32 @@ public class XmlWriter extends Writer {
 		}
 		out.println("  </Property>");
 	}
-
+	
 	@Override
-	public void writeInvalid(String prop, int k, Model model, long elapsed) {
+	public void writeInvalid(String prop, Counterexample cex, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
-		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + elapsed / 1000.0
+		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + runtime
 				+ "</Runtime>");
 		out.println("    <Answer>falsifiable</Answer>");
-		out.println("    <K>" + k + "</K>");
-		writeCounterexample(k, BigInteger.ZERO, model);
+		out.println("    <K>" + cex.getLength() + "</K>");
+		writeCounterexample(cex);
 		out.println("  </Property>");
 	}
 
-	private void writeCounterexample(int k, BigInteger offset, Model model) {
+	private void writeCounterexample(Counterexample cex) {
 		out.println("    <Counterexample>");
-		for (String fn : getRelevantFunctions(model.getFunctions())) {
-			writeSignal(fn, k, offset, model);
+		for (Signal<Value> signal : cex.getSignals()) {
+			writeSignal(cex.getLength(), signal);
 		}
 		out.println("    </Counterexample>");
 	}
 
-	private void writeSignal(String fn, int k, BigInteger offset, Model model) {
-		String name = fn.substring(1);
+	private void writeSignal(int k, Signal<Value> signal) {
+		String name = signal.getName();
 		Type type = types.get(name);
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
 		for (int i = 0; i < k; i++) {
-			BigInteger key = BigInteger.valueOf(i).add(offset);
-			Value value = model.getFunctionValue(fn, key);
+			Value value = signal.getValue(i);
 			if (value != null) {
 				out.println("        <Value time=\"" + i + "\">" + formatValue(value) + "</Value>");
 			}
@@ -92,28 +88,28 @@ public class XmlWriter extends Writer {
 	 * should eventually switch to true/false
 	 */
 	private String formatValue(Value value) {
-		if (value instanceof BoolValue) {
-			BoolValue boolValue = (BoolValue) value;
-			return boolValue.getBool() ? "1" : "0";
+		if (value instanceof BooleanValue) {
+			BooleanValue bv = (BooleanValue) value;
+			return bv.value ? "1" : "0";
 		} else {
 			return value.toString();
 		}
 	}
-
+	
 	@Override
 	public void writeUnknown(List<String> props,
-			Map<String, InductiveCounterexampleMessage> inductiveCounterexamples) {
+			Map<String, Counterexample> inductiveCounterexamples) {
 		for (String prop : props) {
 			writeUnknown(prop, inductiveCounterexamples.get(prop));
 		}
 	}
 
-	private void writeUnknown(String prop, InductiveCounterexampleMessage icm) {
+	private void writeUnknown(String prop, Counterexample icm) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Answer>unknown</Answer>");
 		if (icm != null) {
-			out.println("    <K>" + icm.k + "</K>");
-			writeCounterexample(icm.k, icm.n, icm.model);
+			out.println("    <K>" + icm.getLength() + "</K>");
+			writeCounterexample(icm);
 		}
 		out.println("  </Property>");
 	}

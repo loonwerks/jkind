@@ -1,24 +1,33 @@
 package jkind.processes;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.Settings;
 import jkind.invariant.Invariant;
+import jkind.lustre.Type;
+import jkind.lustre.values.Value;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
+import jkind.results.Counterexample;
+import jkind.results.Signal;
 import jkind.slicing.CounterexampleSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
+import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
@@ -83,8 +92,7 @@ public class Director {
 
 		processMessages(startTime);
 		if (!remainingProperties.isEmpty()) {
-			sliceInductiveCounterexamples();
-			writer.writeUnknown(remainingProperties, inductiveCounterexamples);
+			writer.writeUnknown(remainingProperties, convertInductiveCounterexamples());
 		}
 
 		writer.end();
@@ -176,7 +184,7 @@ public class Director {
 	private void processMessages(long startTime) {
 		while (!incoming.isEmpty()) {
 			Message message = incoming.poll();
-			long elapsed = System.currentTimeMillis() - startTime;
+			double runtime = (System.currentTimeMillis() - startTime) / 1000.0;
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
 				remainingProperties.removeAll(vm.valid);
@@ -186,16 +194,17 @@ public class Director {
 				if (reduceProcess == null) {
 					invariants = Collections.<Invariant> emptyList();
 				}
-				writer.writeValid(vm.valid, vm.k, elapsed, invariants);
+				writer.writeValid(vm.valid, vm.k, runtime, invariants);
 			} else if (message instanceof CounterexampleMessage) {
-				CounterexampleMessage cex = (CounterexampleMessage) message;
-				remainingProperties.removeAll(cex.invalid);
-				invalidProperties.addAll(cex.invalid);
-				inductiveCounterexamples.keySet().removeAll(cex.invalid);
+				CounterexampleMessage cm = (CounterexampleMessage) message;
+				remainingProperties.removeAll(cm.invalid);
+				invalidProperties.addAll(cm.invalid);
+				inductiveCounterexamples.keySet().removeAll(cm.invalid);
 				CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
-				for (String invalidProp : cex.invalid) {
-					Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
-					writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
+				for (String invalidProp : cm.invalid) {
+					Model slicedModel = cexSlicer.slice(invalidProp, cm.model);
+					Counterexample cex = extractCounterexample(cm.k, BigInteger.ZERO, slicedModel);
+					writer.writeInvalid(invalidProp, cex, runtime);
 				}
 			} else if (message instanceof InductiveCounterexampleMessage) {
 				InductiveCounterexampleMessage icm = (InductiveCounterexampleMessage) message;
@@ -226,14 +235,48 @@ public class Director {
 		}
 	}
 
-	private void sliceInductiveCounterexamples() {
+	private Map<String, Counterexample> convertInductiveCounterexamples() {
+		Map<String, Counterexample> result = new HashMap<>();
+
 		CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
 			Model slicedModel = cexSlicer.slice(icm.property, icm.model);
-			InductiveCounterexampleMessage slicedIcm = new InductiveCounterexampleMessage(
-					icm.property, icm.n, icm.k, slicedModel);
-			inductiveCounterexamples.put(prop, slicedIcm);
+			result.put(prop, extractCounterexample(icm.k, icm.n, slicedModel));
 		}
+
+		return result;
+	}
+
+	private Counterexample extractCounterexample(int k, BigInteger offset, Model model) {
+		Counterexample cex = new Counterexample(k);
+		for (String fn : getRelevantFunctions(model.getFunctions())) {
+			cex.addSignal(extractSignal(fn, k, offset, model));
+		}
+		return cex;
+	}
+
+	private Signal<Value> extractSignal(String fn, int k, BigInteger offset, Model model) {
+		String name = fn.substring(1);
+		Signal<Value> signal = new Signal<>(name);
+		Type type = spec.typeMap.get(name);
+		
+		for (int i = 0; i < k; i++) {
+			BigInteger key = BigInteger.valueOf(i).add(offset);
+			jkind.solvers.Value value = model.getFunctionValue(fn, key);
+			signal.putValue(i, Util.parseValue(type.name, value.toString()));
+		}
+		
+		return signal;
+	}
+
+	private static SortedSet<String> getRelevantFunctions(Set<String> functions) {
+		SortedSet<String> relevant = new TreeSet<>();
+		for (String fn : functions) {
+			if (!fn.startsWith("$%")) {
+				relevant.add(fn);
+			}
+		}
+		return relevant;
 	}
 }

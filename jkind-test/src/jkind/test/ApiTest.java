@@ -62,8 +62,8 @@ public class ApiTest extends TestCase {
 		Property invalidPropRaw = result.getProperty("invalid_prop");
 		assertTrue(invalidPropRaw instanceof InvalidProperty);
 		InvalidProperty invalidProp = (InvalidProperty) invalidPropRaw;
-		assertEquals(11, invalidProp.getK());
 		Counterexample cex = invalidProp.getCounterexample();
+		assertEquals(11, cex.getLength());
 		Signal<IntegerValue> counterSignal = cex.getIntegerSignal("counter");
 		for (int i = 0; i < 11; i++) {
 			assertEquals(i, counterSignal.getValue(i).value.intValue());
@@ -91,8 +91,8 @@ public class ApiTest extends TestCase {
 
 	@Test
 	public void testRenamingProperties() {
-		Property property1 = new UnknownProperty("property1", 0, null);
-		Property property2 = new UnknownProperty("property2", 0, null);
+		Property property1 = new UnknownProperty("property1", null);
+		Property property2 = new UnknownProperty("property2", null);
 		List<Property> properties = new ArrayList<>();
 		properties.add(property1);
 		properties.add(property2);
@@ -112,7 +112,7 @@ public class ApiTest extends TestCase {
 	public void testRenamingCounterexample() {
 		Signal<Value> signal1 = new Signal<>("signal1");
 		Signal<Value> signal2 = new Signal<>("signal2");
-		Counterexample original = new Counterexample();
+		Counterexample original = new Counterexample(0);
 		original.addSignal(signal1);
 		original.addSignal(signal2);
 

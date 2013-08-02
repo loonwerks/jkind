@@ -12,7 +12,16 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 
 public final class Counterexample {
+	private final int length;
 	private final List<Signal<Value>> signals = new ArrayList<>();
+	
+	public Counterexample(int length) {
+		this.length = length;
+	}
+	
+	public int getLength() {
+		return length;
+	}
 
 	public void addSignal(Signal<Value> signal) {
 		signals.add(signal);
@@ -63,7 +72,7 @@ public final class Counterexample {
 	}
 
 	public Counterexample rename(Renaming renaming) {
-		Counterexample result = new Counterexample();
+		Counterexample result = new Counterexample(length);
 		for (Signal<Value> signal : signals) {
 			Signal<Value> newSignal = signal.rename(renaming);
 			if (newSignal != null) {

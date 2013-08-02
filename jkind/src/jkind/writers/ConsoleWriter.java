@@ -1,13 +1,12 @@
 package jkind.writers;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
 import jkind.invariant.Invariant;
-import jkind.processes.messages.InductiveCounterexampleMessage;
-import jkind.solvers.Model;
-import jkind.solvers.Value;
+import jkind.lustre.values.Value;
+import jkind.results.Counterexample;
+import jkind.results.Signal;
 
 public class ConsoleWriter extends Writer {
 	@Override
@@ -23,10 +22,9 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, long elapsed, List<Invariant> invariants) {
+	public void writeValid(List<String> props, int k, double runtime, List<Invariant> invariants) {
 		writeLine();
-		System.out.println("VALID PROPERTIES: " + props + " || K = " + k + " || Time = " + elapsed
-				/ 1000.0);
+		System.out.println("VALID PROPERTIES: " + props + " || K = " + k + " || Time = " + runtime);
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
 			for (Invariant invariant : invariants) {
@@ -38,42 +36,43 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, int k, Model model, long elapsed) {
+	public void writeInvalid(String prop, Counterexample cex, double runtime) {
 		writeLine();
-		System.out.println("INVALID PROPERTY: " + prop + " || K = " + k + " || Time = " + elapsed
-				/ 1000.0);
-		writeModel(k, BigInteger.ZERO, model);
+		System.out.println("INVALID PROPERTY: " + prop + " || K = " + cex.getLength()
+				+ " || Time = " + runtime);
+		writeCounterexample(cex);
 	}
 
 	@Override
 	public void writeUnknown(List<String> props,
-			Map<String, InductiveCounterexampleMessage> inductiveCounterexamples) {
+			Map<String, Counterexample> inductiveCounterexamples) {
 		for (String prop : props) {
-			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			if (icm == null) {
-				continue;
+			Counterexample icm = inductiveCounterexamples.get(prop);
+			if (icm != null) {
+				writeLine();
+				System.out.println("INDUCTIVE COUNTEREXAMPLE: " + prop + " || K = "
+						+ icm.getLength());
+				writeCounterexample(icm);
 			}
-
-			writeLine();
-			System.out.println("INDUCTIVE COUNTEREXAMPLE: " + prop + " || K = " + icm.k);
-			writeModel(icm.k, icm.n, icm.model);
 		}
 	}
 
-	private void writeModel(int k, BigInteger offset, Model model) {
+	private void writeCounterexample(Counterexample cex) {
+		int length = cex.getLength();
+
 		System.out.format("%25s %6s ", "", "Step");
 		System.out.println();
 		System.out.format("%-25s ", "variable");
-		for (int i = 0; i < k; i++) {
+		for (int i = 0; i < length; i++) {
 			System.out.format("%6s ", i);
 		}
 		System.out.println();
 		System.out.println();
 
-		for (String fn : getRelevantFunctions(model.getFunctions())) {
-			System.out.format("%-25s ", fn.substring(1));
-			for (int i = 0; i < k; i++) {
-				Value value = model.getFunctionValue(fn, BigInteger.valueOf(i).add(offset));
+		for (Signal<Value> signal : cex.getSignals()) {
+			System.out.format("%-25s ", signal.getName());
+			for (int i = 0; i < length; i++) {
+				Value value = signal.getValue(i);
 				System.out.format("%6s ", value != null ? value : "-");
 			}
 			System.out.println();

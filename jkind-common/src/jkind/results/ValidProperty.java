@@ -4,13 +4,19 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ValidProperty extends Property {
+	private final int k;
 	private final double runtime;
 	private final List<String> invariants;
 
-	public ValidProperty(String name, int k, List<String> invariants, double runtime) {
-		super(name, k);
-		this.invariants = invariants;
+	public ValidProperty(String name, int k, double runtime, List<String> invariants) {
+		super(name);
+		this.k = k;
 		this.runtime = runtime;
+		this.invariants = invariants;
+	}
+	
+	public int getK() {
+		return k;
 	}
 
 	public List<String> getInvariants() {
@@ -28,6 +34,6 @@ public final class ValidProperty extends Property {
 			return null;
 		}
 		
-		return new ValidProperty(newName, k, invariants, runtime);
+		return new ValidProperty(newName, k, runtime, invariants);
 	}
 }

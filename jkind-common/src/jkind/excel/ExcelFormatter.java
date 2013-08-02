@@ -77,8 +77,12 @@ public class ExcelFormatter {
 	}
 
 	public void write(JKindResult result) {
+		write(result.getProperties());
+	}
+
+	public void write(List<Property> properties) {
 		try {
-			for (Property property : result.getProperties()) {
+			for (Property property : properties) {
 				write(property);
 			}
 		} catch (WriteException e) {
@@ -100,16 +104,21 @@ public class ExcelFormatter {
 	}
 
 	private void write(ValidProperty property) throws WriteException {
-		summarySheet.addCell(new Label(0, summaryRow, property.getName()));
-		if (property.getInvariants().isEmpty()) {
+		String name = property.getName();
+		int k = property.getK();
+		List<String> invariants = property.getInvariants();
+		double runtime = property.getRuntime();
+
+		summarySheet.addCell(new Label(0, summaryRow, name));
+		if (invariants.isEmpty()) {
 			summarySheet.addCell(new Label(1, summaryRow, "Valid"));
 		} else {
-			WritableSheet invSheet = writeInvariants(property.getName(), property.getInvariants());
-			summarySheet
-					.addHyperlink(new WritableHyperlink(1, summaryRow, "Valid", invSheet, 0, 0));
+			WritableSheet invSheet = writeInvariants(name, invariants);
+			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", invSheet, 0, 0);
+			summarySheet.addHyperlink(link);
 		}
-		summarySheet.addCell(new Number(2, summaryRow, property.getK()));
-		summarySheet.addCell(new Number(3, summaryRow, property.getRuntime()));
+		summarySheet.addCell(new Number(2, summaryRow, k));
+		summarySheet.addCell(new Number(3, summaryRow, runtime));
 		summaryRow++;
 	}
 
@@ -131,26 +140,30 @@ public class ExcelFormatter {
 	}
 
 	private void write(InvalidProperty property) throws WriteException {
-		WritableSheet cexSheet = writeCounterexample(property.getName(), property.getK(),
-				property.getCounterexample());
+		String name = property.getName();
+		Counterexample cex = property.getCounterexample();
+		int length = cex.getLength();
+		double runtime = property.getRuntime();
 
-		summarySheet.addCell(new Label(0, summaryRow, property.getName()));
+		WritableSheet cexSheet = writeCounterexample(name, cex);
+		summarySheet.addCell(new Label(0, summaryRow, name));
 		summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Invalid", cexSheet, 0, 0));
-		summarySheet.addCell(new Number(2, summaryRow, property.getK()));
-		summarySheet.addCell(new Number(3, summaryRow, property.getRuntime()));
+		summarySheet.addCell(new Number(2, summaryRow, length));
+		summarySheet.addCell(new Number(3, summaryRow, runtime));
 		summaryRow++;
 	}
 
-	private WritableSheet writeCounterexample(String property, int k, Counterexample cex)
+	private WritableSheet writeCounterexample(String property, Counterexample cex)
 			throws WriteException {
 		currSheet = workbook.createSheet(trimName(property), numSheets++);
 		currRow = 0;
 		autosize(currSheet, 1);
 
-		writeStepsHeader(k);
+		int length = cex.getLength();
+		writeStepsHeader(length);
 		for (String category : layout.getCategories()) {
 			List<Signal<Value>> signals = getCategorySignals(cex, category);
-			writeSection(category, signals, k);
+			writeSection(category, signals, length);
 		}
 		return currSheet;
 	}
@@ -217,14 +230,16 @@ public class ExcelFormatter {
 	}
 
 	private void write(UnknownProperty property) throws WriteException {
-		summarySheet.addCell(new Label(0, summaryRow, property.getName()));
+		String name = property.getName();
 		Counterexample cex = property.getInductiveCounterexample();
+
+		summarySheet.addCell(new Label(0, summaryRow, name));
 		if (cex == null) {
 			summarySheet.addCell(new Label(1, summaryRow, "Unknown"));
 		} else {
-			WritableSheet cexSheet = writeCounterexample(property.getName(), property.getK(), cex);
-			summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Unknown",
-					cexSheet, 0, 0));
+			WritableSheet cexSheet = writeCounterexample(name, cex);
+			summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Unknown", cexSheet, 0,
+					0));
 		}
 		summaryRow++;
 	}
