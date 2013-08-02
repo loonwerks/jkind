@@ -88,8 +88,6 @@ public class Director {
 			}
 		}
 
-		System.out.println("Some thread: " + someThreadAlive());
-
 		processMessages(startTime);
 		if (!remainingProperties.isEmpty()) {
 			writer.writeUnknown(remainingProperties, convertInductiveCounterexamples());
