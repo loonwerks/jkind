@@ -32,6 +32,7 @@ public class InductiveProcess extends Process {
 	private BaseProcess baseProcess;
 	private List<Invariant> invariants = new ArrayList<>();
 	private InvariantProcess invariantProcess;
+	private ReduceProcess reduceProcess;
 
 	public InductiveProcess(Specification spec, Director director) {
 		super("Inductive", spec, director);
@@ -43,6 +44,10 @@ public class InductiveProcess extends Process {
 
 	public void setInvariantProcess(InvariantProcess invariantProcess) {
 		this.invariantProcess = invariantProcess;
+	}
+	
+	public void setReduceProcess(ReduceProcess reduceProcess) {
+		this.reduceProcess = reduceProcess;
 	}
 
 	@Override
@@ -184,6 +189,9 @@ public class InductiveProcess extends Process {
 	private void sendStop() {
 		if (invariantProcess != null) {
 			invariantProcess.incoming.add(new StopMessage());
+		}
+		if (reduceProcess != null) {
+			reduceProcess.incoming.add(new StopMessage());
 		}
 	}
 }

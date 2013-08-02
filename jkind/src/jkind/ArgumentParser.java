@@ -65,7 +65,12 @@ public class ArgumentParser {
 		formatter.printHelp("jkind [options] <input>", getOptions());
 	}
 
-	private static void setSettings(CommandLine line) {
+	private static void setSettings(CommandLine line) {		
+		ensureExclusive(line, EXCEL, XML);
+		ensureExclusive(line, BMC, REDUCE_INV);
+		ensureExclusive(line, NO_INV_GEN, REDUCE_INV);
+		ensureExclusive(line, BMC, INDUCT_CEX);
+		
 		if (line.hasOption(VERSION)) {
 			System.out.println("JKind " + Main.VERSION);
 			System.exit(0);
@@ -74,11 +79,6 @@ public class ArgumentParser {
 		if (line.hasOption(HELP)) {
 			printHelp();
 			System.exit(0);
-		}
-		
-		if (line.hasOption(EXCEL) && line.hasOption(XML)) {
-			System.out.println("Error: only one output format may be selected");
-			System.exit(-1);
 		}
 		
 		if (line.hasOption(BMC)) {
@@ -137,6 +137,13 @@ public class ArgumentParser {
 		}
 	}
 	
+	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
+		if (line.hasOption(opt1) && line.hasOption(opt2)) {
+			System.out.println("Error: cannot use option -" + opt1 + " with option -" + opt2);
+			System.exit(-1);
+		}
+	}
+
 	private static void checkSettings() {
 		if (Settings.solver == SolverOption.CVC4) {
 			if (Settings.smoothCounterexamples) {

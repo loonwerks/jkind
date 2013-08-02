@@ -151,6 +151,7 @@ public class Director {
 
 		if (Settings.reduceInvariants) {
 			reduceProcess = new ReduceProcess(spec, this);
+			inductiveProcess.setReduceProcess(reduceProcess);
 			registerProcess(reduceProcess);
 		}
 

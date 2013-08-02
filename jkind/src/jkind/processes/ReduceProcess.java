@@ -11,6 +11,7 @@ import java.util.Set;
 import jkind.JKindException;
 import jkind.invariant.Invariant;
 import jkind.processes.messages.Message;
+import jkind.processes.messages.StopMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -49,6 +50,8 @@ public class ReduceProcess extends Process {
 						Invariant propertyInvariant = getInvariantByName(property, vm.invariants);
 						reduce(propertyInvariant, vm.invariants);
 					}
+				} else if (message instanceof StopMessage) {
+					return;
 				} else {
 					throw new JKindException("Unknown message type in reduce invariants process: "
 							+ message.getClass().getCanonicalName());
