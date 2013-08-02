@@ -36,7 +36,6 @@ public class ExcelFormatter {
 	final private Layout layout;
 
 	private WritableWorkbook workbook;
-	private int numSheets;
 
 	private WritableSheet summarySheet;
 	private int summaryRow;
@@ -53,9 +52,8 @@ public class ExcelFormatter {
 
 		try {
 			workbook = Workbook.createWorkbook(file);
-			numSheets = 0;
 
-			summarySheet = workbook.createSheet("Summary", numSheets++);
+			summarySheet = workbook.createSheet("Summary", workbook.getNumberOfSheets());
 			autosize(summarySheet, 4);
 			summarySheet.addCell(new Label(0, 0, "Property", boldFormat));
 			summarySheet.addCell(new Label(1, 0, "Result", boldFormat));
@@ -124,7 +122,7 @@ public class ExcelFormatter {
 
 	private WritableSheet writeInvariants(String property, List<String> invariants)
 			throws WriteException {
-		currSheet = workbook.createSheet(trimName(property), numSheets++);
+		currSheet = workbook.createSheet(trimName(property), workbook.getNumberOfSheets());
 		currRow = 0;
 
 		currSheet.addCell(new Label(0, currRow, "Invariants for " + property, boldFormat));
@@ -155,7 +153,7 @@ public class ExcelFormatter {
 
 	private WritableSheet writeCounterexample(String property, Counterexample cex)
 			throws WriteException {
-		currSheet = workbook.createSheet(trimName(property), numSheets++);
+		currSheet = workbook.createSheet(trimName(property), workbook.getNumberOfSheets());
 		currRow = 0;
 		autosize(currSheet, 1);
 
