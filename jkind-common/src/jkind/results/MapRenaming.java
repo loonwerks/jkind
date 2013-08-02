@@ -2,6 +2,9 @@ package jkind.results;
 
 import java.util.Map;
 
+/**
+ * A renaming backed by a map from strings to strings
+ */
 public class MapRenaming implements Renaming {
 	private Map<String, String> map;
 	

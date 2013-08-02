@@ -3,13 +3,20 @@ package jkind.excel;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A layout which assigns everything to one single category
+ */
 public class SingletonLayout implements Layout {
 	private final String name;
-	
+
+	/**
+	 * @param name
+	 *            name of the single category
+	 */
 	public SingletonLayout(String name) {
 		this.name = name;
 	}
-	
+
 	public SingletonLayout() {
 		this("Signals");
 	}
@@ -20,7 +27,7 @@ public class SingletonLayout implements Layout {
 	}
 
 	@Override
-	public String getCategory(String varName) {
+	public String getCategory(String signal) {
 		return name;
 	}
 }

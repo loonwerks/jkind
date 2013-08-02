@@ -6,6 +6,12 @@ import java.math.BigInteger;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 
+/**
+ * A real signal value
+ * 
+ * Stored as <code>num</code> / <code>denom</code> where <code>denom</code> is
+ * always positive
+ */
 public class RealValue extends Value implements Comparable<RealValue> {
 	final public BigInteger num;
 	final public BigInteger denom; // Always positive
@@ -79,13 +85,13 @@ public class RealValue extends Value implements Comparable<RealValue> {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		BigInteger gcd = num.gcd(denom);
 		BigInteger reducedNum = num.divide(gcd);
 		BigInteger reducedDenom = denom.divide(gcd);
-		
+
 		if (reducedDenom.equals(BigInteger.ONE)) {
 			return reducedNum.toString();
 		} else {

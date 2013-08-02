@@ -20,32 +20,67 @@ import jkind.results.Property;
 
 import org.xml.sax.SAXException;
 
+/**
+ * The primary interface to JKind.
+ */
 public class JKindApi {
 	private Integer timeout = null;
 	private Integer n = null;
 	private boolean inductiveCounterexamples = false;
 	private boolean reduceInvariants = false;
 
+	/**
+	 * Set a maximum run time for entire execution
+	 * @param timeout A positive timeout in seconds
+	 */
 	public void setTimeout(int timeout) {
+		if (timeout <= 0) {
+			throw new JKindException("Timeout must be positive");
+		}
 		this.timeout = timeout;
 	}
 
+	/**
+	 * Set a maximum value for k in k-induction algorithm
+	 * @param n A non-negative integer
+	 */
 	public void setN(int n) {
+		if (n < 0) {
+			throw new JKindException("n must be positive");
+		}
 		this.n = n;
 	}
 
+	/**
+	 * Produce inductive counterexamples for 'unknown' properties
+	 */
 	public void setInductiveCounterexamples() {
 		inductiveCounterexamples = true;
 	}
 
+	/**
+	 * Reduce and report the invariants used for a valid property
+	 */
 	public void setReduceInvariants() {
 		reduceInvariants = true;
 	}
 
+	/**
+	 * Run JKind on a Lustre program
+	 * @param program Lustre program
+	 * @return results of JKind
+	 * @throws JKindException 
+	 */
 	public JKindResult execute(Program program) {
 		return execute(program.toString());
 	}
-
+	
+	/**
+	 * Run JKind on a Lustre program
+	 * @param program Lustre program as text
+	 * @return results of JKind
+	 * @throws JKindException
+	 */
 	public JKindResult execute(String program) {
 		File lustreFile = null;
 		try {
@@ -55,7 +90,13 @@ public class JKindApi {
 			safeDelete(lustreFile);
 		}
 	}
-
+	
+	/**
+	 * Run JKind on a Lustre program
+	 * @param lustreFile File containing Lustre program
+	 * @return results of JKind
+	 * @throws JKindException
+	 */
 	public JKindResult execute(File lustreFile) {
 		String text = null;
 		File xmlFile = null;

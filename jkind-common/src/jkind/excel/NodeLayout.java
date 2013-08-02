@@ -7,6 +7,9 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.util.Util;
 
+/**
+ * A layout for the inputs, ouputs, and locals of a Lustre node
+ */
 public class NodeLayout implements Layout {
 	private final List<String> nodeInputs;
 	private final List<String> nodeOutputs;
@@ -37,12 +40,12 @@ public class NodeLayout implements Layout {
 	}
 
 	@Override
-	public String getCategory(String varName) {
-		if (nodeInputs.contains(varName)) {
+	public String getCategory(String signal) {
+		if (nodeInputs.contains(signal)) {
 			return INPUTS;
-		} else if (nodeOutputs.contains(varName)) {
+		} else if (nodeOutputs.contains(signal)) {
 			return OUTPUTS;
-		} else if (nodeLocals.contains(varName)) {
+		} else if (nodeLocals.contains(signal)) {
 			return LOCALS;
 		} else {
 			return null;

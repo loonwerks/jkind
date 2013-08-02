@@ -1,5 +1,8 @@
 package jkind.results;
 
+/**
+ * An invalid property
+ */
 public final class InvalidProperty extends Property {
 	private final Counterexample cex;
 	private final double runtime;
@@ -10,8 +13,18 @@ public final class InvalidProperty extends Property {
 		this.cex = cex;
 	}
 
+	/**
+	 * Counterexample for the property
+	 */
 	public Counterexample getCounterexample() {
 		return cex;
+	}
+
+	/**
+	 * Runtime of falsification measured in seconds
+	 */
+	public double getRuntime() {
+		return runtime;
 	}
 	
 	@Override
@@ -22,9 +35,5 @@ public final class InvalidProperty extends Property {
 		}
 		
 		return new InvalidProperty(newName, cex.rename(renaming), runtime);
-	}
-
-	public double getRuntime() {
-		return runtime;
 	}
 }

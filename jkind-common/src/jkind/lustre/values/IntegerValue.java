@@ -5,6 +5,9 @@ import java.math.BigInteger;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 
+/**
+ * An integer signal value
+ */
 public class IntegerValue extends Value {
 	final public BigInteger value;
 	

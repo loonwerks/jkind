@@ -3,6 +3,9 @@ package jkind.lustre.values;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 
+/**
+ * A boolean signal value
+ */
 public class BooleanValue extends Value {
 	final public boolean value;
 

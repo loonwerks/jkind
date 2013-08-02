@@ -3,6 +3,9 @@ package jkind.results;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A valid property
+ */
 public final class ValidProperty extends Property {
 	private final int k;
 	private final double runtime;
@@ -15,14 +18,23 @@ public final class ValidProperty extends Property {
 		this.invariants = invariants;
 	}
 	
+	/**
+	 * k value (from k-induction) used to prove the property
+	 */
 	public int getK() {
 		return k;
 	}
 
+	/**
+	 * Invariants used to prove property, only available if JKindApi.setReduceInvariants()
+	 */
 	public List<String> getInvariants() {
 		return Collections.unmodifiableList(invariants);
 	}
 
+	/**
+	 * Runtime of verification measured in seconds
+	 */
 	public double getRuntime() {
 		return runtime;
 	}
