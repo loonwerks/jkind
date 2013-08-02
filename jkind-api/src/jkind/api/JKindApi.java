@@ -164,8 +164,4 @@ public class JKindApi {
 			throw new JKindException("Error parsing XML", e);
 		}
 	}
-
-	// This method exists to allow Eclipse to export an api jar more easily
-	public static void main(String[] args) {
-	}
 }
