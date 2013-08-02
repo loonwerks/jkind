@@ -8,6 +8,7 @@ import jkind.JKindException;
 import jkind.lustre.VarDecl;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
+import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -40,6 +41,8 @@ public class SmoothProcess extends Process {
 					for (String property : cex.invalid) {
 						smooth(property, cex.k);
 					}
+				} else if (message instanceof StopMessage) {
+					return;
 				} else {
 					throw new JKindException("Unknown message type in reduce invariants process: "
 							+ message.getClass().getCanonicalName());
@@ -53,7 +56,7 @@ public class SmoothProcess extends Process {
 	private void smooth(String property, int k) {
 		debug("Smoothing: " + property);
 		Set<String> relevant = spec.dependencyMap.get(property);
-		
+
 		solver.push();
 
 		for (int i = 1; i <= k; i++) {
@@ -62,12 +65,12 @@ public class SmoothProcess extends Process {
 				assertDeltaCost(i, relevant);
 			}
 		}
-		
+
 		Result result = solver.maxsatQuery(new Cons("$" + property, Sexp.fromInt(k - 1)));
 		if (!(result instanceof SatResult)) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
-		
+
 		Model smoothModel = ((SatResult) result).getModel();
 		solver.pop();
 		sendCounterexample(property, k, smoothModel);
@@ -91,6 +94,6 @@ public class SmoothProcess extends Process {
 	private void sendCounterexample(String property, int k, Model model) {
 		debug("Sending " + property);
 		List<String> invalid = Collections.singletonList(property);
-		director.incoming.add(new CounterexampleMessage(invalid, k, model, true));
+		director.incoming.add(new CounterexampleMessage(invalid, k, model));
 	}
 }

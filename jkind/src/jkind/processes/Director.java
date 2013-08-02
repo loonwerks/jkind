@@ -79,6 +79,8 @@ public class Director {
 			}
 		}
 
+		System.out.println("Some thread: " + someThreadAlive());
+
 		processMessages(startTime);
 		if (!remainingProperties.isEmpty()) {
 			sliceInductiveCounterexamples();
@@ -157,6 +159,7 @@ public class Director {
 
 		if (Settings.smoothCounterexamples) {
 			smoothProcess = new SmoothProcess(spec, this);
+			baseProcess.setSmoothProcess(smoothProcess);
 			registerProcess(smoothProcess);
 		}
 
@@ -176,31 +179,23 @@ public class Director {
 			long elapsed = System.currentTimeMillis() - startTime;
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
-				if (reduceProcess != null && !vm.reduced) {
-					reduceProcess.incoming.add(message);
-				} else {
-					remainingProperties.removeAll(vm.valid);
-					validProperties.addAll(vm.valid);
-					inductiveCounterexamples.keySet().removeAll(vm.valid);
-					List<Invariant> invariants = vm.invariants;
-					if (reduceProcess == null) {
-						invariants = Collections.<Invariant> emptyList();
-					}
-					writer.writeValid(vm.valid, vm.k, elapsed, invariants);
+				remainingProperties.removeAll(vm.valid);
+				validProperties.addAll(vm.valid);
+				inductiveCounterexamples.keySet().removeAll(vm.valid);
+				List<Invariant> invariants = vm.invariants;
+				if (reduceProcess == null) {
+					invariants = Collections.<Invariant> emptyList();
 				}
+				writer.writeValid(vm.valid, vm.k, elapsed, invariants);
 			} else if (message instanceof CounterexampleMessage) {
 				CounterexampleMessage cex = (CounterexampleMessage) message;
-				if (smoothProcess != null && !cex.smooth) {
-					smoothProcess.incoming.add(message);
-				} else {
-					remainingProperties.removeAll(cex.invalid);
-					invalidProperties.addAll(cex.invalid);
-					inductiveCounterexamples.keySet().removeAll(cex.invalid);
-					CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
-					for (String invalidProp : cex.invalid) {
-						Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
-						writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
-					}
+				remainingProperties.removeAll(cex.invalid);
+				invalidProperties.addAll(cex.invalid);
+				inductiveCounterexamples.keySet().removeAll(cex.invalid);
+				CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
+				for (String invalidProp : cex.invalid) {
+					Model slicedModel = cexSlicer.slice(invalidProp, cex.model);
+					writer.writeInvalid(invalidProp, cex.k, slicedModel, elapsed);
 				}
 			} else if (message instanceof InductiveCounterexampleMessage) {
 				InductiveCounterexampleMessage icm = (InductiveCounterexampleMessage) message;

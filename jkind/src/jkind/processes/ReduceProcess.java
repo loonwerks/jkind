@@ -185,6 +185,6 @@ public class ReduceProcess extends Process {
 		}
 
 		List<String> validList = Collections.singletonList(valid);
-		director.incoming.add(new ValidMessage(validList, k, reduced, true));
+		director.incoming.add(new ValidMessage(validList, k, reduced));
 	}
 }

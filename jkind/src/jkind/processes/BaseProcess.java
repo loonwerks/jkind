@@ -10,6 +10,7 @@ import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
+import jkind.processes.messages.StopMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -23,6 +24,7 @@ import jkind.util.SexpUtil;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
+	private SmoothProcess smoothProcess;
 
 	public BaseProcess(Specification spec, Director director) {
 		super("Base", spec, director);
@@ -30,6 +32,10 @@ public class BaseProcess extends Process {
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
 		this.inductiveProcess = inductiveProcess;
+	}
+	
+	public void setSmoothProcess(SmoothProcess smoothProcess) {
+		this.smoothProcess = smoothProcess;
 	}
 
 	@Override
@@ -44,6 +50,7 @@ public class BaseProcess extends Process {
 			checkProperties(k);
 			assertProperties(k);
 		}
+		sendStop();
 	}
 
 	private void processMessages() {
@@ -89,8 +96,12 @@ public class BaseProcess extends Process {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		director.incoming.add(new CounterexampleMessage(invalid, k, model));
-
+		if (smoothProcess != null) {
+			smoothProcess.incoming.add(new CounterexampleMessage(invalid, k, model));
+		} else {
+			director.incoming.add(new CounterexampleMessage(invalid, k, model));
+		}
+		
 		if (inductiveProcess != null) {
 			inductiveProcess.incoming.add(new InvalidMessage(invalid));
 		}
@@ -105,6 +116,12 @@ public class BaseProcess extends Process {
 	private void assertProperties(int k) {
 		if (!properties.isEmpty()) {
 			solver.send(new Cons("assert", SexpUtil.conjoinStreams(properties, Sexp.fromInt(k - 1))));
+		}
+	}
+	
+	private void sendStop() {
+		if (smoothProcess != null) {
+			smoothProcess.incoming.add(new StopMessage());
 		}
 	}
 }
