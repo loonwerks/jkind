@@ -2,6 +2,8 @@ package jkind.results;
 
 /**
  * An interface for renaming and removing variables
+ * 
+ * @see MapRenaming
  */
 public interface Renaming {
 	/**

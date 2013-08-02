@@ -69,7 +69,7 @@ public class JKindApi {
 	 * Run JKind on a Lustre program
 	 * @param program Lustre program
 	 * @return results of JKind
-	 * @throws JKindException 
+	 * @throws jkind.JKindException
 	 */
 	public JKindResult execute(Program program) {
 		return execute(program.toString());
@@ -79,7 +79,7 @@ public class JKindApi {
 	 * Run JKind on a Lustre program
 	 * @param program Lustre program as text
 	 * @return results of JKind
-	 * @throws JKindException
+	 * @throws jkind.JKindException
 	 */
 	public JKindResult execute(String program) {
 		File lustreFile = null;
@@ -95,7 +95,7 @@ public class JKindApi {
 	 * Run JKind on a Lustre program
 	 * @param lustreFile File containing Lustre program
 	 * @return results of JKind
-	 * @throws JKindException
+	 * @throws jkind.JKindException
 	 */
 	public JKindResult execute(File lustreFile) {
 		String text = null;

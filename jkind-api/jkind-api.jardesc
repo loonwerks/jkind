@@ -12,7 +12,6 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
         <javaElement handleIdentifier="=jkind-common/src"/>
-        <folder path="/jkind-common/dependencies"/>
         <javaElement handleIdentifier="=jkind-api/src"/>
     </selectedElements>
 </jardesc>

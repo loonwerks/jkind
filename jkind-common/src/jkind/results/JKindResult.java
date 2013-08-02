@@ -82,7 +82,7 @@ public final class JKindResult {
 	 * @param layout
 	 *            layout information for counterexamples
 	 * @see Layout
-	 * @throws JKindException
+	 * @throws jkind.JKindException
 	 */
 	public void toExcel(File file, Layout layout) {
 		ExcelFormatter formatter = new ExcelFormatter(file, layout);
@@ -97,7 +97,7 @@ public final class JKindResult {
 	 * 
 	 * @param file
 	 *            file to write Excel spreadsheet to
-	 * @throws JKindException
+	 * @throws jkind.JKindException
 	 */
 	public void toExcel(File file) {
 		toExcel(file, new SingletonLayout("Signals"));

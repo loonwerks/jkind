@@ -3,7 +3,10 @@ package jkind.excel;
 import java.util.List;
 
 /**
- * This class is used to configure the layout signals in counterexamples
+ * Layout information for signals in counterexamples
+ * 
+ * @see NodeLayout
+ * @see SingletonLayout
  */
 public interface Layout {
 	/**
