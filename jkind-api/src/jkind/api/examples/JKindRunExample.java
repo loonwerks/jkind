@@ -142,6 +142,7 @@ public class JKindRunExample {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				cancelButton.setEnabled(false);
+				monitor.setCanceled(true);
 			}
 		});
 	}
