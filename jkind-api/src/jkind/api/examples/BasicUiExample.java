@@ -11,10 +11,18 @@ import java.util.regex.Pattern;
 
 import jkind.api.JKindApi;
 import jkind.api.results.JKindResult;
+import jkind.api.results.PropertyResult;
+import jkind.api.results.Status;
 import jkind.api.ui.JKindTable;
+import jkind.results.Counterexample;
+import jkind.results.InvalidProperty;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -100,7 +108,7 @@ public class BasicUiExample {
 		System.exit(0);
 	}
 
-	private static void createControls(Composite parent, String filename, List<String> properties) {
+	private static void createControls(final Shell parent, String filename, List<String> properties) {
 		parent.setLayout(new GridLayout(2, true));
 		JKindTable viewer = createJKindTable(parent);
 		final Button startButton = createButton(parent, "Start");
@@ -145,6 +153,26 @@ public class BasicUiExample {
 				monitor.setCanceled(true);
 			}
 		});
+
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				if (event.getSelection() instanceof IStructuredSelection) {
+					IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+					if (!sel.isEmpty()) {
+						click(parent, (PropertyResult) sel.getFirstElement());
+					}
+				}
+			}
+		});
+	}
+
+	private static void click(Shell parent, PropertyResult pr) {
+		if (pr.getStatus() == Status.INVALID) {
+			InvalidProperty ip = (InvalidProperty) pr.getProperty();
+			Counterexample cex = ip.getCounterexample();
+			MessageDialog.openInformation(parent, "Counterexample", cex.toString());
+		}
 	}
 
 	private static JKindTable createJKindTable(Composite parent) {

@@ -137,4 +137,30 @@ public final class Counterexample {
 		}
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		String newline = System.getProperty("line.separator");
+		StringBuilder text = new StringBuilder();
+		
+		text.append(String.format("%25s %6s ", "", "Step"));
+		text.append(newline);
+		text.append(String.format("%-25s ", "variable"));
+		for (int i = 0; i < length; i++) {
+			text.append(String.format("%6s ", i));
+		}
+		text.append(newline);
+		text.append(newline);
+
+		for (Signal<Value> signal : signals) {
+			text.append(String.format("%-25s ", signal.getName()));
+			for (int i = 0; i < length; i++) {
+				Value value = signal.getValue(i);
+				text.append(String.format("%6s ", value != null ? value : "-"));
+			}
+			text.append(newline);
+		}
+		
+		return text.toString();
+	}
 }

@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.invariant.Invariant;
-import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
-import jkind.results.Signal;
 
 public class ConsoleWriter extends Writer {
 	@Override
@@ -40,45 +38,24 @@ public class ConsoleWriter extends Writer {
 		writeLine();
 		System.out.println("INVALID PROPERTY: " + prop + " || K = " + cex.getLength()
 				+ " || Time = " + runtime);
-		writeCounterexample(cex);
+		System.out.println(cex);
+		writeLine();
+		System.out.println();
 	}
 
 	@Override
 	public void writeUnknown(List<String> props,
 			Map<String, Counterexample> inductiveCounterexamples) {
 		for (String prop : props) {
-			Counterexample icm = inductiveCounterexamples.get(prop);
-			if (icm != null) {
+			Counterexample cex = inductiveCounterexamples.get(prop);
+			if (cex != null) {
 				writeLine();
 				System.out.println("INDUCTIVE COUNTEREXAMPLE: " + prop + " || K = "
-						+ icm.getLength());
-				writeCounterexample(icm);
+						+ cex.getLength());
+				System.out.println(cex);
+				writeLine();
+				System.out.println();
 			}
 		}
-	}
-
-	private void writeCounterexample(Counterexample cex) {
-		int length = cex.getLength();
-
-		System.out.format("%25s %6s ", "", "Step");
-		System.out.println();
-		System.out.format("%-25s ", "variable");
-		for (int i = 0; i < length; i++) {
-			System.out.format("%6s ", i);
-		}
-		System.out.println();
-		System.out.println();
-
-		for (Signal<Value> signal : cex.getSignals()) {
-			System.out.format("%-25s ", signal.getName());
-			for (int i = 0; i < length; i++) {
-				Value value = signal.getValue(i);
-				System.out.format("%6s ", value != null ? value : "-");
-			}
-			System.out.println();
-		}
-
-		writeLine();
-		System.out.println();
 	}
 }

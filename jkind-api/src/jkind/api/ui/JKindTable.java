@@ -6,6 +6,7 @@ import jkind.api.ui.JKindResultLabelProvider.Column;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -50,5 +51,13 @@ public class JKindTable {
 
 	public void setLayoutData(Object layoutData) {
 		composite.setLayoutData(layoutData);
+	}
+	
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+		viewer.addSelectionChangedListener(listener);
+	}
+	
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+		viewer.removeSelectionChangedListener(listener);
 	}
 }
