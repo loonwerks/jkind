@@ -10,15 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.xml.sax.SAXException;
 
 import jkind.JKindException;
+import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.JKindResult;
+import jkind.api.results.PropertyResult;
+import jkind.api.xml.JKindXmlFileInputStream;
+import jkind.api.xml.XmlParseThread;
 import jkind.lustre.Program;
-import jkind.results.JKindResult;
 import jkind.results.Property;
-
-import org.xml.sax.SAXException;
 
 /**
  * The primary interface to JKind.
@@ -31,7 +35,9 @@ public class JKindApi {
 
 	/**
 	 * Set a maximum run time for entire execution
-	 * @param timeout A positive timeout in seconds
+	 * 
+	 * @param timeout
+	 *            A positive timeout in seconds
 	 */
 	public void setTimeout(int timeout) {
 		if (timeout <= 0) {
@@ -42,7 +48,9 @@ public class JKindApi {
 
 	/**
 	 * Set a maximum value for k in k-induction algorithm
-	 * @param n A non-negative integer
+	 * 
+	 * @param n
+	 *            A non-negative integer
 	 */
 	public void setN(int n) {
 		if (n < 0) {
@@ -65,48 +73,68 @@ public class JKindApi {
 		reduceInvariants = true;
 	}
 
-	/**
-	 * Run JKind on a Lustre program
-	 * @param program Lustre program
-	 * @return results of JKind
-	 * @throws jkind.JKindException
-	 */
+	@Deprecated
 	public JKindResult execute(Program program) {
-		return execute(program.toString());
+		DynamicJKindResult result = new DynamicJKindResult();
+		execute(program, result, new NullProgressMonitor());
+
+		List<Property> properties = new ArrayList<Property>();
+		for (PropertyResult pr : result.getPropertyResults()) {
+			properties.add(pr.getProperty());
+		}
+		return new JKindResult(result.getText(), properties);
 	}
-	
+
 	/**
 	 * Run JKind on a Lustre program
-	 * @param program Lustre program as text
+	 * 
+	 * @param program
+	 *            Lustre program
 	 * @return results of JKind
 	 * @throws jkind.JKindException
 	 */
-	public JKindResult execute(String program) {
+	public void execute(Program program, DynamicJKindResult result, IProgressMonitor monitor) {
+		execute(program.toString(), result, monitor);
+	}
+
+	/**
+	 * Run JKind on a Lustre program
+	 * 
+	 * @param program
+	 *            Lustre program as text
+	 * @return results of JKind
+	 * @throws jkind.JKindException
+	 */
+	public void execute(String program, DynamicJKindResult result, IProgressMonitor monitor) {
 		File lustreFile = null;
 		try {
 			lustreFile = writeLustreFile(program);
-			return execute(lustreFile);
+			execute(lustreFile, result, monitor);
 		} finally {
 			safeDelete(lustreFile);
 		}
 	}
-	
+
 	/**
 	 * Run JKind on a Lustre program
-	 * @param lustreFile File containing Lustre program
+	 * 
+	 * @param lustreFile
+	 *            File containing Lustre program
+	 * @param monitor
 	 * @return results of JKind
 	 * @throws jkind.JKindException
 	 */
-	public JKindResult execute(File lustreFile) {
-		String text = null;
+	public void execute(File lustreFile, DynamicJKindResult result, IProgressMonitor monitor) {
 		File xmlFile = null;
 		try {
-			text = callJKind(lustreFile);
 			xmlFile = getXmlFile(lustreFile);
-			List<Property> properties = parseXmlFile(xmlFile);
-			return new JKindResult(text, properties);
+			safeDelete(xmlFile);
+			if (xmlFile.exists()) {
+				throw new JKindException("Existing XML file cannot be removed: " + xmlFile);
+			}
+			callJKind(lustreFile, xmlFile, result, monitor);
 		} catch (Throwable t) {
-			throw new JKindException(text, t);
+			throw new JKindException(result.getText(), t);
 		} finally {
 			safeDelete(xmlFile);
 		}
@@ -142,23 +170,70 @@ public class JKindApi {
 		}
 	}
 
-	private String callJKind(File lustreFile) throws IOException {
+	private void callJKind(File lustreFile, File xmlFile, DynamicJKindResult result,
+			IProgressMonitor monitor) throws IOException, InterruptedException,
+			ParserConfigurationException, SAXException {
 		ProcessBuilder builder = getJKindProcessBuilder(lustreFile);
 		Process process = null;
-		StringBuilder result = new StringBuilder();
+		JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile);
+		XmlParseThread parseThread = new XmlParseThread(xmlStream, result);
+
 		try {
+			result.start();
 			process = builder.start();
-			InputStream stream = new BufferedInputStream(process.getInputStream());
-			int c;
-			while ((c = stream.read()) != -1) {
-				result.append((char) c);
-			}
+			parseThread.start();
+			readOutput(process, result, monitor);
 		} finally {
 			if (process != null) {
 				process.destroy();
+				process.waitFor();
+			}
+			xmlStream.done();
+			parseThread.join();
+			if (monitor.isCanceled()) {
+				result.cancel();
+			} else {
+				result.done();
+			}
+			monitor.done();
+		}
+
+		if (parseThread.getThrowable() != null) {
+			throw new JKindException("Error parsing XML", parseThread.getThrowable());
+		}
+	}
+
+	private void readOutput(Process process, final DynamicJKindResult result,
+			IProgressMonitor monitor) throws IOException {
+		final InputStream stream = new BufferedInputStream(process.getInputStream());
+
+		while (true) {
+			if (monitor.isCanceled()) {
+				return;
+			} else if (stream.available() > 0) {
+				int c = stream.read();
+				if (c == -1) {
+					return;
+				}
+				result.addText((char) c);
+			} else if (isTerminated(process)) {
+				return;
+			} else {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 			}
 		}
-		return result.toString();
+	}
+
+	private boolean isTerminated(Process process) {
+		try {
+			process.exitValue();
+			return true;
+		} catch (IllegalThreadStateException e) {
+			return false;
+		}
 	}
 
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) throws IOException {
@@ -192,17 +267,5 @@ public class JKindApi {
 
 	private static File getXmlFile(File lustreFile) {
 		return new File(lustreFile.toString() + ".xml");
-	}
-
-	private static List<Property> parseXmlFile(File xmlFile) throws IOException {
-		try {
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser saxParser = factory.newSAXParser();
-			XmlHandler handler = new XmlHandler();
-			saxParser.parse(xmlFile, handler);
-			return handler.properties;
-		} catch (ParserConfigurationException | SAXException e) {
-			throw new JKindException("Error parsing XML", e);
-		}
 	}
 }

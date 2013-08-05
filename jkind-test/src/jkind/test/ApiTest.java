@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jkind.JKindException;
 import jkind.api.JKindApi;
+import jkind.api.results.JKindResult;
 import jkind.lustre.Program;
 import jkind.lustre.parsing.LustreLexer;
 import jkind.lustre.parsing.LustreParser;
@@ -18,7 +19,6 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
-import jkind.results.JKindResult;
 import jkind.results.MapRenaming;
 import jkind.results.Property;
 import jkind.results.Signal;

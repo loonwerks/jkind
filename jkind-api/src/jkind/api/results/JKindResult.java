@@ -1,4 +1,4 @@
-package jkind.results;
+package jkind.api.results;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,6 +8,8 @@ import java.util.List;
 import jkind.excel.ExcelFormatter;
 import jkind.excel.Layout;
 import jkind.excel.SingletonLayout;
+import jkind.results.Property;
+import jkind.results.Renaming;
 
 /**
  * The results of an execution of JKind
@@ -86,7 +88,7 @@ public final class JKindResult {
 	 */
 	public void toExcel(File file, Layout layout) {
 		ExcelFormatter formatter = new ExcelFormatter(file, layout);
-		formatter.write(this);
+		formatter.write(getProperties());
 		formatter.close();
 	}
 

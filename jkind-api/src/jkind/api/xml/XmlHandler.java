@@ -1,9 +1,11 @@
-package jkind.api;
+package jkind.api.xml;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.PropertyResult;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
@@ -16,8 +18,8 @@ import jkind.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-class XmlHandler extends DefaultHandler {
-	public List<Property> properties = new ArrayList<>();
+public class XmlHandler extends DefaultHandler {
+	private final DynamicJKindResult result;
 
 	private Counterexample cex;
 	private Signal<Value> signal;
@@ -36,6 +38,10 @@ class XmlHandler extends DefaultHandler {
 	private boolean readK = false;
 	private boolean readValue = false;
 	private boolean readInvariant = false;
+
+	public XmlHandler(DynamicJKindResult result) {
+		this.result = result;
+	}
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -86,7 +92,12 @@ class XmlHandler extends DefaultHandler {
 			default:
 				throw new JKindException("Unknown property answer in XML file: " + answer);
 			}
-			properties.add(prop);
+			
+			PropertyResult pr = result.getPropertyResult(propertyName);
+			if (pr == null) {
+				pr = result.addProperty(propertyName);
+			}
+			pr.setProperty(prop);
 		}
 	}
 

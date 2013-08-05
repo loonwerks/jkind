@@ -12,7 +12,6 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
-import jkind.results.JKindResult;
 import jkind.results.Property;
 import jkind.results.Signal;
 import jkind.results.UnknownProperty;
@@ -72,10 +71,6 @@ public class ExcelFormatter {
 		} catch (Exception e) {
 			throw new JKindException("Error closing Excel file", e);
 		}
-	}
-
-	public void write(JKindResult result) {
-		write(result.getProperties());
 	}
 
 	public void write(List<Property> properties) {
