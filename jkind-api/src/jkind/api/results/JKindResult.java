@@ -2,9 +2,15 @@ package jkind.api.results;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import jkind.excel.ExcelFormatter;
+import jkind.excel.Layout;
+import jkind.excel.SingletonLayout;
+import jkind.results.Property;
 
 public class JKindResult extends AnalysisResult {
 	private final StringBuilder text = new StringBuilder();
@@ -84,6 +90,47 @@ public class JKindResult extends AnalysisResult {
 			pr.done();
 		}
 		ticker.done();
+	}
+
+	/**
+	 * Convert results to an Excel spreadsheet
+	 * 
+	 * Using this requires the jxl.jar file in your classpath
+	 * 
+	 * @param file
+	 *            file to write Excel spreadsheet to
+	 * @param layout
+	 *            layout information for counterexamples
+	 * @see Layout
+	 * @throws jkind.JKindException
+	 */
+	public void toExcel(File file, Layout layout) {
+		ExcelFormatter formatter = new ExcelFormatter(file, layout);
+		formatter.write(getProperties());
+		formatter.close();
+	}
+
+	private List<Property> getProperties() {
+		List<Property> properties = new ArrayList<Property>();
+		for (PropertyResult pr : propertyResults) {
+			if (pr.getProperty() != null) {
+				properties.add(pr.getProperty());
+			}
+		}
+		return properties;
+	}
+
+	/**
+	 * Convert results to an Excel spreadsheet using default layout
+	 * 
+	 * Using this requires the jxl.jar file in your classpath
+	 * 
+	 * @param file
+	 *            file to write Excel spreadsheet to
+	 * @throws jkind.JKindException
+	 */
+	public void toExcel(File file) {
+		toExcel(file, new SingletonLayout("Signals"));
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
