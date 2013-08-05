@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 /*
  * This example illustrates how to dynamically report the results of a JKind API execution.
  */
-public class JKindRunExample {
+public class BasicUiExample {
 	public static void main(String[] args) throws IOException {
 		if (args.length < 1) {
 			System.out.println("Must specify lustre file as argument");
