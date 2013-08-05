@@ -63,6 +63,9 @@ public class XmlHandler extends DefaultHandler {
 		} else if (qName.equals("Signal")) {
 			signal = new Signal<Value>(attributes.getValue("name"));
 			type = attributes.getValue("type");
+			if (type.contains("subrange")) {
+				type = "int";
+			}
 			cex.addSignal(signal);
 		} else if (qName.equals("Value")) {
 			readValue = true;
