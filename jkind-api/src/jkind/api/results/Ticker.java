@@ -1,10 +1,10 @@
 package jkind.api.results;
 
 public class Ticker extends Thread {
-	private DynamicJKindResult result;
+	private JKindResult result;
 	private boolean done;
 
-	public Ticker(DynamicJKindResult result) {
+	public Ticker(JKindResult result) {
 		super("Ticker");
 		this.result = result;
 		this.done = false;

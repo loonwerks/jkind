@@ -22,7 +22,6 @@ public class LineInputStream {
 		}
 		
 		if (buffer.length() == 0) {
-			System.out.println("Closing xml file");
 			source.close();
 			return null;
 		} else {

@@ -1,6 +1,6 @@
 package jkind.api.ui;
 
-import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.ui.JKindResultLabelProvider.Column;
 
@@ -44,7 +44,7 @@ public class JKindTable {
 		viewer.update(pr, null);
 	}
 
-	public void setInput(DynamicJKindResult model) {
+	public void setInput(JKindResult model) {
 		viewer.setInput(model);
 	}
 

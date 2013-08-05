@@ -7,7 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.JKindResult;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -18,7 +18,7 @@ public class XmlParseThread extends Thread {
 	private SAXParser parser;
 	private XmlHandler handler;
 
-	public XmlParseThread(JKindXmlFileInputStream xmlStream, DynamicJKindResult result)
+	public XmlParseThread(JKindXmlFileInputStream xmlStream, JKindResult result)
 			throws ParserConfigurationException, SAXException {
 		super("Xml Parse");
 		this.xmlStream = xmlStream;

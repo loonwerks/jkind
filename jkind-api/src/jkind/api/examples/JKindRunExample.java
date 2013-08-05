@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jkind.api.JKindApi;
-import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.JKindResult;
 import jkind.api.ui.JKindTable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,6 +26,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+/*
+ * This example illustrates how to dynamically report the results of a JKind API execution.
+ */
 public class JKindRunExample {
 	public static void main(String[] args) throws IOException {
 		if (args.length < 1) {
@@ -74,6 +77,10 @@ public class JKindRunExample {
 		shell.setText("JKind Run Example");
 		createControls(shell, filename, properties);
 
+		/*
+		 * The height of the JKindTable is based on the number of properties, so
+		 * we set an upper bound here.
+		 */
 		shell.pack();
 		Point size = shell.getSize();
 		shell.setSize(size.x, Math.min(size.y, 500));
@@ -85,6 +92,11 @@ public class JKindRunExample {
 			}
 		}
 		display.dispose();
+
+		/*
+		 * When the user clicks the close button, the background threads may
+		 * still be running. Calling System.exit kills all threads.
+		 */
 		System.exit(0);
 	}
 
@@ -95,17 +107,28 @@ public class JKindRunExample {
 		final Button cancelButton = createButton(parent, "Cancel");
 		cancelButton.setEnabled(false);
 
-		final File file = new File(filename);
-		final DynamicJKindResult result = new DynamicJKindResult(properties);
+		/*
+		 * The JKindResult object will be populated by a later JKindApi.execute
+		 * call. The JKindTable viewer listens for changes to the JKindResult
+		 * and automatically updates itself as needed.
+		 */
+		final JKindResult result = new JKindResult(properties);
 		viewer.setInput(result);
 
+		// The monitor is only currently used to detect cancellation
 		final IProgressMonitor monitor = new NullProgressMonitor();
+		final File file = new File(filename);
 
 		startButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				startButton.setEnabled(false);
 				cancelButton.setEnabled(true);
+
+				/*
+				 * The JKindApi execute methods run synchronously, thus they
+				 * should usually be wrapped in a thread
+				 */
 				new Thread("Analysis") {
 					@Override
 					public void run() {
@@ -119,12 +142,15 @@ public class JKindRunExample {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				cancelButton.setEnabled(false);
-
 			}
 		});
 	}
 
 	private static JKindTable createJKindTable(Composite parent) {
+		/*
+		 * A JKindTable knows how to format itself. The code here is just to
+		 * position the table within its parent.
+		 */
 		JKindTable table = new JKindTable(parent);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;

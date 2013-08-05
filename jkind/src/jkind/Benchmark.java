@@ -1,4 +1,4 @@
-package jkind.test;
+package jkind;
 
 import java.io.File;
 import java.io.FilenameFilter;

@@ -3,7 +3,7 @@ package jkind.api.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -24,8 +24,8 @@ public class JKindResultContentProvider implements IStructuredContentProvider,
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (oldInput instanceof DynamicJKindResult) {
-			DynamicJKindResult result = (DynamicJKindResult) oldInput;
+		if (oldInput instanceof JKindResult) {
+			JKindResult result = (JKindResult) oldInput;
 
 			result.removePropertyChangeListener(this);
 			for (PropertyResult pr : result.getPropertyResults()) {
@@ -33,8 +33,8 @@ public class JKindResultContentProvider implements IStructuredContentProvider,
 			}
 		}
 		
-		if (newInput instanceof DynamicJKindResult) {
-			DynamicJKindResult result = (DynamicJKindResult) newInput;
+		if (newInput instanceof JKindResult) {
+			JKindResult result = (JKindResult) newInput;
 
 			result.addPropertyChangeListener(this);
 			for (PropertyResult pr : result.getPropertyResults()) {
@@ -45,8 +45,8 @@ public class JKindResultContentProvider implements IStructuredContentProvider,
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		if (inputElement instanceof DynamicJKindResult) {
-			DynamicJKindResult result = (DynamicJKindResult) inputElement;
+		if (inputElement instanceof JKindResult) {
+			JKindResult result = (JKindResult) inputElement;
 			return result.getPropertyResults().toArray();
 		}
 

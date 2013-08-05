@@ -11,18 +11,14 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.xml.sax.SAXException;
-
 import jkind.JKindException;
-import jkind.api.results.DynamicJKindResult;
 import jkind.api.results.JKindResult;
-import jkind.api.results.PropertyResult;
 import jkind.api.xml.JKindXmlFileInputStream;
 import jkind.api.xml.XmlParseThread;
 import jkind.lustre.Program;
-import jkind.results.Property;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.xml.sax.SAXException;
 
 /**
  * The primary interface to JKind.
@@ -73,27 +69,18 @@ public class JKindApi {
 		reduceInvariants = true;
 	}
 
-	@Deprecated
-	public JKindResult execute(Program program) {
-		DynamicJKindResult result = new DynamicJKindResult();
-		execute(program, result, new NullProgressMonitor());
-
-		List<Property> properties = new ArrayList<Property>();
-		for (PropertyResult pr : result.getPropertyResults()) {
-			properties.add(pr.getProperty());
-		}
-		return new JKindResult(result.getText(), properties);
-	}
-
 	/**
 	 * Run JKind on a Lustre program
 	 * 
 	 * @param program
 	 *            Lustre program
-	 * @return results of JKind
+	 * @param result
+	 *            place to store results as they come in
+	 * @param monitor
+	 *            used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(Program program, DynamicJKindResult result, IProgressMonitor monitor) {
+	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
 		execute(program.toString(), result, monitor);
 	}
 
@@ -102,10 +89,13 @@ public class JKindApi {
 	 * 
 	 * @param program
 	 *            Lustre program as text
-	 * @return results of JKind
+	 * @param result
+	 *            place to store results as they come in
+	 * @param monitor
+	 *            used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(String program, DynamicJKindResult result, IProgressMonitor monitor) {
+	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
 		File lustreFile = null;
 		try {
 			lustreFile = writeLustreFile(program);
@@ -120,11 +110,13 @@ public class JKindApi {
 	 * 
 	 * @param lustreFile
 	 *            File containing Lustre program
+	 * @param result
+	 *            place to store results as they come in
 	 * @param monitor
-	 * @return results of JKind
+	 *            used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(File lustreFile, DynamicJKindResult result, IProgressMonitor monitor) {
+	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
 		File xmlFile = null;
 		try {
 			xmlFile = getXmlFile(lustreFile);
@@ -170,7 +162,7 @@ public class JKindApi {
 		}
 	}
 
-	private void callJKind(File lustreFile, File xmlFile, DynamicJKindResult result,
+	private void callJKind(File lustreFile, File xmlFile, JKindResult result,
 			IProgressMonitor monitor) throws IOException, InterruptedException,
 			ParserConfigurationException, SAXException {
 		ProcessBuilder builder = getJKindProcessBuilder(lustreFile);
@@ -203,8 +195,8 @@ public class JKindApi {
 		}
 	}
 
-	private void readOutput(Process process, final DynamicJKindResult result,
-			IProgressMonitor monitor) throws IOException {
+	private void readOutput(Process process, final JKindResult result, IProgressMonitor monitor)
+			throws IOException {
 		final InputStream stream = new BufferedInputStream(process.getInputStream());
 
 		while (true) {

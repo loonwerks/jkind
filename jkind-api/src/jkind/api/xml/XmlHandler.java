@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.api.results.DynamicJKindResult;
+import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
@@ -19,7 +19,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class XmlHandler extends DefaultHandler {
-	private final DynamicJKindResult result;
+	private final JKindResult result;
 
 	private Counterexample cex;
 	private Signal<Value> signal;
@@ -39,7 +39,7 @@ public class XmlHandler extends DefaultHandler {
 	private boolean readValue = false;
 	private boolean readInvariant = false;
 
-	public XmlHandler(DynamicJKindResult result) {
+	public XmlHandler(JKindResult result) {
 		this.result = result;
 	}
 
