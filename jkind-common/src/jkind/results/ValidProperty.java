@@ -38,14 +38,4 @@ public final class ValidProperty extends Property {
 	public double getRuntime() {
 		return runtime;
 	}
-	
-	@Override
-	public Property rename(Renaming renaming) {
-		String newName = renaming.rename(name);
-		if (newName == null) {
-			return null;
-		}
-		
-		return new ValidProperty(newName, k, runtime, invariants);
-	}
 }

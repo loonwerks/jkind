@@ -118,25 +118,6 @@ public final class Counterexample {
 		}
 		return signal.cast(klass);
 	}
-
-	/**
-	 * Rename signals in a counterexample, possibly omitting some
-	 * 
-	 * @param renaming
-	 *            The renaming to use
-	 * @return Renamed version of the counterexample
-	 * @see Renaming
-	 */
-	public Counterexample rename(Renaming renaming) {
-		Counterexample result = new Counterexample(length);
-		for (Signal<Value> signal : signals) {
-			Signal<Value> newSignal = signal.rename(renaming);
-			if (newSignal != null) {
-				result.addSignal(newSignal);
-			}
-		}
-		return result;
-	}
 	
 	@Override
 	public String toString() {

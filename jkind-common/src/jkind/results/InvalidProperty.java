@@ -1,5 +1,6 @@
 package jkind.results;
 
+
 /**
  * An invalid property
  */
@@ -25,15 +26,5 @@ public final class InvalidProperty extends Property {
 	 */
 	public double getRuntime() {
 		return runtime;
-	}
-	
-	@Override
-	public Property rename(Renaming renaming) {
-		String newName = renaming.rename(name);
-		if (newName == null) {
-			return null;
-		}
-		
-		return new InvalidProperty(newName, cex.rename(renaming), runtime);
 	}
 }

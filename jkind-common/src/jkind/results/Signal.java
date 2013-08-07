@@ -22,11 +22,6 @@ public final class Signal<T extends Value> {
 		this.values = new HashMap<>();
 	}
 
-	private Signal(String name, Map<Integer, T> values) {
-		this.name = name;
-		this.values = values;
-	}
-
 	/**
 	 * Name of the signal
 	 */
@@ -72,24 +67,5 @@ public final class Signal<T extends Value> {
 			}
 		}
 		return castSignal;
-	}
-
-	/**
-	 * Rename signal
-	 * 
-	 * @param renaming
-	 *            The renaming to use
-	 * @return Renamed version of the signal or <code>null</code> if there is no
-	 *         renaming for it
-	 * @see Renaming
-	 */
-	public Signal<T> rename(Renaming renaming) {
-		String newName = renaming.rename(name);
-		if (newName == null) {
-			return null;
-		}
-
-		HashMap<Integer, T> newValues = new HashMap<>(values);
-		return new Signal<T>(newName, newValues);
 	}
 }

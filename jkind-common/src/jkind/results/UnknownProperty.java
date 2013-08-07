@@ -1,5 +1,6 @@
 package jkind.results;
 
+
 /**
  * A unknown property
  */
@@ -17,15 +18,5 @@ public final class UnknownProperty extends Property {
 	 */
 	public Counterexample getInductiveCounterexample() {
 		return cex;
-	}
-
-	@Override
-	public Property rename(Renaming renaming) {
-		String newName = renaming.rename(name);
-		if (newName == null) {
-			return null;
-		}
-
-		return new UnknownProperty(newName, cex);
 	}
 }
