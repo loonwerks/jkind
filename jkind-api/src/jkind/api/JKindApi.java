@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -230,11 +231,7 @@ public class JKindApi {
 
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) throws IOException {
 		List<String> args = new ArrayList<>();
-		if (System.getProperty("os.name").startsWith("Windows")) {
-			args.add("cmd");
-			args.add("/c");
-		}
-		args.add("jkind");
+		args.addAll(Arrays.asList(getJKindCommand()));
 		args.add("-xml");
 		if (timeout != null) {
 			args.add("-timeout");
@@ -255,6 +252,42 @@ public class JKindApi {
 		ProcessBuilder builder = new ProcessBuilder(args);
 		builder.redirectErrorStream(true);
 		return builder;
+	}
+
+	private String[] getJKindCommand() {
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			/*
+			 * On Windows, invoking Process.destroy does not kill the
+			 * subprocesses of the destroyed process. If we were to run
+			 * jkind.bat and kill it, only the cmd.exe process which is running
+			 * the batch file would be killed. The underlying JKind process
+			 * would continue to its natural end. To avoid this, we search the
+			 * user's path for the jkind.jar file and invoke it directly.
+			 */
+
+			File jar = findJKindJar();
+			if (jar == null) {
+				throw new JKindException("Unable to find jkind.jar on system PATH");
+			}
+			return new String[] { "java", "-jar", jar.toString() };
+		} else {
+			return new String[] { "jkind" };
+		}
+	}
+
+	private File findJKindJar() {
+		String path = System.getenv("PATH");
+		if (path == null) {
+			return null;
+		}
+
+		for (String element : path.split(";")) {
+			File jar = new File(new File(element), "jkind.jar");
+			if (jar.exists()) {
+				return jar;
+			}
+		}
+		return null;
 	}
 
 	private static File getXmlFile(File lustreFile) {

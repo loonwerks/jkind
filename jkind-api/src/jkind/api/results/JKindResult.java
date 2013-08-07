@@ -1,7 +1,7 @@
 package jkind.api.results;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,16 +12,18 @@ import jkind.excel.Layout;
 import jkind.excel.SingletonLayout;
 import jkind.results.Property;
 
-public class JKindResult extends AnalysisResult {
+public class JKindResult extends AnalysisResult implements PropertyChangeListener {
 	private final StringBuilder text = new StringBuilder();
 	private final List<PropertyResult> propertyResults = new ArrayList<PropertyResult>();
+	private final MultiStatus multiStatus = new MultiStatus();
 	private Ticker ticker;
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-	public JKindResult() {
+	public JKindResult(String name) {
+		super(name);
 	}
 
-	public JKindResult(List<String> properties) {
+	public JKindResult(String name, List<String> properties) {
+		super(name);
 		addProperties(properties);
 	}
 
@@ -34,9 +36,17 @@ public class JKindResult extends AnalysisResult {
 	public PropertyResult addProperty(String property) {
 		PropertyResult propertyResult = new PropertyResult(property);
 		propertyResults.add(propertyResult);
+		propertyResult.setParent(this);
 		pcs.fireIndexedPropertyChange("propertyResults", propertyResults.size() - 1, null,
 				propertyResult);
+		addStatus(propertyResult.getStatus());
+		propertyResult.addPropertyChangeListener(this);
 		return propertyResult;
+	}
+
+	private void addStatus(Status other) {
+		multiStatus.add(other);
+		pcs.firePropertyChange("status", null, other);
 	}
 
 	public List<PropertyResult> getPropertyResults() {
@@ -63,6 +73,10 @@ public class JKindResult extends AnalysisResult {
 	public String getText() {
 		return text.toString();
 	}
+	
+	public MultiStatus getMultiStatus() {
+		return multiStatus;
+	}
 
 	public void start() {
 		for (PropertyResult pr : propertyResults) {
@@ -82,14 +96,18 @@ public class JKindResult extends AnalysisResult {
 		for (PropertyResult pr : propertyResults) {
 			pr.cancel();
 		}
-		ticker.done();
+		if (ticker != null) {
+			ticker.done();
+		}
 	}
 
 	public void done() {
 		for (PropertyResult pr : propertyResults) {
 			pr.done();
 		}
-		ticker.done();
+		if (ticker != null) {
+			ticker.done();
+		}
 	}
 
 	/**
@@ -133,11 +151,19 @@ public class JKindResult extends AnalysisResult {
 		toExcel(file, new SingletonLayout("Signals"));
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		this.pcs.addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		this.pcs.removePropertyChangeListener(listener);
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		// Status updates from immediate children are noted and propagated
+		if ("status".equals(evt.getPropertyName()) && propertyResults.contains(evt.getSource())) {
+			multiStatus.remove((Status) evt.getOldValue());
+			multiStatus.add((Status) evt.getNewValue());
+			pcs.firePropertyChange("status", evt.getOldValue(), evt.getNewValue());
+		}
+		
+		if ("multiStatus".equals(evt.getPropertyName()) && propertyResults.contains(evt.getSource())) {
+			multiStatus.remove((MultiStatus) evt.getOldValue());
+			multiStatus.add((MultiStatus) evt.getNewValue());
+			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());
+		}
 	}
 }

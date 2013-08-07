@@ -64,6 +64,7 @@ public class InductiveProcess extends Process {
 		sendStop();
 	}
 
+	@Override
 	protected void initializeSolver() {
 		super.initializeSolver();
 		declareN();

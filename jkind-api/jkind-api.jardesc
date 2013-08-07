@@ -12,6 +12,7 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
         <javaElement handleIdentifier="=jkind-common/src"/>
+        <javaElement handleIdentifier="=jkind-api/icons"/>
         <javaElement handleIdentifier="=jkind-api/src"/>
     </selectedElements>
 </jardesc>

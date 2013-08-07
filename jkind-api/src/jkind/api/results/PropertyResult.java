@@ -1,31 +1,22 @@
 package jkind.api.results;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 
-public class PropertyResult {
-	private final String name;
+public class PropertyResult extends AnalysisResult {
 	private int elapsed;
 	private Status status;
 	private Property property;
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	public PropertyResult(String name) {
-		this.name = name;
+		super(name);
 		this.elapsed = 0;
 		this.status = Status.WAITING;
 		this.property = null;
 	}
 
-	public String getName() {
-		return name;
-	}
-	
 	public int getElapsed() {
 		return elapsed;
 	}
@@ -78,13 +69,5 @@ public class PropertyResult {
 	@Override
 	public String toString() {
 		return name + " - " + status;
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		pcs.addPropertyChangeListener(listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		pcs.removePropertyChangeListener(listener);
 	}
 }

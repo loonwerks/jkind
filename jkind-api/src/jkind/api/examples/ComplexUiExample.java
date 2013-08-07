@@ -1,19 +1,18 @@
 package jkind.api.examples;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Queue;
 
 import jkind.api.JKindApi;
+import jkind.api.results.AnalysisResult;
+import jkind.api.results.CompositeAnalysisResult;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.Status;
-import jkind.api.ui.AnalysisResultTable;
+import jkind.api.ui.AnalysisResultTree;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
 
@@ -35,64 +34,64 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /*
- * This example illustrates how to dynamically report the results of a JKind API execution.
+ * This example illustrates how to dynamically report the results of multiple JKind API executions.
  */
-public class BasicUiExample {
+public class ComplexUiExample {
 	public static void main(String[] args) throws IOException {
 		if (args.length < 1) {
-			System.out.println("Must specify lustre file as argument");
+			System.out.println("Must specify a directory or Lustre file as argument");
 			System.exit(-1);
 		}
 
-		File file = new File(args[0]);
-		run(file, parseProperties(file));
+		AnalysisResult result = buildAnalysisResult(new File(args[0]));
+		run(result);
 	}
 
-	public static List<String> parseProperties(File file) throws IOException {
-		/*
-		 * It may seem strange that we have to extract the properties here, but
-		 * the JKind API never actually parses the lustre file. It leaves that
-		 * to the underlying analysis tool (JKind, Kind 2, etc). In a real world
-		 * use of the JKind API, the programmer would probably already have a
-		 * list of the property names. Thus, this parsing is just for the sake
-		 * of this example.
-		 */
+	private static class WorkItem {
+		private File file;
+		private JKindResult result;
 
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			List<String> properties = new ArrayList<>();
-			Pattern pattern = Pattern.compile(".*--%PROPERTY +([a-zA-Z_0-9]*) *;.*");
-			String line;
-
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = pattern.matcher(line);
-				if (matcher.matches()) {
-					properties.add(matcher.group(1));
-				}
-			}
-
-			return properties;
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
+		public WorkItem(File file, JKindResult result) {
+			this.file = file;
+			this.result = result;
 		}
 	}
 
-	private static void run(File file, List<String> properties) {
+	private static Queue<WorkItem> queue = new ArrayDeque<WorkItem>();
+
+	private static AnalysisResult buildAnalysisResult(File file) throws IOException {
+		if (file.isDirectory()) {
+			CompositeAnalysisResult result = new CompositeAnalysisResult(file.getName());
+			for (File subFile : file.listFiles()) {
+				AnalysisResult subResult = buildAnalysisResult(subFile);
+				if (subResult != null) {
+					result.addChild(subResult);
+				}
+			}
+			if (result.getChildren().isEmpty()) {
+				return null;
+			} else {
+				return result;
+			}
+		} else if (file.getName().endsWith(".lus")) {
+			List<String> properties = BasicUiExample.parseProperties(file);
+			JKindResult result = new JKindResult(file.getName(), properties);
+			queue.add(new WorkItem(file, result));
+			return result;
+		} else {
+			return null;
+		}
+	}
+
+	private static void run(AnalysisResult result) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setText("JKind Run Example");
-		createControls(shell, file, properties);
+		shell.setText("JKind Multiple Run Example");
+		createControls(shell, result);
 
-		/*
-		 * The height of the table is based on the number of properties, so we
-		 * set an upper bound here.
-		 */
 		shell.pack();
 		Point size = shell.getSize();
-		shell.setSize(size.x, Math.min(size.y, 500));
+		shell.setSize(size.x, 500);
 		shell.open();
 
 		while (!shell.isDisposed()) {
@@ -109,20 +108,19 @@ public class BasicUiExample {
 		System.exit(0);
 	}
 
-	private static void createControls(final Shell parent, final File file, List<String> properties) {
+	private static void createControls(final Shell parent, final AnalysisResult result) {
 		parent.setLayout(new GridLayout(2, true));
-		AnalysisResultTable viewer = createTable(parent);
+		AnalysisResultTree tree = createTree(parent);
 		final Button startButton = createButton(parent, "Start");
 		final Button cancelButton = createButton(parent, "Cancel");
 		cancelButton.setEnabled(false);
 
 		/*
-		 * The JKindResult object will be populated by a later JKindApi.execute
-		 * call. The JKindTable viewer listens for changes to the JKindResult
-		 * and automatically updates itself as needed.
+		 * The leaves of the AnalysisResult object will be populated by later
+		 * JKindApi.execute calls. The JKindTree viewer listens for changes to
+		 * the AnalysisResult and automatically updates itself as needed.
 		 */
-		final JKindResult result = new JKindResult(file.getName(), properties);
-		viewer.setInput(result);
+		tree.setInput(result);
 
 		// The monitor is only currently used to detect cancellation
 		final IProgressMonitor monitor = new NullProgressMonitor();
@@ -140,7 +138,15 @@ public class BasicUiExample {
 				new Thread("Analysis") {
 					@Override
 					public void run() {
-						new JKindApi().execute(file, result, monitor);
+						while (!queue.isEmpty() && !monitor.isCanceled()) {
+							WorkItem item = queue.remove();
+							new JKindApi().execute(item.file, item.result, monitor);
+						}
+
+						while (!queue.isEmpty()) {
+							WorkItem item = queue.remove();
+							item.result.cancel();
+						}
 					}
 				}.start();
 			}
@@ -154,12 +160,12 @@ public class BasicUiExample {
 			}
 		});
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		tree.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (event.getSelection() instanceof IStructuredSelection) {
 					IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-					if (!sel.isEmpty()) {
+					if (!sel.isEmpty() && sel.getFirstElement() instanceof PropertyResult) {
 						click(parent, (PropertyResult) sel.getFirstElement());
 					}
 				}
@@ -175,20 +181,20 @@ public class BasicUiExample {
 		}
 	}
 
-	private static AnalysisResultTable createTable(Composite parent) {
+	private static AnalysisResultTree createTree(Composite parent) {
 		/*
-		 * AnalysisResultTable knows how to format itself. The code here is just
+		 * AnalysisResultTree knows how to format itself. The code here is just
 		 * to position the table within its parent.
 		 */
-		AnalysisResultTable table = new AnalysisResultTable(parent);
+		AnalysisResultTree tree = new AnalysisResultTree(parent);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalSpan = 2;
-		table.setLayoutData(gridData);
-		return table;
+		tree.setLayoutData(gridData);
+		return tree;
 	}
 
 	private static Button createButton(Composite parent, String text) {

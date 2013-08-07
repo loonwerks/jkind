@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 public class CommandLineExample {
 	public static void main(String[] args) throws IOException {
 		if (args.length < 1) {
-			System.out.println("Must specify lustre file as argument");
+			System.out.println("Must specify Lustre file as argument");
 			System.exit(-1);
 		}
 
@@ -30,7 +30,7 @@ public class CommandLineExample {
 		 * programmer may attach listeners to this object to dynamically respond
 		 * to results.
 		 */
-		JKindResult result = new JKindResult();
+		JKindResult result = new JKindResult(file.getName());
 
 		/*
 		 * The progress monitor is used to cancel execution if needed. We will

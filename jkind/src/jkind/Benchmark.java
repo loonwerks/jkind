@@ -27,6 +27,7 @@ public class Benchmark {
 
 	private static String[] getFiles() {
 		return new File(".").list(new FilenameFilter() {
+			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".lus");
 			}
