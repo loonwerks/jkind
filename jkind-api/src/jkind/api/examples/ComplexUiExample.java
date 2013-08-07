@@ -11,6 +11,7 @@ import jkind.api.results.AnalysisResult;
 import jkind.api.results.CompositeAnalysisResult;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
+import jkind.api.results.Renaming;
 import jkind.api.results.Status;
 import jkind.api.ui.AnalysisResultTree;
 import jkind.results.Counterexample;
@@ -33,8 +34,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-/*
- * This example illustrates how to dynamically report the results of multiple JKind API executions.
+/**
+ * This example illustrates how to dynamically report the results of multiple
+ * JKind API executions. It also shows how a {@link Renaming} may be used to
+ * change the display of properties and signals.
  */
 public class ComplexUiExample {
 	public static void main(String[] args) throws IOException {
@@ -58,6 +61,12 @@ public class ComplexUiExample {
 	}
 
 	private static Queue<WorkItem> queue = new ArrayDeque<WorkItem>();
+	private static Renaming renaming = new Renaming() {
+		@Override
+		public String rename(String original) {
+			return original.replace("_", " ");
+		}
+	};
 
 	private static AnalysisResult buildAnalysisResult(File file) throws IOException {
 		if (file.isDirectory()) {
@@ -75,7 +84,7 @@ public class ComplexUiExample {
 			}
 		} else if (file.getName().endsWith(".lus")) {
 			List<String> properties = BasicUiExample.parseProperties(file);
-			JKindResult result = new JKindResult(file.getName(), properties);
+			JKindResult result = new JKindResult(file.getName(), properties, renaming);
 			queue.add(new WorkItem(file, result));
 			return result;
 		} else {

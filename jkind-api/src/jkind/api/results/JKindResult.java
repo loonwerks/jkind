@@ -12,29 +12,86 @@ import jkind.excel.Layout;
 import jkind.excel.SingletonLayout;
 import jkind.results.Property;
 
+/**
+ * This class holds the results of a run of JKind.
+ * 
+ * Each property is tracked using a {@link PropertyResult} class.
+ * 
+ * Note on renaming: This object can be configured with a {@link Renaming} which
+ * changes the names of properties and signals as they arrive. In this case, all
+ * properties are added and retrieved using their original names.
+ * 
+ * @see PropertyResult
+ */
 public class JKindResult extends AnalysisResult implements PropertyChangeListener {
 	private final StringBuilder text = new StringBuilder();
 	private final List<PropertyResult> propertyResults = new ArrayList<PropertyResult>();
 	private final MultiStatus multiStatus = new MultiStatus();
 	private Ticker ticker;
+	private Renaming renaming;
 
+	/**
+	 * Construct an empty JKindResult to hold the results of a run of JKind
+	 * 
+	 * @param name
+	 *            Name of the results
+	 */
 	public JKindResult(String name) {
 		super(name);
 	}
 
+	/**
+	 * Construct a JKindResult to hold the results of a run of JKind
+	 * 
+	 * @param name
+	 *            Name of the results
+	 * @param properties
+	 *            Property names to track
+	 */
 	public JKindResult(String name, List<String> properties) {
 		super(name);
 		addProperties(properties);
 	}
 
-	public void addProperties(List<String> properties) {
+	/**
+	 * Construct a JKindResult to hold the results of a run of JKind
+	 * 
+	 * @param name
+	 *            Name of the results
+	 * @param properties
+	 *            Property names to track (pre-renaming)
+	 * @param renaming
+	 *            Renaming to apply to apply properties
+	 */
+	public JKindResult(String name, List<String> properties, Renaming renaming) {
+		super(name);
+		this.renaming = renaming;
+		addProperties(properties);
+	}
+
+	private void addProperties(List<String> properties) {
 		for (String property : properties) {
 			addProperty(property);
 		}
 	}
 
+	/**
+	 * Add a new property to track
+	 * 
+	 * @param property
+	 *            Property to be tracked (pre-renaming)
+	 * @return The PropertyResult object which will store the results of the
+	 *         property
+	 */
 	public PropertyResult addProperty(String property) {
-		PropertyResult propertyResult = new PropertyResult(property);
+		if (renaming != null) {
+			property = renaming.rename(property);
+			if (property == null) {
+				return null;
+			}
+		}
+
+		PropertyResult propertyResult = new PropertyResult(property, renaming);
 		propertyResults.add(propertyResult);
 		propertyResult.setParent(this);
 		pcs.fireIndexedPropertyChange("propertyResults", propertyResults.size() - 1, null,
@@ -49,11 +106,28 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 		pcs.firePropertyChange("status", null, other);
 	}
 
+	/**
+	 * Get all PropertyResult objects stored in the JKindResult
+	 */
 	public List<PropertyResult> getPropertyResults() {
 		return Collections.unmodifiableList(propertyResults);
 	}
 
+	/**
+	 * Get a specific PropertyResult by property name
+	 * 
+	 * @param name
+	 *            Name of property to retrieve (pre-renaming)
+	 * @return Property with the given name or <code>null</code> if not found
+	 */
 	public PropertyResult getPropertyResult(String name) {
+		if (renaming != null) {
+			name = renaming.rename(name);
+			if (name == null) {
+				return null;
+			}
+		}
+
 		for (PropertyResult pr : propertyResults) {
 			if (pr.getName().equals(name)) {
 				return pr;
@@ -73,7 +147,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	public String getText() {
 		return text.toString();
 	}
-	
+
 	public MultiStatus getMultiStatus() {
 		return multiStatus;
 	}
@@ -159,8 +233,9 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 			multiStatus.add((Status) evt.getNewValue());
 			pcs.firePropertyChange("status", evt.getOldValue(), evt.getNewValue());
 		}
-		
-		if ("multiStatus".equals(evt.getPropertyName()) && propertyResults.contains(evt.getSource())) {
+
+		if ("multiStatus".equals(evt.getPropertyName())
+				&& propertyResults.contains(evt.getSource())) {
 			multiStatus.remove((MultiStatus) evt.getOldValue());
 			multiStatus.add((MultiStatus) evt.getNewValue());
 			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());

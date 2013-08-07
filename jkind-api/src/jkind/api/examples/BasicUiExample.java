@@ -34,8 +34,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-/*
- * This example illustrates how to dynamically report the results of a JKind API execution.
+/**
+ * This example illustrates how to dynamically report the results of a JKind API
+ * execution.
  */
 public class BasicUiExample {
 	public static void main(String[] args) throws IOException {

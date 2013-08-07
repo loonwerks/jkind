@@ -99,6 +99,9 @@ public class XmlHandler extends DefaultHandler {
 			PropertyResult pr = result.getPropertyResult(propertyName);
 			if (pr == null) {
 				pr = result.addProperty(propertyName);
+				if (pr == null) {
+					return;
+				}
 			}
 			pr.setProperty(prop);
 		}

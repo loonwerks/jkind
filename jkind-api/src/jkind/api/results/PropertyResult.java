@@ -9,12 +9,14 @@ public class PropertyResult extends AnalysisResult {
 	private int elapsed;
 	private Status status;
 	private Property property;
+	private final Renaming renaming;
 
-	public PropertyResult(String name) {
+	public PropertyResult(String name, Renaming renaming) {
 		super(name);
 		this.elapsed = 0;
 		this.status = Status.WAITING;
 		this.property = null;
+		this.renaming = renaming;
 	}
 
 	public int getElapsed() {
@@ -29,8 +31,13 @@ public class PropertyResult extends AnalysisResult {
 		return property;
 	}
 	
-	public void setProperty(Property property) {
-		pcs.firePropertyChange("property", this.property, this.property = property);
+	public void setProperty(Property original) {
+		if (renaming == null) {
+			property = original;
+		} else {
+			property = renaming.rename(original);
+		}
+		
 		if (property instanceof ValidProperty) {
 			setStatus(Status.VALID);
 		} else if (property instanceof InvalidProperty) {

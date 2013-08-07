@@ -9,7 +9,7 @@ import jkind.api.results.PropertyResult;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-/*
+/**
  * This example illustrates how to call the JKind API and process the results
  */
 public class CommandLineExample {
@@ -43,14 +43,14 @@ public class CommandLineExample {
 		 * the JKindApi object if desired.
 		 */
 		new JKindApi().execute(file, result, monitor);
-		
+
 		/*
 		 * Process some of the results
 		 */
 		for (PropertyResult pr : result.getPropertyResults()) {
 			System.out.println(pr.getName() + " - " + pr.getStatus());
 		}
-		
+
 		/*
 		 * Dumps the results to an Excel file
 		 */
