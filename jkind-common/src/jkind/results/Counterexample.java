@@ -1,11 +1,15 @@
 package jkind.results;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.excel.ExcelCounterexampleFormatter;
+import jkind.excel.Layout;
+import jkind.excel.SingletonLayout;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
@@ -80,8 +84,8 @@ public final class Counterexample {
 	 * 
 	 * @param name
 	 *            Name of the signal to retrieve
-	 * @return Integer signal with the specified name, or <code>null</code>
-	 *         if it cannot be found
+	 * @return Integer signal with the specified name, or <code>null</code> if
+	 *         it cannot be found
 	 */
 	public Signal<IntegerValue> getIntegerSignal(String name) {
 		return getTypedSignal(name, IntegerValue.class);
@@ -92,8 +96,8 @@ public final class Counterexample {
 	 * 
 	 * @param name
 	 *            Name of the signal to retrieve
-	 * @return Boolean signal with the specified name, or <code>null</code>
-	 *         if it cannot be found
+	 * @return Boolean signal with the specified name, or <code>null</code> if
+	 *         it cannot be found
 	 */
 	public Signal<BooleanValue> getBooleanSignal(String name) {
 		return getTypedSignal(name, BooleanValue.class);
@@ -104,8 +108,8 @@ public final class Counterexample {
 	 * 
 	 * @param name
 	 *            Name of the signal to retrieve
-	 * @return Real signal with the specified name, or <code>null</code> if
-	 *         it cannot be found
+	 * @return Real signal with the specified name, or <code>null</code> if it
+	 *         cannot be found
 	 */
 	public Signal<RealValue> getRealSignal(String name) {
 		return getTypedSignal(name, RealValue.class);
@@ -117,6 +121,43 @@ public final class Counterexample {
 			return null;
 		}
 		return signal.cast(klass);
+	}
+
+	/**
+	 * Convert counterexample to an Excel spreadsheet
+	 * 
+	 * Using this requires the jxl.jar file in your classpath
+	 * 
+	 * @param file
+	 *            File to write Excel spreadsheet to
+	 * @param layout
+	 *            Layout information for signals in counterexample
+	 * @see Layout
+	 * @throws jkind.JKindException
+	 */
+	public void toExcel(File file, Layout layout) {
+		ExcelCounterexampleFormatter formatter = null;
+		try {
+			formatter = new ExcelCounterexampleFormatter(file, layout);
+			formatter.writeCounterexample("Counterexample", this);
+		} finally {
+			if (formatter != null) {
+				formatter.close();
+			}
+		}
+	}
+
+	/**
+	 * Convert counterexample to an Excel spreadsheet using default layout
+	 * 
+	 * Using this requires the jxl.jar file in your classpath
+	 * 
+	 * @param file
+	 *            File to write Excel spreadsheet to
+	 * @throws jkind.JKindException
+	 */
+	public void toExcel(File file) {
+		toExcel(file, new SingletonLayout("Signals"));
 	}
 
 	@Override
