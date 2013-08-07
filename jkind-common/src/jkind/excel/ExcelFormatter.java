@@ -28,7 +28,12 @@ public class ExcelFormatter {
 	private WritableSheet currSheet;
 	private int currRow;
 
-	private static final CellFormat boldFormat = ExcelUtil.getBoldFormat();
+	/*
+	 * CellFormats cannot be static, since JXL has strange results when a cell
+	 * format is reused in another workbook. See {@link
+	 * http://jexcelapi.sourceforge.net/resources/faq/}.
+	 */
+	private final CellFormat boldFormat = ExcelUtil.getBoldFormat();
 	private final ExcelCounterexampleFormatter cexFormatter;
 
 	public ExcelFormatter(File file, Layout layout) {
@@ -45,7 +50,7 @@ public class ExcelFormatter {
 		} catch (WriteException | IOException e) {
 			throw new JKindException("Error writing to Excel file", e);
 		}
-		
+
 		cexFormatter = new ExcelCounterexampleFormatter(workbook, layout);
 	}
 

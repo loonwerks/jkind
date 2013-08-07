@@ -31,9 +31,14 @@ public class ExcelCounterexampleFormatter {
 	private WritableSheet sheet;
 	private int row;
 
-	private static final CellFormat boldFormat = ExcelUtil.getBoldFormat();
-	private static final CellFormat fadedFormat = ExcelUtil.getFadedFormat();
-	private static final CellFormat defaultFormat = new WritableCellFormat();
+	/*
+	 * CellFormats cannot be static, since JXL has strange results when a cell
+	 * format is reused in another workbook. See {@link
+	 * http://jexcelapi.sourceforge.net/resources/faq/}.
+	 */
+	private final CellFormat boldFormat = ExcelUtil.getBoldFormat();
+	private final CellFormat fadedFormat = ExcelUtil.getFadedFormat();
+	private final CellFormat defaultFormat = new WritableCellFormat();
 
 	public ExcelCounterexampleFormatter(File file, Layout layout) {
 		this.layout = layout;

@@ -6,7 +6,6 @@ import java.io.IOException;
 import jkind.api.JKindApi;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
-import jkind.results.InvalidProperty;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -50,14 +49,6 @@ public class CommandLineExample {
 		 */
 		for (PropertyResult pr : result.getPropertyResults()) {
 			System.out.println(pr.getName() + " - " + pr.getStatus());
-			
-			if (pr.getProperty() instanceof InvalidProperty) {
-				InvalidProperty ip = (InvalidProperty) pr.getProperty();
-				File dir = new File(args[0]).getParentFile();
-				File cexXlsFile = new File(dir, ip.getName() + ".xls");
-				ip.getCounterexample().toExcel(cexXlsFile);
-				System.out.println("Individual counterexample written to " + cexXlsFile);
-			}
 		}
 
 		/*

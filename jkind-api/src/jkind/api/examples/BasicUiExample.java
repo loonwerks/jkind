@@ -1,5 +1,6 @@
 package jkind.api.examples;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -168,11 +169,30 @@ public class BasicUiExample {
 		});
 	}
 
-	private static void click(Shell parent, PropertyResult pr) {
+	public static void click(Shell parent, PropertyResult pr) {
 		if (pr.getStatus() == Status.INVALID) {
 			InvalidProperty ip = (InvalidProperty) pr.getProperty();
 			Counterexample cex = ip.getCounterexample();
-			MessageDialog.openInformation(parent, "Counterexample", cex.toString());
+
+			try {
+				File file = File.createTempFile("cex", ".xls");
+				cex.toExcel(file);
+				openFile(file);
+			} catch (Throwable t) {
+				MessageDialog.openError(parent, "Error opening Excel file", t.getMessage());
+			}
+		}
+	}
+
+	public static void openFile(File file) throws IOException {
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			/*
+			 * Desktop.open is slow initially on Windows, so we call explorer
+			 * directly instead
+			 */
+			new ProcessBuilder("explorer", file.toString()).start();
+		} else {
+			Desktop.getDesktop().open(file);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package jkind.excel;
 
 import jkind.JKindException;
+import jxl.format.CellFormat;
 import jxl.CellView;
 import jxl.format.Colour;
 import jxl.write.WritableCellFormat;
@@ -9,7 +10,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WriteException;
 
 public class ExcelUtil {
-	public static WritableCellFormat getBoldFormat() {
+	public static CellFormat getBoldFormat() {
 		WritableCellFormat boldFormat = new WritableCellFormat();
 		WritableFont font = new WritableFont(boldFormat.getFont());
 		try {
@@ -21,7 +22,7 @@ public class ExcelUtil {
 		return boldFormat;
 	}
 
-	public static WritableCellFormat getFadedFormat() {
+	public static CellFormat getFadedFormat() {
 		WritableCellFormat fadedFormat = new WritableCellFormat();
 		WritableFont font = new WritableFont(fadedFormat.getFont());
 		try {

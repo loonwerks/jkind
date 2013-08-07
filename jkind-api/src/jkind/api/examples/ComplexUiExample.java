@@ -12,10 +12,7 @@ import jkind.api.results.CompositeAnalysisResult;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.Renaming;
-import jkind.api.results.Status;
 import jkind.api.ui.AnalysisResultTree;
-import jkind.results.Counterexample;
-import jkind.results.InvalidProperty;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -175,18 +172,22 @@ public class ComplexUiExample {
 				if (event.getSelection() instanceof IStructuredSelection) {
 					IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 					if (!sel.isEmpty() && sel.getFirstElement() instanceof PropertyResult) {
-						click(parent, (PropertyResult) sel.getFirstElement());
+						BasicUiExample.click(parent, (PropertyResult) sel.getFirstElement());
+					} else if (!sel.isEmpty() && sel.getFirstElement() instanceof JKindResult) {
+						click(parent, (JKindResult) sel.getFirstElement());
 					}
 				}
 			}
 		});
 	}
-
-	private static void click(Shell parent, PropertyResult pr) {
-		if (pr.getStatus() == Status.INVALID) {
-			InvalidProperty ip = (InvalidProperty) pr.getProperty();
-			Counterexample cex = ip.getCounterexample();
-			MessageDialog.openInformation(parent, "Counterexample", cex.toString());
+	
+	public static void click(Shell parent, JKindResult result) {
+		try {
+			File file = File.createTempFile("cex", ".xls");
+			result.toExcel(file);
+			BasicUiExample.openFile(file);
+		} catch (Throwable t) {
+			MessageDialog.openError(parent, "Error opening Excel file", t.getMessage());
 		}
 	}
 
