@@ -26,17 +26,16 @@ public class AnalysisResultTable extends AnalysisResultColumnViewer {
 	private void createColumns() {
 		TableViewerColumn propertyColumn = new TableViewerColumn(tableViewer, SWT.None);
 		propertyColumn.getColumn().setText("Property");
-		propertyColumn.getColumn().setWidth(200);
+		propertyColumn.getColumn().setWidth(400);
 		propertyColumn.setLabelProvider(new AnalysisResultLabelProvider(Column.PROPERTY, tableViewer));
 
 		TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.None);
 		resultColumn.getColumn().setText("Result");
-		resultColumn.getColumn().setWidth(200);
 		resultColumn.setLabelProvider(new AnalysisResultLabelProvider(Column.RESULT));
 
 		TableColumnLayout layout = new TableColumnLayout();
 		composite.setLayout(layout);
-		layout.setColumnData(propertyColumn.getColumn(), new ColumnWeightData(1));
+		layout.setColumnData(propertyColumn.getColumn(), new ColumnWeightData(2));
 		layout.setColumnData(resultColumn.getColumn(), new ColumnWeightData(1));
 	}
 }

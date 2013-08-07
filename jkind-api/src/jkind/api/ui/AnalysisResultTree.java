@@ -26,17 +26,16 @@ public class AnalysisResultTree extends AnalysisResultColumnViewer {
 	private void createColumns() {
 		TreeViewerColumn propertyColumn = new TreeViewerColumn(treeViewer, SWT.None);
 		propertyColumn.getColumn().setText("Property");
-		propertyColumn.getColumn().setWidth(200);
+		propertyColumn.getColumn().setWidth(400);
 		propertyColumn.setLabelProvider(new AnalysisResultLabelProvider(Column.PROPERTY, treeViewer));
 
 		TreeViewerColumn resultColumn = new TreeViewerColumn(treeViewer, SWT.None);
 		resultColumn.getColumn().setText("Result");
-		resultColumn.getColumn().setWidth(200);
 		resultColumn.setLabelProvider(new AnalysisResultLabelProvider(Column.RESULT));
 		
 		TreeColumnLayout layout = new TreeColumnLayout();
 		composite.setLayout(layout);
-		layout.setColumnData(propertyColumn.getColumn(), new ColumnWeightData(1));
+		layout.setColumnData(propertyColumn.getColumn(), new ColumnWeightData(2));
 		layout.setColumnData(resultColumn.getColumn(), new ColumnWeightData(1));
 	}
 }
