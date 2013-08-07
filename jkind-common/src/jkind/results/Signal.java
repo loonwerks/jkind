@@ -11,7 +11,7 @@ import jkind.lustre.values.Value;
  * A signal is a trace of values for a specific variable
  * 
  * @param <T>
- *            type of value contained in the signal
+ *            Type of value contained in the signal
  */
 public final class Signal<T extends Value> {
 	private final String name;
@@ -37,8 +37,8 @@ public final class Signal<T extends Value> {
 	 * Get the value of the signal on a specific step
 	 * 
 	 * @param step
-	 *            step to query the value at
-	 * @return value at the specified step or <code>null</code> if the signal
+	 *            Step to query the value at
+	 * @return Value at the specified step or <code>null</code> if the signal
 	 *         does not have a value on that step
 	 */
 	public T getValue(int step) {

@@ -44,9 +44,9 @@ public final class Counterexample {
 	 * Get a specific signal from the counterexample
 	 * 
 	 * @param name
-	 *            the name of the signal to retrieve
-	 * @return the signal with the specified name, or <code>null</code> if it
-	 *         cannot be found
+	 *            Name of the signal to retrieve
+	 * @return Signal with the specified name, or <code>null</code> if it cannot
+	 *         be found
 	 */
 	public Signal<Value> getSignal(String name) {
 		for (Signal<Value> signal : signals) {
@@ -61,8 +61,8 @@ public final class Counterexample {
 	 * Get a specific step of the counterexample
 	 * 
 	 * @param step
-	 *            step to retrieve
-	 * @return a map from signal names to their values on the specified step
+	 *            Step to retrieve
+	 * @return Map from signal names to their values on the specified step
 	 */
 	public Map<String, Value> getStep(int step) {
 		Map<String, Value> result = new HashMap<>();
@@ -79,8 +79,8 @@ public final class Counterexample {
 	 * Get a specific integer signal from the counterexample
 	 * 
 	 * @param name
-	 *            the name of the signal to retrieve
-	 * @return the integer signal with the specified name, or <code>null</code>
+	 *            Name of the signal to retrieve
+	 * @return Integer signal with the specified name, or <code>null</code>
 	 *         if it cannot be found
 	 */
 	public Signal<IntegerValue> getIntegerSignal(String name) {
@@ -91,8 +91,8 @@ public final class Counterexample {
 	 * Get a specific boolean signal from the counterexample
 	 * 
 	 * @param name
-	 *            the name of the signal to retrieve
-	 * @return the boolean signal with the specified name, or <code>null</code>
+	 *            Name of the signal to retrieve
+	 * @return Boolean signal with the specified name, or <code>null</code>
 	 *         if it cannot be found
 	 */
 	public Signal<BooleanValue> getBooleanSignal(String name) {
@@ -103,8 +103,8 @@ public final class Counterexample {
 	 * Get a specific real signal from the counterexample
 	 * 
 	 * @param name
-	 *            the name of the signal to retrieve
-	 * @return the real signal with the specified name, or <code>null</code> if
+	 *            Name of the signal to retrieve
+	 * @return Real signal with the specified name, or <code>null</code> if
 	 *         it cannot be found
 	 */
 	public Signal<RealValue> getRealSignal(String name) {
@@ -118,12 +118,12 @@ public final class Counterexample {
 		}
 		return signal.cast(klass);
 	}
-	
+
 	@Override
 	public String toString() {
 		String newline = System.getProperty("line.separator");
 		StringBuilder text = new StringBuilder();
-		
+
 		text.append(String.format("%25s %6s ", "", "Step"));
 		text.append(newline);
 		text.append(String.format("%-25s ", "variable"));
@@ -141,7 +141,7 @@ public final class Counterexample {
 			}
 			text.append(newline);
 		}
-		
+
 		return text.toString();
 	}
 }

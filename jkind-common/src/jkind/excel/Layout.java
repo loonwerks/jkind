@@ -20,8 +20,8 @@ public interface Layout {
 	 * Get the category for a specific signal
 	 * 
 	 * @param signal
-	 *            name of the signal
-	 * @return the category to which the signal belongs, or <code>null</code> if
+	 *            Name of the signal
+	 * @return The category to which the signal belongs, or <code>null</code> if
 	 *         the signal should be ignored
 	 */
 	public String getCategory(String signal);

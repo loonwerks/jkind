@@ -190,9 +190,10 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 * Using this requires the jxl.jar file in your classpath
 	 * 
 	 * @param file
-	 *            file to write Excel spreadsheet to
+	 *            File to write Excel spreadsheet to
 	 * @param layout
-	 *            layout information for counterexamples
+	 *            Layout information for counterexamples, defined over renamed
+	 *            signals
 	 * @see Layout
 	 * @throws jkind.JKindException
 	 */
@@ -218,7 +219,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 * Using this requires the jxl.jar file in your classpath
 	 * 
 	 * @param file
-	 *            file to write Excel spreadsheet to
+	 *            File to write Excel spreadsheet to
 	 * @throws jkind.JKindException
 	 */
 	public void toExcel(File file) {

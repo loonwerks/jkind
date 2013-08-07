@@ -76,9 +76,9 @@ public class JKindApi {
 	 * @param program
 	 *            Lustre program
 	 * @param result
-	 *            place to store results as they come in
+	 *            Place to store results as they come in
 	 * @param monitor
-	 *            used to check for cancellation
+	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
 	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
@@ -91,9 +91,9 @@ public class JKindApi {
 	 * @param program
 	 *            Lustre program as text
 	 * @param result
-	 *            place to store results as they come in
+	 *            Place to store results as they come in
 	 * @param monitor
-	 *            used to check for cancellation
+	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
 	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
@@ -112,9 +112,9 @@ public class JKindApi {
 	 * @param lustreFile
 	 *            File containing Lustre program
 	 * @param result
-	 *            place to store results as they come in
+	 *            Place to store results as they come in
 	 * @param monitor
-	 *            used to check for cancellation
+	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
 	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {

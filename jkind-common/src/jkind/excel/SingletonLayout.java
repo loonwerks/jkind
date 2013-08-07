@@ -11,7 +11,7 @@ public class SingletonLayout implements Layout {
 
 	/**
 	 * @param name
-	 *            name of the single category
+	 *            Name of the single category
 	 */
 	public SingletonLayout(String name) {
 		this.name = name;
