@@ -110,6 +110,10 @@ public abstract class Renaming {
 	 * @return Renamed version of the counterexample
 	 */
 	private Counterexample rename(Counterexample cex) {
+		if (cex == null) {
+			return null;
+		}
+		
 		Counterexample result = new Counterexample(cex.getLength());
 		for (Signal<Value> signal : cex.getSignals()) {
 			Signal<Value> newSignal = rename(signal);
