@@ -38,4 +38,9 @@ public class AnalysisResultTable extends AnalysisResultColumnViewer {
 		layout.setColumnData(propertyColumn.getColumn(), new ColumnWeightData(2));
 		layout.setColumnData(resultColumn.getColumn(), new ColumnWeightData(1));
 	}
+	
+	@Override
+	public TableViewer getViewer() {
+		return tableViewer;
+	}
 }

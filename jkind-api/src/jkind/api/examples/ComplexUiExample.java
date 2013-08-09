@@ -166,7 +166,7 @@ public class ComplexUiExample {
 			}
 		});
 
-		tree.addSelectionChangedListener(new ISelectionChangedListener() {
+		tree.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (event.getSelection() instanceof IStructuredSelection) {

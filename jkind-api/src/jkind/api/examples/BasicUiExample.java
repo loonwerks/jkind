@@ -156,7 +156,7 @@ public class BasicUiExample {
 			}
 		});
 
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		viewer.getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (event.getSelection() instanceof IStructuredSelection) {
