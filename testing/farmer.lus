@@ -31,7 +31,7 @@ let
   holds = x and (true -> pre holds);
 tel;
 
-node farmer(choice : payload) returns (wolf, goat, cabbage, farmer : side);
+node main(choice : payload) returns (wolf, goat, cabbage, farmer : side);
 var
     solved : bool;
     nothing_eaten : bool;

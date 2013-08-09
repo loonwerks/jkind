@@ -5,7 +5,7 @@
 
 -- This model uses real numbers
 
-node system(throttle_in: real; 
+node main(throttle_in: real; 
       slope_in: real)
    returns (transmission_rotation_out: real; 
       load_out: real; 

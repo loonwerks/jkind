@@ -67,7 +67,7 @@ let
   holds = p = 6 or p = 7 or p = 8 or p = 9;
 tel;
 
-node peg(in : int) returns (b1, b2, b3, b4, r6, r7, r8, r9 : int);
+node main(in : int) returns (b1, b2, b3, b4, r6, r7, r8, r9 : int);
 var
     solved, wellformed, prop : bool;
     distinct, bounded : bool;

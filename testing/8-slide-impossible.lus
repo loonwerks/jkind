@@ -44,7 +44,7 @@ let
         inv(p6, p9) xor inv(p7, p8) xor inv(p7, p9) xor inv(p8, p9);
 tel;
 
-node puzzle(in : dir) returns (p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc);
+node main(in : dir) returns (p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc);
 var
     solved : bool;
     prop : bool;

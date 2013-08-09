@@ -103,7 +103,7 @@ let
   peg = (prev and a <> curr and mid <> curr) or (curr = b);
 tel;
 
-node puzzle(a, b : loc)
+node main(a, b : loc)
 returns (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15 : peg);
 var
     valid_move, solved, prop : bool;

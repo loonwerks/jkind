@@ -51,7 +51,7 @@ let
   odd = 2 * (x div 2) <> x;
 tel;
 
-node puzzle(in : dir) returns (p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc);
+node main(in : dir) returns (p1, p2, p3, p4, p5, p6, p7, p8, p9 : loc);
 var
     solved : bool;
     prop : bool;
