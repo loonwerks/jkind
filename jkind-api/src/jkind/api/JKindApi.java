@@ -229,7 +229,7 @@ public class JKindApi {
 		}
 	}
 
-	private ProcessBuilder getJKindProcessBuilder(File lustreFile) throws IOException {
+	private ProcessBuilder getJKindProcessBuilder(File lustreFile) {
 		List<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(getJKindCommand()));
 		args.add("-xml");

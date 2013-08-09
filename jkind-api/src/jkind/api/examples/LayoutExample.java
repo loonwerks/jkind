@@ -1,7 +1,6 @@
 package jkind.api.examples;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * Excel output
  */
 public class LayoutExample {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("Must specify Lustre file as argument");
 			System.exit(-1);

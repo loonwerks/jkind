@@ -36,7 +36,7 @@ public class JKindXmlFileInputStream extends InputStream {
 		return c;
 	}
 	
-	private boolean getStream() throws FileNotFoundException {
+	private boolean getStream() {
 		if (stream == null) {
 			try {
 				while (!xmlFile.exists() && !done) {

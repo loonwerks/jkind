@@ -1,7 +1,6 @@
 package jkind.api.examples;
 
 import java.io.File;
-import java.io.IOException;
 
 import jkind.api.JKindApi;
 import jkind.api.results.JKindResult;
@@ -13,7 +12,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
  * This example illustrates how to call the JKind API and process the results
  */
 public class CommandLineExample {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("Must specify Lustre file as argument");
 			System.exit(-1);

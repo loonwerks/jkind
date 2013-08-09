@@ -183,7 +183,7 @@ public class YicesSolver extends Solver {
 		}
 	}
 
-	private static Result parseYices(String string) throws IOException, RecognitionException {
+	private static Result parseYices(String string) throws RecognitionException {
 		CharStream stream = new ANTLRInputStream(string);
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

@@ -61,8 +61,7 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	public void parsePropety(String propertyXml) throws SAXException, IOException,
-			ParserConfigurationException {
+	public void parsePropety(String propertyXml) throws SAXException, IOException {
 		parser.parse(new InputSource(new StringReader(propertyXml)), handler);
 	}
 
