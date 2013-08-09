@@ -275,7 +275,7 @@ public class Director {
 	private static SortedSet<String> getRelevantFunctions(Set<String> functions) {
 		SortedSet<String> relevant = new TreeSet<>();
 		for (String fn : functions) {
-			if (!fn.startsWith("$%")) {
+			if (!fn.contains("~")) {
 				relevant.add(fn);
 			}
 		}

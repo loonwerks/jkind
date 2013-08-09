@@ -29,15 +29,14 @@ public class InlineNodeCalls extends MapVisitor {
 		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
 				main.properties, main.assertions);
 	}
-	
-	private Map<String, Node> nodeTable;
-	private List<VarDecl> newLocals;
-	private Queue<Equation> queue;
+
+	private final Map<String, Node> nodeTable;
+	private final List<VarDecl> newLocals = new ArrayList<>();
+	private final Map<String, Integer> usedNames = new HashMap<>();
+	private final Queue<Equation> queue = new ArrayDeque<>();
 
 	private InlineNodeCalls(Map<String, Node> nodeTable) {
 		this.nodeTable = nodeTable;
-		this.newLocals = new ArrayList<>();
-		this.queue = new ArrayDeque<>();
 	}
 
 	private List<Equation> visit(Node node) {
@@ -55,14 +54,8 @@ public class InlineNodeCalls extends MapVisitor {
 				}
 			}
 		}
-		
-		return result;
-	}
 
-	private IdExpr newVar(VarDecl decl) {
-		VarDecl newDecl = new VarDecl(decl.location, "%inline" + newLocals.size(), decl.type);
-		newLocals.add(newDecl);
-		return new IdExpr(newDecl.id);
+		return result;
 	}
 
 	@Override
@@ -93,9 +86,25 @@ public class InlineNodeCalls extends MapVisitor {
 	private Map<String, IdExpr> getTranslation(Node node) {
 		Map<String, IdExpr> translation = new HashMap<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
-			translation.put(decl.id, newVar(decl));
+			translation.put(decl.id, newVar(node.id, decl));
 		}
 		return translation;
+	}
+
+	private IdExpr newVar(String nodeName, VarDecl decl) {
+		VarDecl newDecl = new VarDecl(decl.location, newName(nodeName, decl.id), decl.type);
+		newLocals.add(newDecl);
+		return new IdExpr(newDecl.id);
+	}
+
+	private String newName(String node, String id) {
+		String base = node + "." + id;
+		int i = 0;
+		if (usedNames.containsKey(base)) {
+			i = usedNames.get(base);
+		}
+		usedNames.put(base, i + 1);
+		return node + "~" + i + "." + id;
 	}
 
 	private void createInputEquations(List<VarDecl> inputs, List<Expr> args,

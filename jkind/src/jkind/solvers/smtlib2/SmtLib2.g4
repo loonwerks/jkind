@@ -19,7 +19,7 @@ symbol: ID | BOOL | INT | REAL;
 BOOL: 'true' | 'false';
 
 fragment DIGIT: [0-9];
-fragment SYMBOL: [a-zA-Z_@$#%!.];
+fragment SYMBOL: [a-zA-Z_@$#%!.^~];
 
 INT: DIGIT+;
 REAL: DIGIT+ '.' DIGIT+;
