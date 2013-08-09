@@ -12,6 +12,7 @@ import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.SubrangeIntType;
@@ -243,7 +244,7 @@ public class StaticAnalyzer {
 
 		Set<String> booleans = new HashSet<>();
 		for (VarDecl varDecl : Util.getVarDecls(node)) {
-			if (varDecl.type == Type.BOOL) {
+			if (varDecl.type == NamedType.BOOL) {
 				booleans.add(varDecl.id);
 			}
 		}

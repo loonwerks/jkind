@@ -14,9 +14,10 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
+import jkind.translation.FlattenRecordTypes;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
-import jkind.translation.InlineTypes;
+import jkind.translation.InlineUserTypes;
 import jkind.translation.Specification;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -49,10 +50,11 @@ public class Main {
 				System.exit(-1);
 			}
 
-			program = InlineTypes.program(program);
+			program = InlineUserTypes.program(program);
 			program = InlineConstants.program(program);
 			Node main = InlineNodeCalls.program(program);
-	
+			main = FlattenRecordTypes.node(main);
+			
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 			Specification spec = new Specification(filename, main, dependencyMap);

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.sexp.Cons;
@@ -38,7 +39,7 @@ public class CandidateGenerator {
 			}
 
 			Type type = spec.typeMap.get(id);
-			if (type == Type.BOOL) {
+			if (type == NamedType.BOOL) {
 				Sexp s = new Cons("$" + id, SexpUtil.I);
 				addCandidate(s, id);
 				addCandidate(new Cons("not", s), "not " + id);
@@ -61,7 +62,7 @@ public class CandidateGenerator {
 	}
 
 	private void addCandidate(Sexp s, String text) {
-		StreamDef def = new StreamDef("can" + candidateIndex, Type.BOOL, new Lambda(SexpUtil.I, s));
+		StreamDef def = new StreamDef("can" + candidateIndex, NamedType.BOOL, new Lambda(SexpUtil.I, s));
 		candidateIndex++;
 		candidates.add(new Candidate(def, text));
 	}

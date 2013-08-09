@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.JKindException;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.RecordType;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
@@ -48,6 +51,17 @@ public class Util {
 		return nodeTable;
 	}
 	
+	public static String getName(Type type) {
+		if (type instanceof NamedType) {
+			NamedType namedType = (NamedType) type;
+			return namedType.name;
+		} else if (type instanceof SubrangeIntType) {
+			return "int";
+		} else {
+			throw new IllegalArgumentException("Cannot find name for type " + type);
+		}
+	}
+
 	public static Value parseValue(String type, String value) {
 		if (type.equals("bool")) {
 			if (value.equals("0") || value.equals("false")) {
@@ -67,5 +81,27 @@ public class Util {
 		}
 
 		throw new JKindException("Unable to parse " + value + " as " + type);
+	}
+	
+	public static Type resolveType(Type type, Map<String, Type> map) {
+		if (type instanceof NamedType) {
+			NamedType namedType = (NamedType) type;
+			if (namedType.isBuiltin()) {
+				return namedType;
+			} else {
+				return map.get(namedType.name);
+			}
+		} else if (type instanceof SubrangeIntType) {
+			return type;
+		} else if (type instanceof RecordType) {
+			RecordType recordType = (RecordType) type;
+			Map<String, Type> resolvedFields = new HashMap<>();
+			for (String field : recordType.fields.keySet()) {
+				resolvedFields.put(field, resolveType(recordType.fields.get(field), map));
+			}
+			return new RecordType(recordType.location, resolvedFields);
+		} else {
+			return null;
+		}
 	}
 }

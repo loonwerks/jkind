@@ -44,7 +44,7 @@ public class Benchmark {
 	}
 
 	private static double getMedianRuntime(String[] fixedArgs, String file) throws Exception {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			args.add("cmd");
 			args.add("/c");
@@ -53,7 +53,7 @@ public class Benchmark {
 		args.addAll(Arrays.asList(fixedArgs));
 		args.add(file);
 
-		List<Double> results = new ArrayList<Double>();
+		List<Double> results = new ArrayList<>();
 		for (int i = 0; i < N; i++) {
 			results.add(getRuntime(args));
 		}

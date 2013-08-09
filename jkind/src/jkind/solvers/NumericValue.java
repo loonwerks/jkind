@@ -23,18 +23,23 @@ public class NumericValue extends Value {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!(obj instanceof NumericValue)) {
 			return false;
+		}
 		NumericValue other = (NumericValue) obj;
 		if (val == null) {
-			if (other.val != null)
+			if (other.val != null) {
 				return false;
-		} else if (!val.equals(other.val))
+			}
+		} else if (!val.equals(other.val)) {
 			return false;
+		}
 		return true;
 	}
 }

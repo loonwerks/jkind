@@ -3,9 +3,9 @@ package jkind.lustre.parsing;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 public class LustreBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements LustreVisitor<T> {
-	@Override public T visitIdExpr(LustreParser.IdExprContext ctx) { return visitChildren(ctx); }
-
 	@Override public T visitIfThenElseExpr(LustreParser.IfThenElseExprContext ctx) { return visitChildren(ctx); }
+
+	@Override public T visitIdExpr(LustreParser.IdExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitIntType(LustreParser.IntTypeContext ctx) { return visitChildren(ctx); }
 
@@ -25,11 +25,15 @@ public class LustreBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 
 	@Override public T visitRealType(LustreParser.RealTypeContext ctx) { return visitChildren(ctx); }
 
+	@Override public T visitRecordType(LustreParser.RecordTypeContext ctx) { return visitChildren(ctx); }
+
 	@Override public T visitRealExpr(LustreParser.RealExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitNotExpr(LustreParser.NotExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitNodeCallExpr(LustreParser.NodeCallExprContext ctx) { return visitChildren(ctx); }
+
+	@Override public T visitProjectionExpr(LustreParser.ProjectionExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitConstant(LustreParser.ConstantContext ctx) { return visitChildren(ctx); }
 
@@ -50,6 +54,8 @@ public class LustreBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 	@Override public T visitBoolType(LustreParser.BoolTypeContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitVarDeclGroup(LustreParser.VarDeclGroupContext ctx) { return visitChildren(ctx); }
+
+	@Override public T visitRecordExpr(LustreParser.RecordExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitProgram(LustreParser.ProgramContext ctx) { return visitChildren(ctx); }
 

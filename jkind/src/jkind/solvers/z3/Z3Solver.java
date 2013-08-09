@@ -1,6 +1,6 @@
 package jkind.solvers.z3;
 
-import jkind.lustre.Type;
+import jkind.lustre.NamedType;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -27,7 +27,7 @@ public class Z3Solver extends SmtLib2Solver {
 		Result result;
 
 		Symbol assum = new Symbol("assum" + assumCount++);
-		send(new VarDecl(assum, Type.BOOL));
+		send(new VarDecl(assum, NamedType.BOOL));
 		send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
 		send(new Cons("check-sat", assum));
 		send("(echo \"" + DONE + "\")");

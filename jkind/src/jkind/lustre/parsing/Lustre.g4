@@ -24,6 +24,7 @@ type: 'int'                                              # intType
     | 'bool'                                             # boolType
     | 'real'                                             # realType
     | ID                                                 # userType
+    | '{' (ID ':' type) (';' ID ':' type)* '}'           # recordType
     ;
 
 bound: '-'? INT;
@@ -41,6 +42,7 @@ expr: ID                                                       # idExpr
     | REAL                                                     # realExpr
     | BOOL                                                     # boolExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
+    | expr '.' ID                                              # projectionExpr
     | 'pre' expr                                               # preExpr
     | 'not' expr                                               # notExpr
     | '-' expr                                                 # negateExpr
@@ -52,6 +54,7 @@ expr: ID                                                       # idExpr
     | expr op='=>'<assoc=right> expr                           # binaryExpr
     | expr op='->'<assoc=right> expr                           # binaryExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
+    | '{' ID '=' expr (';' ID '=' expr)* '}'                   # recordExpr
     | '(' expr ')'                                             # parenExpr
     ;
 

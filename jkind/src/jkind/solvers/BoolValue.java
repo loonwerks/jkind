@@ -1,24 +1,23 @@
 package jkind.solvers;
 
-
 public class BoolValue extends Value {
 	final public static BoolValue TRUE = new BoolValue(true);
 	final public static BoolValue FALSE = new BoolValue(false);
-	
+
 	private boolean val;
-	
+
 	private BoolValue(boolean val) {
 		this.val = val;
 	}
-	
+
 	public boolean getBool() {
 		return val;
 	}
-	
+
 	public static BoolValue fromBool(boolean b) {
 		return b ? BoolValue.TRUE : BoolValue.FALSE;
 	}
-	
+
 	@Override
 	public String toString() {
 		return Boolean.toString(val);
@@ -34,15 +33,19 @@ public class BoolValue extends Value {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!(obj instanceof BoolValue)) {
 			return false;
+		}
 		BoolValue other = (BoolValue) obj;
-		if (val != other.val)
+		if (val != other.val) {
 			return false;
+		}
 		return true;
 	}
 }

@@ -13,8 +13,8 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 
 public class Spinner {
-	private final List<Image> frames = new ArrayList<Image>();
-	private final List<Integer> delays = new ArrayList<Integer>();
+	private final List<Image> frames = new ArrayList<>();
+	private final List<Integer> delays = new ArrayList<>();
 	private int current = 0;
 	private Thread thread;
 

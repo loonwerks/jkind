@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import jkind.lustre.Type;
+import jkind.lustre.NamedType;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Eval;
@@ -52,7 +52,7 @@ public class SmtLib2Model extends Model {
 	}
 
 	private Symbol getDefaultValue(String fn) {
-		if (declarations.get(fn).getType() == Type.BOOL) {
+		if (declarations.get(fn).getType() == NamedType.BOOL) {
 			return new Symbol("true");
 		} else {
 			return new Symbol("0");

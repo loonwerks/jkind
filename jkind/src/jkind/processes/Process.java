@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.Settings;
-import jkind.lustre.Type;
+import jkind.lustre.NamedType;
 import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -112,7 +112,7 @@ public abstract class Process implements Runnable {
 	}
 	
 	protected void declareN() {
-		solver.send(new VarDecl(Keywords.N, Type.INT));
+		solver.send(new VarDecl(Keywords.N, NamedType.INT));
 		solver.send(new Cons("assert", new Cons(">=", Keywords.N, Sexp.fromInt(0))));
 	}
 

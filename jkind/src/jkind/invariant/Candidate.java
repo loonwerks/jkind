@@ -2,7 +2,7 @@ package jkind.invariant;
 
 import java.math.BigInteger;
 
-import jkind.lustre.Type;
+import jkind.lustre.NamedType;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -38,8 +38,8 @@ public class Candidate {
 		return text;
 	}
 
-	final public static Candidate TRUE = new Candidate(new StreamDef("canTrue", Type.BOOL,
+	final public static Candidate TRUE = new Candidate(new StreamDef("canTrue", NamedType.BOOL,
 			new Lambda(SexpUtil.I, new Symbol("true"))), "true");
-	final public static Candidate FALSE = new Candidate(new StreamDef("canFalse", Type.BOOL,
+	final public static Candidate FALSE = new Candidate(new StreamDef("canFalse", NamedType.BOOL,
 			new Lambda(SexpUtil.I, new Symbol("false"))), "false");
 }

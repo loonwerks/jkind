@@ -56,7 +56,7 @@ public final class Signal<T extends Value> {
 	 * Downcast the signal to a specific signal type
 	 */
 	public <S extends T> Signal<S> cast(Class<S> klass) {
-		Signal<S> castSignal = new Signal<S>(name);
+		Signal<S> castSignal = new Signal<>(name);
 		for (Integer step : values.keySet()) {
 			Value value = values.get(step);
 			if (klass.isInstance(value)) {

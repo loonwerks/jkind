@@ -3,9 +3,9 @@ package jkind.lustre.parsing;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
-	T visitIdExpr(LustreParser.IdExprContext ctx);
-
 	T visitIfThenElseExpr(LustreParser.IfThenElseExprContext ctx);
+
+	T visitIdExpr(LustreParser.IdExprContext ctx);
 
 	T visitIntType(LustreParser.IntTypeContext ctx);
 
@@ -25,11 +25,15 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 
 	T visitRealType(LustreParser.RealTypeContext ctx);
 
+	T visitRecordType(LustreParser.RecordTypeContext ctx);
+
 	T visitRealExpr(LustreParser.RealExprContext ctx);
 
 	T visitNotExpr(LustreParser.NotExprContext ctx);
 
 	T visitNodeCallExpr(LustreParser.NodeCallExprContext ctx);
+
+	T visitProjectionExpr(LustreParser.ProjectionExprContext ctx);
 
 	T visitConstant(LustreParser.ConstantContext ctx);
 
@@ -50,6 +54,8 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitBoolType(LustreParser.BoolTypeContext ctx);
 
 	T visitVarDeclGroup(LustreParser.VarDeclGroupContext ctx);
+
+	T visitRecordExpr(LustreParser.RecordExprContext ctx);
 
 	T visitProgram(LustreParser.ProgramContext ctx);
 

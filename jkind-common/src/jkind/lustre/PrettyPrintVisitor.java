@@ -2,6 +2,7 @@ package jkind.lustre;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 public class PrettyPrintVisitor implements AstVisitor<Void> {
 	private StringBuilder sb = new StringBuilder();
@@ -229,8 +230,33 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 	}
 
 	@Override
+	public Void visit(ProjectionExpr e) {
+		expr(e.expr);
+		write(".");
+		write(e.field);
+		return null;
+	}
+
+	@Override
 	public Void visit(RealExpr e) {
 		write(e.value.toPlainString());
+		return null;
+	}
+
+	@Override
+	public Void visit(RecordExpr e) {
+		write("{");
+		Iterator<Entry<String, Expr>> iterator = e.fields.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, Expr> entry = iterator.next();
+			write(entry.getKey());
+			write(" = ");
+			expr(entry.getValue());
+			if (iterator.hasNext()) {
+				write("; ");
+			}
+		}
+		write("}");
 		return null;
 	}
 

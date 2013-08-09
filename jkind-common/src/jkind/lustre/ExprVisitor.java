@@ -7,6 +7,8 @@ public interface ExprVisitor<T> {
 	public T visit(IfThenElseExpr e);
 	public T visit(IntExpr e);
 	public T visit(NodeCallExpr e);
+	public T visit(ProjectionExpr e);
 	public T visit(RealExpr e);
+	public T visit(RecordExpr e);
 	public T visit(UnaryExpr e);
 }

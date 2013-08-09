@@ -18,6 +18,7 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.VarDecl;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.translation.Keywords;
+import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -60,7 +61,7 @@ public abstract class SmtLib2Solver extends Solver {
 	}
 
 	private Symbol type(Type type) {
-		return new Symbol(capitalize(type.name));
+		return new Symbol(capitalize(Util.getName(type)));
 	}
 
 	private String capitalize(String name) {

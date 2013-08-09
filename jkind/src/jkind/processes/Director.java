@@ -258,13 +258,15 @@ public class Director {
 		String name = fn.substring(1);
 		Signal<Value> signal = new Signal<>(name);
 		Type type = spec.typeMap.get(name);
-		
+
 		for (int i = 0; i < k; i++) {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
 			jkind.solvers.Value value = model.getFunctionValue(fn, key);
-			signal.putValue(i, Util.parseValue(type.name, value.toString()));
+			if (value != null) {
+				signal.putValue(i, Util.parseValue(Util.getName(type), value.toString()));
+			}
 		}
-		
+
 		return signal;
 	}
 

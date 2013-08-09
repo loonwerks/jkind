@@ -3,7 +3,9 @@ package jkind.lustre.parsing;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -15,10 +17,14 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -44,9 +50,12 @@ import jkind.lustre.parsing.LustreParser.NotExprContext;
 import jkind.lustre.parsing.LustreParser.ParenExprContext;
 import jkind.lustre.parsing.LustreParser.PreExprContext;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
+import jkind.lustre.parsing.LustreParser.ProjectionExprContext;
 import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
+import jkind.lustre.parsing.LustreParser.RecordExprContext;
+import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
 import jkind.lustre.parsing.LustreParser.TypeContext;
 import jkind.lustre.parsing.LustreParser.TypedefContext;
@@ -111,7 +120,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		if (listCtx == null) {
 			return decls;
 		}
-		
+
 		for (VarDeclGroupContext groupCtx : listCtx.varDeclGroup()) {
 			Type type = type(groupCtx.type());
 			for (TerminalNode id : groupCtx.ID()) {
@@ -161,7 +170,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Type visitIntType(IntTypeContext ctx) {
-		return Type.INT;
+		return NamedType.INT;
 	}
 
 	@Override
@@ -172,18 +181,27 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
+	public Type visitRecordType(RecordTypeContext ctx) {
+		Map<String, Type> fields = new HashMap<>();
+		for (int i = 0; i < ctx.ID().size(); i++) {
+			fields.put(ctx.ID(i).getText(), type(ctx.type(i)));
+		}
+		return new RecordType(loc(ctx), fields);
+	}
+
+	@Override
 	public Type visitBoolType(BoolTypeContext ctx) {
-		return Type.BOOL;
+		return NamedType.BOOL;
 	}
 
 	@Override
 	public Type visitRealType(RealTypeContext ctx) {
-		return Type.REAL;
+		return NamedType.REAL;
 	}
 
 	@Override
 	public Type visitUserType(UserTypeContext ctx) {
-		return new Type(ctx.ID().getText());
+		return new NamedType(ctx.ID().getText());
 	}
 
 	private Expr expr(ExprContext ctx) {
@@ -218,6 +236,11 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			args.add(expr(arg));
 		}
 		return new NodeCallExpr(loc(ctx), node, args);
+	}
+
+	@Override
+	public Expr visitProjectionExpr(ProjectionExprContext ctx) {
+		return new ProjectionExpr(loc(ctx), expr(ctx.expr()), ctx.ID().getText());
 	}
 
 	@Override
@@ -280,10 +303,19 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			throw new IllegalArgumentException("Unknown binary operator");
 		}
 	}
-	
+
 	@Override
 	public Expr visitIfThenElseExpr(IfThenElseExprContext ctx) {
 		return new IfThenElseExpr(loc(ctx), expr(ctx.expr(0)), expr(ctx.expr(1)), expr(ctx.expr(2)));
+	}
+
+	@Override
+	public Expr visitRecordExpr(RecordExprContext ctx) {
+		Map<String, Expr> fields = new HashMap<>();
+		for (int i = 0; i < ctx.ID().size(); i++) {
+			fields.put(ctx.ID(i).getText(), expr(ctx.expr(i)));
+		}
+		return new RecordExpr(loc(ctx), fields);
 	}
 
 	@Override

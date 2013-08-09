@@ -61,7 +61,7 @@ public class XmlHandler extends DefaultHandler {
 		} else if (qName.equals("Counterexample")) {
 			cex = new Counterexample(k);
 		} else if (qName.equals("Signal")) {
-			signal = new Signal<Value>(attributes.getValue("name"));
+			signal = new Signal<>(attributes.getValue("name"));
 			type = attributes.getValue("type");
 			if (type.contains("subrange")) {
 				type = "int";

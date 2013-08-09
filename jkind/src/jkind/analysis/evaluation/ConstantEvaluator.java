@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
@@ -16,12 +17,15 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
+import jkind.lustre.values.RecordValue;
 import jkind.lustre.values.Value;
 import jkind.util.Util;
 
@@ -101,7 +105,18 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(NodeCallExpr e) {
 		return null;
 	}
-	
+
+	@Override
+	public Value visit(ProjectionExpr e) {
+		Value value = e.expr.accept(this);
+		if (value instanceof RecordValue) {
+			RecordValue recordValue = (RecordValue) value;
+			return recordValue.fields.get(e.field);
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public Value visit(RealExpr e) {
 		return new RealValue(e.value);
@@ -115,5 +130,14 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		} else {
 			return value.applyUnaryOp(e.op);
 		}
+	}
+
+	@Override
+	public Value visit(RecordExpr e) {
+		Map<String, Value> fields = new HashMap<>();
+		for (Entry<String, Expr> entry : e.fields.entrySet()) {
+			fields.put(entry.getKey(), entry.getValue().accept(this));
+		}
+		return new RecordValue(fields);
 	}
 }

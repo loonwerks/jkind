@@ -28,18 +28,23 @@ public class Symbol extends Sexp {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!(obj instanceof Symbol)) {
 			return false;
+		}
 		Symbol other = (Symbol) obj;
 		if (sym == null) {
-			if (other.sym != null)
+			if (other.sym != null) {
 				return false;
-		} else if (!sym.equals(other.sym))
+			}
+		} else if (!sym.equals(other.sym)) {
 			return false;
+		}
 		return true;
 	}
 }

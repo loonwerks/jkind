@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.Type;
+import jkind.lustre.NamedType;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.BoolValue;
@@ -77,7 +77,7 @@ public class YicesModel extends Model {
 	}
 	
 	private Value getDefaultValue(String fn) {
-		if (declarations.get(fn).getType() == Type.BOOL) {
+		if (declarations.get(fn).getType() == NamedType.BOOL) {
 			return BoolValue.TRUE;
 		} else {
 			return new NumericValue("0");

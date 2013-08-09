@@ -57,7 +57,7 @@ public class ComplexUiExample {
 		}
 	}
 
-	private static Queue<WorkItem> queue = new ArrayDeque<WorkItem>();
+	private static Queue<WorkItem> queue = new ArrayDeque<>();
 	private static Renaming renaming = new Renaming() {
 		@Override
 		public String rename(String original) {

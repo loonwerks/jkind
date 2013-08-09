@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
@@ -15,10 +16,14 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -61,7 +66,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (TypeDef def : typeDefs) {
 			Type type = lookupBaseType(def.type);
 			if (type == null) {
-				error(def, "unknown type " + def.type.name);
+				error(def, "unknown type " + def.type);
 			}
 			typeTable.put(def.id, type);
 		}
@@ -94,7 +99,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return passed;
 	}
 
-	private void repopulateVariableTable(Node node) {
+	public void repopulateVariableTable(Node node) {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
 			Type type = lookupBaseType(v.type);
@@ -107,14 +112,11 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private Type lookupBaseType(Type type) {
-		if (type.isBase()) {
-			return type;
-		} else if (type instanceof SubrangeIntType) {
-			return Type.INT;
-		} else if (typeTable.containsKey(type.name)) {
-			return typeTable.get(type.name);
+		Type resolved = Util.resolveType(type, typeTable);
+		if (resolved instanceof SubrangeIntType) {
+			return NamedType.INT;
 		} else {
-			return null;
+			return resolved;
 		}
 	}
 
@@ -164,30 +166,30 @@ public class TypeChecker implements ExprVisitor<Type> {
 		case PLUS:
 		case MINUS:
 		case MULTIPLY:
-			if (left == Type.REAL && right == Type.REAL) {
-				return Type.REAL;
+			if (left == NamedType.REAL && right == NamedType.REAL) {
+				return NamedType.REAL;
 			}
-			if (left == Type.INT && right == Type.INT) {
-				return Type.INT;
+			if (left == NamedType.INT && right == NamedType.INT) {
+				return NamedType.INT;
 			}
 			break;
 
 		case DIVIDE:
-			if (left == Type.REAL && right == Type.REAL) {
-				return Type.REAL;
+			if (left == NamedType.REAL && right == NamedType.REAL) {
+				return NamedType.REAL;
 			}
 			break;
 
 		case INT_DIVIDE:
-			if (left == Type.INT && right == Type.INT) {
-				return Type.INT;
+			if (left == NamedType.INT && right == NamedType.INT) {
+				return NamedType.INT;
 			}
 			break;
 
 		case EQUAL:
 		case NOTEQUAL:
 			if (left == right) {
-				return Type.BOOL;
+				return NamedType.BOOL;
 			}
 			break;
 
@@ -195,11 +197,11 @@ public class TypeChecker implements ExprVisitor<Type> {
 		case LESS:
 		case GREATEREQUAL:
 		case LESSEQUAL:
-			if (left == Type.REAL && right == Type.REAL) {
-				return Type.BOOL;
+			if (left == NamedType.REAL && right == NamedType.REAL) {
+				return NamedType.BOOL;
 			}
-			if (left == Type.INT && right == Type.INT) {
-				return Type.BOOL;
+			if (left == NamedType.INT && right == NamedType.INT) {
+				return NamedType.BOOL;
 			}
 			break;
 
@@ -207,8 +209,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 		case AND:
 		case XOR:
 		case IMPLIES:
-			if (left == Type.BOOL && right == Type.BOOL) {
-				return Type.BOOL;
+			if (left == NamedType.BOOL && right == NamedType.BOOL) {
+				return NamedType.BOOL;
 			}
 			break;
 
@@ -225,7 +227,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(BoolExpr e) {
-		return Type.BOOL;
+		return NamedType.BOOL;
 	}
 
 	@Override
@@ -246,7 +248,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		Type thenType = e.thenExpr.accept(this);
 		Type elseType = e.elseExpr.accept(this);
 
-		compareTypes(e.cond, Type.BOOL, condType);
+		compareTypes(e.cond, NamedType.BOOL, condType);
 		compareTypes(e.elseExpr, thenType, elseType);
 
 		return thenType;
@@ -254,7 +256,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(IntExpr e) {
-		return Type.INT;
+		return NamedType.INT;
 	}
 
 	@Override
@@ -305,10 +307,37 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	@Override
+	public Type visit(ProjectionExpr e) {
+		Type type = e.expr.accept(this);
+		if (type == null) {
+			return null;
+		}
+		
+		if (type instanceof RecordType) {
+			RecordType recordType = (RecordType) type;
+			if (recordType.fields.containsKey(e.field)) {
+				return recordType.fields.get(e.field);
+			}
+		}
+		
+		error(e, "expected record type with field " + e.field + " but found " + type);
+		return null;
+	}
+	
+	@Override
 	public Type visit(RealExpr e) {
-		return Type.REAL;
+		return NamedType.REAL;
 	}
 
+	@Override
+	public Type visit(RecordExpr e) {
+		Map<String, Type> fields = new HashMap<>();
+		for (Entry<String, Expr> entry : e.fields.entrySet()) {
+			fields.put(entry.getKey(), entry.getValue().accept(this));
+		}
+		return new RecordType(e.location, fields);
+	}
+	
 	@Override
 	public Type visit(UnaryExpr e) {
 		Type type = e.expr.accept(this);
@@ -318,13 +347,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		switch (e.op) {
 		case NEGATIVE:
-			if (type == Type.INT || type == Type.REAL) {
+			if (type == NamedType.INT || type == NamedType.REAL) {
 				return type;
 			}
 			break;
 
 		case NOT:
-			if (type == Type.BOOL) {
+			if (type == NamedType.BOOL) {
 				return type;
 			}
 			break;
@@ -342,7 +371,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return;
 		}
 
-		if (expected != actual) {
+		if (!expected.equals(actual)) {
 			error(ast, "expected type " + expected + " but found type " + actual);
 		}
 	}

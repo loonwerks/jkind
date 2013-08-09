@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CompositeAnalysisResult extends AnalysisResult implements PropertyChangeListener {
-	final private List<AnalysisResult> children = new ArrayList<AnalysisResult>();
+	final private List<AnalysisResult> children = new ArrayList<>();
 	final private MultiStatus multiStatus = new MultiStatus();
 
 	public CompositeAnalysisResult(String name) {

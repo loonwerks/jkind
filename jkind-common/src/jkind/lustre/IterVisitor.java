@@ -38,12 +38,26 @@ public class IterVisitor implements ExprVisitor<Void> {
 		}
 		return null;
 	}
-	
+
+	@Override
+	public Void visit(ProjectionExpr e) {
+		e.expr.accept(this);
+		return null;
+	}
+
 	@Override
 	public Void visit(RealExpr e) {
 		return null;
 	}
 
+	@Override
+	public Void visit(RecordExpr e) {
+		for (Expr expr : e.fields.values()) {
+			expr.accept(this);
+		}
+		return null;
+	}
+	
 	@Override
 	public Void visit(UnaryExpr e) {
 		e.expr.accept(this);

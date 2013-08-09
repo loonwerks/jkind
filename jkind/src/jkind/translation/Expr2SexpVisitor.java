@@ -12,9 +12,11 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
-import jkind.lustre.Type;
+import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -23,25 +25,14 @@ import jkind.solvers.StreamDecl;
 
 public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	final private Symbol iSym;
-	final private int offset;
+	private int offset = 0;
 
 	private static int sideConditionCounter = 0;
-	final private List<StreamDecl> sideConditionDeclarations;
-	final private List<Sexp> sideConditions;
-
-	private Expr2SexpVisitor(Symbol iSym, int offset) {
-		this.iSym = iSym;
-		this.offset = offset;
-		this.sideConditionDeclarations = new ArrayList<>();
-		this.sideConditions = new ArrayList<>();
-	}
+	final private List<StreamDecl> sideConditionDeclarations = new ArrayList<>();
+	final private List<Sexp> sideConditions = new ArrayList<>();
 
 	public Expr2SexpVisitor(Symbol iSym) {
-		this(iSym, 0);
-	}
-
-	private Expr2SexpVisitor pre() {
-		return new Expr2SexpVisitor(iSym, offset - 1);
+		this.iSym = iSym;
 	}
 
 	@Override
@@ -63,7 +54,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 				if (right.equals(new Symbol("1"))) {
 					return left;
 				} else {
-					StreamDecl divDecl = new StreamDecl("%div" + sideConditionCounter, Type.INT);
+					StreamDecl divDecl = new StreamDecl("%div" + sideConditionCounter, NamedType.INT);
 					Sexp div = new Cons(divDecl.getId(), iSym);
 					sideConditionCounter++;
 
@@ -110,6 +101,12 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	}
 
 	@Override
+	public Sexp visit(ProjectionExpr e) {
+		System.out.println(e);
+		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
+	}
+	
+	@Override
 	public Sexp visit(RealExpr e) {
 		if (Settings.solver == SolverOption.YICES) {
 			Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());
@@ -121,10 +118,18 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	}
 
 	@Override
+	public Sexp visit(RecordExpr e) {
+		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
+	}
+	
+	@Override
 	public Sexp visit(UnaryExpr e) {
 		switch (e.op) {
 		case PRE:
-			return e.expr.accept(this.pre());
+			offset--;
+			Sexp expr = e.expr.accept(this);
+			offset++;
+			return expr;
 
 		case NEGATIVE:
 			return new Cons("-", new Symbol("0"), e.expr.accept(this));

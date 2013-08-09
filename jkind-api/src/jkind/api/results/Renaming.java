@@ -139,7 +139,7 @@ public abstract class Renaming {
 			return null;
 		}
 		
-		Signal<T> newSignal = new Signal<T>(name); 
+		Signal<T> newSignal = new Signal<>(name); 
 		for (Entry<Integer, T> entry : signal.getValues().entrySet()) {
 			newSignal.putValue(entry.getKey(), entry.getValue());
 		}

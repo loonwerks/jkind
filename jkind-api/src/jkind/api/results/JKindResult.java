@@ -25,7 +25,7 @@ import jkind.results.Property;
  */
 public class JKindResult extends AnalysisResult implements PropertyChangeListener {
 	private final StringBuilder text = new StringBuilder();
-	private final List<PropertyResult> propertyResults = new ArrayList<PropertyResult>();
+	private final List<PropertyResult> propertyResults = new ArrayList<>();
 	private final MultiStatus multiStatus = new MultiStatus();
 	private Ticker ticker;
 	private Renaming renaming;
@@ -204,7 +204,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	}
 
 	private List<Property> getProperties() {
-		List<Property> properties = new ArrayList<Property>();
+		List<Property> properties = new ArrayList<>();
 		for (PropertyResult pr : propertyResults) {
 			if (pr.getProperty() != null) {
 				properties.add(pr.getProperty());

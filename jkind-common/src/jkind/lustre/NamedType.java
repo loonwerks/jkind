@@ -1,19 +1,23 @@
-package jkind.solvers;
+package jkind.lustre;
 
-public class Label {
-	final private String name;
+public class NamedType extends Type {
+	final public String name;
 
-	public Label(String name) {
+	public NamedType(String name) {
 		this.name = name;
-	}
-
-	public Label(int i) {
-		this.name = Integer.toString(i);
 	}
 
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	final public static NamedType REAL = new NamedType("real");
+	final public static NamedType BOOL = new NamedType("bool");
+	final public static NamedType INT = new NamedType("int");
+
+	public boolean isBuiltin() {
+		return (this == REAL || this == BOOL || this == INT);
 	}
 
 	@Override
@@ -32,10 +36,10 @@ public class Label {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Label)) {
+		if (!(obj instanceof NamedType)) {
 			return false;
 		}
-		Label other = (Label) obj;
+		NamedType other = (NamedType) obj;
 		if (name == null) {
 			if (other.name != null) {
 				return false;
@@ -45,4 +49,5 @@ public class Label {
 		}
 		return true;
 	}
+
 }

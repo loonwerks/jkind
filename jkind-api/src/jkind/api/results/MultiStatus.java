@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MultiStatus {
-	final private EnumMap<Status, Integer> map = new EnumMap<Status, Integer>(Status.class);
+	final private EnumMap<Status, Integer> map = new EnumMap<>(Status.class);
 
 	public int getCount(Status status) {
 		if (map.containsKey(status)) {
@@ -58,7 +58,7 @@ public class MultiStatus {
 
 	@Override
 	public String toString() {
-		List<String> components = new ArrayList<String>();
+		List<String> components = new ArrayList<>();
 		for (Status status : PRECEDENCE) {
 			int count = getCount(status);
 			if (count > 0) {

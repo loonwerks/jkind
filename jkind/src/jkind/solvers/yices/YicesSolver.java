@@ -17,6 +17,7 @@ import jkind.solvers.StreamDef;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.VarDecl;
 import jkind.solvers.yices.YicesParser.ResultContext;
+import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -64,7 +65,7 @@ public class YicesSolver extends Solver {
 	}
 
 	private Symbol type(Type type) {
-		return new Symbol(type.name);
+		return new Symbol(Util.getName(type));
 	}
 
 	@Override

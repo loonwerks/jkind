@@ -5,9 +5,9 @@ import java.util.List;
 
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
-import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -58,7 +58,7 @@ public class Lustre2Sexps {
 		}
 
 		Lambda lambda = new Lambda(SexpUtil.I, new Cons("and", conjuncts));
-		transition = new StreamDef(Keywords.T, Type.BOOL, lambda);
+		transition = new StreamDef(Keywords.T, NamedType.BOOL, lambda);
 	}
 
 	private Sexp equation2Sexp(Equation eq, Symbol iSym, Expr2SexpVisitor visitor) {

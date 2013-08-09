@@ -11,8 +11,9 @@ import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
+import jkind.util.Util;
 
-public class InlineTypes {
+public class InlineUserTypes {
 	public static Program program(Program program) {
 		Map<String, Type> types = getTypeMap(program);
 		List<TypeDef> emptyTypes = Collections.emptyList();
@@ -37,24 +38,16 @@ public class InlineTypes {
 	private static List<VarDecl> varDecls(List<VarDecl> decls, Map<String, Type> types) {
 		List<VarDecl> inlinedDecls = new ArrayList<>();
 		for (VarDecl decl : decls) {
-			Type base = getBuiltinType(decl.type, types);
+			Type base = Util.resolveType(decl.type, types);
 			inlinedDecls.add(new VarDecl(decl.location, decl.id, base));
 		}
 		return inlinedDecls;
 	}
 
-	private static Type getBuiltinType(Type type, Map<String, Type> types) {
-		Type curr = type;
-		while (!curr.isBuiltin()) {
-			curr = types.get(curr.name);
-		}
-		return curr;
-	}
-
 	private static Map<String, Type> getTypeMap(Program program) {
 		Map<String, Type> types = new HashMap<>();
 		for (TypeDef def : program.types) {
-			types.put(def.id, def.type);
+			types.put(def.id, Util.resolveType(def.type, types));
 		}
 		return types;
 	}

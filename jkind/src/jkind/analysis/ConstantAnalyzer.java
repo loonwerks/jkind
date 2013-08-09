@@ -8,13 +8,16 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.Expr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
@@ -28,12 +31,12 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 		addConstantsToSet(constantDecls);
 		removeShadowedConstants(Util.getVarDecls(node));
 	}
-	
+
 	public ConstantAnalyzer(List<Constant> constantDecls) {
 		constants = new HashSet<>();
 		addConstantsToSet(constantDecls);
 	}
-	
+
 	private void addConstantsToSet(List<Constant> constantDecls) {
 		for (Constant c : constantDecls) {
 			constants.add(c.id);
@@ -79,9 +82,24 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	public Boolean visit(NodeCallExpr e) {
 		return false;
 	}
-	
+
+	@Override
+	public Boolean visit(ProjectionExpr e) {
+		return e.expr.accept(this);
+	}
+
 	@Override
 	public Boolean visit(RealExpr e) {
+		return true;
+	}
+
+	@Override
+	public Boolean visit(RecordExpr e) {
+		for (Expr expr : e.fields.values()) {
+			if (!expr.accept(this)) {
+				return false;
+			}
+		}
 		return true;
 	}
 
