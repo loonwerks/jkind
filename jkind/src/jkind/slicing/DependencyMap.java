@@ -1,9 +1,11 @@
 package jkind.slicing;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -19,6 +21,7 @@ public class DependencyMap {
 	public DependencyMap(Node node, List<String> roots) {
 		this.map = new HashMap<>();
 		computeOneStepDependencies(node);
+		analyzeAssertions(node.assertions);
 		closeDependencies(roots);
 	}
 
@@ -33,9 +36,38 @@ public class DependencyMap {
 				map.put(idExpr.id, deps);
 			}
 		}
-		
-		for (Expr e : node.assertions) {
-			Set<String> ids = IdExtractorVisitor.getIds(e);
+	}
+
+	/*
+	 * Assertions cause everything they (transitively) touch to be related. For
+	 * example, suppose x depends on y and y depends on z. If we assert that x
+	 * is always true, then x, y, and z all depends on each other. We encode
+	 * this by adding one step dependencies to the map and closing them later.
+	 */
+	private void analyzeAssertions(List<Expr> assertions) {
+		for (Expr assertion : assertions) {
+			Set<String> ids = IdExtractorVisitor.getIds(assertion);
+
+			// Everything mentioned in an assertion creates bidirectional
+			// dependencies for all its dependencies
+			Queue<String> todo = new ArrayDeque<>(ids);
+			Set<String> seen = new HashSet<>();
+			while (!todo.isEmpty()) {
+				String id = todo.remove();
+				if (seen.contains(id)) {
+					continue;
+				} else {
+					seen.add(id);
+				}
+
+				Set<String> deps = map.get(id);
+				for (String dep : deps) {
+					map.get(dep).add(id);
+				}
+				todo.addAll(deps);
+			}
+
+			// All variables in an assertion depend on all other variables in it
 			for (String id : ids) {
 				map.get(id).addAll(ids);
 			}

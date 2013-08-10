@@ -168,7 +168,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 		newline();
 	}
 
-	public <T> void expr(Expr e) {
+	public void expr(Expr e) {
 		e.accept(this);
 	}
 

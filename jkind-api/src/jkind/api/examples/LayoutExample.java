@@ -40,7 +40,7 @@ public class LayoutExample {
 
 			@Override
 			public List<String> getCategories() {
-				List<String> categories = new ArrayList<String>();
+				List<String> categories = new ArrayList<>();
 				for (char c = 'A'; c <= 'Z'; c++) {
 					categories.add(Character.toString(c));
 				}

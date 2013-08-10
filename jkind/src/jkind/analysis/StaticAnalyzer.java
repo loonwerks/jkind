@@ -19,7 +19,6 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
-import jkind.slicing.IdExtractorVisitor;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
@@ -43,7 +42,6 @@ public class StaticAnalyzer {
 		result = result && propertiesBoolean(program.main);
 		result = result && LinearChecker.check(program);
 		result = result && DivideByZeroChecker.check(program);
-		result = result && assertsDoNotUseComputedValues(program.main);
 		return result;
 	}
 
@@ -257,26 +255,6 @@ public class StaticAnalyzer {
 		}
 
 		return allBoolean;
-	}
-
-	private static boolean assertsDoNotUseComputedValues(Node node) {
-		boolean result = true;
-
-		List<String> computed = new ArrayList<>();
-		computed.addAll(Util.getIds(node.locals));
-		computed.addAll(Util.getIds(node.outputs));
-		
-		for (Expr expr : node.assertions) {
-			Set<String> vars = IdExtractorVisitor.getIds(expr);
-			vars.retainAll(computed);
-			if (!vars.isEmpty()) {
-				System.out.println("Error at line " + expr.location
-						+ " assertion refers to non-input variables: " + vars);
-				result = false;
-			}
-		}
-
-		return result;
 	}
 
 	private static void warnUnusedAssertsAndProperties(Program program) {

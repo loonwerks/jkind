@@ -105,7 +105,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 			Type type = lookupBaseType(v.type);
 			if (type == null) {
 				error(v, "unknown type " + v.type);
-				type = null;
 			}
 			variableTable.put(v.id, type);
 		}
