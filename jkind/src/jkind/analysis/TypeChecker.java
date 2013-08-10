@@ -143,7 +143,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 				error(eq, "expected " + expected.size() + " values but found " + actual.size());
 				return;
 			}
-			
+
 			for (int i = 0; i < expected.size(); i++) {
 				compareTypes(eq.lhs.get(i), expected.get(i), actual.get(i));
 			}
@@ -311,18 +311,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 		if (type == null) {
 			return null;
 		}
-		
+
 		if (type instanceof RecordType) {
 			RecordType recordType = (RecordType) type;
 			if (recordType.fields.containsKey(e.field)) {
 				return recordType.fields.get(e.field);
 			}
 		}
-		
+
 		error(e, "expected record type with field " + e.field + " but found " + type);
 		return null;
 	}
-	
+
 	@Override
 	public Type visit(RealExpr e) {
 		return NamedType.REAL;
@@ -334,9 +334,35 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (Entry<String, Expr> entry : e.fields.entrySet()) {
 			fields.put(entry.getKey(), entry.getValue().accept(this));
 		}
-		return new RecordType(e.location, fields);
+
+		Type expectedType = typeTable.get(e.id);
+		if (!(expectedType instanceof RecordType)) {
+			error(e, "unknown record type " + e.id);
+			return null;
+		}
+		RecordType expectedRecordType = (RecordType) expectedType;
+
+		for (Entry<String, Type> entry : expectedRecordType.fields.entrySet()) {
+			String expectedField = entry.getKey();
+			Type expectedFieldType = entry.getValue();
+			if (!fields.containsKey(expectedField)) {
+				error(e, "record of type " + e.id + " is missing field " + expectedField);
+			} else {
+				Type actualFieldType = fields.get(expectedField);
+				compareTypes(e.fields.get(expectedField), expectedFieldType, actualFieldType);
+			}
+		}
+
+		for (String actualField : fields.keySet()) {
+			if (!expectedRecordType.fields.keySet().contains(actualField)) {
+				error(e.fields.get(actualField), "record of type " + e.id + " has extra field "
+						+ actualField);
+			}
+		}
+
+		return new RecordType(e.location, e.id, fields);
 	}
-	
+
 	@Override
 	public Type visit(UnaryExpr e) {
 		Type type = e.expr.accept(this);

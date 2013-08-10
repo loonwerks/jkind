@@ -59,7 +59,7 @@ public class MapVisitor implements ExprVisitor<Expr> {
 		for (Entry<String, Expr> entry : e.fields.entrySet()) {
 			fields.put(entry.getKey(), entry.getValue().accept(this));
 		}
-		return new RecordExpr(e.location, fields);
+		return new RecordExpr(e.location, e.id, fields);
 	}
 
 	@Override

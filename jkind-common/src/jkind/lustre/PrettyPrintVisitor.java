@@ -57,9 +57,29 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 		write("type ");
 		write(typeDef.id);
 		write(" = ");
-		write(typeDef.type);
+		writeType(typeDef.type);
 		write(";");
 		return null;
+	}
+
+	private void writeType(Type type) {
+		if (type instanceof RecordType) {
+			RecordType recordType = (RecordType) type;
+			write("struct {");
+			Iterator<Entry<String, Type>> iterator = recordType.fields.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry<String, Type> entry = iterator.next();
+				write(entry.getKey());
+				write(" : ");
+				write(entry.getValue());
+				if (iterator.hasNext()) {
+					write("; ");
+				}
+			}
+			write("}");
+		} else {
+			write(type);
+		}
 	}
 
 	@Override
@@ -245,7 +265,8 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 
 	@Override
 	public Void visit(RecordExpr e) {
-		write("{");
+		write(e.id);
+		write(" {");
 		Iterator<Entry<String, Expr>> iterator = e.fields.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, Expr> entry = iterator.next();

@@ -3,6 +3,8 @@ package jkind.lustre.parsing;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
+	T visitPlainType(LustreParser.PlainTypeContext ctx);
+
 	T visitIfThenElseExpr(LustreParser.IfThenElseExprContext ctx);
 
 	T visitIdExpr(LustreParser.IdExprContext ctx);

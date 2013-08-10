@@ -4,20 +4,24 @@
 -- VALID PROPERTIES: [lemma, prop2]
 -- INVALID PROPERTIES: [prop1] (K = 11)
 
-type point = { x : int; y : int };
-type weighted_point = { weight : real; p : point };
+type point = struct { x : int; y : int };
+type weighted_point = struct { weight : real; p : point };
 
 node main(delta1, delta2 : subrange [-1, 1] of int) returns ();
 var
   wp1, wp2 : weighted_point;
   prop1, prop2, lemma : bool;
 let
-  wp1 = {weight = 1.0 -> pre(wp2.weight);
-         p = {x = 0 -> pre(wp1.p.x) + 1;
-              y = 0 -> pre(wp1.p.y) + delta1}};
-  wp2 = {weight = 2.0 -> pre(wp1.weight);
-         p = {x = 0 -> pre(wp2.p.x) + 1;
-         y = 20 -> pre(wp2.p.y) + delta2}};
+  wp1 = weighted_point {
+          weight = 1.0 -> pre(wp2.weight);
+          p = point {
+            x = 0 -> pre(wp1.p.x) + 1;
+            y = 0 -> pre(wp1.p.y) + delta1}};
+  wp2 = weighted_point {
+          weight = 2.0 -> pre(wp1.weight);
+          p = point {
+            x = 0 -> pre(wp2.p.x) + 1;
+            y = 20 -> pre(wp2.p.y) + delta2}};
 
   prop1 = not (wp1.p = wp2.p);
   --%PROPERTY prop1;

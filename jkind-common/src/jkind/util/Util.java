@@ -99,7 +99,7 @@ public class Util {
 			for (String field : recordType.fields.keySet()) {
 				resolvedFields.put(field, resolveType(recordType.fields.get(field), map));
 			}
-			return new RecordType(recordType.location, resolvedFields);
+			return new RecordType(recordType.location, recordType.id, resolvedFields);
 		} else {
 			return null;
 		}

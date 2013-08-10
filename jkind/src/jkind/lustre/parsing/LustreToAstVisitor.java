@@ -48,6 +48,7 @@ import jkind.lustre.parsing.LustreParser.NodeCallExprContext;
 import jkind.lustre.parsing.LustreParser.NodeContext;
 import jkind.lustre.parsing.LustreParser.NotExprContext;
 import jkind.lustre.parsing.LustreParser.ParenExprContext;
+import jkind.lustre.parsing.LustreParser.PlainTypeContext;
 import jkind.lustre.parsing.LustreParser.PreExprContext;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreParser.ProjectionExprContext;
@@ -57,6 +58,7 @@ import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
+import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
 import jkind.lustre.parsing.LustreParser.TypeContext;
 import jkind.lustre.parsing.LustreParser.TypedefContext;
 import jkind.lustre.parsing.LustreParser.UserTypeContext;
@@ -79,7 +81,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<TypeDef> types = new ArrayList<>();
 		for (TypedefContext ctx : ctxs) {
 			String id = ctx.ID().getText();
-			Type type = type(ctx.type());
+			Type type = topLevelType(id, ctx.topLevelType());
 			types.add(new TypeDef(loc(ctx), id, type));
 		}
 		return types;
@@ -164,6 +166,23 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return assertions;
 	}
 
+	private Type topLevelType(String id, TopLevelTypeContext ctx) {
+		if (ctx instanceof PlainTypeContext) {
+			PlainTypeContext pctx = (PlainTypeContext) ctx;
+			return type(pctx.type());
+		}
+		if (ctx instanceof RecordTypeContext) {
+			RecordTypeContext rctx = (RecordTypeContext) ctx;
+			Map<String, Type> fields = new HashMap<>();
+			for (int i = 0; i < rctx.ID().size(); i++) {
+				fields.put(rctx.ID(i).getText(), type(rctx.type(i)));
+			}
+			return new RecordType(loc(ctx), id, fields);
+		} else {
+			throw new IllegalArgumentException(ctx.getClass().getSimpleName());
+		}
+	}
+
 	private Type type(TypeContext ctx) {
 		return (Type) ctx.accept(this);
 	}
@@ -178,15 +197,6 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		BigInteger low = new BigInteger(ctx.bound(0).getText());
 		BigInteger high = new BigInteger(ctx.bound(1).getText());
 		return new SubrangeIntType(loc(ctx), low, high);
-	}
-
-	@Override
-	public Type visitRecordType(RecordTypeContext ctx) {
-		Map<String, Type> fields = new HashMap<>();
-		for (int i = 0; i < ctx.ID().size(); i++) {
-			fields.put(ctx.ID(i).getText(), type(ctx.type(i)));
-		}
-		return new RecordType(loc(ctx), fields);
 	}
 
 	@Override
@@ -312,10 +322,10 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	@Override
 	public Expr visitRecordExpr(RecordExprContext ctx) {
 		Map<String, Expr> fields = new HashMap<>();
-		for (int i = 0; i < ctx.ID().size(); i++) {
-			fields.put(ctx.ID(i).getText(), expr(ctx.expr(i)));
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			fields.put(ctx.ID(i + 1).getText(), expr(ctx.expr(i)));
 		}
-		return new RecordExpr(loc(ctx), fields);
+		return new RecordExpr(loc(ctx), ctx.ID(0).getText(), fields);
 	}
 
 	@Override

@@ -2,7 +2,7 @@ grammar Lustre;
 
 program: (typedef | constant | node)* EOF;
 
-typedef: 'type' ID '=' type ';';
+typedef: 'type' ID '=' topLevelType ';';
 
 constant: 'const' ID (':' type)? '=' expr ';';
 
@@ -19,12 +19,15 @@ varDeclList: varDeclGroup (';' varDeclGroup)*;
 
 varDeclGroup: ID (',' ID)* ':' type;
 
+topLevelType: type                                       # plainType
+    | 'struct' '{' (ID ':' type) (';' ID ':' type)* '}'  # recordType
+    ;
+
 type: 'int'                                              # intType
     | 'subrange' '[' bound ',' bound ']' 'of' 'int'      # subrangeType
     | 'bool'                                             # boolType
     | 'real'                                             # realType
     | ID                                                 # userType
-    | '{' (ID ':' type) (';' ID ':' type)* '}'           # recordType
     ;
 
 bound: '-'? INT;
@@ -54,7 +57,7 @@ expr: ID                                                       # idExpr
     | expr op='=>'<assoc=right> expr                           # binaryExpr
     | expr op='->'<assoc=right> expr                           # binaryExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
-    | '{' ID '=' expr (';' ID '=' expr)* '}'                   # recordExpr
+    | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '(' expr ')'                                             # parenExpr
     ;
 

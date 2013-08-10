@@ -3,6 +3,8 @@ package jkind.lustre.parsing;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 public class LustreBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements LustreVisitor<T> {
+	@Override public T visitPlainType(LustreParser.PlainTypeContext ctx) { return visitChildren(ctx); }
+
 	@Override public T visitIfThenElseExpr(LustreParser.IfThenElseExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitIdExpr(LustreParser.IdExprContext ctx) { return visitChildren(ctx); }
