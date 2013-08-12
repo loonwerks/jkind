@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
-import jkind.Settings;
+import jkind.JKindSettings;
 import jkind.invariant.Invariant;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
@@ -34,7 +34,7 @@ import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
 public class Director {
-	private Settings settings;
+	private JKindSettings settings;
 	private Specification spec;
 	private Writer writer;
 
@@ -53,7 +53,7 @@ public class Director {
 
 	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
 
-	public Director(Settings settings, Specification spec) {
+	public Director(JKindSettings settings, Specification spec) {
 		this.settings = settings;
 		this.spec = spec;
 		this.writer = getWriter(spec);

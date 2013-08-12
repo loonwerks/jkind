@@ -1,6 +1,6 @@
 package jkind;
 
-public class Settings {
+public class JKindSettings {
 	public int n = 200;
 	public int timeout = 100;
 	public boolean excel = false;

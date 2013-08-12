@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.Settings;
+import jkind.JKindSettings;
 import jkind.invariant.Invariant;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
@@ -34,7 +34,7 @@ public class InductiveProcess extends Process {
 	private InvariantProcess invariantProcess;
 	private ReduceProcess reduceProcess;
 
-	public InductiveProcess(Specification spec, Settings settings, Director director) {
+	public InductiveProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Inductive", spec, settings, director);
 	}
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.JKindException;
-import jkind.Settings;
+import jkind.JKindSettings;
 import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
@@ -31,7 +31,7 @@ public class InvariantProcess extends Process {
 	private Map<String, StreamDef> definitions;
 	private Map<String, StreamDecl> declarations;
 
-	public InvariantProcess(Specification spec, Settings settings) {
+	public InvariantProcess(Specification spec, JKindSettings settings) {
 		super("Invariant", spec, settings, null);
 		definitions = new HashMap<>();
 		declarations = new HashMap<>();

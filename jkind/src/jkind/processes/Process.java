@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
-import jkind.Settings;
+import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
@@ -24,7 +24,7 @@ import jkind.translation.Specification;
 
 public abstract class Process implements Runnable {
 	protected Specification spec;
-	protected Settings settings;
+	protected JKindSettings settings;
 	protected Director director;
 	protected List<String> properties;
 
@@ -35,7 +35,7 @@ public abstract class Process implements Runnable {
 	private PrintWriter scratch;
 	private Throwable throwable;
 
-	public Process(String name, Specification spec, Settings settings, Director director) {
+	public Process(String name, Specification spec, JKindSettings settings, Director director) {
 		this.name = name;
 		this.spec = spec;
 		this.settings = settings;

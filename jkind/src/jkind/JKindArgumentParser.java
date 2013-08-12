@@ -1,6 +1,6 @@
 package jkind;
 
-import jkind.Settings.SolverOption;
+import jkind.JKindSettings.SolverOption;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -8,7 +8,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
-public class ArgumentParser {
+public class JKindArgumentParser {
 	final private static String BMC = "bmc";
 	final private static String EXCEL = "excel";
 	final private static String INDUCT_CEX = "induct_cex";
@@ -41,11 +41,11 @@ public class ArgumentParser {
 		return options;
 	}
 
-	public static Settings parse(String[] args) {
+	public static JKindSettings parse(String[] args) {
 		CommandLineParser parser = new GnuParser();
 		try {
 			CommandLine line = parser.parse(getOptions(), args);
-			Settings settings = new Settings();
+			JKindSettings settings = new JKindSettings();
 			setSettings(line, settings);
 			checkSettings(settings);
 			String[] input = line.getArgs();
@@ -67,7 +67,7 @@ public class ArgumentParser {
 		formatter.printHelp("jkind [options] <input>", getOptions());
 	}
 
-	private static void setSettings(CommandLine line, Settings settings) {		
+	private static void setSettings(CommandLine line, JKindSettings settings) {		
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, BMC, REDUCE_INV);
 		ensureExclusive(line, NO_INV_GEN, REDUCE_INV);
@@ -146,7 +146,7 @@ public class ArgumentParser {
 		}
 	}
 
-	private static void checkSettings(Settings settings) {
+	private static void checkSettings(JKindSettings settings) {
 		if (settings.solver == SolverOption.CVC4) {
 			if (settings.smoothCounterexamples) {
 				System.out.println("Smoothing not supported with CVC4");

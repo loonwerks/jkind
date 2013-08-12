@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.Settings;
+import jkind.JKindSettings;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -27,7 +27,7 @@ public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
 	private SmoothProcess smoothProcess;
 
-	public BaseProcess(Specification spec, Settings settings, Director director) {
+	public BaseProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Base", spec, settings, director);
 	}
 
