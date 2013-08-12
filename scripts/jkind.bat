@@ -1,1 +1,1 @@
-@java -jar "%~dp0jkind.jar" %*
+@java -jar "%~dp0jkind.jar" -jkind %*
