@@ -64,7 +64,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
-			Type type = lookupBaseType(def.type);
+			Type type = resolveType(def.type);
 			if (type == null) {
 				error(def, "unknown type " + def.type);
 			}
@@ -78,8 +78,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 			if (c.type == null) {
 				constantTable.put(c.id, actual);
 			} else {
-				Type expected = lookupBaseType(c.type);
-				compareTypes(c.expr, expected, actual);
+				Type expected = resolveType(c.type);
+				compareTypeAssignment(c.expr, expected, actual);
 				constantTable.put(c.id, expected);
 			}
 		}
@@ -102,7 +102,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	public void repopulateVariableTable(Node node) {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
-			Type type = lookupBaseType(v.type);
+			Type type = resolveType(v.type);
 			if (type == null) {
 				error(v, "unknown type " + v.type);
 			}
@@ -110,19 +110,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	private Type lookupBaseType(Type type) {
-		Type resolved = Util.resolveType(type, typeTable);
-		if (resolved instanceof SubrangeIntType) {
-			return NamedType.INT;
-		} else {
-			return resolved;
-		}
+	private Type resolveType(Type type) {
+		return Util.resolveType(type, typeTable);
+	}
+
+	private boolean isIntBased(Type type) {
+		return type == NamedType.INT || type instanceof SubrangeIntType;
 	}
 
 	private void checkSingleAssignment(Equation eq) {
 		Type expected = eq.lhs.get(0).accept(this);
 		Type actual = eq.expr.accept(this);
-		compareTypes(eq, expected, actual);
+		compareTypeAssignment(eq, expected, actual);
 	}
 
 	private void checkNodeCallAssignment(Equation eq) {
@@ -145,7 +144,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 
 			for (int i = 0; i < expected.size(); i++) {
-				compareTypes(eq.lhs.get(i), expected.get(i), actual.get(i));
+				compareTypeAssignment(eq.lhs.get(i), expected.get(i), actual.get(i));
 			}
 		} else {
 			error(eq.expr, "expected node call for multiple value assignment");
@@ -168,7 +167,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			if (left == NamedType.REAL && right == NamedType.REAL) {
 				return NamedType.REAL;
 			}
-			if (left == NamedType.INT && right == NamedType.INT) {
+			if (isIntBased(left) && isIntBased(right)) {
 				return NamedType.INT;
 			}
 			break;
@@ -180,14 +179,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 			break;
 
 		case INT_DIVIDE:
-			if (left == NamedType.INT && right == NamedType.INT) {
+			if (isIntBased(left) && isIntBased(right)) {
 				return NamedType.INT;
 			}
 			break;
 
 		case EQUAL:
 		case NOTEQUAL:
-			if (left.equals(right)) {
+			if (joinTypes(left, right) != null) {
 				return NamedType.BOOL;
 			}
 			break;
@@ -199,7 +198,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			if (left == NamedType.REAL && right == NamedType.REAL) {
 				return NamedType.BOOL;
 			}
-			if (left == NamedType.INT && right == NamedType.INT) {
+			if (isIntBased(left) && isIntBased(right)) {
 				return NamedType.BOOL;
 			}
 			break;
@@ -214,8 +213,9 @@ public class TypeChecker implements ExprVisitor<Type> {
 			break;
 
 		case ARROW:
-			if (left.equals(right)) {
-				return left;
+			Type join = joinTypes(left, right);
+			if (join != null) {
+				return join;
 			}
 			break;
 		}
@@ -247,15 +247,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 		Type thenType = e.thenExpr.accept(this);
 		Type elseType = e.elseExpr.accept(this);
 
-		compareTypes(e.cond, NamedType.BOOL, condType);
-		compareTypes(e.elseExpr, thenType, elseType);
-
-		return thenType;
+		compareTypeAssignment(e.cond, NamedType.BOOL, condType);
+		return compareTypeJoin(e.elseExpr, thenType, elseType);
 	}
 
 	@Override
 	public Type visit(IntExpr e) {
-		return NamedType.INT;
+		return new SubrangeIntType(e.value, e.value);
 	}
 
 	@Override
@@ -286,7 +284,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		List<Type> expected = new ArrayList<>();
 		for (VarDecl input : node.inputs) {
-			expected.add(lookupBaseType(input.type));
+			expected.add(resolveType(input.type));
 		}
 
 		if (actual.size() != expected.size()) {
@@ -295,12 +293,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		for (int i = 0; i < expected.size(); i++) {
-			compareTypes(e.args.get(i), expected.get(i), actual.get(i));
+			compareTypeAssignment(e.args.get(i), expected.get(i), actual.get(i));
 		}
 
 		List<Type> result = new ArrayList<>();
 		for (VarDecl decl : node.outputs) {
-			result.add(lookupBaseType(decl.type));
+			result.add(resolveType(decl.type));
 		}
 		return result;
 	}
@@ -349,7 +347,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 				error(e, "record of type " + e.id + " is missing field " + expectedField);
 			} else {
 				Type actualFieldType = fields.get(expectedField);
-				compareTypes(e.fields.get(expectedField), expectedFieldType, actualFieldType);
+				compareTypeAssignment(e.fields.get(expectedField), expectedFieldType,
+						actualFieldType);
 			}
 		}
 
@@ -372,6 +371,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		switch (e.op) {
 		case NEGATIVE:
+			if (type instanceof SubrangeIntType) {
+				SubrangeIntType subrange = (SubrangeIntType) type;
+				return new SubrangeIntType(subrange.high.negate(), subrange.low.negate());
+			}
 			if (type == NamedType.INT || type == NamedType.REAL) {
 				return type;
 			}
@@ -391,13 +394,59 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return null;
 	}
 
-	private void compareTypes(Ast ast, Type expected, Type actual) {
+	private void compareTypeAssignment(Ast ast, Type expected, Type actual) {
 		if (expected == null || actual == null) {
 			return;
 		}
 
-		if (!expected.equals(actual)) {
+		if (!typeAssignable(expected, actual)) {
 			error(ast, "expected type " + expected + " but found type " + actual);
+		}
+	}
+
+	private boolean typeAssignable(Type expected, Type actual) {
+		if (expected.equals(actual)) {
+			return true;
+		}
+
+		if (expected == NamedType.INT && actual instanceof SubrangeIntType) {
+			return true;
+		}
+
+		if (expected instanceof SubrangeIntType && actual instanceof SubrangeIntType) {
+			SubrangeIntType exRange = (SubrangeIntType) expected;
+			SubrangeIntType acRange = (SubrangeIntType) actual;
+			return exRange.low.compareTo(acRange.low) <= 0
+					&& exRange.high.compareTo(acRange.high) >= 0;
+		}
+		
+		return false;
+	}
+	
+	private Type compareTypeJoin(Ast ast, Type t1, Type t2) {
+		if (t1 == null || t2 == null) {
+			return null;
+		}
+		
+		Type join = joinTypes(t1, t2);
+		if (join == null) {
+			error(ast, "cannot join types " + t1 + " and " + t2);
+			return null;
+		}
+		return join;
+	}
+
+	private Type joinTypes(Type t1, Type t2) {
+		if (t1 instanceof SubrangeIntType && t2 instanceof SubrangeIntType) {
+			SubrangeIntType s1 = (SubrangeIntType) t1;
+			SubrangeIntType s2 = (SubrangeIntType) t2;
+			return new SubrangeIntType(s1.low.min(s2.low), s1.high.max(s2.high));
+		} else if (isIntBased(t1) && isIntBased(t2)) {
+			return NamedType.INT;
+		} else if (t1.equals(t2)) {
+			return t1;
+		} else {
+			return null;
 		}
 	}
 
