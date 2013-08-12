@@ -120,7 +120,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 
 		if (node.id.equals(main)) {
 			newline();
-			write("  --%MAIN;");
+			write("  --%MAIN");
 			newline();
 		}
 
