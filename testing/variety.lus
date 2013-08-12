@@ -1,0 +1,42 @@
+-- This file uses a variety of Lustre features
+-- Expected output:
+-- VALID PROPERTIES: [prop1]
+-- INVALID PROPERTIES: [prop2] (k = 10)
+
+type point = struct {x : int; y : int};
+
+node add(p, q : point) returns (r : point);
+var
+  x_coord, y_coord : int;
+let
+  x_coord = p.x + q.x;
+  y_coord = p.y + q.y;
+  r = point {x = x_coord; y = y_coord};
+tel;
+
+node abs(z : int) returns (az : int);
+let
+  az = if z >= 0 then z else -z;
+tel;
+
+node main(delta_x, delta_y : int) returns ();
+var
+  p1, p2, origin, delta : point;
+  prop1, prop2 : bool;
+let
+  p1 = point {x = (0 -> pre p1.x) + delta_x;
+              y = (0 -> pre p1.y) + delta_y};
+
+  origin = point {x = 0; y = 0};
+  delta = point {x = delta_x; y = delta_y};
+  p2 = add(origin -> pre p2, delta);
+
+  assert abs(delta_x) <= 2;
+  assert abs(delta_y) <= 2;
+
+  prop1 = p1 = p1;
+  --%PROPERTY prop1;
+
+  prop2 = p1 <> point {x = 20; y = 13};
+  --%PROPERTY prop2;
+tel;
