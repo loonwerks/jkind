@@ -23,10 +23,14 @@ import jkind.util.Util;
 
 public class StaticAnalyzer {
 	public static boolean check(Program program) {
-		return checkErrors(program) && checkWarnings(program);
+		return check(program, true);
 	}
 
-	private static boolean checkErrors(Program program) {
+	public static boolean check(Program program, boolean linearCheck) {
+		return checkErrors(program, linearCheck) && checkWarnings(program);
+	}
+
+	private static boolean checkErrors(Program program, boolean linearCheck) {
 		boolean result = true;
 		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
@@ -40,7 +44,9 @@ public class StaticAnalyzer {
 		result = result && propertiesUnique(program.main);
 		result = result && propertiesExist(program.main);
 		result = result && propertiesBoolean(program.main);
-		result = result && LinearChecker.check(program);
+		if (linearCheck) {
+			result = result && LinearChecker.check(program);
+		}
 		result = result && DivideByZeroChecker.check(program);
 		return result;
 	}

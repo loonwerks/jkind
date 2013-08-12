@@ -31,7 +31,7 @@ public class JLustre2Excel {
 				System.exit(-1);
 			}
 
-			if (!StaticAnalyzer.check(program)) {
+			if (!StaticAnalyzer.check(program, false)) {
 				System.exit(-1);
 			}
 
