@@ -1,5 +1,10 @@
 package jkind.util;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +107,18 @@ public class Util {
 			return new RecordType(recordType.location, recordType.id, resolvedFields);
 		} else {
 			return null;
+		}
+	}
+	
+	public static void writeToFile(String content, File file) throws IOException {
+		Writer writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.append(content);
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
 		}
 	}
 }

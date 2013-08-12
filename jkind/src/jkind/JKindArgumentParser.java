@@ -44,16 +44,8 @@ public class JKindArgumentParser {
 	public static JKindSettings parse(String[] args) {
 		CommandLineParser parser = new GnuParser();
 		try {
-			CommandLine line = parser.parse(getOptions(), args);
-			JKindSettings settings = new JKindSettings();
-			setSettings(line, settings);
+			JKindSettings settings = getSettings(parser.parse(getOptions(), args));
 			checkSettings(settings);
-			String[] input = line.getArgs();
-			if (input.length != 1) {
-				printHelp();
-				System.exit(-1);
-			}
-			settings.filename = input[0];
 			return settings;
 		} catch (Throwable t) {
 			System.out.println("Error reading command line arguments: " + t.getMessage());
@@ -67,59 +59,61 @@ public class JKindArgumentParser {
 		formatter.printHelp("jkind [options] <input>", getOptions());
 	}
 
-	private static void setSettings(CommandLine line, JKindSettings settings) {		
+	private static JKindSettings getSettings(CommandLine line) {
+		JKindSettings settings = new JKindSettings();
+
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, BMC, REDUCE_INV);
 		ensureExclusive(line, NO_INV_GEN, REDUCE_INV);
 		ensureExclusive(line, BMC, INDUCT_CEX);
-		
+
 		if (line.hasOption(VERSION)) {
 			System.out.println("JKind " + Main.VERSION);
 			System.exit(0);
 		}
-		
+
 		if (line.hasOption(HELP)) {
 			printHelp();
 			System.exit(0);
 		}
-		
+
 		if (line.hasOption(BMC)) {
 			settings.useInductiveProcess = false;
 			settings.useInvariantProcess = false;
 		}
-		
+
 		if (line.hasOption(EXCEL)) {
 			settings.excel = true;
 		}
-		
+
 		if (line.hasOption(INDUCT_CEX)) {
 			settings.inductiveCounterexamples = true;
 		}
-		
+
 		if (line.hasOption(NO_INV_GEN)) {
 			settings.useInvariantProcess = false;
 		}
-		
+
 		if (line.hasOption(N)) {
 			settings.n = Integer.parseInt(line.getOptionValue(N));
 		}
-		
+
 		if (line.hasOption(REDUCE_INV)) {
 			settings.reduceInvariants = true;
 		}
-		
+
 		if (line.hasOption(TIMEOUT)) {
 			settings.timeout = Integer.parseInt(line.getOptionValue(TIMEOUT));
 		}
-		
+
 		if (line.hasOption(SCRATCH)) {
 			settings.scratch = true;
 		}
-		
-		if (line.hasOption(SMOOTH))	 {
+
+		if (line.hasOption(SMOOTH)) {
 			settings.smoothCounterexamples = true;
 		}
-		
+
 		if (line.hasOption(SOLVER)) {
 			String solver = line.getOptionValue(SOLVER);
 			if (solver.equals("yices")) {
@@ -133,12 +127,21 @@ public class JKindArgumentParser {
 				System.exit(-1);
 			}
 		}
-		
+
 		if (line.hasOption(XML)) {
 			settings.xml = true;
 		}
+		
+		String[] input = line.getArgs();
+		if (input.length != 1) {
+			printHelp();
+			System.exit(-1);
+		}
+		settings.filename = input[0];
+		
+		return settings;
 	}
-	
+
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
 		if (line.hasOption(opt1) && line.hasOption(opt2)) {
 			System.out.println("Error: cannot use option -" + opt1 + " with option -" + opt2);

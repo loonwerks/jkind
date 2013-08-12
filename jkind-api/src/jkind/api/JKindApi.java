@@ -2,10 +2,8 @@ package jkind.api;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +15,7 @@ import jkind.api.results.JKindResult;
 import jkind.api.xml.JKindXmlFileInputStream;
 import jkind.api.xml.XmlParseThread;
 import jkind.lustre.Program;
+import jkind.util.Util;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.SAXException;
@@ -137,7 +136,7 @@ public class JKindApi {
 		File file = null;
 		try {
 			file = File.createTempFile("jkind-api", ".lus");
-			writeToFile(program, file);
+			Util.writeToFile(program, file);
 			return file;
 		} catch (IOException e) {
 			safeDelete(file);
@@ -148,18 +147,6 @@ public class JKindApi {
 	private static void safeDelete(File file) {
 		if (file != null && file.exists()) {
 			file.delete();
-		}
-	}
-
-	private static void writeToFile(String content, File file) throws IOException {
-		Writer writer = null;
-		try {
-			writer = new FileWriter(file);
-			writer.append(content);
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
 		}
 	}
 

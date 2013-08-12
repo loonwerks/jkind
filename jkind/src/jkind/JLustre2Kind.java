@@ -1,10 +1,6 @@
 package jkind;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
@@ -15,16 +11,14 @@ import jkind.translation.FlattenRecordTypes;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
+import jkind.util.Util;
 
 public class JLustre2Kind {
 	public static void main(String args[]) {
 		try {
-			if (args.length != 1) {
-				System.out.println("Usage: jlustre2kind <input>");
-				System.exit(-1);
-			}
-			String filename = args[0];
-			
+			JLustre2KindSettings settings = JLustre2KindArgumentParser.parse(args);
+			String filename = settings.filename;
+
 			if (!filename.endsWith(".lus")) {
 				System.out.println("Error: input file must have .lus extension");
 			}
@@ -49,27 +43,24 @@ public class JLustre2Kind {
 			program = InlineConstants.program(program);
 			Node main = InlineNodeCalls.program(program);
 			main = FlattenRecordTypes.node(main);
-			
+
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
+
+			String result = main.toString();
+			if (settings.noDot) {
+				result = result.replaceAll("\\.", "~dot~");
+			}
 			
-			write(main.toString(), new File(outFilename));
-			System.out.println("Wrote " + outFilename);
+			if (settings.stdout) {
+				System.out.println(result);
+			} else {
+				Util.writeToFile(result, new File(outFilename));
+				System.out.println("Wrote " + outFilename);
+			}
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(-1);
-		}
-	}
-
-	private static void write(String string, File file) throws IOException {
-		Writer writer = null;
-		try {
-			writer = new BufferedWriter(new FileWriter(file));
-			writer.append(string);
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
 		}
 	}
 }
