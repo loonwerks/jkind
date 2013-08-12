@@ -14,6 +14,7 @@ public class MapRenaming extends Renaming {
 	}
 
 	public MapRenaming(Map<String, String> map, Mode mode) {
+		super();
 		this.map = map;
 		this.mode = mode;
 	}
