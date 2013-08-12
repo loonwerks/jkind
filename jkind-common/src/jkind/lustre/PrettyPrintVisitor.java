@@ -117,30 +117,30 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 			newline();
 		}
 		write("let");
+		newline();
 
 		if (node.id.equals(main)) {
-			newline();
 			write("  --%MAIN");
 			newline();
 		}
 
 		for (Equation equation : node.equations) {
-			newline();
 			write("  ");
 			equation.accept(this);
+			newline();
 			newline();
 		}
 
 		for (Expr assertion : node.assertions) {
-			newline();
 			assertion(assertion);
+			newline();
 		}
 
 		if (!node.properties.isEmpty()) {
-			newline();
 			for (String property : node.properties) {
 				property(property);
 			}
+			newline();
 		}
 
 		write("tel;");
