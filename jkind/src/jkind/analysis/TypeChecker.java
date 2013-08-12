@@ -187,7 +187,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		case EQUAL:
 		case NOTEQUAL:
-			if (left == right) {
+			if (left.equals(right)) {
 				return NamedType.BOOL;
 			}
 			break;
@@ -214,7 +214,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			break;
 
 		case ARROW:
-			if (left == right) {
+			if (left.equals(right)) {
 				return left;
 			}
 			break;
