@@ -20,7 +20,7 @@ import jkind.util.Util;
 public class InlineNodeCalls extends MapVisitor {
 	public static Node program(Program program) {
 		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
-		Node main = program.main;
+		Node main = program.getMainNode();
 
 		List<Expr> assertions = inliner.visitAssertions(main.assertions);
 		List<Equation> equations = inliner.visitEquations(main.equations);

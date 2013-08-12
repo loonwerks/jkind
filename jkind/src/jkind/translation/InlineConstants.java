@@ -24,7 +24,7 @@ public class InlineConstants {
 			inlinedNodes.add(node(node, constants));
 		}
 
-		return new Program(program.location, program.types, emptyConstants, inlinedNodes);
+		return new Program(program.location, program.types, emptyConstants, inlinedNodes, program.main);
 	}
 
 	public static Node node(Node node, Map<String, Expr> constants) {

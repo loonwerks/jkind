@@ -70,11 +70,13 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
+	private String main;
+
 	public Program program(ProgramContext ctx) {
 		List<TypeDef> types = types(ctx.typedef());
 		List<Constant> constants = constants(ctx.constant());
 		List<Node> nodes = nodes(ctx.node());
-		return new Program(loc(ctx), types, constants, nodes);
+		return new Program(loc(ctx), types, constants, nodes, main);
 	}
 
 	private List<TypeDef> types(List<TypedefContext> ctxs) {
@@ -114,6 +116,9 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
+		if (!ctx.main().isEmpty()) {
+			main = id;
+		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions);
 	}
 

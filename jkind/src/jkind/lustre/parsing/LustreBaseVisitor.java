@@ -49,6 +49,8 @@ public class LustreBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 
 	@Override public T visitTypedef(LustreParser.TypedefContext ctx) { return visitChildren(ctx); }
 
+	@Override public T visitMain(LustreParser.MainContext ctx) { return visitChildren(ctx); }
+
 	@Override public T visitIntExpr(LustreParser.IntExprContext ctx) { return visitChildren(ctx); }
 
 	@Override public T visitNode(LustreParser.NodeContext ctx) { return visitChildren(ctx); }

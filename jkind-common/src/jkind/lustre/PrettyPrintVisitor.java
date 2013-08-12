@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 public class PrettyPrintVisitor implements AstVisitor<Void> {
 	private StringBuilder sb = new StringBuilder();
+	private String main;
 
 	@Override
 	public String toString() {
@@ -24,6 +25,8 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 
 	@Override
 	public Void visit(Program program) {
+		main = program.main;
+		
 		if (!program.types.isEmpty()) {
 			for (TypeDef typeDef : program.types) {
 				typeDef.accept(this);
@@ -114,6 +117,12 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 			newline();
 		}
 		write("let");
+
+		if (node.id.equals(main)) {
+			newline();
+			write("  --%MAIN;");
+			newline();
+		}
 
 		for (Equation equation : node.equations) {
 			newline();

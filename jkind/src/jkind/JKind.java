@@ -25,7 +25,7 @@ public class JKind {
 			}
 	
 			Program program = Main.parseLustre(filename);
-			if (program.main == null) {
+			if (program.getMainNode() == null) {
 				System.out.println("Error: no main node");
 				System.exit(-1);
 			}

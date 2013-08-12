@@ -11,7 +11,7 @@ node:
   'returns' '(' output=varDeclList? ')' ';'
   ('var' local=varDeclList ';')?
   'let'
-    (equation | property | assertion)*
+    (equation | property | assertion | main)*
   'tel' ';'?
 ;
 
@@ -33,6 +33,8 @@ type: 'int'                                              # intType
 bound: '-'? INT;
 
 property: '--%PROPERTY' ID ';';
+
+main: '--%MAIN' ';'?;
 
 assertion: 'assert' expr ';';
 
@@ -71,6 +73,5 @@ WS: [ \t\n\r\f]+ -> skip;
 
 SL_COMMENT: '--' (~[%\n\r] ~[\n\r]* | /* empty */) ('\r'? '\n')? -> skip;
 ML_COMMENT: '/*' .*? '*/' -> skip;
-MAIN: '--%MAIN' ';'? -> skip;
 
 ERROR: .;

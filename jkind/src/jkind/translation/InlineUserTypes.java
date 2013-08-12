@@ -23,7 +23,7 @@ public class InlineUserTypes {
 			inlinedNodes.add(node(node, types));
 		}
 
-		return new Program(program.location, emptyTypes, program.constants, inlinedNodes);
+		return new Program(program.location, emptyTypes, program.constants, inlinedNodes, program.main);
 	}
 
 	public static Node node(Node node, Map<String, Type> types) {

@@ -49,6 +49,8 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 
 	T visitTypedef(LustreParser.TypedefContext ctx);
 
+	T visitMain(LustreParser.MainContext ctx);
+
 	T visitIntExpr(LustreParser.IntExprContext ctx);
 
 	T visitNode(LustreParser.NodeContext ctx);

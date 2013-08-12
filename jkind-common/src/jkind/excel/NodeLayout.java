@@ -31,7 +31,7 @@ public class NodeLayout implements Layout {
 	}
 	
 	public NodeLayout(Program program) {
-		this(program.main);
+		this(program.getMainNode());
 	}
 
 	@Override

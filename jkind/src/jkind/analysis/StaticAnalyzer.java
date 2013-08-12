@@ -31,6 +31,7 @@ public class StaticAnalyzer {
 	}
 
 	private static boolean checkErrors(Program program, boolean linearCheck) {
+		Node mainNode = program.getMainNode();
 		boolean result = true;
 		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
@@ -41,9 +42,9 @@ public class StaticAnalyzer {
 		result = result && NodeDependencyChecker.check(program);
 		result = result && variablesUnique(program);
 		result = result && assignmentsSound(program);
-		result = result && propertiesUnique(program.main);
-		result = result && propertiesExist(program.main);
-		result = result && propertiesBoolean(program.main);
+		result = result && propertiesUnique(mainNode);
+		result = result && propertiesExist(mainNode);
+		result = result && propertiesBoolean(mainNode);
 		if (linearCheck) {
 			result = result && LinearChecker.check(program);
 		}
@@ -265,7 +266,7 @@ public class StaticAnalyzer {
 
 	private static void warnUnusedAssertsAndProperties(Program program) {
 		for (Node node : program.nodes) {
-			if (node == program.main) {
+			if (node.id.equals(program.main)) {
 				continue;
 			}
 
