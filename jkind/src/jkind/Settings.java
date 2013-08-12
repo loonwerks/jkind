@@ -1,17 +1,20 @@
 package jkind;
 
 public class Settings {
-	public static int n = 200;
-	public static int timeout = 100;
-	public static boolean excel = false;
-	public static boolean xml = false;
-	public static boolean scratch = false;
-	public static boolean useInductiveProcess = true;
-	public static boolean useInvariantProcess = true;
-	public static boolean inductiveCounterexamples = false;
-	public static boolean reduceInvariants = false;
-	public static boolean smoothCounterexamples = false;
-	public static SolverOption solver = SolverOption.YICES;
-	
-	public static enum SolverOption { YICES, CVC4, Z3 };
+	public int n = 200;
+	public int timeout = 100;
+	public boolean excel = false;
+	public boolean xml = false;
+	public boolean scratch = false;
+	public boolean useInductiveProcess = true;
+	public boolean useInvariantProcess = true;
+	public boolean inductiveCounterexamples = false;
+	public boolean reduceInvariants = false;
+	public boolean smoothCounterexamples = false;
+	public SolverOption solver = SolverOption.YICES;
+	public String filename = null;
+
+	public static enum SolverOption {
+		YICES, CVC4, Z3
+	};
 }

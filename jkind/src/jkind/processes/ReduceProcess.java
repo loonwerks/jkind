@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import jkind.JKindException;
+import jkind.Settings;
 import jkind.invariant.Invariant;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
@@ -25,8 +26,8 @@ import jkind.util.BiMap;
 import jkind.util.SexpUtil;
 
 public class ReduceProcess extends Process {
-	public ReduceProcess(Specification spec, Director director) {
-		super("Reduction", spec, director);
+	public ReduceProcess(Specification spec, Settings settings, Director director) {
+		super("Reduction", spec, settings, director);
 	}
 
 	@Override

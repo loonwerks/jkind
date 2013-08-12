@@ -41,18 +41,20 @@ public class ArgumentParser {
 		return options;
 	}
 
-	public static String parse(String[] args) {
+	public static Settings parse(String[] args) {
 		CommandLineParser parser = new GnuParser();
 		try {
 			CommandLine line = parser.parse(getOptions(), args);
-			setSettings(line);
-			checkSettings();
+			Settings settings = new Settings();
+			setSettings(line, settings);
+			checkSettings(settings);
 			String[] input = line.getArgs();
 			if (input.length != 1) {
 				printHelp();
 				System.exit(-1);
 			}
-			return input[0];
+			settings.filename = input[0];
+			return settings;
 		} catch (Throwable t) {
 			System.out.println("Error reading command line arguments: " + t.getMessage());
 			System.exit(-1);
@@ -65,7 +67,7 @@ public class ArgumentParser {
 		formatter.printHelp("jkind [options] <input>", getOptions());
 	}
 
-	private static void setSettings(CommandLine line) {		
+	private static void setSettings(CommandLine line, Settings settings) {		
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, BMC, REDUCE_INV);
 		ensureExclusive(line, NO_INV_GEN, REDUCE_INV);
@@ -82,50 +84,50 @@ public class ArgumentParser {
 		}
 		
 		if (line.hasOption(BMC)) {
-			Settings.useInductiveProcess = false;
-			Settings.useInvariantProcess = false;
+			settings.useInductiveProcess = false;
+			settings.useInvariantProcess = false;
 		}
 		
 		if (line.hasOption(EXCEL)) {
-			Settings.excel = true;
+			settings.excel = true;
 		}
 		
 		if (line.hasOption(INDUCT_CEX)) {
-			Settings.inductiveCounterexamples = true;
+			settings.inductiveCounterexamples = true;
 		}
 		
 		if (line.hasOption(NO_INV_GEN)) {
-			Settings.useInvariantProcess = false;
+			settings.useInvariantProcess = false;
 		}
 		
 		if (line.hasOption(N)) {
-			Settings.n = Integer.parseInt(line.getOptionValue(N));
+			settings.n = Integer.parseInt(line.getOptionValue(N));
 		}
 		
 		if (line.hasOption(REDUCE_INV)) {
-			Settings.reduceInvariants = true;
+			settings.reduceInvariants = true;
 		}
 		
 		if (line.hasOption(TIMEOUT)) {
-			Settings.timeout = Integer.parseInt(line.getOptionValue(TIMEOUT));
+			settings.timeout = Integer.parseInt(line.getOptionValue(TIMEOUT));
 		}
 		
 		if (line.hasOption(SCRATCH)) {
-			Settings.scratch = true;
+			settings.scratch = true;
 		}
 		
 		if (line.hasOption(SMOOTH))	 {
-			Settings.smoothCounterexamples = true;
+			settings.smoothCounterexamples = true;
 		}
 		
 		if (line.hasOption(SOLVER)) {
 			String solver = line.getOptionValue(SOLVER);
 			if (solver.equals("yices")) {
-				Settings.solver = SolverOption.YICES;
+				settings.solver = SolverOption.YICES;
 			} else if (solver.equals("cvc4")) {
-				Settings.solver = SolverOption.CVC4;
+				settings.solver = SolverOption.CVC4;
 			} else if (solver.equals("z3")) {
-				Settings.solver = SolverOption.Z3;
+				settings.solver = SolverOption.Z3;
 			} else {
 				System.out.println("Unknown solver: " + solver);
 				System.exit(-1);
@@ -133,7 +135,7 @@ public class ArgumentParser {
 		}
 		
 		if (line.hasOption(XML)) {
-			Settings.xml = true;
+			settings.xml = true;
 		}
 	}
 	
@@ -144,23 +146,23 @@ public class ArgumentParser {
 		}
 	}
 
-	private static void checkSettings() {
-		if (Settings.solver == SolverOption.CVC4) {
-			if (Settings.smoothCounterexamples) {
+	private static void checkSettings(Settings settings) {
+		if (settings.solver == SolverOption.CVC4) {
+			if (settings.smoothCounterexamples) {
 				System.out.println("Smoothing not supported with CVC4");
 				System.exit(-1);
 			}
-			if (Settings.reduceInvariants) {
+			if (settings.reduceInvariants) {
 				System.out.println("Invariant reduction not supported with CVC4");
 				System.exit(-1);
 			}
 		}
-		if (Settings.solver == SolverOption.Z3) {
-			if (Settings.smoothCounterexamples) {
+		if (settings.solver == SolverOption.Z3) {
+			if (settings.smoothCounterexamples) {
 				System.out.println("Smoothing not supported with Z3");
 				System.exit(-1);
 			}
-			if (Settings.reduceInvariants) {
+			if (settings.reduceInvariants) {
 				System.out.println("Invariant reduction not supported with Z3");
 				System.exit(-1);
 			}

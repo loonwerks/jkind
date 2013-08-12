@@ -34,6 +34,7 @@ import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
 public class Director {
+	private Settings settings;
 	private Specification spec;
 	private Writer writer;
 
@@ -52,7 +53,8 @@ public class Director {
 
 	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
 
-	public Director(Specification spec) {
+	public Director(Settings settings, Specification spec) {
+		this.settings = settings;
 		this.spec = spec;
 		this.writer = getWriter(spec);
 		this.remainingProperties.addAll(spec.node.properties);
@@ -60,9 +62,9 @@ public class Director {
 
 	private Writer getWriter(Specification spec) {
 		try {
-			if (Settings.excel) {
+			if (settings.excel) {
 				return new ExcelWriter(spec.filename + ".xls", spec.node);
-			} else if (Settings.xml) {
+			} else if (settings.xml) {
 				return new XmlWriter(spec.filename + ".xml", spec.typeMap);
 			} else {
 				return new ConsoleWriter();
@@ -78,7 +80,7 @@ public class Director {
 		startThreads();
 
 		long startTime = System.currentTimeMillis();
-		long timeout = startTime + Settings.timeout * 1000;
+		long timeout = startTime + settings.timeout * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
 				&& someThreadAlive() && !someProcessFailed()) {
 			processMessages(startTime);
@@ -140,31 +142,31 @@ public class Director {
 	}
 
 	private void startThreads() {
-		baseProcess = new BaseProcess(spec, this);
+		baseProcess = new BaseProcess(spec, settings, this);
 		registerProcess(baseProcess);
 
-		if (Settings.useInductiveProcess) {
-			inductiveProcess = new InductiveProcess(spec, this);
+		if (settings.useInductiveProcess) {
+			inductiveProcess = new InductiveProcess(spec, settings, this);
 			baseProcess.setInductiveProcess(inductiveProcess);
 			inductiveProcess.setBaseProcess(baseProcess);
 			registerProcess(inductiveProcess);
 		}
 
-		if (Settings.useInvariantProcess) {
-			invariantProcess = new InvariantProcess(spec);
+		if (settings.useInvariantProcess) {
+			invariantProcess = new InvariantProcess(spec, settings);
 			invariantProcess.setInductiveProcess(inductiveProcess);
 			inductiveProcess.setInvariantProcess(invariantProcess);
 			registerProcess(invariantProcess);
 		}
 
-		if (Settings.reduceInvariants) {
-			reduceProcess = new ReduceProcess(spec, this);
+		if (settings.reduceInvariants) {
+			reduceProcess = new ReduceProcess(spec, settings, this);
 			inductiveProcess.setReduceProcess(reduceProcess);
 			registerProcess(reduceProcess);
 		}
 
-		if (Settings.smoothCounterexamples) {
-			smoothProcess = new SmoothProcess(spec, this);
+		if (settings.smoothCounterexamples) {
+			smoothProcess = new SmoothProcess(spec, settings, this);
 			baseProcess.setSmoothProcess(smoothProcess);
 			registerProcess(smoothProcess);
 		}

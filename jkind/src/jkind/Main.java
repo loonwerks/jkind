@@ -34,7 +34,8 @@ public class Main {
 
 	public static void main(String args[]) {
 		try {
-			String filename = ArgumentParser.parse(args);
+			Settings settings = ArgumentParser.parse(args);
+			String filename = settings.filename;
 			if (!new File(filename).exists()) {
 				System.out.println("Cannot find file " + filename);
 				System.exit(-1);
@@ -58,7 +59,7 @@ public class Main {
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 			Specification spec = new Specification(filename, main, dependencyMap);
-			new Director(spec).run();
+			new Director(settings, spec).run();
 			System.exit(0); // Kills all threads
 		} catch (Exception e) {
 			e.printStackTrace();

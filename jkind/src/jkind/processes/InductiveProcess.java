@@ -34,8 +34,8 @@ public class InductiveProcess extends Process {
 	private InvariantProcess invariantProcess;
 	private ReduceProcess reduceProcess;
 
-	public InductiveProcess(Specification spec, Director director) {
-		super("Inductive", spec, director);
+	public InductiveProcess(Specification spec, Settings settings, Director director) {
+		super("Inductive", spec, settings, director);
 	}
 
 	public void setBaseProcess(BaseProcess baseProcess) {
@@ -52,7 +52,7 @@ public class InductiveProcess extends Process {
 
 	@Override
 	public void main() {
-		for (int k = 0; k <= kMax; k++) {
+		for (int k = 0; k <= settings.n; k++) {
 			debug("K = " + k);
 			processMessagesAndWait(k);
 			assertTransitionAndInvariants(k);
@@ -187,7 +187,7 @@ public class InductiveProcess extends Process {
 	}
 
 	private void sendInductiveCounterexample(String p, BigInteger n, int k, Model model) {
-		if (Settings.inductiveCounterexamples) {
+		if (settings.inductiveCounterexamples) {
 			director.incoming.add(new InductiveCounterexampleMessage(p, n, k, model));
 		}
 	}

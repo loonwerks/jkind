@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import jkind.JKindException;
+import jkind.Settings;
 import jkind.lustre.VarDecl;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.Message;
@@ -18,8 +19,8 @@ import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public class SmoothProcess extends Process {
-	public SmoothProcess(Specification spec, Director director) {
-		super("Smoothing", spec, director);
+	public SmoothProcess(Specification spec, Settings settings, Director director) {
+		super("Smoothing", spec, settings, director);
 	}
 
 	@Override

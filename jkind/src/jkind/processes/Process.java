@@ -24,28 +24,29 @@ import jkind.translation.Specification;
 
 public abstract class Process implements Runnable {
 	protected Specification spec;
+	protected Settings settings;
 	protected Director director;
 	protected List<String> properties;
 
 	protected Solver solver;
 	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
-	protected int kMax = Settings.n;
 
 	private String name;
 	private PrintWriter scratch;
 	private Throwable throwable;
 
-	public Process(String name, Specification spec, Director director) {
+	public Process(String name, Specification spec, Settings settings, Director director) {
 		this.name = name;
 		this.spec = spec;
+		this.settings = settings;
 		this.director = director;
 		this.properties = new ArrayList<>(spec.node.properties);
 		this.scratch = getScratch(spec.filename, name);
 	}
 
-	private static PrintWriter getScratch(String base, String proc) {
+	private PrintWriter getScratch(String base, String proc) {
 		String filename = base + "." + proc.toLowerCase() + "." + getSolverExtension();
-		if (Settings.scratch) {
+		if (settings.scratch) {
 			try {
 				return new PrintWriter(new FileOutputStream(filename), true);
 			} catch (FileNotFoundException e) {
@@ -56,8 +57,8 @@ public abstract class Process implements Runnable {
 		}
 	}
 
-	private static String getSolverExtension() {
-		switch (Settings.solver) {
+	private String getSolverExtension() {
+		switch (settings.solver) {
 		case YICES:
 			return "yc";
 		case CVC4:
@@ -88,7 +89,7 @@ public abstract class Process implements Runnable {
 	}
 
 	protected void initializeSolver() {
-		switch (Settings.solver) {
+		switch (settings.solver) {
 		case YICES:
 			solver = new YicesSolver();
 			break;
@@ -102,7 +103,7 @@ public abstract class Process implements Runnable {
 			break;
 		}
 
-		if (Settings.scratch) {
+		if (settings.scratch) {
 			solver.setDebug(scratch);
 		}
 
