@@ -1,0 +1,16 @@
+-- A small test of slicing for assertions
+-- Expected output:
+-- VALID PROPERTIES: [prop]
+
+node main(x, y : int) returns ();
+var
+  a, b, c : int;
+  prop : bool;
+let
+  a = b;
+  b = c;
+  c = x;
+  assert a > 0;
+  prop = x > 0;
+  --%PROPERTY prop;
+tel;
