@@ -21,13 +21,15 @@ public class InlineNodeCalls extends MapVisitor {
 	public static Node program(Program program) {
 		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
 		Node main = program.main;
-		List<Equation> equations = inliner.visit(main);
 
+		List<Expr> assertions = inliner.visitAssertions(main.assertions);
+		List<Equation> equations = inliner.visitEquations(main.equations);
+		
 		List<VarDecl> locals = new ArrayList<>(main.locals);
 		locals.addAll(inliner.newLocals);
 
 		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				main.properties, main.assertions);
+				main.properties, assertions);
 	}
 
 	private final Map<String, Node> nodeTable;
@@ -39,8 +41,16 @@ public class InlineNodeCalls extends MapVisitor {
 		this.nodeTable = nodeTable;
 	}
 
-	private List<Equation> visit(Node node) {
-		queue.addAll(node.equations);
+	private List<Expr> visitAssertions(List<Expr> assertions) {
+		List<Expr> result = new ArrayList<>();
+		for (Expr assertion : assertions) {
+			result.add(assertion.accept(this));
+		}
+		return result;
+	}
+
+	private List<Equation> visitEquations(List<Equation> equations) {
+		queue.addAll(equations);
 		List<Equation> result = new ArrayList<>();
 
 		while (!queue.isEmpty()) {
