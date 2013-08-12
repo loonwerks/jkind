@@ -20,7 +20,7 @@ import jkind.util.Util;
 
 public class Lustre2Sexps {
 	private StreamDef transition;
-	private List<StreamDecl> declarations = new ArrayList<>();
+	private final List<StreamDecl> declarations = new ArrayList<>();
 
 	public Lustre2Sexps(Node node) {
 		createDefinitions(node);
@@ -49,12 +49,7 @@ public class Lustre2Sexps {
 		}
 		
 		for (Expr assertion : node.assertions) {
-			conjuncts.add(assertion.accept(new Expr2SexpVisitor(SexpUtil.I)));
-		}
-		
-		if (visitor.hasSideConditions()) {
-			declarations.addAll(visitor.getSideConditionDeclarations());
-			conjuncts.addAll(visitor.getSideConditions());
+			conjuncts.add(assertion.accept(visitor));
 		}
 
 		Lambda lambda = new Lambda(SexpUtil.I, new Cons("and", conjuncts));
