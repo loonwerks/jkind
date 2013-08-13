@@ -1,5 +1,6 @@
 package jkind.api.xml;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +48,7 @@ public class JKindXmlFileInputStream extends InputStream {
 			}
 
 			try {
-				stream = new FileInputStream(xmlFile);
+				stream = new BufferedInputStream(new FileInputStream(xmlFile));
 			} catch (FileNotFoundException e) {
 				// File deleted before we could open it
 				return false;
