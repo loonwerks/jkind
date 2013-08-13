@@ -13,15 +13,20 @@ public class Benchmark {
 
 	private static int N = 3;
 
-	public static void main(String args[]) throws Exception {
-		LOG.delete();
-
-		System.out.println("Arguments: " + join(args));
-		System.out.println();
-		System.out.println("File, Runtime");
-		for (String file : getFiles()) {
-			System.out.printf("%s, %.1f", file, getMedianRuntime(args, file));
+	public static void main(String args[]) {
+		try {
+			LOG.delete();
+	
+			System.out.println("Arguments: " + join(args));
 			System.out.println();
+			System.out.println("File, Runtime");
+			for (String file : getFiles()) {
+				System.out.printf("%s, %.1f", file, getMedianRuntime(args, file));
+				System.out.println();
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.exit(-1);
 		}
 	}
 
