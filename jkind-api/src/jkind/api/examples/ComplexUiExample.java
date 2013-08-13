@@ -12,6 +12,7 @@ import jkind.api.results.CompositeAnalysisResult;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.Renaming;
+import jkind.api.results.Status;
 import jkind.api.ui.AnalysisResultTree;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -180,14 +181,16 @@ public class ComplexUiExample {
 			}
 		});
 	}
-	
+
 	public static void click(Shell parent, JKindResult result) {
-		try {
-			File file = File.createTempFile("cex", ".xls");
-			result.toExcel(file);
-			BasicUiExample.openFile(file);
-		} catch (Throwable t) {
-			MessageDialog.openError(parent, "Error opening Excel file", t.getMessage());
+		if (result.getMultiStatus().getOverallStatus() != Status.WAITING) {
+			try {
+				File file = File.createTempFile("cex", ".xls");
+				result.toExcel(file);
+				BasicUiExample.openFile(file);
+			} catch (Throwable t) {
+				MessageDialog.openError(parent, "Error opening Excel file", t.getMessage());
+			}
 		}
 	}
 
