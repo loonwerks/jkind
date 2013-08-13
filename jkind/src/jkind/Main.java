@@ -19,6 +19,15 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
+/**
+ * This class serves as a single entry point for all JKind-based command line
+ * tools. This allows us to distribute a single jar for all tools. It would not
+ * be enough to simply put this jar is the classpath and load the appropriate
+ * main, because we rely on some third-party jars which Java is not able to load
+ * out of another jar. Instead, we use Eclipse's "Export to Runnable JAR"
+ * feature which comes with a jar-in-jar loader. The downside is that such
+ * runnable JARs allow only a single entry point.
+ */
 public class Main {
 	final public static String VERSION = "1.4";
 
@@ -45,7 +54,7 @@ public class Main {
 		case "-jlustre2excel":
 			JLustre2Excel.main(subArgs);
 			break;
-			
+
 		case "-benchmark":
 			Benchmark.main(subArgs);
 			break;
