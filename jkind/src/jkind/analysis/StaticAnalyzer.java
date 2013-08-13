@@ -15,6 +15,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -102,6 +103,15 @@ public class StaticAnalyzer {
 				System.out.println("Error at line " + subrange.location + " subrange is empty");
 				return false;
 			}
+		} else if (type instanceof RecordType) {
+			RecordType recordType = (RecordType) type;
+			boolean result = true;
+			for (Type subType : recordType.fields.values()) {
+				if (!checkSubrangeNonempty(subType)) {
+					result = false;
+				}
+			}
+			return result;
 		}
 
 		return true;
