@@ -223,6 +223,7 @@ public class JKindApi {
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) {
 		List<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(getJKindCommand()));
+		args.add("-jkind");
 		args.add("-xml");
 		if (timeout != null) {
 			args.add("-timeout");
