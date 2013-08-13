@@ -164,9 +164,10 @@ public class JKindApi {
 			parseThread.start();
 			readOutput(process, result, monitor);
 		} finally {
+			int code = 0;
 			if (process != null) {
 				process.destroy();
-				process.waitFor();
+				code = process.waitFor();
 			}
 			xmlStream.done();
 			parseThread.join();
@@ -176,6 +177,9 @@ public class JKindApi {
 				result.done();
 			}
 			monitor.done();
+			if (code != 0) {
+				throw new JKindException("Abnormal termination, exit code " + code);
+			}
 		}
 
 		if (parseThread.getThrowable() != null) {
