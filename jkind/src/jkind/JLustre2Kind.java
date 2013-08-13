@@ -19,10 +19,10 @@ public class JLustre2Kind {
 			JLustre2KindSettings settings = JLustre2KindArgumentParser.parse(args);
 			String filename = settings.filename;
 
-			if (!filename.endsWith(".lus")) {
+			if (!filename.toLowerCase().endsWith(".lus")) {
 				System.out.println("Error: input file must have .lus extension");
 			}
-			String outFilename = filename.replaceAll(".lus$", ".kind.lus");
+			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
 
 			if (!new File(filename).exists()) {
 				System.out.println("Error: cannot find file " + filename);
