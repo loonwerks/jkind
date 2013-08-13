@@ -15,7 +15,7 @@ public class JLustre2Excel {
 	public static void main(String args[]) {
 		try {
 			if (args.length != 1) {
-				System.out.println("Usage: jlustre2excel <input>");
+				System.out.println("usage: jlustre2excel <input>");
 				System.exit(-1);
 			}
 			String filename = args[0];
