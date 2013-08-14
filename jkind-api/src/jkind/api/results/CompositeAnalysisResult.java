@@ -31,7 +31,7 @@ public class CompositeAnalysisResult extends AnalysisResult implements PropertyC
 		return Collections.unmodifiableList(children);
 	}
 
-	public MultiStatus getStatus() {
+	public MultiStatus getMultiStatus() {
 		return multiStatus;
 	}
 
