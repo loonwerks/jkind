@@ -177,7 +177,7 @@ public class JKindApi {
 				result.done();
 			}
 			monitor.done();
-			if (code != 0) {
+			if (code != 0 && !monitor.isCanceled()) {
 				throw new JKindException("Abnormal termination, exit code " + code);
 			}
 		}
