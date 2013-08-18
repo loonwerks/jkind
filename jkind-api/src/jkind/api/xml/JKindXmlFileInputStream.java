@@ -66,6 +66,7 @@ public class JKindXmlFileInputStream extends InputStream {
 	public void close() throws IOException {
 		if (stream != null) {
 			stream.close();
+			stream = null;
 		}
 	}
 }

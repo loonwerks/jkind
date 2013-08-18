@@ -31,9 +31,9 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void end() {
-		ExcelFormatter formatter = new ExcelFormatter(file, new NodeLayout(node));
-		formatter.write(properties);
-		formatter.close();
+		try (ExcelFormatter formatter = new ExcelFormatter(file, new NodeLayout(node))) {
+			formatter.write(properties);
+		}
 	}
 
 	@Override

@@ -60,9 +60,7 @@ public class BasicUiExample {
 		 * of this example.
 		 */
 
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(file));
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			List<String> properties = new ArrayList<>();
 			Pattern pattern = Pattern.compile(".*--%PROPERTY +([a-zA-Z_0-9]*) *;.*");
 			String line;
@@ -75,10 +73,6 @@ public class BasicUiExample {
 			}
 
 			return properties;
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
 		}
 	}
 

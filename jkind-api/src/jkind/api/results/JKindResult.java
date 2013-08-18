@@ -198,9 +198,9 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 * @throws jkind.JKindException
 	 */
 	public void toExcel(File file, Layout layout) {
-		ExcelFormatter formatter = new ExcelFormatter(file, layout);
-		formatter.write(getProperties());
-		formatter.close();
+		try (ExcelFormatter formatter = new ExcelFormatter(file, layout)) {
+			formatter.write(getProperties());
+		}
 	}
 
 	private List<Property> getProperties() {

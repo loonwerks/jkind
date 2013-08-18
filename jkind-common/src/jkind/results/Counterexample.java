@@ -136,14 +136,8 @@ public final class Counterexample {
 	 * @throws jkind.JKindException
 	 */
 	public void toExcel(File file, Layout layout) {
-		ExcelCounterexampleFormatter formatter = null;
-		try {
-			formatter = new ExcelCounterexampleFormatter(file, layout);
+		try (ExcelCounterexampleFormatter formatter = new ExcelCounterexampleFormatter(file, layout)) {
 			formatter.writeCounterexample("Counterexample", this);
-		} finally {
-			if (formatter != null) {
-				formatter.close();
-			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 package jkind.excel;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
-public class ExcelCounterexampleFormatter {
+public class ExcelCounterexampleFormatter implements Closeable {
 	final private Layout layout;
 
 	private WritableWorkbook workbook;
@@ -55,11 +56,13 @@ public class ExcelCounterexampleFormatter {
 		this.layout = layout;
 	}
 
+	@Override
 	public void close() {
 		try {
 			if (workbook != null) {
 				workbook.write();
 				workbook.close();
+				workbook = null;
 			}
 		} catch (Exception e) {
 			throw new JKindException("Error closing Excel file", e);

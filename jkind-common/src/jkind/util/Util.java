@@ -55,7 +55,7 @@ public class Util {
 		}
 		return nodeTable;
 	}
-	
+
 	public static String getName(Type type) {
 		if (type instanceof NamedType) {
 			NamedType namedType = (NamedType) type;
@@ -87,7 +87,7 @@ public class Util {
 
 		throw new JKindException("Unable to parse " + value + " as " + type);
 	}
-	
+
 	public static Type resolveType(Type type, Map<String, Type> map) {
 		if (type instanceof NamedType) {
 			NamedType namedType = (NamedType) type;
@@ -109,16 +109,10 @@ public class Util {
 			return null;
 		}
 	}
-	
+
 	public static void writeToFile(String content, File file) throws IOException {
-		Writer writer = null;
-		try {
-			writer = new BufferedWriter(new FileWriter(file));
+		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 			writer.append(content);
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
 		}
 	}
 }
