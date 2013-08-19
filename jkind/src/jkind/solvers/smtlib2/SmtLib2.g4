@@ -12,7 +12,7 @@ body: symbol                               # symbolBody
     | '(' fn body* ')'                     # consBody
     ;
 
-fn: '=' | '-' | '/' | 'and' | 'ite' | 'not';
+fn: '=' | '-' | '/' | 'and' | 'ite' | 'not' | '>=' | '<=' | '<' | '>';
 
 symbol: ID | BOOL | INT | REAL;
 

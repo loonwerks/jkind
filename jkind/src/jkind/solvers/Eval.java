@@ -47,7 +47,7 @@ public class Eval {
 				return BoolValue.TRUE;
 			}
 		}
-		
+
 		List<Value> args = new ArrayList<>();
 		for (Sexp arg : sexp.args) {
 			args.add(eval(arg));
@@ -60,22 +60,40 @@ public class Eval {
 	}
 
 	private Value evalFunction(String fn, List<Value> args) {
-		if (fn.equals("=")) {
+		switch (fn) {
+		case "=":
 			return BoolValue.fromBool(args.get(0).equals(args.get(1)));
-		} else if (fn.equals("-")) {
+		case "-":
 			NumericValue x = (NumericValue) args.get(0);
 			return new NumericValue("-" + x);
-		} else if (fn.equals("/")) {
+		case "/": {
 			NumericValue p = (NumericValue) args.get(0);
 			NumericValue q = (NumericValue) args.get(1);
 			return new NumericValue(p + "/" + q);
-		} else if (fn.equals("<=")) {
+		}
+		case "<=": {
 			BigInteger p = new BigInteger(args.get(0).toString());
 			BigInteger q = new BigInteger(args.get(1).toString());
 			return BoolValue.fromBool(p.compareTo(q) <= 0);
-		} else if (fn.equals("not")) {
+		}
+		case ">=": {
+			BigInteger p = new BigInteger(args.get(0).toString());
+			BigInteger q = new BigInteger(args.get(1).toString());
+			return BoolValue.fromBool(p.compareTo(q) >= 0);
+		}
+		case "<": {
+			BigInteger p = new BigInteger(args.get(0).toString());
+			BigInteger q = new BigInteger(args.get(1).toString());
+			return BoolValue.fromBool(p.compareTo(q) < 0);
+		}
+		case ">": {
+			BigInteger p = new BigInteger(args.get(0).toString());
+			BigInteger q = new BigInteger(args.get(1).toString());
+			return BoolValue.fromBool(p.compareTo(q) > 0);
+		}
+		case "not":
 			return BoolValue.fromBool(!isTrue(args.get(0)));
-		} else {
+		default:
 			BigInteger index = new BigInteger(args.get(0).toString());
 			return model.getFunctionValue(fn, index);
 		}
