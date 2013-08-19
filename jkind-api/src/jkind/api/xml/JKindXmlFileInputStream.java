@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class JKindXmlFileInputStream extends InputStream {
 	private final File xmlFile;
 	private InputStream stream;
-	private boolean done;
+	private volatile boolean done;
 	private static final int POLL_INTERVAL = 100;
 
 	public JKindXmlFileInputStream(File xmlFile) {
