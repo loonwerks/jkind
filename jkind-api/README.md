@@ -1,3 +1,9 @@
+API Users
+=========
+See the [examples](https://github.com/agacek/jkind/tree/master/jkind-api/src/jkind/api/examples) for how to use JKind API.
+
+API Developers
+==============
 JKind API requires JFace and SWT libraries, the latter of which is
 platform dependent. To handle this, the project depends on a user
 library called JFace which needs to contain:
