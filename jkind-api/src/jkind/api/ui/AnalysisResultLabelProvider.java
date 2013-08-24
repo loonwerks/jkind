@@ -1,5 +1,6 @@
 package jkind.api.ui;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import jkind.api.results.AnalysisResult;
@@ -62,10 +63,13 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 	private static final Image CANCEL_IMAGE = loadImage("/cancel.png");
 	private static final Image ERROR_IMAGE = loadImage("/error.png");
 	private Spinner workingSpinner;
-	
+
 	private static Image loadImage(String filename) {
-		InputStream stream = AnalysisResultLabelProvider.class.getResourceAsStream(filename);
-		return new Image(null, new ImageData(stream));
+		try (InputStream stream = AnalysisResultLabelProvider.class.getResourceAsStream(filename)) {
+			return new Image(null, new ImageData(stream));
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -111,7 +115,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 	@Override
 	public void dispose() {
 		if (workingSpinner != null) {
-			workingSpinner.stop();
+			workingSpinner.dispose();
 		}
 	}
 }

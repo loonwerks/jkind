@@ -1,5 +1,6 @@
 package jkind.api.ui;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +21,17 @@ public class Spinner {
 
 	public Spinner(String filename, final ColumnViewer viewer) {
 		ImageLoader loader = new ImageLoader();
-		InputStream stream = AnalysisResultLabelProvider.class.getResourceAsStream(filename);
-		if (stream == null) {
-			throw new JKindException("Unable to find resource: " + filename);
-		}
+		try (InputStream stream = AnalysisResultLabelProvider.class.getResourceAsStream(filename)) {
+			if (stream == null) {
+				throw new JKindException("Unable to find resource: " + filename);
+			}
 
-		loader.load(stream);
-		for (ImageData data : loader.data) {
-			frames.add(new Image(null, data));
-			delays.add(data.delayTime * 10);
+			loader.load(stream);
+			for (ImageData data : loader.data) {
+				frames.add(new Image(null, data));
+				delays.add(data.delayTime * 10);
+			}
+		} catch (IOException e) {
 		}
 
 		thread = new Thread("Spinner") {
@@ -58,10 +61,13 @@ public class Spinner {
 		return frames.get(current);
 	}
 
-	public void stop() {
+	public void dispose() {
 		if (thread != null) {
 			thread.interrupt();
 			thread = null;
+		}
+		for (Image image : frames) {
+			image.dispose();
 		}
 	}
 }

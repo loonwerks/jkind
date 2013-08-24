@@ -155,6 +155,7 @@ public class JKindApi {
 			ParserConfigurationException, SAXException {
 		ProcessBuilder builder = getJKindProcessBuilder(lustreFile);
 		Process process = null;
+		@SuppressWarnings("resource")
 		JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile);
 		XmlParseThread parseThread = new XmlParseThread(xmlStream, result);
 
@@ -169,14 +170,18 @@ public class JKindApi {
 				process.destroy();
 				code = process.waitFor();
 			}
+			
 			xmlStream.done();
 			parseThread.join();
+			xmlStream.close();
+			
 			if (monitor.isCanceled()) {
 				result.cancel();
 			} else {
 				result.done();
 			}
 			monitor.done();
+			
 			if (code != 0 && !monitor.isCanceled()) {
 				throw new JKindException("Abnormal termination, exit code " + code);
 			}
