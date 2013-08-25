@@ -1,6 +1,5 @@
 package jkind.api.examples;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -30,6 +29,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -171,22 +171,10 @@ public class BasicUiExample {
 			try {
 				File file = File.createTempFile("cex", ".xls");
 				cex.toExcel(file);
-				openFile(file);
+				Program.launch(file.toString());
 			} catch (Throwable t) {
 				MessageDialog.openError(parent, "Error opening Excel file", t.getMessage());
 			}
-		}
-	}
-
-	public static void openFile(File file) throws IOException {
-		if (System.getProperty("os.name").startsWith("Windows")) {
-			/*
-			 * Desktop.open is slow initially on Windows, so we call explorer
-			 * directly instead
-			 */
-			new ProcessBuilder("explorer", file.toString()).start();
-		} else {
-			Desktop.getDesktop().open(file);
 		}
 	}
 

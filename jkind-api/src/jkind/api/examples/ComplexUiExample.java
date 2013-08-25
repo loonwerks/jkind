@@ -27,6 +27,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -187,7 +188,7 @@ public class ComplexUiExample {
 			try {
 				File file = File.createTempFile("cex", ".xls");
 				result.toExcel(file);
-				BasicUiExample.openFile(file);
+				Program.launch(file.toString());
 			} catch (Throwable t) {
 				MessageDialog.openError(parent, "Error opening Excel file", t.getMessage());
 			}
