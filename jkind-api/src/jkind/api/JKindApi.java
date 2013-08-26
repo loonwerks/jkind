@@ -28,6 +28,7 @@ public class JKindApi {
 	private Integer n = null;
 	private boolean inductiveCounterexamples = false;
 	private boolean reduceInvariants = false;
+	private boolean smoothCounterexamples = false;
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -67,6 +68,13 @@ public class JKindApi {
 	 */
 	public void setReduceInvariants() {
 		reduceInvariants = true;
+	}
+	
+	/**
+	 * Post-process counterexamples so that input variables have a minimal number of changes
+	 */
+	public void setSmoothCounterexamples() {
+		smoothCounterexamples = true;
 	}
 
 	/**
@@ -242,6 +250,9 @@ public class JKindApi {
 		}
 		if (reduceInvariants) {
 			args.add("-reduce_inv");
+		}
+		if (smoothCounterexamples) {
+			args.add("-smooth");
 		}
 		args.add(lustreFile.toString());
 
