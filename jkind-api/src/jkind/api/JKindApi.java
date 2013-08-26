@@ -155,40 +155,39 @@ public class JKindApi {
 			ParserConfigurationException, SAXException {
 		ProcessBuilder builder = getJKindProcessBuilder(lustreFile);
 		Process process = null;
-		@SuppressWarnings("resource")
-		JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile);
-		XmlParseThread parseThread = new XmlParseThread(xmlStream, result);
-
-		try {
-			result.start();
-			process = builder.start();
-			parseThread.start();
-			readOutput(process, result, monitor);
-		} finally {
-			int code = 0;
-			if (process != null) {
-				process.destroy();
-				code = process.waitFor();
+		try (JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile)) {
+			XmlParseThread parseThread = new XmlParseThread(xmlStream, result);
+	
+			try {
+				result.start();
+				process = builder.start();
+				parseThread.start();
+				readOutput(process, result, monitor);
+			} finally {
+				int code = 0;
+				if (process != null) {
+					process.destroy();
+					code = process.waitFor();
+				}
+				
+				xmlStream.done();
+				parseThread.join();
+				
+				if (monitor.isCanceled()) {
+					result.cancel();
+				} else {
+					result.done();
+				}
+				monitor.done();
+				
+				if (code != 0 && !monitor.isCanceled()) {
+					throw new JKindException("Abnormal termination, exit code " + code);
+				}
 			}
-			
-			xmlStream.done();
-			parseThread.join();
-			xmlStream.close();
-			
-			if (monitor.isCanceled()) {
-				result.cancel();
-			} else {
-				result.done();
+	
+			if (parseThread.getThrowable() != null) {
+				throw new JKindException("Error parsing XML", parseThread.getThrowable());
 			}
-			monitor.done();
-			
-			if (code != 0 && !monitor.isCanceled()) {
-				throw new JKindException("Abnormal termination, exit code " + code);
-			}
-		}
-
-		if (parseThread.getThrowable() != null) {
-			throw new JKindException("Error parsing XML", parseThread.getThrowable());
 		}
 	}
 

@@ -59,7 +59,7 @@ public class JKindXmlFileInputStream extends InputStream {
 	}
 
 	public void done() {
-		this.done = true;
+		done = true;
 	}
 
 	@Override
