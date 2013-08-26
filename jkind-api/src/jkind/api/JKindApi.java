@@ -71,7 +71,7 @@ public class JKindApi {
 	}
 	
 	/**
-	 * Post-process counterexamples so that input variables have a minimal number of changes
+	 * Post-process counterexamples to have minimal input value changes
 	 */
 	public void setSmoothCounterexamples() {
 		smoothCounterexamples = true;
