@@ -1,0 +1,23 @@
+-- This file has one top level property which requires subnode
+-- properties in order to prove
+
+node counter() returns (x : int);
+var
+  lemma : bool;
+let
+  x = 0 -> 1 + pre x;
+
+  lemma = x >= 0;
+  --%PROPERTY lemma;
+tel;
+
+node ten() returns (ten : bool);
+let
+  ten = counter() >= 10;
+tel;
+
+node main() returns (prop : bool);
+let
+  prop = counter() < 10 or ten();
+  --%PROPERTY prop;
+tel;
