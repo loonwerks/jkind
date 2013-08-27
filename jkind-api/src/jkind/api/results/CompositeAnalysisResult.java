@@ -50,4 +50,9 @@ public class CompositeAnalysisResult extends AnalysisResult implements PropertyC
 			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return name + children;
+	}
 }

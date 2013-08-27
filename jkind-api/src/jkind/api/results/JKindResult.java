@@ -242,4 +242,9 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return name + propertyResults;
+	}
 }

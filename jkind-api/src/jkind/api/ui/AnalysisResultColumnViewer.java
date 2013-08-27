@@ -20,7 +20,7 @@ public abstract class AnalysisResultColumnViewer {
 	/**
 	 * Warning: This method will be called by the JKindColumnViewer constructor
 	 * and thus subclasses will not be fully initialized at this time.
-	 * Subclasses may use this method to initialized themselves.
+	 * Subclasses may use this method to initialize themselves.
 	 */
 	protected abstract ColumnViewer createViewer();
 	
