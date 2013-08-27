@@ -27,6 +27,7 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
 import jkind.lustre.values.Value;
+import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
@@ -119,7 +120,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(RealExpr e) {
-		return new RealValue(e.value);
+		return new RealValue(new BigFraction(e.value));
 	}
 
 	@Override

@@ -1,39 +1,17 @@
 package jkind.lustre.values;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
+import jkind.util.BigFraction;
 
 /**
  * A real signal value
- * 
- * Stored as <code>num</code> / <code>denom</code> where <code>denom</code> is
- * always positive
  */
 public class RealValue extends Value implements Comparable<RealValue> {
-	final public BigInteger num;
-	final public BigInteger denom; // Always positive
-
-	public RealValue(BigInteger num, BigInteger denom) {
-		if (denom.equals(BigInteger.ZERO)) {
-			throw new ArithmeticException("Divide by zero");
-		}
-
-		if (denom.compareTo(BigInteger.ZERO) > 0) {
-			this.num = num;
-			this.denom = denom;
-		} else {
-			this.num = num.negate();
-			this.denom = denom.negate();
-		}
-	}
-
-	public RealValue(BigDecimal value) {
-		BigInteger TEN = BigInteger.valueOf(10);
-		this.num = value.unscaledValue();
-		this.denom = TEN.pow(value.scale());
+	final public BigFraction value;
+	
+	public RealValue(BigFraction value) {
+		this.value = value;
 	}
 
 	@Override
@@ -45,15 +23,13 @@ public class RealValue extends Value implements Comparable<RealValue> {
 
 		switch (op) {
 		case PLUS:
-			return new RealValue(num.multiply(other.denom).add(other.num.multiply(denom)),
-					denom.multiply(other.denom));
+			return new RealValue(value.add(other.value));
 		case MINUS:
-			return new RealValue(num.multiply(other.denom).subtract(other.num.multiply(denom)),
-					denom.multiply(other.denom));
+			return new RealValue(value.subtract(other.value));
 		case MULTIPLY:
-			return new RealValue(num.multiply(other.num), denom.multiply(other.denom));
+			return new RealValue(value.multiply(other.value));
 		case DIVIDE:
-			return new RealValue(num.multiply(other.denom), denom.multiply(other.num));
+			return new RealValue(value.divide(other.value));
 		case EQUAL:
 			return BooleanValue.fromBoolean(compareTo(other) == 0);
 		case NOTEQUAL:
@@ -73,14 +49,14 @@ public class RealValue extends Value implements Comparable<RealValue> {
 
 	@Override
 	public int compareTo(RealValue other) {
-		return num.multiply(other.denom).compareTo(other.num.multiply(denom));
+		return value.compareTo(other.value);
 	}
 
 	@Override
 	public Value applyUnaryOp(UnaryOp op) {
 		switch (op) {
 		case NEGATIVE:
-			return new RealValue(num.negate(), denom);
+			return new RealValue(value.negate());
 		default:
 			return null;
 		}
@@ -88,14 +64,6 @@ public class RealValue extends Value implements Comparable<RealValue> {
 
 	@Override
 	public String toString() {
-		BigInteger gcd = num.gcd(denom);
-		BigInteger reducedNum = num.divide(gcd);
-		BigInteger reducedDenom = denom.divide(gcd);
-
-		if (reducedDenom.equals(BigInteger.ONE)) {
-			return reducedNum.toString();
-		} else {
-			return reducedNum.toString() + "/" + reducedDenom.toString();
-		}
+		return value.toString();
 	}
 }

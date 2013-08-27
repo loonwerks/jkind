@@ -81,7 +81,7 @@ public class Util {
 			if (strs.length <= 2) {
 				BigInteger num = new BigInteger(strs[0]);
 				BigInteger denom = strs.length > 1 ? new BigInteger(strs[1]) : BigInteger.ONE;
-				return new RealValue(num, denom);
+				return new RealValue(new BigFraction(num, denom));
 			}
 		}
 

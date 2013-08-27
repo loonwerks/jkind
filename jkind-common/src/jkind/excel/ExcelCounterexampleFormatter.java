@@ -141,8 +141,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			sheet.addCell(new Number(col, row, iv.value.doubleValue(), format));
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			double quotient = rv.num.doubleValue() / rv.denom.doubleValue();
-			sheet.addCell(new Number(col, row, quotient, format));
+			sheet.addCell(new Number(col, row, rv.value.doubleValue(), format));
 		} else {
 			throw new JKindException("Unknown value type in Excel writer: "
 					+ value.getClass().getSimpleName());

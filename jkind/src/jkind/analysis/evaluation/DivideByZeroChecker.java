@@ -11,6 +11,7 @@ import jkind.lustre.Program;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.util.BigFraction;
 
 public class DivideByZeroChecker extends IterVisitor {
 	private ConstantEvaluator constantEvaluator;
@@ -60,7 +61,7 @@ public class DivideByZeroChecker extends IterVisitor {
 			return (iv.value.compareTo(BigInteger.ZERO) == 0);
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			return (rv.num.equals(BigInteger.ZERO));
+			return (rv.value.equals(BigFraction.ZERO));
 		} else {
 			return false;
 		}
