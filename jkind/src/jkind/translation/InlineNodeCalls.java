@@ -27,13 +27,16 @@ public class InlineNodeCalls extends MapVisitor {
 		
 		List<VarDecl> locals = new ArrayList<>(main.locals);
 		locals.addAll(inliner.newLocals);
+		List<String> properties = new ArrayList<>(main.properties);
+		properties.addAll(inliner.newProperties);
 
 		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				main.properties, assertions);
+				properties, assertions);
 	}
 
 	private final Map<String, Node> nodeTable;
 	private final List<VarDecl> newLocals = new ArrayList<>();
+	private final List<String> newProperties = new ArrayList<>();
 	private final Map<String, Integer> usedNames = new HashMap<>();
 	private final Queue<Equation> queue = new ArrayDeque<>();
 
@@ -85,6 +88,7 @@ public class InlineNodeCalls extends MapVisitor {
 
 		createInputEquations(node.inputs, e.args, translation);
 		createAssignmentEquations(node.equations, translation);
+		accumulateProperties(node.properties, translation);
 
 		List<IdExpr> result = new ArrayList<>();
 		for (VarDecl decl : node.outputs) {
@@ -135,6 +139,12 @@ public class InlineNodeCalls extends MapVisitor {
 			}
 			Expr expr = eq.expr.accept(substitution);
 			queue.add(new Equation(eq.location, lhs, expr));
+		}
+	}
+
+	private void accumulateProperties(List<String> properties, Map<String, IdExpr> translation) {
+		for (String property : properties) {
+			newProperties.add(translation.get(property).id);
 		}
 	}
 }

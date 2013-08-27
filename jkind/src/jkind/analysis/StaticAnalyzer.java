@@ -54,7 +54,7 @@ public class StaticAnalyzer {
 	}
 
 	private static boolean checkWarnings(Program program) {
-		warnUnusedAssertsAndProperties(program);
+		warnUnusedAsserts(program);
 		warnAlgebraicLoops(program);
 		WarnUnguardedPreVisitor.check(program);
 
@@ -274,7 +274,7 @@ public class StaticAnalyzer {
 		return allBoolean;
 	}
 
-	private static void warnUnusedAssertsAndProperties(Program program) {
+	private static void warnUnusedAsserts(Program program) {
 		for (Node node : program.nodes) {
 			if (node.id.equals(program.main)) {
 				continue;
@@ -283,11 +283,6 @@ public class StaticAnalyzer {
 			for (Expr expr : node.assertions) {
 				System.out.println("Warning at line " + expr.location
 						+ " assertion in subnode ignored");
-			}
-
-			for (String prop : node.properties) {
-				System.out.println("Warning: Property '" + prop + "' in subnode '" + node.id
-						+ "' is ignored");
 			}
 		}
 	}

@@ -7,8 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -250,7 +248,7 @@ public class Director {
 
 	private Counterexample extractCounterexample(int k, BigInteger offset, Model model) {
 		Counterexample cex = new Counterexample(k);
-		for (String fn : getRelevantFunctions(model.getFunctions())) {
+		for (String fn : new TreeSet<>(model.getFunctions())) {
 			cex.addSignal(extractSignal(fn, k, offset, model));
 		}
 		return cex;
@@ -270,15 +268,5 @@ public class Director {
 		}
 
 		return signal;
-	}
-
-	private static SortedSet<String> getRelevantFunctions(Set<String> functions) {
-		SortedSet<String> relevant = new TreeSet<>();
-		for (String fn : functions) {
-			if (!fn.contains("~")) {
-				relevant.add(fn);
-			}
-		}
-		return relevant;
 	}
 }
