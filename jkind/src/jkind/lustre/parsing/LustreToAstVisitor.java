@@ -149,8 +149,10 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	private List<IdExpr> lhs(LhsContext ctx) {
 		List<IdExpr> lhs = new ArrayList<>();
-		for (TerminalNode node : ctx.ID()) {
-			lhs.add(new IdExpr(loc(node), node.getText()));
+		if (ctx != null) {
+			for (TerminalNode node : ctx.ID()) {
+				lhs.add(new IdExpr(loc(node), node.getText()));
+			}
 		}
 		return lhs;
 	}
