@@ -32,7 +32,6 @@ public class StaticAnalyzer {
 	}
 
 	private static boolean checkErrors(Program program, boolean linearCheck) {
-		Node mainNode = program.getMainNode();
 		boolean result = true;
 		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
@@ -43,9 +42,9 @@ public class StaticAnalyzer {
 		result = result && NodeDependencyChecker.check(program);
 		result = result && variablesUnique(program);
 		result = result && assignmentsSound(program);
-		result = result && propertiesUnique(mainNode);
-		result = result && propertiesExist(mainNode);
-		result = result && propertiesBoolean(mainNode);
+		result = result && propertiesUnique(program);
+		result = result && propertiesExist(program);
+		result = result && propertiesBoolean(program);
 		if (linearCheck) {
 			result = result && LinearChecker.check(program);
 		}
@@ -224,54 +223,66 @@ public class StaticAnalyzer {
 		return sound;
 	}
 
-	private static boolean propertiesUnique(Node node) {
+	private static boolean propertiesUnique(Program program) {
 		boolean unique = true;
-		Set<String> seen = new HashSet<>();
 
-		for (String prop : node.properties) {
-			if (seen.contains(prop)) {
-				System.out.println("Error: property '" + prop + "' declared multiple times");
-				unique = false;
-			} else {
-				seen.add(prop);
+		for (Node node : program.nodes) {
+			Set<String> seen = new HashSet<>();
+			for (String prop : node.properties) {
+				if (seen.contains(prop)) {
+					System.out.println("Error: property '" + prop
+							+ "' declared multiple times in node '" + node.id + "'");
+					unique = false;
+				} else {
+					seen.add(prop);
+				}
 			}
 		}
 
 		return unique;
 	}
 
-	private static boolean propertiesExist(Node node) {
+	private static boolean propertiesExist(Program program) {
 		boolean exist = true;
 
-		Set<String> variables = new HashSet<>(Util.getIds(Util.getVarDecls(node)));
-		for (String prop : node.properties) {
-			if (!variables.contains(prop)) {
-				System.out.println("Error: property '" + prop + "' does not exist");
-				exist = false;
+		for (Node node : program.nodes) {
+			Set<String> variables = new HashSet<>(Util.getIds(Util.getVarDecls(node)));
+			for (String prop : node.properties) {
+				if (!variables.contains(prop)) {
+					System.out.println("Error: property '" + prop + "' does not exist in node '"
+							+ node.id + "'");
+					exist = false;
+				}
 			}
 		}
 
 		return exist;
 	}
-	
-	private static boolean propertiesBoolean(Node node) {
+
+	private static boolean propertiesBoolean(Program program) {
 		boolean allBoolean = true;
 
+		for (Node node : program.nodes) {
+			Set<String> booleans = getBooleans(node);
+			for (String prop : node.properties) {
+				if (!booleans.contains(prop)) {
+					System.out.println("Error: property '" + prop + "' does not have type bool");
+					allBoolean = false;
+				}
+			}
+		}
+
+		return allBoolean;
+	}
+
+	private static Set<String> getBooleans(Node node) {
 		Set<String> booleans = new HashSet<>();
 		for (VarDecl varDecl : Util.getVarDecls(node)) {
 			if (varDecl.type == NamedType.BOOL) {
 				booleans.add(varDecl.id);
 			}
 		}
-		
-		for (String prop : node.properties) {
-			if (!booleans.contains(prop)) {
-				System.out.println("Error: property '" + prop + "' does not have type bool");
-				allBoolean = false;
-			}
-		}
-
-		return allBoolean;
+		return booleans;
 	}
 
 	private static void warnUnusedAsserts(Program program) {
