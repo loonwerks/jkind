@@ -56,6 +56,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return "";
 	}
 
+	private static final Image EMPTY_IMAGE = loadImage("/empty.png");
 	private static final Image VALID_IMAGE = loadImage("/valid.png");
 	private static final Image INVALID_IMAGE = loadImage("/invalid.png");
 	private static final Image UNKNOWN_IMAGE = loadImage("/unknown.png");
@@ -89,7 +90,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 
 	private Image getStatusImage(Status status) {
 		if (status == null) {
-			return WAITING_IMAGE;
+			return EMPTY_IMAGE;
 		}
 
 		switch (status) {
