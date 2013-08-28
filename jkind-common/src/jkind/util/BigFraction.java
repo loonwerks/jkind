@@ -110,20 +110,13 @@ public class BigFraction implements Comparable<BigFraction> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((denom == null) ? 0 : denom.hashCode());
-		result = prime * result + ((num == null) ? 0 : num.hashCode());
-		return result;
+		return num.hashCode() + denom.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		}
-		if (obj == null) {
-			return false;
 		}
 		if (!(obj instanceof BigFraction)) {
 			return false;
