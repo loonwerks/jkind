@@ -33,7 +33,10 @@ public abstract class Process implements Runnable {
 
 	private String name;
 	private PrintWriter scratch;
-	private Throwable throwable;
+
+	// The director process will read this from another thread, so we
+	// make it volatile
+	private volatile Throwable throwable;
 
 	public Process(String name, Specification spec, JKindSettings settings, Director director) {
 		this.name = name;
@@ -111,7 +114,7 @@ public abstract class Process implements Runnable {
 		solver.send(spec.translation.getDeclarations());
 		solver.send(spec.translation.getTransition());
 	}
-	
+
 	protected void declareN() {
 		solver.send(new VarDecl(Keywords.N, NamedType.INT));
 		solver.send(new Cons("assert", new Cons(">=", Keywords.N, Sexp.fromInt(0))));
