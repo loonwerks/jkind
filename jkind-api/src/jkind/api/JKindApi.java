@@ -133,6 +133,8 @@ public class JKindApi {
 				throw new JKindException("Existing XML file cannot be removed: " + xmlFile);
 			}
 			callJKind(lustreFile, xmlFile, result, monitor);
+		} catch (JKindException e) {
+			throw e;
 		} catch (Throwable t) {
 			throw new JKindException(result.getText(), t);
 		} finally {
