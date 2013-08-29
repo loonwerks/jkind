@@ -1,69 +1,237 @@
-// Generated from Lustre.g4 by ANTLR 4.0
+// Generated from Lustre.g4 by ANTLR 4.1
 package jkind.lustre.parsing;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
+/**
+ * This interface defines a complete generic visitor for a parse tree produced
+ * by {@link LustreParser}.
+ *
+ * @param <T> The return type of the visit operation. Use {@link Void} for
+ * operations with no return type.
+ */
 public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
-	T visitPlainType(LustreParser.PlainTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#plainType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPlainType(@NotNull LustreParser.PlainTypeContext ctx);
 
-	T visitIfThenElseExpr(LustreParser.IfThenElseExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#ifThenElseExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfThenElseExpr(@NotNull LustreParser.IfThenElseExprContext ctx);
 
-	T visitIdExpr(LustreParser.IdExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#idExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdExpr(@NotNull LustreParser.IdExprContext ctx);
 
-	T visitIntType(LustreParser.IntTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#intType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntType(@NotNull LustreParser.IntTypeContext ctx);
 
-	T visitBoolExpr(LustreParser.BoolExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#boolExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExpr(@NotNull LustreParser.BoolExprContext ctx);
 
-	T visitUserType(LustreParser.UserTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#userType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUserType(@NotNull LustreParser.UserTypeContext ctx);
 
-	T visitLhs(LustreParser.LhsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#lhs}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLhs(@NotNull LustreParser.LhsContext ctx);
 
-	T visitSubrangeType(LustreParser.SubrangeTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#subrangeType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubrangeType(@NotNull LustreParser.SubrangeTypeContext ctx);
 
-	T visitEquation(LustreParser.EquationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#equation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEquation(@NotNull LustreParser.EquationContext ctx);
 
-	T visitPreExpr(LustreParser.PreExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#preExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPreExpr(@NotNull LustreParser.PreExprContext ctx);
 
-	T visitNegateExpr(LustreParser.NegateExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#negateExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNegateExpr(@NotNull LustreParser.NegateExprContext ctx);
 
-	T visitRealType(LustreParser.RealTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#realType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealType(@NotNull LustreParser.RealTypeContext ctx);
 
-	T visitRecordType(LustreParser.RecordTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#recordType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRecordType(@NotNull LustreParser.RecordTypeContext ctx);
 
-	T visitRealExpr(LustreParser.RealExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#realExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealExpr(@NotNull LustreParser.RealExprContext ctx);
 
-	T visitNotExpr(LustreParser.NotExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#notExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNotExpr(@NotNull LustreParser.NotExprContext ctx);
 
-	T visitNodeCallExpr(LustreParser.NodeCallExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#nodeCallExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNodeCallExpr(@NotNull LustreParser.NodeCallExprContext ctx);
 
-	T visitProjectionExpr(LustreParser.ProjectionExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#projectionExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProjectionExpr(@NotNull LustreParser.ProjectionExprContext ctx);
 
-	T visitConstant(LustreParser.ConstantContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#constant}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstant(@NotNull LustreParser.ConstantContext ctx);
 
-	T visitVarDeclList(LustreParser.VarDeclListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#varDeclList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarDeclList(@NotNull LustreParser.VarDeclListContext ctx);
 
-	T visitProperty(LustreParser.PropertyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#property}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProperty(@NotNull LustreParser.PropertyContext ctx);
 
-	T visitBinaryExpr(LustreParser.BinaryExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#binaryExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinaryExpr(@NotNull LustreParser.BinaryExprContext ctx);
 
-	T visitAssertion(LustreParser.AssertionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#assertion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssertion(@NotNull LustreParser.AssertionContext ctx);
 
-	T visitTypedef(LustreParser.TypedefContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#typedef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTypedef(@NotNull LustreParser.TypedefContext ctx);
 
-	T visitMain(LustreParser.MainContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#main}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMain(@NotNull LustreParser.MainContext ctx);
 
-	T visitIntExpr(LustreParser.IntExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#intExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntExpr(@NotNull LustreParser.IntExprContext ctx);
 
-	T visitNode(LustreParser.NodeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#node}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNode(@NotNull LustreParser.NodeContext ctx);
 
-	T visitBoolType(LustreParser.BoolTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#boolType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolType(@NotNull LustreParser.BoolTypeContext ctx);
 
-	T visitVarDeclGroup(LustreParser.VarDeclGroupContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#varDeclGroup}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarDeclGroup(@NotNull LustreParser.VarDeclGroupContext ctx);
 
-	T visitRecordExpr(LustreParser.RecordExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#recordExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRecordExpr(@NotNull LustreParser.RecordExprContext ctx);
 
-	T visitProgram(LustreParser.ProgramContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#program}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProgram(@NotNull LustreParser.ProgramContext ctx);
 
-	T visitParenExpr(LustreParser.ParenExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#parenExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenExpr(@NotNull LustreParser.ParenExprContext ctx);
 
-	T visitBound(LustreParser.BoundContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#bound}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBound(@NotNull LustreParser.BoundContext ctx);
 }

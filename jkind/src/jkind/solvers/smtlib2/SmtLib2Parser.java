@@ -1,4 +1,4 @@
-// Generated from SmtLib2.g4 by ANTLR 4.0
+// Generated from SmtLib2.g4 by ANTLR 4.1
 package jkind.solvers.smtlib2;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -47,12 +47,12 @@ public class SmtLib2Parser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class ModelContext extends ParserRuleContext {
-		public List<DefineContext> define() {
-			return getRuleContexts(DefineContext.class);
-		}
 		public TerminalNode EOF() { return getToken(SmtLib2Parser.EOF, 0); }
 		public DefineContext define(int i) {
 			return getRuleContext(DefineContext.class,i);
+		}
+		public List<DefineContext> define() {
+			return getRuleContexts(DefineContext.class);
 		}
 		public ModelContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -98,13 +98,13 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static class DefineContext extends ParserRuleContext {
-		public ArgContext arg() {
-			return getRuleContext(ArgContext.class,0);
-		}
 		public BodyContext body() {
 			return getRuleContext(BodyContext.class,0);
 		}
 		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
+		public ArgContext arg() {
+			return getRuleContext(ArgContext.class,0);
+		}
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -235,11 +235,11 @@ public class SmtLib2Parser extends Parser {
 		public SymbolBodyContext(BodyContext ctx) { copyFrom(ctx); }
 	}
 	public static class ConsBodyContext extends BodyContext {
-		public List<BodyContext> body() {
-			return getRuleContexts(BodyContext.class);
-		}
 		public FnContext fn() {
 			return getRuleContext(FnContext.class,0);
+		}
+		public List<BodyContext> body() {
+			return getRuleContexts(BodyContext.class);
 		}
 		public BodyContext body(int i) {
 			return getRuleContext(BodyContext.class,i);
@@ -335,10 +335,10 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static class SymbolContext extends ParserRuleContext {
-		public TerminalNode REAL() { return getToken(SmtLib2Parser.REAL, 0); }
+		public TerminalNode BOOL() { return getToken(SmtLib2Parser.BOOL, 0); }
 		public TerminalNode INT() { return getToken(SmtLib2Parser.INT, 0); }
 		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
-		public TerminalNode BOOL() { return getToken(SmtLib2Parser.BOOL, 0); }
+		public TerminalNode REAL() { return getToken(SmtLib2Parser.REAL, 0); }
 		public SymbolContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -372,25 +372,28 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\2\3\31@\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3"+
-		"\2\3\2\7\2\24\n\2\f\2\16\2\27\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3"+
-		"!\n\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\6\3\6\3\6\3\6"+
-		"\7\6\63\n\6\f\6\16\6\66\13\6\3\6\3\6\5\6:\n\6\3\7\3\7\3\b\3\b\3\b\2\t"+
-		"\2\4\6\b\n\f\16\2\5\4\f\r\20\20\6\5\6\b\13\16\17\22\23\3\24\27<\2\20\3"+
-		"\2\2\2\4\33\3\2\2\2\6\'\3\2\2\2\b,\3\2\2\2\n9\3\2\2\2\f;\3\2\2\2\16=\3"+
-		"\2\2\2\20\21\7\7\2\2\21\25\7\21\2\2\22\24\5\4\3\2\23\22\3\2\2\2\24\27"+
-		"\3\2\2\2\25\23\3\2\2\2\25\26\3\2\2\2\26\30\3\2\2\2\27\25\3\2\2\2\30\31"+
-		"\7\4\2\2\31\32\7\1\2\2\32\3\3\2\2\2\33\34\7\7\2\2\34\35\7\3\2\2\35\36"+
-		"\7\27\2\2\36 \7\7\2\2\37!\5\6\4\2 \37\3\2\2\2 !\3\2\2\2!\"\3\2\2\2\"#"+
-		"\7\4\2\2#$\5\b\5\2$%\5\n\6\2%&\7\4\2\2&\5\3\2\2\2\'(\7\7\2\2()\7\27\2"+
-		"\2)*\5\b\5\2*+\7\4\2\2+\7\3\2\2\2,-\t\2\2\2-\t\3\2\2\2.:\5\16\b\2/\60"+
-		"\7\7\2\2\60\64\5\f\7\2\61\63\5\n\6\2\62\61\3\2\2\2\63\66\3\2\2\2\64\62"+
-		"\3\2\2\2\64\65\3\2\2\2\65\67\3\2\2\2\66\64\3\2\2\2\678\7\4\2\28:\3\2\2"+
-		"\29.\3\2\2\29/\3\2\2\2:\13\3\2\2\2;<\t\3\2\2<\r\3\2\2\2=>\t\4\2\2>\17"+
-		"\3\2\2\2\6\25 \649";
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\31@\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\7\2\24\n\2\f\2"+
+		"\16\2\27\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3!\n\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\6\3\6\3\6\3\6\7\6\63\n\6\f\6\16\6\66"+
+		"\13\6\3\6\3\6\5\6:\n\6\3\7\3\7\3\b\3\b\3\b\2\t\2\4\6\b\n\f\16\2\5\4\2"+
+		"\f\r\20\20\6\2\5\6\b\13\16\17\22\23\3\2\24\27<\2\20\3\2\2\2\4\33\3\2\2"+
+		"\2\6\'\3\2\2\2\b,\3\2\2\2\n9\3\2\2\2\f;\3\2\2\2\16=\3\2\2\2\20\21\7\7"+
+		"\2\2\21\25\7\21\2\2\22\24\5\4\3\2\23\22\3\2\2\2\24\27\3\2\2\2\25\23\3"+
+		"\2\2\2\25\26\3\2\2\2\26\30\3\2\2\2\27\25\3\2\2\2\30\31\7\4\2\2\31\32\7"+
+		"\2\2\3\32\3\3\2\2\2\33\34\7\7\2\2\34\35\7\3\2\2\35\36\7\27\2\2\36 \7\7"+
+		"\2\2\37!\5\6\4\2 \37\3\2\2\2 !\3\2\2\2!\"\3\2\2\2\"#\7\4\2\2#$\5\b\5\2"+
+		"$%\5\n\6\2%&\7\4\2\2&\5\3\2\2\2\'(\7\7\2\2()\7\27\2\2)*\5\b\5\2*+\7\4"+
+		"\2\2+\7\3\2\2\2,-\t\2\2\2-\t\3\2\2\2.:\5\16\b\2/\60\7\7\2\2\60\64\5\f"+
+		"\7\2\61\63\5\n\6\2\62\61\3\2\2\2\63\66\3\2\2\2\64\62\3\2\2\2\64\65\3\2"+
+		"\2\2\65\67\3\2\2\2\66\64\3\2\2\2\678\7\4\2\28:\3\2\2\29.\3\2\2\29/\3\2"+
+		"\2\2:\13\3\2\2\2;<\t\3\2\2<\r\3\2\2\2=>\t\4\2\2>\17\3\2\2\2\6\25 \649";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
+		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
+			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
+		}
 	}
 }

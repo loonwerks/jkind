@@ -1,55 +1,221 @@
-// Generated from Yices.g4 by ANTLR 4.0
+// Generated from Yices.g4 by ANTLR 4.1
 package jkind.solvers.yices;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+/**
+ * This class provides an empty implementation of {@link YicesListener},
+ * which can be extended to create a listener which only needs to handle a subset
+ * of the available methods.
+ */
 public class YicesBaseListener implements YicesListener {
-	@Override public void enterResult(YicesParser.ResultContext ctx) { }
-	@Override public void exitResult(YicesParser.ResultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterResult(@NotNull YicesParser.ResultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitResult(@NotNull YicesParser.ResultContext ctx) { }
 
-	@Override public void enterModel(YicesParser.ModelContext ctx) { }
-	@Override public void exitModel(YicesParser.ModelContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterModel(@NotNull YicesParser.ModelContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitModel(@NotNull YicesParser.ModelContext ctx) { }
 
-	@Override public void enterNumeric(YicesParser.NumericContext ctx) { }
-	@Override public void exitNumeric(YicesParser.NumericContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterNumeric(@NotNull YicesParser.NumericContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitNumeric(@NotNull YicesParser.NumericContext ctx) { }
 
-	@Override public void enterInteger(YicesParser.IntegerContext ctx) { }
-	@Override public void exitInteger(YicesParser.IntegerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterInteger(@NotNull YicesParser.IntegerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitInteger(@NotNull YicesParser.IntegerContext ctx) { }
 
-	@Override public void enterAlias(YicesParser.AliasContext ctx) { }
-	@Override public void exitAlias(YicesParser.AliasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterAlias(@NotNull YicesParser.AliasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitAlias(@NotNull YicesParser.AliasContext ctx) { }
 
-	@Override public void enterCost(YicesParser.CostContext ctx) { }
-	@Override public void exitCost(YicesParser.CostContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterCost(@NotNull YicesParser.CostContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitCost(@NotNull YicesParser.CostContext ctx) { }
 
-	@Override public void enterSatResult(YicesParser.SatResultContext ctx) { }
-	@Override public void exitSatResult(YicesParser.SatResultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterSatResult(@NotNull YicesParser.SatResultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitSatResult(@NotNull YicesParser.SatResultContext ctx) { }
 
-	@Override public void enterFunction(YicesParser.FunctionContext ctx) { }
-	@Override public void exitFunction(YicesParser.FunctionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterFunction(@NotNull YicesParser.FunctionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitFunction(@NotNull YicesParser.FunctionContext ctx) { }
 
-	@Override public void enterUnsatCore(YicesParser.UnsatCoreContext ctx) { }
-	@Override public void exitUnsatCore(YicesParser.UnsatCoreContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterUnsatCore(@NotNull YicesParser.UnsatCoreContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitUnsatCore(@NotNull YicesParser.UnsatCoreContext ctx) { }
 
-	@Override public void enterUnsatAssertions(YicesParser.UnsatAssertionsContext ctx) { }
-	@Override public void exitUnsatAssertions(YicesParser.UnsatAssertionsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterUnsatAssertions(@NotNull YicesParser.UnsatAssertionsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitUnsatAssertions(@NotNull YicesParser.UnsatAssertionsContext ctx) { }
 
-	@Override public void enterValue(YicesParser.ValueContext ctx) { }
-	@Override public void exitValue(YicesParser.ValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterValue(@NotNull YicesParser.ValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitValue(@NotNull YicesParser.ValueContext ctx) { }
 
-	@Override public void enterUnsatResult(YicesParser.UnsatResultContext ctx) { }
-	@Override public void exitUnsatResult(YicesParser.UnsatResultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterUnsatResult(@NotNull YicesParser.UnsatResultContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitUnsatResult(@NotNull YicesParser.UnsatResultContext ctx) { }
 
-	@Override public void enterVariable(YicesParser.VariableContext ctx) { }
-	@Override public void exitVariable(YicesParser.VariableContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterVariable(@NotNull YicesParser.VariableContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitVariable(@NotNull YicesParser.VariableContext ctx) { }
 
-	@Override public void enterPredefined(YicesParser.PredefinedContext ctx) { }
-	@Override public void exitPredefined(YicesParser.PredefinedContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterPredefined(@NotNull YicesParser.PredefinedContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitPredefined(@NotNull YicesParser.PredefinedContext ctx) { }
 
-	@Override public void enterEveryRule(ParserRuleContext ctx) { }
-	@Override public void exitEveryRule(ParserRuleContext ctx) { }
-	@Override public void visitTerminal(TerminalNode node) { }
-	@Override public void visitErrorNode(ErrorNode node) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterEveryRule(@NotNull ParserRuleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitEveryRule(@NotNull ParserRuleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void visitTerminal(@NotNull TerminalNode node) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void visitErrorNode(@NotNull ErrorNode node) { }
 }
