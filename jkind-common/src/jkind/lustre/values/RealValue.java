@@ -66,4 +66,18 @@ public class RealValue extends Value implements Comparable<RealValue> {
 	public String toString() {
 		return value.toString();
 	}
+	
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RealValue) {
+			RealValue other = (RealValue) obj;
+			return value.equals(other.value);
+		}
+		return false;
+	}
 }

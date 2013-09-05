@@ -65,4 +65,18 @@ public class IntegerValue extends Value {
 	public String toString() {
 		return value.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof IntegerValue) {
+			IntegerValue other = (IntegerValue) obj;
+			return value.equals(other.value);
+		}
+		return false;
+	}
 }

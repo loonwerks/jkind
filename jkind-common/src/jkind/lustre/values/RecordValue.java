@@ -46,4 +46,18 @@ public class RecordValue extends Value {
 		}
 		return text.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		return fields.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RecordValue) {
+			RecordValue other = (RecordValue) obj;
+			return fields.equals(other.fields);
+		}
+		return false;
+	}
 }

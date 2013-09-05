@@ -59,4 +59,18 @@ public class BooleanValue extends Value {
 	public String toString() {
 		return Boolean.toString(value);
 	}
+
+	@Override
+	public int hashCode() {
+		return Boolean.valueOf(value).hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BooleanValue) {
+			BooleanValue other = (BooleanValue) obj;
+			return (value == other.value);
+		}
+		return false;
+	}
 }
