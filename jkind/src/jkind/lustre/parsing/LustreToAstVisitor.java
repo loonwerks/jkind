@@ -280,45 +280,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		String op = ctx.op.getText();
 		Expr left = expr(ctx.expr(0));
 		Expr right = expr(ctx.expr(1));
-		return new BinaryExpr(loc(ctx.op), left, binaryOp(op), right);
-	}
-
-	private static BinaryOp binaryOp(String op) {
-		if (op.equals("+")) {
-			return BinaryOp.PLUS;
-		} else if (op.equals("-")) {
-			return BinaryOp.MINUS;
-		} else if (op.equals("*")) {
-			return BinaryOp.MULTIPLY;
-		} else if (op.equals("/")) {
-			return BinaryOp.DIVIDE;
-		} else if (op.equals("div")) {
-			return BinaryOp.INT_DIVIDE;
-		} else if (op.equals("=")) {
-			return BinaryOp.EQUAL;
-		} else if (op.equals("<>")) {
-			return BinaryOp.NOTEQUAL;
-		} else if (op.equals(">")) {
-			return BinaryOp.GREATER;
-		} else if (op.equals("<")) {
-			return BinaryOp.LESS;
-		} else if (op.equals(">=")) {
-			return BinaryOp.GREATEREQUAL;
-		} else if (op.equals("<=")) {
-			return BinaryOp.LESSEQUAL;
-		} else if (op.equals("or")) {
-			return BinaryOp.OR;
-		} else if (op.equals("and")) {
-			return BinaryOp.AND;
-		} else if (op.equals("xor")) {
-			return BinaryOp.XOR;
-		} else if (op.equals("=>")) {
-			return BinaryOp.IMPLIES;
-		} else if (op.equals("->")) {
-			return BinaryOp.ARROW;
-		} else {
-			throw new IllegalArgumentException("Unknown binary operator");
-		}
+		return new BinaryExpr(loc(ctx.op), left, BinaryOp.fromString(op), right);
 	}
 
 	@Override

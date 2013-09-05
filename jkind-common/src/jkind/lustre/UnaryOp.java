@@ -15,4 +15,13 @@ public enum UnaryOp {
 	public String toString() {
 		return str;
 	}
+	
+	public static UnaryOp fromString(String string) {
+		for (UnaryOp op : UnaryOp.values()) {
+			if (op.toString().equals(string)) {
+				return op;
+			}
+		}
+		return null;
+	}
 }

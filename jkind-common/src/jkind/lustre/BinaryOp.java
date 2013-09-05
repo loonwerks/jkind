@@ -28,4 +28,13 @@ public enum BinaryOp {
 	public String toString() {
 		return str;
 	}
+	
+	public static BinaryOp fromString(String string) {
+		for (BinaryOp op : BinaryOp.values()) {
+			if (op.toString().equals(string)) {
+				return op;
+			}
+		}
+		return null;
+	}
 }
