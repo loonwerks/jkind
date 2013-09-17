@@ -237,7 +237,6 @@ public class JKindApi {
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) {
 		List<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(getJKindCommand()));
-		args.add("-jkind");
 		args.add("-xml");
 		if (timeout != null) {
 			args.add("-timeout");
@@ -278,7 +277,7 @@ public class JKindApi {
 			if (jar == null) {
 				throw new JKindException("Unable to find jkind.jar on system PATH");
 			}
-			return new String[] { "java", "-jar", jar.toString() };
+			return new String[] { "java", "-jar", jar.toString(), "-jkind" };
 		} else {
 			return new String[] { "jkind" };
 		}
