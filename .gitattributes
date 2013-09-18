@@ -1,0 +1,4 @@
+scripts/jkind text eol=lf
+scripts/jlustre2kind text eol=lf
+scripts/jlustre2excel text eol=lf
+
