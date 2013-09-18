@@ -1,0 +1,66 @@
+-- This is an example based on PID controller in AADL translated using
+-- AGREE. There is a signle property which is provable at k = 23.
+-- Increasing the value of max_accel makes k smaller and the proof
+-- easier, and vice-versa for decreasing max_accel.
+
+node H(inp : bool) returns (outp : bool);
+let
+  outp = (inp -> (inp and pre outp));
+tel;
+
+node abs(inp : real) returns (outp : real);
+let
+  outp = (if (inp < 0.0) then -inp else inp);
+tel;
+
+node AXL__abs(AXL__inp : real) returns (AXL__outp : real);
+let
+  AXL__outp = (if (AXL__inp < 0.0) then -AXL__inp else AXL__inp);
+tel;
+
+node _MAIN(
+  AXL__Speed__val : real;
+  Target_Speed__val : real;
+  AXL__Actual_Tire_Direction__val : real;
+  CNTRL__Actuator_Input__val : real;
+  THROT__Actual__val : real;
+  Target_Tire_Pitch__val : real
+) returns (
+);
+var
+  THROT__Actuator_Input__val : real;
+  CNTRL__e_dot : real;
+  CNTRL__e_int : real;
+  CNTRL__e : real;
+  CNTRL__u : real;
+  max_accel : real;
+  AXL__Target_Tire_Direction__val : real;
+  Actual_Speed__val : real;
+  CNTRL__Actual__val : real;
+  CNTRL__Target__val : real;
+  _TOTAL_COMP_HIST : bool;
+  _SYSTEM_ASSUMP_HIST : bool;
+  _CONTR_HIST_AXL : bool;
+  _CONTR_HIST_CNTRL : bool;
+  _CONTR_HIST_THROT : bool;
+  _SYS_GUARANTEE_1 : bool;
+let
+  --%MAIN
+  max_accel = 10.0;
+  CNTRL__e = (CNTRL__Target__val - CNTRL__Actual__val);
+  CNTRL__e_int = ((0.0 -> pre CNTRL__e) + CNTRL__e);
+  CNTRL__e_dot = ((0.0 -> pre CNTRL__e) - CNTRL__e);
+  CNTRL__u = (((0.2 * CNTRL__e) + (0.1 * CNTRL__e_dot)) + (0.1 * CNTRL__e_int));
+  THROT__Actuator_Input__val = CNTRL__Actuator_Input__val;
+  Actual_Speed__val = THROT__Actual__val;
+  CNTRL__Actual__val = THROT__Actual__val;
+  CNTRL__Target__val = Target_Speed__val;
+  AXL__Target_Tire_Direction__val = Target_Tire_Pitch__val;
+  _TOTAL_COMP_HIST = ((((true and (((AXL__abs(AXL__Target_Tire_Direction__val) <= 0.45) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val))) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val)))) and ((true and (CNTRL__Actuator_Input__val = CNTRL__u)) and (CNTRL__Actuator_Input__val = CNTRL__u))) and ((true and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val)))) and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val))))) -> ((((true and (((AXL__abs(AXL__Target_Tire_Direction__val) <= 0.45) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val))) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val)))) and ((true and (CNTRL__Actuator_Input__val = CNTRL__u)) and (CNTRL__Actuator_Input__val = CNTRL__u))) and ((true and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val)))) and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val))))) and pre _TOTAL_COMP_HIST));
+  _SYSTEM_ASSUMP_HIST = ((((Target_Speed__val >= 0.0) and (Target_Speed__val < 150.0)) and true) -> ((((Target_Speed__val >= 0.0) and (Target_Speed__val < 150.0)) and true) and pre _SYSTEM_ASSUMP_HIST));
+  _CONTR_HIST_AXL = ((((AXL__abs(AXL__Target_Tire_Direction__val) <= 0.45) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val))) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val))) -> ((((AXL__abs(AXL__Target_Tire_Direction__val) <= 0.45) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val))) and (if ((AXL__abs(AXL__Target_Tire_Direction__val) > 0.2) and (AXL__Speed__val > 45.0)) then (AXL__Actual_Tire_Direction__val = 0.2) else (AXL__Actual_Tire_Direction__val = AXL__Target_Tire_Direction__val))) and pre _CONTR_HIST_AXL));
+  _CONTR_HIST_CNTRL = (((true and (CNTRL__Actuator_Input__val = CNTRL__u)) and (CNTRL__Actuator_Input__val = CNTRL__u)) -> (((true and (CNTRL__Actuator_Input__val = CNTRL__u)) and (CNTRL__Actuator_Input__val = CNTRL__u)) and pre _CONTR_HIST_CNTRL));
+  _CONTR_HIST_THROT = (((true and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val)))) and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val)))) -> (((true and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val)))) and (THROT__Actual__val = ((0.0 -> pre THROT__Actual__val) + (0.1 * THROT__Actuator_Input__val)))) and pre _CONTR_HIST_THROT));
+  _SYS_GUARANTEE_1 = ((_SYSTEM_ASSUMP_HIST and _TOTAL_COMP_HIST) => (abs((Actual_Speed__val - (0.0 -> pre Actual_Speed__val))) < max_accel));
+  --%PROPERTY _SYS_GUARANTEE_1;
+tel;
