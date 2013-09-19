@@ -69,10 +69,68 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 		addProperties(properties);
 	}
 
+	/**
+	 * Construct a JKindResult to hold the results of a run of JKind
+	 * 
+	 * @param name
+	 *            Name of the results
+	 * @param properties
+	 *            Property names to track (pre-renaming)
+	 * @param invertStatus
+	 *            True if the status of the property of the same index in
+	 *            properties should be inverted
+	 * @param renaming
+	 *            Renaming to apply to apply properties
+	 */
+	public JKindResult(String name, List<String> properties, List<Boolean> invertStatus,
+			Renaming renaming) {
+		super(name);
+		this.renaming = renaming;
+		addProperties(properties, invertStatus);
+	}
+
 	private void addProperties(List<String> properties) {
 		for (String property : properties) {
 			addProperty(property);
 		}
+	}
+
+	private void addProperties(List<String> properties, List<Boolean> invertStatus) {
+		int i = 0;
+		if (properties.size() != invertStatus.size()) {
+			throw new IllegalArgumentException("Lists have different length");
+		}
+		for (String property : properties) {
+			addProperty(property, invertStatus.get(i++));
+		}
+	}
+
+	/**
+	 * Add a new property to track
+	 * 
+	 * @param property
+	 *            Property to be tracked (pre-renaming)
+	 * @param invertStatus
+	 *            True if finding a model means success. Otherwise false.
+	 * @return The PropertyResult object which will store the results of the
+	 *         property
+	 */
+	public PropertyResult addProperty(String property, boolean invertStatus) {
+		if (renaming != null) {
+			property = renaming.rename(property);
+			if (property == null) {
+				return null;
+			}
+		}
+
+		PropertyResult propertyResult = new PropertyResult(property, renaming, invertStatus);
+		propertyResults.add(propertyResult);
+		propertyResult.setParent(this);
+		pcs.fireIndexedPropertyChange("propertyResults", propertyResults.size() - 1, null,
+				propertyResult);
+		addStatus(propertyResult.getStatus());
+		propertyResult.addPropertyChangeListener(this);
+		return propertyResult;
 	}
 
 	/**
@@ -84,21 +142,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 *         property
 	 */
 	public PropertyResult addProperty(String property) {
-		if (renaming != null) {
-			property = renaming.rename(property);
-			if (property == null) {
-				return null;
-			}
-		}
-
-		PropertyResult propertyResult = new PropertyResult(property, renaming);
-		propertyResults.add(propertyResult);
-		propertyResult.setParent(this);
-		pcs.fireIndexedPropertyChange("propertyResults", propertyResults.size() - 1, null,
-				propertyResult);
-		addStatus(propertyResult.getStatus());
-		propertyResult.addPropertyChangeListener(this);
-		return propertyResult;
+		return addProperty(property, false);
 	}
 
 	private void addStatus(Status other) {
@@ -242,7 +286,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return name + propertyResults;
