@@ -263,7 +263,7 @@ public class JKindApi {
 	}
 
 	private String[] getJKindCommand() {
-		if (System.getProperty("os.name").startsWith("Windows")) {
+		if (Util.isWindows()) {
 			/*
 			 * On Windows, invoking Process.destroy does not kill the
 			 * subprocesses of the destroyed process. If we were to run

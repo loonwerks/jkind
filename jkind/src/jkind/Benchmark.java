@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.util.Util;
+
 public class Benchmark {
 	private static final File LOG = new File("results.log");
 
@@ -50,7 +52,7 @@ public class Benchmark {
 
 	private static double getMedianRuntime(String[] fixedArgs, String file) throws Exception {
 		List<String> args = new ArrayList<>();
-		if (System.getProperty("os.name").startsWith("Windows")) {
+		if (Util.isWindows()) {
 			args.add("cmd");
 			args.add("/c");
 		}
