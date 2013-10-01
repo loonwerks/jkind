@@ -35,8 +35,16 @@ public class Graph {
 	}
 
 	private void addEdge(Node source, Node destination) {
-		safeGet(outgoing, source).add(destination);
-		safeGet(incoming, destination).add(source);
+		outgoing(source).add(destination);
+		incoming(destination).add(source);
+	}
+
+	private Set<Node> incoming(Node destination) {
+		return safeGet(incoming, destination);
+	}
+
+	private Set<Node> outgoing(Node source) {
+		return safeGet(outgoing, source);
 	}
 
 	private Set<Node> safeGet(Map<Node, Set<Node>> map, Node node) {
@@ -79,15 +87,15 @@ public class Graph {
 	private void removeTrivialInvariants() {
 		for (Node node : nodes) {
 			if (node.getRepresentative() == Candidate.TRUE) {
-				Set<Node> in = safeGet(incoming, node);
+				Set<Node> in = incoming(node);
 				for (Node other : in) {
-					safeGet(outgoing, other).remove(node);
+					outgoing(other).remove(node);
 				}
 				in.clear();
 			} else if (node.getRepresentative() == Candidate.FALSE) {
-				Set<Node> out = safeGet(outgoing, node);
+				Set<Node> out = outgoing(node);
 				for (Node other : out) {
-					safeGet(incoming, other).remove(node);
+					incoming(other).remove(node);
 				}
 				out.clear();
 			}
@@ -162,10 +170,10 @@ public class Graph {
 		outgoing.remove(node);
 
 		for (Node source : in) {
-			safeGet(outgoing, source).remove(node);
+			outgoing(source).remove(node);
 		}
 		for (Node destination : out) {
-			safeGet(incoming, destination).remove(node);
+			incoming(destination).remove(node);
 		}
 
 		for (Node source : in) {
@@ -173,14 +181,6 @@ public class Graph {
 				addEdge(source, destination);
 			}
 		}
-	}
-
-	private Set<Node> incoming(Node destination) {
-		return safeGet(incoming, destination);
-	}
-
-	private Set<Node> outgoing(Node source) {
-		return safeGet(outgoing, source);
 	}
 
 	private void removeUselessNodes() {
