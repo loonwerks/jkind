@@ -68,6 +68,11 @@ public abstract class Solver {
 			process.destroy();
 			process = null;
 		}
+		
+		if (debug != null) {
+			debug.close();
+			debug = null;
+		}
 	}
 	
 	/** Utility */
