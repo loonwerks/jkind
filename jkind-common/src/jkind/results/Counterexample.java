@@ -154,29 +154,59 @@ public final class Counterexample {
 		toExcel(file, new SingletonLayout("Signals"));
 	}
 
+	private static final String NEWLINE = System.getProperty("line.separator");
+
 	@Override
 	public String toString() {
-		String newline = System.getProperty("line.separator");
+		return toString(new SingletonLayout());
+	}
+
+	public String toString(Layout layout) {
 		StringBuilder text = new StringBuilder();
 
 		text.append(String.format("%25s %6s ", "", "Step"));
-		text.append(newline);
+		text.append(NEWLINE);
 		text.append(String.format("%-25s ", "variable"));
 		for (int i = 0; i < length; i++) {
 			text.append(String.format("%6s ", i));
 		}
-		text.append(newline);
-		text.append(newline);
+		text.append(NEWLINE);
 
-		for (Signal<Value> signal : signals) {
-			text.append(String.format("%-25s ", signal.getName()));
-			for (int i = 0; i < length; i++) {
-				Value value = signal.getValue(i);
-				text.append(String.format("%6s ", value != null ? value : "-"));
-			}
-			text.append(newline);
+		for (String category : layout.getCategories()) {
+			List<Signal<Value>> signals = getCategorySignals(layout, category);
+			appendSection(text, category, signals);
 		}
 
 		return text.toString();
+	}
+
+	private List<Signal<Value>> getCategorySignals(Layout layout, String category) {
+		List<Signal<Value>> result = new ArrayList<>();
+		for (Signal<Value> signal : signals) {
+			if (category.equals(layout.getCategory(signal.getName()))) {
+				result.add(signal);
+			}
+		}
+		return result;
+	}
+
+	private void appendSection(StringBuilder text, String category, List<Signal<Value>> signals) {
+		if (!signals.isEmpty()) {
+			text.append(NEWLINE);
+			text.append(category.toUpperCase());
+			text.append(NEWLINE);
+			for (Signal<Value> signal : signals) {
+				appendSignal(text, signal);
+			}
+		}
+	}
+
+	private void appendSignal(StringBuilder text, Signal<Value> signal) {
+		text.append(String.format("%-25s ", signal.getName()));
+		for (int i = 0; i < length; i++) {
+			Value value = signal.getValue(i);
+			text.append(String.format("%6s ", value != null ? value : "-"));
+		}
+		text.append(NEWLINE);
 	}
 }

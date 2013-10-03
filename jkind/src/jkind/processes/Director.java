@@ -22,6 +22,7 @@ import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.results.layout.NodeLayout;
 import jkind.slicing.CounterexampleSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
@@ -65,7 +66,7 @@ public class Director {
 			} else if (settings.xml) {
 				return new XmlWriter(spec.filename + ".xml", spec.typeMap);
 			} else {
-				return new ConsoleWriter();
+				return new ConsoleWriter(new NodeLayout(spec.node));
 			}
 		} catch (IOException e) {
 			throw new JKindException("Unable to open output file", e);

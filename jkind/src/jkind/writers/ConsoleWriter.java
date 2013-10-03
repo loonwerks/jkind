@@ -5,8 +5,16 @@ import java.util.Map;
 
 import jkind.invariant.Invariant;
 import jkind.results.Counterexample;
+import jkind.results.layout.Layout;
 
 public class ConsoleWriter extends Writer {
+	private final Layout layout;
+	
+	public ConsoleWriter(Layout layout) {
+		super();
+		this.layout = layout;
+	}
+	
 	@Override
 	public void begin() {
 	}
@@ -38,7 +46,7 @@ public class ConsoleWriter extends Writer {
 		writeLine();
 		System.out.println("INVALID PROPERTY: " + prop + " || K = " + cex.getLength()
 				+ " || Time = " + runtime);
-		System.out.println(cex);
+		System.out.println(cex.toString(layout));
 		writeLine();
 		System.out.println();
 	}
