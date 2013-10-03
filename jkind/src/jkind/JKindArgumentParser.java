@@ -64,7 +64,6 @@ public class JKindArgumentParser {
 
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, BMC, REDUCE_INV);
-		ensureExclusive(line, NO_INV_GEN, REDUCE_INV);
 		ensureExclusive(line, BMC, INDUCT_CEX);
 
 		if (line.hasOption(VERSION)) {
