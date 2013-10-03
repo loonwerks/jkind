@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.excel.ExcelFormatter;
-import jkind.excel.Layout;
-import jkind.excel.SingletonLayout;
 import jkind.results.Property;
+import jkind.results.layout.Layout;
+import jkind.results.layout.SingletonLayout;
 
 /**
  * This class holds the results of a run of JKind.

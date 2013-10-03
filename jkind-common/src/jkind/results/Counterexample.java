@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.excel.ExcelCounterexampleFormatter;
-import jkind.excel.Layout;
-import jkind.excel.SingletonLayout;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.results.layout.Layout;
+import jkind.results.layout.SingletonLayout;
 
 /**
  * A JKind counterexample

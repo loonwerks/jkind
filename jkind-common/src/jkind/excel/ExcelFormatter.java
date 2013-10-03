@@ -11,6 +11,7 @@ import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
+import jkind.results.layout.Layout;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Label;

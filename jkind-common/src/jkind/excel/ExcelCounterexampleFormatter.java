@@ -13,6 +13,7 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.results.layout.Layout;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Boolean;

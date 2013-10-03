@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.excel.ExcelFormatter;
-import jkind.excel.NodeLayout;
 import jkind.invariant.Invariant;
 import jkind.lustre.Node;
 import jkind.results.Counterexample;
@@ -14,6 +13,7 @@ import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
+import jkind.results.layout.NodeLayout;
 
 public class ExcelWriter extends Writer {
 	final private File file;

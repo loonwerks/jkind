@@ -6,7 +6,7 @@ import java.util.List;
 
 import jkind.api.JKindApi;
 import jkind.api.results.JKindResult;
-import jkind.excel.Layout;
+import jkind.results.layout.Layout;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
