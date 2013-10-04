@@ -1,0 +1,73 @@
+-- The Bridge and Torches problem:
+-- http://en.wikipedia.org/wiki/Bridge_and_torch_problem
+--
+-- This file finds a solution at cost 15 (prop2) and proves that this
+-- is minimal (prop1)
+--
+-- Expected outcome:
+--   VALID PROPERTIES: [lemma (k = 1), prop1 (k = 14)]
+--   INVALID PROPERTIES: [prop2 (k = 6)]
+
+node main(a, b, c, d : bool) returns (cost : int);
+var
+  torch : bool;
+  at_least_one_travelers, no_more_than_two_travelers : bool;
+  solved, lemma, prop1, prop2 : bool;
+let
+  --%MAIN
+  torch = true -> not pre torch;
+
+  assert traveler(a, torch);
+  assert traveler(b, torch);
+  assert traveler(c, torch);
+  assert traveler(d, torch);
+
+  at_least_one_travelers =
+    true -> (a <> pre a) or (b <> pre b) or (c <> pre c) or (d <> pre d);
+
+  no_more_than_two_travelers = true ->
+      b2i(a <> pre a) + b2i(b <> pre b) +
+      b2i(c <> pre c) + b2i(d <> pre d) <= 2;
+
+  assert at_least_one_travelers;
+  assert no_more_than_two_travelers;
+
+  cost = 0 -> pre cost + max(cost(a, 1), cost(b, 2), cost(c, 5), cost(d, 8));
+
+  solved = a and b and c and d;
+  prop1 = not (solved and cost < 15);
+  prop2 = not (solved and cost = 15);
+  lemma = cost >= 0;
+  --%PROPERTY lemma;
+  --%PROPERTY prop1;
+  --%PROPERTY prop2;
+tel;
+
+node traveler(state, torch : bool)
+returns (ok : bool);
+let
+  -- 1. start on left side of bridge
+  -- 2. only travel with torch
+  ok = (state = false) ->
+       (state <> pre state => pre state = torch);
+tel;
+
+node cost(state : bool; value : int) returns (out : int);
+let
+  out = 0 -> if (state <> pre state) then value else 0;
+tel;
+
+node max(x, y, z, w : int) returns (out : int);
+let
+  out = max2(x, max2(y, max2(z, w)));
+tel;
+
+node max2(x, y : int) returns (out : int);
+let
+  out = if x >= y then x else y;
+tel;
+
+node b2i(x : bool) returns (y : int);
+let
+  y = if x then 1 else 0;
+tel;
