@@ -39,7 +39,10 @@ public class CandidateGenerator {
 			}
 
 			Type type = spec.typeMap.get(id);
-			if (type == NamedType.BOOL) {
+			if (type == NamedType.INT) {
+				Sexp s = new Cons("$" + id, SexpUtil.I);
+				addCandidate(new Cons(">=", s, Sexp.fromInt(0)), "(" + id + " >= 0)");
+			} else if (type == NamedType.BOOL) {
 				Sexp s = new Cons("$" + id, SexpUtil.I);
 				addCandidate(s, id);
 				addCandidate(new Cons("not", s), "not " + id);

@@ -5,9 +5,9 @@ node counter() returns (x : int);
 var
   lemma : bool;
 let
-  x = 0 -> 1 + pre x;
+  x = -1 -> 1 + pre x;
 
-  lemma = x >= 0;
+  lemma = x >= -1;
   --%PROPERTY lemma;
 tel;
 

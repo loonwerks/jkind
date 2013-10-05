@@ -5,14 +5,14 @@
 -- is minimal (prop1)
 --
 -- Expected outcome:
---   VALID PROPERTIES: [lemma (k = 1), prop1 (k = 14)]
+--   VALID PROPERTIES: [prop1 (k = 14)]
 --   INVALID PROPERTIES: [prop2 (k = 6)]
 
 node main(a, b, c, d : bool) returns (cost : int);
 var
   torch : bool;
   at_least_one_travelers, no_more_than_two_travelers : bool;
-  solved, lemma, prop1, prop2 : bool;
+  solved, prop1, prop2 : bool;
 let
   --%MAIN
   torch = true -> not pre torch;
@@ -37,8 +37,6 @@ let
   solved = a and b and c and d;
   prop1 = not (solved and cost < 15);
   prop2 = not (solved and cost = 15);
-  lemma = cost >= 0;
-  --%PROPERTY lemma;
   --%PROPERTY prop1;
   --%PROPERTY prop2;
 tel;
