@@ -2,7 +2,8 @@ grammar Yices;
 
 result: (satResult | unsatResult) EOF;
 
-satResult: 'sat' unsatAssertions? model? cost?;
+// maxsat may return unknown when it gives up, but it gives a usable model still
+satResult: ('sat' | 'unknown') unsatAssertions? model? cost?;
 
 unsatResult: 'unsat' unsatCore?;
 
