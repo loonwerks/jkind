@@ -20,6 +20,7 @@ import jkind.util.Util;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.SAXException;
 
+
 /**
  * The primary interface to JKind.
  */
@@ -29,6 +30,7 @@ public class JKindApi {
 	private boolean inductiveCounterexamples = false;
 	private boolean reduceInvariants = false;
 	private boolean smoothCounterexamples = false;
+	private boolean intervalGeneralization = false;
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -75,6 +77,13 @@ public class JKindApi {
 	 */
 	public void setSmoothCounterexamples() {
 		smoothCounterexamples = true;
+	}
+	
+	/**
+	 * Post-process counterexamples using interval analysis to make them more general
+	 */
+	public void setIntervalGeneralization() {
+	    intervalGeneralization = true;
 	}
 
 	/**
@@ -255,6 +264,10 @@ public class JKindApi {
 		if (smoothCounterexamples) {
 			args.add("-smooth");
 		}
+		if(intervalGeneralization) {
+		    args.add("-interval");
+		}
+		
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);

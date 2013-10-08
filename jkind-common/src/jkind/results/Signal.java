@@ -13,7 +13,7 @@ import jkind.lustre.values.Value;
  * @param <T>
  *            Type of value contained in the signal
  */
-public final class Signal<T extends Value> {
+public final class Signal<T extends Value> implements Comparable<Signal<T>> {
 	private final String name;
 	private final Map<Integer, T> values;
 
@@ -67,5 +67,10 @@ public final class Signal<T extends Value> {
 			}
 		}
 		return castSignal;
+	}
+
+	@Override
+	public int compareTo(Signal<T> other) {
+		return name.compareTo(other.name);
 	}
 }

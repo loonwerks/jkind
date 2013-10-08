@@ -18,6 +18,7 @@ import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
+import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.ValidMessage;
 import jkind.results.Counterexample;
@@ -47,6 +48,8 @@ public class Director {
 	private InvariantProcess invariantProcess;
 	private ReduceProcess reduceProcess;
 	private SmoothProcess smoothProcess;
+	private IntervalProcess intervalProcess;
+
 	private List<Process> processes = new ArrayList<>();
 	private List<Thread> threads = new ArrayList<>();
 
@@ -166,8 +169,18 @@ public class Director {
 
 		if (settings.smoothCounterexamples) {
 			smoothProcess = new SmoothProcess(spec, settings, this);
-			baseProcess.setSmoothProcess(smoothProcess);
+			baseProcess.setCounterexampleProcess(smoothProcess);
 			registerProcess(smoothProcess);
+		}
+
+		if (settings.intervalGeneralization) {
+			intervalProcess = new IntervalProcess(spec, settings, this);
+			if (smoothProcess == null) {
+				baseProcess.setCounterexampleProcess(intervalProcess);
+			} else {
+				smoothProcess.setCounterexampleProcess(intervalProcess);
+			}
+			registerProcess(intervalProcess);
 		}
 
 		for (Thread thread : threads) {
@@ -194,17 +207,23 @@ public class Director {
 					invariants = Collections.<Invariant> emptyList();
 				}
 				writer.writeValid(vm.valid, vm.k, runtime, invariants);
-			} else if (message instanceof CounterexampleMessage) {
-				CounterexampleMessage cm = (CounterexampleMessage) message;
-				remainingProperties.removeAll(cm.invalid);
-				invalidProperties.addAll(cm.invalid);
-				inductiveCounterexamples.keySet().removeAll(cm.invalid);
+			} else if (message instanceof InvalidMessage) {
+				InvalidMessage im = (InvalidMessage) message;
+				remainingProperties.removeAll(im.invalid);
+				invalidProperties.addAll(im.invalid);
+				inductiveCounterexamples.keySet().removeAll(im.invalid);
 				CounterexampleSlicer cexSlicer = new CounterexampleSlicer(spec.dependencyMap);
-				for (String invalidProp : cm.invalid) {
-					Model slicedModel = cexSlicer.slice(invalidProp, cm.model);
-					Counterexample cex = extractCounterexample(cm.k, BigInteger.ZERO, slicedModel);
+				for (String invalidProp : im.invalid) {
+					Model slicedModel = cexSlicer.slice(invalidProp, im.model);
+					Counterexample cex = extractCounterexample(im.k, BigInteger.ZERO, slicedModel);
 					writer.writeInvalid(invalidProp, cex, runtime);
 				}
+			} else if (message instanceof CounterexampleMessage) {
+				CounterexampleMessage cm = (CounterexampleMessage) message;
+				remainingProperties.remove(cm.invalid);
+				invalidProperties.add(cm.invalid);
+				inductiveCounterexamples.keySet().remove(cm.invalid);
+				writer.writeInvalid(cm.invalid, cm.cex, runtime);
 			} else if (message instanceof InductiveCounterexampleMessage) {
 				InductiveCounterexampleMessage icm = (InductiveCounterexampleMessage) message;
 				inductiveCounterexamples.put(icm.property, icm);

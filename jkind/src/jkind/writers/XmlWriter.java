@@ -6,12 +6,15 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
+import jkind.interval.BoolInterval;
+import jkind.interval.NumericInterval;
 import jkind.invariant.Invariant;
 import jkind.lustre.Type;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.util.Util;
 
 public class XmlWriter extends Writer {
 	private PrintWriter out;
@@ -50,12 +53,11 @@ public class XmlWriter extends Writer {
 		}
 		out.println("  </Property>");
 	}
-	
+
 	@Override
 	public void writeInvalid(String prop, Counterexample cex, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
-		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + runtime
-				+ "</Runtime>");
+		out.println("    <Runtime unit=\"sec\" timeout=\"false\">" + runtime + "</Runtime>");
 		out.println("    <Answer>falsifiable</Answer>");
 		out.println("    <K>" + cex.getLength() + "</K>");
 		writeCounterexample(cex);
@@ -76,7 +78,7 @@ public class XmlWriter extends Writer {
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
 		for (int i = 0; i < k; i++) {
 			Value value = signal.getValue(i);
-			if (value != null) {
+			if (!Util.isArbitrary(value)) {
 				out.println("        <Value time=\"" + i + "\">" + formatValue(value) + "</Value>");
 			}
 		}
@@ -91,11 +93,19 @@ public class XmlWriter extends Writer {
 		if (value instanceof BooleanValue) {
 			BooleanValue bv = (BooleanValue) value;
 			return bv.value ? "1" : "0";
+		}
+		if (value instanceof NumericInterval) {
+			NumericInterval ni = (NumericInterval) value;
+			return "<Interval low=\"" + ni.getLow() + "\" high=\"" + ni.getHigh() + "\"/>";
+		}
+		if (value instanceof BoolInterval) {
+			BoolInterval bi = (BoolInterval) value;
+			return bi.isTrue() ? "1" : "0";
 		} else {
 			return value.toString();
 		}
 	}
-	
+
 	@Override
 	public void writeUnknown(List<String> props,
 			Map<String, Counterexample> inductiveCounterexamples) {

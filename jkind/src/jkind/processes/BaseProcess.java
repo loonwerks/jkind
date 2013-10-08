@@ -8,7 +8,6 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.processes.messages.BaseStepMessage;
-import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
@@ -25,7 +24,7 @@ import jkind.util.SexpUtil;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
-	private SmoothProcess smoothProcess;
+	private Process cexProcess;
 
 	public BaseProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Base", spec, settings, director);
@@ -34,9 +33,9 @@ public class BaseProcess extends Process {
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
 		this.inductiveProcess = inductiveProcess;
 	}
-	
-	public void setSmoothProcess(SmoothProcess smoothProcess) {
-		this.smoothProcess = smoothProcess;
+
+	public void setCounterexampleProcess(Process cexProcess) {
+		this.cexProcess = cexProcess;
 	}
 
 	@Override
@@ -97,14 +96,15 @@ public class BaseProcess extends Process {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		if (smoothProcess != null) {
-			smoothProcess.incoming.add(new CounterexampleMessage(invalid, k, model));
+		InvalidMessage im = new InvalidMessage(invalid, k, model);
+		if (cexProcess != null) {
+			cexProcess.incoming.add(im);
 		} else {
-			director.incoming.add(new CounterexampleMessage(invalid, k, model));
+			director.incoming.add(im);
 		}
-		
+
 		if (inductiveProcess != null) {
-			inductiveProcess.incoming.add(new InvalidMessage(invalid));
+			inductiveProcess.incoming.add(im);
 		}
 	}
 
@@ -119,10 +119,10 @@ public class BaseProcess extends Process {
 			solver.send(new Cons("assert", SexpUtil.conjoinStreams(properties, Sexp.fromInt(k - 1))));
 		}
 	}
-	
+
 	private void sendStop() {
-		if (smoothProcess != null) {
-			smoothProcess.incoming.add(new StopMessage());
+		if (cexProcess != null) {
+			cexProcess.incoming.add(new StopMessage());
 		}
 	}
 }

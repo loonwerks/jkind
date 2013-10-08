@@ -1,17 +1,13 @@
 package jkind.processes.messages;
 
-import java.util.List;
-
-import jkind.solvers.Model;
+import jkind.results.Counterexample;
 
 public class CounterexampleMessage extends Message {
-	final public List<String> invalid;
-	final public int k;
-	final public Model model;
+	final public String invalid;
+	final public Counterexample cex;
 
-	public CounterexampleMessage(List<String> invalid, int k, Model model) {
+	public CounterexampleMessage(String invalid, Counterexample cex) {
 		this.invalid = invalid;
-		this.k = k;
-		this.model = model;
+		this.cex = cex;
 	}
 }

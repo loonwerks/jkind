@@ -89,6 +89,10 @@ public class BigFraction implements Comparable<BigFraction> {
 	public BigFraction negate() {
 		return new BigFraction(num.negate(), denom);
 	}
+	
+	public int signum() {
+		return num.signum();
+	}
 
 	public double doubleValue() {
 		return num.doubleValue() / denom.doubleValue();

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.interval.BoolInterval;
+import jkind.interval.NumericInterval;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
@@ -14,6 +16,7 @@ import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.Layout;
+import jkind.util.Util;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Boolean;
@@ -125,7 +128,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		Value prev = null;
 		for (int i = 0; i < k; i++) {
 			Value curr = signal.getValue(i);
-			if (curr != null) {
+			if (!Util.isArbitrary(curr)) {
 				CellFormat format = curr.equals(prev) ? fadedFormat : defaultFormat;
 				writeValue(curr, i + 1, format);
 			}
@@ -143,6 +146,16 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
 			sheet.addCell(new Number(col, row, rv.value.doubleValue(), format));
+		} else if (value instanceof NumericInterval) {
+			NumericInterval ni = (NumericInterval) value;
+			if (ni.isExact()) {
+				sheet.addCell(new Number(col, row, Double.parseDouble(ni.toString()), format));
+			} else {
+				sheet.addCell(new Label(col, row, ni.toString(), format));
+			}
+		} else if (value instanceof BoolInterval) {
+			BoolInterval bi = (BoolInterval) value;
+			sheet.addCell(new Boolean(col, row, bi.isTrue(), format));
 		} else {
 			throw new JKindException("Unknown value type in Excel writer: "
 					+ value.getClass().getSimpleName());

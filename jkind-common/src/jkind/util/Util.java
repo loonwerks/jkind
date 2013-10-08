@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.JKindException;
+import jkind.interval.Interval;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.RecordType;
@@ -68,15 +69,19 @@ public class Util {
 	}
 
 	public static Value parseValue(String type, String value) {
-		if (type.equals("bool")) {
+		switch (type) {
+		case "bool":
 			if (value.equals("0") || value.equals("false")) {
 				return BooleanValue.FALSE;
 			} else if (value.equals("1") || value.equals("true")) {
 				return BooleanValue.TRUE;
 			}
-		} else if (type.equals("int")) {
+			break;
+
+		case "int":
 			return new IntegerValue(new BigInteger(value));
-		} else if (type.equals("real")) {
+
+		case "real":
 			String[] strs = value.split("/");
 			if (strs.length <= 2) {
 				BigInteger num = new BigInteger(strs[0]);
@@ -115,8 +120,17 @@ public class Util {
 			writer.append(content);
 		}
 	}
-	
+
 	public static boolean isWindows() {
 		return System.getProperty("os.name").startsWith("Windows");
+	}
+
+	public static boolean isArbitrary(Value value) {
+		if (value == null) {
+			return true;
+		} else if (value instanceof Interval) {
+			return ((Interval) value).isArbitrary();
+		}
+		return false;
 	}
 }

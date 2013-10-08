@@ -6,6 +6,13 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
+import jkind.interval.IntEndpoint;
+import jkind.interval.Interval;
+import jkind.interval.NumericEndpoint;
+import jkind.interval.NumericInterval;
+import jkind.interval.RealEndpoint;
+import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
@@ -70,8 +77,58 @@ public class XmlHandler extends DefaultHandler {
 		} else if (qName.equals("Value")) {
 			readValue = true;
 			time = Integer.parseInt(attributes.getValue("time"));
+		} else if (qName.equals("Interval")) {
+			Interval interval = readInterval(attributes.getValue("low"),
+					attributes.getValue("high"));
+			signal.putValue(time, interval);
 		} else if (qName.equals("Invariant")) {
 			readInvariant = true;
+		}
+	}
+
+	private Interval readInterval(String low, String high) {
+		NumericEndpoint lowEnd;
+		NumericEndpoint highEnd;
+
+		switch (type) {
+		case "int":
+			lowEnd = readIntEndpoint(low);
+			highEnd = readIntEndpoint(high);
+			break;
+
+		case "real":
+			lowEnd = readRealEndpoint(low);
+			highEnd = readRealEndpoint(high);
+			break;
+
+		default:
+			throw new JKindException("Unknown interval type in XML file: " + type);
+		}
+		
+		return new NumericInterval(lowEnd, highEnd);
+	}
+
+	private IntEndpoint readIntEndpoint(String text) {
+		switch (text) {
+		case "inf":
+			return IntEndpoint.POS_INFINITY;
+		case "-inf":
+			return IntEndpoint.NEG_INFINITY;
+		default:
+			IntegerValue iv = (IntegerValue) Util.parseValue("int", text);
+			return new IntEndpoint(iv.value);
+		}
+	}
+
+	private RealEndpoint readRealEndpoint(String text) {
+		switch (text) {
+		case "inf":
+			return RealEndpoint.POS_INFINITY;
+		case "-inf":
+			return RealEndpoint.NEG_INFINITY;
+		default:
+			RealValue rv = (RealValue) Util.parseValue("real", text);
+			return new RealEndpoint(rv.value);
 		}
 	}
 
@@ -95,7 +152,7 @@ public class XmlHandler extends DefaultHandler {
 			default:
 				throw new JKindException("Unknown property answer in XML file: " + answer);
 			}
-			
+
 			PropertyResult pr = result.getPropertyResult(propertyName);
 			if (pr == null) {
 				pr = result.addProperty(propertyName);
@@ -119,7 +176,10 @@ public class XmlHandler extends DefaultHandler {
 			k = Integer.parseInt(new String(ch, start, length));
 			readK = false;
 		} else if (readValue) {
-			signal.putValue(time, Util.parseValue(type, new String(ch, start, length)));
+			String str = new String(ch, start, length);
+			if (!str.trim().isEmpty()) {
+				signal.putValue(time, Util.parseValue(type, new String(ch, start, length)));
+			}
 			readValue = false;
 		} else if (readInvariant) {
 			invariants.add(new String(ch, start, length));

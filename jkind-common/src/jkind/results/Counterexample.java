@@ -14,13 +14,14 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.layout.Layout;
 import jkind.results.layout.SingletonLayout;
+import jkind.util.Util;
 
 /**
  * A JKind counterexample
  */
 public final class Counterexample {
 	private final int length;
-	private final List<Signal<Value>> signals = new ArrayList<>();
+	private final Map<String, Signal<Value>> signals = new HashMap<>();
 
 	public Counterexample(int length) {
 		this.length = length;
@@ -34,14 +35,16 @@ public final class Counterexample {
 	}
 
 	public void addSignal(Signal<Value> signal) {
-		signals.add(signal);
+		signals.put(signal.getName(), signal);
 	}
 
 	/**
 	 * All signals in the counterexample
 	 */
 	public List<Signal<Value>> getSignals() {
-		return Collections.unmodifiableList(signals);
+		List<Signal<Value>> result = new ArrayList<>(signals.values());
+		Collections.sort(result);
+		return result;
 	}
 
 	/**
@@ -53,12 +56,7 @@ public final class Counterexample {
 	 *         be found
 	 */
 	public Signal<Value> getSignal(String name) {
-		for (Signal<Value> signal : signals) {
-			if (signal.getName().equals(name)) {
-				return signal;
-			}
-		}
-		return null;
+		return signals.get(name);
 	}
 
 	/**
@@ -70,13 +68,13 @@ public final class Counterexample {
 	 */
 	public Map<String, Value> getStep(int step) {
 		Map<String, Value> result = new HashMap<>();
-		for (Signal<Value> signal : signals) {
+		for (Signal<Value> signal : signals.values()) {
 			Value value = signal.getValue(step);
 			if (value != null) {
 				result.put(signal.getName(), value);
 			}
 		}
-		return Collections.unmodifiableMap(result);
+		return result;
 	}
 
 	/**
@@ -182,7 +180,7 @@ public final class Counterexample {
 
 	private List<Signal<Value>> getCategorySignals(Layout layout, String category) {
 		List<Signal<Value>> result = new ArrayList<>();
-		for (Signal<Value> signal : signals) {
+		for (Signal<Value> signal : getSignals()) {
 			if (category.equals(layout.getCategory(signal.getName()))) {
 				result.add(signal);
 			}
@@ -205,7 +203,7 @@ public final class Counterexample {
 		text.append(String.format("%-25s ", signal.getName()));
 		for (int i = 0; i < length; i++) {
 			Value value = signal.getValue(i);
-			text.append(String.format("%6s ", value != null ? value : "-"));
+			text.append(String.format("%6s ", !Util.isArbitrary(value) ? value : "-"));
 		}
 		text.append(NEWLINE);
 	}

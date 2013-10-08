@@ -1,13 +1,11 @@
 package jkind.processes;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.lustre.VarDecl;
-import jkind.processes.messages.CounterexampleMessage;
+import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
@@ -19,6 +17,8 @@ import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public class SmoothProcess extends Process {
+	private Process cexProcess;
+
 	public SmoothProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Smoothing", spec, settings, director);
 	}
@@ -33,14 +33,18 @@ public class SmoothProcess extends Process {
 		waitForMessage();
 	}
 
+	public void setCounterexampleProcess(Process cexProcess) {
+		this.cexProcess = cexProcess;
+	}
+
 	private void waitForMessage() {
 		try {
 			while (true) {
 				Message message = incoming.take();
-				if (message instanceof CounterexampleMessage) {
-					CounterexampleMessage cex = (CounterexampleMessage) message;
-					for (String property : cex.invalid) {
-						smooth(property, cex.k);
+				if (message instanceof InvalidMessage) {
+					InvalidMessage im = (InvalidMessage) message;
+					for (String property : im.invalid) {
+						smooth(property, im.k);
 					}
 				} else if (message instanceof StopMessage) {
 					return;
@@ -94,7 +98,12 @@ public class SmoothProcess extends Process {
 
 	private void sendCounterexample(String property, int k, Model model) {
 		debug("Sending " + property);
-		List<String> invalid = Collections.singletonList(property);
-		director.incoming.add(new CounterexampleMessage(invalid, k, model));
+		InvalidMessage im = new InvalidMessage(property, k, model);
+
+		if (cexProcess != null) {
+			cexProcess.incoming.add(im);
+		} else {
+			director.incoming.add(im);
+		}
 	}
 }
