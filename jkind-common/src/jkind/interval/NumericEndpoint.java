@@ -16,4 +16,6 @@ public abstract class NumericEndpoint extends IntervalEndpoint {
 	public NumericEndpoint max(NumericEndpoint other) {
 		return (NumericEndpoint) max((IntervalEndpoint) other);
 	}
+	
+	public abstract double toDouble();
 }

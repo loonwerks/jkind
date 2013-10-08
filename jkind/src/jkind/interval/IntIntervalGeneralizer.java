@@ -18,7 +18,7 @@ public class IntIntervalGeneralizer {
 	}
 
 	private NumericInterval generalizeIntIntervalLow(String id, int i, NumericInterval curr) {
-		NumericInterval next = new NumericInterval(IntEndpoint.NEG_INFINITY, curr.getHigh());
+		NumericInterval next = new NumericInterval(IntEndpoint.NEGATIVE_INFINITY, curr.getHigh());
 		if (generalizer.modelConsistent(id, i, next)) {
 			return next;
 		}
@@ -56,7 +56,7 @@ public class IntIntervalGeneralizer {
 	}
 
 	private NumericInterval generalizeIntIntervalHigh(String id, int i, NumericInterval curr) {
-		NumericInterval next = new NumericInterval(curr.getLow(), IntEndpoint.POS_INFINITY);
+		NumericInterval next = new NumericInterval(curr.getLow(), IntEndpoint.POSITIVE_INFINITY);
 		if (generalizer.modelConsistent(id, i, next)) {
 			return next;
 		}

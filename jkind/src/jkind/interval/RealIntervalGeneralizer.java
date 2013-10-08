@@ -22,7 +22,7 @@ public class RealIntervalGeneralizer {
 	}
 
 	private NumericInterval generalizeRealIntervalLow(String id, int i, NumericInterval curr) {
-		NumericInterval next = new NumericInterval(RealEndpoint.NEG_INFINITY, curr.getHigh());
+		NumericInterval next = new NumericInterval(RealEndpoint.NEGATIVE_INFINITY, curr.getHigh());
 		if (generalizer.modelConsistent(id, i, next)) {
 			return next;
 		}
@@ -61,7 +61,7 @@ public class RealIntervalGeneralizer {
 	}
 
 	private NumericInterval generalizeRealIntervalHigh(String id, int i, NumericInterval curr) {
-		NumericInterval next = new NumericInterval(curr.getLow(), RealEndpoint.POS_INFINITY);
+		NumericInterval next = new NumericInterval(curr.getLow(), RealEndpoint.POSITIVE_INFINITY);
 		if (generalizer.modelConsistent(id, i, next)) {
 			return next;
 		}

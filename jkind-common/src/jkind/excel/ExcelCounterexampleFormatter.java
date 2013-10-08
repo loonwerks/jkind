@@ -149,9 +149,10 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		} else if (value instanceof NumericInterval) {
 			NumericInterval ni = (NumericInterval) value;
 			if (ni.isExact()) {
-				sheet.addCell(new Number(col, row, Double.parseDouble(ni.toString()), format));
+				sheet.addCell(new Number(col, row, ni.getLow().toDouble(), format));
 			} else {
-				sheet.addCell(new Label(col, row, ni.toString(), format));
+				String str = "[" + ni.getLow().toDouble() + ", " + ni.getHigh().toDouble() + "]";
+				sheet.addCell(new Label(col, row, str, format));
 			}
 		} else if (value instanceof BoolInterval) {
 			BoolInterval bi = (BoolInterval) value;

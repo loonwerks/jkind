@@ -111,9 +111,9 @@ public class XmlHandler extends DefaultHandler {
 	private IntEndpoint readIntEndpoint(String text) {
 		switch (text) {
 		case "inf":
-			return IntEndpoint.POS_INFINITY;
+			return IntEndpoint.POSITIVE_INFINITY;
 		case "-inf":
-			return IntEndpoint.NEG_INFINITY;
+			return IntEndpoint.NEGATIVE_INFINITY;
 		default:
 			IntegerValue iv = (IntegerValue) Util.parseValue("int", text);
 			return new IntEndpoint(iv.value);
@@ -123,9 +123,9 @@ public class XmlHandler extends DefaultHandler {
 	private RealEndpoint readRealEndpoint(String text) {
 		switch (text) {
 		case "inf":
-			return RealEndpoint.POS_INFINITY;
+			return RealEndpoint.POSITIVE_INFINITY;
 		case "-inf":
-			return RealEndpoint.NEG_INFINITY;
+			return RealEndpoint.NEGATIVE_INFINITY;
 		default:
 			RealValue rv = (RealValue) Util.parseValue("real", text);
 			return new RealEndpoint(rv.value);

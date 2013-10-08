@@ -7,8 +7,8 @@ public class IntEndpoint extends NumericEndpoint {
 
 	public static final IntEndpoint ZERO = new IntEndpoint(BigInteger.ZERO);
 	public static final IntEndpoint ONE = new IntEndpoint(BigInteger.ONE);
-	public static final IntEndpoint POS_INFINITY = new IntEndpoint();
-	public static final IntEndpoint NEG_INFINITY = new IntEndpoint();
+	public static final IntEndpoint POSITIVE_INFINITY = new IntEndpoint();
+	public static final IntEndpoint NEGATIVE_INFINITY = new IntEndpoint();
 
 	public IntEndpoint(BigInteger value) {
 		this.value = value;
@@ -31,15 +31,15 @@ public class IntEndpoint extends NumericEndpoint {
 	}
 
 	private int compareTo(IntEndpoint other) {
-		if (this == POS_INFINITY) {
-			return other == POS_INFINITY ? 0 : 1;
-		} else if (other == POS_INFINITY) {
+		if (this == POSITIVE_INFINITY) {
+			return other == POSITIVE_INFINITY ? 0 : 1;
+		} else if (other == POSITIVE_INFINITY) {
 			return -1;
 		}
 
-		if (this == NEG_INFINITY) {
-			return other == NEG_INFINITY ? 0 : -1;
-		} else if (other == NEG_INFINITY) {
+		if (this == NEGATIVE_INFINITY) {
+			return other == NEGATIVE_INFINITY ? 0 : -1;
+		} else if (other == NEGATIVE_INFINITY) {
 			return 1;
 		}
 
@@ -50,8 +50,8 @@ public class IntEndpoint extends NumericEndpoint {
 	public IntEndpoint add(NumericEndpoint o) {
 		IntEndpoint other = (IntEndpoint) o;
 
-		if ((this == POS_INFINITY && other == NEG_INFINITY)
-				|| (this == NEG_INFINITY && other == POS_INFINITY)) {
+		if ((this == POSITIVE_INFINITY && other == NEGATIVE_INFINITY)
+				|| (this == NEGATIVE_INFINITY && other == POSITIVE_INFINITY)) {
 			throw new ArithmeticException("Infinity + negative infinity is undefined");
 		}
 
@@ -78,7 +78,7 @@ public class IntEndpoint extends NumericEndpoint {
 		}
 
 		if (!isFinite() || !other.isFinite()) {
-			return signum() * other.signum() > 0 ? POS_INFINITY : NEG_INFINITY;
+			return signum() * other.signum() > 0 ? POSITIVE_INFINITY : NEGATIVE_INFINITY;
 		}
 
 		return new IntEndpoint(value.multiply(other.value));
@@ -91,9 +91,9 @@ public class IntEndpoint extends NumericEndpoint {
 		if (!other.isFinite()) {
 			throw new ArithmeticException("Division by non-constant");
 		}
-		
+
 		if (!isFinite()) {
-			return signum() * other.signum() > 0 ? POS_INFINITY : NEG_INFINITY;
+			return signum() * other.signum() > 0 ? POSITIVE_INFINITY : NEGATIVE_INFINITY;
 		} else {
 			return new IntEndpoint(value.divide(other.value));
 		}
@@ -101,10 +101,10 @@ public class IntEndpoint extends NumericEndpoint {
 
 	@Override
 	public IntEndpoint negate() {
-		if (this == POS_INFINITY) {
-			return NEG_INFINITY;
-		} else if (this == NEG_INFINITY) {
-			return POS_INFINITY;
+		if (this == POSITIVE_INFINITY) {
+			return NEGATIVE_INFINITY;
+		} else if (this == NEGATIVE_INFINITY) {
+			return POSITIVE_INFINITY;
 		} else {
 			return new IntEndpoint(value.negate());
 		}
@@ -112,14 +112,14 @@ public class IntEndpoint extends NumericEndpoint {
 
 	@Override
 	public boolean isFinite() {
-		return this != POS_INFINITY && this != NEG_INFINITY;
+		return this != POSITIVE_INFINITY && this != NEGATIVE_INFINITY;
 	}
 
 	@Override
 	public int signum() {
-		if (this == POS_INFINITY) {
+		if (this == POSITIVE_INFINITY) {
 			return 1;
-		} else if (this == NEG_INFINITY) {
+		} else if (this == NEGATIVE_INFINITY) {
 			return -1;
 		} else {
 			return value.signum();
@@ -127,10 +127,21 @@ public class IntEndpoint extends NumericEndpoint {
 	}
 
 	@Override
+	public double toDouble() {
+		if (this == NEGATIVE_INFINITY) {
+			return Double.NEGATIVE_INFINITY;
+		} else if (this == POSITIVE_INFINITY) {
+			return Double.POSITIVE_INFINITY;
+		} else {
+			return value.doubleValue();
+		}
+	}
+
+	@Override
 	public String toString() {
-		if (this == POS_INFINITY) {
+		if (this == POSITIVE_INFINITY) {
 			return "inf";
-		} else if (this == NEG_INFINITY) {
+		} else if (this == NEGATIVE_INFINITY) {
 			return "-inf";
 		} else {
 			return value.toString();

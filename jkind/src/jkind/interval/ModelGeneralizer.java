@@ -101,8 +101,8 @@ public class ModelGeneralizer {
 	}
 
 	private Interval generalizeSubrangeIntInterval(String id, int i) {
-		NumericInterval next = new NumericInterval(IntEndpoint.NEG_INFINITY,
-				IntEndpoint.POS_INFINITY);
+		NumericInterval next = new NumericInterval(IntEndpoint.NEGATIVE_INFINITY,
+				IntEndpoint.POSITIVE_INFINITY);
 		if (modelConsistent(id, i, next)) {
 			return next;
 		} else {
