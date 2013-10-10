@@ -400,7 +400,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		if (!typeAssignable(expected, actual)) {
-			error(ast, "expected type " + expected + " but found type " + actual);
+			String found = expected instanceof SubrangeIntType ? getDetails(actual) : actual
+					.toString();
+			error(ast, "expected type " + getDetails(expected) + " but found type " + found);
+		}
+	}
+
+	private String getDetails(Type type) {
+		if (type instanceof SubrangeIntType) {
+			SubrangeIntType subrange = (SubrangeIntType) type;
+			return subrange.toSubrangeString();
+		} else {
+			return type.toString();
 		}
 	}
 
@@ -419,15 +430,15 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return exRange.low.compareTo(acRange.low) <= 0
 					&& exRange.high.compareTo(acRange.high) >= 0;
 		}
-		
+
 		return false;
 	}
-	
+
 	private Type compareTypeJoin(Ast ast, Type t1, Type t2) {
 		if (t1 == null || t2 == null) {
 			return null;
 		}
-		
+
 		Type join = joinTypes(t1, t2);
 		if (join == null) {
 			error(ast, "cannot join types " + t1 + " and " + t2);

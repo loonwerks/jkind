@@ -19,6 +19,10 @@ public class SubrangeIntType extends Type {
 
 	@Override
 	public String toString() {
+		return "int";
+	}
+	
+	public String toSubrangeString() {
 		return "subrange [" + low + ", " + high + "] of int";
 	}
 
