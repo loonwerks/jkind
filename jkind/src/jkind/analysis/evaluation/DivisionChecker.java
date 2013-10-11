@@ -13,14 +13,14 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.util.BigFraction;
 
-public class DivideByZeroChecker extends IterVisitor {
+public class DivisionChecker extends IterVisitor {
 	private ConstantEvaluator constantEvaluator;
 
 	public static boolean check(Program program) {
 		try {
-			new DivideByZeroChecker().visitProgram(program);
+			new DivisionChecker().visitProgram(program);
 			return true;
-		} catch (DivideByZeroException e) {
+		} catch (DivisionException e) {
 			return false;
 		}
 	}
@@ -45,25 +45,30 @@ public class DivideByZeroChecker extends IterVisitor {
 		e.right.accept(this);
 
 		if (e.op == BinaryOp.DIVIDE || e.op == BinaryOp.INT_DIVIDE) {
-			Value right = e.right.accept(constantEvaluator);
-			if (isZero(right)) {
+			int rightSignum = signum(e.right.accept(constantEvaluator));
+			
+			if (rightSignum == 0) {
 				System.out.println("Error at line " + e.location + " division by zero");
-				throw new DivideByZeroException();
+				throw new DivisionException();
+			} else if (rightSignum < 0 && e.op == BinaryOp.INT_DIVIDE) {
+				System.out.println("Error at line " + e.location
+						+ " integer division by negative numbers is disabled");
+				throw new DivisionException();
 			}
 		}
 
 		return null;
 	}
 
-	private boolean isZero(Value value) {
+	private int signum(Value value) {
 		if (value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;
-			return (iv.value.compareTo(BigInteger.ZERO) == 0);
+			return iv.value.compareTo(BigInteger.ZERO);
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			return (rv.value.equals(BigFraction.ZERO));
+			return rv.value.compareTo(BigFraction.ZERO);
 		} else {
-			return false;
+			throw new IllegalArgumentException();
 		}
 	}
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.analysis.evaluation.DivideByZeroChecker;
+import jkind.analysis.evaluation.DivisionChecker;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -48,7 +48,7 @@ public class StaticAnalyzer {
 		if (linearCheck) {
 			result = result && LinearChecker.check(program);
 		}
-		result = result && DivideByZeroChecker.check(program);
+		result = result && DivisionChecker.check(program);
 		return result;
 	}
 

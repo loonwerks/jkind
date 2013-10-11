@@ -53,7 +53,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 			return e.accept(this);
 		} catch (ArithmeticException ae) {
 			System.out.println("Error at line " + e.location + " division by zero");
-			throw new DivideByZeroException();
+			throw new DivisionException();
 		}
 	}
 
