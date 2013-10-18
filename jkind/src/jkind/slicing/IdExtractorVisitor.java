@@ -5,9 +5,9 @@ import java.util.Set;
 
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.IterVisitor;
+import jkind.lustre.ExprIterVisitor;
 
-public class IdExtractorVisitor extends IterVisitor {
+public class IdExtractorVisitor extends ExprIterVisitor {
 	public static Set<String> getIds(Expr expr) {
 		IdExtractorVisitor visitor = new IdExtractorVisitor();
 		expr.accept(visitor);

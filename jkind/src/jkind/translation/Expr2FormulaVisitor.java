@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CondactExpr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -22,7 +23,6 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 	private final SortedSet<String> refs;
 	private final StringBuilder buf;
-	private boolean invalid;
 
 	final private static int INITIAL_COLUMN = 1;
 
@@ -32,15 +32,10 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 		this.refs = new TreeSet<>();
 		this.buf = new StringBuilder();
-		this.invalid = false;
 	}
 
 	@Override
 	public String toString() {
-		if (invalid) {
-			return "";
-		}
-
 		if (refs.isEmpty()) {
 			return buf.toString();
 		}
@@ -52,7 +47,7 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 			if (!first) {
 				result.append(",");
 			}
-			result.append(ref + "=\"\"");
+			result.append("IF(ISERROR(" + ref + "),FALSE," + ref + "=\"\")");
 			first = false;
 		}
 		result.append("), \"\", ");
@@ -121,6 +116,11 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	public Void visit(BoolExpr e) {
 		buf.append(e.value ? "TRUE" : "FALSE");
 		return null;
+	}
+
+	@Override
+	public Void visit(CondactExpr e) {
+		throw new IllegalArgumentException("Condacts must be removed before translation to formula");
 	}
 
 	@Override
@@ -194,7 +194,8 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 		switch (e.op) {
 		case PRE:
 			if (column == INITIAL_COLUMN) {
-				invalid = true;
+				// Create an error value for pre in initial step
+				buf.append("(0+\"\")");
 				return null;
 			}
 
@@ -206,8 +207,6 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 			buf.append(")");
 
 			refs.addAll(preVisitor.refs);
-
-			invalid = invalid || preVisitor.invalid;
 
 			return null;
 

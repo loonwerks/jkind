@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class PrettyPrintVisitor implements AstVisitor<Void> {
+public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	private StringBuilder sb = new StringBuilder();
 	private String main;
 
@@ -26,7 +26,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 	@Override
 	public Void visit(Program program) {
 		main = program.main;
-		
+
 		if (!program.types.isEmpty()) {
 			for (TypeDef typeDef : program.types) {
 				typeDef.accept(this);
@@ -169,15 +169,17 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 
 	@Override
 	public Void visit(Equation equation) {
-		Iterator<IdExpr> iterator = equation.lhs.iterator();
-		while (iterator.hasNext()) {
-			write(iterator.next().id);
-			if (iterator.hasNext()) {
-				write(", ");
+		if (!equation.lhs.isEmpty()) {
+			Iterator<IdExpr> iterator = equation.lhs.iterator();
+			while (iterator.hasNext()) {
+				write(iterator.next().id);
+				if (iterator.hasNext()) {
+					write(", ");
+				}
 			}
+			write(" = ");
 		}
-
-		write(" = ");
+		
 		expr(equation.expr);
 		write(";");
 		return null;
@@ -216,6 +218,20 @@ public class PrettyPrintVisitor implements AstVisitor<Void> {
 	@Override
 	public Void visit(BoolExpr e) {
 		write(Boolean.toString(e.value));
+		return null;
+	}
+
+	@Override
+	public Void visit(CondactExpr e) {
+		write("condact(");
+		expr(e.clock);
+		write(", ");
+		expr(e.call);
+		for (Expr arg : e.args) {
+			write(", ");
+			expr(arg);
+		}
+		write(")");
 		return null;
 	}
 

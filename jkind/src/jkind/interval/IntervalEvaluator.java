@@ -3,6 +3,7 @@ package jkind.interval;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CondactExpr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -42,6 +43,11 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	@Override
 	public Interval visit(BoolExpr e) {
 		return e.value ? BoolInterval.TRUE : BoolInterval.FALSE;
+	}
+
+	@Override
+	public Interval visit(CondactExpr e) {
+		throw new IllegalArgumentException();
 	}
 
 	@Override

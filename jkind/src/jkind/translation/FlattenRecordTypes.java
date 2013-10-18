@@ -17,7 +17,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.Location;
-import jkind.lustre.MapVisitor;
+import jkind.lustre.ExprMapVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RecordExpr;
@@ -32,7 +32,7 @@ import jkind.lustre.VarDecl;
  * 
  * Assumption: All user types have been inlined.
  */
-public class FlattenRecordTypes extends MapVisitor {
+public class FlattenRecordTypes extends ExprMapVisitor {
 	public static Node node(Node node) {
 		return new FlattenRecordTypes().visitNode(node);
 	}

@@ -133,4 +133,12 @@ public class Util {
 		}
 		return false;
 	}
+	
+	public static <T, S> List<S> castList(List<T> list, Class<S> klass) {
+		List<S> result = new ArrayList<>();
+		for (T e : list) {
+			result.add(klass.cast(e));
+		}
+		return result;
+	}
 }

@@ -5,7 +5,7 @@ import java.util.Set;
 
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.IterVisitor;
+import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -25,7 +25,7 @@ public class CombinatorialInfo {
 	private boolean isCombinatorialExpr(Expr expr) {
 		final boolean flag[] = {true};
 		
-		expr.accept(new IterVisitor() {
+		expr.accept(new ExprIterVisitor() {
 			@Override
 			public Void visit(UnaryExpr e) {
 				if (e.op == UnaryOp.PRE) {

@@ -1,0 +1,72 @@
+-- This file exercises some properties of condacts.
+-- All properties in this file are vaild.
+
+node integ(x : int) returns (sum : int);
+let
+  sum = x + (0 -> pre sum);
+tel;
+
+node historically(x : bool) returns (ok : bool);
+let
+  ok = x and (true -> pre ok);
+tel;
+
+node counter() returns (out : int);
+let
+  out = 0 -> 1 + pre out;
+tel;
+
+node double_counter() returns (out : int);
+let
+  out = counter() + counter();
+tel;
+
+node slow_counter() returns (out : int);
+var
+  toggle : bool;
+let
+  toggle = true -> not pre toggle;
+  out = condact(toggle, counter(), 0);  
+tel;
+
+node prop(x : bool) returns ();
+var
+  prop : bool;
+let
+  prop = x;
+  --%PROPERTY prop;
+tel;
+
+node main(x, y : int) returns ();
+var
+  toggle : bool;
+  prop1, prop2, prop3, prop4, prop5, prop6, prop7 : bool;
+let
+  toggle = true -> not pre toggle;
+  
+  prop1 = historically(toggle => x >= 0) =>
+            condact(toggle, integ(x), 0) >= 0;
+  --%PROPERTY prop1;
+
+  prop2 = condact(toggle, integ(x), 0) + condact(toggle, integ(y), 0) =
+          condact(toggle, integ(x + y), 0);
+  --%PROPERTY prop2;
+
+  prop3 = condact(toggle, double_counter(), 0) <= counter();
+  --%PROPERTY prop3;
+
+  prop4 = counter() <= 1 + condact(toggle, double_counter(), 0);
+  --%PROPERTY prop4;
+
+  prop5 = 4 * condact(toggle, slow_counter(), 0) <= counter();
+  --%PROPERTY prop5;
+
+  prop6 = counter() <= 4 * (1 + condact(toggle, slow_counter(), 0));
+  --%PROPERTY prop6;
+
+  prop7 = condact(toggle, integ(x), 0) + condact(not(toggle), integ(x), 0) = integ(x);
+  --%PROPERTY prop7;
+
+  -- This requires properly clocking subnode properties
+  condact(toggle, prop(toggle));
+tel;

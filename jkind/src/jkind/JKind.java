@@ -12,6 +12,7 @@ import jkind.translation.FlattenRecordTypes;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
+import jkind.translation.RemoveCondacts;
 import jkind.translation.Specification;
 
 public class JKind {
@@ -36,6 +37,7 @@ public class JKind {
 
 			program = InlineUserTypes.program(program);
 			program = InlineConstants.program(program);
+			program = RemoveCondacts.program(program);
 			Node main = InlineNodeCalls.program(program);
 			main = FlattenRecordTypes.node(main);
 			

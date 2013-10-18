@@ -10,6 +10,7 @@ import java.util.Map;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -35,6 +36,7 @@ import jkind.lustre.parsing.LustreParser.AssertionContext;
 import jkind.lustre.parsing.LustreParser.BinaryExprContext;
 import jkind.lustre.parsing.LustreParser.BoolExprContext;
 import jkind.lustre.parsing.LustreParser.BoolTypeContext;
+import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
@@ -246,13 +248,32 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
-	public Expr visitNodeCallExpr(NodeCallExprContext ctx) {
+	public NodeCallExpr visitNodeCallExpr(NodeCallExprContext ctx) {
 		String node = ctx.ID().getText();
 		List<Expr> args = new ArrayList<>();
 		for (ExprContext arg : ctx.expr()) {
 			args.add(expr(arg));
 		}
 		return new NodeCallExpr(loc(ctx), node, args);
+	}
+
+	@Override
+	public Expr visitCondactExpr(CondactExprContext ctx) {
+		Expr clock = expr(ctx.expr(0));
+		if (ctx.expr(1) instanceof NodeCallExprContext) {
+			NodeCallExprContext callCtx = (NodeCallExprContext) ctx.expr(1);
+			NodeCallExpr call = visitNodeCallExpr(callCtx);
+			List<Expr> args = new ArrayList<>();
+			for (int i = 2; i < ctx.expr().size(); i++) {
+				args.add(expr(ctx.expr(i)));
+			}
+			return new CondactExpr(loc(ctx), clock, call, args);
+		} else {
+			System.out.println("Error at line " + loc(ctx)
+					+ " second argument to condact must be a node call");
+			System.exit(-1);
+			return null;
+		}
 	}
 
 	@Override

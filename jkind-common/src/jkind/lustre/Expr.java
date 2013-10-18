@@ -6,9 +6,10 @@ public abstract class Expr extends Ast {
 		super(location);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T accept(AstVisitor<T> visitor) {
-		return accept((ExprVisitor<T>) visitor);
+	public <T, S extends T> S accept(AstVisitor<T, S> visitor) {
+		return accept((ExprVisitor<S>) visitor);
 	}
 	
 	public abstract <T> T accept(ExprVisitor<T> visitor);

@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
-public class MapVisitor implements ExprVisitor<Expr> {
+public class ExprMapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(BinaryExpr e) {
 		return new BinaryExpr(e.location, e.left.accept(this), e.op, e.right.accept(this));
@@ -16,6 +15,12 @@ public class MapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(BoolExpr e) {
 		return e;
+	}
+
+	@Override
+	public Expr visit(CondactExpr e) {
+		return new CondactExpr(e.clock.accept(this), (NodeCallExpr) e.call.accept(this),
+				visitAll(e.args));
 	}
 
 	@Override
@@ -36,11 +41,7 @@ public class MapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(NodeCallExpr e) {
-		List<Expr> args = new ArrayList<>();
-		for (Expr arg : e.args) {
-			args.add(arg.accept(this));
-		}
-		return new NodeCallExpr(e.location, e.node, args);
+		return new NodeCallExpr(e.location, e.node, visitAll(e.args));
 	}
 
 	@Override
@@ -65,5 +66,13 @@ public class MapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(UnaryExpr e) {
 		return new UnaryExpr(e.location, e.op, e.expr.accept(this));
+	}
+
+	protected List<Expr> visitAll(List<? extends Expr> list) {
+		List<Expr> result = new ArrayList<>();
+		for (Expr e : list) {
+			result.add(e.accept(this));
+		}
+		return result;
 	}
 }

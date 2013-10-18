@@ -10,6 +10,7 @@ import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.Node2Excel;
+import jkind.translation.RemoveCondacts;
 
 public class JLustre2Excel {
 	public static void main(String args[]) {
@@ -37,6 +38,7 @@ public class JLustre2Excel {
 
 			program = InlineUserTypes.program(program);
 			program = InlineConstants.program(program);
+			program = RemoveCondacts.program(program);
 			Node main = InlineNodeCalls.program(program);
 			main = FlattenRecordTypes.node(main);
 

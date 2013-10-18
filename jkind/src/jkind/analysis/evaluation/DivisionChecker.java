@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
-import jkind.lustre.IterVisitor;
+import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.values.IntegerValue;
@@ -13,7 +13,7 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.util.BigFraction;
 
-public class DivisionChecker extends IterVisitor {
+public class DivisionChecker extends ExprIterVisitor {
 	private ConstantEvaluator constantEvaluator;
 
 	public static boolean check(Program program) {

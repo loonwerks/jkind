@@ -6,11 +6,11 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.IterVisitor;
+import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 
-public class LinearChecker extends IterVisitor {
+public class LinearChecker extends ExprIterVisitor {
 	private boolean passed;
 	private ConstantAnalyzer constantAnalyzer;
 

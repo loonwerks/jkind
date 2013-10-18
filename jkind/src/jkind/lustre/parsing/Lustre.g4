@@ -49,6 +49,7 @@ expr: ID                                                       # idExpr
     | REAL                                                     # realExpr
     | BOOL                                                     # boolExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
+    | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # projectionExpr
     | 'pre' expr                                               # preExpr
     | 'not' expr                                               # notExpr

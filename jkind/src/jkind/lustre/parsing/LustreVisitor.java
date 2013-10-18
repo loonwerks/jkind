@@ -12,6 +12,13 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#condactExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCondactExpr(@NotNull LustreParser.CondactExprContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#plainType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

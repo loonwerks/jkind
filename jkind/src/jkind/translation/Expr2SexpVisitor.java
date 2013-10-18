@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CondactExpr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -50,6 +51,11 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	}
 
 	@Override
+	public Sexp visit(CondactExpr e) {
+		throw new IllegalArgumentException("Condacts must be removed before translation to sexp");
+	}
+
+	@Override
 	public Sexp visit(IdExpr e) {
 		return new Cons("$" + e.id, new Cons("+", iSym, Sexp.fromInt(offset)));
 	}
@@ -75,7 +81,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 		System.out.println(e);
 		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
 	}
-	
+
 	@Override
 	public Sexp visit(RealExpr e) {
 		Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());
@@ -87,7 +93,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	public Sexp visit(RecordExpr e) {
 		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
 	}
-	
+
 	@Override
 	public Sexp visit(UnaryExpr e) {
 		switch (e.op) {

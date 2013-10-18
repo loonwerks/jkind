@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
 import jkind.lustre.ExprVisitor;
@@ -47,7 +48,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 			hidden.add(decl.id);
 		}
 	}
-	
+
 	private Value eval(Expr e) {
 		try {
 			return e.accept(this);
@@ -71,6 +72,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(BoolExpr e) {
 		return BooleanValue.fromBoolean(e.value);
+	}
+
+	@Override
+	public Value visit(CondactExpr e) {
+		return null;
 	}
 
 	@Override

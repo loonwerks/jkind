@@ -10,14 +10,14 @@ import java.util.Queue;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.MapVisitor;
+import jkind.lustre.ExprMapVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
-public class InlineNodeCalls extends MapVisitor {
+public class InlineNodeCalls extends ExprMapVisitor {
 	public static Node program(Program program) {
 		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
 		Node main = program.getMainNode();

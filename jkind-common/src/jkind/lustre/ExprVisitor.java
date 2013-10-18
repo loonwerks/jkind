@@ -3,6 +3,7 @@ package jkind.lustre;
 public interface ExprVisitor<T> {
 	public T visit(BinaryExpr e);
 	public T visit(BoolExpr e);
+	public T visit(CondactExpr e);
 	public T visit(IdExpr e);
 	public T visit(IfThenElseExpr e);
 	public T visit(IntExpr e);

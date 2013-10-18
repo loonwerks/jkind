@@ -18,7 +18,7 @@ public class Constant extends Ast {
 	}
 	
 	@Override
-	public <T> T accept(AstVisitor<T> visitor) {
+	public <T, S extends T> T accept(AstVisitor<T, S> visitor) {
 		return visitor.visit(this);
 	}
 }

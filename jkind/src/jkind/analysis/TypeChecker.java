@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -60,6 +61,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		return passed;
+	}
+	
+	public void setNodeTable(Map<String, Node> nodeTable) {
+		this.nodeTable = nodeTable;
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
@@ -125,15 +130,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private void checkNodeCallAssignment(Equation eq) {
-		if (eq.expr instanceof NodeCallExpr) {
-			NodeCallExpr call = (NodeCallExpr) eq.expr;
-
+		if (eq.expr instanceof NodeCallExpr || eq.expr instanceof CondactExpr) {
 			List<Type> expected = new ArrayList<>();
 			for (IdExpr idExpr : eq.lhs) {
 				expected.add(idExpr.accept(this));
 			}
 
-			List<Type> actual = visitNodeCallExpr(call);
+			List<Type> actual = visitTopLevelCall(eq.expr);
 			if (actual == null) {
 				return;
 			}
@@ -149,6 +152,16 @@ public class TypeChecker implements ExprVisitor<Type> {
 		} else {
 			error(eq.expr, "expected node call for multiple value assignment");
 			return;
+		}
+	}
+	
+	private List<Type> visitTopLevelCall(Expr call) {
+		if (call instanceof NodeCallExpr) {
+			return visitNodeCallExpr((NodeCallExpr) call);
+		} else if (call instanceof CondactExpr) {
+			return visitCondactExpr((CondactExpr) call);
+		} else {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -230,6 +243,45 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	@Override
+	public Type visit(CondactExpr e) {
+		List<Type> result = visitCondactExpr(e);
+
+		if (result == null) {
+			return null;
+		} else if (result.size() == 1) {
+			return result.get(0);
+		} else {
+			error(e, "condact returns multiple values");
+			return null;
+		}
+	}
+
+	private List<Type> visitCondactExpr(CondactExpr e) {
+		compareTypeAssignment(e.clock, NamedType.BOOL, e.clock.accept(this));
+		
+		List<Type> expected = visitNodeCallExpr(e.call);
+		if (expected == null) {
+			return null;
+		}
+
+		List<Type> actual = new ArrayList<>();
+		for (Expr arg : e.args) {
+			actual.add(arg.accept(this));
+		}
+
+		if (actual.size() != expected.size()) {
+			error(e, "expected " + expected.size() + " default values, but found " + actual.size());
+			return null;
+		}
+
+		for (int i = 0; i < expected.size(); i++) {
+			compareTypeAssignment(e.args.get(i), expected.get(i), actual.get(i));
+		}
+
+		return expected;
+	}
+	
+	@Override
 	public Type visit(IdExpr e) {
 		if (variableTable.containsKey(e.id)) {
 			return variableTable.get(e.id);
@@ -270,7 +322,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	public List<Type> visitNodeCallExpr(NodeCallExpr e) {
+	private List<Type> visitNodeCallExpr(NodeCallExpr e) {
 		Node node = nodeTable.get(e.node);
 		if (node == null) {
 			error(e, "unknown node " + e.node);

@@ -3,13 +3,13 @@ package jkind.analysis;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
-import jkind.lustre.IterVisitor;
+import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 
-public class WarnUnguardedPreVisitor extends IterVisitor {
+public class WarnUnguardedPreVisitor extends ExprIterVisitor {
 	public static void check(Program program) {
 		for (Node node : program.nodes) {
 			for (Equation eq : node.equations) {

@@ -1,7 +1,6 @@
 package jkind.lustre;
 
-
-public interface AstVisitor<T> extends ExprVisitor<T> {
+public interface AstVisitor<T, S extends T> extends ExprVisitor<S> {
 	public T visit(Constant constant);
 	public T visit(Equation equation);
 	public T visit(Node node);
