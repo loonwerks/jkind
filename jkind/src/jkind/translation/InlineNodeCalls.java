@@ -84,7 +84,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {
 		String prefix = newPrefix(e.node);
-		Node node = getNode(e.node);
+		Node node = nodeTable.get(e.node.substring(e.node.lastIndexOf('.') + 1));
 
 		Map<String, IdExpr> translation = getTranslation(prefix, node);
 
@@ -97,15 +97,6 @@ public class InlineNodeCalls extends ExprMapVisitor {
 			result.add(translation.get(decl.id));
 		}
 		return result;
-	}
-
-	private Node getNode(String id) {
-		if (id.contains(".")) {
-			int index = id.lastIndexOf('.');
-			return nodeTable.get(id.substring(index + 1));
-		} else {
-			return nodeTable.get(id);
-		}
 	}
 
 	private Map<String, IdExpr> getTranslation(String prefix, Node node) {
@@ -135,7 +126,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 				return new NodeCallExpr(e.location, prefix + e.node, visitAll(e.args));
 			}
 		};
-		
+
 		for (Equation eq : equations) {
 			List<IdExpr> lhs = new ArrayList<>();
 			for (IdExpr idExpr : eq.lhs) {
