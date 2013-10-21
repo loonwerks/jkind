@@ -24,7 +24,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 		List<Expr> assertions = inliner.visitAssertions(main.assertions);
 		List<Equation> equations = inliner.visitEquations(main.equations);
-		
+
 		List<VarDecl> locals = new ArrayList<>(main.locals);
 		locals.addAll(inliner.newLocals);
 		List<String> properties = new ArrayList<>(main.properties);
@@ -37,7 +37,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 	private final Map<String, Node> nodeTable;
 	private final List<VarDecl> newLocals = new ArrayList<>();
 	private final List<String> newProperties = new ArrayList<>();
-	private final Map<String, Integer> usedNames = new HashMap<>();
+	private final Map<String, Integer> usedPrefixes = new HashMap<>();
 	private final Queue<Equation> queue = new ArrayDeque<>();
 
 	private InlineNodeCalls(Map<String, Node> nodeTable) {
@@ -83,11 +83,13 @@ public class InlineNodeCalls extends ExprMapVisitor {
 	}
 
 	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {
-		Node node = nodeTable.get(e.node);
-		Map<String, IdExpr> translation = getTranslation(node);
+		String prefix = newPrefix(e.node);
+		Node node = getNode(e.node);
+
+		Map<String, IdExpr> translation = getTranslation(prefix, node);
 
 		createInputEquations(node.inputs, e.args, translation);
-		createAssignmentEquations(node.equations, translation);
+		createAssignmentEquations(prefix, node.equations, translation);
 		accumulateProperties(node.properties, translation);
 
 		List<IdExpr> result = new ArrayList<>();
@@ -97,28 +99,23 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		return result;
 	}
 
-	private Map<String, IdExpr> getTranslation(Node node) {
+	private Node getNode(String id) {
+		if (id.contains(".")) {
+			int index = id.lastIndexOf('.');
+			return nodeTable.get(id.substring(index + 1));
+		} else {
+			return nodeTable.get(id);
+		}
+	}
+
+	private Map<String, IdExpr> getTranslation(String prefix, Node node) {
 		Map<String, IdExpr> translation = new HashMap<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
-			translation.put(decl.id, newVar(node.id, decl));
+			String id = prefix + decl.id;
+			newLocals.add(new VarDecl(id, decl.type));
+			translation.put(decl.id, new IdExpr(id));
 		}
 		return translation;
-	}
-
-	private IdExpr newVar(String nodeName, VarDecl decl) {
-		VarDecl newDecl = new VarDecl(decl.location, newName(nodeName, decl.id), decl.type);
-		newLocals.add(newDecl);
-		return new IdExpr(newDecl.id);
-	}
-
-	private String newName(String node, String id) {
-		String base = node + "." + id;
-		int i = 0;
-		if (usedNames.containsKey(base)) {
-			i = usedNames.get(base);
-		}
-		usedNames.put(base, i + 1);
-		return node + "~" + i + "." + id;
 	}
 
 	private void createInputEquations(List<VarDecl> inputs, List<Expr> args,
@@ -130,8 +127,15 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		}
 	}
 
-	private void createAssignmentEquations(List<Equation> equations, Map<String, IdExpr> translation) {
-		SubstitutionVisitor substitution = new SubstitutionVisitor(translation);
+	private void createAssignmentEquations(final String prefix, List<Equation> equations,
+			Map<String, IdExpr> translation) {
+		SubstitutionVisitor substitution = new SubstitutionVisitor(translation) {
+			@Override
+			public Expr visit(NodeCallExpr e) {
+				return new NodeCallExpr(e.location, prefix + e.node, visitAll(e.args));
+			}
+		};
+		
 		for (Equation eq : equations) {
 			List<IdExpr> lhs = new ArrayList<>();
 			for (IdExpr idExpr : eq.lhs) {
@@ -140,6 +144,15 @@ public class InlineNodeCalls extends ExprMapVisitor {
 			Expr expr = eq.expr.accept(substitution);
 			queue.add(new Equation(eq.location, lhs, expr));
 		}
+	}
+
+	private String newPrefix(String prefix) {
+		int i = 0;
+		if (usedPrefixes.containsKey(prefix)) {
+			i = usedPrefixes.get(prefix);
+		}
+		usedPrefixes.put(prefix, i + 1);
+		return prefix + "~" + i + ".";
 	}
 
 	private void accumulateProperties(List<String> properties, Map<String, IdExpr> translation) {
