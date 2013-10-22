@@ -82,7 +82,7 @@ public class Director {
 		startThreads();
 
 		long startTime = System.currentTimeMillis();
-		long timeout = startTime + settings.timeout * 1000;
+		long timeout = startTime + ((long) settings.timeout) * 1000;
 		while (System.currentTimeMillis() < timeout && !remainingProperties.isEmpty()
 				&& someThreadAlive() && !someProcessFailed()) {
 			processMessages(startTime);

@@ -1,5 +1,7 @@
 package jkind;
 
+import java.math.BigInteger;
+
 import jkind.JKindSettings.SolverOption;
 
 import org.apache.commons.cli.CommandLine;
@@ -106,7 +108,12 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(TIMEOUT)) {
-			settings.timeout = Integer.parseInt(line.getOptionValue(TIMEOUT));
+			BigInteger timeout = new BigInteger(line.getOptionValue(TIMEOUT));
+			if (timeout.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+				settings.timeout = Integer.MAX_VALUE;
+			} else {
+				settings.timeout = timeout.intValue();
+			}
 		}
 
 		if (line.hasOption(SCRATCH)) {
