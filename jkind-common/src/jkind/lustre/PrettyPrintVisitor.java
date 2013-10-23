@@ -284,7 +284,11 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 
 	@Override
 	public Void visit(RealExpr e) {
-		write(e.value.toPlainString());
+		String str = e.value.toPlainString();
+		write(str);
+		if (!str.contains(".")) {
+			write(".0");
+		}
 		return null;
 	}
 
