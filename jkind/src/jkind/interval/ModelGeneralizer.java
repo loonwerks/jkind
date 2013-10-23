@@ -208,7 +208,9 @@ public class ModelGeneralizer {
 			result = generalized.get(pair);
 		} else {
 			result = getFromBasisModel(pair);
-			if (i >= 0) {
+			// Due to checking all assertions, we may hit variables that our
+			// property doesn't depend on. We detect and ignore these variables.
+			if (i >= 0 && dependsOn.get(id) != null) {
 				toGeneralize.add(pair);
 			}
 		}
