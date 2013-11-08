@@ -46,7 +46,7 @@ public class LinearChecker extends ExprIterVisitor {
 		switch (e.op) {
 		case MULTIPLY:
 			if (!isConstant(e.left) && !isConstant(e.right)) {
-				System.out.println("Error at line " + e.location + " nonlinearity");
+				System.out.println("Error at line " + e.location + " non-constant multiplication");
 				passed = false;
 			}
 			break;
@@ -55,6 +55,13 @@ public class LinearChecker extends ExprIterVisitor {
 		case INT_DIVIDE:
 			if (!isConstant(e.right)) {
 				System.out.println("Error at line " + e.location + " non-constant division");
+				passed = false;
+			}
+			break;
+			
+		case MODULUS:
+			if (!isConstant(e.right)) {
+				System.out.println("Error at line " + e.location + " non-constant modulus");
 				passed = false;
 			}
 			break;

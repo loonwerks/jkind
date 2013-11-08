@@ -1,5 +1,6 @@
 package jkind.interval;
 
+import jkind.JKindException;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.Value;
@@ -52,6 +53,8 @@ public class NumericInterval extends Interval {
 		case DIVIDE:
 		case INT_DIVIDE:
 			return divide(other);
+		case MODULUS:
+			return modulus(other);
 		case EQUAL:
 			return equal(other);
 		case NOTEQUAL:
@@ -89,6 +92,21 @@ public class NumericInterval extends Interval {
 		NumericEndpoint val3 = high.divide(other.high);
 
 		return new NumericInterval(min(val0, val1, val2, val3), max(val0, val1, val2, val3));
+	}
+	
+	private NumericInterval modulus(NumericInterval other) {
+		if (!other.low.equals(other.high)) {
+			throw new JKindException("Non-constant modulus in interval simulation");
+		}
+		IntEndpoint b = (IntEndpoint) other.low;
+		
+		if (isExact()) {
+			IntEndpoint a = (IntEndpoint) low;
+			IntEndpoint v = a.modulus(b);
+			return new NumericInterval(v, v);
+		} else {
+			return new NumericInterval(IntEndpoint.ZERO, b.add(IntEndpoint.ONE.negate()));
+		}
 	}
 
 	private NumericEndpoint min(NumericEndpoint val, NumericEndpoint... others) {

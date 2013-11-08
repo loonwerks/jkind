@@ -2,6 +2,8 @@ package jkind.interval;
 
 import java.math.BigInteger;
 
+import jkind.util.Util;
+
 public class IntEndpoint extends NumericEndpoint {
 	private final BigInteger value;
 
@@ -95,8 +97,16 @@ public class IntEndpoint extends NumericEndpoint {
 		if (!isFinite()) {
 			return signum() * other.signum() > 0 ? POSITIVE_INFINITY : NEGATIVE_INFINITY;
 		} else {
-			return new IntEndpoint(value.divide(other.value));
+			return new IntEndpoint(Util.smtDivide(value, other.value));
 		}
+	}
+
+	public IntEndpoint modulus(IntEndpoint other) {
+		if (!isFinite() || !other.isFinite()) {
+			throw new ArithmeticException("Modulus with infinite value");
+		}
+		
+		return new IntEndpoint(value.mod(other.value));
 	}
 
 	@Override

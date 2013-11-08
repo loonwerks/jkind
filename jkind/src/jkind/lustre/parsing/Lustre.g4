@@ -54,7 +54,7 @@ expr: ID                                                       # idExpr
     | 'pre' expr                                               # preExpr
     | 'not' expr                                               # notExpr
     | '-' expr                                                 # negateExpr
-    | expr op=('*' | '/' | 'div') expr                         # binaryExpr
+    | expr op=('*' | '/' | 'div' | 'mod') expr                 # binaryExpr
     | expr op=('+' | '-') expr                                 # binaryExpr
     | expr op=('<' | '<=' | '>' | '>=' | '=' | '<>') expr      # binaryExpr
     | expr op='and' expr                                       # binaryExpr

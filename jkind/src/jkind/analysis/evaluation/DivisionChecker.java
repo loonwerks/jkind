@@ -44,15 +44,19 @@ public class DivisionChecker extends ExprIterVisitor {
 		e.left.accept(this);
 		e.right.accept(this);
 
-		if (e.op == BinaryOp.DIVIDE || e.op == BinaryOp.INT_DIVIDE) {
+		if (e.op == BinaryOp.DIVIDE || e.op == BinaryOp.INT_DIVIDE || e.op == BinaryOp.MODULUS) {
 			int rightSignum = signum(e.right.accept(constantEvaluator));
-			
+
 			if (rightSignum == 0) {
 				System.out.println("Error at line " + e.location + " division by zero");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.INT_DIVIDE) {
 				System.out.println("Error at line " + e.location
 						+ " integer division by negative numbers is disabled");
+				throw new DivisionException();
+			} else if (rightSignum < 0 && e.op == BinaryOp.MODULUS) {
+				System.out.println("Error at line " + e.location
+						+ " modulus by negative numbers is disabled");
 				throw new DivisionException();
 			}
 		}

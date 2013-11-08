@@ -93,6 +93,14 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 			e.right.accept(this);
 			buf.append(")");
 			return null;
+			
+		case MODULUS:
+			buf.append("MOD(");
+			e.left.accept(this);
+			buf.append(",");
+			e.right.accept(this);
+			buf.append(")");
+			return null;
 
 		case IMPLIES:
 			buf.append("OR(NOT(");

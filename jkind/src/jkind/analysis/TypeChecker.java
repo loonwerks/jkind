@@ -192,6 +192,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			break;
 
 		case INT_DIVIDE:
+		case MODULUS:
 			if (isIntBased(left) && isIntBased(right)) {
 				return NamedType.INT;
 			}

@@ -4,13 +4,14 @@ import java.math.BigInteger;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
+import jkind.util.Util;
 
 /**
  * An integer signal value
  */
 public class IntegerValue extends Value {
 	final public BigInteger value;
-	
+
 	public IntegerValue(BigInteger value) {
 		if (value == null) {
 			throw new IllegalArgumentException("Cannot create null integer value");
@@ -33,7 +34,9 @@ public class IntegerValue extends Value {
 		case MULTIPLY:
 			return new IntegerValue(value.multiply(other));
 		case INT_DIVIDE:
-			return new IntegerValue(value.divide(other));
+			return new IntegerValue(Util.smtDivide(value, other));
+		case MODULUS:
+			return new IntegerValue(value.mod(other));
 		case EQUAL:
 			return BooleanValue.fromBoolean(value.compareTo(other) == 0);
 		case NOTEQUAL:
@@ -60,7 +63,7 @@ public class IntegerValue extends Value {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return value.toString();
