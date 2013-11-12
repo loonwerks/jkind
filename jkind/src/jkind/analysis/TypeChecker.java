@@ -101,6 +101,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 		}
 
+		for (Expr assertion : node.assertions) {
+			compareTypeAssignment(assertion, NamedType.BOOL, assertion.accept(this));
+		}
+
 		return passed;
 	}
 
