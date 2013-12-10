@@ -19,6 +19,11 @@ public class Benchmark {
 		try {
 			LOG.delete();
 	
+			if (args.length >= 2 && "-N".equals(args[0])) {
+				N = Integer.parseInt(args[1]);
+				args = Arrays.copyOfRange(args, 2, args.length);
+			}
+			
 			System.out.println("Arguments: " + join(args));
 			System.out.println();
 			System.out.println("File, Runtime");
