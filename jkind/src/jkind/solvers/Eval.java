@@ -44,8 +44,8 @@ public class Eval {
 				if (!isTrue(eval(arg))) {
 					return BoolValue.FALSE;
 				}
-				return BoolValue.TRUE;
 			}
+			return BoolValue.TRUE;
 		}
 
 		List<Value> args = new ArrayList<>();
