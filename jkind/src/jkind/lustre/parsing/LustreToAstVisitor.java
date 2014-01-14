@@ -179,8 +179,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		if (ctx instanceof PlainTypeContext) {
 			PlainTypeContext pctx = (PlainTypeContext) ctx;
 			return type(pctx.type());
-		}
-		if (ctx instanceof RecordTypeContext) {
+		} else if (ctx instanceof RecordTypeContext) {
 			RecordTypeContext rctx = (RecordTypeContext) ctx;
 			Map<String, Type> fields = new HashMap<>();
 			for (int i = 0; i < rctx.ID().size(); i++) {
