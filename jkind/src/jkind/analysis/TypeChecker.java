@@ -62,7 +62,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		return passed;
 	}
-	
+
 	public void setNodeTable(Map<String, Node> nodeTable) {
 		this.nodeTable = nodeTable;
 	}
@@ -158,7 +158,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return;
 		}
 	}
-	
+
 	private List<Type> visitTopLevelCall(Expr call) {
 		if (call instanceof NodeCallExpr) {
 			return visitNodeCallExpr((NodeCallExpr) call);
@@ -238,7 +238,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 			break;
 		}
 
-		error(e, "operator '" + e.op + "' not defined on types " + left + ", " + right);
+		error(e, "operator '" + e.op + "' not defined on types " + simple(left) + ", "
+				+ simple(right));
 		return null;
 	}
 
@@ -263,7 +264,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private List<Type> visitCondactExpr(CondactExpr e) {
 		compareTypeAssignment(e.clock, NamedType.BOOL, e.clock.accept(this));
-		
+
 		List<Type> expected = visitNodeCallExpr(e.call);
 		if (expected == null) {
 			return null;
@@ -285,7 +286,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		return expected;
 	}
-	
+
 	@Override
 	public Type visit(IdExpr e) {
 		if (variableTable.containsKey(e.id)) {
@@ -374,7 +375,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 		}
 
-		error(e, "expected record type with field " + e.field + " but found " + type);
+		error(e, "expected record type with field " + e.field + " but found " + simple(type));
 		return null;
 	}
 
@@ -447,8 +448,16 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return type;
 		}
 
-		error(e, "operator '" + e.op + "' not defined on type " + type);
+		error(e, "operator '" + e.op + "' not defined on type " + simple(type));
 		return null;
+	}
+
+	private String simple(Type type) {
+		if (type instanceof SubrangeIntType) {
+			return "int";
+		} else {
+			return type.toString();
+		}
 	}
 
 	private void compareTypeAssignment(Ast ast, Type expected, Type actual) {
@@ -457,18 +466,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		if (!typeAssignable(expected, actual)) {
-			String found = expected instanceof SubrangeIntType ? getDetails(actual) : actual
-					.toString();
-			error(ast, "expected type " + getDetails(expected) + " but found type " + found);
-		}
-	}
-
-	private String getDetails(Type type) {
-		if (type instanceof SubrangeIntType) {
-			SubrangeIntType subrange = (SubrangeIntType) type;
-			return subrange.toSubrangeString();
-		} else {
-			return type.toString();
+			String found = expected instanceof SubrangeIntType ? actual.toString() : simple(actual);
+			error(ast, "expected type " + expected + " but found type " + found);
 		}
 	}
 
@@ -498,7 +497,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		Type join = joinTypes(t1, t2);
 		if (join == null) {
-			error(ast, "cannot join types " + t1 + " and " + t2);
+			error(ast, "cannot join types " + simple(t1) + " and " + simple(t2));
 			return null;
 		}
 		return join;
