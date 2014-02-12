@@ -3,12 +3,11 @@ package jkind.lustre;
 import java.math.BigInteger;
 
 public class SubrangeIntType extends Type {
-	final public Location location;
 	final public BigInteger low;
 	final public BigInteger high;
 
 	public SubrangeIntType(Location location, BigInteger low, BigInteger high) {
-		this.location = location;
+		super(location);
 		this.low = low;
 		this.high = high;
 	}

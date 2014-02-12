@@ -6,12 +6,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class RecordType extends Type {
-	final public Location location;
 	final public String id;
 	final public SortedMap<String, Type> fields;
 
 	public RecordType(Location location, String id, Map<String, Type> fields) {
-		this.location = location;
+		super(location);
 		this.id = id;
 		this.fields = Collections.unmodifiableSortedMap(new TreeMap<>(fields));
 	}

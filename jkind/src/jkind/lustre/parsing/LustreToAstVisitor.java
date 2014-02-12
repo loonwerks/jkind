@@ -219,7 +219,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Type visitUserType(UserTypeContext ctx) {
-		return new NamedType(ctx.ID().getText());
+		return new NamedType(loc(ctx), ctx.ID().getText());
 	}
 
 	private Expr expr(ExprContext ctx) {

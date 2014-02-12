@@ -98,8 +98,10 @@ public class Util {
 			NamedType namedType = (NamedType) type;
 			if (namedType.isBuiltin()) {
 				return namedType;
-			} else {
+			} else if (map.containsKey(namedType.name)) {
 				return map.get(namedType.name);
+			} else {
+				throw new TypeResolutionException(type);
 			}
 		} else if (type instanceof SubrangeIntType) {
 			return type;
@@ -111,7 +113,7 @@ public class Util {
 			}
 			return new RecordType(recordType.location, recordType.id, resolvedFields);
 		} else {
-			return null;
+			throw new IllegalArgumentException("Illegal type");
 		}
 	}
 

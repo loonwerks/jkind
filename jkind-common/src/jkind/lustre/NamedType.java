@@ -3,10 +3,15 @@ package jkind.lustre;
 public class NamedType extends Type {
 	final public String name;
 
-	public NamedType(String name) {
+	public NamedType(Location location, String name) {
+		super(location);
 		this.name = name;
 	}
 
+	public NamedType(String name) {
+		this(Location.NULL, name);
+	}
+	
 	@Override
 	public String toString() {
 		return name;
@@ -49,5 +54,4 @@ public class NamedType extends Type {
 		}
 		return true;
 	}
-
 }

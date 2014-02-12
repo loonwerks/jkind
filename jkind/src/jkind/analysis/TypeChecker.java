@@ -17,6 +17,7 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.Location;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
@@ -30,6 +31,7 @@ import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
+import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
@@ -69,11 +71,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
-			Type type = resolveType(def.type);
-			if (type == null) {
-				error(def, "unknown type " + def.type);
-			}
-			typeTable.put(def.id, type);
+			typeTable.put(def.id, resolveType(def.type));
 		}
 	}
 
@@ -111,16 +109,17 @@ public class TypeChecker implements ExprVisitor<Type> {
 	public void repopulateVariableTable(Node node) {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
-			Type type = resolveType(v.type);
-			if (type == null) {
-				error(v, "unknown type " + v.type);
-			}
-			variableTable.put(v.id, type);
+			variableTable.put(v.id, resolveType(v.type));
 		}
 	}
 
 	private Type resolveType(Type type) {
-		return Util.resolveType(type, typeTable);
+		try {
+			return Util.resolveType(type, typeTable);
+		} catch (TypeResolutionException e) {
+			error(e.type.location, "unknown type " + e.type);
+			return null;
+		}
 	}
 
 	private boolean isIntBased(Type type) {
@@ -392,7 +391,9 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		Type expectedType = typeTable.get(e.id);
-		if (!(expectedType instanceof RecordType)) {
+		if (expectedType == null) {
+			return null;
+		} else if (!(expectedType instanceof RecordType)) {
 			error(e, "unknown record type " + e.id);
 			return null;
 		}
@@ -517,8 +518,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	private void error(Ast ast, String message) {
+	private void error(Location location, String message) {
 		passed = false;
-		System.out.println("Type error at line " + ast.location + " " + message);
+		System.out.println("Type error at line " + location + " " + message);
+	}
+	
+	private void error(Ast ast, String message) {
+		error(ast.location, message);
 	}
 }
