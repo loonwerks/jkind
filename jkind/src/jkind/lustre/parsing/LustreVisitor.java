@@ -1,4 +1,4 @@
-// Generated from Lustre.g4 by ANTLR 4.1
+// Generated from Lustre.g4 by ANTLR 4.2
 package jkind.lustre.parsing;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
