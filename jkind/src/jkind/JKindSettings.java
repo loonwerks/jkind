@@ -14,8 +14,4 @@ public class JKindSettings {
 	public SolverOption solver = SolverOption.YICES;
 	public String filename = null;
     public boolean intervalGeneralization = false;
-
-	public static enum SolverOption {
-		YICES, CVC4, Z3
-	};
 }

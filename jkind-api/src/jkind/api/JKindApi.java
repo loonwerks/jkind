@@ -11,6 +11,7 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import jkind.JKindException;
+import jkind.SolverOption;
 import jkind.api.results.JKindResult;
 import jkind.api.xml.JKindXmlFileInputStream;
 import jkind.api.xml.XmlParseThread;
@@ -31,6 +32,7 @@ public class JKindApi {
 	private boolean reduceInvariants = false;
 	private boolean smoothCounterexamples = false;
 	private boolean intervalGeneralization = false;
+	private SolverOption solver = null;
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -65,6 +67,13 @@ public class JKindApi {
 		inductiveCounterexamples = true;
 	}
 
+	/**
+	 * Set the solver to use (Yices, Z3, CVC4)
+	 */
+	public void setSolver(SolverOption solver) {
+		this.solver  = solver;
+	}
+	
 	/**
 	 * Reduce and report the invariants used for a valid property
 	 */
@@ -257,6 +266,10 @@ public class JKindApi {
 		}
 		if (inductiveCounterexamples) {
 			args.add("-induct_cex");
+		}
+		if (solver != null) {
+			args.add("-solver");
+			args.add(solver.toString());
 		}
 		if (reduceInvariants) {
 			args.add("-reduce_inv");

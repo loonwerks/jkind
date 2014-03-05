@@ -2,8 +2,6 @@ package jkind;
 
 import java.math.BigInteger;
 
-import jkind.JKindSettings.SolverOption;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
