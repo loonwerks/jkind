@@ -11,17 +11,19 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 
 public class LinearChecker extends ExprIterVisitor {
+	private final Level level;
 	private boolean passed;
 	private ConstantAnalyzer constantAnalyzer;
 
-	public LinearChecker() {
+	public LinearChecker(Level level) {
+		this.level = level;
 		this.passed = true;
 	}
 
-	public static boolean check(Program program) {
-		return new LinearChecker().visitProgram(program);
+	public static boolean check(Program program, Level level) {
+		return new LinearChecker(level).visitProgram(program);
 	}
-	
+
 	public boolean visitProgram(Program program) {
 		for (Node node : program.nodes) {
 			visitNode(node, program.constants);
@@ -29,10 +31,10 @@ public class LinearChecker extends ExprIterVisitor {
 
 		return passed;
 	}
-	
+
 	public void visitNode(Node node, List<Constant> constants) {
 		constantAnalyzer = new ConstantAnalyzer(node, constants);
-		
+
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
 		}
@@ -42,11 +44,12 @@ public class LinearChecker extends ExprIterVisitor {
 	public Void visit(BinaryExpr e) {
 		e.left.accept(this);
 		e.right.accept(this);
-		
+
 		switch (e.op) {
 		case MULTIPLY:
 			if (!isConstant(e.left) && !isConstant(e.right)) {
-				System.out.println("Error at line " + e.location + " non-constant multiplication");
+				System.out.println(level + " at line " + e.location
+						+ " non-constant multiplication");
 				passed = false;
 			}
 			break;
@@ -54,22 +57,22 @@ public class LinearChecker extends ExprIterVisitor {
 		case DIVIDE:
 		case INT_DIVIDE:
 			if (!isConstant(e.right)) {
-				System.out.println("Error at line " + e.location + " non-constant division");
+				System.out.println(level + " at line " + e.location + " non-constant division");
 				passed = false;
 			}
 			break;
-			
+
 		case MODULUS:
 			if (!isConstant(e.right)) {
-				System.out.println("Error at line " + e.location + " non-constant modulus");
+				System.out.println(level + " at line " + e.location + " non-constant modulus");
 				passed = false;
 			}
 			break;
-			
+
 		default:
 			break;
 		}
-		
+
 		return null;
 	}
 

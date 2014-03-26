@@ -2,6 +2,7 @@ package jkind;
 
 import java.io.File;
 
+import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -36,7 +37,7 @@ public class JLustre2Kind {
 				System.exit(-1);
 			}
 
-			if (!StaticAnalyzer.check(program)) {
+			if (!StaticAnalyzer.check(program, Level.WARNING)) {
 				System.exit(-1);
 			}
 

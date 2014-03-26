@@ -23,15 +23,11 @@ import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
-	public static boolean check(Program program) {
-		return check(program, true);
+	public static boolean check(Program program, Level nonlinear) {
+		return checkErrors(program, nonlinear) && checkWarnings(program, nonlinear);
 	}
 
-	public static boolean check(Program program, boolean linearCheck) {
-		return checkErrors(program, linearCheck) && checkWarnings(program);
-	}
-
-	private static boolean checkErrors(Program program, boolean linearCheck) {
+	private static boolean checkErrors(Program program, Level nonlinear) {
 		boolean result = true;
 		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
@@ -45,17 +41,20 @@ public class StaticAnalyzer {
 		result = result && propertiesUnique(program);
 		result = result && propertiesExist(program);
 		result = result && propertiesBoolean(program);
-		if (linearCheck) {
-			result = result && LinearChecker.check(program);
+		if (nonlinear == Level.ERROR) {
+			result = result && LinearChecker.check(program, nonlinear);
 		}
 		result = result && DivisionChecker.check(program);
 		return result;
 	}
 
-	private static boolean checkWarnings(Program program) {
+	private static boolean checkWarnings(Program program, Level nonlinear) {
 		warnUnusedAsserts(program);
 		warnAlgebraicLoops(program);
 		WarnUnguardedPreVisitor.check(program);
+		if (nonlinear == Level.WARNING) {
+			LinearChecker.check(program, nonlinear);
+		}
 
 		return true;
 	}

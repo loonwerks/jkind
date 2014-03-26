@@ -2,6 +2,7 @@ package jkind;
 
 import java.io.File;
 
+import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -24,14 +25,15 @@ public class JKind {
 				System.out.println("Error: cannot find file " + filename);
 				System.exit(-1);
 			}
-	
+
 			Program program = Main.parseLustre(filename);
 			if (program.getMainNode() == null) {
 				System.out.println("Error: no main node");
 				System.exit(-1);
 			}
-	
-			if (!StaticAnalyzer.check(program)) {
+
+			Level nonlinear = settings.solver == SolverOption.Z3 ? Level.WARNING : Level.ERROR;
+			if (!StaticAnalyzer.check(program, nonlinear)) {
 				System.exit(-1);
 			}
 
@@ -40,7 +42,7 @@ public class JKind {
 			program = RemoveCondacts.program(program);
 			Node main = InlineNodeCalls.program(program);
 			main = FlattenRecordTypes.node(main);
-			
+
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 			Specification spec = new Specification(filename, main, dependencyMap);
