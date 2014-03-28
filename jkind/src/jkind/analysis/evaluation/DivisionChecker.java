@@ -72,7 +72,15 @@ public class DivisionChecker extends ExprIterVisitor {
 			RealValue rv = (RealValue) value;
 			return rv.value.compareTo(BigFraction.ZERO);
 		} else {
-			throw new IllegalArgumentException();
+			/*
+			 * This should only arise for non-constant division which is
+			 * currently only enabled for Z3. We return 1 to allow everything to
+			 * go through. This allows, for example, users to divide by a
+			 * negative integer which gives different results for different
+			 * solvers, or even to divide by 0. We allow this, but may change
+			 * the semantics of those operations later.
+			 */
+			return 1;
 		}
 	}
 }
