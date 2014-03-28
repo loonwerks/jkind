@@ -48,6 +48,7 @@ expr: ID                                                       # idExpr
     | INT                                                      # intExpr
     | REAL                                                     # realExpr
     | BOOL                                                     # boolExpr
+    | op=('real' | 'floor') '(' expr ')'                       # castExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # projectionExpr

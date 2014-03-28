@@ -6,11 +6,13 @@ import java.util.TreeSet;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
@@ -126,6 +128,20 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(CastExpr e) {
+		if (e.type == NamedType.REAL) {
+			e.expr.accept(this);
+		} else if (e.type == NamedType.INT) {
+			buf.append("FLOOR(");
+			e.expr.accept(this);
+			buf.append(",1)");
+		} else {
+			throw new IllegalArgumentException();
+		}
+		return null;
+	}
+	
 	@Override
 	public Void visit(CondactExpr e) {
 		throw new IllegalArgumentException("Condacts must be removed before translation to formula");

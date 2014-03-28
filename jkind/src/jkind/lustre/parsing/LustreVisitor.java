@@ -26,6 +26,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitPlainType(@NotNull LustreParser.PlainTypeContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#castExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCastExpr(@NotNull LustreParser.CastExprContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#ifThenElseExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

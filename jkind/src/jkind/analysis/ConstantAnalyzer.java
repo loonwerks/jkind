@@ -7,6 +7,7 @@ import java.util.Set;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
@@ -62,6 +63,11 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	@Override
 	public Boolean visit(BoolExpr e) {
 		return true;
+	}
+	
+	@Override
+	public Boolean visit(CastExpr e) {
+		return e.expr.accept(this);
 	}
 
 	@Override

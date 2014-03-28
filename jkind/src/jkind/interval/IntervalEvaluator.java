@@ -3,11 +3,13 @@ package jkind.interval;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
@@ -43,6 +45,22 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	@Override
 	public Interval visit(BoolExpr e) {
 		return e.value ? BoolInterval.TRUE : BoolInterval.FALSE;
+	}
+	
+	@Override
+	public Interval visit(CastExpr e) {
+		NumericInterval interval = (NumericInterval) e.expr.accept(this);
+		if (e.type == NamedType.REAL) {
+			IntEndpoint low = (IntEndpoint) interval.getLow();
+			IntEndpoint high = (IntEndpoint) interval.getHigh();
+			return new NumericInterval(low.real(), high.real());
+		} else if (e.type == NamedType.INT) {
+			RealEndpoint low = (RealEndpoint) interval.getLow();
+			RealEndpoint high = (RealEndpoint) interval.getHigh();
+			return new NumericInterval(low.floor(), high.floor());
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

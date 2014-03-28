@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
@@ -245,6 +246,21 @@ public class TypeChecker implements ExprVisitor<Type> {
 	@Override
 	public Type visit(BoolExpr e) {
 		return NamedType.BOOL;
+	}
+
+	@Override
+	public Type visit(CastExpr e) {
+		Type type = e.expr.accept(this);
+		if (type == null) {
+			return null;
+		}
+
+		if (e.type == NamedType.REAL && !isIntBased(type)) {
+			error(e, "expected type int, but found " + simple(type));
+		} else if (e.type == NamedType.INT && type != NamedType.REAL) {
+			error(e, "expected type real, but found " + simple(type));
+		}
+		return e.type;
 	}
 
 	@Override
@@ -522,7 +538,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		passed = false;
 		System.out.println("Type error at line " + location + " " + message);
 	}
-	
+
 	private void error(Ast ast, String message) {
 		error(ast.location, message);
 	}

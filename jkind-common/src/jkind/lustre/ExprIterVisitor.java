@@ -14,7 +14,13 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	public Void visit(BoolExpr e) {
 		return null;
 	}
-	
+
+	@Override
+	public Void visit(CastExpr e) {
+		e.expr.accept(this);
+		return null;
+	}
+
 	@Override
 	public Void visit(CondactExpr e) {
 		e.clock.accept(this);

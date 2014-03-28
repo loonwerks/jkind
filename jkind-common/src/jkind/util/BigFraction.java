@@ -98,6 +98,15 @@ public class BigFraction implements Comparable<BigFraction> {
 		return num.doubleValue() / denom.doubleValue();
 	}
 
+	public BigInteger floor() {
+		BigInteger divAndRem[] = num.divideAndRemainder(denom);
+		if (num.signum() >= 0 || divAndRem[1].equals(BigInteger.ZERO)) {
+			return divAndRem[0];
+		} else {
+			return divAndRem[0].subtract(BigInteger.ONE);
+		}
+	}
+	
 	@Override
 	public int compareTo(BigFraction other) {
 		return num.multiply(other.denom).compareTo(other.num.multiply(denom));

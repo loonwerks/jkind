@@ -39,6 +39,8 @@ public class YicesSolver extends Solver {
 	@Override
 	public void initialize() {
 		send("(set-evidence! true)");
+		send("(define to_int::(-> x::real (subtype (y::int) (and (<= y x) (< x (+ y 1))))))");
+		send("(define to_real::(-> x::int (subtype (y::real) (= y x))))");
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
@@ -16,6 +17,7 @@ import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.ProjectionExpr;
@@ -72,6 +74,20 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(BoolExpr e) {
 		return BooleanValue.fromBoolean(e.value);
+	}
+	
+	@Override
+	public Value visit(CastExpr e) {
+		Value value = eval(e.expr);
+		if (e.type == NamedType.REAL && value instanceof IntegerValue) {
+			IntegerValue iv = (IntegerValue) value;
+			return new RealValue(new BigFraction(iv.value));
+		} else if (e.type == NamedType.INT && value instanceof RealValue) {
+			RealValue rv = (RealValue) value;
+			return new IntegerValue(rv.value.floor());
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package jkind.interval;
 
 import java.math.BigInteger;
 
+import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public class IntEndpoint extends NumericEndpoint {
@@ -144,6 +145,16 @@ public class IntEndpoint extends NumericEndpoint {
 			return Double.POSITIVE_INFINITY;
 		} else {
 			return value.doubleValue();
+		}
+	}
+
+	public RealEndpoint real() {
+		if (this == POSITIVE_INFINITY) {
+			return RealEndpoint.POSITIVE_INFINITY;
+		} else if (this == NEGATIVE_INFINITY) {
+			return RealEndpoint.NEGATIVE_INFINITY;
+		} else {
+			return new RealEndpoint(new BigFraction(value));
 		}
 	}
 

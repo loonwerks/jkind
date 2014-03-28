@@ -18,6 +18,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	}
 
 	@Override
+	public Expr visit(CastExpr e) {
+		return new CastExpr(e.type, e.expr.accept(this));
+	}
+	
+	@Override
 	public Expr visit(CondactExpr e) {
 		return new CondactExpr(e.clock.accept(this), (NodeCallExpr) e.call.accept(this),
 				visitAll(e.args));

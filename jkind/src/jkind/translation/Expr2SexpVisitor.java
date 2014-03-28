@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
@@ -48,6 +50,17 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	@Override
 	public Sexp visit(BoolExpr e) {
 		return e.value ? new Symbol("true") : new Symbol("false");
+	}
+	
+	@Override
+	public Sexp visit(CastExpr e) {
+		if (e.type == NamedType.REAL) {
+			return new Cons("to_real", e.expr.accept(this));
+		} else if (e.type == NamedType.INT) {
+			return new Cons("to_int", e.expr.accept(this));
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

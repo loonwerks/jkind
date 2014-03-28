@@ -220,6 +220,25 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		write(Boolean.toString(e.value));
 		return null;
 	}
+	
+	@Override
+	public Void visit(CastExpr e) {
+		write(getCastFunction(e.type));
+		write("(");
+		expr(e.expr);
+		write(")");
+		return null;
+	}
+
+	private String getCastFunction(Type type) {
+		if (type == NamedType.REAL) {
+			return "real";
+		} else if (type == NamedType.INT) {
+			return "floor";
+		} else {
+			throw new IllegalArgumentException("Unable to cast to type: " + type);
+		}
+	}
 
 	@Override
 	public Void visit(CondactExpr e) {

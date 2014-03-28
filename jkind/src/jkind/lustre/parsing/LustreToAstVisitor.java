@@ -10,6 +10,7 @@ import java.util.Map;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
@@ -36,6 +37,7 @@ import jkind.lustre.parsing.LustreParser.AssertionContext;
 import jkind.lustre.parsing.LustreParser.BinaryExprContext;
 import jkind.lustre.parsing.LustreParser.BoolExprContext;
 import jkind.lustre.parsing.LustreParser.BoolTypeContext;
+import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
@@ -244,6 +246,22 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	@Override
 	public Expr visitBoolExpr(BoolExprContext ctx) {
 		return new BoolExpr(loc(ctx), ctx.BOOL().getText().equals("true"));
+	}
+
+	@Override
+	public Expr visitCastExpr(CastExprContext ctx) {
+		return new CastExpr(loc(ctx), getCastType(ctx.op.getText()), expr(ctx.expr()));
+	}
+
+	private Type getCastType(String cast) {
+		switch (cast) {
+		case "real":
+			return NamedType.REAL;
+		case "floor":
+			return NamedType.INT;
+		default:
+			throw new IllegalArgumentException("Unknown cast: " + cast);
+		}
 	}
 
 	@Override

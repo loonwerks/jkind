@@ -136,6 +136,16 @@ public class RealEndpoint extends NumericEndpoint {
 			return value.doubleValue();
 		}
 	}
+	
+	public IntEndpoint floor() {
+		if (this == POSITIVE_INFINITY) {
+			return IntEndpoint.POSITIVE_INFINITY;
+		} else if (this == NEGATIVE_INFINITY) {
+			return IntEndpoint.NEGATIVE_INFINITY;
+		} else {
+			return new IntEndpoint(value.floor());
+		}
+	}
 
 	@Override
 	public String toString() {
