@@ -11,6 +11,7 @@ public class Cvc4Solver extends SmtLib2Solver {
 	public void initialize() {
 		send("(set-option :produce-models true)");
 		send("(set-option :incremental true)");
+		send("(set-option :rewrite-divk true)");
 		send("(set-logic AUFLIRA)");
 	}
 }
