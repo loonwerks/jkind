@@ -1,0 +1,15 @@
+-- This property is nonlinear and requires z3
+-- Expected output:
+--   VALID PROPERTIES: [ok] || K = 1 || Time = 0.1
+
+node gauss() returns (ok : bool);
+var
+  i : int;
+  sum : int;
+let
+  i = 0 -> 1 + pre i;
+  sum = i + (0 -> pre sum);
+
+  ok = sum = i * (i + 1) div 2;
+  --%PROPERTY ok;
+tel;
