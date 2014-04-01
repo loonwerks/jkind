@@ -67,7 +67,7 @@ expr: ID                                                       # idExpr
     | expr op='->'<assoc=right> expr                           # binaryExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
-    | '[' expr (',' expr)+ ']'                                 # arrayExpr
+    | '[' expr (',' expr)* ']'                                 # arrayExpr
     | '(' expr ')'                                             # parenExpr
     ;
 
