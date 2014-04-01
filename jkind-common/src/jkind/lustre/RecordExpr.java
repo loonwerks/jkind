@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 public class RecordExpr extends Expr {
 	final public String id;
 	final public SortedMap<String, Expr> fields;

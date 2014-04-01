@@ -1,9 +1,14 @@
 package jkind.analysis;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
@@ -11,22 +16,26 @@ import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
-import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
 public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	private Set<String> constants;
+
+	public ConstantAnalyzer() {
+		constants = Collections.emptySet();
+	}
 
 	public ConstantAnalyzer(Node node, List<Constant> constantDecls) {
 		constants = new HashSet<>();
@@ -52,6 +61,21 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	}
 
 	@Override
+	public Boolean visit(ArrayAccessExpr e) {
+		return e.array.accept(this) && e.index.accept(this);
+	}
+
+	@Override
+	public Boolean visit(ArrayExpr e) {
+		return visitAll(e.elements);
+	}
+
+	@Override
+	public Boolean visit(ArrayUpdateExpr e) {
+		return e.array.accept(this) && e.index.accept(this) && e.value.accept(this);
+	}
+
+	@Override
 	public Boolean visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
 			return false;
@@ -64,7 +88,7 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	public Boolean visit(BoolExpr e) {
 		return true;
 	}
-	
+
 	@Override
 	public Boolean visit(CastExpr e) {
 		return e.expr.accept(this);
@@ -96,23 +120,18 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	}
 
 	@Override
-	public Boolean visit(ProjectionExpr e) {
-		return e.expr.accept(this);
-	}
-
-	@Override
 	public Boolean visit(RealExpr e) {
 		return true;
 	}
 
 	@Override
+	public Boolean visit(RecordAccessExpr e) {
+		return e.record.accept(this);
+	}
+
+	@Override
 	public Boolean visit(RecordExpr e) {
-		for (Expr expr : e.fields.values()) {
-			if (!expr.accept(this)) {
-				return false;
-			}
-		}
-		return true;
+		return visitAll(e.fields.values());
 	}
 
 	@Override
@@ -122,5 +141,14 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 		} else {
 			return e.expr.accept(this);
 		}
+	}
+
+	private Boolean visitAll(Collection<Expr> exprs) {
+		for (Expr expr : exprs) {
+			if (!expr.accept(this)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

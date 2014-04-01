@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 
 public class IdExpr extends Expr {
 	final public String id;

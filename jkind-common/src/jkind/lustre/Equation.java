@@ -3,6 +3,8 @@ package jkind.lustre;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.lustre.visitors.AstVisitor;
+
 public class Equation extends Ast {
 	final public List<IdExpr> lhs;
 	final public Expr expr;

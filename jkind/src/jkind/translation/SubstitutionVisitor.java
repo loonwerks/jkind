@@ -4,7 +4,7 @@ import java.util.Map;
 
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.ExprMapVisitor;
+import jkind.lustre.visitors.ExprMapVisitor;
 
 public class SubstitutionVisitor extends ExprMapVisitor {
 	private Map<String, ? extends Expr> map;

@@ -1,7 +1,7 @@
 package jkind;
 
 public class JLustre2KindSettings {
-	public boolean noDot = false;
+	public boolean encode = false;
 	public boolean stdout = false;
 	public String filename = null;
 }

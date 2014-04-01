@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.AstVisitor;
+
 public class TypeDef extends Ast {
 	final public String id;
 	final public Type type;

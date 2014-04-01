@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 public class BoolExpr extends Expr {
 	final public boolean value;
 

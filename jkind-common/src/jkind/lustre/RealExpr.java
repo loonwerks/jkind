@@ -2,6 +2,8 @@ package jkind.lustre;
 
 import java.math.BigDecimal;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 public class RealExpr extends Expr {
 	final public BigDecimal value;
 

@@ -1,5 +1,8 @@
 package jkind.analysis.evaluation;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,35 +10,44 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
-import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
+import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
 	private Map<String, Value> constants;
 	private Set<String> hidden;
+
+	public ConstantEvaluator() {
+		constants = Collections.emptyMap();
+		hidden = Collections.emptySet();
+	}
 
 	public ConstantEvaluator(List<Constant> constantDecls) {
 		constants = new HashMap<>();
@@ -61,6 +73,42 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	}
 
 	@Override
+	public Value visit(ArrayAccessExpr e) {
+		Value value = e.array.accept(this);
+		Value indexValue = e.index.accept(this);
+		if (value instanceof ArrayValue && indexValue instanceof IntegerValue) {
+			ArrayValue arrayValue = (ArrayValue) value;
+			BigInteger index = ((IntegerValue) indexValue).value;
+			return arrayValue.elements.get(index.intValue());
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Value visit(ArrayExpr e) {
+		List<Value> elements = new ArrayList<>();
+		for (Expr element : e.elements) {
+			elements.add(element.accept(this));
+		}
+		return new ArrayValue(elements);
+	}
+
+	@Override
+	public Value visit(ArrayUpdateExpr e) {
+		Value value = e.array.accept(this);
+		Value indexValue = e.index.accept(this);
+		Value valueValue = e.value.accept(this);
+		if (value instanceof ArrayValue && indexValue instanceof IntegerValue) {
+			ArrayValue arrayValue = (ArrayValue) value;
+			BigInteger index = ((IntegerValue) indexValue).value;
+			return arrayValue.update(index.intValue(), valueValue);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public Value visit(BinaryExpr e) {
 		Value left = eval(e.left);
 		Value right = eval(e.right);
@@ -75,7 +123,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(BoolExpr e) {
 		return BooleanValue.fromBoolean(e.value);
 	}
-	
+
 	@Override
 	public Value visit(CastExpr e) {
 		Value value = eval(e.expr);
@@ -130,19 +178,19 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	}
 
 	@Override
-	public Value visit(ProjectionExpr e) {
-		Value value = e.expr.accept(this);
+	public Value visit(RealExpr e) {
+		return new RealValue(new BigFraction(e.value));
+	}
+
+	@Override
+	public Value visit(RecordAccessExpr e) {
+		Value value = e.record.accept(this);
 		if (value instanceof RecordValue) {
 			RecordValue recordValue = (RecordValue) value;
 			return recordValue.fields.get(e.field);
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public Value visit(RealExpr e) {
-		return new RealValue(new BigFraction(e.value));
 	}
 
 	@Override

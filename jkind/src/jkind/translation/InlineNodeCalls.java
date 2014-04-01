@@ -10,11 +10,11 @@ import java.util.Queue;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.ExprMapVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.util.Util;
 
 public class InlineNodeCalls extends ExprMapVisitor {

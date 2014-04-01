@@ -15,7 +15,6 @@ import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -94,27 +93,7 @@ public class Util {
 	}
 
 	public static Type resolveType(Type type, Map<String, Type> map) {
-		if (type instanceof NamedType) {
-			NamedType namedType = (NamedType) type;
-			if (namedType.isBuiltin()) {
-				return namedType;
-			} else if (map.containsKey(namedType.name)) {
-				return map.get(namedType.name);
-			} else {
-				throw new TypeResolutionException(type);
-			}
-		} else if (type instanceof SubrangeIntType) {
-			return type;
-		} else if (type instanceof RecordType) {
-			RecordType recordType = (RecordType) type;
-			Map<String, Type> resolvedFields = new HashMap<>();
-			for (String field : recordType.fields.keySet()) {
-				resolvedFields.put(field, resolveType(recordType.fields.get(field), map));
-			}
-			return new RecordType(recordType.location, recordType.id, resolvedFields);
-		} else {
-			throw new IllegalArgumentException("Illegal type");
-		}
+		return TypeResolver.resolve(type, map);
 	}
 
 	public static void writeToFile(String content, File file) throws IOException {
@@ -135,7 +114,7 @@ public class Util {
 		}
 		return false;
 	}
-	
+
 	public static <T, S> List<S> castList(List<T> list, Class<S> klass) {
 		List<S> result = new ArrayList<>();
 		for (T e : list) {

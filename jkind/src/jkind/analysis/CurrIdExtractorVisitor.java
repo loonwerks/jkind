@@ -5,9 +5,9 @@ import java.util.Set;
 
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.visitors.ExprIterVisitor;
 
 public class CurrIdExtractorVisitor extends ExprIterVisitor {
 	public static Set<String> getCurrIds(Expr expr) {

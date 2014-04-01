@@ -15,19 +15,19 @@ public class SmtLib2Parser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__16=1, T__15=2, T__14=3, T__13=4, T__12=5, T__11=6, T__10=7, T__9=8, 
-		T__8=9, T__7=10, T__6=11, T__5=12, T__4=13, T__3=14, T__2=15, T__1=16, 
-		T__0=17, BOOL=18, INT=19, REAL=20, ID=21, WS=22, ERROR=23;
+		T__17=1, T__16=2, T__15=3, T__14=4, T__13=5, T__12=6, T__11=7, T__10=8, 
+		T__9=9, T__8=10, T__7=11, T__6=12, T__5=13, T__4=14, T__3=15, T__2=16, 
+		T__1=17, T__0=18, BOOL=19, INT=20, REAL=21, ID=22, WS=23, ERROR=24;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'define-fun'", "')'", "'-'", "'ite'", "'('", "'not'", "'<'", 
 		"'='", "'<='", "'Int'", "'Bool'", "'>'", "'and'", "'Real'", "'model'", 
-		"'/'", "'>='", "BOOL", "INT", "REAL", "ID", "WS", "ERROR"
+		"'/'", "'>='", "'|'", "BOOL", "INT", "REAL", "ID", "WS", "ERROR"
 	};
 	public static final int
 		RULE_model = 0, RULE_define = 1, RULE_arg = 2, RULE_type = 3, RULE_body = 4, 
-		RULE_fn = 5, RULE_symbol = 6;
+		RULE_fn = 5, RULE_symbol = 6, RULE_id = 7, RULE_qid = 8;
 	public static final String[] ruleNames = {
-		"model", "define", "arg", "type", "body", "fn", "symbol"
+		"model", "define", "arg", "type", "body", "fn", "symbol", "id", "qid"
 	};
 
 	@Override
@@ -70,23 +70,23 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(14); match(5);
-			setState(15); match(15);
-			setState(19);
+			setState(18); match(5);
+			setState(19); match(15);
+			setState(23);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==5) {
 				{
 				{
-				setState(16); define();
+				setState(20); define();
 				}
 				}
-				setState(21);
+				setState(25);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(22); match(2);
-			setState(23); match(EOF);
+			setState(26); match(2);
+			setState(27); match(EOF);
 			}
 		}
 		catch (RecognitionException re) {
@@ -101,10 +101,12 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static class DefineContext extends ParserRuleContext {
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
 		public BodyContext body() {
 			return getRuleContext(BodyContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
 		public ArgContext arg() {
 			return getRuleContext(ArgContext.class,0);
 		}
@@ -124,22 +126,22 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(25); match(5);
-			setState(26); match(1);
-			setState(27); match(ID);
-			setState(28); match(5);
-			setState(30);
+			setState(29); match(5);
+			setState(30); match(1);
+			setState(31); id();
+			setState(32); match(5);
+			setState(34);
 			_la = _input.LA(1);
 			if (_la==5) {
 				{
-				setState(29); arg();
+				setState(33); arg();
 				}
 			}
 
-			setState(32); match(2);
-			setState(33); type();
-			setState(34); body();
-			setState(35); match(2);
+			setState(36); match(2);
+			setState(37); type();
+			setState(38); body();
+			setState(39); match(2);
 			}
 		}
 		catch (RecognitionException re) {
@@ -154,7 +156,9 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static class ArgContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -170,10 +174,10 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(37); match(5);
-			setState(38); match(ID);
-			setState(39); type();
-			setState(40); match(2);
+			setState(41); match(5);
+			setState(42); id();
+			setState(43); type();
+			setState(44); match(2);
 			}
 		}
 		catch (RecognitionException re) {
@@ -201,7 +205,7 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(46);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 10) | (1L << 11) | (1L << 14))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -255,8 +259,9 @@ public class SmtLib2Parser extends Parser {
 		enterRule(_localctx, 8, RULE_body);
 		int _la;
 		try {
-			setState(55);
+			setState(59);
 			switch (_input.LA(1)) {
+			case 18:
 			case BOOL:
 			case INT:
 			case REAL:
@@ -264,29 +269,29 @@ public class SmtLib2Parser extends Parser {
 				_localctx = new SymbolBodyContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(44); symbol();
+				setState(48); symbol();
 				}
 				break;
 			case 5:
 				_localctx = new ConsBodyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(45); match(5);
-				setState(46); fn();
-				setState(50);
+				setState(49); match(5);
+				setState(50); fn();
+				setState(54);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 5) | (1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) {
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 5) | (1L << 18) | (1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) {
 					{
 					{
-					setState(47); body();
+					setState(51); body();
 					}
 					}
-					setState(52);
+					setState(56);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(53); match(2);
+				setState(57); match(2);
 				}
 				break;
 			default:
@@ -318,7 +323,7 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(57);
+			setState(61);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 3) | (1L << 4) | (1L << 6) | (1L << 7) | (1L << 8) | (1L << 9) | (1L << 12) | (1L << 13) | (1L << 16) | (1L << 17))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -339,8 +344,10 @@ public class SmtLib2Parser extends Parser {
 
 	public static class SymbolContext extends ParserRuleContext {
 		public TerminalNode BOOL() { return getToken(SmtLib2Parser.BOOL, 0); }
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
 		public TerminalNode INT() { return getToken(SmtLib2Parser.INT, 0); }
-		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
 		public TerminalNode REAL() { return getToken(SmtLib2Parser.REAL, 0); }
 		public SymbolContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -351,16 +358,110 @@ public class SmtLib2Parser extends Parser {
 	public final SymbolContext symbol() throws RecognitionException {
 		SymbolContext _localctx = new SymbolContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_symbol);
-		int _la;
+		try {
+			setState(67);
+			switch (_input.LA(1)) {
+			case 18:
+			case ID:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(63); id();
+				}
+				break;
+			case BOOL:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(64); match(BOOL);
+				}
+				break;
+			case INT:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(65); match(INT);
+				}
+				break;
+			case REAL:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(66); match(REAL);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IdContext extends ParserRuleContext {
+		public QidContext qid() {
+			return getRuleContext(QidContext.class,0);
+		}
+		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
+		public IdContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_id; }
+	}
+
+	public final IdContext id() throws RecognitionException {
+		IdContext _localctx = new IdContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_id);
+		try {
+			setState(71);
+			switch (_input.LA(1)) {
+			case 18:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(69); qid();
+				}
+				break;
+			case ID:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(70); match(ID);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class QidContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(SmtLib2Parser.ID, 0); }
+		public QidContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_qid; }
+	}
+
+	public final QidContext qid() throws RecognitionException {
+		QidContext _localctx = new QidContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_qid);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(59);
-			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) ) {
-			_errHandler.recoverInline(this);
-			}
-			consume();
+			setState(73); match(18);
+			setState(74); match(ID);
+			setState(75); match(18);
 			}
 		}
 		catch (RecognitionException re) {
@@ -375,23 +476,26 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\31@\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\7\2\24\n\2\f\2"+
-		"\16\2\27\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3!\n\3\3\3\3\3\3\3\3\3"+
-		"\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\6\3\6\3\6\3\6\7\6\63\n\6\f\6\16\6\66"+
-		"\13\6\3\6\3\6\5\6:\n\6\3\7\3\7\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\5\4"+
-		"\2\f\r\20\20\6\2\5\6\b\13\16\17\22\23\3\2\24\27<\2\20\3\2\2\2\4\33\3\2"+
-		"\2\2\6\'\3\2\2\2\b,\3\2\2\2\n9\3\2\2\2\f;\3\2\2\2\16=\3\2\2\2\20\21\7"+
-		"\7\2\2\21\25\7\21\2\2\22\24\5\4\3\2\23\22\3\2\2\2\24\27\3\2\2\2\25\23"+
-		"\3\2\2\2\25\26\3\2\2\2\26\30\3\2\2\2\27\25\3\2\2\2\30\31\7\4\2\2\31\32"+
-		"\7\2\2\3\32\3\3\2\2\2\33\34\7\7\2\2\34\35\7\3\2\2\35\36\7\27\2\2\36 \7"+
-		"\7\2\2\37!\5\6\4\2 \37\3\2\2\2 !\3\2\2\2!\"\3\2\2\2\"#\7\4\2\2#$\5\b\5"+
-		"\2$%\5\n\6\2%&\7\4\2\2&\5\3\2\2\2\'(\7\7\2\2()\7\27\2\2)*\5\b\5\2*+\7"+
-		"\4\2\2+\7\3\2\2\2,-\t\2\2\2-\t\3\2\2\2.:\5\16\b\2/\60\7\7\2\2\60\64\5"+
-		"\f\7\2\61\63\5\n\6\2\62\61\3\2\2\2\63\66\3\2\2\2\64\62\3\2\2\2\64\65\3"+
-		"\2\2\2\65\67\3\2\2\2\66\64\3\2\2\2\678\7\4\2\28:\3\2\2\29.\3\2\2\29/\3"+
-		"\2\2\2:\13\3\2\2\2;<\t\3\2\2<\r\3\2\2\2=>\t\4\2\2>\17\3\2\2\2\6\25 \64"+
-		"9";
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\32P\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\3\2\3\2"+
+		"\7\2\30\n\2\f\2\16\2\33\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3%\n\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\6\3\6\3\6\3\6\7\6\67"+
+		"\n\6\f\6\16\6:\13\6\3\6\3\6\5\6>\n\6\3\7\3\7\3\b\3\b\3\b\3\b\5\bF\n\b"+
+		"\3\t\3\t\5\tJ\n\t\3\n\3\n\3\n\3\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4"+
+		"\4\2\f\r\20\20\6\2\5\6\b\13\16\17\22\23N\2\24\3\2\2\2\4\37\3\2\2\2\6+"+
+		"\3\2\2\2\b\60\3\2\2\2\n=\3\2\2\2\f?\3\2\2\2\16E\3\2\2\2\20I\3\2\2\2\22"+
+		"K\3\2\2\2\24\25\7\7\2\2\25\31\7\21\2\2\26\30\5\4\3\2\27\26\3\2\2\2\30"+
+		"\33\3\2\2\2\31\27\3\2\2\2\31\32\3\2\2\2\32\34\3\2\2\2\33\31\3\2\2\2\34"+
+		"\35\7\4\2\2\35\36\7\2\2\3\36\3\3\2\2\2\37 \7\7\2\2 !\7\3\2\2!\"\5\20\t"+
+		"\2\"$\7\7\2\2#%\5\6\4\2$#\3\2\2\2$%\3\2\2\2%&\3\2\2\2&\'\7\4\2\2\'(\5"+
+		"\b\5\2()\5\n\6\2)*\7\4\2\2*\5\3\2\2\2+,\7\7\2\2,-\5\20\t\2-.\5\b\5\2."+
+		"/\7\4\2\2/\7\3\2\2\2\60\61\t\2\2\2\61\t\3\2\2\2\62>\5\16\b\2\63\64\7\7"+
+		"\2\2\648\5\f\7\2\65\67\5\n\6\2\66\65\3\2\2\2\67:\3\2\2\28\66\3\2\2\28"+
+		"9\3\2\2\29;\3\2\2\2:8\3\2\2\2;<\7\4\2\2<>\3\2\2\2=\62\3\2\2\2=\63\3\2"+
+		"\2\2>\13\3\2\2\2?@\t\3\2\2@\r\3\2\2\2AF\5\20\t\2BF\7\25\2\2CF\7\26\2\2"+
+		"DF\7\27\2\2EA\3\2\2\2EB\3\2\2\2EC\3\2\2\2ED\3\2\2\2F\17\3\2\2\2GJ\5\22"+
+		"\n\2HJ\7\30\2\2IG\3\2\2\2IH\3\2\2\2J\21\3\2\2\2KL\7\24\2\2LM\7\30\2\2"+
+		"MN\7\24\2\2N\23\3\2\2\2\b\31$8=EI";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

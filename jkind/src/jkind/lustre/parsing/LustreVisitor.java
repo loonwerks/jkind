@@ -12,6 +12,13 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#recordAccessExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRecordAccessExpr(@NotNull LustreParser.RecordAccessExprContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#condactExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -24,6 +31,20 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPlainType(@NotNull LustreParser.PlainTypeContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#arrayType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayType(@NotNull LustreParser.ArrayTypeContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#arrayUpdateExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayUpdateExpr(@NotNull LustreParser.ArrayUpdateExprContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link LustreParser#castExpr}.
@@ -59,6 +80,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBoolExpr(@NotNull LustreParser.BoolExprContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#arrayExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayExpr(@NotNull LustreParser.ArrayExprContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link LustreParser#userType}.
@@ -117,6 +145,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitRecordType(@NotNull LustreParser.RecordTypeContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#arrayAccessExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayAccessExpr(@NotNull LustreParser.ArrayAccessExprContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#realExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -136,13 +171,6 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNodeCallExpr(@NotNull LustreParser.NodeCallExprContext ctx);
-
-	/**
-	 * Visit a parse tree produced by {@link LustreParser#projectionExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProjectionExpr(@NotNull LustreParser.ProjectionExprContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link LustreParser#constant}.

@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 public class CastExpr extends Expr {
 	final public Type type;
 	final public Expr expr;

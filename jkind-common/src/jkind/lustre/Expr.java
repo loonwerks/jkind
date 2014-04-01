@@ -1,5 +1,8 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.AstVisitor;
+import jkind.lustre.visitors.ExprVisitor;
+
 
 public abstract class Expr extends Ast {
 	public Expr(Location location) {

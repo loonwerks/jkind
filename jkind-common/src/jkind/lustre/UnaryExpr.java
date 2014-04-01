@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 public class UnaryExpr extends Expr {
 	final public UnaryOp op;
 	final public Expr expr;

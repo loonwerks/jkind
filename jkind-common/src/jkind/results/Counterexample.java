@@ -43,7 +43,7 @@ public final class Counterexample {
 	 */
 	public List<Signal<Value>> getSignals() {
 		List<Signal<Value>> result = new ArrayList<>(signals.values());
-		Collections.sort(result);
+		Collections.sort(result, new SignalNaturalOrdering());
 		return result;
 	}
 

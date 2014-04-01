@@ -1,4 +1,4 @@
-package jkind.lustre;
+package jkind.lustre.visitors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
+import jkind.lustre.CondactExpr;
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
+import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
+import jkind.lustre.RecordExpr;
+import jkind.lustre.UnaryExpr;
+
 public class ExprMapVisitor implements ExprVisitor<Expr> {
+	@Override
+	public Expr visit(ArrayAccessExpr e) {
+		return new ArrayAccessExpr(e.location, e.array.accept(this), e.index.accept(this));
+	}
+
+	@Override
+	public Expr visit(ArrayExpr e) {
+		return new ArrayExpr(e.location, visitAll(e.elements));
+	}
+
+	@Override
+	public Expr visit(ArrayUpdateExpr e) {
+		return new ArrayUpdateExpr(e.location, e.array.accept(this), e.index.accept(this),
+				e.value.accept(this));
+	}
+
 	@Override
 	public Expr visit(BinaryExpr e) {
 		return new BinaryExpr(e.location, e.left.accept(this), e.op, e.right.accept(this));
@@ -21,7 +54,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	public Expr visit(CastExpr e) {
 		return new CastExpr(e.type, e.expr.accept(this));
 	}
-	
+
 	@Override
 	public Expr visit(CondactExpr e) {
 		return new CondactExpr(e.clock.accept(this), (NodeCallExpr) e.call.accept(this),
@@ -50,13 +83,13 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	}
 
 	@Override
-	public Expr visit(ProjectionExpr e) {
-		return new ProjectionExpr(e.location, e.expr.accept(this), e.field);
+	public Expr visit(RealExpr e) {
+		return e;
 	}
 
 	@Override
-	public Expr visit(RealExpr e) {
-		return e;
+	public Expr visit(RecordAccessExpr e) {
+		return new RecordAccessExpr(e.location, e.record.accept(this), e.field);
 	}
 
 	@Override

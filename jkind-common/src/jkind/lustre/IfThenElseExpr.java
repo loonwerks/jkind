@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 
 public class IfThenElseExpr extends Expr {
 	final public Expr cond;

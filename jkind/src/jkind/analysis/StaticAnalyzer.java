@@ -15,9 +15,6 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.lustre.RecordType;
-import jkind.lustre.SubrangeIntType;
-import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 import jkind.util.Util;
@@ -31,13 +28,15 @@ public class StaticAnalyzer {
 		boolean result = true;
 		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
-		result = result && subrangesNonempty(program);
+		result = result && SubrangesNonempty.check(program);
+		result = result && ArraysNonempty.check(program);
 		result = result && constantsUnique(program);
 		result = result && constantsConstant(program);
 		result = result && nodesUnique(program);
 		result = result && NodeDependencyChecker.check(program);
 		result = result && variablesUnique(program);
 		result = result && assignmentsSound(program);
+		result = result && ConstantArrayAccessBounded.check(program);
 		result = result && propertiesUnique(program);
 		result = result && propertiesExist(program);
 		result = result && propertiesBoolean(program);
@@ -72,47 +71,6 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
-	}
-
-	private static boolean subrangesNonempty(Program program) {
-		boolean nonempty = true;
-
-		for (TypeDef def : program.types) {
-			if (!checkSubrangeNonempty(def.type)) {
-				nonempty = false;
-			}
-		}
-
-		for (Node node : program.nodes) {
-			for (VarDecl decl : Util.getVarDecls(node)) {
-				if (!checkSubrangeNonempty(decl.type)) {
-					nonempty = false;
-				}
-			}
-		}
-
-		return nonempty;
-	}
-
-	private static boolean checkSubrangeNonempty(Type type) {
-		if (type instanceof SubrangeIntType) {
-			SubrangeIntType subrange = (SubrangeIntType) type;
-			if (subrange.high.compareTo(subrange.low) < 0) {
-				System.out.println("Error at line " + subrange.location + " subrange is empty");
-				return false;
-			}
-		} else if (type instanceof RecordType) {
-			RecordType recordType = (RecordType) type;
-			boolean result = true;
-			for (Type subType : recordType.fields.values()) {
-				if (!checkSubrangeNonempty(subType)) {
-					result = false;
-				}
-			}
-			return result;
-		}
-
-		return true;
 	}
 
 	private static boolean constantsUnique(Program program) {

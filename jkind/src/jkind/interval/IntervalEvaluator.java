@@ -1,21 +1,24 @@
 package jkind.interval;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
-import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
 
 public class IntervalEvaluator implements ExprVisitor<Interval> {
@@ -25,6 +28,21 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	public IntervalEvaluator(int i, ModelGeneralizer generalizer) {
 		this.i = i;
 		this.generalizer = generalizer;
+	}
+
+	@Override
+	public Interval visit(ArrayAccessExpr e) {
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public Interval visit(ArrayExpr e) {
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public Interval visit(ArrayUpdateExpr e) {
+		throw new IllegalArgumentException();
 	}
 
 	@Override
@@ -46,7 +64,7 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	public Interval visit(BoolExpr e) {
 		return e.value ? BoolInterval.TRUE : BoolInterval.FALSE;
 	}
-	
+
 	@Override
 	public Interval visit(CastExpr e) {
 		NumericInterval interval = (NumericInterval) e.expr.accept(this);
@@ -97,14 +115,14 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	}
 
 	@Override
-	public Interval visit(ProjectionExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
 	public Interval visit(RealExpr e) {
 		RealEndpoint v = new RealEndpoint(new BigFraction(e.value));
 		return new NumericInterval(v, v);
+	}
+
+	@Override
+	public Interval visit(RecordAccessExpr e) {
+		throw new IllegalArgumentException();
 	}
 
 	@Override

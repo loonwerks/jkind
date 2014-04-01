@@ -3,6 +3,8 @@ package jkind.lustre;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.lustre.visitors.AstVisitor;
+
 public class Node extends Ast {
 	final public String id;
 	final public List<VarDecl> inputs;

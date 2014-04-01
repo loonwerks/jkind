@@ -5,10 +5,10 @@ import java.util.Set;
 
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.visitors.ExprIterVisitor;
 
 public class CombinatorialInfo {
 	private Set<String> combinatorialIds;

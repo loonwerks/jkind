@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.AstVisitor;
+
 
 public class VarDecl extends Ast {
 	final public String id;

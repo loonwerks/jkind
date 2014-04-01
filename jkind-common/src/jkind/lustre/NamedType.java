@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.TypeVisitor;
+
 public class NamedType extends Type {
 	final public String name;
 
@@ -53,5 +55,10 @@ public class NamedType extends Type {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public <T> T accept(TypeVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 }

@@ -2,6 +2,8 @@ package jkind.lustre;
 
 import java.math.BigInteger;
 
+import jkind.lustre.visitors.TypeVisitor;
+
 public class SubrangeIntType extends Type {
 	final public BigInteger low;
 	final public BigInteger high;
@@ -57,5 +59,10 @@ public class SubrangeIntType extends Type {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public <T> T accept(TypeVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 }

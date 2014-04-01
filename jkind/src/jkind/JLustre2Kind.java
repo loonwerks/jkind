@@ -8,11 +8,12 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
-import jkind.translation.FlattenRecordTypes;
+import jkind.translation.FlattenCompoundTypes;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.RemoveCondacts;
+import jkind.translation.RemoveNonConstantArrayIndices;
 import jkind.util.Util;
 
 public class JLustre2Kind {
@@ -45,14 +46,17 @@ public class JLustre2Kind {
 			program = InlineConstants.program(program);
 			program = RemoveCondacts.program(program);
 			Node main = InlineNodeCalls.program(program);
-			main = FlattenRecordTypes.node(main);
+			main = RemoveNonConstantArrayIndices.node(main);
+			main = FlattenCompoundTypes.node(main);
 
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 
 			String result = main.toString();
-			if (settings.noDot) {
+			if (settings.encode) {
 				result = result.replaceAll("\\.", "~dot~");
+				result = result.replaceAll("\\[", "~lbrack~");
+				result = result.replaceAll("\\]", "~rbrack~");
 			}
 			
 			if (settings.stdout) {

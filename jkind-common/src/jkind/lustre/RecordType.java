@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import jkind.lustre.visitors.TypeVisitor;
+
 public class RecordType extends Type {
 	final public String id;
 	final public SortedMap<String, Type> fields;
@@ -36,5 +38,10 @@ public class RecordType extends Type {
 			return id.equals(rt.id);
 		}
 		return false;
+	}
+
+	@Override
+	public <T> T accept(TypeVisitor<T> visitor) {
+		return visitor.visit(this);
 	}
 }

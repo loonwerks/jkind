@@ -1,5 +1,8 @@
 package jkind.lustre;
 
+import jkind.lustre.visitors.AstVisitor;
+import jkind.lustre.visitors.PrettyPrintVisitor;
+
 public abstract class Ast {
 	final public Location location;
 

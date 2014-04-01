@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.lustre.visitors.ExprVisitor;
+
 public class NodeCallExpr extends Expr {
 	final public String node;
 	final public List<Expr> args;

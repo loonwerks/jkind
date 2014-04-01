@@ -44,6 +44,7 @@ public class RecordValue extends Value {
 				text.append("; ");
 			}
 		}
+		text.append("}");
 		return text.toString();
 	}
 

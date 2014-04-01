@@ -1,8 +1,35 @@
-package jkind.lustre;
+package jkind.lustre.visitors;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
+import jkind.lustre.CondactExpr;
+import jkind.lustre.Constant;
+import jkind.lustre.Equation;
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
+import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
+import jkind.lustre.Program;
+import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
+import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordType;
+import jkind.lustre.Type;
+import jkind.lustre.TypeDef;
+import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
+import jkind.lustre.VarDecl;
 
 public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	private StringBuilder sb = new StringBuilder();
@@ -179,7 +206,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			}
 			write(" = ");
 		}
-		
+
 		expr(equation.expr);
 		write(";");
 		return null;
@@ -204,6 +231,39 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	}
 
 	@Override
+	public Void visit(ArrayAccessExpr e) {
+		expr(e.array);
+		write("[");
+		expr(e.index);
+		write("]");
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayExpr e) {
+		Iterator<Expr> iterator = e.elements.iterator();
+		write("[");
+		expr(iterator.next());
+		while (iterator.hasNext()) {
+			write(", ");
+			expr(iterator.next());
+		}
+		write("]");
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayUpdateExpr e) {
+		expr(e.array);
+		write("[");
+		expr(e.index);
+		write(" := ");
+		expr(e.value);
+		write("]");
+		return null;
+	}
+
+	@Override
 	public Void visit(BinaryExpr e) {
 		write("(");
 		expr(e.left);
@@ -220,7 +280,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		write(Boolean.toString(e.value));
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(CastExpr e) {
 		write(getCastFunction(e.type));
@@ -294,20 +354,20 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	}
 
 	@Override
-	public Void visit(ProjectionExpr e) {
-		expr(e.expr);
-		write(".");
-		write(e.field);
-		return null;
-	}
-
-	@Override
 	public Void visit(RealExpr e) {
 		String str = e.value.toPlainString();
 		write(str);
 		if (!str.contains(".")) {
 			write(".0");
 		}
+		return null;
+	}
+
+	@Override
+	public Void visit(RecordAccessExpr e) {
+		expr(e.record);
+		write(".");
+		write(e.field);
 		return null;
 	}
 

@@ -6,9 +6,9 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.ExprIterVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.visitors.ExprIterVisitor;
 
 public class LinearChecker extends ExprIterVisitor {
 	private final Level level;
@@ -37,6 +37,9 @@ public class LinearChecker extends ExprIterVisitor {
 
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
+		}
+		for (Expr e : node.assertions) {
+			e.accept(this);
 		}
 	}
 

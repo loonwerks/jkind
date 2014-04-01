@@ -1,8 +1,17 @@
-package jkind.lustre;
+package jkind.lustre.visitors;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.lustre.Ast;
+import jkind.lustre.Constant;
+import jkind.lustre.Equation;
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.Node;
+import jkind.lustre.Program;
+import jkind.lustre.TypeDef;
+import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Expr> {

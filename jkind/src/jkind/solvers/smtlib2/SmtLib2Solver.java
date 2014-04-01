@@ -40,7 +40,7 @@ public abstract class SmtLib2Solver extends Solver {
 
 	@Override
 	public void send(Sexp sexp) {
-		send(sexp.toString());
+		send(Quoting.quoteSexp(sexp).toString());
 	}
 
 	protected void send(String str) {

@@ -27,6 +27,7 @@ type: 'int'                                              # intType
     | 'subrange' '[' bound ',' bound ']' 'of' 'int'      # subrangeType
     | 'bool'                                             # boolType
     | 'real'                                             # realType
+    | type '[' INT ']'                                   # arrayType
     | ID                                                 # userType
     ;
 
@@ -51,7 +52,9 @@ expr: ID                                                       # idExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
-    | expr '.' ID                                              # projectionExpr
+    | expr '.' ID                                              # recordAccessExpr
+    | expr '[' expr ']'                                        # arrayAccessExpr
+    | expr '[' expr ':=' expr ']'                              # arrayUpdateExpr
     | 'pre' expr                                               # preExpr
     | 'not' expr                                               # notExpr
     | '-' expr                                                 # negateExpr
@@ -64,6 +67,7 @@ expr: ID                                                       # idExpr
     | expr op='->'<assoc=right> expr                           # binaryExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
+    | '[' expr (',' expr)+ ']'                                 # arrayExpr
     | '(' expr ')'                                             # parenExpr
     ;
 

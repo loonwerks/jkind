@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.lustre.visitors.AstVisitor;
+
 public class Program extends Ast {
 	final public List<TypeDef> types;
 	final public List<Constant> constants;

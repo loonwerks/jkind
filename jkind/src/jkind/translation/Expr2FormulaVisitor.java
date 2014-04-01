@@ -4,20 +4,23 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
-import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.visitors.ExprVisitor;
 
 public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	private final int column;
@@ -60,6 +63,24 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
+	public Void visit(ArrayAccessExpr e) {
+		throw new IllegalArgumentException(
+				"Arrays must be flattened before translation to formula");
+	}
+
+	@Override
+	public Void visit(ArrayExpr e) {
+		throw new IllegalArgumentException(
+				"Arrays must be flattened before translation to formula");
+	}
+
+	@Override
+	public Void visit(ArrayUpdateExpr e) {
+		throw new IllegalArgumentException(
+				"Arrays must be flattened before translation to formula");
+	}
+
+	@Override
 	public Void visit(BinaryExpr e) {
 		switch (e.op) {
 		case ARROW:
@@ -95,7 +116,7 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 			e.right.accept(this);
 			buf.append(")");
 			return null;
-			
+
 		case MODULUS:
 			buf.append("MOD(");
 			e.left.accept(this);
@@ -141,7 +162,7 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(CondactExpr e) {
 		throw new IllegalArgumentException("Condacts must be removed before translation to formula");
@@ -196,15 +217,15 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(ProjectionExpr e) {
-		throw new IllegalArgumentException(
-				"Records must be flattened before translation to formula");
-	}
-
-	@Override
 	public Void visit(RealExpr e) {
 		buf.append(e.value.toPlainString());
 		return null;
+	}
+
+	@Override
+	public Void visit(RecordAccessExpr e) {
+		throw new IllegalArgumentException(
+				"Records must be flattened before translation to formula");
 	}
 
 	@Override

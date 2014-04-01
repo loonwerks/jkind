@@ -1,4 +1,11 @@
-package jkind.lustre;
+package jkind.lustre.visitors;
+
+import jkind.lustre.Constant;
+import jkind.lustre.Equation;
+import jkind.lustre.Node;
+import jkind.lustre.Program;
+import jkind.lustre.TypeDef;
+import jkind.lustre.VarDecl;
 
 public interface AstVisitor<T, S extends T> extends ExprVisitor<S> {
 	public T visit(Constant constant);

@@ -2,10 +2,15 @@ package jkind.analysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayType;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
@@ -14,7 +19,6 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -23,8 +27,8 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
@@ -32,6 +36,7 @@ import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
@@ -50,24 +55,24 @@ public class TypeChecker implements ExprVisitor<Type> {
 		this.passed = true;
 	}
 
-	public static boolean check(Program program) {
-		return new TypeChecker().visitProgram(program);
-	}
-
-	public boolean visitProgram(Program program) {
+	public TypeChecker(Program program) {
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
-		nodeTable = Util.getNodeTable(program.nodes);
+		this.variableTable = new HashMap<>();
+		this.nodeTable = Util.getNodeTable(program.nodes);
+		this.passed = true;
+	}
 
+	public static boolean check(Program program) {
+		return new TypeChecker(program).visitProgram(program);
+	}
+
+	private boolean visitProgram(Program program) {
 		for (Node node : program.nodes) {
 			visitNode(node);
 		}
 
 		return passed;
-	}
-
-	public void setNodeTable(Map<String, Node> nodeTable) {
-		this.nodeTable = nodeTable;
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
@@ -146,7 +151,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 
 			if (expected.size() != actual.size()) {
-				error(eq, "expected " + expected.size() + " values but found " + actual.size());
+				error(eq, "expected " + expected.size() + " values, but found " + actual.size());
 				return;
 			}
 
@@ -167,6 +172,76 @@ public class TypeChecker implements ExprVisitor<Type> {
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	@Override
+	public Type visit(ArrayAccessExpr e) {
+		Type type = e.array.accept(this);
+		Type indexType = e.index.accept(this);
+		if (type == null || indexType == null) {
+			return null;
+		}
+
+		if (!isIntBased(indexType)) {
+			error(e.index, "expected type int, but found " + simple(indexType));
+		}
+
+		if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			return arrayType.base;
+		}
+
+		error(e.array, "expected array type, but found " + simple(type));
+		return null;
+	}
+
+	@Override
+	public Type visit(ArrayExpr e) {
+		Iterator<Expr> iterator = e.elements.iterator();
+
+		Type common = iterator.next().accept(this);
+		if (common == null) {
+			return null;
+		}
+
+		while (iterator.hasNext()) {
+			Expr nextExpr = iterator.next();
+			Type next = nextExpr.accept(this);
+			if (next == null) {
+				return null;
+			}
+			Type join = joinTypes(common, next);
+			if (join == null) {
+				error(nextExpr, "expected type " + simple(common) + ", but found " + simple(next));
+				return null;
+			}
+			common = join;
+		}
+
+		return new ArrayType(common, e.elements.size());
+	}
+
+	@Override
+	public Type visit(ArrayUpdateExpr e) {
+		Type type = e.array.accept(this);
+		Type indexType = e.index.accept(this);
+		Type valueType = e.value.accept(this);
+		if (type == null || indexType == null || valueType == null) {
+			return null;
+		}
+
+		if (!isIntBased(indexType)) {
+			error(e.index, "expected type int, but found " + simple(indexType));
+		}
+
+		if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			compareTypeAssignment(e.value, arrayType.base, valueType);
+			return arrayType;
+		}
+
+		error(e.array, "expected array type, but found " + simple(type));
+		return null;
 	}
 
 	@Override
@@ -377,8 +452,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	@Override
-	public Type visit(ProjectionExpr e) {
-		Type type = e.expr.accept(this);
+	public Type visit(RealExpr e) {
+		return NamedType.REAL;
+	}
+
+	@Override
+	public Type visit(RecordAccessExpr e) {
+		Type type = e.record.accept(this);
 		if (type == null) {
 			return null;
 		}
@@ -390,13 +470,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 		}
 
-		error(e, "expected record type with field " + e.field + " but found " + simple(type));
+		error(e, "expected record type with field " + e.field + ", but found " + simple(type));
 		return null;
-	}
-
-	@Override
-	public Type visit(RealExpr e) {
-		return NamedType.REAL;
 	}
 
 	@Override
@@ -469,11 +544,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return null;
 	}
 
-	private String simple(Type type) {
+	private Type simple(Type type) {
 		if (type instanceof SubrangeIntType) {
-			return "int";
+			return NamedType.INT;
+		} else if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			return new ArrayType(simple(arrayType.base), arrayType.size);
 		} else {
-			return type.toString();
+			return type;
 		}
 	}
 
@@ -483,8 +561,17 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		if (!typeAssignable(expected, actual)) {
-			String found = expected instanceof SubrangeIntType ? actual.toString() : simple(actual);
-			error(ast, "expected type " + expected + " but found type " + found);
+			Type found = containsSubrange(expected) ? actual : simple(actual);
+			error(ast, "expected type " + expected + ", but found type " + found);
+		}
+	}
+
+	private boolean containsSubrange(Type type) {
+		if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			return containsSubrange(arrayType.base);
+		} else {
+			return type instanceof SubrangeIntType;
 		}
 	}
 
@@ -502,6 +589,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 			SubrangeIntType acRange = (SubrangeIntType) actual;
 			return exRange.low.compareTo(acRange.low) <= 0
 					&& exRange.high.compareTo(acRange.high) >= 0;
+		}
+		
+		if (expected instanceof ArrayType && actual instanceof ArrayType) {
+			ArrayType expectedArrayType = (ArrayType) expected;
+			ArrayType actualArrayType = (ArrayType) actual;
+			return expectedArrayType.size == actualArrayType.size
+					&& typeAssignable(expectedArrayType.base, actualArrayType.base);
 		}
 
 		return false;
@@ -527,6 +621,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return new SubrangeIntType(s1.low.min(s2.low), s1.high.max(s2.high));
 		} else if (isIntBased(t1) && isIntBased(t2)) {
 			return NamedType.INT;
+		} else if (t1 instanceof ArrayType && t2 instanceof ArrayType) {
+			ArrayType a1 = (ArrayType) t1;
+			ArrayType a2 = (ArrayType) t2;
+			Type join = joinTypes(a1.base, a2.base);
+			if (a1.size != a2.size || join == null) {
+				return null;
+			}
+			return new ArrayType(join, a1.size);
 		} else if (t1.equals(t2)) {
 			return t1;
 		} else {

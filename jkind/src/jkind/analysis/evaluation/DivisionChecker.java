@@ -5,12 +5,13 @@ import java.math.BigInteger;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
-import jkind.lustre.ExprIterVisitor;
+import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.ExprIterVisitor;
 import jkind.util.BigFraction;
 
 public class DivisionChecker extends ExprIterVisitor {
@@ -36,6 +37,9 @@ public class DivisionChecker extends ExprIterVisitor {
 		constantEvaluator.setHidden(node);
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
+		}
+		for (Expr e : node.assertions) {
+			e.accept(this);
 		}
 	}
 

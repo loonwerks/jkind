@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayType;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
@@ -23,8 +27,8 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
@@ -33,6 +37,10 @@ import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
+import jkind.lustre.parsing.LustreParser.ArrayAccessExprContext;
+import jkind.lustre.parsing.LustreParser.ArrayExprContext;
+import jkind.lustre.parsing.LustreParser.ArrayTypeContext;
+import jkind.lustre.parsing.LustreParser.ArrayUpdateExprContext;
 import jkind.lustre.parsing.LustreParser.AssertionContext;
 import jkind.lustre.parsing.LustreParser.BinaryExprContext;
 import jkind.lustre.parsing.LustreParser.BoolExprContext;
@@ -55,10 +63,10 @@ import jkind.lustre.parsing.LustreParser.ParenExprContext;
 import jkind.lustre.parsing.LustreParser.PlainTypeContext;
 import jkind.lustre.parsing.LustreParser.PreExprContext;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
-import jkind.lustre.parsing.LustreParser.ProjectionExprContext;
 import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
+import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
@@ -218,6 +226,11 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	public Type visitRealType(RealTypeContext ctx) {
 		return NamedType.REAL;
 	}
+	
+	@Override
+	public Type visitArrayType(ArrayTypeContext ctx) {
+		return new ArrayType(loc(ctx), type(ctx.type()), Integer.parseInt(ctx.INT().getText()));
+	}
 
 	@Override
 	public Type visitUserType(UserTypeContext ctx) {
@@ -294,8 +307,19 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
-	public Expr visitProjectionExpr(ProjectionExprContext ctx) {
-		return new ProjectionExpr(loc(ctx), expr(ctx.expr()), ctx.ID().getText());
+	public Expr visitRecordAccessExpr(RecordAccessExprContext ctx) {
+		return new RecordAccessExpr(loc(ctx), expr(ctx.expr()), ctx.ID().getText());
+	}
+
+	@Override
+	public Expr visitArrayAccessExpr(ArrayAccessExprContext ctx) {
+		return new ArrayAccessExpr(loc(ctx), expr(ctx.expr(0)), expr(ctx.expr(1)));
+	}
+
+	@Override
+	public Expr visitArrayUpdateExpr(ArrayUpdateExprContext ctx) {
+		return new ArrayUpdateExpr(loc(ctx), expr(ctx.expr(0)), expr(ctx.expr(1)),
+				expr(ctx.expr(2)));
 	}
 
 	@Override
@@ -334,7 +358,16 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new RecordExpr(loc(ctx), ctx.ID(0).getText(), fields);
 	}
-
+	
+	@Override
+	public Expr visitArrayExpr(ArrayExprContext ctx) {
+		List<Expr> elements = new ArrayList<>();
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			elements.add(expr(ctx.expr(i)));
+		}
+		return new ArrayExpr(loc(ctx), elements);
+	}
+	
 	@Override
 	public Expr visitParenExpr(ParenExprContext ctx) {
 		return expr(ctx.expr());

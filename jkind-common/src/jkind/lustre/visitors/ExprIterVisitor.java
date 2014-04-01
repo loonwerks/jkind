@@ -1,8 +1,46 @@
-package jkind.lustre;
+package jkind.lustre.visitors;
 
 import java.util.Collection;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BoolExpr;
+import jkind.lustre.CastExpr;
+import jkind.lustre.CondactExpr;
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
+import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
+import jkind.lustre.RecordExpr;
+import jkind.lustre.UnaryExpr;
+
 public class ExprIterVisitor implements ExprVisitor<Void> {
+	@Override
+	public Void visit(ArrayAccessExpr e) {
+		e.array.accept(this);
+		e.index.accept(this);
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayExpr e) {
+		visitAll(e.elements);
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayUpdateExpr e) {
+		e.array.accept(this);
+		e.index.accept(this);
+		e.value.accept(this);
+		return null;
+	}
+
 	@Override
 	public Void visit(BinaryExpr e) {
 		e.left.accept(this);
@@ -54,13 +92,13 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(ProjectionExpr e) {
-		e.expr.accept(this);
+	public Void visit(RealExpr e) {
 		return null;
 	}
 
 	@Override
-	public Void visit(RealExpr e) {
+	public Void visit(RecordAccessExpr e) {
+		e.record.accept(this);
 		return null;
 	}
 
@@ -69,13 +107,13 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 		visitAll(e.fields.values());
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(UnaryExpr e) {
 		e.expr.accept(this);
 		return null;
 	}
-	
+
 	protected Void visitAll(Collection<Expr> list) {
 		for (Expr e : list) {
 			e.accept(this);

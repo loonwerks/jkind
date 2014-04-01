@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.lustre.Equation;
-import jkind.lustre.ExprIterVisitor;
+import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.visitors.ExprIterVisitor;
 
 public class NodeDependencyChecker {
 	public static boolean check(Program program) {
@@ -33,13 +34,16 @@ public class NodeDependencyChecker {
 				return null;
 			}
 		};
-		
+
 		for (Equation eq : node.equations) {
 			eq.expr.accept(nodeCallCollector);
 		}
+		for (Expr e : node.assertions) {
+			e.accept(nodeCallCollector);
+		}
 		return dependencies;
 	}
-	
+
 	private Map<String, Set<String>> dependencies;
 	private Deque<String> callStack;
 
@@ -54,7 +58,7 @@ public class NodeDependencyChecker {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -75,7 +79,7 @@ public class NodeDependencyChecker {
 			}
 		}
 		callStack.removeLast();
-		
+
 		return true;
 	}
 }

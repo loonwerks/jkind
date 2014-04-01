@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.analysis.TypeChecker;
-import jkind.lustre.AstMapVisitor;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
@@ -22,6 +21,7 @@ import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
 /**
@@ -43,12 +43,12 @@ public class RemoveCondacts {
 	private final Program program;
 	private final Map<String, Node> nodeTable;
 	private final List<Node> resultNodes = new ArrayList<>();
-	private final TypeChecker typeChecker = new TypeChecker();
+	private final TypeChecker typeChecker;
 
 	private RemoveCondacts(Program program) {
 		this.program = program;
 		this.nodeTable = Util.getNodeTable(program.nodes);
-		typeChecker.setNodeTable(nodeTable);
+		this.typeChecker = new TypeChecker(program);
 	}
 
 	private void remove() {

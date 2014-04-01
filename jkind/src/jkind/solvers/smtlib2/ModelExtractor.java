@@ -12,6 +12,7 @@ import jkind.solvers.Lambda;
 import jkind.solvers.smtlib2.SmtLib2Parser.BodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ConsBodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DefineContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.IdContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.SymbolBodyContext;
 
@@ -25,14 +26,18 @@ public class ModelExtractor {
 	}
 
 	public static void walkDefine(DefineContext ctx, SmtLib2Model model) {
-		String fn = ctx.ID().getText();
+		String fn = getId(ctx.id());
 		Sexp body = sexp(ctx.body());
 		if (ctx.arg() == null) {
 			model.addValue(fn, body);
 		} else {
-			Symbol arg = new Symbol(ctx.arg().ID().getText());
+			Symbol arg = new Symbol(getId(ctx.arg().id()));
 			model.addFunction(fn, new Lambda(arg, body));
 		}
+	}
+
+	private static String getId(IdContext id) {
+		return Quoting.unquote(id.getText());
 	}
 
 	private static Sexp sexp(BodyContext ctx) {

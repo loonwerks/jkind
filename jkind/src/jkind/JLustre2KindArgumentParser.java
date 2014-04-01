@@ -7,7 +7,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
 public class JLustre2KindArgumentParser {
-	final private static String NO_DOT = "no_dot";
+	final private static String ENCODE = "encode";
 	final private static String STDOUT = "stdout";
 	final private static String VERSION = "version";
 	final private static String HELP = "help";
@@ -15,7 +15,7 @@ public class JLustre2KindArgumentParser {
 	private static Options getOptions() {
 		Options options = new Options();
 		options.addOption(STDOUT, false, "write result to standard out");
-		options.addOption(NO_DOT, false, "use ~dot~ in place of . for record field access");
+		options.addOption(ENCODE, false, "Encode identifiers to avoid reserved symbols");
 		options.addOption(VERSION, false, "display version information");
 		options.addOption(HELP, false, "print this message");
 		return options;
@@ -49,8 +49,8 @@ public class JLustre2KindArgumentParser {
 			System.exit(0);
 		}
 
-		if (line.hasOption(NO_DOT)) {
-			settings.noDot = true;
+		if (line.hasOption(ENCODE)) {
+			settings.encode = true;
 		}
 
 		if (line.hasOption(STDOUT)) {

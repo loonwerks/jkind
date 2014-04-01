@@ -2,20 +2,23 @@ package jkind.translation;
 
 import java.math.BigDecimal;
 
+import jkind.lustre.ArrayAccessExpr;
+import jkind.lustre.ArrayExpr;
+import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
-import jkind.lustre.ExprVisitor;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
-import jkind.lustre.ProjectionExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.visitors.ExprVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -26,6 +29,21 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 
 	public Expr2SexpVisitor(Symbol iSym) {
 		this.iSym = iSym;
+	}
+
+	@Override
+	public Sexp visit(ArrayAccessExpr e) {
+		throw new IllegalArgumentException("Arrays must be flattened before translation to sexp");
+	}
+
+	@Override
+	public Sexp visit(ArrayExpr e) {
+		throw new IllegalArgumentException("Arrays must be flattened before translation to sexp");
+	}
+
+	@Override
+	public Sexp visit(ArrayUpdateExpr e) {
+		throw new IllegalArgumentException("Arrays must be flattened before translation to sexp");
 	}
 
 	@Override
@@ -90,16 +108,15 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	}
 
 	@Override
-	public Sexp visit(ProjectionExpr e) {
-		System.out.println(e);
-		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
-	}
-
-	@Override
 	public Sexp visit(RealExpr e) {
 		Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());
 		Sexp denominator = Sexp.fromBigInt(BigDecimal.TEN.pow(e.value.scale()).toBigInteger());
 		return new Cons("/", numerator, denominator);
+	}
+
+	@Override
+	public Sexp visit(RecordAccessExpr e) {
+		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
 	}
 
 	@Override
