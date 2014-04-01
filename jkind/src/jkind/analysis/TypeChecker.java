@@ -56,11 +56,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	public TypeChecker(Program program) {
+		this();
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
-		this.variableTable = new HashMap<>();
 		this.nodeTable = Util.getNodeTable(program.nodes);
-		this.passed = true;
 	}
 
 	public static boolean check(Program program) {

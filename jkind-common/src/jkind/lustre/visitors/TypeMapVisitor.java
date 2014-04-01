@@ -33,6 +33,6 @@ public class TypeMapVisitor implements TypeVisitor<Type> {
 
 	@Override
 	public Type visit(SubrangeIntType e) {
-		return null;
+		return e;
 	}
 }
