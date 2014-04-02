@@ -17,11 +17,11 @@ import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.solvers.Decl;
 import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
-import jkind.solvers.StreamDecl;
 import jkind.solvers.StreamDef;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
@@ -29,15 +29,12 @@ import jkind.translation.Specification;
 public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
 	private Map<String, StreamDef> definitions;
-	private Map<String, StreamDecl> declarations;
+	private Map<String, Decl> declarations;
 
 	public InvariantProcess(Specification spec, JKindSettings settings) {
 		super("Invariant", spec, settings, null);
 		definitions = new HashMap<>();
-		declarations = new HashMap<>();
-		for (StreamDecl decl : spec.translation.getDeclarations()) {
-			declarations.put(decl.getId().toString(), decl);
-		}
+		declarations = spec.translation.getDeclarationsTable();
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {

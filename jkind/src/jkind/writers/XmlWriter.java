@@ -5,14 +5,17 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
 import jkind.invariant.Invariant;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
 import jkind.results.Signal;
 import jkind.util.Util;
 
@@ -69,6 +72,9 @@ public class XmlWriter extends Writer {
 		for (Signal<Value> signal : cex.getSignals()) {
 			writeSignal(cex.getLength(), signal);
 		}
+		for (Entry<String, FunctionTable> entry : cex.getFunctionTables().entrySet()) {
+			writeFunction(entry.getKey(), entry.getValue());
+		}
 		out.println("    </Counterexample>");
 	}
 
@@ -104,6 +110,29 @@ public class XmlWriter extends Writer {
 		} else {
 			return value.toString();
 		}
+	}
+
+	private void writeFunction(String fn, FunctionTable table) {
+		out.println("      <Function name=\"" + fn + "\">");
+		for (VarDecl input : table.getInputs()) {
+			out.println("        <Input name=\"" + input.id + "\" type=\"" + input.type + "\"/>");
+		}
+		for (VarDecl output : table.getOutputs()) {
+			out.println("        <Output name=\"" + output.id + "\" type=\"" + output.type + "\"/>");
+		}
+
+		Map<List<Value>, List<Value>> map = table.getMap();
+		for (List<Value> inputs : map.keySet()) {
+			out.println("        <FunctionValue>");
+			for (Value input : inputs) {
+				out.println("          <ArgumentValue>" + formatValue(input) + "</ArgumentValue>");
+			}
+			for (Value output : map.get(inputs)) {
+				out.println("          <ArgumentValue>" + formatValue(output) + "</ArgumentValue>");
+			}
+			out.println("        </FunctionValue>");
+		}
+		out.println("      </Function>");
 	}
 
 	@Override

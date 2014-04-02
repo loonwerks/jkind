@@ -19,10 +19,10 @@ alias: '(' '=' ID ID ')';
 
 variable: '(' '=' ID value ')';
 
-function: '(' '=' '(' ID integer ')' value ')';
+function: '(' '=' '(' ID value* ')' value ')';
 
 predefined: '(' '=' '(' PREDEFINED_OP value* ')' value ')';
-
+  
 PREDEFINED_OP: 'mod' | 'div' | 'to_int' | 'to_real';
 
 value: BOOL | numeric;

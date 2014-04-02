@@ -9,13 +9,13 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -65,20 +65,17 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(ArrayAccessExpr e) {
-		throw new IllegalArgumentException(
-				"Arrays must be flattened before translation to formula");
+		throw new IllegalArgumentException("Arrays must be flattened before translation to formula");
 	}
 
 	@Override
 	public Void visit(ArrayExpr e) {
-		throw new IllegalArgumentException(
-				"Arrays must be flattened before translation to formula");
+		throw new IllegalArgumentException("Arrays must be flattened before translation to formula");
 	}
 
 	@Override
 	public Void visit(ArrayUpdateExpr e) {
-		throw new IllegalArgumentException(
-				"Arrays must be flattened before translation to formula");
+		throw new IllegalArgumentException("Arrays must be flattened before translation to formula");
 	}
 
 	@Override
@@ -165,6 +162,12 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
+	public Void visit(CallExpr e) {
+		throw new IllegalArgumentException(
+				"Uninterpreted functions are not supported in Excel translation");
+	}
+
+	@Override
 	public Void visit(CondactExpr e) {
 		throw new IllegalArgumentException("Condacts must be removed before translation to formula");
 	}
@@ -212,12 +215,6 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(NodeCallExpr e) {
-		throw new IllegalArgumentException(
-				"Node calls must be inlined before translation to formula");
-	}
-
-	@Override
 	public Void visit(RealExpr e) {
 		buf.append(e.value.toPlainString());
 		return null;
@@ -237,10 +234,9 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(TupleExpr e) {
-		throw new IllegalArgumentException(
-				"Tuples must be flattened before translation to formula");
+		throw new IllegalArgumentException("Tuples must be flattened before translation to formula");
 	}
-	
+
 	@Override
 	public Void visit(UnaryExpr e) {
 		switch (e.op) {

@@ -14,18 +14,19 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -46,13 +47,15 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private Map<String, Type> typeTable;
 	private Map<String, Type> constantTable;
 	private Map<String, Type> variableTable;
+	private Map<String, Function> functionTable;
 	private Map<String, Node> nodeTable;
 	private boolean passed;
 
-	public TypeChecker() {
+	private TypeChecker() {
 		this.typeTable = new HashMap<>();
 		this.constantTable = new HashMap<>();
 		this.variableTable = new HashMap<>();
+		this.functionTable = new HashMap<>();
 		this.nodeTable = new HashMap<>();
 		this.passed = true;
 	}
@@ -61,9 +64,15 @@ public class TypeChecker implements ExprVisitor<Type> {
 		this();
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
+		this.functionTable = Util.getFunctionTable(program.functions);
 		this.nodeTable = Util.getNodeTable(program.nodes);
 	}
-
+	
+	public TypeChecker(List<Function> functions) {
+		this();
+		this.functionTable = Util.getFunctionTable(functions);
+	}
+	
 	public static boolean check(Program program) {
 		return new TypeChecker(program).visitProgram(program);
 	}
@@ -103,8 +112,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		for (Expr assertion : node.assertions) {
-			compareTypeAssignment(assertion, NamedType.BOOL,
-					assertion.accept(this));
+			compareTypeAssignment(assertion, NamedType.BOOL, assertion.accept(this));
 		}
 
 		return passed;
@@ -138,17 +146,17 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private Type getExpectedType(List<IdExpr> lhs) {
 		List<Type> expectedTypes = new ArrayList<>();
-		for (IdExpr ide : lhs) {
-			expectedTypes.add(ide.accept(this));
+		for (IdExpr idExpr : lhs) {
+			expectedTypes.add(idExpr.accept(this));
 		}
 		return compressTypes(expectedTypes);
 	}
 
 	private Type compressTypes(List<Type> types) {
-		if(types == null || types.contains(null)) {
+		if (types == null || types.contains(null)) {
 			return null;
 		}
-		
+
 		if (types.size() == 1) {
 			return types.get(0);
 		}
@@ -193,8 +201,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 			Type join = joinTypes(common, next);
 			if (join == null) {
-				error(nextExpr, "expected type " + simple(common)
-						+ ", but found " + simple(next));
+				error(nextExpr, "expected type " + simple(common) + ", but found " + simple(next));
 				return null;
 			}
 			common = join;
@@ -295,8 +302,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 			break;
 		}
 
-		error(e, "operator '" + e.op + "' not defined on types " + simple(left)
-				+ ", " + simple(right));
+		error(e, "operator '" + e.op + "' not defined on types " + simple(left) + ", "
+				+ simple(right));
 		return null;
 	}
 
@@ -328,7 +335,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private List<Type> visitCondactExpr(CondactExpr e) {
 		compareTypeAssignment(e.clock, NamedType.BOOL, e.clock.accept(this));
 
-		List<Type> expected = visitNodeCallExpr(e.call);
+		if (functionTable.containsKey(e.call.name)) {
+			error(e.call, "condact cannot apply to function calls");
+			return null;
+		}
+
+		List<Type> expected = visitCallExpr(e.call);
 		if (expected == null) {
 			return null;
 		}
@@ -339,8 +351,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		if (actual.size() != expected.size()) {
-			error(e, "expected " + expected.size()
-					+ " default values, but found " + actual.size());
+			error(e, "expected " + expected.size() + " default values, but found " + actual.size());
 			return null;
 		}
 
@@ -379,30 +390,38 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	@Override
-	public Type visit(NodeCallExpr e) {
-		return compressTypes(visitNodeCallExpr(e));
+	public Type visit(CallExpr e) {
+		return compressTypes(visitCallExpr(e));
 	}
 
-	private List<Type> visitNodeCallExpr(NodeCallExpr e) {
-		Node node = nodeTable.get(e.node);
-		if (node == null) {
-			error(e, "unknown node " + e.node);
-			return null;
+	private List<Type> visitCallExpr(CallExpr e) {
+		Node node = nodeTable.get(e.name);
+		if (node != null) {
+			return visitCallExpr(e, node.inputs, node.outputs);
 		}
 
+		Function function = functionTable.get(e.name);
+		if (function != null) {
+			return visitCallExpr(e, function.inputs, function.outputs);
+		}
+
+		error(e, "unknown function or node " + e.name);
+		return null;
+	}
+
+	private List<Type> visitCallExpr(CallExpr e, List<VarDecl> inputs, List<VarDecl> outputs) {
 		List<Type> actual = new ArrayList<>();
 		for (Expr arg : e.args) {
 			actual.add(arg.accept(this));
 		}
 
 		List<Type> expected = new ArrayList<>();
-		for (VarDecl input : node.inputs) {
+		for (VarDecl input : inputs) {
 			expected.add(resolveType(input.type));
 		}
 
 		if (actual.size() != expected.size()) {
-			error(e, "expected " + expected.size() + " arguments, but found "
-					+ actual.size());
+			error(e, "expected " + expected.size() + " arguments, but found " + actual.size());
 			return null;
 		}
 
@@ -411,7 +430,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		List<Type> result = new ArrayList<>();
-		for (VarDecl decl : node.outputs) {
+		for (VarDecl decl : outputs) {
 			result.add(resolveType(decl.type));
 		}
 		return result;
@@ -436,8 +455,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 		}
 
-		error(e, "expected record type with field " + e.field + ", but found "
-				+ simple(type));
+		error(e, "expected record type with field " + e.field + ", but found " + simple(type));
 		return null;
 	}
 
@@ -461,19 +479,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 			String expectedField = entry.getKey();
 			Type expectedFieldType = entry.getValue();
 			if (!fields.containsKey(expectedField)) {
-				error(e, "record of type " + e.id + " is missing field "
-						+ expectedField);
+				error(e, "record of type " + e.id + " is missing field " + expectedField);
 			} else {
 				Type actualFieldType = fields.get(expectedField);
-				compareTypeAssignment(e.fields.get(expectedField),
-						expectedFieldType, actualFieldType);
+				compareTypeAssignment(e.fields.get(expectedField), expectedFieldType,
+						actualFieldType);
 			}
 		}
 
 		for (String actualField : fields.keySet()) {
 			if (!expectedRecordType.fields.keySet().contains(actualField)) {
-				error(e.fields.get(actualField), "record of type " + e.id
-						+ " has extra field " + actualField);
+				error(e.fields.get(actualField), "record of type " + e.id + " has extra field "
+						+ actualField);
 			}
 		}
 
@@ -500,8 +517,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		case NEGATIVE:
 			if (type instanceof SubrangeIntType) {
 				SubrangeIntType subrange = (SubrangeIntType) type;
-				return new SubrangeIntType(subrange.high.negate(),
-						subrange.low.negate());
+				return new SubrangeIntType(subrange.high.negate(), subrange.low.negate());
 			}
 			if (type == NamedType.INT || type == NamedType.REAL) {
 				return type;
@@ -540,8 +556,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		if (!typeAssignable(expected, actual)) {
 			Type found = containsSubrange(expected) ? actual : simple(actual);
-			error(ast, "expected type " + expected + ", but found type "
-					+ found);
+			error(ast, "expected type " + expected + ", but found type " + found);
 		}
 	}
 
@@ -563,8 +578,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return true;
 		}
 
-		if (expected instanceof SubrangeIntType
-				&& actual instanceof SubrangeIntType) {
+		if (expected instanceof SubrangeIntType && actual instanceof SubrangeIntType) {
 			SubrangeIntType exRange = (SubrangeIntType) expected;
 			SubrangeIntType acRange = (SubrangeIntType) actual;
 			return exRange.low.compareTo(acRange.low) <= 0
@@ -575,8 +589,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			ArrayType expectedArrayType = (ArrayType) expected;
 			ArrayType actualArrayType = (ArrayType) actual;
 			return expectedArrayType.size == actualArrayType.size
-					&& typeAssignable(expectedArrayType.base,
-							actualArrayType.base);
+					&& typeAssignable(expectedArrayType.base, actualArrayType.base);
 		}
 
 		return false;

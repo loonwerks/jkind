@@ -4,6 +4,7 @@ import java.io.File;
 
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
+import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
@@ -15,6 +16,7 @@ import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.RemoveCondacts;
 import jkind.translation.RemoveNonConstantArrayIndices;
+import jkind.translation.SplitFunctions;
 import jkind.util.Util;
 
 public class JLustre2Kind {
@@ -46,15 +48,16 @@ public class JLustre2Kind {
 			program = InlineUserTypes.program(program);
 			program = InlineConstants.program(program);
 			program = RemoveCondacts.program(program);
-			Node main = InlineNodeCalls.program(program);
-			main = FlattenTuples.node(main);
-			main = RemoveNonConstantArrayIndices.node(main);
-			main = FlattenCompoundTypes.node(main);
+			InlinedProgram ip = InlineNodeCalls.program(program);
+			ip = SplitFunctions.inlinedProgram(ip);
+			ip = FlattenTuples.inlinedProgram(ip);
+			ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
+			ip = FlattenCompoundTypes.inlinedProgram(ip);
 
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
-			main = LustreSlicer.slice(main, dependencyMap);
+			DependencyMap dependencyMap = new DependencyMap(ip.node, ip.node.properties);
+			Node sliced = LustreSlicer.slice(ip.node, dependencyMap);
 
-			String result = main.toString();
+			String result = sliced.toString();
 			if (settings.encode) {
 				result = result.replaceAll("\\.", "~dot~");
 				result = result.replaceAll("\\[", "~lbrack~");

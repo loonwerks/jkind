@@ -2,7 +2,7 @@ grammar SmtLib2;
 
 model: '(' 'model' define* ')' EOF;
 
-define: '(' 'define-fun' id '(' arg? ')' type body ')';
+define: '(' 'define-fun' id '(' arg* ')' type body ')';
 
 arg: '(' id type ')';
 

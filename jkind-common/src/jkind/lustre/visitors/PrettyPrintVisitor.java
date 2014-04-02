@@ -9,17 +9,18 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -69,6 +70,13 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 				newline();
 			}
 			newline();
+		}
+		
+		if (!program.functions.isEmpty()) {
+			for (Function function : program.functions) {
+				function.accept(this);
+				newline();
+			}
 		}
 
 		Iterator<Node> iterator = program.nodes.iterator();
@@ -123,6 +131,23 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(Function function) {
+		write("function ");
+		write(function.id);
+		write("(");
+		newline();
+		varDecls(function.inputs);
+		newline();
+		write(") returns (");
+		newline();
+		varDecls(function.outputs);
+		newline();
+		write(");");
+		newline();
+		return null;
+	}
+	
 	@Override
 	public Void visit(Node node) {
 		write("node ");
@@ -283,6 +308,21 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	}
 
 	@Override
+	public Void visit(CallExpr e) {
+		write(e.name);
+		write("(");
+		Iterator<Expr> iterator = e.args.iterator();
+		while (iterator.hasNext()) {
+			expr(iterator.next());
+			if (iterator.hasNext()) {
+				write(", ");
+			}
+		}
+		write(")");
+		return null;
+	}
+
+	@Override
 	public Void visit(CastExpr e) {
 		write(getCastFunction(e.type));
 		write("(");
@@ -336,21 +376,6 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	@Override
 	public Void visit(IntExpr e) {
 		write(e.value);
-		return null;
-	}
-
-	@Override
-	public Void visit(NodeCallExpr e) {
-		write(e.node);
-		write("(");
-		Iterator<Expr> iterator = e.args.iterator();
-		while (iterator.hasNext()) {
-			expr(iterator.next());
-			if (iterator.hasNext()) {
-				write(", ");
-			}
-		}
-		write(")");
 		return null;
 	}
 

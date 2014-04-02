@@ -22,7 +22,7 @@ public class SexpUtil {
 		if (fns.isEmpty()) {
 			return new Symbol("true");
 		}
-		
+
 		List<Sexp> args = new ArrayList<>();
 		for (Sexp fn : fns) {
 			args.add(new Cons(fn, i));
@@ -37,18 +37,18 @@ public class SexpUtil {
 		}
 		return conjoin(symbols, i);
 	}
-	
+
 	public static Sexp conjoinInvariants(Collection<Invariant> invariants, Sexp i) {
 		if (invariants.isEmpty()) {
 			return new Symbol("true");
 		}
-		
+
 		List<Sexp> sexps = new ArrayList<>();
 		for (Invariant invariant : invariants) {
 			sexps.add(invariant.instantiate(i));
 		}
 		return new Cons("and", sexps);
 	}
-	
+
 	final public static Symbol I = new Symbol("i");
 }

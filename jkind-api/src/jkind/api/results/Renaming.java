@@ -113,8 +113,9 @@ public abstract class Renaming {
 		if (cex == null) {
 			return null;
 		}
-		
+
 		Counterexample result = new Counterexample(cex.getLength());
+		result.setFuntionTables(cex.getFunctionTables());
 		for (Signal<Value> signal : cex.getSignals()) {
 			Signal<Value> newSignal = rename(signal);
 			if (newSignal != null) {

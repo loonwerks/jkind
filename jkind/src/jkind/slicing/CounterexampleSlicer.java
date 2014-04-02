@@ -1,6 +1,6 @@
 package jkind.slicing;
 
-import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,21 +30,25 @@ public class CounterexampleSlicer {
 		Set<String> keep = dependencyMap.get(prop);
 		YicesModel sliced = new YicesModel();
 		for (String fn : model.getFunctions()) {
-			if (fn.startsWith("$") && keep.contains(fn.substring(1))) {
-				Map<BigInteger, Value> fnMap = model.getFunction(fn);
-				for (BigInteger i : fnMap.keySet()) {
-					sliced.addFunctionValue(fn, i, fnMap.get(i));
+			if (keepFn(keep, fn)) {
+				Map<List<Value>, Value> fnMap = model.getFunction(fn);
+				for (List<Value> inputs : fnMap.keySet()) {
+					sliced.addFunctionValue(fn, inputs, fnMap.get(inputs));
 				}
 			}
 		}
 		return sliced;
+	}
+
+	private boolean keepFn(Set<String> keep, String fn) {
+		return (fn.startsWith("$") && keep.contains(fn.substring(1))) || fn.startsWith("$$");
 	}
 	
 	public SmtLib2Model slice(String prop, SmtLib2Model model) {
 		Set<String> keep = dependencyMap.get(prop);
 		SmtLib2Model sliced = new SmtLib2Model();
 		for (String fn : model.getFunctions()) {
-			if (fn.startsWith("$") && keep.contains(fn.substring(1))) {
+			if (keepFn(keep, fn)) {
 				sliced.addFunction(fn, model.getFunction(fn));
 			}
 		}

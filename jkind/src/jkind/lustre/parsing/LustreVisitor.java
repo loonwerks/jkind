@@ -96,6 +96,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitTupleExpr(@NotNull LustreParser.TupleExprContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(@NotNull LustreParser.FunctionContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#userType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -173,13 +180,6 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitNotExpr(@NotNull LustreParser.NotExprContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link LustreParser#nodeCallExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNodeCallExpr(@NotNull LustreParser.NodeCallExprContext ctx);
-
-	/**
 	 * Visit a parse tree produced by {@link LustreParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -192,6 +192,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVarDeclList(@NotNull LustreParser.VarDeclListContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#callExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCallExpr(@NotNull LustreParser.CallExprContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link LustreParser#property}.

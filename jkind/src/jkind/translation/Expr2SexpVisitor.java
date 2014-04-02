@@ -1,19 +1,22 @@
 package jkind.translation;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -83,6 +86,15 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	}
 
 	@Override
+	public Sexp visit(CallExpr e) {
+		List<Sexp> args = new ArrayList<>();
+		for (Expr arg : e.args) {
+			args.add(arg.accept(this));
+		}
+		return new Cons("$$" + e.name, args);
+	}
+
+	@Override
 	public Sexp visit(CondactExpr e) {
 		throw new IllegalArgumentException("Condacts must be removed before translation to sexp");
 	}
@@ -101,11 +113,6 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	@Override
 	public Sexp visit(IntExpr e) {
 		return Sexp.fromBigInt(e.value);
-	}
-
-	@Override
-	public Sexp visit(NodeCallExpr e) {
-		throw new IllegalArgumentException("Node calls must be inlined before translation to sexp");
 	}
 
 	@Override

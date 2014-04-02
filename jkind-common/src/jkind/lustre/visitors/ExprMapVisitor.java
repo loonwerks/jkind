@@ -11,13 +11,13 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -52,13 +52,18 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	}
 
 	@Override
+	public Expr visit(CallExpr e) {
+		return new CallExpr(e.location, e.name, visitAll(e.args));
+	}
+
+	@Override
 	public Expr visit(CastExpr e) {
-		return new CastExpr(e.type, e.expr.accept(this));
+		return new CastExpr(e.location, e.type, e.expr.accept(this));
 	}
 
 	@Override
 	public Expr visit(CondactExpr e) {
-		return new CondactExpr(e.clock.accept(this), (NodeCallExpr) e.call.accept(this),
+		return new CondactExpr(e.location, e.clock.accept(this), (CallExpr) e.call.accept(this),
 				visitAll(e.args));
 	}
 
@@ -76,11 +81,6 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(IntExpr e) {
 		return e;
-	}
-
-	@Override
-	public Expr visit(NodeCallExpr e) {
-		return new NodeCallExpr(e.location, e.node, visitAll(e.args));
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	public Expr visit(TupleExpr e) {
 		return new TupleExpr(e.location, visitAll(e.elements));
 	}
-	
+
 	@Override
 	public Expr visit(UnaryExpr e) {
 		return new UnaryExpr(e.location, e.op, e.expr.accept(this));

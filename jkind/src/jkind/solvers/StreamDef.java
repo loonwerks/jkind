@@ -34,7 +34,7 @@ public class StreamDef {
 	}
 
 	public Type getType() {
-		return decl.getType();
+		return decl.getOutput();
 	}
 	
 	public StreamDecl getDecl() {

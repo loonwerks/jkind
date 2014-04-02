@@ -564,11 +564,11 @@ public class YicesParser extends Parser {
 	}
 
 	public static class FunctionContext extends ParserRuleContext {
-		public ValueContext value() {
-			return getRuleContext(ValueContext.class,0);
+		public ValueContext value(int i) {
+			return getRuleContext(ValueContext.class,i);
 		}
-		public IntegerContext integer() {
-			return getRuleContext(IntegerContext.class,0);
+		public List<ValueContext> value() {
+			return getRuleContexts(ValueContext.class);
 		}
 		public TerminalNode ID() { return getToken(YicesParser.ID, 0); }
 		public FunctionContext(ParserRuleContext parent, int invokingState) {
@@ -588,6 +588,7 @@ public class YicesParser extends Parser {
 	public final FunctionContext function() throws RecognitionException {
 		FunctionContext _localctx = new FunctionContext(_ctx, getState());
 		enterRule(_localctx, 18, RULE_function);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -595,10 +596,22 @@ public class YicesParser extends Parser {
 			setState(91); match(12);
 			setState(92); match(8);
 			setState(93); match(ID);
-			setState(94); integer();
-			setState(95); match(4);
-			setState(96); value();
-			setState(97); match(4);
+			setState(97);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 5) | (1L << BOOL) | (1L << INT))) != 0)) {
+				{
+				{
+				setState(94); value();
+				}
+				}
+				setState(99);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(100); match(4);
+			setState(101); value();
+			setState(102); match(4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -641,26 +654,26 @@ public class YicesParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(99); match(8);
-			setState(100); match(12);
-			setState(101); match(8);
-			setState(102); match(PREDEFINED_OP);
-			setState(106);
+			setState(104); match(8);
+			setState(105); match(12);
+			setState(106); match(8);
+			setState(107); match(PREDEFINED_OP);
+			setState(111);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 5) | (1L << BOOL) | (1L << INT))) != 0)) {
 				{
 				{
-				setState(103); value();
+				setState(108); value();
 				}
 				}
-				setState(108);
+				setState(113);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(109); match(4);
-			setState(110); value();
-			setState(111); match(4);
+			setState(114); match(4);
+			setState(115); value();
+			setState(116); match(4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -697,19 +710,19 @@ public class YicesParser extends Parser {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
 		enterRule(_localctx, 22, RULE_value);
 		try {
-			setState(115);
+			setState(120);
 			switch (_input.LA(1)) {
 			case BOOL:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(113); match(BOOL);
+				setState(118); match(BOOL);
 				}
 				break;
 			case 5:
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(114); numeric();
+				setState(119); numeric();
 				}
 				break;
 			default:
@@ -750,15 +763,15 @@ public class YicesParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(118);
+			setState(123);
 			_la = _input.LA(1);
 			if (_la==5) {
 				{
-				setState(117); match(5);
+				setState(122); match(5);
 				}
 			}
 
-			setState(120); match(INT);
+			setState(125); match(INT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -798,21 +811,21 @@ public class YicesParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(123);
+			setState(128);
 			_la = _input.LA(1);
 			if (_la==5) {
 				{
-				setState(122); match(5);
+				setState(127); match(5);
 				}
 			}
 
-			setState(125); match(INT);
-			setState(128);
+			setState(130); match(INT);
+			setState(133);
 			_la = _input.LA(1);
 			if (_la==11) {
 				{
-				setState(126); match(11);
-				setState(127); match(INT);
+				setState(131); match(11);
+				setState(132); match(INT);
 				}
 			}
 
@@ -830,39 +843,41 @@ public class YicesParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\26\u0085\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\26\u008a\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\3\2\3\2\5\2!\n\2\3\2\3\2\3\3"+
 		"\3\3\5\3\'\n\3\3\3\5\3*\n\3\3\3\5\3-\n\3\3\4\3\4\5\4\61\n\4\3\5\3\5\3"+
 		"\5\3\5\6\5\67\n\5\r\5\16\58\3\6\3\6\3\6\3\6\3\6\6\6@\n\6\r\6\16\6A\3\7"+
 		"\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\6\bM\n\b\r\b\16\bN\3\t\3\t\3\t\3\t\3"+
-		"\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13"+
-		"\3\13\3\f\3\f\3\f\3\f\3\f\7\fk\n\f\f\f\16\fn\13\f\3\f\3\f\3\f\3\f\3\r"+
-		"\3\r\5\rv\n\r\3\16\5\16y\n\16\3\16\3\16\3\17\5\17~\n\17\3\17\3\17\3\17"+
-		"\5\17\u0083\n\17\3\17\2\2\20\2\4\6\b\n\f\16\20\22\24\26\30\32\34\2\3\4"+
-		"\2\4\4\b\b\u0086\2 \3\2\2\2\4$\3\2\2\2\6.\3\2\2\2\b\66\3\2\2\2\n:\3\2"+
-		"\2\2\fC\3\2\2\2\16G\3\2\2\2\20P\3\2\2\2\22V\3\2\2\2\24\\\3\2\2\2\26e\3"+
-		"\2\2\2\30u\3\2\2\2\32x\3\2\2\2\34}\3\2\2\2\36!\5\4\3\2\37!\5\6\4\2 \36"+
-		"\3\2\2\2 \37\3\2\2\2!\"\3\2\2\2\"#\7\2\2\3#\3\3\2\2\2$&\t\2\2\2%\'\5\n"+
-		"\6\2&%\3\2\2\2&\'\3\2\2\2\')\3\2\2\2(*\5\b\5\2)(\3\2\2\2)*\3\2\2\2*,\3"+
-		"\2\2\2+-\5\f\7\2,+\3\2\2\2,-\3\2\2\2-\5\3\2\2\2.\60\7\17\2\2/\61\5\16"+
-		"\b\2\60/\3\2\2\2\60\61\3\2\2\2\61\7\3\2\2\2\62\67\5\20\t\2\63\67\5\22"+
-		"\n\2\64\67\5\24\13\2\65\67\5\26\f\2\66\62\3\2\2\2\66\63\3\2\2\2\66\64"+
-		"\3\2\2\2\66\65\3\2\2\2\678\3\2\2\28\66\3\2\2\289\3\2\2\29\t\3\2\2\2:;"+
-		"\7\13\2\2;<\7\3\2\2<=\7\5\2\2=?\7\t\2\2>@\7\23\2\2?>\3\2\2\2@A\3\2\2\2"+
-		"A?\3\2\2\2AB\3\2\2\2B\13\3\2\2\2CD\7\20\2\2DE\7\t\2\2EF\7\23\2\2F\r\3"+
-		"\2\2\2GH\7\17\2\2HI\7\f\2\2IJ\7\5\2\2JL\7\t\2\2KM\7\23\2\2LK\3\2\2\2M"+
-		"N\3\2\2\2NL\3\2\2\2NO\3\2\2\2O\17\3\2\2\2PQ\7\n\2\2QR\7\16\2\2RS\7\24"+
-		"\2\2ST\7\24\2\2TU\7\6\2\2U\21\3\2\2\2VW\7\n\2\2WX\7\16\2\2XY\7\24\2\2"+
-		"YZ\5\30\r\2Z[\7\6\2\2[\23\3\2\2\2\\]\7\n\2\2]^\7\16\2\2^_\7\n\2\2_`\7"+
-		"\24\2\2`a\5\32\16\2ab\7\6\2\2bc\5\30\r\2cd\7\6\2\2d\25\3\2\2\2ef\7\n\2"+
-		"\2fg\7\16\2\2gh\7\n\2\2hl\7\21\2\2ik\5\30\r\2ji\3\2\2\2kn\3\2\2\2lj\3"+
-		"\2\2\2lm\3\2\2\2mo\3\2\2\2nl\3\2\2\2op\7\6\2\2pq\5\30\r\2qr\7\6\2\2r\27"+
-		"\3\2\2\2sv\7\22\2\2tv\5\34\17\2us\3\2\2\2ut\3\2\2\2v\31\3\2\2\2wy\7\7"+
-		"\2\2xw\3\2\2\2xy\3\2\2\2yz\3\2\2\2z{\7\23\2\2{\33\3\2\2\2|~\7\7\2\2}|"+
-		"\3\2\2\2}~\3\2\2\2~\177\3\2\2\2\177\u0082\7\23\2\2\u0080\u0081\7\r\2\2"+
-		"\u0081\u0083\7\23\2\2\u0082\u0080\3\2\2\2\u0082\u0083\3\2\2\2\u0083\35"+
-		"\3\2\2\2\20 &),\60\668ANlux}\u0082";
+		"\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\7\13b\n\13\f\13"+
+		"\16\13e\13\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\7\fp\n\f\f\f\16"+
+		"\fs\13\f\3\f\3\f\3\f\3\f\3\r\3\r\5\r{\n\r\3\16\5\16~\n\16\3\16\3\16\3"+
+		"\17\5\17\u0083\n\17\3\17\3\17\3\17\5\17\u0088\n\17\3\17\2\2\20\2\4\6\b"+
+		"\n\f\16\20\22\24\26\30\32\34\2\3\4\2\4\4\b\b\u008c\2 \3\2\2\2\4$\3\2\2"+
+		"\2\6.\3\2\2\2\b\66\3\2\2\2\n:\3\2\2\2\fC\3\2\2\2\16G\3\2\2\2\20P\3\2\2"+
+		"\2\22V\3\2\2\2\24\\\3\2\2\2\26j\3\2\2\2\30z\3\2\2\2\32}\3\2\2\2\34\u0082"+
+		"\3\2\2\2\36!\5\4\3\2\37!\5\6\4\2 \36\3\2\2\2 \37\3\2\2\2!\"\3\2\2\2\""+
+		"#\7\2\2\3#\3\3\2\2\2$&\t\2\2\2%\'\5\n\6\2&%\3\2\2\2&\'\3\2\2\2\')\3\2"+
+		"\2\2(*\5\b\5\2)(\3\2\2\2)*\3\2\2\2*,\3\2\2\2+-\5\f\7\2,+\3\2\2\2,-\3\2"+
+		"\2\2-\5\3\2\2\2.\60\7\17\2\2/\61\5\16\b\2\60/\3\2\2\2\60\61\3\2\2\2\61"+
+		"\7\3\2\2\2\62\67\5\20\t\2\63\67\5\22\n\2\64\67\5\24\13\2\65\67\5\26\f"+
+		"\2\66\62\3\2\2\2\66\63\3\2\2\2\66\64\3\2\2\2\66\65\3\2\2\2\678\3\2\2\2"+
+		"8\66\3\2\2\289\3\2\2\29\t\3\2\2\2:;\7\13\2\2;<\7\3\2\2<=\7\5\2\2=?\7\t"+
+		"\2\2>@\7\23\2\2?>\3\2\2\2@A\3\2\2\2A?\3\2\2\2AB\3\2\2\2B\13\3\2\2\2CD"+
+		"\7\20\2\2DE\7\t\2\2EF\7\23\2\2F\r\3\2\2\2GH\7\17\2\2HI\7\f\2\2IJ\7\5\2"+
+		"\2JL\7\t\2\2KM\7\23\2\2LK\3\2\2\2MN\3\2\2\2NL\3\2\2\2NO\3\2\2\2O\17\3"+
+		"\2\2\2PQ\7\n\2\2QR\7\16\2\2RS\7\24\2\2ST\7\24\2\2TU\7\6\2\2U\21\3\2\2"+
+		"\2VW\7\n\2\2WX\7\16\2\2XY\7\24\2\2YZ\5\30\r\2Z[\7\6\2\2[\23\3\2\2\2\\"+
+		"]\7\n\2\2]^\7\16\2\2^_\7\n\2\2_c\7\24\2\2`b\5\30\r\2a`\3\2\2\2be\3\2\2"+
+		"\2ca\3\2\2\2cd\3\2\2\2df\3\2\2\2ec\3\2\2\2fg\7\6\2\2gh\5\30\r\2hi\7\6"+
+		"\2\2i\25\3\2\2\2jk\7\n\2\2kl\7\16\2\2lm\7\n\2\2mq\7\21\2\2np\5\30\r\2"+
+		"on\3\2\2\2ps\3\2\2\2qo\3\2\2\2qr\3\2\2\2rt\3\2\2\2sq\3\2\2\2tu\7\6\2\2"+
+		"uv\5\30\r\2vw\7\6\2\2w\27\3\2\2\2x{\7\22\2\2y{\5\34\17\2zx\3\2\2\2zy\3"+
+		"\2\2\2{\31\3\2\2\2|~\7\7\2\2}|\3\2\2\2}~\3\2\2\2~\177\3\2\2\2\177\u0080"+
+		"\7\23\2\2\u0080\33\3\2\2\2\u0081\u0083\7\7\2\2\u0082\u0081\3\2\2\2\u0082"+
+		"\u0083\3\2\2\2\u0083\u0084\3\2\2\2\u0084\u0087\7\23\2\2\u0085\u0086\7"+
+		"\r\2\2\u0086\u0088\7\23\2\2\u0087\u0085\3\2\2\2\u0087\u0088\3\2\2\2\u0088"+
+		"\35\3\2\2\2\21 &),\60\668ANcqz}\u0082\u0087";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

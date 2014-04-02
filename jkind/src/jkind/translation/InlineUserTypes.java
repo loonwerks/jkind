@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.lustre.Function;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
@@ -17,15 +18,28 @@ public class InlineUserTypes {
 	public static Program program(Program program) {
 		Map<String, Type> types = getTypeMap(program);
 		List<TypeDef> emptyTypes = Collections.emptyList();
-		List<Node> inlinedNodes = new ArrayList<>();
 
+		List<Function> inlinedFunctions = new ArrayList<>();
+		for (Function function : program.functions) {
+			inlinedFunctions.add(function(function, types));
+		}
+		
+		List<Node> inlinedNodes = new ArrayList<>();
 		for (Node node : program.nodes) {
 			inlinedNodes.add(node(node, types));
 		}
 
-		return new Program(program.location, emptyTypes, program.constants, inlinedNodes, program.main);
+		return new Program(program.location, emptyTypes, program.constants, inlinedFunctions,
+				inlinedNodes, program.main);
 	}
 
+	public static Function function(Function function, Map<String, Type> types) {
+		List<VarDecl> inputs = varDecls(function.inputs, types);
+		List<VarDecl> outputs = varDecls(function.outputs, types);
+
+		return new Function(function.location, function.id, inputs, outputs);
+	}
+	
 	public static Node node(Node node, Map<String, Type> types) {
 		List<VarDecl> inputs = varDecls(node.inputs, types);
 		List<VarDecl> outputs = varDecls(node.outputs, types);

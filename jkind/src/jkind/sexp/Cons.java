@@ -24,6 +24,10 @@ public class Cons extends Sexp {
 	public Cons(String head, Sexp... args) {
 		this(head, Arrays.asList(args));
 	}
+	
+	public Cons(List<Sexp> body) {
+		this(body.get(0), body.subList(1, body.size()));
+	}
 
 	@Override
 	public String toString() {

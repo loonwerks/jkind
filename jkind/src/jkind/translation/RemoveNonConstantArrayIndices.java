@@ -14,7 +14,9 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InlinedProgram;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
@@ -29,11 +31,16 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * Assumption: All user types have been inlined.
  */
 public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
-	public static Node node(Node node) {
-		return new RemoveNonConstantArrayIndices().visitNode(node);
+	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
+		Node node = new RemoveNonConstantArrayIndices(ip.functions).visitNode(ip.node);
+		return new InlinedProgram(ip.functions, node);
 	}
 
-	private final TypeChecker typeChecker = new TypeChecker();
+	private final TypeChecker typeChecker;
+
+	public RemoveNonConstantArrayIndices(List<Function> functions) {
+		this.typeChecker = new TypeChecker(functions);
+	}
 
 	private Node visitNode(Node node) {
 		typeChecker.repopulateVariableTable(node);

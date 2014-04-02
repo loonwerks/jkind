@@ -4,7 +4,7 @@ import java.io.File;
 
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.Node;
+import jkind.lustre.InlinedProgram;
 import jkind.lustre.Program;
 import jkind.translation.FlattenCompoundTypes;
 import jkind.translation.FlattenTuples;
@@ -14,6 +14,7 @@ import jkind.translation.InlineUserTypes;
 import jkind.translation.Node2Excel;
 import jkind.translation.RemoveCondacts;
 import jkind.translation.RemoveNonConstantArrayIndices;
+import jkind.translation.SplitFunctions;
 
 public class JLustre2Excel {
 	public static void main(String args[]) {
@@ -42,13 +43,14 @@ public class JLustre2Excel {
 			program = InlineUserTypes.program(program);
 			program = InlineConstants.program(program);
 			program = RemoveCondacts.program(program);
-			Node main = InlineNodeCalls.program(program);
-			main = FlattenTuples.node(main);
-			main = RemoveNonConstantArrayIndices.node(main);
-			main = FlattenCompoundTypes.node(main);
-
+			InlinedProgram ip = InlineNodeCalls.program(program);
+			ip = SplitFunctions.inlinedProgram(ip);
+			ip = FlattenTuples.inlinedProgram(ip);
+			ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
+			ip = FlattenCompoundTypes.inlinedProgram(ip);
+			
 			String outFilename = filename + ".xls";
-			Node2Excel.convert(main, outFilename);
+			Node2Excel.convert(ip.node, outFilename);
 			System.out.println("Wrote " + outFilename);
 		} catch (Exception e) {
 			e.printStackTrace();

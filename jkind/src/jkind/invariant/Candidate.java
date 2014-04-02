@@ -22,7 +22,7 @@ public class Candidate {
 	}
 
 	public boolean isTrue(Model model, BigInteger k) {
-		return model.getFunctionValue(def.getId().toString(), k) == BoolValue.TRUE;
+		return model.getStreamValue(def.getId().toString(), k) == BoolValue.TRUE;
 	}
 
 	public Sexp index(Sexp index, boolean pure) {

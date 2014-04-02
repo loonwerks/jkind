@@ -16,6 +16,7 @@ public abstract class Solver {
 	
 	public abstract void send(Sexp sexp);
 	public abstract void send(StreamDecl decl);
+	public abstract void send(FunctionDecl decl);
 	public abstract void send(StreamDef def);
 	public abstract void send(VarDecl decl);
 	
@@ -77,13 +78,22 @@ public abstract class Solver {
 	
 	/** Utility */
 
-	public void send(List<StreamDecl> decls) {
-		for (StreamDecl decl : decls) {
+	public void send(List<Decl> decls) {
+		for (Decl decl : decls) {
 			send(decl);
 		}
 	}
-	
-	
+
+	private void send(Decl decl) {
+		if (decl instanceof StreamDecl) {
+			send((StreamDecl) decl);
+		} else if (decl instanceof FunctionDecl) {
+			send((FunctionDecl) decl);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	/** Debugging */
 	
 	protected PrintWriter debug;

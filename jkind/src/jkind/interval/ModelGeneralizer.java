@@ -116,7 +116,8 @@ public class ModelGeneralizer {
 			throw new IllegalStateException("Internal JKind error during interval generalization");
 		}
 
-		Counterexample cex = new Counterexample(k);
+		Counterexample cex = new Counterexample(k, spec.functions);
+		int todo_add_function_values_to_cex;
 		for (Entry<IdIndexPair, Interval> entry : cache.entrySet()) {
 			IdIndexPair pair = entry.getKey();
 			Interval value = entry.getValue();
@@ -219,7 +220,7 @@ public class ModelGeneralizer {
 	}
 
 	private Interval getFromBasisModel(IdIndexPair pair) {
-		jkind.solvers.Value raw = basisModel.getFunctionValue("$" + pair.id,
+		jkind.solvers.Value raw = basisModel.getStreamValue("$" + pair.id,
 				BigInteger.valueOf(pair.i));
 
 		if (raw instanceof BoolValue) {

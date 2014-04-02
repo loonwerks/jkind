@@ -45,7 +45,7 @@ public class InductiveProcess extends Process {
 	public void setInvariantProcess(InvariantProcess invariantProcess) {
 		this.invariantProcess = invariantProcess;
 	}
-	
+
 	public void setReduceProcess(ReduceProcess reduceProcess) {
 		this.reduceProcess = reduceProcess;
 	}
@@ -128,7 +128,7 @@ public class InductiveProcess extends Process {
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
+					BoolValue v = (BoolValue) model.getStreamValue("$" + p, index);
 					if (!v.getBool()) {
 						sendInductiveCounterexample(p, n, k + 1, model);
 						iterator.remove();
@@ -178,7 +178,7 @@ public class InductiveProcess extends Process {
 
 	private void sendValid(List<String> valid, int k) {
 		baseProcess.incoming.add(new ValidMessage(valid, k, invariants));
-		
+
 		if (reduceProcess != null) {
 			reduceProcess.incoming.add(new ValidMessage(valid, k, invariants));
 		} else {

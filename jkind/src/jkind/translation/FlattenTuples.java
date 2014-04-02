@@ -7,6 +7,7 @@ import java.util.List;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.visitors.ExprMapVisitor;
@@ -17,7 +18,11 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * Assumption: All node calls have been inlined.
  */
 public class FlattenTuples extends ExprMapVisitor {
-	public static Node node(Node node) {
+	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
+		return new InlinedProgram(ip.functions, node(ip.node));
+	}
+
+	private static Node node(Node node) {
 		return visitNode(node);
 	}
 
@@ -63,5 +68,4 @@ public class FlattenTuples extends ExprMapVisitor {
 		return new IfThenElseExpr(e.location, e.cond, e.thenExpr.accept(this),
 				e.elseExpr.accept(this));
 	}
-
 }

@@ -1,10 +1,15 @@
 grammar Lustre;
 
-program: (typedef | constant | node)* EOF;
+program: (typedef | constant | function | node)* EOF;
 
 typedef: 'type' ID '=' topLevelType ';';
 
 constant: 'const' ID (':' type)? '=' expr ';';
+
+function:
+  'function' ID '(' input=varDeclList? ')'
+  'returns' '(' output=varDeclList? ')' ';'
+;
 
 node:
   'node' ID '(' input=varDeclList? ')'
@@ -50,7 +55,7 @@ expr: ID                                                       # idExpr
     | REAL                                                     # realExpr
     | BOOL                                                     # boolExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
-    | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
+    | ID '(' (expr (',' expr)*)? ')'                           # callExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
     | expr '[' expr ']'                                        # arrayAccessExpr

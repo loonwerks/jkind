@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,7 +15,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.invariant.Invariant;
+import jkind.lustre.Function;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.Value;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
@@ -25,9 +28,10 @@ import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.CounterexampleSlicer;
+import jkind.solvers.Decl;
 import jkind.solvers.Model;
-import jkind.solvers.StreamDecl;
 import jkind.solvers.StreamDef;
+import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
@@ -44,7 +48,7 @@ public class Director {
 	private List<String> validProperties = new ArrayList<>();
 	private List<String> invalidProperties = new ArrayList<>();
 	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<>();
-	private Map<String, StreamDecl> declarations;
+	private Map<String, Decl> declarations;
 
 	private BaseProcess baseProcess;
 	private InductiveProcess inductiveProcess;
@@ -63,11 +67,7 @@ public class Director {
 		this.spec = spec;
 		this.writer = getWriter(spec);
 		this.remainingProperties.addAll(spec.node.properties);
-
-		this.declarations = new HashMap<>();
-		for (StreamDecl decl : spec.translation.getDeclarations()) {
-			this.declarations.put(decl.getId().toString(), decl);
-		}
+		this.declarations = spec.translation.getDeclarationsTable();
 	}
 
 	private Writer getWriter(Specification spec) {
@@ -275,13 +275,58 @@ public class Director {
 	}
 
 	private Counterexample extractCounterexample(int k, BigInteger offset, Model model) {
-		Counterexample cex = new Counterexample(k);
+		Counterexample cex = new Counterexample(k, spec.functions);
 		model.setDeclarations(declarations);
 		model.setDefinitions(Collections.<String, StreamDef> emptyMap());
 		for (String fn : new TreeSet<>(model.getFunctions())) {
-			cex.addSignal(extractSignal(fn, k, offset, model));
+			if (!fn.startsWith("$$")) {
+				cex.addSignal(extractSignal(fn, k, offset, model));
+			}
 		}
+
+		int todo_support_other_solvers;
+		YicesModel yicesModel = (YicesModel) model;
+		for (String fn : new TreeSet<>(model.getFunctions())) {
+			if (fn.startsWith("$$")) {
+				for (Entry<List<jkind.solvers.Value>, jkind.solvers.Value> entry : yicesModel
+						.getFunction(fn).entrySet()) {
+					addFunctionValue(cex, fn.substring(2), entry.getKey(), entry.getValue());
+				}
+			}
+		}
+
 		return cex;
+	}
+
+	private void addFunctionValue(Counterexample cex, String name,
+			List<jkind.solvers.Value> inputs, jkind.solvers.Value value) {
+		Function function = getFunction(spec.functions, name);
+		List<Value> inputValues = parseValues(Util.getTypes(function.inputs), inputs);
+		VarDecl output = function.outputs.get(0);
+		Type outputType = output.type;
+		Value outputValue = Util.parseValue(Util.getName(outputType), value.toString());
+		cex.addFunctionValue(getBase(name), inputValues, output, outputValue);
+	}
+
+	private Function getFunction(List<Function> functions, String name) {
+		for (Function function : functions) {
+			if (function.id.equals(name)) {
+				return function;
+			}
+		}
+		return null;
+	}
+
+	private String getBase(String name) {
+		return name.substring(0, name.indexOf('.'));
+	}
+
+	private List<Value> parseValues(List<Type> types, List<jkind.solvers.Value> values) {
+		List<Value> result = new ArrayList<>();
+		for (int i = 0; i < types.size(); i++) {
+			result.add(Util.parseValue(Util.getName(types.get(i)), values.get(i).toString()));
+		}
+		return result;
 	}
 
 	private Signal<Value> extractSignal(String fn, int k, BigInteger offset, Model model) {
@@ -291,7 +336,7 @@ public class Director {
 
 		for (int i = 0; i < k; i++) {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
-			jkind.solvers.Value value = model.getFunctionValue(fn, key);
+			jkind.solvers.Value value = model.getStreamValue(fn, key);
 			if (value != null) {
 				signal.putValue(i, Util.parseValue(Util.getName(type), value.toString()));
 			}

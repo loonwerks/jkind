@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.excel.ExcelCounterexampleFormatter;
+import jkind.lustre.Function;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
@@ -22,9 +24,50 @@ import jkind.util.Util;
 public final class Counterexample {
 	private final int length;
 	private final Map<String, Signal<Value>> signals = new HashMap<>();
+	private final Map<String, FunctionTable> functionTables = new HashMap<>();
 
+	public Counterexample(int length, List<Function> functions) {
+		this.length = length;
+		initializeFunctionTable(functions);
+	}
+	
 	public Counterexample(int length) {
 		this.length = length;
+	}
+
+	private void initializeFunctionTable(List<Function> functions) {
+		for (Function function : functions) {
+			String name = getBase(function.id);
+			FunctionTable table = getOrCreateTable(name, function.inputs);
+			table.addOutput(function.outputs.get(0));
+		}
+	}
+
+	private String getBase(String name) {
+		return name.substring(0, name.indexOf('.'));
+	}
+
+	public FunctionTable getOrCreateTable(String name, List<VarDecl> inputs) {
+		FunctionTable table = functionTables.get(name);
+		if (table == null) {
+			table = new FunctionTable(inputs);
+			functionTables.put(name, table);
+		}
+		return table;
+	}
+
+	public void addFunctionValue(String name, List<Value> inputs, VarDecl output,
+			Value outputValue) {
+		functionTables.get(name).setOutput(inputs, output, outputValue);
+	}
+	
+	public Map<String, FunctionTable> getFunctionTables() {
+		return functionTables;
+	}
+	
+	public void setFuntionTables(Map<String, FunctionTable> functionTables) {
+		this.functionTables.clear();
+		this.functionTables.putAll(functionTables);
 	}
 
 	/**
@@ -175,6 +218,15 @@ public final class Counterexample {
 			appendSection(text, category, signals);
 		}
 
+		if (!functionTables.isEmpty()) {
+			text.append(NEWLINE);
+			text.append("FUNCTIONS");
+			for (String fn : functionTables.keySet()) {
+				appendFunction(text, fn, functionTables.get(fn));
+				text.append(NEWLINE);
+			}
+		}
+
 		return text.toString();
 	}
 
@@ -203,8 +255,73 @@ public final class Counterexample {
 		text.append(String.format("%-25s ", signal.getName()));
 		for (int i = 0; i < length; i++) {
 			Value value = signal.getValue(i);
-			text.append(String.format("%6s ", !Util.isArbitrary(value) ? value : "-"));
+			text.append(String.format("%6s ", formatValue(value)));
 		}
 		text.append(NEWLINE);
+	}
+
+	private String formatValue(Value value) {
+		return !Util.isArbitrary(value) ? value.toString() : "-";
+	}
+
+	private void appendFunction(StringBuilder text, String fn, FunctionTable table) {
+		Map<List<Value>, List<Value>> map = table.getMap();
+		if (map.isEmpty()) {
+			return;
+		}
+		
+		List<List<String>> display = new ArrayList<>();
+		List<String> header = new ArrayList<>();
+		header.add(fn);
+		header.addAll(table.getInputNames());
+		header.addAll(table.getOutputNames());
+		display.add(header);
+		for (List<Value> inputs : map.keySet()) {
+			List<String> row = new ArrayList<>();
+			row.add("");
+			row.addAll(mapToString(inputs));
+			row.addAll(mapToString(map.get(inputs)));
+			display.add(row);
+		}
+		
+		appendTable(text, display);
+	}
+	
+	private List<String> mapToString(List<Value> values) {
+		List<String> result = new ArrayList<>();
+		for (Value value : values) {
+			result.add(formatValue(value));
+		}
+		return result;
+	}
+
+	private void appendTable(StringBuilder text, List<List<String>> table) {
+		int numRows = table.size();
+		int numCols = table.get(0).size();
+		List<Integer> widths = new ArrayList<>();
+		for (int i = 0; i < numCols; i++) {
+			int width = 0;
+			for (int j = 0; j < numRows; j++) {
+				width = Math.max(width, table.get(j).get(i).length());
+			}
+			widths.add(width);
+		}
+		
+		for (List<String> row : table) {
+			text.append(NEWLINE);
+			for (int i = 0; i < numCols; i++) {
+				text.append(padLeft(row.get(i), widths.get(i)));
+				text.append("  ");
+			}
+		}
+	}
+
+	private String padLeft(String str, int n) {
+		StringBuilder text = new StringBuilder();
+		for (int i = str.length(); i < n; i++) {
+			text.append(" ");
+		}
+		text.append(str);
+		return text.toString();
 	}
 }

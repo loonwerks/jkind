@@ -11,6 +11,7 @@ import jkind.analysis.evaluation.DivisionChecker;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
@@ -32,7 +33,8 @@ public class StaticAnalyzer {
 		result = result && ArraysNonempty.check(program);
 		result = result && constantsUnique(program);
 		result = result && constantsConstant(program);
-		result = result && nodesUnique(program);
+		result = result && nodesAndFunctionsUnique(program);
+		result = result && functionsHaveInputAndOutput(program);
 		result = result && NodeDependencyChecker.check(program);
 		result = result && variablesUnique(program);
 		result = result && assignmentsSound(program);
@@ -101,13 +103,23 @@ public class StaticAnalyzer {
 		return constant;
 	}
 
-	private static boolean nodesUnique(Program program) {
+	private static boolean nodesAndFunctionsUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
+		for (Function function : program.functions) {
+			if (seen.contains(function.id)) {
+				System.out.println("Error at line " + function.location + " function or node "
+						+ function.id + " already defined");
+				unique = false;
+			} else {
+				seen.add(function.id);
+			}
+		}
+
 		for (Node node : program.nodes) {
 			if (seen.contains(node.id)) {
-				System.out.println("Error at line " + node.location + " node " + node.id
-						+ " already defined");
+				System.out.println("Error at line " + node.location + " function or node "
+						+ node.id + " already defined");
 				unique = false;
 			} else {
 				seen.add(node.id);
@@ -116,18 +128,38 @@ public class StaticAnalyzer {
 		return unique;
 	}
 
+	private static boolean functionsHaveInputAndOutput(Program program) {
+		boolean valid = true;
+		for (Function function : program.functions) {
+			if (function.inputs.isEmpty()) {
+				System.out.println("Error at line " + function.location + " function "
+						+ function.id + " must have at least one input");
+				valid = false;
+			}
+			if (function.outputs.isEmpty()) {
+				System.out.println("Error at line " + function.location + " function "
+						+ function.id + " must have at least one output");
+				valid = false;
+			}
+		}
+		return valid;
+	}
+
 	private static boolean variablesUnique(Program program) {
 		boolean unique = true;
+		for (Function function : program.functions) {
+			unique = variablesUnique(Util.getVarDecls(function)) && unique;
+		}
 		for (Node node : program.nodes) {
-			unique = variablesUnique(node) && unique;
+			unique = variablesUnique(Util.getVarDecls(node)) && unique;
 		}
 		return unique;
 	}
 
-	private static boolean variablesUnique(Node node) {
+	private static boolean variablesUnique(List<VarDecl> varDecls) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
-		for (VarDecl decl : Util.getVarDecls(node)) {
+		for (VarDecl decl : varDecls) {
 			if (seen.contains(decl.id)) {
 				System.out.println("Error at line " + decl.location + " variable " + decl.id
 						+ " already declared");

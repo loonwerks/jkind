@@ -9,6 +9,7 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Lambda;
+import jkind.solvers.smtlib2.SmtLib2Parser.ArgContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.BodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ConsBodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DefineContext;
@@ -28,11 +29,14 @@ public class ModelExtractor {
 	public static void walkDefine(DefineContext ctx, SmtLib2Model model) {
 		String fn = getId(ctx.id());
 		Sexp body = sexp(ctx.body());
-		if (ctx.arg() == null) {
+		if (ctx.arg().isEmpty()) {
 			model.addValue(fn, body);
 		} else {
-			Symbol arg = new Symbol(getId(ctx.arg().id()));
-			model.addFunction(fn, new Lambda(arg, body));
+			List<Symbol> args = new ArrayList<>();
+			for (ArgContext argCtx : ctx.arg()) {
+				args.add(new Symbol(getId(argCtx.id())));
+			}
+			model.addFunction(fn, new Lambda(args, body));
 		}
 	}
 
@@ -61,11 +65,11 @@ public class ModelExtractor {
 			BigDecimal d = new BigDecimal(string);
 			BigInteger numerator = d.unscaledValue();
 			BigInteger denominator = BigDecimal.TEN.pow(d.scale()).toBigInteger();
-			
+
 			BigInteger gcd = numerator.gcd(denominator);
 			numerator = numerator.divide(gcd);
 			denominator = denominator.divide(gcd);
-			
+
 			if (denominator.equals(BigInteger.ONE)) {
 				return numerator.toString();
 			} else {

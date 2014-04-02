@@ -1,6 +1,8 @@
 package jkind.solvers.smtlib2;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import jkind.JKindException;
 import jkind.lustre.Type;
@@ -8,6 +10,7 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.FunctionDecl;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -57,7 +60,16 @@ public abstract class SmtLib2Solver extends Solver {
 
 	@Override
 	public void send(StreamDecl decl) {
-		send(new Cons("declare-fun", decl.getId(), new Cons("Int"), type(decl.getType())));
+		send(new Cons("declare-fun", decl.getId(), new Cons("Int"), type(decl.getOutput())));
+	}
+	
+	@Override
+	public void send(FunctionDecl decl) {
+		List<Sexp> inputs = new ArrayList<>();
+		for (Type input : decl.getInputs()) {
+			inputs.add(type(input));
+		}
+		send(new Cons("declare-fun", decl.getId(), new Cons(inputs), type(decl.getOutput())));
 	}
 
 	private Symbol type(Type type) {

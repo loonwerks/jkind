@@ -1,6 +1,6 @@
 package jkind.solvers.yices;
 
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import jkind.solvers.BoolValue;
@@ -60,9 +60,14 @@ public class ResultExtractorListener extends YicesBaseListener {
 	@Override
 	public void enterFunction(FunctionContext ctx) {
 		String fn = ctx.ID().getText();
-		BigInteger arg = new BigInteger(ctx.integer().getText());
-		Value value = value(ctx.value());
-		model.addFunctionValue(fn, arg, value);
+		int n = ctx.value().size();
+		
+		List<Value> inputs = new ArrayList<>();
+		for (ValueContext inputCtx : ctx.value().subList(0, n - 1)) {
+			inputs.add(value(inputCtx));
+		}
+		Value output = value(ctx.value().get(n - 1));
+		model.addFunctionValue(fn, inputs, output);
 	}
 
 	private Value value(ValueContext ctx) {

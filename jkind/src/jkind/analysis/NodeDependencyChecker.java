@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.lustre.CallExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.ExprIterVisitor;
 
@@ -28,8 +28,8 @@ public class NodeDependencyChecker {
 		final Set<String> dependencies = new HashSet<>();
 		ExprIterVisitor nodeCallCollector = new ExprIterVisitor() {
 			@Override
-			public Void visit(NodeCallExpr e) {
-				dependencies.add(e.node);
+			public Void visit(CallExpr e) {
+				dependencies.add(e.name);
 				super.visit(e);
 				return null;
 			}
@@ -73,9 +73,11 @@ public class NodeDependencyChecker {
 		}
 
 		callStack.addLast(curr);
-		for (String next : dependencies.get(curr)) {
-			if (!check(next)) {
-				return false;
+		if (dependencies.containsKey(curr)) {
+			for (String next : dependencies.get(curr)) {
+				if (!check(next)) {
+					return false;
+				}
 			}
 		}
 		callStack.removeLast();

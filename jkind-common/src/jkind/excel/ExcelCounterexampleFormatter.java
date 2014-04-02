@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import jkind.JKindException;
 import jkind.interval.BoolInterval;
@@ -14,6 +16,7 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
 import jkind.results.Signal;
 import jkind.results.layout.Layout;
 import jkind.util.Util;
@@ -86,6 +89,16 @@ public class ExcelCounterexampleFormatter implements Closeable {
 				List<Signal<Value>> signals = getCategorySignals(cex, category);
 				writeSection(category, signals, length);
 			}
+
+			if (!cex.getFunctionTables().isEmpty()) {
+				row++;
+				sheet.addCell(new Label(0, row, "Functions", boldFormat));
+				row++;
+				for (Entry<String, FunctionTable> entry : cex.getFunctionTables().entrySet()) {
+					writeFunction(entry.getKey(), entry.getValue());
+				}
+			}
+
 			return sheet;
 		} catch (WriteException e) {
 			throw new JKindException("Error writing counterexample to Excel file", e);
@@ -161,5 +174,31 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			throw new JKindException("Unknown value type in Excel writer: "
 					+ value.getClass().getSimpleName());
 		}
+	}
+
+	private void writeFunction(String name, FunctionTable table) throws WriteException {
+		int col = 0;
+		sheet.addCell(new Label(col++, row, name, defaultFormat));
+		for (String input : table.getInputNames()) {
+			sheet.addCell(new Label(col++, row, input, defaultFormat));
+		}
+		for (String output : table.getOutputNames()) {
+			sheet.addCell(new Label(col++, row, output, defaultFormat));
+		}
+		row++;
+
+		Map<List<Value>, List<Value>> map = table.getMap();
+		for (List<Value> inputs : map.keySet()) {
+			List<Value> outputs = map.get(inputs);
+			col = 1;
+			for (Value input : inputs) {
+				writeValue(input, col++, defaultFormat);
+			}
+			for (Value output : outputs) {
+				writeValue(output, col++, defaultFormat);
+			}
+			row++;
+		}
+		row++;
 	}
 }

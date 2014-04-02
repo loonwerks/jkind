@@ -58,7 +58,7 @@ public class LustreSlicer {
 		List<Expr> sliced = new ArrayList<>();
 		for (Expr assertion : assertions) {
 			Set<String> deps = IdExtractorVisitor.getIds(assertion);
-			if (deps.size() > 0 && keep.contains(deps.iterator().next())) {
+			if (deps.size() == 0 || keep.contains(deps.iterator().next())) {
 				sliced.add(assertion);
 			}
 		}

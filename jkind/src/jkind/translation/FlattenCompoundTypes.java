@@ -17,10 +17,13 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
+import jkind.lustre.CallExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InlinedProgram;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.RecordAccessExpr;
@@ -29,24 +32,56 @@ import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.util.Util;
 
 /**
- * Flatten compound types in to base type with record or array access variables.
+ * Flatten compound types (records, arrays) in to base type with record or array
+ * access variables.
  * 
  * Assumption: All node calls have been inlined.
  * 
  * Assumption: All user types have been inlined.
  * 
  * Assumption: All array indices are integer literals
+ * 
+ * Assumption: All functions have been split so they return a single value. They
+ * are annotated with their output. E.g. f returning o has been renamed to f.o
  */
 public class FlattenCompoundTypes extends ExprMapVisitor {
-	public static Node node(Node node) {
-		return new FlattenCompoundTypes().visitNode(node);
+	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
+		FlattenCompoundTypes flattener = new FlattenCompoundTypes(ip.functions);
+		List<Function> flatFunctions = flattener.visitFunctions(ip.functions);
+		Node flatNode = flattener.visitNode(ip.node);
+		return new InlinedProgram(flatFunctions, flatNode);
 	}
 
 	private final Map<String, ArrayType> arrayTypes = new HashMap<>();
 	private final Map<String, RecordType> recordTypes = new HashMap<>();
-	private final TypeChecker typeChecker = new TypeChecker();
+	private final Map<String, Function> originalFunctionTable;
+	private final TypeChecker typeChecker;
+
+	public FlattenCompoundTypes(List<Function> functions) {
+		this.originalFunctionTable = Util.getFunctionTable(functions);
+		this.typeChecker = new TypeChecker(functions);
+	}
+
+	private List<Function> visitFunctions(List<Function> functions) {
+		List<Function> flattenedFunctions = new ArrayList<>();
+		for (Function function : functions) {
+			List<VarDecl> inputs = flattenTopLevelVarDecls(function.inputs);
+			List<VarDecl> outputs = flattenTopLevelVarDecls(function.outputs);
+			for (VarDecl output : outputs) {
+				String id = getBase(function.id) + "." + output.id;
+				List<VarDecl> singleOutput = Collections.singletonList(output);
+				flattenedFunctions.add(new Function(function.location, id, inputs, singleOutput));
+			}
+		}
+		return flattenedFunctions;
+	}
+
+	private String getBase(String id) {
+		return id.substring(0, id.indexOf('.'));
+	}
 
 	private Node visitNode(Node node) {
 		typeChecker.repopulateVariableTable(node);
@@ -226,6 +261,52 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 	}
 
 	@Override
+	public Expr visit(CallExpr e) {
+		List<Expr> splitArgs = new ArrayList<>();
+		Function function = originalFunctionTable.get(e.name);
+
+		for (int i = 0; i < function.inputs.size(); i++) {
+			splitArgs.addAll(splitExpr(e.args.get(i), function.inputs.get(i).type));
+		}
+
+		// Flatten projections within arguments
+		Deque<Access> saved = accesses;
+		accesses = new ArrayDeque<>();
+		List<Expr> flatArgs = visitAll(splitArgs);
+		accesses = saved;
+
+		return new CallExpr(e.location, getAccess(e.name), flatArgs);
+	}
+
+	private List<Expr> splitExpr(Expr expr, Type type) {
+		if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			return splitArrayExpr(expr, arrayType.base, arrayType.size);
+		} else if (type instanceof RecordType) {
+			RecordType recordType = (RecordType) type;
+			return splitRecordExpr(expr, recordType.fields);
+		} else {
+			return Collections.singletonList(expr);
+		}
+	}
+
+	private List<Expr> splitArrayExpr(Expr expr, Type base, int size) {
+		List<Expr> result = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			result.addAll(splitExpr(new ArrayAccessExpr(expr, i), base));
+		}
+		return result;
+	}
+
+	private List<Expr> splitRecordExpr(Expr expr, Map<String, Type> fields) {
+		List<Expr> result = new ArrayList<>();
+		for (Entry<String, Type> entry : fields.entrySet()) {
+			result.addAll(splitExpr(new RecordAccessExpr(expr, entry.getKey()), entry.getValue()));
+		}
+		return result;
+	}
+
+	@Override
 	public Expr visit(RecordAccessExpr e) {
 		accesses.push(new RecordAccess(e.field));
 		Expr result = e.record.accept(this);
@@ -247,12 +328,16 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 
 	@Override
 	public Expr visit(IdExpr e) {
-		StringBuilder projected = new StringBuilder();
-		projected.append(e.id);
+		return new IdExpr(getAccess(e.id));
+	}
+
+	public String getAccess(String base) {
+		StringBuilder result = new StringBuilder();
+		result.append(base);
 		for (Access access : accesses) {
-			projected.append(access);
+			result.append(access);
 		}
-		return new IdExpr(projected.toString());
+		return result.toString();
 	}
 
 	@Override

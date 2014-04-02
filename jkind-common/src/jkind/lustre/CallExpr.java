@@ -6,22 +6,22 @@ import java.util.List;
 
 import jkind.lustre.visitors.ExprVisitor;
 
-public class NodeCallExpr extends Expr {
-	final public String node;
+public class CallExpr extends Expr {
+	final public String name;
 	final public List<Expr> args;
 
-	public NodeCallExpr(Location loc, String node, List<Expr> args) {
+	public CallExpr(Location loc, String name, List<Expr> args) {
 		super(loc);
-		this.node = node;
+		this.name = name;
 		this.args = Collections.unmodifiableList(args);
 	}
 	
-	public NodeCallExpr(String node, List<Expr> args) {
-		this(Location.NULL, node, args);
+	public CallExpr(String name, List<Expr> args) {
+		this(Location.NULL, name, args);
 	}
 	
-	public NodeCallExpr(String node, Expr... args) {
-		this(Location.NULL, node, Arrays.asList(args));
+	public CallExpr(String name, Expr... args) {
+		this(Location.NULL, name, Arrays.asList(args));
 	}
 
 	@Override

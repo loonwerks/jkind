@@ -14,18 +14,19 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -46,18 +47,19 @@ import jkind.lustre.parsing.LustreParser.AssertionContext;
 import jkind.lustre.parsing.LustreParser.BinaryExprContext;
 import jkind.lustre.parsing.LustreParser.BoolExprContext;
 import jkind.lustre.parsing.LustreParser.BoolTypeContext;
+import jkind.lustre.parsing.LustreParser.CallExprContext;
 import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
+import jkind.lustre.parsing.LustreParser.FunctionContext;
 import jkind.lustre.parsing.LustreParser.IdExprContext;
 import jkind.lustre.parsing.LustreParser.IfThenElseExprContext;
 import jkind.lustre.parsing.LustreParser.IntExprContext;
 import jkind.lustre.parsing.LustreParser.IntTypeContext;
 import jkind.lustre.parsing.LustreParser.LhsContext;
 import jkind.lustre.parsing.LustreParser.NegateExprContext;
-import jkind.lustre.parsing.LustreParser.NodeCallExprContext;
 import jkind.lustre.parsing.LustreParser.NodeContext;
 import jkind.lustre.parsing.LustreParser.NotExprContext;
 import jkind.lustre.parsing.LustreParser.ParenExprContext;
@@ -89,8 +91,9 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	public Program program(ProgramContext ctx) {
 		List<TypeDef> types = types(ctx.typedef());
 		List<Constant> constants = constants(ctx.constant());
+		List<Function> functions = functions(ctx.function());
 		List<Node> nodes = nodes(ctx.node());
-		return new Program(loc(ctx), types, constants, nodes, main);
+		return new Program(loc(ctx), types, constants, functions, nodes, main);
 	}
 
 	private List<TypeDef> types(List<TypedefContext> ctxs) {
@@ -112,6 +115,17 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			constants.add(new Constant(loc(ctx), id, type, expr));
 		}
 		return constants;
+	}
+
+	private List<Function> functions(List<FunctionContext> ctxs) {
+		List<Function> functions = new ArrayList<>();
+		for (FunctionContext ctx : ctxs) {
+			String id = ctx.ID().getText();
+			List<VarDecl> inputs = varDecls(ctx.input);
+			List<VarDecl> outputs = varDecls(ctx.output);
+			functions.add(new Function(loc(ctx), id, inputs, outputs));
+		}
+		return functions;
 	}
 
 	private List<Node> nodes(List<NodeContext> ctxs) {
@@ -228,7 +242,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	public Type visitRealType(RealTypeContext ctx) {
 		return NamedType.REAL;
 	}
-	
+
 	@Override
 	public Type visitArrayType(ArrayTypeContext ctx) {
 		return new ArrayType(loc(ctx), type(ctx.type()), Integer.parseInt(ctx.INT().getText()));
@@ -280,21 +294,21 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
-	public NodeCallExpr visitNodeCallExpr(NodeCallExprContext ctx) {
-		String node = ctx.ID().getText();
+	public CallExpr visitCallExpr(CallExprContext ctx) {
+		String name = ctx.ID().getText();
 		List<Expr> args = new ArrayList<>();
 		for (ExprContext arg : ctx.expr()) {
 			args.add(expr(arg));
 		}
-		return new NodeCallExpr(loc(ctx), node, args);
+		return new CallExpr(loc(ctx), name, args);
 	}
 
 	@Override
 	public Expr visitCondactExpr(CondactExprContext ctx) {
 		Expr clock = expr(ctx.expr(0));
-		if (ctx.expr(1) instanceof NodeCallExprContext) {
-			NodeCallExprContext callCtx = (NodeCallExprContext) ctx.expr(1);
-			NodeCallExpr call = visitNodeCallExpr(callCtx);
+		if (ctx.expr(1) instanceof CallExprContext) {
+			CallExprContext callCtx = (CallExprContext) ctx.expr(1);
+			CallExpr call = visitCallExpr(callCtx);
 			List<Expr> args = new ArrayList<>();
 			for (int i = 2; i < ctx.expr().size(); i++) {
 				args.add(expr(ctx.expr(i)));
@@ -360,7 +374,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new RecordExpr(loc(ctx), ctx.ID(0).getText(), fields);
 	}
-	
+
 	@Override
 	public Expr visitArrayExpr(ArrayExprContext ctx) {
 		List<Expr> elements = new ArrayList<>();
@@ -369,7 +383,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new ArrayExpr(loc(ctx), elements);
 	}
-	
+
 	@Override
 	public Expr visitTupleExpr(TupleExprContext ctx) {
 		List<Expr> elements = new ArrayList<>();
@@ -378,7 +392,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new TupleExpr(loc(ctx), elements);
 	}
-	
+
 	@Override
 	public Expr visitParenExpr(ParenExprContext ctx) {
 		return expr(ctx.expr());

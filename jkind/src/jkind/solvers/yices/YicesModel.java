@@ -1,8 +1,8 @@
 package jkind.solvers.yices;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,7 +18,7 @@ import jkind.solvers.Value;
 public class YicesModel extends Model {
 	private Map<String, String> aliases;
 	private Map<String, Value> valueAssignments;
-	private Map<String, Map<BigInteger, Value>> functionAssignments;
+	private Map<String, Map<List<Value>, Value>> functionAssignments;
 
 	public YicesModel() {
 		this.aliases = new HashMap<>();
@@ -34,14 +34,14 @@ public class YicesModel extends Model {
 		valueAssignments.put(id, v);
 	}
 
-	public void addFunctionValue(String fn, BigInteger arg, Value v) {
-		Map<BigInteger, Value> fnMap = functionAssignments.get(fn);
+	public void addFunctionValue(String fn, List<Value> inputs, Value output) {
+		Map<List<Value>, Value> fnMap = functionAssignments.get(fn);
 		if (fnMap == null) {
 			fnMap = new HashMap<>();
 			functionAssignments.put(fn, fnMap);
 		}
 
-		fnMap.put(arg, v);
+		fnMap.put(inputs, output);
 	}
 
 	private String getAlias(String id) {
@@ -57,27 +57,28 @@ public class YicesModel extends Model {
 		return valueAssignments.get(getAlias(sym.toString()));
 	}
 
-	public Map<BigInteger, Value> getFunction(String fn) {
+	public Map<List<Value>, Value> getFunction(String fn) {
 		return functionAssignments.get(getAlias(fn));
 	}
 
 	@Override
-	public Value getFunctionValue(String fn, BigInteger index) {
+	public Value getFunctionValue(String fn, List<Value> inputs) {
 		fn = getAlias(fn);
-		if (functionAssignments.containsKey(fn) && functionAssignments.get(fn).containsKey(index)) {
-			return functionAssignments.get(fn).get(index);
+		if (functionAssignments.containsKey(fn) && functionAssignments.get(fn).containsKey(inputs)) {
+			return functionAssignments.get(fn).get(inputs);
 		} else if (definitions.containsKey(fn)) {
-			Sexp s = definitions.get(fn).getLambda().instantiate(new Symbol(index.toString()));
+			Symbol argument = new Symbol(inputs.get(0).toString());
+			Sexp s = definitions.get(fn).getLambda().instantiate(argument);
 			return new Eval(this).eval(s);
 		} else {
 			Value value = getDefaultValue(fn);
-			addFunctionValue(fn, index, value);
+			addFunctionValue(fn, inputs, value);
 			return value;
 		}
 	}
 
 	private Value getDefaultValue(String fn) {
-		if (declarations.get(fn).getType() == NamedType.BOOL) {
+		if (declarations.get(fn).getOutput() == NamedType.BOOL) {
 			return BoolValue.TRUE;
 		} else {
 			return new NumericValue("0");

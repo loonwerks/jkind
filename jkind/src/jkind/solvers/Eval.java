@@ -94,8 +94,7 @@ public class Eval {
 		case "not":
 			return BoolValue.fromBool(!isTrue(args.get(0)));
 		default:
-			BigInteger index = new BigInteger(args.get(0).toString());
-			return model.getFunctionValue(fn, index);
+			return model.getFunctionValue(fn, args);
 		}
 	}
 }

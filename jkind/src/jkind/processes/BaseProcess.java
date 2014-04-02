@@ -82,7 +82,7 @@ public class BaseProcess extends Process {
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
+					BoolValue v = (BoolValue) model.getStreamValue("$" + p, index);
 					if (!v.getBool()) {
 						invalid.add(p);
 						iterator.remove();

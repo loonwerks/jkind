@@ -12,6 +12,7 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
@@ -20,7 +21,6 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -91,6 +91,11 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	}
 
 	@Override
+	public Boolean visit(CallExpr e) {
+		return false;
+	}
+	
+	@Override
 	public Boolean visit(CastExpr e) {
 		return e.expr.accept(this);
 	}
@@ -113,11 +118,6 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	@Override
 	public Boolean visit(IntExpr e) {
 		return true;
-	}
-
-	@Override
-	public Boolean visit(NodeCallExpr e) {
-		return false;
 	}
 
 	@Override

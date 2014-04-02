@@ -13,6 +13,7 @@ import java.util.Map;
 
 import jkind.JKindException;
 import jkind.interval.Interval;
+import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
@@ -31,6 +32,13 @@ public class Util {
 		decls.addAll(node.locals);
 		return decls;
 	}
+	
+	public static List<VarDecl> getVarDecls(Function function) {
+		List<VarDecl> decls = new ArrayList<>();
+		decls.addAll(function.inputs);
+		decls.addAll(function.outputs);
+		return decls;
+	}
 
 	public static Map<String, Type> getTypeMap(Node node) {
 		Map<String, Type> map = new HashMap<>();
@@ -47,6 +55,14 @@ public class Util {
 		}
 		return ids;
 	}
+	
+	public static List<Type> getTypes(List<VarDecl> decls) {
+		List<Type> types = new ArrayList<>();
+		for (VarDecl decl : decls) {
+			types.add(decl.type);
+		}
+		return types;
+	}
 
 	public static Map<String, Node> getNodeTable(List<Node> nodes) {
 		Map<String, Node> nodeTable = new HashMap<>();
@@ -54,6 +70,14 @@ public class Util {
 			nodeTable.put(node.id, node);
 		}
 		return nodeTable;
+	}
+
+	public static Map<String, Function> getFunctionTable(List<Function> functions) {
+		Map<String, Function> functionTable = new HashMap<>();
+		for (Function function : functions) {
+			functionTable.put(function.id, function);
+		}
+		return functionTable;
 	}
 
 	public static String getName(Type type) {
@@ -113,14 +137,6 @@ public class Util {
 			return ((Interval) value).isArbitrary();
 		}
 		return false;
-	}
-
-	public static <T, S> List<S> castList(List<T> list, Class<S> klass) {
-		List<S> result = new ArrayList<>();
-		for (T e : list) {
-			result.add(klass.cast(e));
-		}
-		return result;
 	}
 
 	/**

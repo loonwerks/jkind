@@ -7,12 +7,12 @@ import jkind.lustre.Ast;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
-import jkind.util.Util;
 
 public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Expr> {
 	@Override
@@ -22,10 +22,17 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 
 	@Override
 	public Ast visit(Equation e) {
-		List<IdExpr> lhs = Util.castList(visitAll(e.lhs), IdExpr.class);
+		List<IdExpr> lhs = visitAllAst(e.lhs, IdExpr.class);
 		return new Equation(e.location, lhs, e.expr.accept(this));
 	}
 
+	@Override
+	public Ast visit(Function e) {
+		List<VarDecl> inputs = visitAllAst(e.inputs, VarDecl.class);
+		List<VarDecl> outputs = visitAllAst(e.outputs, VarDecl.class);
+		return new Function(e.location, e.id, inputs, outputs);
+	}
+	
 	@Override
 	public Ast visit(Node e) {
 		List<VarDecl> inputs = visitAllAst(e.inputs, VarDecl.class);
@@ -41,8 +48,9 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	public Ast visit(Program e) {
 		List<TypeDef> types = visitAllAst(e.types, TypeDef.class);
 		List<Constant> constants = visitAllAst(e.constants, Constant.class);
+		List<Function> functions = visitAllAst(e.functions, Function.class);
 		List<Node> nodes = visitAllAst(e.nodes, Node.class);
-		return new Program(e.location, types, constants, nodes, e.main);
+		return new Program(e.location, types, constants, functions, nodes, e.main);
 	}
 
 	@Override
@@ -56,10 +64,10 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	protected <T> List<T> visitAllAst(List<? extends Ast> list, Class<T> klass) {
-		List<Ast> result = new ArrayList<>();
+		List<T> result = new ArrayList<>();
 		for (Ast e : list) {
-			result.add(e.accept(this));
+			result.add(klass.cast(e.accept(this)));
 		}
-		return Util.castList(result, klass);
+		return result;
 	}
 }

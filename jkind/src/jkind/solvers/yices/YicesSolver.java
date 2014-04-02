@@ -1,6 +1,7 @@
 package jkind.solvers.yices;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
@@ -9,6 +10,7 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.FunctionDecl;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.Solver;
@@ -62,8 +64,18 @@ public class YicesSolver extends Solver {
 
 	@Override
 	public void send(StreamDecl decl) {
-		Sexp type = new Cons("->", new Symbol("int"), type(decl.getType()));
+		Sexp type = new Cons("->", new Symbol("int"), type(decl.getOutput()));
 		send(new Cons("define", decl.getId(), new Symbol("::"), type));
+	}
+	
+	@Override
+	public void send(FunctionDecl decl) {
+		List<Sexp> args = new ArrayList<>();
+		for (Type input : decl.getInputs()) {
+			args.add(type(input));
+		}
+		args.add(type(decl.getOutput()));
+		send(new Cons("define", decl.getId(), new Symbol("::"), new Cons("->", args)));
 	}
 
 	private Symbol type(Type type) {

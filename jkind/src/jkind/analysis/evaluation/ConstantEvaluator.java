@@ -15,6 +15,7 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
@@ -24,7 +25,6 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -139,6 +139,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	@Override
+	public Value visit(CallExpr e) {
+		return null;
+	}
 
 	@Override
 	public Value visit(CondactExpr e) {
@@ -172,11 +177,6 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(IntExpr e) {
 		return new IntegerValue(e.value);
-	}
-
-	@Override
-	public Value visit(NodeCallExpr e) {
-		return null;
 	}
 
 	@Override
