@@ -19,6 +19,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.visitors.ExprVisitor;
 
@@ -234,6 +235,12 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 				"Records must be flattened before translation to formula");
 	}
 
+	@Override
+	public Void visit(TupleExpr e) {
+		throw new IllegalArgumentException(
+				"Tuples must be flattened before translation to formula");
+	}
+	
 	@Override
 	public Void visit(UnaryExpr e) {
 		switch (e.op) {

@@ -17,6 +17,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.sexp.Cons;
@@ -122,6 +123,11 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	@Override
 	public Sexp visit(RecordExpr e) {
 		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
+	}
+	
+	@Override
+	public Sexp visit(TupleExpr e) {
+		throw new IllegalArgumentException("Tuples must be flattened before translation to sexp");
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.FlattenCompoundTypes;
+import jkind.translation.FlattenTuples;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
@@ -42,7 +43,11 @@ public class JKind {
 			program = InlineConstants.program(program);
 			program = RemoveCondacts.program(program);
 			Node main = InlineNodeCalls.program(program);
+			
+			main = FlattenTuples.node(main);
 			main = RemoveNonConstantArrayIndices.node(main);
+			
+			System.out.println(main);
 			main = FlattenCompoundTypes.node(main);
 
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);

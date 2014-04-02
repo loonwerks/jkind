@@ -13,13 +13,15 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.util.Util;
 
 public class InlineNodeCalls extends ExprMapVisitor {
 	public static Node program(Program program) {
-		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
+		InlineNodeCalls inliner = new InlineNodeCalls(
+				Util.getNodeTable(program.nodes));
 		Node main = program.getMainNode();
 
 		List<Expr> assertions = inliner.visitAssertions(main.assertions);
@@ -30,8 +32,8 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		List<String> properties = new ArrayList<>(main.properties);
 		properties.addAll(inliner.newProperties);
 
-		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				properties, assertions);
+		return new Node(main.location, main.id, main.inputs, main.outputs,
+				locals, equations, properties, assertions);
 	}
 
 	private final Map<String, Node> nodeTable;
@@ -58,33 +60,27 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 		while (!queue.isEmpty()) {
 			Equation eq = queue.poll();
-			if (eq.lhs.size() == 1) {
-				result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-			} else {
-				List<IdExpr> outputs = visitNodeCallExpr((NodeCallExpr) eq.expr);
-				for (int i = 0; i < eq.lhs.size(); i++) {
-					result.add(new Equation(eq.lhs.get(i), outputs.get(i)));
-				}
-			}
+			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
 		}
-
 		return result;
 	}
 
 	@Override
 	public Expr visit(NodeCallExpr e) {
-		List<IdExpr> result = visitNodeCallExpr(e);
+		return compressExprs(visitNodeCallExpr(e));
+	}
 
-		if (result.size() == 1) {
-			return result.get(0);
-		} else {
-			throw new IllegalArgumentException("Multi-return node calls should already be inlined");
+	private Expr compressExprs(List<IdExpr> exprs) {
+		if (exprs.size() == 1) {
+			return exprs.get(0);
 		}
+		return new TupleExpr(exprs);
 	}
 
 	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {
 		String prefix = newPrefix(e.node);
-		Node node = nodeTable.get(e.node.substring(e.node.lastIndexOf('.') + 1));
+		Node node = nodeTable
+				.get(e.node.substring(e.node.lastIndexOf('.') + 1));
 
 		Map<String, IdExpr> translation = getTranslation(prefix, node);
 
@@ -118,12 +114,13 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		}
 	}
 
-	private void createAssignmentEquations(final String prefix, List<Equation> equations,
-			Map<String, IdExpr> translation) {
+	private void createAssignmentEquations(final String prefix,
+			List<Equation> equations, Map<String, IdExpr> translation) {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation) {
 			@Override
 			public Expr visit(NodeCallExpr e) {
-				return new NodeCallExpr(e.location, prefix + e.node, visitAll(e.args));
+				return new NodeCallExpr(e.location, prefix + e.node,
+						visitAll(e.args));
 			}
 		};
 
@@ -146,7 +143,8 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		return prefix + "~" + i + ".";
 	}
 
-	private void accumulateProperties(List<String> properties, Map<String, IdExpr> translation) {
+	private void accumulateProperties(List<String> properties,
+			Map<String, IdExpr> translation) {
 		for (String property : properties) {
 			newProperties.add(translation.get(property).id);
 		}

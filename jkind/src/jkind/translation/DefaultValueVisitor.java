@@ -17,6 +17,9 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
+import jkind.lustre.TupleExpr;
+import jkind.lustre.TupleType;
+import jkind.lustre.Type;
 import jkind.lustre.visitors.TypeVisitor;
 
 public class DefaultValueVisitor implements TypeVisitor<Expr> {
@@ -50,6 +53,15 @@ public class DefaultValueVisitor implements TypeVisitor<Expr> {
 			fields.put(key, e.fields.get(key).accept(this));
 		}
 		return new RecordExpr(e.id, fields);
+	}
+
+	@Override
+	public Expr visit(TupleType e) {
+		List<Expr> elements = new ArrayList<>();
+		for (Type t : e.types) {
+			elements.add(t.accept(this));
+		}
+		return new TupleExpr(elements);
 	}
 
 	@Override
