@@ -9,9 +9,9 @@ import jkind.lustre.CallExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
-import jkind.lustre.IdExpr;
 import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.util.Util;
@@ -56,25 +56,8 @@ public class SplitFunctions extends ExprMapVisitor {
 	private List<Equation> visitEquations(List<Equation> equations) {
 		List<Equation> splitEquations = new ArrayList<>();
 		for (Equation equation : equations) {
-			if (equation.lhs.size() > 1) {
-				splitEquations.addAll(splitEquation(equation));
-			} else {
-				Expr expr = equation.expr.accept(this);
-				splitEquations.add(new Equation(equation.location, equation.lhs, expr));
-			}
-		}
-		return splitEquations;
-	}
-
-	private List<Equation> splitEquation(Equation equation) {
-		List<Equation> splitEquations = new ArrayList<>();
-		CallExpr call = (CallExpr) equation.expr;
-		Function function = originalFunctionTabe.get(call.name);
-		for (int i = 0; i < equation.lhs.size(); i++) {
-			IdExpr lhs = equation.lhs.get(i);
-			String name = call.name + "." + function.outputs.get(i).id;
-			Expr rhs = new CallExpr(name, visitAll(call.args));
-			splitEquations.add(new Equation(lhs, rhs));
+			Expr expr = equation.expr.accept(this);
+			splitEquations.add(new Equation(equation.location, equation.lhs, expr));
 		}
 		return splitEquations;
 	}
@@ -82,7 +65,11 @@ public class SplitFunctions extends ExprMapVisitor {
 	@Override
 	public Expr visit(CallExpr e) {
 		Function function = originalFunctionTabe.get(e.name);
-		String output = function.outputs.get(0).id;
-		return new CallExpr(e.location, e.name + "." + output, visitAll(e.args));
+		List<Expr> args = visitAll(e.args);
+		List<Expr> exprs = new ArrayList<>();
+		for (VarDecl output : function.outputs) {
+			exprs.add(new CallExpr(e.name + "." + output.id, args));
+		}
+		return TupleExpr.compress(exprs);
 	}
 }
