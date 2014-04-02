@@ -67,7 +67,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 		if (isConstant(indexExpr)) {
 			int index = evalIndex(indexExpr);
 			ArrayType arrayType = getArrayType(arrayExpr);
-			if (index < 0 || index > arrayType.size) {
+			if (index < 0 || index >= arrayType.size) {
 				System.out.println("Error at line " + location + " index " + index
 						+ " out of range");
 				passed = false;
