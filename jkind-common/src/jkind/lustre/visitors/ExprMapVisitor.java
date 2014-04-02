@@ -21,6 +21,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 
 public class ExprMapVisitor implements ExprVisitor<Expr> {
@@ -101,6 +102,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 		return new RecordExpr(e.location, e.id, fields);
 	}
 
+	@Override
+	public Expr visit(TupleExpr e) {
+		return new TupleExpr(e.location, visitAll(e.elements));
+	}
+	
 	@Override
 	public Expr visit(UnaryExpr e) {
 		return new UnaryExpr(e.location, e.op, e.expr.accept(this));

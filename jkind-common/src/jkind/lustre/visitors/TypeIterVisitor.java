@@ -6,6 +6,7 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
+import jkind.lustre.TupleType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
@@ -31,6 +32,14 @@ public class TypeIterVisitor implements TypeVisitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(TupleType e) {
+		for (Type t : e.types) {
+			t.accept(this);
+		}
+		return null;
+	}	
+	
 	@Override
 	public Void visit(SubrangeIntType e) {
 		return null;

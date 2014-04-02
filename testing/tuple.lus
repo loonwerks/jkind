@@ -1,0 +1,45 @@
+/*
+This file exercises tuple expressions.  Tuple types are not allowed to
+be declared by the user, but are used to generalize node calls that 
+return multiple values such that they can be called from within another
+expression.  
+
+Expected Output:
+
+VALID PROPERTIES: [ok1, ok2]
+
+INVALID PROPERTIES: [cex1, cex2]
+*/
+
+node count_by(diff : int) returns (down, up : int);
+let
+  down = 0 -> pre down - diff;
+  up = 0 -> pre up + diff;
+tel;
+
+node main(a, b : int) returns ();
+var
+  min, max : int;
+  fib1, fib2 : int;
+  toggle : bool;
+  down, up : int;
+  ok1, ok2 : bool;
+  cex1, cex2 : bool;
+let
+  min, max = if a < b then (a, b) else (b, a);
+  ok1 = (min <= max) and (a = min or a = max) and (b = min or b = max);
+  --%PROPERTY ok1;
+
+  fib1, fib2 = (0, 1) -> pre (fib2, fib1 + fib2);
+  cex1 = fib2 <> 10946;
+  --%PROPERTY cex1;
+
+  ok2 = fib2 <> 10947;
+  --%PROPERTY ok2;
+
+  toggle = true -> not pre toggle;
+  down, up = if toggle then count_by(1) else count_by(2);
+  cex2 = up < 100;
+  --%PROPERTY cex2;
+
+tel;

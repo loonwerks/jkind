@@ -14,6 +14,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 
 public interface ExprVisitor<T> {
@@ -31,5 +32,6 @@ public interface ExprVisitor<T> {
 	public T visit(RealExpr e);
 	public T visit(RecordAccessExpr e);
 	public T visit(RecordExpr e);
+	public T visit(TupleExpr e);
 	public T visit(UnaryExpr e);
 }

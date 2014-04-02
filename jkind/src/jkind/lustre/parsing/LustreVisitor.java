@@ -89,6 +89,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitArrayExpr(@NotNull LustreParser.ArrayExprContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#tupleExpr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTupleExpr(@NotNull LustreParser.TupleExprContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#userType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

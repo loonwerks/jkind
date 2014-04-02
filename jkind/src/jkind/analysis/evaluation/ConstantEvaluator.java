@@ -28,6 +28,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.ArrayValue;
@@ -35,6 +36,7 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
+import jkind.lustre.values.TupleValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
@@ -193,6 +195,15 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		}
 	}
 
+	@Override
+	public Value visit(TupleExpr e) {
+		List<Value> elements = new ArrayList<>();
+		for (Expr element : e.elements) {
+			elements.add(element.accept(this));
+		}
+		return new TupleValue(elements);
+	}
+	
 	@Override
 	public Value visit(UnaryExpr e) {
 		Value value = eval(e.expr);
