@@ -28,10 +28,10 @@ public class SplitFunctions extends ExprMapVisitor {
 		return new InlinedProgram(functions, node);
 	}
 
-	private final Map<String, Function> originalFunctionTabe;
+	private final Map<String, Function> originalFunctionTable;
 
 	public SplitFunctions(List<Function> functions) {
-		originalFunctionTabe = Util.getFunctionTable(functions);
+		originalFunctionTable = Util.getFunctionTable(functions);
 	}
 
 	private List<Function> visitFunctions(List<Function> functions) {
@@ -47,7 +47,7 @@ public class SplitFunctions extends ExprMapVisitor {
 
 	@Override
 	public Expr visit(CallExpr e) {
-		Function function = originalFunctionTabe.get(e.name);
+		Function function = originalFunctionTable.get(e.name);
 		List<Expr> args = visitAll(e.args);
 		List<Expr> exprs = new ArrayList<>();
 		for (VarDecl output : function.outputs) {

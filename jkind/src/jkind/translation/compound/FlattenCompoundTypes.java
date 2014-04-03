@@ -13,6 +13,8 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 		ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
 		ip = FlattenCompoundComparisons.inlinedProgram(ip);
 		ip = FlattenCompoundVariables.inlinedProgram(ip);
+		ip = FlattenCompoundFunctionOutputs.inlinedProgram(ip);
+		ip = FlattenCompoundFunctionInputs.inlinedProgram(ip);
 		ip = FlattenCompoundExpressions.inlinedProgram(ip);
 		return ip;
 	}

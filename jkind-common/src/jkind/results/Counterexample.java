@@ -37,14 +37,10 @@ public final class Counterexample {
 
 	private void initializeFunctionTable(List<Function> functions) {
 		for (Function function : functions) {
-			String name = getBase(function.id);
+			String name = Util.getBase(function.id);
 			FunctionTable table = getOrCreateTable(name, function.inputs);
 			table.addOutput(function.outputs.get(0));
 		}
-	}
-
-	private String getBase(String name) {
-		return name.substring(0, name.indexOf('.'));
 	}
 
 	public FunctionTable getOrCreateTable(String name, List<VarDecl> inputs) {

@@ -16,6 +16,14 @@ public class Function extends Ast {
 		this.inputs = Collections.unmodifiableList(inputs);
 		this.outputs = Collections.unmodifiableList(outputs);
 	}
+
+	public Function(String id, List<VarDecl> inputs, List<VarDecl> outputs) {
+		this(Location.NULL, id, inputs, outputs);
+	}
+	
+	public Function(String id, List<VarDecl> inputs, VarDecl output) {
+		this(Location.NULL, id, inputs, Collections.singletonList(output));
+	}
 	
 	@Override
 	public <T, S extends T> T accept(AstVisitor<T, S> visitor) {

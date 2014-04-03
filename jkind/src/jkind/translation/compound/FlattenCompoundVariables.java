@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -15,7 +14,6 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
 import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -44,9 +42,9 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 		addOriginalTypes(node.outputs);
 		addOriginalTypes(node.locals);
 
-		List<VarDecl> inputs = flattenVarDecls(node.inputs);
-		List<VarDecl> outputs = flattenVarDecls(node.outputs);
-		List<VarDecl> locals = flattenVarDecls(node.locals);
+		List<VarDecl> inputs = CompoundUtil.flattenVarDecls(node.inputs);
+		List<VarDecl> outputs = CompoundUtil.flattenVarDecls(node.outputs);
+		List<VarDecl> locals = CompoundUtil.flattenVarDecls(node.locals);
 		List<Equation> equations = flattenLeftHandSide(node.equations);
 		Node flattened = new Node(node.id, inputs, outputs, locals, equations, node.properties,
 				node.assertions);
@@ -59,17 +57,6 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 		for (VarDecl varDecl : varDecls) {
 			originalTypes.put(varDecl.id, varDecl.type);
 		}
-	}
-
-	private List<VarDecl> flattenVarDecls(List<VarDecl> varDecls) {
-		List<VarDecl> result = new ArrayList<>();
-		for (VarDecl varDecl : varDecls) {
-			IdExpr id = new IdExpr(varDecl.id);
-			for (ExprType et : CompoundUtil.flattenExpr(id, varDecl.type)) {
-				result.add(new VarDecl(et.expr.toString(), et.type));
-			}
-		}
-		return result;
 	}
 
 	private List<Equation> flattenLeftHandSide(List<Equation> equations) {
@@ -113,26 +100,13 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 		}
 		return map;
 	}
-
-	private Expr expand(Expr expr, Type type) {
-		if (type instanceof ArrayType) {
-			ArrayType arrayType = (ArrayType) type;
-			List<Expr> elements = new ArrayList<>();
-			for (int i = 0; i < arrayType.size; i++) {
-				elements.add(expand(new ArrayAccessExpr(expr, i), arrayType.base));
+	
+	private static Expr expand(Expr expr, Type type) {
+		return new Expander() {
+			@Override
+			protected Expr baseCase(Expr expr) {
+				return new IdExpr(expr.toString());
 			}
-			return new ArrayExpr(elements);
-		} else if (type instanceof RecordType) {
-			RecordType recordType = (RecordType) type;
-			Map<String, Expr> fields = new HashMap<>();
-			for (Entry<String, Type> entry : recordType.fields.entrySet()) {
-				String field = entry.getKey();
-				Type fieldType = entry.getValue();
-				fields.put(field, expand(new RecordAccessExpr(expr, field), fieldType));
-			}
-			return new RecordExpr(recordType.id, fields);
-		} else {
-			return new IdExpr(expr.toString());
-		}
+		}.expand(expr, type);
 	}
 }

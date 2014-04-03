@@ -305,7 +305,7 @@ public class Director {
 		VarDecl output = function.outputs.get(0);
 		Type outputType = output.type;
 		Value outputValue = Util.parseValue(Util.getName(outputType), value.toString());
-		cex.addFunctionValue(getBase(name), inputValues, output, outputValue);
+		cex.addFunctionValue(Util.getBase(name), inputValues, output, outputValue);
 	}
 
 	private Function getFunction(List<Function> functions, String name) {
@@ -315,10 +315,6 @@ public class Director {
 			}
 		}
 		return null;
-	}
-
-	private String getBase(String name) {
-		return name.substring(0, name.indexOf('.'));
 	}
 
 	private List<Value> parseValues(List<Type> types, List<jkind.solvers.Value> values) {

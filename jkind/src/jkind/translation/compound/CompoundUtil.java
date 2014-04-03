@@ -13,9 +13,11 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 
 public class CompoundUtil {
 	public static List<ExprType> flattenExpr(Expr expr, Type type) {
@@ -46,11 +48,22 @@ public class CompoundUtil {
 		return result;
 	}
 
+	public static List<VarDecl> flattenVarDecls(List<VarDecl> varDecls) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl varDecl : varDecls) {
+			IdExpr id = new IdExpr(varDecl.id);
+			for (ExprType et : CompoundUtil.flattenExpr(id, varDecl.type)) {
+				result.add(new VarDecl(et.expr.toString(), et.type));
+			}
+		}
+		return result;
+	}
+	
 	public static Expr conjoin(List<Expr> exprs) {
 		if (exprs.isEmpty()) {
 			return new BoolExpr(true);
 		}
-		
+
 		Iterator<Expr> iterator = exprs.iterator();
 		Expr result = iterator.next();
 		while (iterator.hasNext()) {

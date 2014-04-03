@@ -146,4 +146,8 @@ public class Util {
 	public static BigInteger smtDivide(BigInteger a, BigInteger b) {
 		return a.subtract(a.mod(b)).divide(b);
 	}
+	
+	public static String getBase(String name) {
+		return name.substring(0, name.indexOf('.'));
+	}
 }
