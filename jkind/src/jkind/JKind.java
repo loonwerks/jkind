@@ -1,7 +1,5 @@
 package jkind;
 
-import java.io.File;
-
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
@@ -17,21 +15,10 @@ public class JKind {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			String filename = settings.filename;
-			if (!new File(filename).exists()) {
-				System.out.println("Error: cannot find file " + filename);
-				System.exit(-1);
-			}
-
 			Program program = Main.parseLustre(filename);
-			if (program.getMainNode() == null) {
-				System.out.println("Error: no main node");
-				System.exit(-1);
-			}
-
+			
 			Level nonlinear = settings.solver == SolverOption.Z3 ? Level.WARNING : Level.ERROR;
-			if (!StaticAnalyzer.check(program, nonlinear)) {
-				System.exit(-1);
-			}
+			StaticAnalyzer.check(program, nonlinear);
 
 			Node main = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);

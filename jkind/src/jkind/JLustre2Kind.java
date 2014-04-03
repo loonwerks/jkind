@@ -22,21 +22,8 @@ public class JLustre2Kind {
 			}
 			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
 
-			if (!new File(filename).exists()) {
-				System.out.println("Error: cannot find file " + filename);
-				System.exit(-1);
-			}
-
 			Program program = Main.parseLustre(filename);
-			if (program.getMainNode() == null) {
-				System.out.println("Error: no main node");
-				System.exit(-1);
-			}
-
-			if (!StaticAnalyzer.check(program, Level.WARNING)) {
-				System.exit(-1);
-			}
-
+			StaticAnalyzer.check(program, Level.WARNING);
 
 			Node main = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);

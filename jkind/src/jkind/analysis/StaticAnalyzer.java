@@ -20,12 +20,16 @@ import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
-	public static boolean check(Program program, Level nonlinear) {
-		return checkErrors(program, nonlinear) && checkWarnings(program, nonlinear);
+	public static void check(Program program, Level nonlinear) {
+		if (!checkErrors(program, nonlinear)) {
+			System.exit(-1);
+		}
+		checkWarnings(program, nonlinear);
 	}
 
 	private static boolean checkErrors(Program program, Level nonlinear) {
 		boolean result = true;
+		result = result && hasMainNode(program);
 		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
 		result = result && SubrangesNonempty.check(program);
@@ -45,6 +49,14 @@ public class StaticAnalyzer {
 		}
 		result = result && DivisionChecker.check(program);
 		return result;
+	}
+
+	private static boolean hasMainNode(Program program) {
+		if (program.getMainNode() == null) {
+			System.out.println("Error: no main node");
+			return false;
+		}
+		return true;
 	}
 
 	private static boolean checkWarnings(Program program, Level nonlinear) {
