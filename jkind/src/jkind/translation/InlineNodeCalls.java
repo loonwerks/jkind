@@ -20,20 +20,17 @@ import jkind.util.Util;
 
 public class InlineNodeCalls extends ExprMapVisitor {
 	public static Node program(Program program) {
-		InlineNodeCalls inliner = new InlineNodeCalls(
-				Util.getNodeTable(program.nodes));
+		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
 		Node main = program.getMainNode();
 
-		List<Expr> assertions = inliner.visitAssertions(main.assertions);
+		List<Expr> assertions = inliner.visitAll(main.assertions);
 		List<Equation> equations = inliner.visitEquations(main.equations);
 
-		List<VarDecl> locals = new ArrayList<>(main.locals);
-		locals.addAll(inliner.newLocals);
-		List<String> properties = new ArrayList<>(main.properties);
-		properties.addAll(inliner.newProperties);
+		List<VarDecl> locals = append(main.locals, inliner.newLocals);
+		List<String> properties = append(main.properties, inliner.newProperties);
 
-		return new Node(main.location, main.id, main.inputs, main.outputs,
-				locals, equations, properties, assertions);
+		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
+				properties, assertions);
 	}
 
 	private final Map<String, Node> nodeTable;
@@ -44,14 +41,6 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 	private InlineNodeCalls(Map<String, Node> nodeTable) {
 		this.nodeTable = nodeTable;
-	}
-
-	private List<Expr> visitAssertions(List<Expr> assertions) {
-		List<Expr> result = new ArrayList<>();
-		for (Expr assertion : assertions) {
-			result.add(assertion.accept(this));
-		}
-		return result;
 	}
 
 	private List<Equation> visitEquations(List<Equation> equations) {
@@ -79,8 +68,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {
 		String prefix = newPrefix(e.node);
-		Node node = nodeTable
-				.get(e.node.substring(e.node.lastIndexOf('.') + 1));
+		Node node = nodeTable.get(e.node.substring(e.node.lastIndexOf('.') + 1));
 
 		Map<String, IdExpr> translation = getTranslation(prefix, node);
 
@@ -114,13 +102,12 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		}
 	}
 
-	private void createAssignmentEquations(final String prefix,
-			List<Equation> equations, Map<String, IdExpr> translation) {
+	private void createAssignmentEquations(final String prefix, List<Equation> equations,
+			Map<String, IdExpr> translation) {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation) {
 			@Override
 			public Expr visit(NodeCallExpr e) {
-				return new NodeCallExpr(e.location, prefix + e.node,
-						visitAll(e.args));
+				return new NodeCallExpr(e.location, prefix + e.node, visitAll(e.args));
 			}
 		};
 
@@ -143,10 +130,16 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		return prefix + "~" + i + ".";
 	}
 
-	private void accumulateProperties(List<String> properties,
-			Map<String, IdExpr> translation) {
+	private void accumulateProperties(List<String> properties, Map<String, IdExpr> translation) {
 		for (String property : properties) {
 			newProperties.add(translation.get(property).id);
 		}
+	}
+
+	private static <T> List<T> append(List<T> list1, List<T> list2) {
+		List<T> result = new ArrayList<>();
+		result.addAll(list1);
+		result.addAll(list2);
+		return result;
 	}
 }
