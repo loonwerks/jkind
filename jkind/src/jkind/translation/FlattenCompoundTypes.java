@@ -52,7 +52,7 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 		List<VarDecl> locals = flattenVarDecls(node.locals);
 
 		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAssertions(node.assertions);
+		List<Expr> assertions = visitAll(node.assertions);
 		return new Node(node.id, inputs, outputs, locals, equations, node.properties, assertions);
 	}
 
@@ -148,14 +148,6 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 		List<Equation> result = new ArrayList<>();
 		for (Equation eq : equations) {
 			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-		}
-		return result;
-	}
-
-	private List<Expr> visitAssertions(List<Expr> exprs) {
-		List<Expr> result = new ArrayList<>();
-		for (Expr expr : exprs) {
-			result.add(expr.accept(this));
 		}
 		return result;
 	}
