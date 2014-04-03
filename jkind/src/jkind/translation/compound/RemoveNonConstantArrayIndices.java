@@ -1,4 +1,4 @@
-package jkind.translation;
+package jkind.translation.compound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
 import jkind.lustre.IfThenElseExpr;
@@ -22,9 +21,11 @@ import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.DefaultValueVisitor;
 
 /**
- * Replace all non-constant array indices using if-then-else expressions
+ * Replace all non-constant array indices using if-then-else expressions. Remove
+ * all array updates entirely.
  * 
  * Assumption: All node calls have been inlined.
  * 
@@ -42,20 +43,10 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 		this.typeChecker = new TypeChecker(functions);
 	}
 
-	private Node visitNode(Node node) {
+	@Override
+	public Node visitNode(Node node) {
 		typeChecker.repopulateVariableTable(node);
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
-	}
-
-	private List<Equation> visitEquations(List<Equation> equations) {
-		List<Equation> result = new ArrayList<>();
-		for (Equation eq : equations) {
-			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-		}
-		return result;
+		return super.visitNode(node);
 	}
 
 	private boolean isConstant(Expr e) {
@@ -103,13 +94,29 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 		Expr index = e.index.accept(this);
 		Expr value = e.value.accept(this);
 		if (isConstant(index)) {
-			return new ArrayUpdateExpr(array, evalIndex(index), value);
+			return expandConstantArrayUpdate(array, evalIndex(index), value);
 		} else {
-			return expandArrayUpdate(array, index, value);
+			return expandNonConstantArrayUpdate(array, index, value);
 		}
 	}
 
-	private Expr expandArrayUpdate(Expr array, Expr index, Expr value) {
+	private Expr expandConstantArrayUpdate(Expr array, IntExpr indexExpr, Expr value) {
+		ArrayType arrayType = getArrayType(array);
+		int index = indexExpr.value.intValue();
+		List<Expr> elements = new ArrayList<>();
+
+		for (int i = 0; i < arrayType.size; i++) {
+			if (i == index) {
+				elements.add(value);
+			} else {
+				elements.add(new ArrayAccessExpr(array, i));
+			}
+		}
+
+		return new ArrayExpr(elements);
+	}
+	
+	private Expr expandNonConstantArrayUpdate(Expr array, Expr index, Expr value) {
 		ArrayType arrayType = getArrayType(array);
 		List<Expr> elements = new ArrayList<>();
 		for (int i = 0; i < arrayType.size; i++) {

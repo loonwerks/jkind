@@ -2,11 +2,11 @@
 This file exercises tuple expressions.  Tuple types are not allowed to
 be declared by the user, but are used to generalize node calls that 
 return multiple values such that they can be called from within another
-expression.  
+expression.
 
 Expected Output:
 
-VALID PROPERTIES: [ok1, ok2]
+VALID PROPERTIES: [ok1, ok3, ok2]
 
 INVALID PROPERTIES: [cex1, cex2]
 */
@@ -17,13 +17,14 @@ let
   up = 0 -> pre up + diff;
 tel;
 
-node main(a, b : int) returns ();
+node main(a, b, x, y : int) returns ();
 var
   min, max : int;
   fib1, fib2 : int;
   toggle : bool;
   down, up : int;
-  ok1, ok2 : bool;
+
+  ok1, ok2, ok3 : bool;
   cex1, cex2 : bool;
 let
   min, max = if a < b then (a, b) else (b, a);
@@ -42,4 +43,7 @@ let
   cex2 = up < 100;
   --%PROPERTY cex2;
 
+  assert (x, y) = if toggle then (1, 2) else (3, 4);
+  ok3 = (x = 1 and y = 2) or (x = 3 and y = 4);
+  --%PROPERTY ok3;
 tel;

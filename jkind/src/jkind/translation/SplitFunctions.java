@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.CallExpr;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
 import jkind.lustre.InlinedProgram;
@@ -44,22 +43,6 @@ public class SplitFunctions extends ExprMapVisitor {
 			}
 		}
 		return splitFunctions;
-	}
-
-	private Node visitNode(Node node) {
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
-	}
-
-	private List<Equation> visitEquations(List<Equation> equations) {
-		List<Equation> splitEquations = new ArrayList<>();
-		for (Equation equation : equations) {
-			Expr expr = equation.expr.accept(this);
-			splitEquations.add(new Equation(equation.location, equation.lhs, expr));
-		}
-		return splitEquations;
 	}
 
 	@Override

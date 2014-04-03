@@ -6,15 +6,8 @@ import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.InlinedProgram;
 import jkind.lustre.Program;
-import jkind.translation.FlattenCompoundTypes;
-import jkind.translation.FlattenTuples;
-import jkind.translation.InlineConstants;
-import jkind.translation.InlineNodeCalls;
-import jkind.translation.InlineUserTypes;
 import jkind.translation.Node2Excel;
-import jkind.translation.RemoveCondacts;
-import jkind.translation.RemoveNonConstantArrayIndices;
-import jkind.translation.SplitFunctions;
+import jkind.translation.Translate;
 
 public class JLustre2Excel {
 	public static void main(String args[]) {
@@ -40,15 +33,7 @@ public class JLustre2Excel {
 				System.exit(-1);
 			}
 
-			program = InlineUserTypes.program(program);
-			program = InlineConstants.program(program);
-			program = RemoveCondacts.program(program);
-			InlinedProgram ip = InlineNodeCalls.program(program);
-			ip = SplitFunctions.inlinedProgram(ip);
-			ip = FlattenTuples.inlinedProgram(ip);
-			ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
-			ip = FlattenCompoundTypes.inlinedProgram(ip);
-			
+			InlinedProgram ip = Translate.translate(program);
 			String outFilename = filename + ".xls";
 			Node2Excel.convert(ip.node, outFilename);
 			System.out.println("Wrote " + outFilename);

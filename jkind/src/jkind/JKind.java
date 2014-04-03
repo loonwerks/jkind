@@ -10,15 +10,8 @@ import jkind.lustre.Program;
 import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
-import jkind.translation.FlattenCompoundTypes;
-import jkind.translation.FlattenTuples;
-import jkind.translation.InlineConstants;
-import jkind.translation.InlineNodeCalls;
-import jkind.translation.InlineUserTypes;
-import jkind.translation.RemoveCondacts;
-import jkind.translation.RemoveNonConstantArrayIndices;
 import jkind.translation.Specification;
-import jkind.translation.SplitFunctions;
+import jkind.translation.Translate;
 
 public class JKind {
 	public static void main(String[] args) {
@@ -41,15 +34,7 @@ public class JKind {
 				System.exit(-1);
 			}
 
-			program = InlineUserTypes.program(program);
-			program = InlineConstants.program(program);
-			program = RemoveCondacts.program(program);
-			InlinedProgram ip = InlineNodeCalls.program(program);
-			ip = SplitFunctions.inlinedProgram(ip);
-			ip = FlattenTuples.inlinedProgram(ip);
-			ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
-			ip = FlattenCompoundTypes.inlinedProgram(ip);
-
+			InlinedProgram ip = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(ip.node, ip.node.properties);
 			Node sliced = LustreSlicer.slice(ip.node, dependencyMap);
 			Specification spec = new Specification(filename, ip.functions, sliced, dependencyMap);

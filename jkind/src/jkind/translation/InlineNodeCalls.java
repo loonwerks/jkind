@@ -25,7 +25,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		Node main = program.getMainNode();
 
 		List<Expr> assertions = inliner.visitAll(main.assertions);
-		List<Equation> equations = inliner.visitEquations(main.equations);
+		List<Equation> equations = inliner.visitEquationsQueue(main.equations);
 
 		List<VarDecl> locals = append(main.locals, inliner.newLocals);
 		List<String> properties = append(main.properties, inliner.newProperties);
@@ -45,7 +45,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		this.nodeTable = nodeTable;
 	}
 
-	private List<Equation> visitEquations(List<Equation> equations) {
+	public List<Equation> visitEquationsQueue(List<Equation> equations) {
 		queue.addAll(equations);
 		List<Equation> result = new ArrayList<>();
 

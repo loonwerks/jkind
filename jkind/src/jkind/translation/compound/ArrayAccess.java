@@ -1,4 +1,4 @@
-package jkind.translation;
+package jkind.translation.compound;
 
 import java.math.BigInteger;
 

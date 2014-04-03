@@ -1,4 +1,4 @@
-package jkind.translation;
+package jkind.translation.compound;
 
 public class RecordAccess implements Access {
 	public final String field;
