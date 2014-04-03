@@ -10,13 +10,13 @@ import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.FlattenCompoundTypes;
-import jkind.translation.FlattenTuples;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.RemoveCondacts;
 import jkind.translation.RemoveNonConstantArrayIndices;
 import jkind.translation.Specification;
+import jkind.translation.tuples.FlattenTuples;
 
 public class JKind {
 	public static void main(String[] args) {

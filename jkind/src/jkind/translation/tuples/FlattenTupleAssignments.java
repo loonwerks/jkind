@@ -1,22 +1,19 @@
-package jkind.translation;
+package jkind.translation.tuples;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.Node;
 import jkind.lustre.TupleExpr;
-import jkind.lustre.visitors.ExprMapVisitor;
 
 /**
- * Flatten tuple types to scalars so that all equations are single assignment.
+ * Expand tuple assignments into single value assignments
  * 
- * Assumption: All node calls have been inlined.
+ * Assumption: All tuple expressions have been lifted as far as possible.
  */
-public class FlattenTuples extends ExprMapVisitor {
+public class FlattenTupleAssignments {
 	public static Node node(Node node) {
 		return visitNode(node);
 	}
@@ -41,26 +38,10 @@ public class FlattenTuples extends ExprMapVisitor {
 		}
 
 		List<Equation> results = new ArrayList<>();
+		TupleExpr tuple = (TupleExpr) eq.expr;
 		for (int i = 0; i < eq.lhs.size(); i++) {
-			results.add(new Equation(eq.lhs.get(i), eq.expr.accept(new FlattenTuples(i))));
+			results.add(new Equation(eq.lhs.get(i), tuple.elements.get(i)));
 		}
 		return results;
-	}
-
-	private final int index;
-
-	public FlattenTuples(int index) {
-		this.index = index;
-	}
-
-	@Override
-	public Expr visit(TupleExpr e) {
-		return e.elements.get(index);
-	}
-
-	@Override
-	public Expr visit(IfThenElseExpr e) {
-		return new IfThenElseExpr(e.location, e.cond, e.thenExpr.accept(this),
-				e.elseExpr.accept(this));
 	}
 }

@@ -9,12 +9,12 @@ import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.FlattenCompoundTypes;
-import jkind.translation.FlattenTuples;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.RemoveCondacts;
 import jkind.translation.RemoveNonConstantArrayIndices;
+import jkind.translation.tuples.FlattenTuples;
 import jkind.util.Util;
 
 public class JLustre2Kind {
