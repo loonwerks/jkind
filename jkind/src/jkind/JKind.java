@@ -9,13 +9,8 @@ import jkind.lustre.Program;
 import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
-import jkind.translation.InlineConstants;
-import jkind.translation.InlineNodeCalls;
-import jkind.translation.InlineUserTypes;
-import jkind.translation.RemoveCondacts;
 import jkind.translation.Specification;
-import jkind.translation.compound.FlattenCompoundTypes;
-import jkind.translation.tuples.FlattenTuples;
+import jkind.translation.Translate;
 
 public class JKind {
 	public static void main(String[] args) {
@@ -38,13 +33,7 @@ public class JKind {
 				System.exit(-1);
 			}
 
-			program = InlineUserTypes.program(program);
-			program = InlineConstants.program(program);
-			program = RemoveCondacts.program(program);
-			Node main = InlineNodeCalls.program(program);
-			main = FlattenTuples.node(main);
-			main = FlattenCompoundTypes.node(main);
-
+			Node main = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 			Specification spec = new Specification(filename, main, dependencyMap);

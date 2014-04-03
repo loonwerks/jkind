@@ -8,13 +8,7 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
-import jkind.translation.InlineConstants;
-import jkind.translation.InlineNodeCalls;
-import jkind.translation.InlineUserTypes;
-import jkind.translation.RemoveCondacts;
-import jkind.translation.compound.FlattenCompoundTypes;
-import jkind.translation.compound.RemoveNonConstantArrayIndices;
-import jkind.translation.tuples.FlattenTuples;
+import jkind.translation.Translate;
 import jkind.util.Util;
 
 public class JLustre2Kind {
@@ -43,14 +37,8 @@ public class JLustre2Kind {
 				System.exit(-1);
 			}
 
-			program = InlineUserTypes.program(program);
-			program = InlineConstants.program(program);
-			program = RemoveCondacts.program(program);
-			Node main = InlineNodeCalls.program(program);
-			main = FlattenTuples.node(main);
-			main = RemoveNonConstantArrayIndices.node(main);
-			main = FlattenCompoundTypes.node(main);
 
+			Node main = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 
