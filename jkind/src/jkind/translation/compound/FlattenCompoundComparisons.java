@@ -6,7 +6,6 @@ import jkind.analysis.TypeChecker;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.RecordType;
@@ -25,12 +24,10 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 
 	private final TypeChecker typeChecker = new TypeChecker();
 
-	private Node visitNode(Node node) {
+	@Override
+	public Node visitNode(Node node) {
 		typeChecker.repopulateVariableTable(node);
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
+		return super.visitNode(node);
 	}
 
 	@Override

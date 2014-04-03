@@ -36,7 +36,8 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 
 	private final Map<String, Type> originalTypes = new HashMap<>();
 
-	private Node visitNode(Node node) {
+	@Override
+	public Node visitNode(Node node) {
 		addOriginalTypes(node.inputs);
 		addOriginalTypes(node.outputs);
 		addOriginalTypes(node.locals);
@@ -44,13 +45,12 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 		List<VarDecl> inputs = flattenVarDecls(node.inputs);
 		List<VarDecl> outputs = flattenVarDecls(node.outputs);
 		List<VarDecl> locals = flattenVarDecls(node.locals);
+		List<Equation> equations = flattenLeftHandSide(node.equations);
+		Node flattened = new Node(node.id, inputs, outputs, locals, equations, node.properties,
+				node.assertions);
 
 		Map<String, Expr> map = createExpandedVariables(Util.getVarDecls(node));
-		SubstitutionVisitor substitution = new SubstitutionVisitor(map);
-
-		List<Equation> equations = substitution.visitEquations(flattenLeftHandSide(node.equations));
-		List<Expr> assertions = substitution.visitAll(node.assertions);
-		return new Node(node.id, inputs, outputs, locals, equations, node.properties, assertions);
+		return new SubstitutionVisitor(map).visitNode(flattened);
 	}
 
 	private void addOriginalTypes(List<VarDecl> varDecls) {

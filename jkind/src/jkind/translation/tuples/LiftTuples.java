@@ -1,10 +1,7 @@
 package jkind.translation.tuples;
 
-import java.util.List;
-
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.Node;
@@ -18,13 +15,6 @@ import jkind.lustre.visitors.ExprMapVisitor;
 public class LiftTuples extends ExprMapVisitor {
 	public static Node node(Node node) {
 		return new LiftTuples().visitNode(node);
-	}
-
-	private Node visitNode(Node node) {
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
 	}
 
 	@Override

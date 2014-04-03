@@ -2,11 +2,9 @@ package jkind.translation.compound;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -28,13 +26,6 @@ import jkind.lustre.visitors.ExprMapVisitor;
 public class FlattenCompoundExpressions extends ExprMapVisitor {
 	public static Node node(Node node) {
 		return new FlattenCompoundExpressions().visitNode(node);
-	}
-
-	private Node visitNode(Node node) {
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
 	}
 
 	private final Deque<Access> accesses = new ArrayDeque<>();

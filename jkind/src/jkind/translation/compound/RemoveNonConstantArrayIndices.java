@@ -12,7 +12,6 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -37,12 +36,10 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 
 	private final TypeChecker typeChecker = new TypeChecker();
 
-	private Node visitNode(Node node) {
+	@Override
+	public Node visitNode(Node node) {
 		typeChecker.repopulateVariableTable(node);
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
+		return super.visitNode(node);
 	}
 
 	private boolean isConstant(Expr e) {
