@@ -25,9 +25,6 @@ import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprMapVisitor;
-import jkind.translation.Access;
-import jkind.translation.ArrayAccess;
-import jkind.translation.RecordAccess;
 
 /**
  * Flatten array and record variables to scalars variables
