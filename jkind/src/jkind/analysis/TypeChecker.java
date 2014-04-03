@@ -1,6 +1,7 @@
 package jkind.analysis;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -67,12 +68,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 		this.functionTable = Util.getFunctionTable(program.functions);
 		this.nodeTable = Util.getNodeTable(program.nodes);
 	}
-	
+
 	public TypeChecker(List<Function> functions) {
 		this();
 		this.functionTable = Util.getFunctionTable(functions);
 	}
-	
+
 	public static boolean check(Program program) {
 		return new TypeChecker(program).visitProgram(program);
 	}
@@ -139,28 +140,44 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private void checkEquation(Equation eq) {
-		Type expected = getExpectedType(eq.lhs);
-		Type actual = eq.expr.accept(this);
-		compareTypeAssignment(eq, expected, actual);
+		List<Type> expected = getExpectedTypes(eq.lhs);
+		List<Type> actual = removeTuple(eq.expr.accept(this));
+		if (expected == null || actual == null || expected.contains(null) || actual.contains(null)) {
+			return;
+		}
+
+		if (expected.size() != actual.size()) {
+			error(eq, "trying to assign " + actual.size() + " values to " + expected.size()
+					+ " variables");
+			return;
+		}
+
+		for (int i = 0; i < expected.size(); i++) {
+			Type ex = expected.get(i);
+			Type ac = actual.get(i);
+			if (!typeAssignable(ex, ac)) {
+				error(eq.lhs.get(i), "trying to assign value of type " + ac
+						+ " to variable of type " + ex);
+			}
+		}
 	}
 
-	private Type getExpectedType(List<IdExpr> lhs) {
-		List<Type> expectedTypes = new ArrayList<>();
+	private List<Type> getExpectedTypes(List<IdExpr> lhs) {
+		List<Type> result = new ArrayList<>();
 		for (IdExpr idExpr : lhs) {
-			expectedTypes.add(idExpr.accept(this));
+			result.add(idExpr.accept(this));
 		}
-		return compressTypes(expectedTypes);
+		return result;
 	}
 
-	private Type compressTypes(List<Type> types) {
-		if (types == null || types.contains(null)) {
+	private List<Type> removeTuple(Type type) {
+		if (type == null) {
 			return null;
+		} else if (type instanceof TupleType) {
+			return ((TupleType) type).types;
+		} else {
+			return Collections.singletonList(type);
 		}
-
-		if (types.size() == 1) {
-			return types.get(0);
-		}
-		return new TupleType(types);
 	}
 
 	@Override
@@ -330,6 +347,17 @@ public class TypeChecker implements ExprVisitor<Type> {
 	@Override
 	public Type visit(CondactExpr e) {
 		return compressTypes(visitCondactExpr(e));
+	}
+
+	private Type compressTypes(List<Type> types) {
+		if (types == null || types.contains(null)) {
+			return null;
+		}
+
+		if (types.size() == 1) {
+			return types.get(0);
+		}
+		return new TupleType(types);
 	}
 
 	private List<Type> visitCondactExpr(CondactExpr e) {
@@ -538,34 +566,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return null;
 	}
 
-	private Type simple(Type type) {
-		if (type instanceof SubrangeIntType) {
-			return NamedType.INT;
-		} else if (type instanceof ArrayType) {
-			ArrayType arrayType = (ArrayType) type;
-			return new ArrayType(simple(arrayType.base), arrayType.size);
-		} else {
-			return type;
-		}
-	}
-
 	private void compareTypeAssignment(Ast ast, Type expected, Type actual) {
 		if (expected == null || actual == null) {
 			return;
 		}
 
 		if (!typeAssignable(expected, actual)) {
-			Type found = containsSubrange(expected) ? actual : simple(actual);
+			Type found = ContainsSubrange.check(expected) ? actual : simple(actual);
 			error(ast, "expected type " + expected + ", but found type " + found);
-		}
-	}
-
-	private boolean containsSubrange(Type type) {
-		if (type instanceof ArrayType) {
-			ArrayType arrayType = (ArrayType) type;
-			return containsSubrange(arrayType.base);
-		} else {
-			return type instanceof SubrangeIntType;
 		}
 	}
 
@@ -592,6 +600,20 @@ public class TypeChecker implements ExprVisitor<Type> {
 					&& typeAssignable(expectedArrayType.base, actualArrayType.base);
 		}
 
+		if (expected instanceof TupleType && actual instanceof TupleType) {
+			TupleType expectedTupleType = (TupleType) expected;
+			TupleType actualTupleType = (TupleType) actual;
+			if (expectedTupleType.types.size() != actualTupleType.types.size()) {
+				return false;
+			}
+			for (int i = 0; i < expectedTupleType.types.size(); i++) {
+				if (!typeAssignable(expectedTupleType.types.get(i), actualTupleType.types.get(i))) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		return false;
 	}
 
@@ -606,6 +628,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return null;
 		}
 		return join;
+	}
+
+	private Type simple(Type type) {
+		return RemoveSubranges.remove(type);
 	}
 
 	private Type joinTypes(Type t1, Type t2) {

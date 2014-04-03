@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,8 +54,6 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 		return new InlinedProgram(flatFunctions, flatNode);
 	}
 
-	private final Map<String, ArrayType> arrayTypes = new HashMap<>();
-	private final Map<String, RecordType> recordTypes = new HashMap<>();
 	private final Map<String, Function> originalFunctionTable;
 	private final TypeChecker typeChecker;
 
@@ -68,8 +65,8 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 	private List<Function> visitFunctions(List<Function> functions) {
 		List<Function> flattenedFunctions = new ArrayList<>();
 		for (Function function : functions) {
-			List<VarDecl> inputs = flattenTopLevelVarDecls(function.inputs);
-			List<VarDecl> outputs = flattenTopLevelVarDecls(function.outputs);
+			List<VarDecl> inputs = flattenVarDecls(function.inputs);
+			List<VarDecl> outputs = flattenVarDecls(function.outputs);
 			for (VarDecl output : outputs) {
 				String id = getBase(function.id) + "." + output.id;
 				List<VarDecl> singleOutput = Collections.singletonList(output);
@@ -85,25 +82,18 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 
 	private Node visitNode(Node node) {
 		typeChecker.repopulateVariableTable(node);
-		List<VarDecl> inputs = flattenTopLevelVarDecls(node.inputs);
-		List<VarDecl> outputs = flattenTopLevelVarDecls(node.outputs);
-		List<VarDecl> locals = flattenTopLevelVarDecls(node.locals);
+		List<VarDecl> inputs = flattenVarDecls(node.inputs);
+		List<VarDecl> outputs = flattenVarDecls(node.outputs);
+		List<VarDecl> locals = flattenVarDecls(node.locals);
 
 		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAssertions(node.assertions);
+		List<Expr> assertions = visitAll(node.assertions);
 		return new Node(node.id, inputs, outputs, locals, equations, node.properties, assertions);
 	}
 
-	private List<VarDecl> flattenTopLevelVarDecls(List<VarDecl> varDecls) {
+	private List<VarDecl> flattenVarDecls(List<VarDecl> varDecls) {
 		List<VarDecl> result = new ArrayList<>();
 		for (VarDecl varDecl : varDecls) {
-			if (varDecl.type instanceof ArrayType) {
-				ArrayType arrayType = (ArrayType) varDecl.type;
-				arrayTypes.put(varDecl.id, arrayType);
-			} else if (varDecl.type instanceof RecordType) {
-				RecordType recordType = (RecordType) varDecl.type;
-				recordTypes.put(varDecl.id, recordType);
-			}
 			result.addAll(flattenVarDecl(varDecl.id, varDecl.type));
 		}
 		return result;
@@ -144,20 +134,9 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 	private List<Equation> flattenTopLevelLeftHandSide(List<Equation> equations) {
 		List<Equation> result = new ArrayList<>();
 		for (Equation eq : equations) {
-			result.addAll(flattenTopLevelLeftHandSide(eq));
+			result.addAll(flattenLeftHandSide(eq, getType(eq.lhs.get(0))));
 		}
 		return result;
-	}
-
-	private List<Equation> flattenTopLevelLeftHandSide(Equation eq) {
-		String id = eq.lhs.get(0).id;
-		if (arrayTypes.containsKey(id)) {
-			return flattenLeftHandSide(eq, arrayTypes.get(id));
-		} else if (recordTypes.containsKey(id)) {
-			return flattenLeftHandSide(eq, recordTypes.get(id));
-		} else {
-			return Collections.singletonList(eq);
-		}
 	}
 
 	/*
@@ -204,14 +183,6 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 		List<Equation> result = new ArrayList<>();
 		for (Equation eq : equations) {
 			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-		}
-		return result;
-	}
-
-	private List<Expr> visitAssertions(List<Expr> exprs) {
-		List<Expr> result = new ArrayList<>();
-		for (Expr expr : exprs) {
-			result.add(expr.accept(this));
 		}
 		return result;
 	}
