@@ -25,6 +25,7 @@ public class ContainsSubrange implements TypeVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(RecordType e) {
+		// We only care if the toString() has subranges, thus records never do
 		return false;
 	}
 

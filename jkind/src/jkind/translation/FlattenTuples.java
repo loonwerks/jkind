@@ -63,5 +63,4 @@ public class FlattenTuples extends ExprMapVisitor {
 		return new IfThenElseExpr(e.location, e.cond, e.thenExpr.accept(this),
 				e.elseExpr.accept(this));
 	}
-
 }
