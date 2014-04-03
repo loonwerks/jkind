@@ -45,14 +45,6 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 				node.properties, assertions);
 	}
 
-	private List<Equation> visitEquations(List<Equation> equations) {
-		List<Equation> result = new ArrayList<>();
-		for (Equation eq : equations) {
-			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-		}
-		return result;
-	}
-
 	private boolean isConstant(Expr e) {
 		return e.accept(new ConstantAnalyzer());
 	}

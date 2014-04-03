@@ -13,6 +13,7 @@ public class FlattenCompoundTypes extends ExprMapVisitor {
 		node = RemoveNonConstantArrayIndices.node(node);
 		node = FlattenCompoundComparisons.node(node);
 		node = FlattenCompoundVariables.node(node);
+		node = FlattenCompoundExpressions.node(node);
 		return node;
 	}
 }

@@ -13,6 +13,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -112,10 +113,18 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 		return new UnaryExpr(e.location, e.op, e.expr.accept(this));
 	}
 
-	protected List<Expr> visitAll(List<? extends Expr> list) {
+	public List<Expr> visitAll(List<? extends Expr> list) {
 		List<Expr> result = new ArrayList<>();
 		for (Expr e : list) {
 			result.add(e.accept(this));
+		}
+		return result;
+	}
+	
+	public List<Equation> visitEquations(List<Equation> equations) {
+		List<Equation> result = new ArrayList<>();
+		for (Equation eq : equations) {
+			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
 		}
 		return result;
 	}

@@ -1,6 +1,5 @@
 package jkind.translation.compound;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jkind.analysis.TypeChecker;
@@ -32,14 +31,6 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 		List<Expr> assertions = visitAll(node.assertions);
 		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
 				node.properties, assertions);
-	}
-
-	private List<Equation> visitEquations(List<Equation> equations) {
-		List<Equation> results = new ArrayList<>();
-		for (Equation eq : equations) {
-			results.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-		}
-		return results;
 	}
 
 	@Override
