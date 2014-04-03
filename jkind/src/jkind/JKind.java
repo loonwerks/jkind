@@ -9,13 +9,12 @@ import jkind.lustre.Program;
 import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
-import jkind.translation.FlattenCompoundTypes;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.RemoveCondacts;
-import jkind.translation.RemoveNonConstantArrayIndices;
 import jkind.translation.Specification;
+import jkind.translation.compound.FlattenCompoundTypes;
 import jkind.translation.tuples.FlattenTuples;
 
 public class JKind {
@@ -44,7 +43,6 @@ public class JKind {
 			program = RemoveCondacts.program(program);
 			Node main = InlineNodeCalls.program(program);
 			main = FlattenTuples.node(main);
-			main = RemoveNonConstantArrayIndices.node(main);
 			main = FlattenCompoundTypes.node(main);
 
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);

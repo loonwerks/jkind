@@ -6,13 +6,13 @@ import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.translation.FlattenCompoundTypes;
 import jkind.translation.InlineConstants;
 import jkind.translation.InlineNodeCalls;
 import jkind.translation.InlineUserTypes;
 import jkind.translation.Node2Excel;
 import jkind.translation.RemoveCondacts;
-import jkind.translation.RemoveNonConstantArrayIndices;
+import jkind.translation.compound.FlattenCompoundTypes;
+import jkind.translation.compound.RemoveNonConstantArrayIndices;
 import jkind.translation.tuples.FlattenTuples;
 
 public class JLustre2Excel {

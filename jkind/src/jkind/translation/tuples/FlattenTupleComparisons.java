@@ -1,8 +1,6 @@
 package jkind.translation.tuples;
 
 import java.util.ArrayList;
-
-import java.util.Iterator;
 import java.util.List;
 
 import jkind.lustre.BinaryExpr;
@@ -14,9 +12,10 @@ import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.compound.CompoundUtil;
 
 /**
- * Expand equalities and inequalities on tuple expressions.
+ * Expand equalities and inequalities on tuples
  * 
  * Assumption: All tuple expressions have been lifted as far as possible.
  */
@@ -46,7 +45,7 @@ public class FlattenTupleComparisons extends ExprMapVisitor {
 			TupleExpr left = (TupleExpr) e.left.accept(this);
 			TupleExpr right = (TupleExpr) e.right.accept(this);
 			TupleExpr tuple = TupleUtil.mapBinary(BinaryOp.EQUAL, left, right);
-			Expr equal = conjoin(tuple.elements);
+			Expr equal = CompoundUtil.conjoin(tuple.elements);
 			if (e.op == BinaryOp.EQUAL) {
 				return equal;
 			} else {
@@ -55,15 +54,6 @@ public class FlattenTupleComparisons extends ExprMapVisitor {
 		} else {
 			return super.visit(e);
 		}
-	}
-
-	private Expr conjoin(List<Expr> exprs) {
-		Iterator<Expr> iterator = exprs.iterator();
-		Expr result = iterator.next();
-		while (iterator.hasNext()) {
-			result = new BinaryExpr(result, BinaryOp.AND, iterator.next());
-		}
-		return result;
 	}
 
 	private boolean isTupleComparison(BinaryExpr e) {
