@@ -3,14 +3,13 @@ package jkind.translation.compound;
 import java.util.HashMap;
 import java.util.Map;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.TypeAwareExprMapVisitor;
 
 /**
  * Removes all record updates via expansion to full record expressions.
@@ -28,29 +27,17 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * 
  * Guarantees: All record update expressions are removed
  */
-public class RemoveRecordUpdates extends ExprMapVisitor {
+public class RemoveRecordUpdates extends TypeAwareExprMapVisitor {
 	public static Node node(Node node) {
 		return new RemoveRecordUpdates().visitNode(node);
 	}
-
-	private final TypeReconstructor typeReconstructor = new TypeReconstructor();
-
-	@Override
-	public Node visitNode(Node node) {
-		typeReconstructor.setNodeContext(node);
-		return super.visitNode(node);
-	}
-
-	private RecordType getRecordType(Expr e) {
-		return (RecordType) e.accept(typeReconstructor);
-	}
-
+	
 	@Override
 	public Expr visit(RecordUpdateExpr e) {
 		Expr record = e.record.accept(this);
 		Expr value = e.value.accept(this);
 
-		RecordType rt = getRecordType(record);
+		RecordType rt = (RecordType) getType(record);
 		Map<String, Expr> fields = new HashMap<>();
 
 		for (String key : rt.fields.keySet()) {

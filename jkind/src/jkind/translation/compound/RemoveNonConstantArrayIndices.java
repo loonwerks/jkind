@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.analysis.ConstantAnalyzer;
-import jkind.analysis.TypeReconstructor;
 import jkind.analysis.evaluation.ConstantEvaluator;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -18,8 +17,8 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.values.IntegerValue;
-import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.translation.DefaultValueVisitor;
+import jkind.translation.TypeAwareExprMapVisitor;
 
 /**
  * Replace all non-constant array indices using if-then-else expressions.
@@ -27,17 +26,9 @@ import jkind.translation.DefaultValueVisitor;
  * 
  * Assumption: All node calls have been inlined.
  */
-public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
+public class RemoveNonConstantArrayIndices extends TypeAwareExprMapVisitor {
 	public static Node node(Node node) {
 		return new RemoveNonConstantArrayIndices().visitNode(node);
-	}
-
-	private final TypeReconstructor typeReconstructor = new TypeReconstructor();
-
-	@Override
-	public Node visitNode(Node node) {
-		typeReconstructor.setNodeContext(node);
-		return super.visitNode(node);
 	}
 
 	private boolean isConstant(Expr e) {
@@ -47,10 +38,6 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 	private IntExpr evalIndex(Expr e) {
 		IntegerValue value = (IntegerValue) e.accept(new ConstantEvaluator());
 		return new IntExpr(value.value);
-	}
-
-	private ArrayType getArrayType(Expr e) {
-		return (ArrayType) e.accept(typeReconstructor);
 	}
 
 	@Override
@@ -65,7 +52,7 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 	}
 
 	private Expr expandArrayAccess(Expr array, Expr index) {
-		ArrayType arrayType = getArrayType(array);
+		ArrayType arrayType = (ArrayType) getType(array);
 		Expr result = getDefaultValue(arrayType.base);
 		for (int i = arrayType.size - 1; i >= 0; i--) {
 			Expr cond = new BinaryExpr(index, BinaryOp.EQUAL, new IntExpr(i));
@@ -92,7 +79,7 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 	}
 
 	private Expr expandNonConstantArrayUpdate(Expr array, Expr index, Expr value) {
-		ArrayType arrayType = getArrayType(array);
+		ArrayType arrayType = (ArrayType) getType(array);
 		List<Expr> elements = new ArrayList<>();
 		for (int i = 0; i < arrayType.size; i++) {
 			Expr cond = new BinaryExpr(index, BinaryOp.EQUAL, new IntExpr(i));

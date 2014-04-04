@@ -2,7 +2,6 @@ package jkind.translation.compound;
 
 import java.util.List;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -12,22 +11,14 @@ import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.TypeAwareExprMapVisitor;
 
 /**
  * Expand equalities and inequalities on records and arrays
  */
-public class FlattenCompoundComparisons extends ExprMapVisitor {
+public class FlattenCompoundComparisons extends TypeAwareExprMapVisitor {
 	public static Node node(Node node) {
 		return new FlattenCompoundComparisons().visitNode(node);
-	}
-
-	private final TypeReconstructor typeReconstructor = new TypeReconstructor();
-
-	@Override
-	public Node visitNode(Node node) {
-		typeReconstructor.setNodeContext(node);
-		return super.visitNode(node);
 	}
 
 	@Override
@@ -54,9 +45,5 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 		}
 
 		return new BinaryExpr(e.location, left, e.op, right);
-	}
-
-	private Type getType(Expr e) {
-		return e.accept(typeReconstructor);
 	}
 }

@@ -3,7 +3,6 @@ package jkind.translation.compound;
 import java.util.ArrayList;
 import java.util.List;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
@@ -11,7 +10,7 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.TypeAwareExprMapVisitor;
 
 /**
  * Replace all non-constant array indices using if-then-else expressions. Remove
@@ -19,30 +18,18 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * 
  * Assumption: All node calls have been inlined.
  */
-public class RemoveArrayUpdates extends ExprMapVisitor {
+public class RemoveArrayUpdates extends TypeAwareExprMapVisitor {
 	public static Node node(Node node) {
 		return new RemoveArrayUpdates().visitNode(node);
 	}
-
-	private final TypeReconstructor typeReconstructor = new TypeReconstructor();
-
-	@Override
-	public Node visitNode(Node node) {
-		typeReconstructor.setNodeContext(node);
-		return super.visitNode(node);
-	}
-
-	private ArrayType getArrayType(Expr e) {
-		return (ArrayType) e.accept(typeReconstructor);
-	}
-
+	
 	@Override
 	public Expr visit(ArrayUpdateExpr e) {
 		Expr array = e.array.accept(this);
 		IntExpr indexExpr = (IntExpr) e.index;
 		Expr value = e.value.accept(this);
 
-		ArrayType at = getArrayType(array);
+		ArrayType at = (ArrayType) getType(array);
 		int index = indexExpr.value.intValue();
 		List<Expr> elements = new ArrayList<>();
 		for (int i = 0; i < at.size; i++) {
