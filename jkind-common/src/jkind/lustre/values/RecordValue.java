@@ -1,6 +1,7 @@
 package jkind.lustre.values;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +19,12 @@ public class RecordValue extends Value {
 
 	public RecordValue(Map<String, Value> fields) {
 		this.fields = Collections.unmodifiableSortedMap(new TreeMap<>(fields));
+	}
+
+	public Value update(String field, Value value) {
+		Map<String, Value> copy = new HashMap<>(fields);
+		copy.put(field, value);
+		return new RecordValue(copy);
 	}
 
 	@Override
@@ -52,7 +59,7 @@ public class RecordValue extends Value {
 	public int hashCode() {
 		return fields.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RecordValue) {

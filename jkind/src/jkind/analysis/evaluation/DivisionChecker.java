@@ -1,9 +1,11 @@
 package jkind.analysis.evaluation;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
+import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -27,9 +29,18 @@ public class DivisionChecker extends ExprIterVisitor {
 	}
 
 	public void visitProgram(Program program) {
-		constantEvaluator = new ConstantEvaluator(program.constants);
+		visitConstants(program.constants);
 		for (Node node : program.nodes) {
 			visitNode(node);
+		}
+	}
+
+	private void visitConstants(List<Constant> constants) {
+		constantEvaluator = new ConstantEvaluator();
+		for (Constant c : constants) {
+			// Check constants for division by zero, before admitting them
+			c.expr.accept(this);
+			constantEvaluator.addConstant(c);
 		}
 	}
 

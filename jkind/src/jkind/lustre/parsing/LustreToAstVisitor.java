@@ -32,6 +32,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
@@ -72,6 +73,7 @@ import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
+import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
 import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
 import jkind.lustre.parsing.LustreParser.TupleExprContext;
@@ -325,6 +327,12 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	@Override
 	public Expr visitRecordAccessExpr(RecordAccessExprContext ctx) {
 		return new RecordAccessExpr(loc(ctx), expr(ctx.expr()), ctx.ID().getText());
+	}
+
+	@Override
+	public Expr visitRecordUpdateExpr(RecordUpdateExprContext ctx) {
+		return new RecordUpdateExpr(loc(ctx), expr(ctx.expr(0)), ctx.ID().getText(),
+				expr(ctx.expr(1)));
 	}
 
 	@Override

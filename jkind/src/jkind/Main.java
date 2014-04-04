@@ -1,5 +1,6 @@
 package jkind;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -67,6 +68,11 @@ public class Main {
 	}
 
 	public static Program parseLustre(String filename) throws IOException, RecognitionException {
+		if (!new File(filename).exists()) {
+			System.out.println("Error: cannot find file " + filename);
+			System.exit(-1);
+		}
+		
 		CharStream stream = new ANTLRFileStream(filename);
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

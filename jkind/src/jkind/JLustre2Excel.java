@@ -1,7 +1,5 @@
 package jkind;
 
-import java.io.File;
-
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.InlinedProgram;
@@ -18,21 +16,9 @@ public class JLustre2Excel {
 			}
 			String filename = args[0];
 
-			if (!new File(filename).exists()) {
-				System.out.println("Error: cannot find file " + filename);
-				System.exit(-1);
-			}
-
 			Program program = Main.parseLustre(filename);
-			if (program.getMainNode() == null) {
-				System.out.println("Error: no main node");
-				System.exit(-1);
-			}
-
-			if (!StaticAnalyzer.check(program, Level.WARNING)) {
-				System.exit(-1);
-			}
-
+			StaticAnalyzer.check(program, Level.WARNING);
+			
 			InlinedProgram ip = Translate.translate(program);
 			String outFilename = filename + ".xls";
 			Node2Excel.convert(ip.node, outFilename);

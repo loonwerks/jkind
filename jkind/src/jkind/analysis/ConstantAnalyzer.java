@@ -24,6 +24,7 @@ import jkind.lustre.Node;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -135,6 +136,11 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 		return visitAll(e.fields.values());
 	}
 
+	@Override
+	public Boolean visit(RecordUpdateExpr e) {
+		return e.record.accept(this) && e.value.accept(this);
+	}
+	
 	@Override
 	public Boolean visit(TupleExpr e) {
 		return visitAll(e.elements);

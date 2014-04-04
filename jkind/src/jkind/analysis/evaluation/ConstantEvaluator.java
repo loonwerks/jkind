@@ -1,8 +1,6 @@
 package jkind.analysis.evaluation;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +26,7 @@ import jkind.lustre.Node;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
@@ -43,82 +42,74 @@ import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
-	private Map<String, Value> constants;
-	private Set<String> hidden;
+	private final Map<String, Value> constants;
+	private final Set<String> hidden;
 
 	public ConstantEvaluator() {
-		constants = Collections.emptyMap();
-		hidden = Collections.emptySet();
+		constants = new HashMap<>();
+		hidden = new HashSet<>();
 	}
 
-	public ConstantEvaluator(List<Constant> constantDecls) {
-		constants = new HashMap<>();
-		for (Constant c : constantDecls) {
-			constants.put(c.id, eval(c.expr));
+	public ConstantEvaluator(List<Constant> constants) {
+		this();
+		for (Constant c : constants) {
+			addConstant(c);
 		}
 	}
 
+	public Value addConstant(Constant c) {
+		return constants.put(c.id, c.expr.accept(this));
+	}
+
 	public void setHidden(Node node) {
-		hidden = new HashSet<>();
+		hidden.clear();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			hidden.add(decl.id);
 		}
 	}
 
-	private Value eval(Expr e) {
-		try {
-			return e.accept(this);
-		} catch (ArithmeticException ae) {
-			System.out.println("Error at line " + e.location + " division by zero");
-			throw new DivisionException();
-		}
-	}
-
 	@Override
 	public Value visit(ArrayAccessExpr e) {
-		Value value = e.array.accept(this);
-		Value indexValue = e.index.accept(this);
-		if (value instanceof ArrayValue && indexValue instanceof IntegerValue) {
-			ArrayValue arrayValue = (ArrayValue) value;
-			BigInteger index = ((IntegerValue) indexValue).value;
-			return arrayValue.elements.get(index.intValue());
-		} else {
+		ArrayValue array = (ArrayValue) e.array.accept(this);
+		IntegerValue index = (IntegerValue) e.index.accept(this);
+		if (array == null || index == null) {
 			return null;
 		}
+		return array.elements.get(index.value.intValue());
 	}
 
 	@Override
 	public Value visit(ArrayExpr e) {
 		List<Value> elements = new ArrayList<>();
 		for (Expr element : e.elements) {
-			elements.add(element.accept(this));
+			Value value = element.accept(this);
+			if (value == null) {
+				return null;
+			}
+			elements.add(value);
 		}
 		return new ArrayValue(elements);
 	}
 
 	@Override
 	public Value visit(ArrayUpdateExpr e) {
-		Value value = e.array.accept(this);
-		Value indexValue = e.index.accept(this);
-		Value valueValue = e.value.accept(this);
-		if (value instanceof ArrayValue && indexValue instanceof IntegerValue) {
-			ArrayValue arrayValue = (ArrayValue) value;
-			BigInteger index = ((IntegerValue) indexValue).value;
-			return arrayValue.update(index.intValue(), valueValue);
-		} else {
+		ArrayValue array = (ArrayValue) e.array.accept(this);
+		IntegerValue index = (IntegerValue) e.index.accept(this);
+		Value value = e.value.accept(this);
+		if (array == null || index == null || value == null) {
 			return null;
 		}
+		return array.update(index.value.intValue(), value);
 	}
 
 	@Override
 	public Value visit(BinaryExpr e) {
-		Value left = eval(e.left);
-		Value right = eval(e.right);
-		if (left == null) {
+		Value left = e.left.accept(this);
+		Value right = e.right.accept(this);
+		if (left == null || right == null) {
 			return null;
-		} else {
-			return left.applyBinaryOp(e.op, right);
 		}
+		return left.applyBinaryOp(e.op, right);
 	}
 
 	@Override
@@ -128,7 +119,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(CastExpr e) {
-		Value value = eval(e.expr);
+		Value value = e.expr.accept(this);
+		if (value == null) {
+			return null;
+		}
+
 		if (e.type == NamedType.REAL && value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;
 			return new RealValue(new BigFraction(iv.value));
@@ -161,16 +156,15 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IfThenElseExpr e) {
-		Value cond = eval(e);
-		if (!(cond instanceof BooleanValue)) {
+		BooleanValue cond = (BooleanValue) e.accept(this);
+		if (cond == null) {
 			return null;
 		}
-		boolean condValue = ((BooleanValue) cond).value;
 
-		if (condValue) {
-			return eval(e.thenExpr);
+		if (cond.value) {
+			return e.thenExpr.accept(this);
 		} else {
-			return eval(e.elseExpr);
+			return e.elseExpr.accept(this);
 		}
 	}
 
@@ -186,40 +180,55 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(RecordAccessExpr e) {
-		Value value = e.record.accept(this);
-		if (value instanceof RecordValue) {
-			RecordValue recordValue = (RecordValue) value;
-			return recordValue.fields.get(e.field);
-		} else {
+		RecordValue record = (RecordValue) e.record.accept(this);
+		if (record == null) {
 			return null;
 		}
-	}
-
-	@Override
-	public Value visit(TupleExpr e) {
-		List<Value> elements = new ArrayList<>();
-		for (Expr element : e.elements) {
-			elements.add(element.accept(this));
-		}
-		return new TupleValue(elements);
-	}
-	
-	@Override
-	public Value visit(UnaryExpr e) {
-		Value value = eval(e.expr);
-		if (value == null) {
-			return null;
-		} else {
-			return value.applyUnaryOp(e.op);
-		}
+		return record.fields.get(e.field);
 	}
 
 	@Override
 	public Value visit(RecordExpr e) {
 		Map<String, Value> fields = new HashMap<>();
 		for (Entry<String, Expr> entry : e.fields.entrySet()) {
-			fields.put(entry.getKey(), entry.getValue().accept(this));
+			Value value = entry.getValue().accept(this);
+			if (value == null) {
+				return null;
+			}
+			fields.put(entry.getKey(), value);
 		}
 		return new RecordValue(fields);
+	}
+
+	@Override
+	public Value visit(RecordUpdateExpr e) {
+		RecordValue record = (RecordValue) e.record.accept(this);
+		Value value = e.value.accept(this);
+		if (record == null || value == null) {
+			return null;
+		}
+		return record.update(e.field, value);
+	}
+
+	@Override
+	public Value visit(TupleExpr e) {
+		List<Value> elements = new ArrayList<>();
+		for (Expr element : e.elements) {
+			Value value = element.accept(this);
+			if (value == null) {
+				return null;
+			}
+			elements.add(value);
+		}
+		return new TupleValue(elements);
+	}
+
+	@Override
+	public Value visit(UnaryExpr e) {
+		Value value = e.expr.accept(this);
+		if (value == null) {
+			return null;
+		}
+		return value.applyUnaryOp(e.op);
 	}
 }

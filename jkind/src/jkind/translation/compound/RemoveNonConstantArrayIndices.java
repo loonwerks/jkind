@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.analysis.ConstantAnalyzer;
-import jkind.analysis.TypeChecker;
+import jkind.analysis.TypeReconstructor;
 import jkind.analysis.evaluation.ConstantEvaluator;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -37,15 +37,15 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 		return new InlinedProgram(ip.functions, node);
 	}
 
-	private final TypeChecker typeChecker;
-
 	public RemoveNonConstantArrayIndices(List<Function> functions) {
-		this.typeChecker = new TypeChecker(functions);
+		this.typeReconstructor = new TypeReconstructor(functions);
 	}
+
+	private final TypeReconstructor typeReconstructor;
 
 	@Override
 	public Node visitNode(Node node) {
-		typeChecker.repopulateVariableTable(node);
+		typeReconstructor.setNodeContext(node);
 		return super.visitNode(node);
 	}
 
@@ -59,7 +59,7 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 	}
 
 	private ArrayType getArrayType(Expr e) {
-		return (ArrayType) e.accept(typeChecker);
+		return (ArrayType) e.accept(typeReconstructor);
 	}
 
 	@Override

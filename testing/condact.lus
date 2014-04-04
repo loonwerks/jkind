@@ -1,5 +1,8 @@
 -- This file exercises some properties of condacts.
--- All properties in this file are vaild.
+--
+-- Expected output:
+--   VALID PROPERTIES: [holds~condact~0.ok~clocked_property,
+--                      ok1, ok2, ok3, ok7, ok4, ok5, ok6]
 
 node integ(x : int) returns (sum : int);
 let
@@ -29,44 +32,44 @@ let
   out = condact(toggle, counter(), 0);  
 tel;
 
-node prop(x : bool) returns ();
+node holds(x : bool) returns ();
 var
-  prop : bool;
+  ok : bool;
 let
-  prop = x;
-  --%PROPERTY prop;
+  ok = x;
+  --%PROPERTY ok;
 tel;
 
 node main(x, y : int) returns ();
 var
   toggle : bool;
-  prop1, prop2, prop3, prop4, prop5, prop6, prop7 : bool;
+  ok1, ok2, ok3, ok4, ok5, ok6, ok7 : bool;
 let
   toggle = true -> not pre toggle;
   
-  prop1 = historically(toggle => x >= 0) =>
+  ok1 = historically(toggle => x >= 0) =>
             condact(toggle, integ(x), 0) >= 0;
-  --%PROPERTY prop1;
+  --%PROPERTY ok1;
 
-  prop2 = condact(toggle, integ(x), 0) + condact(toggle, integ(y), 0) =
+  ok2 = condact(toggle, integ(x), 0) + condact(toggle, integ(y), 0) =
           condact(toggle, integ(x + y), 0);
-  --%PROPERTY prop2;
+  --%PROPERTY ok2;
 
-  prop3 = condact(toggle, double_counter(), 0) <= counter();
-  --%PROPERTY prop3;
+  ok3 = condact(toggle, double_counter(), 0) <= counter();
+  --%PROPERTY ok3;
 
-  prop4 = counter() <= 1 + condact(toggle, double_counter(), 0);
-  --%PROPERTY prop4;
+  ok4 = counter() <= 1 + condact(toggle, double_counter(), 0);
+  --%PROPERTY ok4;
 
-  prop5 = 4 * condact(toggle, slow_counter(), 0) <= counter();
-  --%PROPERTY prop5;
+  ok5 = 4 * condact(toggle, slow_counter(), 0) <= counter();
+  --%PROPERTY ok5;
 
-  prop6 = counter() <= 4 * (1 + condact(toggle, slow_counter(), 0));
-  --%PROPERTY prop6;
+  ok6 = counter() <= 4 * (1 + condact(toggle, slow_counter(), 0));
+  --%PROPERTY ok6;
 
-  prop7 = condact(toggle, integ(x), 0) + condact(not(toggle), integ(x), 0) = integ(x);
-  --%PROPERTY prop7;
+  ok7 = condact(toggle, integ(x), 0) + condact(not(toggle), integ(x), 0) = integ(x);
+  --%PROPERTY ok7;
 
   -- This requires properly clocking subnode properties
-  condact(toggle, prop(toggle));
+  condact(toggle, holds(toggle));
 tel;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jkind.analysis.TypeChecker;
+import jkind.analysis.TypeReconstructor;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
@@ -43,12 +43,12 @@ public class RemoveCondacts {
 	private final Program program;
 	private final Map<String, Node> nodeTable;
 	private final List<Node> resultNodes = new ArrayList<>();
-	private final TypeChecker typeChecker;
+	private final TypeReconstructor typeReconstructor;
 
 	private RemoveCondacts(Program program) {
 		this.program = program;
 		this.nodeTable = Util.getNodeTable(program.nodes);
-		this.typeChecker = new TypeChecker(program);
+		this.typeReconstructor = new TypeReconstructor(program);
 	}
 
 	private void remove() {
@@ -99,7 +99,7 @@ public class RemoveCondacts {
 		}
 
 		Node node = nodeTable.get(id);
-		typeChecker.repopulateVariableTable(node);
+		typeReconstructor.setNodeContext(node);
 		IdExpr clock = new IdExpr("~clock");
 		node = addClock(node, clock);
 		node = clockArrowsAndPres(node, clock);
@@ -167,7 +167,7 @@ public class RemoveCondacts {
 			public Expr visit(UnaryExpr e) {
 				if (e.op == UnaryOp.PRE) {
 					String state = "~state" + counter++;
-					Type type = e.expr.accept(typeChecker);
+					Type type = e.expr.accept(typeReconstructor);
 					preLocals.add(new VarDecl(state, type));
 					// state = if clock then expr else pre state
 					preEquations.add(new Equation(new IdExpr(state), new IfThenElseExpr(clock,
@@ -231,7 +231,7 @@ public class RemoveCondacts {
 		}
 
 		Node node = nodeTable.get(id);
-		typeChecker.repopulateVariableTable(node);
+		typeReconstructor.setNodeContext(node);
 		IdExpr clock = new IdExpr("~clock");
 		node = addClock(node, clock);
 		node = clockArrowsAndPres(node, clock);

@@ -2,7 +2,7 @@ package jkind.translation.compound;
 
 import java.util.List;
 
-import jkind.analysis.TypeChecker;
+import jkind.analysis.TypeReconstructor;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -26,14 +26,14 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 	}
 	
 	public FlattenCompoundComparisons(List<Function> functions) {
-		this.typeChecker = new TypeChecker(functions);
+		this.typeReconstructor = new TypeReconstructor(functions);
 	}
 
-	private final TypeChecker typeChecker;
+	private final TypeReconstructor typeReconstructor;
 
 	@Override
 	public Node visitNode(Node node) {
-		typeChecker.repopulateVariableTable(node);
+		typeReconstructor.setNodeContext(node);
 		return super.visitNode(node);
 	}
 
@@ -70,6 +70,6 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 	 * information instead.
 	 */
 	private Type getType(Expr e) {
-		return e.accept(typeChecker);
+		return e.accept(typeReconstructor);
 	}
 }

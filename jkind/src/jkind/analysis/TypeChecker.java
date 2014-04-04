@@ -33,6 +33,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.TupleType;
@@ -45,33 +46,23 @@ import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
-	private Map<String, Type> typeTable;
-	private Map<String, Type> constantTable;
-	private Map<String, Type> variableTable;
-	private Map<String, Function> functionTable;
-	private Map<String, Node> nodeTable;
+	private final Map<String, Type> typeTable;
+	private final Map<String, Type> constantTable;
+	private final Map<String, Type> variableTable;
+	private final Map<String, Function> functionTable;
+	private final Map<String, Node> nodeTable;
 	private boolean passed;
 
-	private TypeChecker() {
+	private TypeChecker(Program program) {
 		this.typeTable = new HashMap<>();
 		this.constantTable = new HashMap<>();
 		this.variableTable = new HashMap<>();
-		this.functionTable = new HashMap<>();
-		this.nodeTable = new HashMap<>();
-		this.passed = true;
-	}
-
-	public TypeChecker(Program program) {
-		this();
-		populateTypeTable(program.types);
-		populateConstantTable(program.constants);
 		this.functionTable = Util.getFunctionTable(program.functions);
 		this.nodeTable = Util.getNodeTable(program.nodes);
-	}
-
-	public TypeChecker(List<Function> functions) {
-		this();
-		this.functionTable = Util.getFunctionTable(functions);
+		this.passed = true;
+		
+		populateTypeTable(program.types);
+		populateConstantTable(program.constants);
 	}
 
 	public static boolean check(Program program) {
@@ -105,7 +96,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	public boolean visitNode(Node node) {
+	private boolean visitNode(Node node) {
 		repopulateVariableTable(node);
 
 		for (Equation eq : node.equations) {
@@ -119,7 +110,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return passed;
 	}
 
-	public void repopulateVariableTable(Node node) {
+	private void repopulateVariableTable(Node node) {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
 			variableTable.put(v.id, resolveType(v.type));
@@ -495,9 +486,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		Type expectedType = typeTable.get(e.id);
-		if (expectedType == null) {
-			return null;
-		} else if (!(expectedType instanceof RecordType)) {
+		if (!(expectedType instanceof RecordType)) {
 			error(e, "unknown record type " + e.id);
 			return null;
 		}
@@ -523,6 +512,31 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		return new RecordType(e.location, e.id, fields);
+	}
+
+	@Override
+	public Type visit(RecordUpdateExpr e) {
+		Type type = e.record.accept(this);
+		Type valueType = e.value.accept(this);
+
+		if (type == null || valueType == null) {
+			return null;
+		}
+
+		if (type instanceof RecordType) {
+			RecordType rt = (RecordType) type;
+			if (rt.fields.containsKey(e.field)) {
+				Type fieldType = rt.fields.get(e.field);
+				compareTypeAssignment(e.value, fieldType, valueType);
+				return rt;
+			} else {
+				error(e, "expected record type with field " + e.field + ", but found "
+						+ simple(type));
+			}
+		} else {
+			error(e.record, "expected a record type, but found " + simple(type));
+		}
+		return null;
 	}
 
 	@Override

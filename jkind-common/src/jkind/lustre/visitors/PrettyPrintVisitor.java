@@ -26,6 +26,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -416,6 +417,17 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	}
 
 	@Override
+	public Void visit(RecordUpdateExpr e) {
+		expr(e.record);
+		write("{");
+		write(e.field);
+		write(" := ");
+		expr(e.value);
+		write("}");
+		return null;
+	}
+
+	@Override
 	public Void visit(TupleExpr e) {
 		if (e.elements.isEmpty()) {
 			write("()");
@@ -435,11 +447,14 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 
 	@Override
 	public Void visit(UnaryExpr e) {
+		write("(");
 		write(e.op);
 		if (e.op != UnaryOp.NEGATIVE) {
 			write(" ");
 		}
 		expr(e.expr);
+		write(")");
 		return null;
 	}
+
 }

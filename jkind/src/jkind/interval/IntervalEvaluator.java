@@ -16,6 +16,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -128,6 +129,11 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 
 	@Override
 	public Interval visit(RecordExpr e) {
+		throw new IllegalArgumentException();
+	}
+	
+	@Override
+	public Interval visit(RecordUpdateExpr e) {
 		throw new IllegalArgumentException();
 	}
 
