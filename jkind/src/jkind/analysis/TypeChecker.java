@@ -45,25 +45,21 @@ import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
-	private Map<String, Type> typeTable;
-	private Map<String, Type> constantTable;
-	private Map<String, Type> variableTable;
-	private Map<String, Node> nodeTable;
+	private final Map<String, Type> typeTable;
+	private final Map<String, Type> constantTable;
+	private final Map<String, Type> variableTable;
+	private final Map<String, Node> nodeTable;
 	private boolean passed;
 
-	public TypeChecker() {
+	private TypeChecker(Program program) {
 		this.typeTable = new HashMap<>();
 		this.constantTable = new HashMap<>();
 		this.variableTable = new HashMap<>();
-		this.nodeTable = new HashMap<>();
+		this.nodeTable = Util.getNodeTable(program.nodes);
 		this.passed = true;
-	}
-
-	public TypeChecker(Program program) {
-		this();
+		
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
-		this.nodeTable = Util.getNodeTable(program.nodes);
 	}
 
 	public static boolean check(Program program) {
@@ -97,7 +93,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 	}
 
-	public boolean visitNode(Node node) {
+	private boolean visitNode(Node node) {
 		repopulateVariableTable(node);
 
 		for (Equation eq : node.equations) {
@@ -111,7 +107,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return passed;
 	}
 
-	public void repopulateVariableTable(Node node) {
+	private void repopulateVariableTable(Node node) {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
 			variableTable.put(v.id, resolveType(v.type));
@@ -473,12 +469,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		Type expectedType = typeTable.get(e.id);
-		if (expectedType == null) {
-			/* When the typechecker is called during translation, 
-			 * record types might not be available, so we infer one.
-			 */
-			return new RecordType(e.id, fields);
-		} else if (!(expectedType instanceof RecordType)) {
+		if (!(expectedType instanceof RecordType)) {
 			error(e, "unknown record type " + e.id);
 			return null;
 		}

@@ -19,7 +19,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 	private boolean passed = true;
 	private ConstantAnalyzer constantAnalyzer;
 	private ConstantEvaluator constantEvaluator;
-	private TypeChecker typeChecker;
+	private TypeReconstructor typeReconstructor;
 
 	public static boolean check(Program program) {
 		return new ConstantArrayAccessBounded().visitProgram(program);
@@ -27,7 +27,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 
 	public boolean visitProgram(Program program) {
 		constantEvaluator = new ConstantEvaluator(program.constants);
-		typeChecker = new TypeChecker(program);
+		typeReconstructor = new TypeReconstructor(program);
 
 		for (Node node : program.nodes) {
 			visitNode(node, program.constants);
@@ -39,7 +39,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 	public void visitNode(Node node, List<Constant> constants) {
 		constantAnalyzer = new ConstantAnalyzer(node, constants);
 		constantEvaluator.setHidden(node);
-		typeChecker.repopulateVariableTable(node);
+		typeReconstructor.setNodeContext(node);
 
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
@@ -76,7 +76,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 	}
 
 	private ArrayType getArrayType(Expr e) {
-		return (ArrayType) e.accept(typeChecker);
+		return (ArrayType) e.accept(typeReconstructor);
 	}
 
 	private boolean isConstant(Expr e) {

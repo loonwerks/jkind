@@ -3,7 +3,7 @@ package jkind.translation.compound;
 import java.util.HashMap;
 import java.util.Map;
 
-import jkind.analysis.TypeChecker;
+import jkind.analysis.TypeReconstructor;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.RecordAccessExpr;
@@ -33,16 +33,16 @@ public class RemoveRecordUpdates extends ExprMapVisitor {
 		return new RemoveRecordUpdates().visitNode(node);
 	}
 
-	private final TypeChecker typeChecker = new TypeChecker();
+	private final TypeReconstructor typeReconstructor = new TypeReconstructor();
 
 	@Override
 	public Node visitNode(Node node) {
-		typeChecker.repopulateVariableTable(node);
+		typeReconstructor.setNodeContext(node);
 		return super.visitNode(node);
 	}
 
 	private RecordType getRecordType(Expr e) {
-		return (RecordType) e.accept(typeChecker);
+		return (RecordType) e.accept(typeReconstructor);
 	}
 
 	@Override
