@@ -24,12 +24,10 @@ import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.translation.DefaultValueVisitor;
 
 /**
- * Replace all non-constant array indices using if-then-else expressions. Remove
- * all array updates entirely.
+ * Replace all non-constant array indices using if-then-else expressions.
+ * Constant array indices are evaluated to be integer literal.
  * 
  * Assumption: All node calls have been inlined.
- * 
- * Assumption: All user types have been inlined.
  */
 public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
@@ -94,28 +92,12 @@ public class RemoveNonConstantArrayIndices extends ExprMapVisitor {
 		Expr index = e.index.accept(this);
 		Expr value = e.value.accept(this);
 		if (isConstant(index)) {
-			return expandConstantArrayUpdate(array, evalIndex(index), value);
+			return new ArrayUpdateExpr(array, evalIndex(index), value);
 		} else {
 			return expandNonConstantArrayUpdate(array, index, value);
 		}
 	}
 
-	private Expr expandConstantArrayUpdate(Expr array, IntExpr indexExpr, Expr value) {
-		ArrayType arrayType = getArrayType(array);
-		int index = indexExpr.value.intValue();
-		List<Expr> elements = new ArrayList<>();
-
-		for (int i = 0; i < arrayType.size; i++) {
-			if (i == index) {
-				elements.add(value);
-			} else {
-				elements.add(new ArrayAccessExpr(array, i));
-			}
-		}
-
-		return new ArrayExpr(elements);
-	}
-	
 	private Expr expandNonConstantArrayUpdate(Expr array, Expr index, Expr value) {
 		ArrayType arrayType = getArrayType(array);
 		List<Expr> elements = new ArrayList<>();

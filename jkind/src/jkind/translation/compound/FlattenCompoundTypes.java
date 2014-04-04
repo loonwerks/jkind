@@ -11,6 +11,7 @@ import jkind.lustre.visitors.ExprMapVisitor;
 public class FlattenCompoundTypes extends ExprMapVisitor {
 	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
 		ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
+		ip = RemoveArrayUpdates.inlinedProgram(ip);
 		ip = RemoveRecordUpdates.inlinedProgram(ip);
 		ip = FlattenCompoundComparisons.inlinedProgram(ip);
 		ip = FlattenCompoundVariables.inlinedProgram(ip);
