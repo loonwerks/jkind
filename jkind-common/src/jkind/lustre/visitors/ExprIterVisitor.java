@@ -17,6 +17,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 
@@ -109,6 +110,13 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(RecordUpdateExpr e) {
+		e.record.accept(this);
+		e.value.accept(this);
+		return null;
+	}
+	
 	@Override
 	public Void visit(TupleExpr e) {
 		visitAll(e.elements);

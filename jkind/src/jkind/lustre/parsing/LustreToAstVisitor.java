@@ -31,6 +31,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
@@ -70,6 +71,7 @@ import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
+import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
 import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
 import jkind.lustre.parsing.LustreParser.TupleExprContext;
@@ -228,7 +230,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	public Type visitRealType(RealTypeContext ctx) {
 		return NamedType.REAL;
 	}
-	
+
 	@Override
 	public Type visitArrayType(ArrayTypeContext ctx) {
 		return new ArrayType(loc(ctx), type(ctx.type()), Integer.parseInt(ctx.INT().getText()));
@@ -314,6 +316,12 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
+	public Expr visitRecordUpdateExpr(RecordUpdateExprContext ctx) {
+		return new RecordUpdateExpr(loc(ctx), expr(ctx.expr(0)), ctx.ID().getText(),
+				expr(ctx.expr(1)));
+	}
+
+	@Override
 	public Expr visitArrayAccessExpr(ArrayAccessExprContext ctx) {
 		return new ArrayAccessExpr(loc(ctx), expr(ctx.expr(0)), expr(ctx.expr(1)));
 	}
@@ -360,7 +368,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new RecordExpr(loc(ctx), ctx.ID(0).getText(), fields);
 	}
-	
+
 	@Override
 	public Expr visitArrayExpr(ArrayExprContext ctx) {
 		List<Expr> elements = new ArrayList<>();
@@ -369,7 +377,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new ArrayExpr(loc(ctx), elements);
 	}
-	
+
 	@Override
 	public Expr visitTupleExpr(TupleExprContext ctx) {
 		List<Expr> elements = new ArrayList<>();
@@ -378,7 +386,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new TupleExpr(loc(ctx), elements);
 	}
-	
+
 	@Override
 	public Expr visitParenExpr(ParenExprContext ctx) {
 		return expr(ctx.expr());

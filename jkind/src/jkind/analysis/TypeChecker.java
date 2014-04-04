@@ -32,6 +32,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
+import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.TupleType;
@@ -473,7 +474,10 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		Type expectedType = typeTable.get(e.id);
 		if (expectedType == null) {
-			return null;
+			/* When the typechecker is called during translation, 
+			 * record types might not be available, so we infer one.
+			 */
+			return new RecordType(e.id, fields);
 		} else if (!(expectedType instanceof RecordType)) {
 			error(e, "unknown record type " + e.id);
 			return null;
@@ -500,6 +504,31 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		return new RecordType(e.location, e.id, fields);
+	}
+
+	@Override
+	public Type visit(RecordUpdateExpr e) {
+		Type type = e.record.accept(this);
+		Type valueType = e.value.accept(this);
+
+		if (type == null || valueType == null) {
+			return null;
+		}
+
+		if (type instanceof RecordType) {
+			RecordType rt = (RecordType) type;
+			if (rt.fields.containsKey(e.field)) {
+				Type fieldType = rt.fields.get(e.field);
+				compareTypeAssignment(e.value, fieldType, valueType);
+				return rt;
+			} else {
+				error(e, "expected record type with field " + e.field + ", but found "
+						+ simple(type));
+			}
+		} else {
+			error(e.record, "expected a record type, but found " + simple(type));
+		}
+		return null;
 	}
 
 	@Override

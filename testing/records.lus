@@ -2,15 +2,18 @@
 --
 -- Expected output:
 -- VALID PROPERTIES: [lemma, ok1]
--- INVALID PROPERTIES: [cex1] (K = 11)
+-- INVALID PROPERTIES: [cex1, cex2] (K = 11)
 
 type point = struct { x : int; y : int };
 type weighted_point = struct { weight : real; p : point };
 
+type large = struct { a : int; b : int; c : int; d : int; e : int };
+
 node main(delta1, delta2 : subrange [-1, 1] of int) returns ();
 var
   wp1, wp2 : weighted_point;
-  ok1, cex1, lemma : bool;
+  lg : large;
+  ok1, cex1, cex2, lemma : bool;
 let
   wp1 = weighted_point {
           weight = 1.0 -> pre(wp2.weight);
@@ -32,4 +35,13 @@ let
   
   ok1 = wp1 <> wp2;
   --%PROPERTY ok1;
+
+  lg = large { a = 0; b = 0; c = 0; d = 0; e = 0 } ->
+         if delta1 = 0 then
+           (pre lg){a := 10}{b := 20}
+         else
+           (pre lg){c := 30}{d := 40};
+           
+  cex2 = (lg.a = 0 or lg.c = 0);
+  --%PROPERTY cex2;
 tel;

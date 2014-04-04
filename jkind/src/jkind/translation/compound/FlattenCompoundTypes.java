@@ -11,6 +11,7 @@ import jkind.lustre.visitors.ExprMapVisitor;
 public class FlattenCompoundTypes extends ExprMapVisitor {
 	public static Node node(Node node) {
 		node = RemoveNonConstantArrayIndices.node(node);
+		node = RemoveRecordUpdates.node(node);
 		node = FlattenCompoundComparisons.node(node);
 		node = FlattenCompoundVariables.node(node);
 		node = FlattenCompoundExpressions.node(node);
