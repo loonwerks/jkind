@@ -1,8 +1,8 @@
 -- This example exercises the flattening of records
 --
 -- Expected output:
--- VALID PROPERTIES: [lemma, prop2]
--- INVALID PROPERTIES: [prop1] (K = 11)
+-- VALID PROPERTIES: [lemma, ok1]
+-- INVALID PROPERTIES: [cex1] (K = 11)
 
 type point = struct { x : int; y : int };
 type weighted_point = struct { weight : real; p : point };
@@ -10,7 +10,7 @@ type weighted_point = struct { weight : real; p : point };
 node main(delta1, delta2 : subrange [-1, 1] of int) returns ();
 var
   wp1, wp2 : weighted_point;
-  prop1, prop2, lemma : bool;
+  ok1, cex1, lemma : bool;
 let
   wp1 = weighted_point {
           weight = 1.0 -> pre(wp2.weight);
@@ -23,13 +23,13 @@ let
             x = 0 -> pre(wp2.p.x) + 1;
             y = 20 -> pre(wp2.p.y) + delta2}};
 
-  prop1 = not (wp1.p = wp2.p);
-  --%PROPERTY prop1;
+  cex1 = not (wp1.p = wp2.p);
+  --%PROPERTY cex1;
 
-  -- This lemma is required for prop2
+  -- This lemma is required for ok1
   lemma = wp1.weight <> wp2.weight;
   --%PROPERTY lemma;
   
-  prop2 = wp1 <> wp2;
-  --%PROPERTY prop2;
+  ok1 = wp1 <> wp2;
+  --%PROPERTY ok1;
 tel;

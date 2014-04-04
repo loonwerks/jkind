@@ -5,7 +5,7 @@
 node main() returns (x: bool);
 var
    count: int; 
-   prop: bool;
+   ok: bool;
    lemma: bool;
 let
    count = 1 -> 
@@ -15,8 +15,8 @@ let
 
    x = false -> ((not (count >= 5)) and (pre x));
 
-   prop = true -> ((not (pre x)) or x);
-   --%PROPERTY prop;
+   ok = true -> ((not (pre x)) or x);
+   --%PROPERTY ok;
 
    lemma = not x;
    -- %PROPERTY lemma;
