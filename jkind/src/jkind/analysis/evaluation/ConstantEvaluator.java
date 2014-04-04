@@ -78,6 +78,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(ArrayAccessExpr e) {
 		ArrayValue array = (ArrayValue) e.array.accept(this);
 		IntegerValue index = (IntegerValue) e.index.accept(this);
+		if (array == null || index == null) {
+			return null;
+		}
 		return array.elements.get(index.value.intValue());
 	}
 
@@ -85,7 +88,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(ArrayExpr e) {
 		List<Value> elements = new ArrayList<>();
 		for (Expr element : e.elements) {
-			elements.add(element.accept(this));
+			Value value = element.accept(this);
+			if (value == null) {
+				return null;
+			}
+			elements.add(value);
 		}
 		return new ArrayValue(elements);
 	}
@@ -95,6 +102,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		ArrayValue array = (ArrayValue) e.array.accept(this);
 		IntegerValue index = (IntegerValue) e.index.accept(this);
 		Value value = e.value.accept(this);
+		if (array == null || index == null || value == null) {
+			return null;
+		}
 		return array.update(index.value.intValue(), value);
 	}
 
@@ -102,11 +112,10 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(BinaryExpr e) {
 		Value left = eval(e.left);
 		Value right = eval(e.right);
-		if (left == null) {
+		if (left == null || right == null) {
 			return null;
-		} else {
-			return left.applyBinaryOp(e.op, right);
 		}
+		return left.applyBinaryOp(e.op, right);
 	}
 
 	@Override
@@ -117,6 +126,10 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(CastExpr e) {
 		Value value = eval(e.expr);
+		if (value == null) {
+			return null;
+		}
+		
 		if (e.type == NamedType.REAL && value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;
 			return new RealValue(new BigFraction(iv.value));
@@ -144,13 +157,12 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IfThenElseExpr e) {
-		Value cond = eval(e);
-		if (!(cond instanceof BooleanValue)) {
+		BooleanValue cond = (BooleanValue) eval(e);
+		if (cond == null) {
 			return null;
 		}
-		boolean condValue = ((BooleanValue) cond).value;
 
-		if (condValue) {
+		if (cond.value) {
 			return eval(e.thenExpr);
 		} else {
 			return eval(e.elseExpr);
@@ -182,7 +194,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(RecordExpr e) {
 		Map<String, Value> fields = new HashMap<>();
 		for (Entry<String, Expr> entry : e.fields.entrySet()) {
-			fields.put(entry.getKey(), entry.getValue().accept(this));
+			Value value = entry.getValue().accept(this);
+			if (value == null) {
+				return null;
+			}
+			fields.put(entry.getKey(), value);
 		}
 		return new RecordValue(fields);
 	}
@@ -191,6 +207,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(RecordUpdateExpr e) {
 		RecordValue record = (RecordValue) e.record.accept(this);
 		Value value = e.value.accept(this);
+		if (record == null || value == null) {
+			return null;
+		}
 		return record.update(e.field, value);
 	}
 
@@ -198,7 +217,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(TupleExpr e) {
 		List<Value> elements = new ArrayList<>();
 		for (Expr element : e.elements) {
-			elements.add(element.accept(this));
+			Value value = element.accept(this);
+			if (value == null) {
+				return null;
+			}
+			elements.add(value);
 		}
 		return new TupleValue(elements);
 	}
@@ -208,8 +231,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		Value value = eval(e.expr);
 		if (value == null) {
 			return null;
-		} else {
-			return value.applyUnaryOp(e.op);
 		}
+		return value.applyUnaryOp(e.op);
 	}
 }
