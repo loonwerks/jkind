@@ -56,12 +56,6 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 		return new BinaryExpr(e.location, left, e.op, right);
 	}
 
-	/*
-	 * We need type information to decompose equality and inequality for
-	 * compound types. We do this by re-invoking the type checker. If we later
-	 * run in to performance problems we can think about caching type
-	 * information instead.
-	 */
 	private Type getType(Expr e) {
 		return e.accept(typeReconstructor);
 	}
