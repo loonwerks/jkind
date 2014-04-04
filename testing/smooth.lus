@@ -8,8 +8,8 @@ let
   out = counter <= 10;
 tel;
 
-node main(x, y, z, w : int) returns (ok : bool);
+node main(x, y, z, w : int) returns (cex : bool);
 let
-  ok = delay(x < y and y < z and z < w);
-  --%PROPERTY ok;
+  cex = delay(x < y and y < z and z < w);
+  --%PROPERTY cex;
 tel;
