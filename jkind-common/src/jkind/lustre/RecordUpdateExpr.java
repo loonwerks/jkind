@@ -2,7 +2,6 @@ package jkind.lustre;
 
 import jkind.lustre.visitors.ExprVisitor;
 
-// TODO : Ask Andrew
 public class RecordUpdateExpr extends Expr {
 	final public Expr record;
 	final public String field;
@@ -15,8 +14,8 @@ public class RecordUpdateExpr extends Expr {
 		this.value = value;
 	}
 	
-	public RecordUpdateExpr(Expr expr, String field, Expr value) {
-		this(Location.NULL, expr, field, value);
+	public RecordUpdateExpr(Expr record, String field, Expr value) {
+		this(Location.NULL, record, field, value);
 	}
 
 	@Override

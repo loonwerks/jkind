@@ -12,8 +12,8 @@ public class RecordAccessExpr extends Expr {
 		this.field = field;
 	}
 	
-	public RecordAccessExpr(Expr expr, String field) {
-		this(Location.NULL, expr, field);
+	public RecordAccessExpr(Expr record, String field) {
+		this(Location.NULL, record, field);
 	}
 
 	@Override
