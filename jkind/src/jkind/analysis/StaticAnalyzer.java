@@ -36,6 +36,7 @@ public class StaticAnalyzer {
 		result = result && ArraysNonempty.check(program);
 		result = result && constantsUnique(program);
 		result = result && constantsConstant(program);
+		result = result && DivisionChecker.check(program);
 		result = result && nodesUnique(program);
 		result = result && NodeDependencyChecker.check(program);
 		result = result && variablesUnique(program);
@@ -47,7 +48,6 @@ public class StaticAnalyzer {
 		if (nonlinear == Level.ERROR) {
 			result = result && LinearChecker.check(program, nonlinear);
 		}
-		result = result && DivisionChecker.check(program);
 		return result;
 	}
 

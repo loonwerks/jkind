@@ -1,7 +1,6 @@
 package jkind.analysis.evaluation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,34 +42,29 @@ import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
-	private Map<String, Value> constants;
-	private Set<String> hidden;
+	private final Map<String, Value> constants;
+	private final Set<String> hidden;
 
 	public ConstantEvaluator() {
-		constants = Collections.emptyMap();
-		hidden = Collections.emptySet();
+		constants = new HashMap<>();
+		hidden = new HashSet<>();
 	}
 
-	public ConstantEvaluator(List<Constant> constantDecls) {
-		constants = new HashMap<>();
-		for (Constant c : constantDecls) {
-			constants.put(c.id, eval(c.expr));
+	public ConstantEvaluator(List<Constant> constants) {
+		this();
+		for (Constant c : constants) {
+			addConstant(c);
 		}
+	}
+
+	public Value addConstant(Constant c) {
+		return constants.put(c.id, c.expr.accept(this));
 	}
 
 	public void setHidden(Node node) {
-		hidden = new HashSet<>();
+		hidden.clear();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			hidden.add(decl.id);
-		}
-	}
-
-	private Value eval(Expr e) {
-		try {
-			return e.accept(this);
-		} catch (ArithmeticException ae) {
-			System.out.println("Error at line " + e.location + " division by zero");
-			throw new DivisionException();
 		}
 	}
 
@@ -110,8 +104,8 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(BinaryExpr e) {
-		Value left = eval(e.left);
-		Value right = eval(e.right);
+		Value left = e.left.accept(this);
+		Value right = e.right.accept(this);
 		if (left == null || right == null) {
 			return null;
 		}
@@ -125,11 +119,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(CastExpr e) {
-		Value value = eval(e.expr);
+		Value value = e.expr.accept(this);
 		if (value == null) {
 			return null;
 		}
-		
+
 		if (e.type == NamedType.REAL && value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;
 			return new RealValue(new BigFraction(iv.value));
@@ -157,15 +151,15 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IfThenElseExpr e) {
-		BooleanValue cond = (BooleanValue) eval(e);
+		BooleanValue cond = (BooleanValue) e.accept(this);
 		if (cond == null) {
 			return null;
 		}
 
 		if (cond.value) {
-			return eval(e.thenExpr);
+			return e.thenExpr.accept(this);
 		} else {
-			return eval(e.elseExpr);
+			return e.elseExpr.accept(this);
 		}
 	}
 
@@ -187,6 +181,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(RecordAccessExpr e) {
 		RecordValue record = (RecordValue) e.record.accept(this);
+		if (record == null) {
+			return null;
+		}
 		return record.fields.get(e.field);
 	}
 
@@ -228,7 +225,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(UnaryExpr e) {
-		Value value = eval(e.expr);
+		Value value = e.expr.accept(this);
 		if (value == null) {
 			return null;
 		}
