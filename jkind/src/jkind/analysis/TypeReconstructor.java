@@ -45,23 +45,19 @@ import jkind.util.Util;
  * This class treats subrange types as integer types.
  */
 public class TypeReconstructor implements ExprVisitor<Type> {
-	private final Map<String, Type> typeTable;
-	private final Map<String, Type> constantTable;
-	private final Map<String, Type> variableTable;
-	private final Map<String, Function> functionTable;
-	private final Map<String, Node> nodeTable;
+	private final Map<String, Type> typeTable = new HashMap<>();
+	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, Type> variableTable = new HashMap<>();
+	private final Map<String, Function> functionTable = new HashMap<>();
+	private final Map<String, Node> nodeTable = new HashMap<>();
 
 	public TypeReconstructor(Program program) {
-		this.typeTable = new HashMap<>();
-		this.constantTable = new HashMap<>();
-		this.variableTable = new HashMap<>();
-		this.nodeTable = Util.getNodeTable(program.nodes);
-		this.functionTable = Util.getFunctionTable(program.functions);
-
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
+		functionTable.putAll(Util.getFunctionTable(program.functions));
+		nodeTable.putAll(Util.getNodeTable(program.nodes));
 	}
-
+	
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
 			typeTable.put(def.id, resolveType(def.type));
