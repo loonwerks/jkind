@@ -9,7 +9,7 @@ import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
-import jkind.translation.TypeAwareExprMapVisitor;
+import jkind.translation.TypeAwareAstMapVisitor;
 
 /**
  * Removes all record updates via expansion to full record expressions.
@@ -27,9 +27,9 @@ import jkind.translation.TypeAwareExprMapVisitor;
  * 
  * Guarantees: All record update expressions are removed
  */
-public class RemoveRecordUpdates extends TypeAwareExprMapVisitor {
+public class RemoveRecordUpdates extends TypeAwareAstMapVisitor {
 	public static Node node(Node node) {
-		return new RemoveRecordUpdates().visitNode(node);
+		return new RemoveRecordUpdates().visit(node);
 	}
 	
 	@Override

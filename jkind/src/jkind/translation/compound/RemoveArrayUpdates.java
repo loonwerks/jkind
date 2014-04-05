@@ -10,7 +10,7 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
-import jkind.translation.TypeAwareExprMapVisitor;
+import jkind.translation.TypeAwareAstMapVisitor;
 
 /**
  * Replace all non-constant array indices using if-then-else expressions. Remove
@@ -18,9 +18,9 @@ import jkind.translation.TypeAwareExprMapVisitor;
  * 
  * Assumption: All node calls have been inlined.
  */
-public class RemoveArrayUpdates extends TypeAwareExprMapVisitor {
+public class RemoveArrayUpdates extends TypeAwareAstMapVisitor {
 	public static Node node(Node node) {
-		return new RemoveArrayUpdates().visitNode(node);
+		return new RemoveArrayUpdates().visit(node);
 	}
 	
 	@Override

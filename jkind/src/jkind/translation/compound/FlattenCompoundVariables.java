@@ -18,7 +18,7 @@ import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.translation.SubstitutionVisitor;
 import jkind.util.Util;
 
@@ -29,15 +29,15 @@ import jkind.util.Util;
  * 
  * Assumption: All array indices are integer literals
  */
-public class FlattenCompoundVariables extends ExprMapVisitor {
+public class FlattenCompoundVariables extends AstMapVisitor {
 	public static Node node(Node node) {
-		return new FlattenCompoundVariables().visitNode(node);
+		return new FlattenCompoundVariables().visit(node);
 	}
 
 	private final Map<String, Type> originalTypes = new HashMap<>();
 
 	@Override
-	public Node visitNode(Node node) {
+	public Node visit(Node node) {
 		addOriginalTypes(node.inputs);
 		addOriginalTypes(node.outputs);
 		addOriginalTypes(node.locals);
@@ -50,7 +50,7 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 				node.assertions);
 
 		Map<String, Expr> map = createExpandedVariables(Util.getVarDecls(node));
-		return new SubstitutionVisitor(map).visitNode(flattened);
+		return new SubstitutionVisitor(map).visit(flattened);
 	}
 
 	private void addOriginalTypes(List<VarDecl> varDecls) {

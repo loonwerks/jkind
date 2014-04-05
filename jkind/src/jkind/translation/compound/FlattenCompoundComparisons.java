@@ -11,14 +11,14 @@ import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.translation.TypeAwareExprMapVisitor;
+import jkind.translation.TypeAwareAstMapVisitor;
 
 /**
  * Expand equalities and inequalities on records and arrays
  */
-public class FlattenCompoundComparisons extends TypeAwareExprMapVisitor {
+public class FlattenCompoundComparisons extends TypeAwareAstMapVisitor {
 	public static Node node(Node node) {
-		return new FlattenCompoundComparisons().visitNode(node);
+		return new FlattenCompoundComparisons().visit(node);
 	}
 
 	@Override

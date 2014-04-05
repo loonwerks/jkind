@@ -7,7 +7,6 @@ import jkind.lustre.Ast;
 import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TypeDef;
@@ -16,18 +15,18 @@ import jkind.util.Util;
 
 public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Expr> {
 	@Override
-	public Ast visit(Constant e) {
+	public Constant visit(Constant e) {
 		return new Constant(e.location, e.id, e.type, e.expr.accept(this));
 	}
 
 	@Override
-	public Ast visit(Equation e) {
-		List<IdExpr> lhs = Util.castList(visitAll(e.lhs), IdExpr.class);
-		return new Equation(e.location, lhs, e.expr.accept(this));
+	public Equation visit(Equation e) {
+		// Do not traverse e.lhs since they do not really act like Exprs
+		return new Equation(e.location, e.lhs, e.expr.accept(this));
 	}
 
 	@Override
-	public Ast visit(Node e) {
+	public Node visit(Node e) {
 		List<VarDecl> inputs = visitAllAst(e.inputs, VarDecl.class);
 		List<VarDecl> outputs = visitAllAst(e.outputs, VarDecl.class);
 		List<VarDecl> locals = visitAllAst(e.locals, VarDecl.class);
@@ -38,7 +37,7 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	@Override
-	public Ast visit(Program e) {
+	public Program visit(Program e) {
 		List<TypeDef> types = visitAllAst(e.types, TypeDef.class);
 		List<Constant> constants = visitAllAst(e.constants, Constant.class);
 		List<Node> nodes = visitAllAst(e.nodes, Node.class);
@@ -46,12 +45,12 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	@Override
-	public Ast visit(TypeDef e) {
+	public TypeDef visit(TypeDef e) {
 		return e;
 	}
 
 	@Override
-	public Ast visit(VarDecl e) {
+	public VarDecl visit(VarDecl e) {
 		return e;
 	}
 

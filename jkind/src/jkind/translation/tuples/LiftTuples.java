@@ -7,14 +7,14 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.Node;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 
 /**
  * Lift all tuples as far as possible
  */
-public class LiftTuples extends ExprMapVisitor {
+public class LiftTuples extends AstMapVisitor {
 	public static Node node(Node node) {
-		return new LiftTuples().visitNode(node);
+		return new LiftTuples().visit(node);
 	}
 
 	@Override
