@@ -44,19 +44,15 @@ import jkind.util.Util;
  * This class treats subrange types as integer types.
  */
 public class TypeReconstructor implements ExprVisitor<Type> {
-	private final Map<String, Type> typeTable;
-	private final Map<String, Type> constantTable;
-	private final Map<String, Type> variableTable;
-	private final Map<String, Node> nodeTable;
+	private final Map<String, Type> typeTable = new HashMap<>();
+	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, Type> variableTable = new HashMap<>();
+	private final Map<String, Node> nodeTable = new HashMap<>();
 
 	public TypeReconstructor(Program program) {
-		this.typeTable = new HashMap<>();
-		this.constantTable = new HashMap<>();
-		this.variableTable = new HashMap<>();
-		this.nodeTable = Util.getNodeTable(program.nodes);
-
 		populateTypeTable(program.types);
 		populateConstantTable(program.constants);
+		nodeTable.putAll(Util.getNodeTable(program.nodes));
 	}
 
 	/**
@@ -64,10 +60,6 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	 * all been inlined.
 	 */
 	public TypeReconstructor() {
-		this.typeTable = null;
-		this.constantTable = null;
-		this.variableTable = new HashMap<>();
-		this.nodeTable = null;
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
@@ -210,15 +202,15 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(RecordExpr e) {
-		if (typeTable == null) {
+		if (typeTable.containsKey(e.id)) {
+			return typeTable.get(e.id);
+		} else {
 			// If user types have already been inlined, we reconstruct the type
 			Map<String, Type> fields = new HashMap<>();
 			for (String field : e.fields.keySet()) {
 				fields.put(field, e.fields.get(field).accept(this));
 			}
 			return new RecordType(e.id, fields);
-		} else {
-			return typeTable.get(e.id);
 		}
 	}
 
