@@ -11,13 +11,13 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.translation.SubstitutionVisitor;
 import jkind.util.Util;
 
@@ -28,16 +28,15 @@ import jkind.util.Util;
  * 
  * Assumption: All array indices are integer literals
  */
-public class FlattenCompoundVariables extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		Node node = new FlattenCompoundVariables().visitNode(ip.node);
-		return new InlinedProgram(ip.functions, node);
+public class FlattenCompoundVariables extends AstMapVisitor {
+	public static Program program(Program program) {
+		return new FlattenCompoundVariables().visit(program);
 	}
 
 	private final Map<String, Type> originalTypes = new HashMap<>();
 
 	@Override
-	public Node visitNode(Node node) {
+	public Node visit(Node node) {
 		addOriginalTypes(node.inputs);
 		addOriginalTypes(node.outputs);
 		addOriginalTypes(node.locals);
@@ -50,7 +49,7 @@ public class FlattenCompoundVariables extends ExprMapVisitor {
 				node.assertions);
 
 		Map<String, Expr> map = createExpandedVariables(Util.getVarDecls(node));
-		return new SubstitutionVisitor(map).visitNode(flattened);
+		return new SubstitutionVisitor(map).visit(flattened);
 	}
 
 	private void addOriginalTypes(List<VarDecl> varDecls) {

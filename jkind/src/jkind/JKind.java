@@ -1,9 +1,7 @@
-
 package jkind;
 
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.processes.Director;
@@ -22,10 +20,11 @@ public class JKind {
 			Level nonlinear = settings.solver == SolverOption.Z3 ? Level.WARNING : Level.ERROR;
 			StaticAnalyzer.check(program, nonlinear);
 
-			InlinedProgram ip = Translate.translate(program);
-			DependencyMap dependencyMap = new DependencyMap(ip.node, ip.node.properties);
-			Node sliced = LustreSlicer.slice(ip.node, dependencyMap);
-			Specification spec = new Specification(filename, ip.functions, sliced, dependencyMap);
+			program = Translate.translate(program);
+			Node main = program.getMainNode();
+			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
+			main = LustreSlicer.slice(main, dependencyMap);
+			Specification spec = new Specification(filename, program.functions, main, dependencyMap);
 			new Director(settings, spec).run();
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {

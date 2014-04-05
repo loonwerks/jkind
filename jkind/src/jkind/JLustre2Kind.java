@@ -4,7 +4,6 @@ import java.io.File;
 
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
@@ -26,11 +25,12 @@ public class JLustre2Kind {
 			Program program = Main.parseLustre(filename);
 			StaticAnalyzer.check(program, Level.WARNING);
 			
-			InlinedProgram ip = Translate.translate(program);
-			DependencyMap dependencyMap = new DependencyMap(ip.node, ip.node.properties);
-			Node sliced = LustreSlicer.slice(ip.node, dependencyMap);
+			program = Translate.translate(program);
+			Node main = program.getMainNode();
+			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
+			main = LustreSlicer.slice(main, dependencyMap);
 
-			String result = sliced.toString();
+			String result = main.toString();
 			if (settings.encode) {
 				result = result.replaceAll("\\.", "~dot~");
 				result = result.replaceAll("\\[", "~lbrack~");

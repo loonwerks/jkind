@@ -2,39 +2,23 @@ package jkind.translation.compound;
 
 import java.util.List;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.InlinedProgram;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.TypeAwareAstMapVisitor;
 
 /**
  * Expand equalities and inequalities on records and arrays
  */
-public class FlattenCompoundComparisons extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		Node node = new FlattenCompoundComparisons(ip.functions).visitNode(ip.node);
-		return new InlinedProgram(ip.functions, node);
-	}
-	
-	public FlattenCompoundComparisons(List<Function> functions) {
-		this.typeReconstructor = new TypeReconstructor(functions);
-	}
-
-	private final TypeReconstructor typeReconstructor;
-
-	@Override
-	public Node visitNode(Node node) {
-		typeReconstructor.setNodeContext(node);
-		return super.visitNode(node);
+public class FlattenCompoundComparisons extends TypeAwareAstMapVisitor {
+	public static Program program(Program program) {
+		return new FlattenCompoundComparisons().visit(program);
 	}
 
 	@Override
@@ -61,9 +45,5 @@ public class FlattenCompoundComparisons extends ExprMapVisitor {
 		}
 
 		return new BinaryExpr(e.location, left, e.op, right);
-	}
-
-	private Type getType(Expr e) {
-		return e.accept(typeReconstructor);
 	}
 }

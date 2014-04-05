@@ -41,6 +41,11 @@ public class Program extends Ast {
 				Collections.<Function> emptyList(), Arrays.asList(nodes), null);
 	}
 
+	public Program(List<TypeDef> types, List<Constant> constants, List<Function> functions,
+			Node node) {
+		this(Location.NULL, types, constants, functions, Collections.singletonList(node), null);
+	}
+
 	public Node getMainNode() {
 		for (Node node : nodes) {
 			if (node.id.equals(main)) {

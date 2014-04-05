@@ -4,19 +4,17 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.InlinedProgram;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 
 /**
  * Lift all tuples as far as possible
  */
-public class LiftTuples extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		Node node = new LiftTuples().visitNode(ip.node);
-		return new InlinedProgram(ip.functions, node);
+public class LiftTuples extends AstMapVisitor {
+	public static Program program(Program program) {
+		return new LiftTuples().visit(program);
 	}
 	
 	@Override

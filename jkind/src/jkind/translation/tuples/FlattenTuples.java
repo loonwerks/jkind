@@ -1,6 +1,6 @@
 package jkind.translation.tuples;
 
-import jkind.lustre.InlinedProgram;
+import jkind.lustre.Program;
 import jkind.lustre.visitors.ExprMapVisitor;
 
 /**
@@ -9,10 +9,10 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * Assumption: All node calls have been inlined.
  */
 public class FlattenTuples extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		ip = LiftTuples.inlinedProgram(ip);
-		ip = FlattenTupleComparisons.inlinedProgram(ip);
-		ip = FlattenTupleAssignments.inlinedProgram(ip);
-		return ip;
+	public static Program program(Program program) {
+		program = LiftTuples.program(program);
+		program = FlattenTupleComparisons.program(program);
+		program = FlattenTupleAssignments.program(program);
+		return program;
 	}
 }

@@ -11,38 +11,39 @@ import jkind.lustre.CallExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
-public class InlineNodeCalls extends ExprMapVisitor {
-	public static InlinedProgram program(Program program) {
-		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
-		Node main = program.getMainNode();
-
-		List<Expr> assertions = inliner.visitAll(main.assertions);
-		List<Equation> equations = inliner.visitEquationsQueue(main.equations);
-
-		List<VarDecl> locals = append(main.locals, inliner.newLocals);
-		List<String> properties = append(main.properties, inliner.newProperties);
-
-		Node node = new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				properties, assertions);
-		return new InlinedProgram(program.functions, node);
+public class InlineNodeCalls extends AstMapVisitor {
+	public static Program program(Program program) {
+		return new InlineNodeCalls().visit(program);
 	}
 
-	private final Map<String, Node> nodeTable;
+	private final Map<String, Node> nodeTable = new HashMap<>();
 	private final List<VarDecl> newLocals = new ArrayList<>();
 	private final List<String> newProperties = new ArrayList<>();
 	private final Map<String, Integer> usedPrefixes = new HashMap<>();
 	private final Queue<Equation> queue = new ArrayDeque<>();
 
-	private InlineNodeCalls(Map<String, Node> nodeTable) {
-		this.nodeTable = nodeTable;
+	@Override
+	public Program visit(Program program) {
+		Node main = program.getMainNode();
+		nodeTable.putAll(Util.getNodeTable(program.nodes));
+
+		List<Expr> assertions = visitAll(main.assertions);
+		List<Equation> equations = visitEquationsQueue(main.equations);
+
+		List<VarDecl> locals = append(main.locals, newLocals);
+		List<String> properties = append(main.properties, newProperties);
+
+		main = new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
+				properties, assertions);
+
+		return new Program(program.types, program.constants, program.functions, main);
 	}
 
 	public List<Equation> visitEquationsQueue(List<Equation> equations) {
@@ -51,7 +52,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 		while (!queue.isEmpty()) {
 			Equation eq = queue.poll();
-			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
+			result.add(visit(eq));
 		}
 		return result;
 	}

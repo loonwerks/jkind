@@ -1,6 +1,6 @@
 package jkind.translation.compound;
 
-import jkind.lustre.InlinedProgram;
+import jkind.lustre.Program;
 import jkind.lustre.visitors.ExprMapVisitor;
 
 /**
@@ -9,15 +9,15 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * Assumption: All node calls have been inlined.
  */
 public class FlattenCompoundTypes extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		ip = RemoveNonConstantArrayIndices.inlinedProgram(ip);
-		ip = RemoveArrayUpdates.inlinedProgram(ip);
-		ip = RemoveRecordUpdates.inlinedProgram(ip);
-		ip = FlattenCompoundComparisons.inlinedProgram(ip);
-		ip = FlattenCompoundVariables.inlinedProgram(ip);
-		ip = FlattenCompoundFunctionOutputs.inlinedProgram(ip);
-		ip = FlattenCompoundFunctionInputs.inlinedProgram(ip);
-		ip = FlattenCompoundExpressions.inlinedProgram(ip);
-		return ip;
+	public static Program program(Program program) {
+		program = RemoveNonConstantArrayIndices.program(program);
+		program = RemoveArrayUpdates.program(program);
+		program = RemoveRecordUpdates.program(program);
+		program = FlattenCompoundComparisons.program(program);
+		program = FlattenCompoundVariables.program(program);
+		program = FlattenCompoundFunctionOutputs.program(program);
+		program = FlattenCompoundFunctionInputs.program(program);
+		program = FlattenCompoundExpressions.program(program);
+		return program;
 	}
 }

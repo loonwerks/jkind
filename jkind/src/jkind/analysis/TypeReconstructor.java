@@ -62,18 +62,6 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		populateConstantTable(program.constants);
 	}
 
-	/**
-	 * This constructor is for use after user types, constants, and nodes have
-	 * all been inlined.
-	 */
-	public TypeReconstructor(List<Function> functions) {
-		this.typeTable = null;
-		this.constantTable = null;
-		this.variableTable = new HashMap<>();
-		this.nodeTable = null;
-		this.functionTable = Util.getFunctionTable(functions);
-	}
-
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
 			typeTable.put(def.id, resolveType(def.type));
@@ -221,15 +209,15 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 
 	@Override
 	public Type visit(RecordExpr e) {
-		if (typeTable == null) {
+		if (typeTable.containsKey(e.id)) {
+			return typeTable.get(e.id);
+		} else {
 			// If user types have already been inlined, we reconstruct the type
 			Map<String, Type> fields = new HashMap<>();
 			for (String field : e.fields.keySet()) {
 				fields.put(field, e.fields.get(field).accept(this));
 			}
 			return new RecordType(e.id, fields);
-		} else {
-			return typeTable.get(e.id);
 		}
 	}
 

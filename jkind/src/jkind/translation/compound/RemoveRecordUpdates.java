@@ -1,19 +1,15 @@
 package jkind.translation.compound;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.InlinedProgram;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.translation.TypeAwareAstMapVisitor;
 
 /**
  * Removes all record updates via expansion to full record expressions.
@@ -31,26 +27,9 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * 
  * Guarantees: All record update expressions are removed
  */
-public class RemoveRecordUpdates extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		Node node = new RemoveRecordUpdates(ip.functions).visitNode(ip.node);
-		return new InlinedProgram(ip.functions, node);
-	}
-	
-	public RemoveRecordUpdates(List<Function> functions) {
-		this.typeReconstructor = new TypeReconstructor(functions);
-	}
-
-	private final TypeReconstructor typeReconstructor;
-
-	@Override
-	public Node visitNode(Node node) {
-		typeReconstructor.setNodeContext(node);
-		return super.visitNode(node);
-	}
-
-	private RecordType getRecordType(Expr e) {
-		return (RecordType) e.accept(typeReconstructor);
+public class RemoveRecordUpdates extends TypeAwareAstMapVisitor {
+	public static Program program(Program program) {
+		return new RemoveRecordUpdates().visit(program);
 	}
 
 	@Override
@@ -58,7 +37,7 @@ public class RemoveRecordUpdates extends ExprMapVisitor {
 		Expr record = e.record.accept(this);
 		Expr value = e.value.accept(this);
 
-		RecordType rt = getRecordType(record);
+		RecordType rt = (RecordType) getType(record);
 		Map<String, Expr> fields = new HashMap<>();
 
 		for (String key : rt.fields.keySet()) {

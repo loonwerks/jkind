@@ -5,9 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.Equation;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
+import jkind.lustre.visitors.AstMapVisitor;
 
 /**
  * Expand tuple assignments into single value assignments
@@ -15,18 +16,19 @@ import jkind.lustre.TupleExpr;
  * Assumption: All tuple expressions have been lifted as far as possible.
  */
 
-public class FlattenTupleAssignments {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		return new InlinedProgram(ip.functions, visitNode(ip.node));
+public class FlattenTupleAssignments extends AstMapVisitor {
+	public static Program program(Program program) {
+		return new FlattenTupleAssignments().visit(program);
 	}
 
-	private static Node visitNode(Node node) {
+	@Override
+	public Node visit(Node node) {
 		List<Equation> equations = visitEquations(node.equations);
 		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
 				node.properties, node.assertions);
 	}
 
-	private static List<Equation> visitEquations(List<Equation> equations) {
+	private List<Equation> visitEquations(List<Equation> equations) {
 		List<Equation> results = new ArrayList<>();
 		for (Equation eq : equations) {
 			results.addAll(visitEquation(eq));
@@ -34,7 +36,7 @@ public class FlattenTupleAssignments {
 		return results;
 	}
 
-	private static List<Equation> visitEquation(Equation eq) {
+	private List<Equation> visitEquation(Equation eq) {
 		if (eq.lhs.size() == 1) {
 			return Collections.singletonList(eq);
 		}

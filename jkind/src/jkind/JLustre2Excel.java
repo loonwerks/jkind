@@ -2,7 +2,7 @@ package jkind;
 
 import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.InlinedProgram;
+import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.translation.Node2Excel;
 import jkind.translation.Translate;
@@ -19,9 +19,10 @@ public class JLustre2Excel {
 			Program program = Main.parseLustre(filename);
 			StaticAnalyzer.check(program, Level.WARNING);
 			
-			InlinedProgram ip = Translate.translate(program);
+			program = Translate.translate(program);
+			Node main = program.getMainNode();
 			String outFilename = filename + ".xls";
-			Node2Excel.convert(ip.node, outFilename);
+			Node2Excel.convert(main, outFilename);
 			System.out.println("Wrote " + outFilename);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -14,12 +14,10 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
-import jkind.lustre.Node;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -126,20 +124,5 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 			result.add(e.accept(this));
 		}
 		return result;
-	}
-
-	public List<Equation> visitEquations(List<Equation> equations) {
-		List<Equation> result = new ArrayList<>();
-		for (Equation eq : equations) {
-			result.add(new Equation(eq.location, eq.lhs, eq.expr.accept(this)));
-		}
-		return result;
-	}
-
-	public Node visitNode(Node node) {
-		List<Equation> equations = visitEquations(node.equations);
-		List<Expr> assertions = visitAll(node.assertions);
-		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
 	}
 }

@@ -8,12 +8,11 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.IntExpr;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 
 /**
  * Flatten array and record expressions to scalars variables
@@ -24,10 +23,9 @@ import jkind.lustre.visitors.ExprMapVisitor;
  * 
  * Assumption: All array updates are removed
  */
-public class FlattenCompoundExpressions extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		Node node = new FlattenCompoundExpressions().visitNode(ip.node);
-		return new InlinedProgram(ip.functions, node);
+public class FlattenCompoundExpressions extends AstMapVisitor {
+	public static Program program(Program program) {
+		return new FlattenCompoundExpressions().visit(program);
 	}
 
 	private final Deque<Access> accesses = new ArrayDeque<>();

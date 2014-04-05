@@ -1,34 +1,36 @@
 package jkind.translation.compound;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.CallExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
-import jkind.lustre.InlinedProgram;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.visitors.ExprMapVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
 /**
  * Flatten array and record outputs of functions
  */
-public class FlattenCompoundFunctionInputs extends ExprMapVisitor {
-	public static InlinedProgram inlinedProgram(InlinedProgram ip) {
-		FlattenCompoundFunctionInputs flattener = new FlattenCompoundFunctionInputs(ip.functions);
-		List<Function> functions = flattener.visitFunctions(ip.functions);
-		Node node = flattener.visitNode(ip.node);
-		return new InlinedProgram(functions, node);
+public class FlattenCompoundFunctionInputs extends AstMapVisitor {
+	public static Program program(Program program) {
+		return new FlattenCompoundFunctionInputs().visit(program);
 	}
 
-	private final Map<String, Function> originalFunctionTable;
+	private final Map<String, Function> originalFunctionTable = new HashMap<>();
 
-	public FlattenCompoundFunctionInputs(List<Function> functions) {
-		originalFunctionTable = Util.getFunctionTable(functions);
+	@Override
+	public Program visit(Program program) {
+		originalFunctionTable.putAll(Util.getFunctionTable(program.functions));
+		List<Function> functions = visitFunctions(program.functions);
+		Node main = visit(program.getMainNode());
+		return new Program(program.types, program.constants, functions, main);
 	}
 
 	private List<Function> visitFunctions(List<Function> functions) {
