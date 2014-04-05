@@ -11,7 +11,6 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
-import jkind.util.Util;
 
 public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Expr> {
 	@Override
@@ -27,23 +26,67 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 
 	@Override
 	public Node visit(Node e) {
-		List<VarDecl> inputs = visitAllAst(e.inputs, VarDecl.class);
-		List<VarDecl> outputs = visitAllAst(e.outputs, VarDecl.class);
-		List<VarDecl> locals = visitAllAst(e.locals, VarDecl.class);
-		List<Equation> equations = visitAllAst(e.equations, Equation.class);
-		List<Expr> assertions = visitAll(e.assertions);
+		List<VarDecl> inputs = visitVarDecls(e.inputs);
+		List<VarDecl> outputs = visitVarDecls(e.outputs);
+		List<VarDecl> locals = visitVarDecls(e.locals);
+		List<Equation> equations = visitEquations(e.equations);
+		List<Expr> assertions = visitAssertions(e.assertions);
 		return new Node(e.location, e.id, inputs, outputs, locals, equations, e.properties,
 				assertions);
 	}
 
-	@Override
-	public Program visit(Program e) {
-		List<TypeDef> types = visitAllAst(e.types, TypeDef.class);
-		List<Constant> constants = visitAllAst(e.constants, Constant.class);
-		List<Node> nodes = visitAllAst(e.nodes, Node.class);
-		return new Program(e.location, types, constants, nodes, e.main);
+	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl e : es) {
+			result.add(visit(e));
+		}
+		return result;
 	}
 
+	protected List<Equation> visitEquations(List<Equation> es) {
+		List<Equation> result = new ArrayList<>();
+		for (Equation e : es) {
+			result.add(visit(e));
+		}
+		return result;
+	}
+	
+	protected List<Expr> visitAssertions(List<Expr> es) {
+		return visitExprs(es);
+	}
+
+	@Override
+	public Program visit(Program e) {
+		List<TypeDef> types = visitTypeDefs(e.types);
+		List<Constant> constants = visitConstants(e.constants);
+		List<Node> nodes = visitNodes(e.nodes);
+		return new Program(e.location, types, constants, nodes, e.main);
+	}
+	
+	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
+		List<TypeDef> result = new ArrayList<>();
+		for (TypeDef e : es) {
+			result.add(visit(e));
+		}
+		return result;
+	}
+
+	protected List<Constant> visitConstants(List<Constant> es) {
+		List<Constant> result = new ArrayList<>();
+		for (Constant e : es) {
+			result.add(visit(e));
+		}
+		return result;
+	}
+
+	protected List<Node> visitNodes(List<Node> es) {
+		List<Node> result = new ArrayList<>();
+		for (Node e : es) {
+			result.add(visit(e));
+		}
+		return result;
+	}
+	
 	@Override
 	public TypeDef visit(TypeDef e) {
 		return e;
@@ -52,13 +95,5 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	@Override
 	public VarDecl visit(VarDecl e) {
 		return e;
-	}
-
-	protected <T> List<T> visitAllAst(List<? extends Ast> list, Class<T> klass) {
-		List<Ast> result = new ArrayList<>();
-		for (Ast e : list) {
-			result.add(e.accept(this));
-		}
-		return Util.castList(result, klass);
 	}
 }

@@ -23,7 +23,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
 		Node main = program.getMainNode();
 
-		List<Expr> assertions = inliner.visitAll(main.assertions);
+		List<Expr> assertions = inliner.visitExprs(main.assertions);
 		List<Equation> equations = inliner.visitEquationsQueue(main.equations);
 
 		List<VarDecl> locals = append(main.locals, inliner.newLocals);
@@ -107,7 +107,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation) {
 			@Override
 			public Expr visit(NodeCallExpr e) {
-				return new NodeCallExpr(e.location, prefix + e.node, visitAll(e.args));
+				return new NodeCallExpr(e.location, prefix + e.node, visitExprs(e.args));
 			}
 		};
 

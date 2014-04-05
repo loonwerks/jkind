@@ -1,62 +1,50 @@
 package jkind.translation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.lustre.Constant;
-import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
-public class InlineConstants {
+public class InlineConstants extends AstMapVisitor {
 	public static Program program(Program program) {
-		Map<String, Expr> constants = getConstantsMap(program);
-		List<Constant> emptyConstants = Collections.emptyList();
-		List<Node> inlinedNodes = new ArrayList<>();
-
-		for (Node node : program.nodes) {
-			inlinedNodes.add(node(node, constants));
-		}
-
-		return new Program(program.location, program.types, emptyConstants, inlinedNodes, program.main);
+		return new InlineConstants().visit(program);
 	}
 
-	public static Node node(Node node, Map<String, Expr> constants) {
-		removeShadowedConstants(constants, node);
-		SubstitutionVisitor inliner = new SubstitutionVisitor(constants);
-
-		List<Equation> equations = new ArrayList<>();
-		for (Equation eq : node.equations) {
-			equations.add(new Equation(eq.location, eq.lhs, eq.expr.accept(inliner)));
+	private final Map<String, Expr> constants = new HashMap<>();
+	private final Set<String> variables = new HashSet<>();
+	
+	@Override
+	protected List<Constant> visitConstants(List<Constant> es) {
+		for (Constant e : es) {
+			constants.put(e.id, e.expr.accept(new SubstitutionVisitor(constants)));
 		}
-
-		List<Expr> assertions = new ArrayList<>();
-		for (Expr assertion : node.assertions) {
-			assertions.add(assertion.accept(inliner));
-		}
-
-		return new Node(node.location, node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, assertions);
+		
+		return Collections.emptyList();
 	}
 
-	private static Map<String, Expr> getConstantsMap(Program program) {
-		Map<String, Expr> constants = new HashMap<>();
-		for (Constant c : program.constants) {
-			SubstitutionVisitor inliner = new SubstitutionVisitor(constants);
-			constants.put(c.id, c.expr.accept(inliner));
-		}
-		return constants;
+	@Override
+	public Node visit(Node e) {
+		variables.clear();
+		variables.addAll(Util.getIds(Util.getVarDecls(e)));
+		return super.visit(e);
 	}
-
-	private static void removeShadowedConstants(Map<String, Expr> constants, Node node) {
-		for (VarDecl varDecl : Util.getVarDecls(node)) {
-			constants.remove(varDecl.id);
+	
+	@Override
+	public Expr visit(IdExpr e) {
+		if (!variables.contains(e.id) && constants.containsKey(e.id)) {
+			return constants.get(e.id);
+		} else {
+			return e;
 		}
 	}
 }
