@@ -1,54 +1,34 @@
 package jkind.translation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
-public class InlineUserTypes {
+public class InlineUserTypes extends AstMapVisitor {
 	public static Program program(Program program) {
-		Map<String, Type> types = getTypeMap(program);
-		List<TypeDef> emptyTypes = Collections.emptyList();
-		List<Node> inlinedNodes = new ArrayList<>();
-
-		for (Node node : program.nodes) {
-			inlinedNodes.add(node(node, types));
-		}
-
-		return new Program(program.location, emptyTypes, program.constants, inlinedNodes, program.main);
+		return new InlineUserTypes().visit(program);
 	}
 
-	public static Node node(Node node, Map<String, Type> types) {
-		List<VarDecl> inputs = varDecls(node.inputs, types);
-		List<VarDecl> outputs = varDecls(node.outputs, types);
-		List<VarDecl> locals = varDecls(node.locals, types);
-
-		return new Node(node.location, node.id, inputs, outputs, locals, node.equations,
-				node.properties, node.assertions);
+	private final Map<String, Type> types = new HashMap<>();
+	
+	@Override
+	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
+		for (TypeDef e : es) {
+			types.put(e.id, Util.resolveType(e.type, types));
+		}
+		return Collections.emptyList();
 	}
 
-	private static List<VarDecl> varDecls(List<VarDecl> decls, Map<String, Type> types) {
-		List<VarDecl> inlinedDecls = new ArrayList<>();
-		for (VarDecl decl : decls) {
-			Type base = Util.resolveType(decl.type, types);
-			inlinedDecls.add(new VarDecl(decl.location, decl.id, base));
-		}
-		return inlinedDecls;
-	}
-
-	private static Map<String, Type> getTypeMap(Program program) {
-		Map<String, Type> types = new HashMap<>();
-		for (TypeDef def : program.types) {
-			types.put(def.id, Util.resolveType(def.type, types));
-		}
-		return types;
+	@Override
+	public VarDecl visit(VarDecl e) {
+		return new VarDecl(e.id, Util.resolveType(e.type, types));
 	}
 }

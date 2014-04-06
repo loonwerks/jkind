@@ -7,32 +7,28 @@ import java.util.List;
 import jkind.lustre.Equation;
 import jkind.lustre.Node;
 import jkind.lustre.TupleExpr;
+import jkind.lustre.visitors.AstMapVisitor;
 
 /**
  * Expand tuple assignments into single value assignments
  * 
  * Assumption: All tuple expressions have been lifted as far as possible.
  */
-public class FlattenTupleAssignments {
+public class FlattenTupleAssignments extends AstMapVisitor {
 	public static Node node(Node node) {
-		return visitNode(node);
+		return new FlattenTupleAssignments().visit(node);
 	}
 
-	private static Node visitNode(Node node) {
-		List<Equation> equations = visitEquations(node.equations);
-		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, node.assertions);
-	}
-
-	private static List<Equation> visitEquations(List<Equation> equations) {
+	@Override
+	protected List<Equation> visitEquations(List<Equation> es) {
 		List<Equation> results = new ArrayList<>();
-		for (Equation eq : equations) {
-			results.addAll(visitEquation(eq));
+		for (Equation e : es) {
+			results.addAll(visitEquation(e));
 		}
 		return results;
 	}
 
-	private static List<Equation> visitEquation(Equation eq) {
+	private List<Equation> visitEquation(Equation eq) {
 		if (eq.lhs.size() == 1) {
 			return Collections.singletonList(eq);
 		}
