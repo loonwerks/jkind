@@ -12,7 +12,7 @@ public class TupleExpr extends Expr {
 		super(loc);
 		this.elements = Collections.unmodifiableList(elements);
 	}
-	
+
 	public TupleExpr(List<? extends Expr> elements) {
 		this(Location.NULL, elements);
 	}

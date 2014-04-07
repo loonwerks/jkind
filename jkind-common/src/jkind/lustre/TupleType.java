@@ -9,11 +9,18 @@ import jkind.lustre.visitors.TypeVisitor;
 public class TupleType extends Type {
 	final public List<Type> types;
 
-	public TupleType(List<Type> types) {
+	public TupleType(List<? extends Type> types) {
 		super(Location.NULL);
 		this.types = Collections.unmodifiableList(types);
 	}
 
+	public static Type compress(List<? extends Type> types) {
+		if (types.size() == 1) {
+			return types.get(0);
+		}
+		return new TupleType(types);
+	}
+	
 	@Override
 	public String toString() {
 		if (types.isEmpty()) {
