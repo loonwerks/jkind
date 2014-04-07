@@ -31,7 +31,7 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(ArrayExpr e) {
-		visitAll(e.elements);
+		visitExprs(e.elements);
 		return null;
 	}
 
@@ -57,7 +57,7 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(CallExpr e) {
-		visitAll(e.args);
+		visitExprs(e.args);
 		return null;
 	}
 
@@ -71,7 +71,7 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	public Void visit(CondactExpr e) {
 		e.clock.accept(this);
 		e.call.accept(this);
-		visitAll(e.args);
+		visitExprs(e.args);
 		return null;
 	}
 
@@ -106,7 +106,7 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(RecordExpr e) {
-		visitAll(e.fields.values());
+		visitExprs(e.fields.values());
 		return null;
 	}
 
@@ -119,7 +119,7 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	
 	@Override
 	public Void visit(TupleExpr e) {
-		visitAll(e.elements);
+		visitExprs(e.elements);
 		return null;
 	}
 	
@@ -129,7 +129,7 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 		return null;
 	}
 
-	protected Void visitAll(Collection<Expr> list) {
+	protected Void visitExprs(Collection<Expr> list) {
 		for (Expr e : list) {
 			e.accept(this);
 		}
