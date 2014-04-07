@@ -54,7 +54,7 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(ArrayExpr e) {
-		return visitAll(e.elements);
+		return visitExprs(e.elements);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(RecordExpr e) {
-		return visitAll(e.fields.values());
+		return visitExprs(e.fields.values());
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(TupleExpr e) {
-		return visitAll(e.elements);
+		return visitExprs(e.elements);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 		}
 	}
 
-	private Boolean visitAll(Collection<Expr> exprs) {
+	private Boolean visitExprs(Collection<Expr> exprs) {
 		for (Expr expr : exprs) {
 			if (!expr.accept(this)) {
 				return false;
