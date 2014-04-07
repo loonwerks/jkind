@@ -33,7 +33,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(ArrayExpr e) {
-		return new ArrayExpr(e.location, visitAll(e.elements));
+		return new ArrayExpr(e.location, visitExprs(e.elements));
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(CallExpr e) {
-		return new CallExpr(e.location, e.name, visitAll(e.args));
+		return new CallExpr(e.location, e.name, visitExprs(e.args));
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(CondactExpr e) {
 		return new CondactExpr(e.location, e.clock.accept(this), (CallExpr) e.call.accept(this),
-				visitAll(e.args));
+				visitExprs(e.args));
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	
 	@Override
 	public Expr visit(TupleExpr e) {
-		return new TupleExpr(e.location, visitAll(e.elements));
+		return new TupleExpr(e.location, visitExprs(e.elements));
 	}
 
 	@Override
@@ -118,9 +118,9 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 		return new UnaryExpr(e.location, e.op, e.expr.accept(this));
 	}
 
-	public List<Expr> visitAll(List<? extends Expr> list) {
+	public List<Expr> visitExprs(List<? extends Expr> es) {
 		List<Expr> result = new ArrayList<>();
-		for (Expr e : list) {
+		for (Expr e : es) {
 			result.add(e.accept(this));
 		}
 		return result;

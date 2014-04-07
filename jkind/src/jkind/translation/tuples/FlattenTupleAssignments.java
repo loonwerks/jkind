@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.Equation;
-import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.visitors.AstMapVisitor;
@@ -22,16 +21,10 @@ public class FlattenTupleAssignments extends AstMapVisitor {
 	}
 
 	@Override
-	public Node visit(Node node) {
-		List<Equation> equations = visitEquations(node.equations);
-		return new Node(node.id, node.inputs, node.outputs, node.locals, equations,
-				node.properties, node.assertions);
-	}
-
-	private List<Equation> visitEquations(List<Equation> equations) {
+	protected List<Equation> visitEquations(List<Equation> es) {
 		List<Equation> results = new ArrayList<>();
-		for (Equation eq : equations) {
-			results.addAll(visitEquation(eq));
+		for (Equation e : es) {
+			results.addAll(visitEquation(e));
 		}
 		return results;
 	}

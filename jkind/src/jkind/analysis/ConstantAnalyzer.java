@@ -1,7 +1,6 @@
 package jkind.analysis;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,38 +27,24 @@ import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
 public class ConstantAnalyzer implements ExprVisitor<Boolean> {
-	private Set<String> constants;
+	private final Set<String> constants = new HashSet<>();
 
 	public ConstantAnalyzer() {
-		constants = Collections.emptySet();
-	}
-
-	public ConstantAnalyzer(Node node, List<Constant> constantDecls) {
-		constants = new HashSet<>();
-		addConstantsToSet(constantDecls);
-		removeShadowedConstants(Util.getVarDecls(node));
 	}
 
 	public ConstantAnalyzer(List<Constant> constantDecls) {
-		constants = new HashSet<>();
-		addConstantsToSet(constantDecls);
-	}
-
-	private void addConstantsToSet(List<Constant> constantDecls) {
 		for (Constant c : constantDecls) {
 			constants.add(c.id);
 		}
 	}
 
-	private void removeShadowedConstants(List<VarDecl> decls) {
-		for (VarDecl decl : decls) {
-			constants.remove(decl.id);
-		}
+	public ConstantAnalyzer(Node node, List<Constant> constantDecls) {
+		this(constantDecls);
+		constants.removeAll(Util.getIds(Util.getVarDecls(node)));
 	}
 
 	@Override
@@ -140,12 +125,12 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	public Boolean visit(RecordUpdateExpr e) {
 		return e.record.accept(this) && e.value.accept(this);
 	}
-	
+
 	@Override
 	public Boolean visit(TupleExpr e) {
 		return visitAll(e.elements);
 	}
-	
+
 	@Override
 	public Boolean visit(UnaryExpr e) {
 		if (e.op == UnaryOp.PRE) {

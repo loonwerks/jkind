@@ -34,7 +34,7 @@ public class InlineNodeCalls extends AstMapVisitor {
 		Node main = program.getMainNode();
 		nodeTable.putAll(Util.getNodeTable(program.nodes));
 
-		List<Expr> assertions = visitAll(main.assertions);
+		List<Expr> assertions = visitAssertions(main.assertions);
 		List<Equation> equations = visitEquationsQueue(main.equations);
 
 		List<VarDecl> locals = append(main.locals, newLocals);
@@ -116,7 +116,7 @@ public class InlineNodeCalls extends AstMapVisitor {
 			@Override
 			public Expr visit(CallExpr e) {
 				if (isNodeCall(e)) {
-					return new CallExpr(e.location, prefix + e.name, visitAll(e.args));
+					return new CallExpr(e.location, prefix + e.name, visitExprs(e.args));
 				} else {
 					return super.visit(e);
 				}

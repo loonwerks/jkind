@@ -7,7 +7,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.visitors.AstMapVisitor;
 
 public class SubstitutionVisitor extends AstMapVisitor {
-	private Map<String, ? extends Expr> map;
+	private final Map<String, ? extends Expr> map;
 
 	public SubstitutionVisitor(Map<String, ? extends Expr> map) {
 		this.map = map;

@@ -8,7 +8,6 @@ import java.util.Map;
 import jkind.lustre.CallExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
-import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -28,12 +27,11 @@ public class FlattenCompoundFunctionInputs extends AstMapVisitor {
 	@Override
 	public Program visit(Program program) {
 		originalFunctionTable.putAll(Util.getFunctionTable(program.functions));
-		List<Function> functions = visitFunctions(program.functions);
-		Node main = visit(program.getMainNode());
-		return new Program(program.types, program.constants, functions, main);
+		return super.visit(program);
 	}
 
-	private List<Function> visitFunctions(List<Function> functions) {
+	@Override
+	protected List<Function> visitFunctions(List<Function> functions) {
 		List<Function> result = new ArrayList<>();
 		for (Function fn : functions) {
 			List<VarDecl> inputs = CompoundUtil.flattenVarDecls(fn.inputs);
@@ -45,7 +43,7 @@ public class FlattenCompoundFunctionInputs extends AstMapVisitor {
 	@Override
 	public Expr visit(CallExpr e) {
 		Function fn = originalFunctionTable.get(e.name);
-		List<Expr> args = visitAll(e.args);
+		List<Expr> args = visitExprs(e.args);
 		List<Expr> flatArgs = new ArrayList<>();
 		for (int i = 0; i < args.size(); i++) {
 			flatArgs.addAll(flattenExpr(args.get(i), fn.inputs.get(i).type));

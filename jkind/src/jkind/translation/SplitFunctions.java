@@ -9,7 +9,6 @@ import java.util.Map;
 import jkind.lustre.CallExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
-import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
@@ -31,12 +30,11 @@ public class SplitFunctions extends AstMapVisitor {
 	@Override
 	public Program visit(Program program) {
 		originalFunctionTable.putAll(Util.getFunctionTable(program.functions));
-		List<Function> functions = visitFunctions(program.functions);
-		Node main = visit(program.getMainNode());
-		return new Program(program.types, program.constants, functions, main);
+		return super.visit(program);
 	}
 
-	private List<Function> visitFunctions(List<Function> functions) {
+	@Override
+	protected List<Function> visitFunctions(List<Function> functions) {
 		List<Function> splitFunctions = new ArrayList<>();
 		for (Function function : functions) {
 			for (VarDecl output : function.outputs) {
@@ -50,7 +48,7 @@ public class SplitFunctions extends AstMapVisitor {
 	@Override
 	public Expr visit(CallExpr e) {
 		Function function = originalFunctionTable.get(e.name);
-		List<Expr> args = visitAll(e.args);
+		List<Expr> args = visitExprs(e.args);
 		List<Expr> exprs = new ArrayList<>();
 		for (VarDecl output : function.outputs) {
 			exprs.add(new CallExpr(e.name + "." + output.id, args));

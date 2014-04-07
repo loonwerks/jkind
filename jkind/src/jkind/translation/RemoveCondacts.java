@@ -84,7 +84,7 @@ public class RemoveCondacts {
 				List<Expr> args = new ArrayList<>();
 				args.add(e.clock.accept(this));
 				args.addAll(e.call.args);
-				args.addAll(visitAll(e.args));
+				args.addAll(visitExprs(e.args));
 
 				Node condact = createCondactNode(call.name);
 				return new CallExpr(condact.id, args);
@@ -199,7 +199,7 @@ public class RemoveCondacts {
 				if (nodeTable.containsKey(e.name)) {
 					List<Expr> args = new ArrayList<>();
 					args.add(clock);
-					args.addAll(visitAll(e.args));
+					args.addAll(visitExprs(e.args));
 	
 					Node clocked = createClockedNode(e.name);
 					return new CallExpr(clocked.id, args);
@@ -216,7 +216,7 @@ public class RemoveCondacts {
 				List<Expr> args = new ArrayList<>();
 				args.add(new BinaryExpr(e.clock.accept(this), BinaryOp.AND, clock));
 				args.addAll(e.call.args);
-				args.addAll(visitAll(e.args));
+				args.addAll(visitExprs(e.args));
 
 				Node condact = createCondactNode(call.name);
 				return new CallExpr(condact.id, args);
