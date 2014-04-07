@@ -17,6 +17,13 @@ public class TupleExpr extends Expr {
 		this(Location.NULL, elements);
 	}
 
+	public static Expr compress(List<? extends Expr> exprs) {
+		if (exprs.size() == 1) {
+			return exprs.get(0);
+		}
+		return new TupleExpr(exprs);
+	}
+	
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

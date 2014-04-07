@@ -56,14 +56,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 	@Override
 	public Expr visit(NodeCallExpr e) {
-		return compressExprs(visitNodeCallExpr(e));
-	}
-
-	private Expr compressExprs(List<IdExpr> exprs) {
-		if (exprs.size() == 1) {
-			return exprs.get(0);
-		}
-		return new TupleExpr(exprs);
+		return TupleExpr.compress(visitNodeCallExpr(e));
 	}
 
 	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {

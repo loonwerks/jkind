@@ -340,12 +340,9 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private Type compressTypes(List<Type> types) {
 		if (types == null || types.contains(null)) {
 			return null;
+		} else {
+			return TupleType.compress(types);
 		}
-
-		if (types.size() == 1) {
-			return types.get(0);
-		}
-		return new TupleType(types);
 	}
 
 	private List<Type> visitCondactExpr(CondactExpr e) {

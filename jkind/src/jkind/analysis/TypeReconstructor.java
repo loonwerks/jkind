@@ -179,14 +179,7 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		for (VarDecl output : node.outputs) {
 			outputs.add(resolveType(output.type));
 		}
-		return compressTypes(outputs);
-	}
-
-	private Type compressTypes(List<Type> types) {
-		if (types.size() == 1) {
-			return types.get(0);
-		}
-		return new TupleType(types);
+		return TupleType.compress(outputs);
 	}
 
 	@Override
