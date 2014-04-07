@@ -38,6 +38,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 	private final List<String> newProperties = new ArrayList<>();
 	private final Map<String, Integer> usedPrefixes = new HashMap<>();
 	private final Queue<Equation> queue = new ArrayDeque<>();
+	private final Map<String, Expr> inlinedCalls = new HashMap<>();
 
 	private InlineNodeCalls(Map<String, Node> nodeTable) {
 		this.nodeTable = nodeTable;
@@ -56,12 +57,28 @@ public class InlineNodeCalls extends ExprMapVisitor {
 
 	@Override
 	public Expr visit(NodeCallExpr e) {
-		return TupleExpr.compress(visitNodeCallExpr(e));
+		// Detect duplicate node calls to reduce code size
+		String key = getKey(e);
+		if (inlinedCalls.containsKey(key)) {
+			return inlinedCalls.get(key);
+		} else {
+			Expr result = TupleExpr.compress(visitNodeCallExpr(e));
+			inlinedCalls.put(key, result);
+			return result;
+		}
+	}
+
+	private String getKey(NodeCallExpr e) {
+		return new NodeCallExpr(getOriginalName(e), e.args).toString();
+	}
+
+	private String getOriginalName(NodeCallExpr e) {
+		return e.node.substring(e.node.lastIndexOf('.') + 1);
 	}
 
 	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {
 		String prefix = newPrefix(e.node);
-		Node node = nodeTable.get(e.node.substring(e.node.lastIndexOf('.') + 1));
+		Node node = nodeTable.get(getOriginalName(e));
 
 		Map<String, IdExpr> translation = getTranslation(prefix, node);
 
