@@ -28,6 +28,7 @@ public class InlineNodeCalls extends AstMapVisitor {
 	private final List<String> newProperties = new ArrayList<>();
 	private final Map<String, Integer> usedPrefixes = new HashMap<>();
 	private final Queue<Equation> queue = new ArrayDeque<>();
+	private final Map<String, Expr> inlinedCalls = new HashMap<>();
 
 	@Override
 	public Program visit(Program program) {
@@ -60,15 +61,31 @@ public class InlineNodeCalls extends AstMapVisitor {
 	@Override
 	public Expr visit(CallExpr e) {
 		if (isNodeCall(e)) {
-			return TupleExpr.compress(visitNodeCallExpr(e));
+			// Detect duplicate node calls to reduce code size
+			String key = getKey(e);
+			if (inlinedCalls.containsKey(key)) {
+				return inlinedCalls.get(key);
+			} else {
+				Expr result = TupleExpr.compress(visitNodeCallExpr(e));
+				inlinedCalls.put(key, result);
+				return result;
+			}
 		} else {
 			return super.visit(e);
 		}
 	}
 
+	private String getKey(CallExpr e) {
+		return new CallExpr(getOriginalName(e), e.args).toString();
+	}
+
+	private String getOriginalName(CallExpr e) {
+		return e.name.substring(e.name.lastIndexOf('.') + 1);
+	}
+
 	public List<IdExpr> visitNodeCallExpr(CallExpr e) {
 		String prefix = newPrefix(e.name);
-		Node node = nodeTable.get(originalName(e));
+		Node node = nodeTable.get(getOriginalName(e));
 
 		Map<String, IdExpr> translation = getTranslation(prefix, node);
 
@@ -84,11 +101,7 @@ public class InlineNodeCalls extends AstMapVisitor {
 	}
 
 	private boolean isNodeCall(CallExpr e) {
-		return nodeTable.containsKey(originalName(e));
-	}
-
-	private String originalName(CallExpr e) {
-		return e.name.substring(e.name.lastIndexOf('.') + 1);
+		return nodeTable.containsKey(getOriginalName(e));
 	}
 
 	private Map<String, IdExpr> getTranslation(String prefix, Node node) {
