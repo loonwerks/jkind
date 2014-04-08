@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
  * runnable JARs allow only a single entry point.
  */
 public class Main {
-	final public static String VERSION = "1.4.5";
+	final public static String VERSION = "1.5";
 
 	public static void main(String[] args) {
 		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -benchmark";
