@@ -11,7 +11,7 @@ public class InvalidMessage extends Message {
 	final public Model model;
 
 	public InvalidMessage(List<String> invalid, int k, Model model) {
-		this.invalid = invalid;
+		this.invalid = safeCopy(invalid);
 		this.k = k;
 		this.model = model;
 	}

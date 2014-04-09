@@ -10,8 +10,8 @@ public class ValidMessage extends Message {
 	final public List<Invariant> invariants;
 
 	public ValidMessage(List<String> valid, int k, List<Invariant> invariants) {
-		this.valid = valid;
+		this.valid = safeCopy(valid);
 		this.k = k;
-		this.invariants = invariants;
+		this.invariants = safeCopy(invariants);
 	}
 }

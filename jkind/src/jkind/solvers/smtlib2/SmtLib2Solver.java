@@ -119,7 +119,11 @@ public abstract class SmtLib2Solver extends Solver {
 	}
 
 	protected boolean isSat(String output) {
-		return !output.contains("unsat");
+		return output.trim().equals("sat");
+	}
+	
+	protected boolean isUnsat(String output) {
+		return output.trim().equals("unsat");
 	}
 
 	protected String readFromSolver() {

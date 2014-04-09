@@ -11,6 +11,7 @@ import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
+import jkind.processes.messages.UnknownMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -18,6 +19,7 @@ import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnknownResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
@@ -89,6 +91,9 @@ public class BaseProcess extends Process {
 					}
 				}
 				sendInvalid(invalid, k, model);
+			} else if (result instanceof UnknownResult) {
+				sendUnknown(properties);
+				properties.clear();
 			}
 		} while (!properties.isEmpty() && result instanceof SatResult);
 
@@ -111,6 +116,14 @@ public class BaseProcess extends Process {
 	private void sendBaseStep(int k) {
 		if (inductiveProcess != null) {
 			inductiveProcess.incoming.add(new BaseStepMessage(k));
+		}
+	}
+
+	private void sendUnknown(List<String> unknown) {
+		UnknownMessage um = new UnknownMessage(unknown);
+		director.incoming.add(um);
+		if (inductiveProcess != null) {
+			inductiveProcess.incoming.add(um);
 		}
 	}
 
