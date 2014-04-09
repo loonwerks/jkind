@@ -11,6 +11,9 @@ public class TupleType extends Type {
 
 	public TupleType(List<? extends Type> types) {
 		super(Location.NULL);
+		if (types.size() == 1) {
+			throw new IllegalArgumentException("Cannot construct singleton tuple type");
+		}
 		this.types = Collections.unmodifiableList(types);
 	}
 

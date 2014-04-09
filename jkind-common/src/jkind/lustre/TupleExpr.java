@@ -10,6 +10,9 @@ public class TupleExpr extends Expr {
 
 	public TupleExpr(Location loc, List<? extends Expr> elements) {
 		super(loc);
+		if (elements.size() == 1) {
+			throw new IllegalArgumentException("Cannot construct singleton tuple");
+		}
 		this.elements = Collections.unmodifiableList(elements);
 	}
 	
