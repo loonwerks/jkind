@@ -278,13 +278,6 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitProgram(@NotNull LustreParser.ProgramContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link LustreParser#parenExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParenExpr(@NotNull LustreParser.ParenExprContext ctx);
-
-	/**
 	 * Visit a parse tree produced by {@link LustreParser#bound}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -61,7 +61,6 @@ import jkind.lustre.parsing.LustreParser.NegateExprContext;
 import jkind.lustre.parsing.LustreParser.NodeCallExprContext;
 import jkind.lustre.parsing.LustreParser.NodeContext;
 import jkind.lustre.parsing.LustreParser.NotExprContext;
-import jkind.lustre.parsing.LustreParser.ParenExprContext;
 import jkind.lustre.parsing.LustreParser.PlainTypeContext;
 import jkind.lustre.parsing.LustreParser.PreExprContext;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
@@ -380,16 +379,17 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Expr visitTupleExpr(TupleExprContext ctx) {
+		// Treat singleton tuples as simply parentheses. This increases parsing
+		// performance by not having to decide between parenExpr and tupleExpr.
+		if (ctx.expr().size() == 1) {
+			return expr(ctx.expr(0));
+		}
+
 		List<Expr> elements = new ArrayList<>();
 		for (int i = 0; i < ctx.expr().size(); i++) {
 			elements.add(expr(ctx.expr(i)));
 		}
 		return new TupleExpr(loc(ctx), elements);
-	}
-
-	@Override
-	public Expr visitParenExpr(ParenExprContext ctx) {
-		return expr(ctx.expr());
 	}
 
 	private static Location loc(ParserRuleContext ctx) {
