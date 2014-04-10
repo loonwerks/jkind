@@ -6,6 +6,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.util.StringNaturalOrdering;
 
 public class RecordExpr extends Expr {
 	final public String id;
@@ -14,7 +15,9 @@ public class RecordExpr extends Expr {
 	public RecordExpr(Location loc, String id, Map<String, Expr> fields) {
 		super(loc);
 		this.id = id;
-		this.fields = Collections.unmodifiableSortedMap(new TreeMap<>(fields));
+		TreeMap<String, Expr> map = new TreeMap<>(new StringNaturalOrdering());
+		map.putAll(fields);
+		this.fields = Collections.unmodifiableSortedMap(map);
 	}
 	
 	public RecordExpr(String id, Map<String, Expr> fields) {
