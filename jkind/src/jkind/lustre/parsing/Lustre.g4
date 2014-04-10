@@ -67,8 +67,7 @@ expr: ID                                                       # idExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
-    | '(' expr (',' expr)+ ')'                                 # tupleExpr
-    | '(' expr ')'                                             # parenExpr
+    | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 
 REAL: INT '.' INT;
