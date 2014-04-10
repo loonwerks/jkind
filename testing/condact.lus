@@ -71,5 +71,5 @@ let
   --%PROPERTY ok7;
 
   -- This requires properly clocking subnode properties
-  condact(toggle, holds(toggle));
+  () = condact(toggle, holds(toggle));
 tel;

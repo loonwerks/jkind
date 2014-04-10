@@ -39,9 +39,7 @@ main: '--%MAIN' ';'?;
 
 assertion: 'assert' expr ';';
 
-equation: (lhs | '(' lhs ')') '=' expr ';'
-        | expr ';'
-        ;
+equation: (lhs | '(' lhs? ')') '=' expr ';';
 
 lhs: ID (',' ID)*;
 

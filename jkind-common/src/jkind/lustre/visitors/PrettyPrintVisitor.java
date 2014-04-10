@@ -198,7 +198,9 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 
 	@Override
 	public Void visit(Equation equation) {
-		if (!equation.lhs.isEmpty()) {
+		if (equation.lhs.isEmpty()) {
+			write("()");
+		} else {
 			Iterator<IdExpr> iterator = equation.lhs.iterator();
 			while (iterator.hasNext()) {
 				write(iterator.next().id);
@@ -206,9 +208,9 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 					write(", ");
 				}
 			}
-			write(" = ");
 		}
 
+		write(" = ");
 		expr(equation.expr);
 		write(";");
 		return null;
