@@ -1,0 +1,41 @@
+node main(
+  x : int;
+  y : int
+) returns (
+  z : int
+);
+var
+  history : bool;
+  prop1 : bool;
+  prop2 : bool;
+  integ~0.x : int;
+  integ~0.sum : int;
+  integ~1.x : int;
+  integ~1.sum : int;
+  integ~2.x : int;
+  integ~2.sum : int;
+let
+  z = integ~0.sum;
+
+  history = ((x > 0) and (true -> (pre history)));
+
+  prop1 = (history => (z > 0));
+
+  prop2 = ((integ~0.sum + integ~1.sum) = integ~2.sum);
+
+  integ~0.x = x;
+
+  integ~0.sum = (integ~0.x + (0 -> (pre integ~0.sum)));
+
+  integ~1.x = y;
+
+  integ~1.sum = (integ~1.x + (0 -> (pre integ~1.sum)));
+
+  integ~2.x = (x + y);
+
+  integ~2.sum = (integ~2.x + (0 -> (pre integ~2.sum)));
+
+  --%PROPERTY prop1;
+  --%PROPERTY prop2;
+
+tel;

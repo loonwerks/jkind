@@ -1,0 +1,441 @@
+node main(
+  in : int
+) returns (
+  b1 : int;
+  b2 : int;
+  b3 : int;
+  b4 : int;
+  r6 : int;
+  r7 : int;
+  r8 : int;
+  r9 : int
+);
+var
+  solved : bool;
+  wellformed : bool;
+  prop : bool;
+  distinct : bool;
+  bounded : bool;
+  blue_turn : bool;
+  red_turn : bool;
+  some_turn : bool;
+  blue_start : bool;
+  blue_peg~0.in : int;
+  blue_peg~0.init : int;
+  blue_peg~0.p1 : int;
+  blue_peg~0.p2 : int;
+  blue_peg~0.p3 : int;
+  blue_peg~0.p4 : int;
+  blue_peg~0.p5 : int;
+  blue_peg~0.p6 : int;
+  blue_peg~0.p7 : int;
+  blue_peg~0.b : int;
+  blue_peg~1.in : int;
+  blue_peg~1.init : int;
+  blue_peg~1.p1 : int;
+  blue_peg~1.p2 : int;
+  blue_peg~1.p3 : int;
+  blue_peg~1.p4 : int;
+  blue_peg~1.p5 : int;
+  blue_peg~1.p6 : int;
+  blue_peg~1.p7 : int;
+  blue_peg~1.b : int;
+  blue_peg~2.in : int;
+  blue_peg~2.init : int;
+  blue_peg~2.p1 : int;
+  blue_peg~2.p2 : int;
+  blue_peg~2.p3 : int;
+  blue_peg~2.p4 : int;
+  blue_peg~2.p5 : int;
+  blue_peg~2.p6 : int;
+  blue_peg~2.p7 : int;
+  blue_peg~2.b : int;
+  blue_peg~3.in : int;
+  blue_peg~3.init : int;
+  blue_peg~3.p1 : int;
+  blue_peg~3.p2 : int;
+  blue_peg~3.p3 : int;
+  blue_peg~3.p4 : int;
+  blue_peg~3.p5 : int;
+  blue_peg~3.p6 : int;
+  blue_peg~3.p7 : int;
+  blue_peg~3.b : int;
+  red_peg~0.in : int;
+  red_peg~0.init : int;
+  red_peg~0.p1 : int;
+  red_peg~0.p2 : int;
+  red_peg~0.p3 : int;
+  red_peg~0.p4 : int;
+  red_peg~0.p5 : int;
+  red_peg~0.p6 : int;
+  red_peg~0.p7 : int;
+  red_peg~0.r : int;
+  red_peg~1.in : int;
+  red_peg~1.init : int;
+  red_peg~1.p1 : int;
+  red_peg~1.p2 : int;
+  red_peg~1.p3 : int;
+  red_peg~1.p4 : int;
+  red_peg~1.p5 : int;
+  red_peg~1.p6 : int;
+  red_peg~1.p7 : int;
+  red_peg~1.r : int;
+  red_peg~2.in : int;
+  red_peg~2.init : int;
+  red_peg~2.p1 : int;
+  red_peg~2.p2 : int;
+  red_peg~2.p3 : int;
+  red_peg~2.p4 : int;
+  red_peg~2.p5 : int;
+  red_peg~2.p6 : int;
+  red_peg~2.p7 : int;
+  red_peg~2.r : int;
+  red_peg~3.in : int;
+  red_peg~3.init : int;
+  red_peg~3.p1 : int;
+  red_peg~3.p2 : int;
+  red_peg~3.p3 : int;
+  red_peg~3.p4 : int;
+  red_peg~3.p5 : int;
+  red_peg~3.p6 : int;
+  red_peg~3.p7 : int;
+  red_peg~3.r : int;
+  distinct8~0.p1 : int;
+  distinct8~0.p2 : int;
+  distinct8~0.p3 : int;
+  distinct8~0.p4 : int;
+  distinct8~0.p5 : int;
+  distinct8~0.p6 : int;
+  distinct8~0.p7 : int;
+  distinct8~0.p8 : int;
+  distinct8~0.distinct : bool;
+  valid~0.loc : int;
+  valid~0.v : bool;
+  valid~1.loc : int;
+  valid~1.v : bool;
+  valid~2.loc : int;
+  valid~2.v : bool;
+  valid~3.loc : int;
+  valid~3.v : bool;
+  valid~4.loc : int;
+  valid~4.v : bool;
+  valid~5.loc : int;
+  valid~5.v : bool;
+  valid~6.loc : int;
+  valid~6.v : bool;
+  valid~7.loc : int;
+  valid~7.v : bool;
+  blue_start_position~0.p : int;
+  blue_start_position~0.holds : bool;
+  red_start_position~0.p : int;
+  red_start_position~0.holds : bool;
+  red_start_position~1.p : int;
+  red_start_position~1.holds : bool;
+  red_start_position~2.p : int;
+  red_start_position~2.holds : bool;
+  red_start_position~3.p : int;
+  red_start_position~3.holds : bool;
+  red_start_position~4.p : int;
+  red_start_position~4.holds : bool;
+  blue_start_position~1.p : int;
+  blue_start_position~1.holds : bool;
+  blue_start_position~2.p : int;
+  blue_start_position~2.holds : bool;
+  blue_start_position~3.p : int;
+  blue_start_position~3.holds : bool;
+  blue_start_position~4.p : int;
+  blue_start_position~4.holds : bool;
+  historically~0.x : bool;
+  historically~0.holds : bool;
+let
+  b1 = blue_peg~0.b;
+
+  b2 = blue_peg~1.b;
+
+  b3 = blue_peg~2.b;
+
+  b4 = blue_peg~3.b;
+
+  r6 = red_peg~0.r;
+
+  r7 = red_peg~1.r;
+
+  r8 = red_peg~2.r;
+
+  r9 = red_peg~3.r;
+
+  distinct = distinct8~0.distinct;
+
+  bounded = (((((((valid~0.v and valid~1.v) and valid~2.v) and valid~3.v) and valid~4.v) and valid~5.v) and valid~6.v) and valid~7.v);
+
+  blue_turn = blue_start_position~0.holds;
+
+  red_turn = red_start_position~0.holds;
+
+  blue_start = (blue_turn -> true);
+
+  some_turn = (blue_turn or red_turn);
+
+  wellformed = (((distinct and bounded) and blue_start) and some_turn);
+
+  solved = (((((((red_start_position~1.holds and red_start_position~2.holds) and red_start_position~3.holds) and red_start_position~4.holds) and blue_start_position~1.holds) and blue_start_position~2.holds) and blue_start_position~3.holds) and blue_start_position~4.holds);
+
+  prop = (not (historically~0.holds and solved));
+
+  blue_peg~0.in = in;
+
+  blue_peg~0.init = 1;
+
+  blue_peg~0.p1 = b2;
+
+  blue_peg~0.p2 = b3;
+
+  blue_peg~0.p3 = b4;
+
+  blue_peg~0.p4 = r6;
+
+  blue_peg~0.p5 = r7;
+
+  blue_peg~0.p6 = r8;
+
+  blue_peg~0.p7 = r9;
+
+  blue_peg~0.b = (blue_peg~0.init -> (if ((pre blue_peg~0.in) = blue_peg~0.init) then (if (((((((((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p1)) and (((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p2))) and (((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p3))) and (((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p4))) and (((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p5))) and (((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p6))) and (((pre blue_peg~0.b) + 1) <> (pre blue_peg~0.p7))) then ((pre blue_peg~0.b) + 1) else ((pre blue_peg~0.b) + 2)) else (pre blue_peg~0.b)));
+
+  blue_peg~1.in = in;
+
+  blue_peg~1.init = 2;
+
+  blue_peg~1.p1 = b1;
+
+  blue_peg~1.p2 = b3;
+
+  blue_peg~1.p3 = b4;
+
+  blue_peg~1.p4 = r6;
+
+  blue_peg~1.p5 = r7;
+
+  blue_peg~1.p6 = r8;
+
+  blue_peg~1.p7 = r9;
+
+  blue_peg~1.b = (blue_peg~1.init -> (if ((pre blue_peg~1.in) = blue_peg~1.init) then (if (((((((((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p1)) and (((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p2))) and (((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p3))) and (((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p4))) and (((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p5))) and (((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p6))) and (((pre blue_peg~1.b) + 1) <> (pre blue_peg~1.p7))) then ((pre blue_peg~1.b) + 1) else ((pre blue_peg~1.b) + 2)) else (pre blue_peg~1.b)));
+
+  blue_peg~2.in = in;
+
+  blue_peg~2.init = 3;
+
+  blue_peg~2.p1 = b1;
+
+  blue_peg~2.p2 = b2;
+
+  blue_peg~2.p3 = b4;
+
+  blue_peg~2.p4 = r6;
+
+  blue_peg~2.p5 = r7;
+
+  blue_peg~2.p6 = r8;
+
+  blue_peg~2.p7 = r9;
+
+  blue_peg~2.b = (blue_peg~2.init -> (if ((pre blue_peg~2.in) = blue_peg~2.init) then (if (((((((((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p1)) and (((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p2))) and (((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p3))) and (((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p4))) and (((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p5))) and (((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p6))) and (((pre blue_peg~2.b) + 1) <> (pre blue_peg~2.p7))) then ((pre blue_peg~2.b) + 1) else ((pre blue_peg~2.b) + 2)) else (pre blue_peg~2.b)));
+
+  blue_peg~3.in = in;
+
+  blue_peg~3.init = 4;
+
+  blue_peg~3.p1 = b1;
+
+  blue_peg~3.p2 = b2;
+
+  blue_peg~3.p3 = b3;
+
+  blue_peg~3.p4 = r6;
+
+  blue_peg~3.p5 = r7;
+
+  blue_peg~3.p6 = r8;
+
+  blue_peg~3.p7 = r9;
+
+  blue_peg~3.b = (blue_peg~3.init -> (if ((pre blue_peg~3.in) = blue_peg~3.init) then (if (((((((((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p1)) and (((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p2))) and (((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p3))) and (((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p4))) and (((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p5))) and (((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p6))) and (((pre blue_peg~3.b) + 1) <> (pre blue_peg~3.p7))) then ((pre blue_peg~3.b) + 1) else ((pre blue_peg~3.b) + 2)) else (pre blue_peg~3.b)));
+
+  red_peg~0.in = in;
+
+  red_peg~0.init = 6;
+
+  red_peg~0.p1 = b1;
+
+  red_peg~0.p2 = b2;
+
+  red_peg~0.p3 = b3;
+
+  red_peg~0.p4 = b4;
+
+  red_peg~0.p5 = r7;
+
+  red_peg~0.p6 = r8;
+
+  red_peg~0.p7 = r9;
+
+  red_peg~0.r = (red_peg~0.init -> (if ((pre red_peg~0.in) = red_peg~0.init) then (if (((((((((pre red_peg~0.r) - 1) <> (pre red_peg~0.p1)) and (((pre red_peg~0.r) - 1) <> (pre red_peg~0.p2))) and (((pre red_peg~0.r) - 1) <> (pre red_peg~0.p3))) and (((pre red_peg~0.r) - 1) <> (pre red_peg~0.p4))) and (((pre red_peg~0.r) - 1) <> (pre red_peg~0.p5))) and (((pre red_peg~0.r) - 1) <> (pre red_peg~0.p6))) and (((pre red_peg~0.r) - 1) <> (pre red_peg~0.p7))) then ((pre red_peg~0.r) - 1) else ((pre red_peg~0.r) - 2)) else (pre red_peg~0.r)));
+
+  red_peg~1.in = in;
+
+  red_peg~1.init = 7;
+
+  red_peg~1.p1 = b1;
+
+  red_peg~1.p2 = b2;
+
+  red_peg~1.p3 = b3;
+
+  red_peg~1.p4 = b4;
+
+  red_peg~1.p5 = r6;
+
+  red_peg~1.p6 = r8;
+
+  red_peg~1.p7 = r9;
+
+  red_peg~1.r = (red_peg~1.init -> (if ((pre red_peg~1.in) = red_peg~1.init) then (if (((((((((pre red_peg~1.r) - 1) <> (pre red_peg~1.p1)) and (((pre red_peg~1.r) - 1) <> (pre red_peg~1.p2))) and (((pre red_peg~1.r) - 1) <> (pre red_peg~1.p3))) and (((pre red_peg~1.r) - 1) <> (pre red_peg~1.p4))) and (((pre red_peg~1.r) - 1) <> (pre red_peg~1.p5))) and (((pre red_peg~1.r) - 1) <> (pre red_peg~1.p6))) and (((pre red_peg~1.r) - 1) <> (pre red_peg~1.p7))) then ((pre red_peg~1.r) - 1) else ((pre red_peg~1.r) - 2)) else (pre red_peg~1.r)));
+
+  red_peg~2.in = in;
+
+  red_peg~2.init = 8;
+
+  red_peg~2.p1 = b1;
+
+  red_peg~2.p2 = b2;
+
+  red_peg~2.p3 = b3;
+
+  red_peg~2.p4 = b4;
+
+  red_peg~2.p5 = r6;
+
+  red_peg~2.p6 = r7;
+
+  red_peg~2.p7 = r9;
+
+  red_peg~2.r = (red_peg~2.init -> (if ((pre red_peg~2.in) = red_peg~2.init) then (if (((((((((pre red_peg~2.r) - 1) <> (pre red_peg~2.p1)) and (((pre red_peg~2.r) - 1) <> (pre red_peg~2.p2))) and (((pre red_peg~2.r) - 1) <> (pre red_peg~2.p3))) and (((pre red_peg~2.r) - 1) <> (pre red_peg~2.p4))) and (((pre red_peg~2.r) - 1) <> (pre red_peg~2.p5))) and (((pre red_peg~2.r) - 1) <> (pre red_peg~2.p6))) and (((pre red_peg~2.r) - 1) <> (pre red_peg~2.p7))) then ((pre red_peg~2.r) - 1) else ((pre red_peg~2.r) - 2)) else (pre red_peg~2.r)));
+
+  red_peg~3.in = in;
+
+  red_peg~3.init = 9;
+
+  red_peg~3.p1 = b1;
+
+  red_peg~3.p2 = b2;
+
+  red_peg~3.p3 = b3;
+
+  red_peg~3.p4 = b4;
+
+  red_peg~3.p5 = r6;
+
+  red_peg~3.p6 = r7;
+
+  red_peg~3.p7 = r8;
+
+  red_peg~3.r = (red_peg~3.init -> (if ((pre red_peg~3.in) = red_peg~3.init) then (if (((((((((pre red_peg~3.r) - 1) <> (pre red_peg~3.p1)) and (((pre red_peg~3.r) - 1) <> (pre red_peg~3.p2))) and (((pre red_peg~3.r) - 1) <> (pre red_peg~3.p3))) and (((pre red_peg~3.r) - 1) <> (pre red_peg~3.p4))) and (((pre red_peg~3.r) - 1) <> (pre red_peg~3.p5))) and (((pre red_peg~3.r) - 1) <> (pre red_peg~3.p6))) and (((pre red_peg~3.r) - 1) <> (pre red_peg~3.p7))) then ((pre red_peg~3.r) - 1) else ((pre red_peg~3.r) - 2)) else (pre red_peg~3.r)));
+
+  distinct8~0.p1 = b1;
+
+  distinct8~0.p2 = b2;
+
+  distinct8~0.p3 = b3;
+
+  distinct8~0.p4 = b4;
+
+  distinct8~0.p5 = r6;
+
+  distinct8~0.p6 = r7;
+
+  distinct8~0.p7 = r8;
+
+  distinct8~0.p8 = r9;
+
+  distinct8~0.distinct = ((((((((((((((((((((((((((((distinct8~0.p1 <> distinct8~0.p2) and (distinct8~0.p1 <> distinct8~0.p3)) and (distinct8~0.p1 <> distinct8~0.p4)) and (distinct8~0.p1 <> distinct8~0.p5)) and (distinct8~0.p1 <> distinct8~0.p6)) and (distinct8~0.p1 <> distinct8~0.p7)) and (distinct8~0.p1 <> distinct8~0.p8)) and (distinct8~0.p2 <> distinct8~0.p3)) and (distinct8~0.p2 <> distinct8~0.p4)) and (distinct8~0.p2 <> distinct8~0.p5)) and (distinct8~0.p2 <> distinct8~0.p6)) and (distinct8~0.p2 <> distinct8~0.p7)) and (distinct8~0.p2 <> distinct8~0.p8)) and (distinct8~0.p3 <> distinct8~0.p4)) and (distinct8~0.p3 <> distinct8~0.p5)) and (distinct8~0.p3 <> distinct8~0.p6)) and (distinct8~0.p3 <> distinct8~0.p7)) and (distinct8~0.p3 <> distinct8~0.p8)) and (distinct8~0.p4 <> distinct8~0.p5)) and (distinct8~0.p4 <> distinct8~0.p6)) and (distinct8~0.p4 <> distinct8~0.p7)) and (distinct8~0.p4 <> distinct8~0.p8)) and (distinct8~0.p5 <> distinct8~0.p6)) and (distinct8~0.p5 <> distinct8~0.p7)) and (distinct8~0.p5 <> distinct8~0.p8)) and (distinct8~0.p6 <> distinct8~0.p7)) and (distinct8~0.p6 <> distinct8~0.p8)) and (distinct8~0.p7 <> distinct8~0.p8));
+
+  valid~0.loc = b1;
+
+  valid~0.v = (((((((((valid~0.loc = 1) or (valid~0.loc = 2)) or (valid~0.loc = 3)) or (valid~0.loc = 4)) or (valid~0.loc = 5)) or (valid~0.loc = 6)) or (valid~0.loc = 7)) or (valid~0.loc = 8)) or (valid~0.loc = 9));
+
+  valid~1.loc = b2;
+
+  valid~1.v = (((((((((valid~1.loc = 1) or (valid~1.loc = 2)) or (valid~1.loc = 3)) or (valid~1.loc = 4)) or (valid~1.loc = 5)) or (valid~1.loc = 6)) or (valid~1.loc = 7)) or (valid~1.loc = 8)) or (valid~1.loc = 9));
+
+  valid~2.loc = b3;
+
+  valid~2.v = (((((((((valid~2.loc = 1) or (valid~2.loc = 2)) or (valid~2.loc = 3)) or (valid~2.loc = 4)) or (valid~2.loc = 5)) or (valid~2.loc = 6)) or (valid~2.loc = 7)) or (valid~2.loc = 8)) or (valid~2.loc = 9));
+
+  valid~3.loc = b4;
+
+  valid~3.v = (((((((((valid~3.loc = 1) or (valid~3.loc = 2)) or (valid~3.loc = 3)) or (valid~3.loc = 4)) or (valid~3.loc = 5)) or (valid~3.loc = 6)) or (valid~3.loc = 7)) or (valid~3.loc = 8)) or (valid~3.loc = 9));
+
+  valid~4.loc = r6;
+
+  valid~4.v = (((((((((valid~4.loc = 1) or (valid~4.loc = 2)) or (valid~4.loc = 3)) or (valid~4.loc = 4)) or (valid~4.loc = 5)) or (valid~4.loc = 6)) or (valid~4.loc = 7)) or (valid~4.loc = 8)) or (valid~4.loc = 9));
+
+  valid~5.loc = r7;
+
+  valid~5.v = (((((((((valid~5.loc = 1) or (valid~5.loc = 2)) or (valid~5.loc = 3)) or (valid~5.loc = 4)) or (valid~5.loc = 5)) or (valid~5.loc = 6)) or (valid~5.loc = 7)) or (valid~5.loc = 8)) or (valid~5.loc = 9));
+
+  valid~6.loc = r8;
+
+  valid~6.v = (((((((((valid~6.loc = 1) or (valid~6.loc = 2)) or (valid~6.loc = 3)) or (valid~6.loc = 4)) or (valid~6.loc = 5)) or (valid~6.loc = 6)) or (valid~6.loc = 7)) or (valid~6.loc = 8)) or (valid~6.loc = 9));
+
+  valid~7.loc = r9;
+
+  valid~7.v = (((((((((valid~7.loc = 1) or (valid~7.loc = 2)) or (valid~7.loc = 3)) or (valid~7.loc = 4)) or (valid~7.loc = 5)) or (valid~7.loc = 6)) or (valid~7.loc = 7)) or (valid~7.loc = 8)) or (valid~7.loc = 9));
+
+  blue_start_position~0.p = in;
+
+  blue_start_position~0.holds = ((((blue_start_position~0.p = 1) or (blue_start_position~0.p = 2)) or (blue_start_position~0.p = 3)) or (blue_start_position~0.p = 4));
+
+  red_start_position~0.p = in;
+
+  red_start_position~0.holds = ((((red_start_position~0.p = 6) or (red_start_position~0.p = 7)) or (red_start_position~0.p = 8)) or (red_start_position~0.p = 9));
+
+  red_start_position~1.p = b1;
+
+  red_start_position~1.holds = ((((red_start_position~1.p = 6) or (red_start_position~1.p = 7)) or (red_start_position~1.p = 8)) or (red_start_position~1.p = 9));
+
+  red_start_position~2.p = b2;
+
+  red_start_position~2.holds = ((((red_start_position~2.p = 6) or (red_start_position~2.p = 7)) or (red_start_position~2.p = 8)) or (red_start_position~2.p = 9));
+
+  red_start_position~3.p = b3;
+
+  red_start_position~3.holds = ((((red_start_position~3.p = 6) or (red_start_position~3.p = 7)) or (red_start_position~3.p = 8)) or (red_start_position~3.p = 9));
+
+  red_start_position~4.p = b4;
+
+  red_start_position~4.holds = ((((red_start_position~4.p = 6) or (red_start_position~4.p = 7)) or (red_start_position~4.p = 8)) or (red_start_position~4.p = 9));
+
+  blue_start_position~1.p = r6;
+
+  blue_start_position~1.holds = ((((blue_start_position~1.p = 1) or (blue_start_position~1.p = 2)) or (blue_start_position~1.p = 3)) or (blue_start_position~1.p = 4));
+
+  blue_start_position~2.p = r7;
+
+  blue_start_position~2.holds = ((((blue_start_position~2.p = 1) or (blue_start_position~2.p = 2)) or (blue_start_position~2.p = 3)) or (blue_start_position~2.p = 4));
+
+  blue_start_position~3.p = r8;
+
+  blue_start_position~3.holds = ((((blue_start_position~3.p = 1) or (blue_start_position~3.p = 2)) or (blue_start_position~3.p = 3)) or (blue_start_position~3.p = 4));
+
+  blue_start_position~4.p = r9;
+
+  blue_start_position~4.holds = ((((blue_start_position~4.p = 1) or (blue_start_position~4.p = 2)) or (blue_start_position~4.p = 3)) or (blue_start_position~4.p = 4));
+
+  historically~0.x = wellformed;
+
+  historically~0.holds = (historically~0.x and (true -> (pre historically~0.holds)));
+
+  --%PROPERTY prop;
+
+tel;

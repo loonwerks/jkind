@@ -1,0 +1,21 @@
+node main(
+
+) returns (
+  x : bool
+);
+var
+  count : int;
+  ok : bool;
+  lemma : bool;
+let
+  count = (1 -> (if ((pre count) < 5) then ((pre count) + 1) else 5));
+
+  x = (false -> ((not (count >= 5)) and (pre x)));
+
+  ok = (true -> ((not (pre x)) or x));
+
+  lemma = (not x);
+
+  --%PROPERTY ok;
+
+tel;

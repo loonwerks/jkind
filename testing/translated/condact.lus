@@ -1,0 +1,222 @@
+node main(
+  x : int;
+  y : int
+) returns (
+
+);
+var
+  toggle : bool;
+  ok1 : bool;
+  ok2 : bool;
+  ok3 : bool;
+  ok4 : bool;
+  ok5 : bool;
+  ok6 : bool;
+  ok7 : bool;
+  historically~0.x : bool;
+  historically~0.ok : bool;
+  integ~condact~0.~clock : bool;
+  integ~condact~0.x : int;
+  integ~condact~0.sum~default : int;
+  integ~condact~0.sum~clocked : int;
+  integ~condact~0.~state0 : int;
+  integ~condact~0.~init : bool;
+  integ~condact~0.sum : int;
+  integ~condact~1.~clock : bool;
+  integ~condact~1.x : int;
+  integ~condact~1.sum~default : int;
+  integ~condact~1.sum~clocked : int;
+  integ~condact~1.~state0 : int;
+  integ~condact~1.~init : bool;
+  integ~condact~1.sum : int;
+  integ~condact~2.~clock : bool;
+  integ~condact~2.x : int;
+  integ~condact~2.sum~default : int;
+  integ~condact~2.sum~clocked : int;
+  integ~condact~2.~state0 : int;
+  integ~condact~2.~init : bool;
+  integ~condact~2.sum : int;
+  double_counter~condact~0.~clock : bool;
+  double_counter~condact~0.out~default : int;
+  double_counter~condact~0.out~clocked : int;
+  double_counter~condact~0.~init : bool;
+  double_counter~condact~0.out : int;
+  counter~0.out : int;
+  slow_counter~condact~0.~clock : bool;
+  slow_counter~condact~0.out~default : int;
+  slow_counter~condact~0.out~clocked : int;
+  slow_counter~condact~0.toggle : bool;
+  slow_counter~condact~0.~state0 : bool;
+  slow_counter~condact~0.~init : bool;
+  slow_counter~condact~0.out : int;
+  integ~condact~3.~clock : bool;
+  integ~condact~3.x : int;
+  integ~condact~3.sum~default : int;
+  integ~condact~3.sum~clocked : int;
+  integ~condact~3.~state0 : int;
+  integ~condact~3.~init : bool;
+  integ~condact~3.sum : int;
+  integ~0.x : int;
+  integ~0.sum : int;
+  holds~condact~0.~clock : bool;
+  holds~condact~0.x : bool;
+  holds~condact~0.ok : bool;
+  holds~condact~0.~init : bool;
+  holds~condact~0.ok~clocked_property : bool;
+  double_counter~condact~0.counter~clocked~0.~clock : bool;
+  double_counter~condact~0.counter~clocked~0.out : int;
+  double_counter~condact~0.counter~clocked~0.~state0 : int;
+  double_counter~condact~0.counter~clocked~0.~init : bool;
+  slow_counter~condact~0.counter~condact~0.~clock : bool;
+  slow_counter~condact~0.counter~condact~0.out~default : int;
+  slow_counter~condact~0.counter~condact~0.out~clocked : int;
+  slow_counter~condact~0.counter~condact~0.~state0 : int;
+  slow_counter~condact~0.counter~condact~0.~init : bool;
+  slow_counter~condact~0.counter~condact~0.out : int;
+let
+  toggle = (true -> (not (pre toggle)));
+
+  ok1 = (historically~0.ok => (integ~condact~0.sum~clocked >= 0));
+
+  ok2 = ((integ~condact~0.sum~clocked + integ~condact~1.sum~clocked) = integ~condact~2.sum~clocked);
+
+  ok3 = (double_counter~condact~0.out~clocked <= counter~0.out);
+
+  ok4 = (counter~0.out <= (1 + double_counter~condact~0.out~clocked));
+
+  ok5 = ((4 * slow_counter~condact~0.out~clocked) <= counter~0.out);
+
+  ok6 = (counter~0.out <= (4 * (1 + slow_counter~condact~0.out~clocked)));
+
+  ok7 = ((integ~condact~0.sum~clocked + integ~condact~3.sum~clocked) = integ~0.sum);
+
+  historically~0.x = (toggle => (x >= 0));
+
+  historically~0.ok = (historically~0.x and (true -> (pre historically~0.ok)));
+
+  integ~condact~0.~clock = toggle;
+
+  integ~condact~0.x = x;
+
+  integ~condact~0.sum~default = 0;
+
+  integ~condact~0.sum = (integ~condact~0.x + (if integ~condact~0.~init then 0 else (pre integ~condact~0.~state0)));
+
+  integ~condact~0.~state0 = (if integ~condact~0.~clock then integ~condact~0.sum else (pre integ~condact~0.~state0));
+
+  integ~condact~0.~init = (true -> (if (pre integ~condact~0.~clock) then false else (pre integ~condact~0.~init)));
+
+  integ~condact~0.sum~clocked = (if integ~condact~0.~clock then integ~condact~0.sum else (integ~condact~0.sum~default -> (pre integ~condact~0.sum~clocked)));
+
+  integ~condact~1.~clock = toggle;
+
+  integ~condact~1.x = y;
+
+  integ~condact~1.sum~default = 0;
+
+  integ~condact~1.sum = (integ~condact~1.x + (if integ~condact~1.~init then 0 else (pre integ~condact~1.~state0)));
+
+  integ~condact~1.~state0 = (if integ~condact~1.~clock then integ~condact~1.sum else (pre integ~condact~1.~state0));
+
+  integ~condact~1.~init = (true -> (if (pre integ~condact~1.~clock) then false else (pre integ~condact~1.~init)));
+
+  integ~condact~1.sum~clocked = (if integ~condact~1.~clock then integ~condact~1.sum else (integ~condact~1.sum~default -> (pre integ~condact~1.sum~clocked)));
+
+  integ~condact~2.~clock = toggle;
+
+  integ~condact~2.x = (x + y);
+
+  integ~condact~2.sum~default = 0;
+
+  integ~condact~2.sum = (integ~condact~2.x + (if integ~condact~2.~init then 0 else (pre integ~condact~2.~state0)));
+
+  integ~condact~2.~state0 = (if integ~condact~2.~clock then integ~condact~2.sum else (pre integ~condact~2.~state0));
+
+  integ~condact~2.~init = (true -> (if (pre integ~condact~2.~clock) then false else (pre integ~condact~2.~init)));
+
+  integ~condact~2.sum~clocked = (if integ~condact~2.~clock then integ~condact~2.sum else (integ~condact~2.sum~default -> (pre integ~condact~2.sum~clocked)));
+
+  double_counter~condact~0.~clock = toggle;
+
+  double_counter~condact~0.out~default = 0;
+
+  double_counter~condact~0.out = (double_counter~condact~0.counter~clocked~0.out + double_counter~condact~0.counter~clocked~0.out);
+
+  double_counter~condact~0.~init = (true -> (if (pre double_counter~condact~0.~clock) then false else (pre double_counter~condact~0.~init)));
+
+  double_counter~condact~0.out~clocked = (if double_counter~condact~0.~clock then double_counter~condact~0.out else (double_counter~condact~0.out~default -> (pre double_counter~condact~0.out~clocked)));
+
+  counter~0.out = (0 -> (1 + (pre counter~0.out)));
+
+  slow_counter~condact~0.~clock = toggle;
+
+  slow_counter~condact~0.out~default = 0;
+
+  slow_counter~condact~0.toggle = (if slow_counter~condact~0.~init then true else (not (pre slow_counter~condact~0.~state0)));
+
+  slow_counter~condact~0.out = slow_counter~condact~0.counter~condact~0.out~clocked;
+
+  slow_counter~condact~0.~state0 = (if slow_counter~condact~0.~clock then slow_counter~condact~0.toggle else (pre slow_counter~condact~0.~state0));
+
+  slow_counter~condact~0.~init = (true -> (if (pre slow_counter~condact~0.~clock) then false else (pre slow_counter~condact~0.~init)));
+
+  slow_counter~condact~0.out~clocked = (if slow_counter~condact~0.~clock then slow_counter~condact~0.out else (slow_counter~condact~0.out~default -> (pre slow_counter~condact~0.out~clocked)));
+
+  integ~condact~3.~clock = (not toggle);
+
+  integ~condact~3.x = x;
+
+  integ~condact~3.sum~default = 0;
+
+  integ~condact~3.sum = (integ~condact~3.x + (if integ~condact~3.~init then 0 else (pre integ~condact~3.~state0)));
+
+  integ~condact~3.~state0 = (if integ~condact~3.~clock then integ~condact~3.sum else (pre integ~condact~3.~state0));
+
+  integ~condact~3.~init = (true -> (if (pre integ~condact~3.~clock) then false else (pre integ~condact~3.~init)));
+
+  integ~condact~3.sum~clocked = (if integ~condact~3.~clock then integ~condact~3.sum else (integ~condact~3.sum~default -> (pre integ~condact~3.sum~clocked)));
+
+  integ~0.x = x;
+
+  integ~0.sum = (integ~0.x + (0 -> (pre integ~0.sum)));
+
+  holds~condact~0.~clock = toggle;
+
+  holds~condact~0.x = toggle;
+
+  holds~condact~0.ok = holds~condact~0.x;
+
+  holds~condact~0.~init = (true -> (if (pre holds~condact~0.~clock) then false else (pre holds~condact~0.~init)));
+
+  holds~condact~0.ok~clocked_property = (holds~condact~0.~clock => holds~condact~0.ok);
+
+  double_counter~condact~0.counter~clocked~0.~clock = double_counter~condact~0.~clock;
+
+  double_counter~condact~0.counter~clocked~0.out = (if double_counter~condact~0.counter~clocked~0.~init then 0 else (1 + (pre double_counter~condact~0.counter~clocked~0.~state0)));
+
+  double_counter~condact~0.counter~clocked~0.~state0 = (if double_counter~condact~0.counter~clocked~0.~clock then double_counter~condact~0.counter~clocked~0.out else (pre double_counter~condact~0.counter~clocked~0.~state0));
+
+  double_counter~condact~0.counter~clocked~0.~init = (true -> (if (pre double_counter~condact~0.counter~clocked~0.~clock) then false else (pre double_counter~condact~0.counter~clocked~0.~init)));
+
+  slow_counter~condact~0.counter~condact~0.~clock = (slow_counter~condact~0.toggle and slow_counter~condact~0.~clock);
+
+  slow_counter~condact~0.counter~condact~0.out~default = 0;
+
+  slow_counter~condact~0.counter~condact~0.out = (if slow_counter~condact~0.counter~condact~0.~init then 0 else (1 + (pre slow_counter~condact~0.counter~condact~0.~state0)));
+
+  slow_counter~condact~0.counter~condact~0.~state0 = (if slow_counter~condact~0.counter~condact~0.~clock then slow_counter~condact~0.counter~condact~0.out else (pre slow_counter~condact~0.counter~condact~0.~state0));
+
+  slow_counter~condact~0.counter~condact~0.~init = (true -> (if (pre slow_counter~condact~0.counter~condact~0.~clock) then false else (pre slow_counter~condact~0.counter~condact~0.~init)));
+
+  slow_counter~condact~0.counter~condact~0.out~clocked = (if slow_counter~condact~0.counter~condact~0.~clock then slow_counter~condact~0.counter~condact~0.out else (slow_counter~condact~0.counter~condact~0.out~default -> (pre slow_counter~condact~0.counter~condact~0.out~clocked)));
+
+  --%PROPERTY ok1;
+  --%PROPERTY ok2;
+  --%PROPERTY ok3;
+  --%PROPERTY ok4;
+  --%PROPERTY ok5;
+  --%PROPERTY ok6;
+  --%PROPERTY ok7;
+  --%PROPERTY holds~condact~0.ok~clocked_property;
+
+tel;

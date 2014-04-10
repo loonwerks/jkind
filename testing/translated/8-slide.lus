@@ -1,0 +1,239 @@
+node main(
+  in : subrange [0, 3] of int
+) returns (
+  p1 : subrange [-1, 8] of int;
+  p2 : subrange [-1, 8] of int;
+  p3 : subrange [-1, 8] of int;
+  p4 : subrange [-1, 8] of int;
+  p5 : subrange [-1, 8] of int;
+  p6 : subrange [-1, 8] of int;
+  p7 : subrange [-1, 8] of int;
+  p8 : subrange [-1, 8] of int;
+  p9 : subrange [-1, 8] of int
+);
+var
+  solved : bool;
+  prop : bool;
+  distinct : bool;
+  only_change_on_blank : bool;
+  square~0.in : subrange [0, 3] of int;
+  square~0.init : subrange [-1, 8] of int;
+  square~0.right : subrange [-1, 8] of int;
+  square~0.down : subrange [-1, 8] of int;
+  square~0.left : subrange [-1, 8] of int;
+  square~0.up : subrange [-1, 8] of int;
+  square~0.s : subrange [-1, 8] of int;
+  square~1.in : subrange [0, 3] of int;
+  square~1.init : subrange [-1, 8] of int;
+  square~1.right : subrange [-1, 8] of int;
+  square~1.down : subrange [-1, 8] of int;
+  square~1.left : subrange [-1, 8] of int;
+  square~1.up : subrange [-1, 8] of int;
+  square~1.s : subrange [-1, 8] of int;
+  square~2.in : subrange [0, 3] of int;
+  square~2.init : subrange [-1, 8] of int;
+  square~2.right : subrange [-1, 8] of int;
+  square~2.down : subrange [-1, 8] of int;
+  square~2.left : subrange [-1, 8] of int;
+  square~2.up : subrange [-1, 8] of int;
+  square~2.s : subrange [-1, 8] of int;
+  square~3.in : subrange [0, 3] of int;
+  square~3.init : subrange [-1, 8] of int;
+  square~3.right : subrange [-1, 8] of int;
+  square~3.down : subrange [-1, 8] of int;
+  square~3.left : subrange [-1, 8] of int;
+  square~3.up : subrange [-1, 8] of int;
+  square~3.s : subrange [-1, 8] of int;
+  square~4.in : subrange [0, 3] of int;
+  square~4.init : subrange [-1, 8] of int;
+  square~4.right : subrange [-1, 8] of int;
+  square~4.down : subrange [-1, 8] of int;
+  square~4.left : subrange [-1, 8] of int;
+  square~4.up : subrange [-1, 8] of int;
+  square~4.s : subrange [-1, 8] of int;
+  square~5.in : subrange [0, 3] of int;
+  square~5.init : subrange [-1, 8] of int;
+  square~5.right : subrange [-1, 8] of int;
+  square~5.down : subrange [-1, 8] of int;
+  square~5.left : subrange [-1, 8] of int;
+  square~5.up : subrange [-1, 8] of int;
+  square~5.s : subrange [-1, 8] of int;
+  square~6.in : subrange [0, 3] of int;
+  square~6.init : subrange [-1, 8] of int;
+  square~6.right : subrange [-1, 8] of int;
+  square~6.down : subrange [-1, 8] of int;
+  square~6.left : subrange [-1, 8] of int;
+  square~6.up : subrange [-1, 8] of int;
+  square~6.s : subrange [-1, 8] of int;
+  square~7.in : subrange [0, 3] of int;
+  square~7.init : subrange [-1, 8] of int;
+  square~7.right : subrange [-1, 8] of int;
+  square~7.down : subrange [-1, 8] of int;
+  square~7.left : subrange [-1, 8] of int;
+  square~7.up : subrange [-1, 8] of int;
+  square~7.s : subrange [-1, 8] of int;
+  square~8.in : subrange [0, 3] of int;
+  square~8.init : subrange [-1, 8] of int;
+  square~8.right : subrange [-1, 8] of int;
+  square~8.down : subrange [-1, 8] of int;
+  square~8.left : subrange [-1, 8] of int;
+  square~8.up : subrange [-1, 8] of int;
+  square~8.s : subrange [-1, 8] of int;
+let
+  p1 = square~0.s;
+
+  p2 = square~1.s;
+
+  p3 = square~2.s;
+
+  p4 = square~3.s;
+
+  p5 = square~4.s;
+
+  p6 = square~5.s;
+
+  p7 = square~6.s;
+
+  p8 = square~7.s;
+
+  p9 = square~8.s;
+
+  solved = (((((((((p1 = 1) and (p2 = 2)) and (p3 = 3)) and (p4 = 4)) and (p5 = 5)) and (p6 = 6)) and (p7 = 7)) and (p8 = 8)) and (p9 = 0));
+
+  prop = (not solved);
+
+  distinct = ((((((((((((((((((((((((((((((((((((p1 <> p2) and (p1 <> p3)) and (p1 <> p4)) and (p1 <> p5)) and (p1 <> p6)) and (p1 <> p7)) and (p1 <> p8)) and (p1 <> p9)) and (p2 <> p3)) and (p2 <> p4)) and (p2 <> p5)) and (p2 <> p6)) and (p2 <> p7)) and (p2 <> p8)) and (p2 <> p9)) and (p3 <> p4)) and (p3 <> p5)) and (p3 <> p6)) and (p3 <> p7)) and (p3 <> p8)) and (p3 <> p9)) and (p4 <> p5)) and (p4 <> p6)) and (p4 <> p7)) and (p4 <> p8)) and (p4 <> p9)) and (p5 <> p6)) and (p5 <> p7)) and (p5 <> p8)) and (p5 <> p9)) and (p6 <> p7)) and (p6 <> p8)) and (p6 <> p9)) and (p7 <> p8)) and (p7 <> p9)) and (p8 <> p9));
+
+  only_change_on_blank = (true -> ((((((((((p1 <> (pre p1)) => ((p1 = 0) or ((pre p1) = 0))) and ((p2 <> (pre p2)) => ((p2 = 0) or ((pre p2) = 0)))) and ((p3 <> (pre p3)) => ((p3 = 0) or ((pre p3) = 0)))) and ((p4 <> (pre p4)) => ((p4 = 0) or ((pre p4) = 0)))) and ((p5 <> (pre p5)) => ((p5 = 0) or ((pre p5) = 0)))) and ((p6 <> (pre p6)) => ((p6 = 0) or ((pre p6) = 0)))) and ((p7 <> (pre p7)) => ((p7 = 0) or ((pre p7) = 0)))) and ((p8 <> (pre p8)) => ((p8 = 0) or ((pre p8) = 0)))) and ((p9 <> (pre p9)) => ((p9 = 0) or ((pre p9) = 0)))));
+
+  square~0.in = in;
+
+  square~0.init = 5;
+
+  square~0.right = p2;
+
+  square~0.down = p4;
+
+  square~0.left = (-1);
+
+  square~0.up = (-1);
+
+  square~0.s = (square~0.init -> (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 0)) and (square~0.right <> (-1))) then (pre square~0.right) else (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 1)) and (square~0.down <> (-1))) then (pre square~0.down) else (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 2)) and (square~0.left <> (-1))) then (pre square~0.left) else (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 3)) and (square~0.up <> (-1))) then (pre square~0.up) else (if (((pre square~0.left) = 0) and ((pre square~0.in) = 0)) then 0 else (if (((pre square~0.up) = 0) and ((pre square~0.in) = 1)) then 0 else (if (((pre square~0.right) = 0) and ((pre square~0.in) = 2)) then 0 else (if (((pre square~0.down) = 0) and ((pre square~0.in) = 3)) then 0 else (pre square~0.s))))))))));
+
+  square~1.in = in;
+
+  square~1.init = 2;
+
+  square~1.right = p3;
+
+  square~1.down = p5;
+
+  square~1.left = p1;
+
+  square~1.up = (-1);
+
+  square~1.s = (square~1.init -> (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 0)) and (square~1.right <> (-1))) then (pre square~1.right) else (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 1)) and (square~1.down <> (-1))) then (pre square~1.down) else (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 2)) and (square~1.left <> (-1))) then (pre square~1.left) else (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 3)) and (square~1.up <> (-1))) then (pre square~1.up) else (if (((pre square~1.left) = 0) and ((pre square~1.in) = 0)) then 0 else (if (((pre square~1.up) = 0) and ((pre square~1.in) = 1)) then 0 else (if (((pre square~1.right) = 0) and ((pre square~1.in) = 2)) then 0 else (if (((pre square~1.down) = 0) and ((pre square~1.in) = 3)) then 0 else (pre square~1.s))))))))));
+
+  square~2.in = in;
+
+  square~2.init = 3;
+
+  square~2.right = (-1);
+
+  square~2.down = p6;
+
+  square~2.left = p2;
+
+  square~2.up = (-1);
+
+  square~2.s = (square~2.init -> (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 0)) and (square~2.right <> (-1))) then (pre square~2.right) else (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 1)) and (square~2.down <> (-1))) then (pre square~2.down) else (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 2)) and (square~2.left <> (-1))) then (pre square~2.left) else (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 3)) and (square~2.up <> (-1))) then (pre square~2.up) else (if (((pre square~2.left) = 0) and ((pre square~2.in) = 0)) then 0 else (if (((pre square~2.up) = 0) and ((pre square~2.in) = 1)) then 0 else (if (((pre square~2.right) = 0) and ((pre square~2.in) = 2)) then 0 else (if (((pre square~2.down) = 0) and ((pre square~2.in) = 3)) then 0 else (pre square~2.s))))))))));
+
+  square~3.in = in;
+
+  square~3.init = 4;
+
+  square~3.right = p5;
+
+  square~3.down = p7;
+
+  square~3.left = (-1);
+
+  square~3.up = p1;
+
+  square~3.s = (square~3.init -> (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 0)) and (square~3.right <> (-1))) then (pre square~3.right) else (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 1)) and (square~3.down <> (-1))) then (pre square~3.down) else (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 2)) and (square~3.left <> (-1))) then (pre square~3.left) else (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 3)) and (square~3.up <> (-1))) then (pre square~3.up) else (if (((pre square~3.left) = 0) and ((pre square~3.in) = 0)) then 0 else (if (((pre square~3.up) = 0) and ((pre square~3.in) = 1)) then 0 else (if (((pre square~3.right) = 0) and ((pre square~3.in) = 2)) then 0 else (if (((pre square~3.down) = 0) and ((pre square~3.in) = 3)) then 0 else (pre square~3.s))))))))));
+
+  square~4.in = in;
+
+  square~4.init = 0;
+
+  square~4.right = p6;
+
+  square~4.down = p8;
+
+  square~4.left = p4;
+
+  square~4.up = p2;
+
+  square~4.s = (square~4.init -> (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 0)) and (square~4.right <> (-1))) then (pre square~4.right) else (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 1)) and (square~4.down <> (-1))) then (pre square~4.down) else (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 2)) and (square~4.left <> (-1))) then (pre square~4.left) else (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 3)) and (square~4.up <> (-1))) then (pre square~4.up) else (if (((pre square~4.left) = 0) and ((pre square~4.in) = 0)) then 0 else (if (((pre square~4.up) = 0) and ((pre square~4.in) = 1)) then 0 else (if (((pre square~4.right) = 0) and ((pre square~4.in) = 2)) then 0 else (if (((pre square~4.down) = 0) and ((pre square~4.in) = 3)) then 0 else (pre square~4.s))))))))));
+
+  square~5.in = in;
+
+  square~5.init = 8;
+
+  square~5.right = (-1);
+
+  square~5.down = p9;
+
+  square~5.left = p5;
+
+  square~5.up = p3;
+
+  square~5.s = (square~5.init -> (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 0)) and (square~5.right <> (-1))) then (pre square~5.right) else (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 1)) and (square~5.down <> (-1))) then (pre square~5.down) else (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 2)) and (square~5.left <> (-1))) then (pre square~5.left) else (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 3)) and (square~5.up <> (-1))) then (pre square~5.up) else (if (((pre square~5.left) = 0) and ((pre square~5.in) = 0)) then 0 else (if (((pre square~5.up) = 0) and ((pre square~5.in) = 1)) then 0 else (if (((pre square~5.right) = 0) and ((pre square~5.in) = 2)) then 0 else (if (((pre square~5.down) = 0) and ((pre square~5.in) = 3)) then 0 else (pre square~5.s))))))))));
+
+  square~6.in = in;
+
+  square~6.init = 1;
+
+  square~6.right = p8;
+
+  square~6.down = (-1);
+
+  square~6.left = (-1);
+
+  square~6.up = p4;
+
+  square~6.s = (square~6.init -> (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 0)) and (square~6.right <> (-1))) then (pre square~6.right) else (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 1)) and (square~6.down <> (-1))) then (pre square~6.down) else (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 2)) and (square~6.left <> (-1))) then (pre square~6.left) else (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 3)) and (square~6.up <> (-1))) then (pre square~6.up) else (if (((pre square~6.left) = 0) and ((pre square~6.in) = 0)) then 0 else (if (((pre square~6.up) = 0) and ((pre square~6.in) = 1)) then 0 else (if (((pre square~6.right) = 0) and ((pre square~6.in) = 2)) then 0 else (if (((pre square~6.down) = 0) and ((pre square~6.in) = 3)) then 0 else (pre square~6.s))))))))));
+
+  square~7.in = in;
+
+  square~7.init = 6;
+
+  square~7.right = p9;
+
+  square~7.down = (-1);
+
+  square~7.left = p7;
+
+  square~7.up = p5;
+
+  square~7.s = (square~7.init -> (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 0)) and (square~7.right <> (-1))) then (pre square~7.right) else (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 1)) and (square~7.down <> (-1))) then (pre square~7.down) else (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 2)) and (square~7.left <> (-1))) then (pre square~7.left) else (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 3)) and (square~7.up <> (-1))) then (pre square~7.up) else (if (((pre square~7.left) = 0) and ((pre square~7.in) = 0)) then 0 else (if (((pre square~7.up) = 0) and ((pre square~7.in) = 1)) then 0 else (if (((pre square~7.right) = 0) and ((pre square~7.in) = 2)) then 0 else (if (((pre square~7.down) = 0) and ((pre square~7.in) = 3)) then 0 else (pre square~7.s))))))))));
+
+  square~8.in = in;
+
+  square~8.init = 7;
+
+  square~8.right = (-1);
+
+  square~8.down = (-1);
+
+  square~8.left = p8;
+
+  square~8.up = p6;
+
+  square~8.s = (square~8.init -> (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 0)) and (square~8.right <> (-1))) then (pre square~8.right) else (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 1)) and (square~8.down <> (-1))) then (pre square~8.down) else (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 2)) and (square~8.left <> (-1))) then (pre square~8.left) else (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 3)) and (square~8.up <> (-1))) then (pre square~8.up) else (if (((pre square~8.left) = 0) and ((pre square~8.in) = 0)) then 0 else (if (((pre square~8.up) = 0) and ((pre square~8.in) = 1)) then 0 else (if (((pre square~8.right) = 0) and ((pre square~8.in) = 2)) then 0 else (if (((pre square~8.down) = 0) and ((pre square~8.in) = 3)) then 0 else (pre square~8.s))))))))));
+
+  --%PROPERTY prop;
+  --%PROPERTY distinct;
+  --%PROPERTY only_change_on_blank;
+
+tel;

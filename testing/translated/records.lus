@@ -1,0 +1,59 @@
+node main(
+  delta1 : subrange [-1, 1] of int;
+  delta2 : subrange [-1, 1] of int
+) returns (
+
+);
+var
+  wp1.p.x : int;
+  wp1.p.y : int;
+  wp1.weight : real;
+  wp2.p.x : int;
+  wp2.p.y : int;
+  wp2.weight : real;
+  lg.a : int;
+  lg.b : int;
+  lg.c : int;
+  lg.d : int;
+  lg.e : int;
+  ok1 : bool;
+  cex1 : bool;
+  cex2 : bool;
+  lemma : bool;
+let
+  wp1.p.x = (0 -> ((pre wp1.p.x) + 1));
+
+  wp1.p.y = (0 -> ((pre wp1.p.y) + delta1));
+
+  wp1.weight = (1.0 -> (pre wp2.weight));
+
+  wp2.p.x = (0 -> ((pre wp2.p.x) + 1));
+
+  wp2.p.y = (20 -> ((pre wp2.p.y) + delta2));
+
+  wp2.weight = (2.0 -> (pre wp1.weight));
+
+  cex1 = (not ((wp1.p.x = wp2.p.x) and (wp1.p.y = wp2.p.y)));
+
+  lemma = (wp1.weight <> wp2.weight);
+
+  ok1 = (not (((wp1.p.x = wp2.p.x) and (wp1.p.y = wp2.p.y)) and (wp1.weight = wp2.weight)));
+
+  lg.a = (0 -> (if (delta1 = 0) then 10 else (pre lg.a)));
+
+  lg.b = (0 -> (if (delta1 = 0) then 20 else (pre lg.b)));
+
+  lg.c = (0 -> (if (delta1 = 0) then (pre lg.c) else 30));
+
+  lg.d = (0 -> (if (delta1 = 0) then (pre lg.d) else 40));
+
+  lg.e = (0 -> (if (delta1 = 0) then (pre lg.e) else (pre lg.e)));
+
+  cex2 = ((lg.a = 0) or (lg.c = 0));
+
+  --%PROPERTY cex1;
+  --%PROPERTY lemma;
+  --%PROPERTY ok1;
+  --%PROPERTY cex2;
+
+tel;

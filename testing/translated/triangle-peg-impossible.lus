@@ -1,0 +1,441 @@
+node main(
+  a : subrange [0, 10] of int;
+  b : subrange [0, 10] of int;
+  p1 : bool;
+  p2 : bool;
+  p3 : bool;
+  p4 : bool;
+  p5 : bool;
+  p6 : bool;
+  p7 : bool;
+  p8 : bool;
+  p9 : bool;
+  p10 : bool
+) returns (
+
+);
+var
+  initial : bool;
+  valid_move : bool;
+  solved : bool;
+  prop : bool;
+  mid : subrange [0, 10] of int;
+  initial~0.p1 : bool;
+  initial~0.p2 : bool;
+  initial~0.p3 : bool;
+  initial~0.p4 : bool;
+  initial~0.p5 : bool;
+  initial~0.p6 : bool;
+  initial~0.p7 : bool;
+  initial~0.p8 : bool;
+  initial~0.p9 : bool;
+  initial~0.p10 : bool;
+  initial~0.initial : bool;
+  solved~0.p1 : bool;
+  solved~0.p2 : bool;
+  solved~0.p3 : bool;
+  solved~0.p4 : bool;
+  solved~0.p5 : bool;
+  solved~0.p6 : bool;
+  solved~0.p7 : bool;
+  solved~0.p8 : bool;
+  solved~0.p9 : bool;
+  solved~0.p10 : bool;
+  solved~0.solved : bool;
+  mid~0.a : subrange [0, 10] of int;
+  mid~0.b : subrange [0, 10] of int;
+  mid~0.mid : subrange [0, 10] of int;
+  peg~0.loc : subrange [0, 10] of int;
+  peg~0.p1 : bool;
+  peg~0.p2 : bool;
+  peg~0.p3 : bool;
+  peg~0.p4 : bool;
+  peg~0.p5 : bool;
+  peg~0.p6 : bool;
+  peg~0.p7 : bool;
+  peg~0.p8 : bool;
+  peg~0.p9 : bool;
+  peg~0.p10 : bool;
+  peg~0.p : bool;
+  peg~1.loc : subrange [0, 10] of int;
+  peg~1.p1 : bool;
+  peg~1.p2 : bool;
+  peg~1.p3 : bool;
+  peg~1.p4 : bool;
+  peg~1.p5 : bool;
+  peg~1.p6 : bool;
+  peg~1.p7 : bool;
+  peg~1.p8 : bool;
+  peg~1.p9 : bool;
+  peg~1.p10 : bool;
+  peg~1.p : bool;
+  peg~2.loc : subrange [0, 10] of int;
+  peg~2.p1 : bool;
+  peg~2.p2 : bool;
+  peg~2.p3 : bool;
+  peg~2.p4 : bool;
+  peg~2.p5 : bool;
+  peg~2.p6 : bool;
+  peg~2.p7 : bool;
+  peg~2.p8 : bool;
+  peg~2.p9 : bool;
+  peg~2.p10 : bool;
+  peg~2.p : bool;
+  peg~3.loc : subrange [0, 10] of int;
+  peg~3.p1 : bool;
+  peg~3.p2 : bool;
+  peg~3.p3 : bool;
+  peg~3.p4 : bool;
+  peg~3.p5 : bool;
+  peg~3.p6 : bool;
+  peg~3.p7 : bool;
+  peg~3.p8 : bool;
+  peg~3.p9 : bool;
+  peg~3.p10 : bool;
+  peg~3.p : bool;
+  peg~4.loc : subrange [0, 10] of int;
+  peg~4.p1 : bool;
+  peg~4.p2 : bool;
+  peg~4.p3 : bool;
+  peg~4.p4 : bool;
+  peg~4.p5 : bool;
+  peg~4.p6 : bool;
+  peg~4.p7 : bool;
+  peg~4.p8 : bool;
+  peg~4.p9 : bool;
+  peg~4.p10 : bool;
+  peg~4.p : bool;
+  peg~5.loc : subrange [0, 10] of int;
+  peg~5.p1 : bool;
+  peg~5.p2 : bool;
+  peg~5.p3 : bool;
+  peg~5.p4 : bool;
+  peg~5.p5 : bool;
+  peg~5.p6 : bool;
+  peg~5.p7 : bool;
+  peg~5.p8 : bool;
+  peg~5.p9 : bool;
+  peg~5.p10 : bool;
+  peg~5.p : bool;
+  unchanged_but~0.a : subrange [0, 10] of int;
+  unchanged_but~0.b : subrange [0, 10] of int;
+  unchanged_but~0.c : subrange [0, 10] of int;
+  unchanged_but~0.p1 : bool;
+  unchanged_but~0.p2 : bool;
+  unchanged_but~0.p3 : bool;
+  unchanged_but~0.p4 : bool;
+  unchanged_but~0.p5 : bool;
+  unchanged_but~0.p6 : bool;
+  unchanged_but~0.p7 : bool;
+  unchanged_but~0.p8 : bool;
+  unchanged_but~0.p9 : bool;
+  unchanged_but~0.p10 : bool;
+  unchanged_but~0.constraint : bool;
+  historically~0.x : bool;
+  historically~0.holds : bool;
+  historically~1.x : bool;
+  historically~1.holds : bool;
+  solved~0.b2i~0.x : bool;
+  solved~0.b2i~0.y : int;
+  solved~0.b2i~1.x : bool;
+  solved~0.b2i~1.y : int;
+  solved~0.b2i~2.x : bool;
+  solved~0.b2i~2.y : int;
+  solved~0.b2i~3.x : bool;
+  solved~0.b2i~3.y : int;
+  solved~0.b2i~4.x : bool;
+  solved~0.b2i~4.y : int;
+  solved~0.b2i~5.x : bool;
+  solved~0.b2i~5.y : int;
+  solved~0.b2i~6.x : bool;
+  solved~0.b2i~6.y : int;
+  solved~0.b2i~7.x : bool;
+  solved~0.b2i~7.y : int;
+  solved~0.b2i~8.x : bool;
+  solved~0.b2i~8.y : int;
+  solved~0.b2i~9.x : bool;
+  solved~0.b2i~9.y : int;
+let
+  initial = initial~0.initial;
+
+  solved = solved~0.solved;
+
+  mid = mid~0.mid;
+
+  valid_move = (true -> ((((((peg~0.p and peg~1.p) and (not peg~2.p)) and (not peg~3.p)) and (not peg~4.p)) and peg~5.p) and unchanged_but~0.constraint));
+
+  prop = (not ((historically~0.holds and historically~1.holds) and solved));
+
+  initial~0.p1 = p1;
+
+  initial~0.p2 = p2;
+
+  initial~0.p3 = p3;
+
+  initial~0.p4 = p4;
+
+  initial~0.p5 = p5;
+
+  initial~0.p6 = p6;
+
+  initial~0.p7 = p7;
+
+  initial~0.p8 = p8;
+
+  initial~0.p9 = p9;
+
+  initial~0.p10 = p10;
+
+  initial~0.initial = ((((((((((not initial~0.p1) and initial~0.p2) and initial~0.p3) and initial~0.p4) and initial~0.p5) and initial~0.p6) and initial~0.p7) and initial~0.p8) and initial~0.p9) and initial~0.p10);
+
+  solved~0.p1 = p1;
+
+  solved~0.p2 = p2;
+
+  solved~0.p3 = p3;
+
+  solved~0.p4 = p4;
+
+  solved~0.p5 = p5;
+
+  solved~0.p6 = p6;
+
+  solved~0.p7 = p7;
+
+  solved~0.p8 = p8;
+
+  solved~0.p9 = p9;
+
+  solved~0.p10 = p10;
+
+  solved~0.solved = ((((((((((solved~0.b2i~0.y + solved~0.b2i~1.y) + solved~0.b2i~2.y) + solved~0.b2i~3.y) + solved~0.b2i~4.y) + solved~0.b2i~5.y) + solved~0.b2i~6.y) + solved~0.b2i~7.y) + solved~0.b2i~8.y) + solved~0.b2i~9.y) = 1);
+
+  mid~0.a = a;
+
+  mid~0.b = b;
+
+  mid~0.mid = (if ((mid~0.a = 1) and (mid~0.b = 4)) then 2 else (if ((mid~0.a = 1) and (mid~0.b = 6)) then 3 else (if ((mid~0.a = 2) and (mid~0.b = 7)) then 4 else (if ((mid~0.a = 2) and (mid~0.b = 9)) then 5 else (if ((mid~0.a = 3) and (mid~0.b = 8)) then 5 else (if ((mid~0.a = 3) and (mid~0.b = 10)) then 6 else (if ((mid~0.a = 4) and (mid~0.b = 1)) then 2 else (if ((mid~0.a = 4) and (mid~0.b = 6)) then 5 else (if ((mid~0.a = 6) and (mid~0.b = 1)) then 3 else (if ((mid~0.a = 6) and (mid~0.b = 4)) then 5 else (if ((mid~0.a = 7) and (mid~0.b = 2)) then 4 else (if ((mid~0.a = 7) and (mid~0.b = 9)) then 8 else (if ((mid~0.a = 8) and (mid~0.b = 3)) then 5 else (if ((mid~0.a = 8) and (mid~0.b = 10)) then 9 else (if ((mid~0.a = 9) and (mid~0.b = 2)) then 5 else (if ((mid~0.a = 9) and (mid~0.b = 7)) then 8 else (if ((mid~0.a = 10) and (mid~0.b = 3)) then 6 else (if ((mid~0.a = 10) and (mid~0.b = 8)) then 9 else 0))))))))))))))))));
+
+  peg~0.loc = a;
+
+  peg~0.p1 = (pre p1);
+
+  peg~0.p2 = (pre p2);
+
+  peg~0.p3 = (pre p3);
+
+  peg~0.p4 = (pre p4);
+
+  peg~0.p5 = (pre p5);
+
+  peg~0.p6 = (pre p6);
+
+  peg~0.p7 = (pre p7);
+
+  peg~0.p8 = (pre p8);
+
+  peg~0.p9 = (pre p9);
+
+  peg~0.p10 = (pre p10);
+
+  peg~0.p = (if (peg~0.loc = 1) then peg~0.p1 else (if (peg~0.loc = 2) then peg~0.p2 else (if (peg~0.loc = 3) then peg~0.p3 else (if (peg~0.loc = 4) then peg~0.p4 else (if (peg~0.loc = 5) then peg~0.p5 else (if (peg~0.loc = 6) then peg~0.p6 else (if (peg~0.loc = 7) then peg~0.p7 else (if (peg~0.loc = 8) then peg~0.p8 else (if (peg~0.loc = 9) then peg~0.p9 else (if (peg~0.loc = 10) then peg~0.p10 else false))))))))));
+
+  peg~1.loc = mid;
+
+  peg~1.p1 = (pre p1);
+
+  peg~1.p2 = (pre p2);
+
+  peg~1.p3 = (pre p3);
+
+  peg~1.p4 = (pre p4);
+
+  peg~1.p5 = (pre p5);
+
+  peg~1.p6 = (pre p6);
+
+  peg~1.p7 = (pre p7);
+
+  peg~1.p8 = (pre p8);
+
+  peg~1.p9 = (pre p9);
+
+  peg~1.p10 = (pre p10);
+
+  peg~1.p = (if (peg~1.loc = 1) then peg~1.p1 else (if (peg~1.loc = 2) then peg~1.p2 else (if (peg~1.loc = 3) then peg~1.p3 else (if (peg~1.loc = 4) then peg~1.p4 else (if (peg~1.loc = 5) then peg~1.p5 else (if (peg~1.loc = 6) then peg~1.p6 else (if (peg~1.loc = 7) then peg~1.p7 else (if (peg~1.loc = 8) then peg~1.p8 else (if (peg~1.loc = 9) then peg~1.p9 else (if (peg~1.loc = 10) then peg~1.p10 else false))))))))));
+
+  peg~2.loc = b;
+
+  peg~2.p1 = (pre p1);
+
+  peg~2.p2 = (pre p2);
+
+  peg~2.p3 = (pre p3);
+
+  peg~2.p4 = (pre p4);
+
+  peg~2.p5 = (pre p5);
+
+  peg~2.p6 = (pre p6);
+
+  peg~2.p7 = (pre p7);
+
+  peg~2.p8 = (pre p8);
+
+  peg~2.p9 = (pre p9);
+
+  peg~2.p10 = (pre p10);
+
+  peg~2.p = (if (peg~2.loc = 1) then peg~2.p1 else (if (peg~2.loc = 2) then peg~2.p2 else (if (peg~2.loc = 3) then peg~2.p3 else (if (peg~2.loc = 4) then peg~2.p4 else (if (peg~2.loc = 5) then peg~2.p5 else (if (peg~2.loc = 6) then peg~2.p6 else (if (peg~2.loc = 7) then peg~2.p7 else (if (peg~2.loc = 8) then peg~2.p8 else (if (peg~2.loc = 9) then peg~2.p9 else (if (peg~2.loc = 10) then peg~2.p10 else false))))))))));
+
+  peg~3.loc = a;
+
+  peg~3.p1 = p1;
+
+  peg~3.p2 = p2;
+
+  peg~3.p3 = p3;
+
+  peg~3.p4 = p4;
+
+  peg~3.p5 = p5;
+
+  peg~3.p6 = p6;
+
+  peg~3.p7 = p7;
+
+  peg~3.p8 = p8;
+
+  peg~3.p9 = p9;
+
+  peg~3.p10 = p10;
+
+  peg~3.p = (if (peg~3.loc = 1) then peg~3.p1 else (if (peg~3.loc = 2) then peg~3.p2 else (if (peg~3.loc = 3) then peg~3.p3 else (if (peg~3.loc = 4) then peg~3.p4 else (if (peg~3.loc = 5) then peg~3.p5 else (if (peg~3.loc = 6) then peg~3.p6 else (if (peg~3.loc = 7) then peg~3.p7 else (if (peg~3.loc = 8) then peg~3.p8 else (if (peg~3.loc = 9) then peg~3.p9 else (if (peg~3.loc = 10) then peg~3.p10 else false))))))))));
+
+  peg~4.loc = mid;
+
+  peg~4.p1 = p1;
+
+  peg~4.p2 = p2;
+
+  peg~4.p3 = p3;
+
+  peg~4.p4 = p4;
+
+  peg~4.p5 = p5;
+
+  peg~4.p6 = p6;
+
+  peg~4.p7 = p7;
+
+  peg~4.p8 = p8;
+
+  peg~4.p9 = p9;
+
+  peg~4.p10 = p10;
+
+  peg~4.p = (if (peg~4.loc = 1) then peg~4.p1 else (if (peg~4.loc = 2) then peg~4.p2 else (if (peg~4.loc = 3) then peg~4.p3 else (if (peg~4.loc = 4) then peg~4.p4 else (if (peg~4.loc = 5) then peg~4.p5 else (if (peg~4.loc = 6) then peg~4.p6 else (if (peg~4.loc = 7) then peg~4.p7 else (if (peg~4.loc = 8) then peg~4.p8 else (if (peg~4.loc = 9) then peg~4.p9 else (if (peg~4.loc = 10) then peg~4.p10 else false))))))))));
+
+  peg~5.loc = b;
+
+  peg~5.p1 = p1;
+
+  peg~5.p2 = p2;
+
+  peg~5.p3 = p3;
+
+  peg~5.p4 = p4;
+
+  peg~5.p5 = p5;
+
+  peg~5.p6 = p6;
+
+  peg~5.p7 = p7;
+
+  peg~5.p8 = p8;
+
+  peg~5.p9 = p9;
+
+  peg~5.p10 = p10;
+
+  peg~5.p = (if (peg~5.loc = 1) then peg~5.p1 else (if (peg~5.loc = 2) then peg~5.p2 else (if (peg~5.loc = 3) then peg~5.p3 else (if (peg~5.loc = 4) then peg~5.p4 else (if (peg~5.loc = 5) then peg~5.p5 else (if (peg~5.loc = 6) then peg~5.p6 else (if (peg~5.loc = 7) then peg~5.p7 else (if (peg~5.loc = 8) then peg~5.p8 else (if (peg~5.loc = 9) then peg~5.p9 else (if (peg~5.loc = 10) then peg~5.p10 else false))))))))));
+
+  unchanged_but~0.a = a;
+
+  unchanged_but~0.b = b;
+
+  unchanged_but~0.c = mid;
+
+  unchanged_but~0.p1 = p1;
+
+  unchanged_but~0.p2 = p2;
+
+  unchanged_but~0.p3 = p3;
+
+  unchanged_but~0.p4 = p4;
+
+  unchanged_but~0.p5 = p5;
+
+  unchanged_but~0.p6 = p6;
+
+  unchanged_but~0.p7 = p7;
+
+  unchanged_but~0.p8 = p8;
+
+  unchanged_but~0.p9 = p9;
+
+  unchanged_but~0.p10 = p10;
+
+  unchanged_but~0.constraint = (true -> (((((((((((((unchanged_but~0.a = 1) or (unchanged_but~0.b = 1)) or (unchanged_but~0.c = 1)) or (unchanged_but~0.p1 = (pre unchanged_but~0.p1))) and ((((unchanged_but~0.a = 2) or (unchanged_but~0.b = 2)) or (unchanged_but~0.c = 2)) or (unchanged_but~0.p2 = (pre unchanged_but~0.p2)))) and ((((unchanged_but~0.a = 3) or (unchanged_but~0.b = 3)) or (unchanged_but~0.c = 3)) or (unchanged_but~0.p3 = (pre unchanged_but~0.p3)))) and ((((unchanged_but~0.a = 4) or (unchanged_but~0.b = 4)) or (unchanged_but~0.c = 4)) or (unchanged_but~0.p4 = (pre unchanged_but~0.p4)))) and ((((unchanged_but~0.a = 5) or (unchanged_but~0.b = 5)) or (unchanged_but~0.c = 5)) or (unchanged_but~0.p5 = (pre unchanged_but~0.p5)))) and ((((unchanged_but~0.a = 6) or (unchanged_but~0.b = 6)) or (unchanged_but~0.c = 6)) or (unchanged_but~0.p6 = (pre unchanged_but~0.p6)))) and ((((unchanged_but~0.a = 7) or (unchanged_but~0.b = 7)) or (unchanged_but~0.c = 7)) or (unchanged_but~0.p7 = (pre unchanged_but~0.p7)))) and ((((unchanged_but~0.a = 8) or (unchanged_but~0.b = 8)) or (unchanged_but~0.c = 8)) or (unchanged_but~0.p8 = (pre unchanged_but~0.p8)))) and ((((unchanged_but~0.a = 9) or (unchanged_but~0.b = 9)) or (unchanged_but~0.c = 9)) or (unchanged_but~0.p9 = (pre unchanged_but~0.p9)))) and ((((unchanged_but~0.a = 10) or (unchanged_but~0.b = 10)) or (unchanged_but~0.c = 10)) or (unchanged_but~0.p10 = (pre unchanged_but~0.p10)))));
+
+  historically~0.x = (initial -> true);
+
+  historically~0.holds = (historically~0.x and (true -> (pre historically~0.holds)));
+
+  historically~1.x = valid_move;
+
+  historically~1.holds = (historically~1.x and (true -> (pre historically~1.holds)));
+
+  solved~0.b2i~0.x = solved~0.p1;
+
+  solved~0.b2i~0.y = (if solved~0.b2i~0.x then 1 else 0);
+
+  solved~0.b2i~1.x = solved~0.p2;
+
+  solved~0.b2i~1.y = (if solved~0.b2i~1.x then 1 else 0);
+
+  solved~0.b2i~2.x = solved~0.p3;
+
+  solved~0.b2i~2.y = (if solved~0.b2i~2.x then 1 else 0);
+
+  solved~0.b2i~3.x = solved~0.p4;
+
+  solved~0.b2i~3.y = (if solved~0.b2i~3.x then 1 else 0);
+
+  solved~0.b2i~4.x = solved~0.p5;
+
+  solved~0.b2i~4.y = (if solved~0.b2i~4.x then 1 else 0);
+
+  solved~0.b2i~5.x = solved~0.p6;
+
+  solved~0.b2i~5.y = (if solved~0.b2i~5.x then 1 else 0);
+
+  solved~0.b2i~6.x = solved~0.p7;
+
+  solved~0.b2i~6.y = (if solved~0.b2i~6.x then 1 else 0);
+
+  solved~0.b2i~7.x = solved~0.p8;
+
+  solved~0.b2i~7.y = (if solved~0.b2i~7.x then 1 else 0);
+
+  solved~0.b2i~8.x = solved~0.p9;
+
+  solved~0.b2i~8.y = (if solved~0.b2i~8.x then 1 else 0);
+
+  solved~0.b2i~9.x = solved~0.p10;
+
+  solved~0.b2i~9.y = (if solved~0.b2i~9.x then 1 else 0);
+
+  --%PROPERTY prop;
+
+tel;

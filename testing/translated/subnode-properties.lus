@@ -1,0 +1,22 @@
+node main(
+
+) returns (
+  prop : bool
+);
+var
+  counter~0.x : int;
+  counter~0.lemma : bool;
+  ten~0.ten : bool;
+let
+  prop = ((counter~0.x < 10) or ten~0.ten);
+
+  counter~0.x = ((-1) -> (1 + (pre counter~0.x)));
+
+  counter~0.lemma = (counter~0.x >= (-1));
+
+  ten~0.ten = (counter~0.x >= 10);
+
+  --%PROPERTY prop;
+  --%PROPERTY counter~0.lemma;
+
+tel;

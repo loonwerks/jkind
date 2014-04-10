@@ -1,0 +1,32 @@
+node main(
+  x : real;
+  y : int
+) returns (
+
+);
+var
+  ok1 : bool;
+  ok2 : bool;
+  ok3 : bool;
+  ok4 : bool;
+  is_int~0.x : real;
+  is_int~0.ok : bool;
+let
+  ok1 = ((real(floor(x)) <= x) and (x < (real(floor(x)) + 1.0)));
+
+  ok2 = ((floor((-x)) = (-floor(x))) = is_int~0.ok);
+
+  ok3 = ((y div 5) = floor((real(y) / 5.0)));
+
+  ok4 = ((floor(x) div 5) = floor((x / 5.0)));
+
+  is_int~0.x = x;
+
+  is_int~0.ok = (is_int~0.x = real(floor(is_int~0.x)));
+
+  --%PROPERTY ok1;
+  --%PROPERTY ok2;
+  --%PROPERTY ok3;
+  --%PROPERTY ok4;
+
+tel;

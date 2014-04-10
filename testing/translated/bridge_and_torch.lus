@@ -1,0 +1,184 @@
+node main(
+  a : bool;
+  b : bool;
+  c : bool;
+  d : bool
+) returns (
+  cost : int
+);
+var
+  torch : bool;
+  at_least_one_travelers : bool;
+  no_more_than_two_travelers : bool;
+  solved : bool;
+  prop1 : bool;
+  prop2 : bool;
+  traveler~0.state : bool;
+  traveler~0.torch : bool;
+  traveler~0.ok : bool;
+  traveler~1.state : bool;
+  traveler~1.torch : bool;
+  traveler~1.ok : bool;
+  traveler~2.state : bool;
+  traveler~2.torch : bool;
+  traveler~2.ok : bool;
+  traveler~3.state : bool;
+  traveler~3.torch : bool;
+  traveler~3.ok : bool;
+  b2i~0.x : bool;
+  b2i~0.y : int;
+  b2i~1.x : bool;
+  b2i~1.y : int;
+  b2i~2.x : bool;
+  b2i~2.y : int;
+  b2i~3.x : bool;
+  b2i~3.y : int;
+  max~0.x : int;
+  max~0.y : int;
+  max~0.z : int;
+  max~0.w : int;
+  max~0.out : int;
+  cost~0.state : bool;
+  cost~0.value : int;
+  cost~0.out : int;
+  cost~1.state : bool;
+  cost~1.value : int;
+  cost~1.out : int;
+  cost~2.state : bool;
+  cost~2.value : int;
+  cost~2.out : int;
+  cost~3.state : bool;
+  cost~3.value : int;
+  cost~3.out : int;
+  max~0.max2~0.x : int;
+  max~0.max2~0.y : int;
+  max~0.max2~0.out : int;
+  max~0.max2~1.x : int;
+  max~0.max2~1.y : int;
+  max~0.max2~1.out : int;
+  max~0.max2~2.x : int;
+  max~0.max2~2.y : int;
+  max~0.max2~2.out : int;
+let
+  traveler~0.state = a;
+
+  traveler~0.torch = torch;
+
+  traveler~0.ok = ((traveler~0.state = false) -> ((traveler~0.state <> (pre traveler~0.state)) => ((pre traveler~0.state) = traveler~0.torch)));
+
+  traveler~1.state = b;
+
+  traveler~1.torch = torch;
+
+  traveler~1.ok = ((traveler~1.state = false) -> ((traveler~1.state <> (pre traveler~1.state)) => ((pre traveler~1.state) = traveler~1.torch)));
+
+  traveler~2.state = c;
+
+  traveler~2.torch = torch;
+
+  traveler~2.ok = ((traveler~2.state = false) -> ((traveler~2.state <> (pre traveler~2.state)) => ((pre traveler~2.state) = traveler~2.torch)));
+
+  traveler~3.state = d;
+
+  traveler~3.torch = torch;
+
+  traveler~3.ok = ((traveler~3.state = false) -> ((traveler~3.state <> (pre traveler~3.state)) => ((pre traveler~3.state) = traveler~3.torch)));
+
+  torch = (true -> (not (pre torch)));
+
+  at_least_one_travelers = (true -> ((((a <> (pre a)) or (b <> (pre b))) or (c <> (pre c))) or (d <> (pre d))));
+
+  no_more_than_two_travelers = (true -> ((((b2i~0.y + b2i~1.y) + b2i~2.y) + b2i~3.y) <= 2));
+
+  cost = (0 -> ((pre cost) + max~0.out));
+
+  solved = (((a and b) and c) and d);
+
+  prop1 = (not (solved and (cost < 15)));
+
+  prop2 = (not (solved and (cost = 15)));
+
+  b2i~0.x = (a <> (pre a));
+
+  b2i~0.y = (if b2i~0.x then 1 else 0);
+
+  b2i~1.x = (b <> (pre b));
+
+  b2i~1.y = (if b2i~1.x then 1 else 0);
+
+  b2i~2.x = (c <> (pre c));
+
+  b2i~2.y = (if b2i~2.x then 1 else 0);
+
+  b2i~3.x = (d <> (pre d));
+
+  b2i~3.y = (if b2i~3.x then 1 else 0);
+
+  max~0.x = cost~0.out;
+
+  max~0.y = cost~1.out;
+
+  max~0.z = cost~2.out;
+
+  max~0.w = cost~3.out;
+
+  max~0.out = max~0.max2~0.out;
+
+  cost~0.state = a;
+
+  cost~0.value = 1;
+
+  cost~0.out = (0 -> (if (cost~0.state <> (pre cost~0.state)) then cost~0.value else 0));
+
+  cost~1.state = b;
+
+  cost~1.value = 2;
+
+  cost~1.out = (0 -> (if (cost~1.state <> (pre cost~1.state)) then cost~1.value else 0));
+
+  cost~2.state = c;
+
+  cost~2.value = 5;
+
+  cost~2.out = (0 -> (if (cost~2.state <> (pre cost~2.state)) then cost~2.value else 0));
+
+  cost~3.state = d;
+
+  cost~3.value = 8;
+
+  cost~3.out = (0 -> (if (cost~3.state <> (pre cost~3.state)) then cost~3.value else 0));
+
+  max~0.max2~0.x = max~0.x;
+
+  max~0.max2~0.y = max~0.max2~1.out;
+
+  max~0.max2~0.out = (if (max~0.max2~0.x >= max~0.max2~0.y) then max~0.max2~0.x else max~0.max2~0.y);
+
+  max~0.max2~1.x = max~0.y;
+
+  max~0.max2~1.y = max~0.max2~2.out;
+
+  max~0.max2~1.out = (if (max~0.max2~1.x >= max~0.max2~1.y) then max~0.max2~1.x else max~0.max2~1.y);
+
+  max~0.max2~2.x = max~0.z;
+
+  max~0.max2~2.y = max~0.w;
+
+  max~0.max2~2.out = (if (max~0.max2~2.x >= max~0.max2~2.y) then max~0.max2~2.x else max~0.max2~2.y);
+
+  assert traveler~0.ok;
+
+  assert traveler~1.ok;
+
+  assert traveler~2.ok;
+
+  assert traveler~3.ok;
+
+  assert at_least_one_travelers;
+
+  assert no_more_than_two_travelers;
+
+  --%PROPERTY prop1;
+  --%PROPERTY prop2;
+
+tel;

@@ -1,0 +1,24 @@
+node main(
+  x : int;
+  y : int;
+  z : int;
+  w : int
+) returns (
+  cex : bool
+);
+var
+  delay~0.signal : bool;
+  delay~0.out : bool;
+  delay~0.counter : int;
+let
+  cex = delay~0.out;
+
+  delay~0.signal = (((x < y) and (y < z)) and (z < w));
+
+  delay~0.counter = (if delay~0.signal then (1 + (0 -> (pre delay~0.counter))) else 0);
+
+  delay~0.out = (delay~0.counter <= 10);
+
+  --%PROPERTY cex;
+
+tel;

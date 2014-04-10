@@ -1,0 +1,1921 @@
+node microwave(
+  KP_START : bool;
+  KP_CLEAR : bool;
+  KP_0 : bool;
+  KP_1 : bool;
+  KP_2 : bool;
+  KP_3 : bool;
+  KP_4 : bool;
+  KP_5 : bool;
+  KP_6 : bool;
+  KP_7 : bool;
+  KP_8 : bool;
+  KP_9 : bool;
+  DOOR_CLOSED : bool
+) returns (
+  LEFT_DIGIT : int;
+  MIDDLE_DIGIT : int;
+  RIGHT_DIGIT : int;
+  MODE : int
+);
+var
+  microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic : int;
+  microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining : int;
+  rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Left_Digit : int;
+  rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit : int;
+  rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit : int;
+  microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK : int;
+  rlt_check_467 : bool;
+  rlt_check_466 : bool;
+  rlt_check_465 : bool;
+  rlt_check_464 : bool;
+  rlt_check_463 : bool;
+  rlt_check_462 : bool;
+  rlt_check_461 : bool;
+  rlt_check_460 : bool;
+  rlt_check_459 : bool;
+  rlt_check_458 : bool;
+  rlt_check_457 : bool;
+  rlt_check_456 : bool;
+  rlt_check_455 : bool;
+  rlt_check_454 : bool;
+  rlt_check_453 : bool;
+  rlt_check_452 : bool;
+  rlt_check_451 : bool;
+  rlt_check_450 : bool;
+  rlt_check_449 : bool;
+  rlt_check_448 : bool;
+  rlt_check_447 : bool;
+  rlt_check_446 : bool;
+  rlt_check_445 : bool;
+  rlt_check_444 : bool;
+  rlt_check_443 : bool;
+  rlt_check_442 : bool;
+  rlt_check_441 : bool;
+  rlt_check_440 : bool;
+  rlt_check_439 : bool;
+  rlt_check_438 : bool;
+  rlt_check_437 : bool;
+  rlt_check_436 : bool;
+  rlt_check_435 : bool;
+  rlt_check_434 : bool;
+  rlt_check_433 : bool;
+  rlt_check_432 : bool;
+  rlt_check_431 : bool;
+  rlt_check_430 : bool;
+  rlt_check_429 : bool;
+  rlt_check_428 : bool;
+  rlt_check_427 : bool;
+  rlt_check_426 : bool;
+  rlt_check_425 : bool;
+  rlt_check_424 : bool;
+  rlt_check_423 : bool;
+  rlt_check_422 : bool;
+  rlt_check_421 : bool;
+  rlt_check_420 : bool;
+  rlt_check_419 : bool;
+  rlt_check_418 : bool;
+  rlt_check_417 : bool;
+  rlt_check_416 : bool;
+  rlt_check_415 : bool;
+  rlt_check_414 : bool;
+  rlt_check_413 : bool;
+  rlt_check_412 : bool;
+  rlt_check_411 : bool;
+  rlt_check_410 : bool;
+  rlt_check_409 : bool;
+  rlt_check_408 : bool;
+  rlt_check_407 : bool;
+  rlt_check_406 : bool;
+  rlt_check_405 : bool;
+  rlt_check_404 : bool;
+  rlt_check_403 : bool;
+  rlt_check_402 : bool;
+  rlt_check_401 : bool;
+  rlt_check_400 : bool;
+  rlt_check_399 : bool;
+  rlt_check_398 : bool;
+  rlt_check_397 : bool;
+  rlt_check_396 : bool;
+  rlt_check_395 : bool;
+  rlt_check_394 : bool;
+  rlt_check_393 : bool;
+  rlt_check_392 : bool;
+  rlt_check_391 : bool;
+  rlt_check_390 : bool;
+  rlt_check_389 : bool;
+  rlt_check_388 : bool;
+  rlt_check_387 : bool;
+  rlt_check_386 : bool;
+  rlt_check_385 : bool;
+  rlt_check_384 : bool;
+  rlt_check_383 : bool;
+  rlt_check_382 : bool;
+  rlt_check_381 : bool;
+  rlt_check_380 : bool;
+  rlt_check_379 : bool;
+  rlt_check_378 : bool;
+  rlt_check_377 : bool;
+  rlt_check_376 : bool;
+  rlt_check_375 : bool;
+  rlt_check_374 : bool;
+  rlt_check_373 : bool;
+  rlt_check_372 : bool;
+  rlt_check_371 : bool;
+  rlt_check_370 : bool;
+  rlt_check_369 : bool;
+  rlt_check_368 : bool;
+  rlt_check_367 : bool;
+  rlt_check_366 : bool;
+  rlt_check_365 : bool;
+  rlt_check_364 : bool;
+  rlt_check_363 : bool;
+  rlt_check_362 : bool;
+  rlt_check_361 : bool;
+  rlt_check_360 : bool;
+  rlt_check_359 : bool;
+  rlt_check_358 : bool;
+  rlt_check_357 : bool;
+  rlt_check_356 : bool;
+  rlt_check_355 : bool;
+  rlt_check_354 : bool;
+  rlt_check_353 : bool;
+  rlt_check_352 : bool;
+  rlt_check_351 : bool;
+  rlt_check_350 : bool;
+  rlt_check_349 : bool;
+  rlt_check_348 : bool;
+  rlt_check_347 : bool;
+  rlt_check_346 : bool;
+  rlt_check_345 : bool;
+  rlt_check_344 : bool;
+  rlt_check_343 : bool;
+  rlt_check_342 : bool;
+  rlt_check_341 : bool;
+  rlt_check_340 : bool;
+  rlt_check_339 : bool;
+  rlt_check_338 : bool;
+  rlt_check_337 : bool;
+  rlt_check_336 : bool;
+  rlt_check_335 : bool;
+  rlt_check_334 : bool;
+  rlt_check_333 : bool;
+  rlt_check_332 : bool;
+  rlt_check_331 : bool;
+  rlt_check_330 : bool;
+  rlt_check_329 : bool;
+  rlt_check_328 : bool;
+  rlt_check_327 : bool;
+  rlt_check_326 : bool;
+  rlt_check_325 : bool;
+  rlt_check_324 : bool;
+  rlt_check_323 : bool;
+  rlt_check_322 : bool;
+  rlt_check_321 : bool;
+  rlt_check_320 : bool;
+  rlt_check_319 : bool;
+  rlt_check_318 : bool;
+  rlt_check_317 : bool;
+  rlt_check_316 : bool;
+  rlt_check_315 : bool;
+  rlt_check_314 : bool;
+  rlt_check_313 : bool;
+  rlt_check_312 : bool;
+  rlt_check_311 : bool;
+  rlt_check_310 : bool;
+  rlt_check_309 : bool;
+  rlt_check_308 : bool;
+  rlt_check_307 : bool;
+  rlt_check_306 : bool;
+  rlt_check_305 : bool;
+  rlt_check_304 : bool;
+  rlt_check_303 : bool;
+  rlt_check_302 : bool;
+  rlt_check_301 : bool;
+  rlt_check_300 : bool;
+  rlt_check_299 : bool;
+  rlt_check_298 : bool;
+  rlt_check_297 : bool;
+  rlt_check_296 : bool;
+  rlt_check_295 : bool;
+  rlt_check_294 : bool;
+  rlt_check_293 : bool;
+  rlt_check_292 : bool;
+  rlt_check_291 : bool;
+  rlt_check_290 : bool;
+  rlt_check_289 : bool;
+  rlt_check_288 : bool;
+  rlt_check_287 : bool;
+  rlt_check_286 : bool;
+  rlt_check_285 : bool;
+  rlt_check_284 : bool;
+  rlt_check_283 : bool;
+  rlt_check_282 : bool;
+  rlt_check_281 : bool;
+  rlt_check_280 : bool;
+  rlt_check_279 : bool;
+  rlt_check_278 : bool;
+  rlt_check_277 : bool;
+  rlt_check_276 : bool;
+  rlt_check_275 : bool;
+  rlt_check_274 : bool;
+  rlt_check_273 : bool;
+  rlt_check_272 : bool;
+  rlt_check_271 : bool;
+  rlt_check_270 : bool;
+  rlt_check_269 : bool;
+  rlt_check_268 : bool;
+  rlt_check_267 : bool;
+  rlt_check_266 : bool;
+  rlt_check_265 : bool;
+  rlt_check_264 : bool;
+  rlt_check_263 : bool;
+  rlt_check_262 : bool;
+  rlt_check_261 : bool;
+  rlt_check_260 : bool;
+  rlt_check_259 : bool;
+  rlt_check_258 : bool;
+  rlt_check_257 : bool;
+  rlt_check_256 : bool;
+  rlt_check_255 : bool;
+  rlt_check_254 : bool;
+  rlt_check_253 : bool;
+  rlt_check_252 : bool;
+  rlt_check_251 : bool;
+  rlt_check_250 : bool;
+  rlt_check_249 : bool;
+  rlt_check_248 : bool;
+  rlt_check_247 : bool;
+  rlt_check_246 : bool;
+  rlt_check_245 : bool;
+  rlt_check_244 : bool;
+  rlt_check_243 : bool;
+  rlt_check_242 : bool;
+  rlt_check_241 : bool;
+  rlt_check_240 : bool;
+  rlt_check_239 : bool;
+  rlt_check_238 : bool;
+  rlt_check_237 : bool;
+  rlt_check_236 : bool;
+  rlt_check_235 : bool;
+  rlt_check_234 : bool;
+  rlt_check_233 : bool;
+  rlt_check_232 : bool;
+  rlt_check_231 : bool;
+  rlt_check_230 : bool;
+  rlt_check_229 : bool;
+  rlt_check_228 : bool;
+  rlt_check_227 : bool;
+  rlt_check_226 : bool;
+  rlt_check_225 : bool;
+  rlt_check_224 : bool;
+  rlt_check_223 : bool;
+  rlt_check_222 : bool;
+  rlt_check_221 : bool;
+  rlt_check_220 : bool;
+  rlt_check_219 : bool;
+  rlt_check_218 : bool;
+  rlt_check_217 : bool;
+  rlt_check_216 : bool;
+  rlt_check_215 : bool;
+  rlt_check_214 : bool;
+  rlt_check_213 : bool;
+  rlt_check_212 : bool;
+  rlt_check_211 : bool;
+  rlt_check_210 : bool;
+  rlt_check_209 : bool;
+  rlt_check_208 : bool;
+  rlt_check_207 : bool;
+  rlt_check_206 : bool;
+  rlt_check_205 : bool;
+  rlt_check_204 : bool;
+  rlt_check_203 : bool;
+  rlt_check_202 : bool;
+  rlt_check_201 : bool;
+  rlt_check_200 : bool;
+  rlt_check_199 : bool;
+  rlt_check_198 : bool;
+  rlt_check_197 : bool;
+  rlt_check_196 : bool;
+  rlt_check_195 : bool;
+  rlt_check_194 : bool;
+  rlt_check_193 : bool;
+  rlt_check_192 : bool;
+  rlt_check_191 : bool;
+  rlt_check_190 : bool;
+  rlt_check_189 : bool;
+  rlt_check_188 : bool;
+  rlt_check_187 : bool;
+  rlt_check_186 : bool;
+  rlt_check_185 : bool;
+  rlt_check_184 : bool;
+  rlt_check_183 : bool;
+  rlt_check_182 : bool;
+  rlt_check_181 : bool;
+  rlt_check_180 : bool;
+  rlt_check_179 : bool;
+  rlt_check_178 : bool;
+  rlt_check_177 : bool;
+  rlt_check_176 : bool;
+  rlt_check_175 : bool;
+  rlt_check_174 : bool;
+  rlt_check_173 : bool;
+  rlt_check_172 : bool;
+  rlt_check_171 : bool;
+  rlt_check_170 : bool;
+  rlt_check_169 : bool;
+  rlt_check_168 : bool;
+  rlt_check_167 : bool;
+  rlt_check_166 : bool;
+  rlt_check_165 : bool;
+  rlt_check_164 : bool;
+  rlt_check_163 : bool;
+  rlt_check_162 : bool;
+  rlt_check_161 : bool;
+  rlt_check_160 : bool;
+  rlt_check_159 : bool;
+  rlt_check_158 : bool;
+  rlt_check_157 : bool;
+  rlt_check_156 : bool;
+  rlt_check_155 : bool;
+  rlt_check_154 : bool;
+  rlt_check_153 : bool;
+  rlt_check_152 : bool;
+  rlt_check_151 : bool;
+  rlt_check_150 : bool;
+  rlt_check_149 : bool;
+  rlt_check_148 : bool;
+  rlt_check_147 : bool;
+  rlt_check_146 : bool;
+  rlt_check_145 : bool;
+  rlt_check_144 : bool;
+  rlt_check_143 : bool;
+  rlt_check_142 : bool;
+  rlt_check_141 : bool;
+  rlt_check_140 : bool;
+  rlt_check_139 : bool;
+  rlt_check_138 : bool;
+  rlt_check_137 : bool;
+  rlt_check_136 : bool;
+  rlt_check_135 : bool;
+  rlt_check_134 : bool;
+  rlt_check_133 : bool;
+  rlt_check_132 : bool;
+  rlt_check_131 : bool;
+  rlt_check_130 : bool;
+  rlt_check_129 : bool;
+  rlt_check_128 : bool;
+  rlt_check_127 : bool;
+  rlt_check_126 : bool;
+  rlt_check_125 : bool;
+  rlt_check_124 : bool;
+  rlt_check_123 : bool;
+  rlt_check_122 : bool;
+  rlt_check_121 : bool;
+  rlt_check_120 : bool;
+  rlt_check_119 : bool;
+  rlt_check_118 : bool;
+  rlt_check_117 : bool;
+  rlt_check_116 : bool;
+  rlt_check_115 : bool;
+  rlt_check_114 : bool;
+  rlt_check_113 : bool;
+  rlt_check_112 : bool;
+  rlt_check_111 : bool;
+  rlt_check_110 : bool;
+  rlt_check_109 : bool;
+  rlt_check_108 : bool;
+  rlt_check_107 : bool;
+  rlt_check_106 : bool;
+  rlt_check_105 : bool;
+  rlt_check_104 : bool;
+  rlt_check_103 : bool;
+  rlt_check_102 : bool;
+  rlt_check_101 : bool;
+  rlt_check_100 : bool;
+  rlt_check_99 : bool;
+  rlt_check_98 : bool;
+  rlt_check_97 : bool;
+  rlt_check_96 : bool;
+  rlt_check_95 : bool;
+  rlt_check_94 : bool;
+  rlt_check_93 : bool;
+  rlt_check_92 : bool;
+  rlt_check_91 : bool;
+  rlt_check_90 : bool;
+  rlt_check_89 : bool;
+  rlt_check_88 : bool;
+  rlt_check_87 : bool;
+  rlt_check_86 : bool;
+  rlt_check_85 : bool;
+  rlt_check_84 : bool;
+  rlt_check_83 : bool;
+  rlt_check_82 : bool;
+  rlt_check_81 : bool;
+  rlt_check_80 : bool;
+  rlt_check_79 : bool;
+  rlt_check_78 : bool;
+  rlt_check_77 : bool;
+  rlt_check_76 : bool;
+  rlt_check_75 : bool;
+  rlt_check_74 : bool;
+  rlt_check_73 : bool;
+  rlt_check_72 : bool;
+  rlt_check_71 : bool;
+  rlt_check_70 : bool;
+  rlt_check_69 : bool;
+  rlt_check_68 : bool;
+  rlt_check_67 : bool;
+  rlt_check_66 : bool;
+  rlt_check_65 : bool;
+  rlt_check_64 : bool;
+  rlt_check_63 : bool;
+  rlt_check_62 : bool;
+  rlt_check_61 : bool;
+  rlt_check_60 : bool;
+  rlt_check_59 : bool;
+  rlt_check_58 : bool;
+  rlt_check_57 : bool;
+  rlt_check_56 : bool;
+  rlt_check_55 : bool;
+  rlt_check_54 : bool;
+  rlt_check_53 : bool;
+  rlt_check_52 : bool;
+  rlt_check_51 : bool;
+  rlt_check_50 : bool;
+  rlt_check_49 : bool;
+  rlt_check_48 : bool;
+  rlt_check_47 : bool;
+  rlt_check_46 : bool;
+  rlt_check_45 : bool;
+  rlt_check_44 : bool;
+  rlt_check_43 : bool;
+  rlt_check_42 : bool;
+  rlt_check_41 : bool;
+  rlt_check_40 : bool;
+  rlt_check_39 : bool;
+  rlt_check_38 : bool;
+  rlt_check_37 : bool;
+  rlt_check_36 : bool;
+  rlt_check_35 : bool;
+  rlt_check_34 : bool;
+  rlt_check_33 : bool;
+  rlt_check_32 : bool;
+  rlt_check_31 : bool;
+  rlt_check_30 : bool;
+  rlt_check_29 : bool;
+  rlt_check_28 : bool;
+  rlt_check_27 : bool;
+  rlt_check_26 : bool;
+  rlt_check_25 : bool;
+  rlt_check_24 : bool;
+  rlt_check_23 : bool;
+  rlt_check_22 : bool;
+  rlt_check_21 : bool;
+  rlt_check_20 : bool;
+  rlt_check_19 : bool;
+  rlt_check_18 : bool;
+  rlt_check_17 : bool;
+  rlt_check_16 : bool;
+  rlt_check_15 : bool;
+  rlt_check_14 : bool;
+  rlt_check_13 : bool;
+  rlt_check_12 : bool;
+  rlt_check_11 : bool;
+  rlt_check_10 : bool;
+  rlt_check_9 : bool;
+  rlt_check_8 : bool;
+  rlt_check_7 : bool;
+  rlt_check_6 : bool;
+  rlt_check_5 : bool;
+  rlt_check_4 : bool;
+  rlt_check_3 : bool;
+  rlt_check_2 : bool;
+  rlt_check_1 : bool;
+  rlt_check_ : bool;
+let
+  rlt_check_18 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))) and (not DOOR_CLOSED)));
+
+  rlt_check_19 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))) and DOOR_CLOSED));
+
+  rlt_check_20 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK <= 0))));
+
+  rlt_check_21 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))));
+
+  rlt_check_22 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and KP_START) and (not rlt_check_284))));
+
+  rlt_check_23 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and KP_START) and rlt_check_284)));
+
+  rlt_check_24 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and (not rlt_check_284)) and (not KP_START))));
+
+  rlt_check_25 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and (not rlt_check_284)) and KP_START)));
+
+  rlt_check_26 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5))));
+
+  rlt_check_27 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)));
+
+  rlt_check_28 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((KP_START and (not rlt_check_284)) and (not DOOR_CLOSED))));
+
+  rlt_check_29 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((KP_START and (not rlt_check_284)) and DOOR_CLOSED)));
+
+  rlt_check_30 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and KP_START) and (not rlt_check_284))));
+
+  rlt_check_31 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and KP_START) and rlt_check_284)));
+
+  rlt_check_32 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and (not rlt_check_284)) and (not KP_START))));
+
+  rlt_check_33 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and (not rlt_check_284)) and KP_START)));
+
+  rlt_check_34 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (KP_CLEAR and (not rlt_check_186))));
+
+  rlt_check_35 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (KP_CLEAR and rlt_check_186)));
+
+  rlt_check_36 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and ((not rlt_check_186) and (not KP_CLEAR))));
+
+  rlt_check_37 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and ((not rlt_check_186) and KP_CLEAR)));
+
+  rlt_check_38 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4))));
+
+  rlt_check_39 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)));
+
+  rlt_check_40 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)));
+
+  rlt_check_41 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)));
+
+  rlt_check_42 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((not (KP_CLEAR and (not rlt_check_186))) and (not DOOR_CLOSED))));
+
+  rlt_check_43 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((not (KP_CLEAR and (not rlt_check_186))) and DOOR_CLOSED)));
+
+  rlt_check_44 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and KP_CLEAR) and (not rlt_check_186))));
+
+  rlt_check_45 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and KP_CLEAR) and rlt_check_186)));
+
+  rlt_check_46 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and (not rlt_check_186)) and (not KP_CLEAR))));
+
+  rlt_check_47 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and (not rlt_check_186)) and KP_CLEAR)));
+
+  rlt_check_48 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))));
+
+  rlt_check_49 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)));
+
+  rlt_check_50 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)));
+
+  rlt_check_51 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)));
+
+  rlt_check_52 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic > 4))));
+
+  rlt_check_53 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))));
+
+  rlt_check_54 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic < 2))));
+
+  rlt_check_55 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2))));
+
+  rlt_check_310 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5))));
+
+  rlt_check_311 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)));
+
+  rlt_check_312 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (KP_CLEAR and (not rlt_check_186))));
+
+  rlt_check_313 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (KP_CLEAR and rlt_check_186)));
+
+  rlt_check_314 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and ((not rlt_check_186) and (not KP_CLEAR))));
+
+  rlt_check_315 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and ((not rlt_check_186) and KP_CLEAR)));
+
+  rlt_check_316 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4))));
+
+  rlt_check_317 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)));
+
+  rlt_check_318 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)));
+
+  rlt_check_319 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)));
+
+  rlt_check_320 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((not (KP_CLEAR and (not rlt_check_186))) and (not DOOR_CLOSED))));
+
+  rlt_check_321 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((not (KP_CLEAR and (not rlt_check_186))) and DOOR_CLOSED)));
+
+  rlt_check_322 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and KP_CLEAR) and (not rlt_check_186))));
+
+  rlt_check_323 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and KP_CLEAR) and rlt_check_186)));
+
+  rlt_check_324 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and (not rlt_check_186)) and (not KP_CLEAR))));
+
+  rlt_check_325 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and (not rlt_check_186)) and KP_CLEAR)));
+
+  rlt_check_326 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))));
+
+  rlt_check_327 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)));
+
+  rlt_check_328 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)));
+
+  rlt_check_329 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)));
+
+  rlt_check_330 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic > 4))));
+
+  rlt_check_331 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))));
+
+  rlt_check_332 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic < 2))));
+
+  rlt_check_333 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2))));
+
+  rlt_check_350 = (true -> (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)))));
+
+  rlt_check_351 = ((not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)))) -> true);
+
+  rlt_check_352 = (true -> (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (not ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))))));
+
+  rlt_check_353 = ((not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (not ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))))) -> true);
+
+  rlt_check_354 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))) and (not DOOR_CLOSED)));
+
+  rlt_check_355 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))) and DOOR_CLOSED));
+
+  rlt_check_356 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK <= 0))));
+
+  rlt_check_357 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0))));
+
+  rlt_check_358 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and KP_START) and (not rlt_check_284))));
+
+  rlt_check_359 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and KP_START) and rlt_check_284)));
+
+  rlt_check_360 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and (not rlt_check_284)) and (not KP_START))));
+
+  rlt_check_361 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)) and (((microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0) and (not rlt_check_284)) and KP_START)));
+
+  rlt_check_362 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5))));
+
+  rlt_check_363 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5)));
+
+  rlt_check_364 = (true -> (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)))));
+
+  rlt_check_365 = ((not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)))) -> true);
+
+  rlt_check_366 = (true -> (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and (not ((KP_START and (not rlt_check_284)) and DOOR_CLOSED)))));
+
+  rlt_check_367 = ((not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and (not ((KP_START and (not rlt_check_284)) and DOOR_CLOSED)))) -> true);
+
+  rlt_check_368 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((KP_START and (not rlt_check_284)) and (not DOOR_CLOSED))));
+
+  rlt_check_369 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((KP_START and (not rlt_check_284)) and DOOR_CLOSED)));
+
+  rlt_check_370 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and KP_START) and (not rlt_check_284))));
+
+  rlt_check_371 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and KP_START) and rlt_check_284)));
+
+  rlt_check_372 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and (not rlt_check_284)) and (not KP_START))));
+
+  rlt_check_373 = (not ((((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (not (KP_CLEAR and (not rlt_check_186)))) and ((DOOR_CLOSED and (not rlt_check_284)) and KP_START)));
+
+  rlt_check_374 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (KP_CLEAR and (not rlt_check_186))));
+
+  rlt_check_375 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and (KP_CLEAR and rlt_check_186)));
+
+  rlt_check_376 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and ((not rlt_check_186) and (not KP_CLEAR))));
+
+  rlt_check_377 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)) and ((not rlt_check_186) and KP_CLEAR)));
+
+  rlt_check_378 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4))));
+
+  rlt_check_379 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4)));
+
+  rlt_check_380 = (true -> (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0))));
+
+  rlt_check_381 = ((not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0))) -> true);
+
+  rlt_check_382 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)));
+
+  rlt_check_383 = (not (((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and (not ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)));
+
+  rlt_check_384 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((not (KP_CLEAR and (not rlt_check_186))) and (not DOOR_CLOSED))));
+
+  rlt_check_385 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((not (KP_CLEAR and (not rlt_check_186))) and DOOR_CLOSED)));
+
+  rlt_check_386 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and KP_CLEAR) and (not rlt_check_186))));
+
+  rlt_check_387 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and KP_CLEAR) and rlt_check_186)));
+
+  rlt_check_388 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and (not rlt_check_186)) and (not KP_CLEAR))));
+
+  rlt_check_389 = (not ((((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)) and ((DOOR_CLOSED and (not rlt_check_186)) and KP_CLEAR)));
+
+  rlt_check_390 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (not (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3))));
+
+  rlt_check_391 = (not (((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3)));
+
+  rlt_check_392 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)));
+
+  rlt_check_393 = (not ((((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)));
+
+  rlt_check_394 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic > 4))));
+
+  rlt_check_395 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4))));
+
+  rlt_check_396 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic < 2))));
+
+  rlt_check_397 = (not (((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) and ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2))));
+
+  rlt_check_416 = (not ((not rlt_check_100) and ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) > 9)));
+
+  rlt_check_417 = (not ((not rlt_check_100) and ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9)));
+
+  rlt_check_460 = (not ((not rlt_check_100) and ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) > 9)));
+
+  rlt_check_461 = (not ((not rlt_check_100) and ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9)));
+
+  rlt_check_464 = (not ((not rlt_check_100) and ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) > 9)));
+
+  rlt_check_465 = (not ((not rlt_check_100) and ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9)));
+
+  rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Left_Digit = (0 -> (if rlt_check_6 then (if rlt_check_216 then 0 else (pre (if rlt_check_100 then 0 else (if ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9) then rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit else rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Left_Digit)))) else (pre rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Left_Digit)));
+
+  rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit = (0 -> (if rlt_check_6 then (if rlt_check_216 then 0 else (pre (if rlt_check_100 then 0 else (if ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9) then rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit else rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit)))) else (pre rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit)));
+
+  rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit = (0 -> (if rlt_check_6 then (if rlt_check_216 then 0 else (pre (if rlt_check_100 then 0 else (if ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9) then (if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) else rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit)))) else (pre rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit)));
+
+  microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK = (if rlt_check_6 then (if (rlt_check_216 and (not rlt_check_6)) then 0 else (((if rlt_check_100 then 0 else (if ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9) then (if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) else rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit)) + ((if rlt_check_100 then 0 else (if ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9) then rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Right_Digit else rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit)) * 10)) + ((if rlt_check_100 then 0 else (if ((if (rlt_check_296 and (not rlt_check_188)) then 0 else (if (rlt_check_254 and (not rlt_check_252)) then 1 else (if (rlt_check_212 and (not rlt_check_346)) then 2 else (if (rlt_check_192 and (not rlt_check_152)) then 3 else (if (rlt_check_170 and (not rlt_check_90)) then 4 else (if (rlt_check_114 and (not rlt_check_210)) then 5 else (if (rlt_check_96 and (not rlt_check_8)) then 6 else (if (rlt_check_60 and (not rlt_check_294)) then 7 else (if (rlt_check_402 and (not rlt_check_112)) then 8 else (if (rlt_check_306 and (not rlt_check_190)) then 9 else 10)))))))))) <= 9) then rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Middle_Digit else rlt_condact_resetmicrowave_microwave_inner_KEYPAD_PROCESSING_Unit_Delay_Left_Digit)) * 60))) else 0);
+
+  microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining = (0 -> (pre (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK)));
+
+  microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = (0 -> (pre (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then 5 else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then 4 else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then 3 else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then 5 else (if ((KP_START and (not rlt_check_284)) and DOOR_CLOSED) then 3 else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic)) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then (if ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0)) then (if DOOR_CLOSED then 3 else 4) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic)) else 5)));
+
+  MIDDLE_DIGIT = ((((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) - ((((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) div 60) * 60)) div 10);
+
+  RIGHT_DIGIT = ((((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) - ((((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) div 60) * 60)) - (((((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) - ((((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) div 60) * 60)) div 10) * 10));
+
+  MODE = ((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then 1 else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then 3 else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then 2 else 0)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then 1 else (if ((KP_START and (not rlt_check_284)) and DOOR_CLOSED) then 2 else 0)) else 0))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then (if ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0)) then (if DOOR_CLOSED then 2 else 3) else 0) else 0)) else 1) -> (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then 1 else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then 3 else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then 2 else (pre MODE))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then 1 else (if ((KP_START and (not rlt_check_284)) and DOOR_CLOSED) then 2 else (pre MODE))) else (pre MODE)))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then (if ((KP_START and (not rlt_check_284)) and (microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK > 0)) then (if DOOR_CLOSED then 2 else 3) else (pre MODE)) else (pre MODE))) else 1));
+
+  LEFT_DIGIT = (((if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)) then (if ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 2) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 4)) then (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 3) then (if ((KP_CLEAR and (not rlt_check_186)) or (not DOOR_CLOSED)) then microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0) then (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining - 1) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 4) then (if (KP_CLEAR and (not rlt_check_186)) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining) else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining))) else (if (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic = 5) then microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK else microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)) else microwave_microwave_inner_KEYPAD_PROCESSING___STEPS_TO_COOK) div 1) div 60);
+
+  rlt_check_257 = (true -> (not ((not rlt_check_6) and (pre rlt_check_296))));
+
+  rlt_check_428 = (not ((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (rlt_check_60 and (not rlt_check_294))));
+
+  rlt_check_431 = (not ((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and ((not rlt_check_294) and rlt_check_60)));
+
+  rlt_check_418 = rlt_check_100;
+
+  rlt_check_462 = rlt_check_100;
+
+  rlt_check_466 = rlt_check_100;
+
+  rlt_check_173 = (true -> (not ((not rlt_check_6) and (pre rlt_check_306))));
+
+  rlt_check_437 = (not ((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (rlt_check_114 and rlt_check_210)));
+
+  rlt_check_156 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_152)))));
+
+  rlt_check_279 = (not (rlt_check_6 and KP_1));
+
+  rlt_check_107 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_114)))));
+
+  rlt_check_108 = (true -> (not (rlt_check_6 and ((pre rlt_check_114) and (not rlt_check_216)))));
+
+  rlt_check_433 = (not (((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (rlt_check_96 and rlt_check_8)));
+
+  rlt_check_70 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_212)))));
+
+  rlt_check_264 = (not (rlt_check_6 and (not KP_8)));
+
+  rlt_check_285 = (true -> (not (pre KP_START)));
+
+  rlt_check_234 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_188)))));
+
+  rlt_check_87 = ((not (rlt_check_6 and KP_0)) -> (not (if rlt_check_6 then KP_0 else (pre rlt_check_296))));
+
+  rlt_check_457 = (not (rlt_check_296 and rlt_check_188));
+
+  rlt_check_278 = (not (rlt_check_6 and (not KP_1)));
+
+  rlt_check_90 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_170)) else (pre rlt_check_90)));
+
+  rlt_check_86 = ((rlt_check_6 and KP_0) -> (if rlt_check_6 then KP_0 else (pre rlt_check_296)));
+
+  rlt_check_406 = (true -> false);
+
+  rlt_check_407 = (false -> true);
+
+  rlt_check_408 = (true -> false);
+
+  rlt_check_409 = (false -> true);
+
+  rlt_check_228 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_254))))));
+
+  rlt_check_197 = ((not (rlt_check_6 and KP_3)) -> (not (if rlt_check_6 then KP_3 else (pre rlt_check_192))));
+
+  rlt_check_452 = (not ((not (rlt_check_296 and (not rlt_check_188))) and (rlt_check_254 and (not rlt_check_252))));
+
+  rlt_check_455 = (not ((not (rlt_check_296 and (not rlt_check_188))) and ((not rlt_check_252) and rlt_check_254)));
+
+  rlt_check_104 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_210)))));
+
+  rlt_check_411 = (not (rlt_check_6 and (rlt_check_216 and rlt_check_6)));
+
+  rlt_check_68 = rlt_check_6;
+
+  rlt_check_74 = rlt_check_6;
+
+  rlt_check_78 = rlt_check_6;
+
+  rlt_check_84 = rlt_check_6;
+
+  rlt_check_110 = rlt_check_6;
+
+  rlt_check_122 = rlt_check_6;
+
+  rlt_check_128 = rlt_check_6;
+
+  rlt_check_138 = rlt_check_6;
+
+  rlt_check_150 = rlt_check_6;
+
+  rlt_check_162 = rlt_check_6;
+
+  rlt_check_168 = rlt_check_6;
+
+  rlt_check_176 = rlt_check_6;
+
+  rlt_check_184 = rlt_check_6;
+
+  rlt_check_204 = rlt_check_6;
+
+  rlt_check_224 = rlt_check_6;
+
+  rlt_check_232 = rlt_check_6;
+
+  rlt_check_240 = rlt_check_6;
+
+  rlt_check_260 = rlt_check_6;
+
+  rlt_check_266 = rlt_check_6;
+
+  rlt_check_274 = rlt_check_6;
+
+  rlt_check_280 = rlt_check_6;
+
+  rlt_check_282 = rlt_check_6;
+
+  rlt_check_292 = rlt_check_6;
+
+  rlt_check_304 = rlt_check_6;
+
+  rlt_check_414 = rlt_check_6;
+
+  rlt_check_195 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_254)) else (pre rlt_check_252))));
+
+  rlt_check_76 = (not (rlt_check_6 and (not rlt_check_216)));
+
+  rlt_check_222 = (not (rlt_check_6 and (not rlt_check_216)));
+
+  rlt_check_272 = (not (rlt_check_6 and (not rlt_check_216)));
+
+  rlt_check_117 = (true -> (not ((not rlt_check_6) and (pre rlt_check_190))));
+
+  rlt_check_453 = (not ((not (rlt_check_296 and (not rlt_check_188))) and (rlt_check_254 and rlt_check_252)));
+
+  rlt_check_442 = (not (((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and ((not rlt_check_90) and (not rlt_check_170))));
+
+  rlt_check_152 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_192)) else (pre rlt_check_152)));
+
+  rlt_check_216 = (true -> ((not rlt_check_6) or ((not (pre rlt_check_6)) and (pre rlt_check_216))));
+
+  rlt_check_172 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_306)))));
+
+  rlt_check_348 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_192)) else (pre rlt_check_152)));
+
+  rlt_check_127 = (not (rlt_check_6 and KP_6));
+
+  rlt_check_300 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_96))))));
+
+  rlt_check_16 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_306)) else (pre rlt_check_190)));
+
+  rlt_check_80 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_170)))));
+
+  rlt_check_277 = (true -> (not ((not rlt_check_6) and (pre rlt_check_254))));
+
+  rlt_check_229 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_254)))));
+
+  rlt_check_230 = (true -> (not (rlt_check_6 and ((pre rlt_check_254) and (not rlt_check_216)))));
+
+  rlt_check_294 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_60)) else (pre rlt_check_294)));
+
+  rlt_check_276 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_254)))));
+
+  rlt_check_114 = (KP_5 -> (if rlt_check_6 then KP_5 else (pre rlt_check_114)));
+
+  rlt_check_2 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_192)))));
+
+  rlt_check_143 = (true -> (not ((rlt_check_6 and (pre rlt_check_216)) and (pre rlt_check_6))));
+
+  rlt_check_12 = ((rlt_check_6 and KP_CLEAR) -> (if rlt_check_6 then KP_CLEAR else (pre rlt_check_100)));
+
+  rlt_check_226 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_252)))));
+
+  rlt_check_158 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_192))))));
+
+  rlt_check_263 = (true -> (not ((not rlt_check_6) and (pre rlt_check_402))));
+
+  rlt_check_82 = (not (rlt_check_6 and (not KP_4)));
+
+  rlt_check_116 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_190)))));
+
+  rlt_check_403 = (not rlt_check_402);
+
+  rlt_check_248 = ((rlt_check_6 and KP_8) -> (if rlt_check_6 then KP_8 else (pre rlt_check_402)));
+
+  rlt_check_210 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_114)) else (pre rlt_check_210)));
+
+  rlt_check_181 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_60)))));
+
+  rlt_check_182 = (true -> (not (rlt_check_6 and ((pre rlt_check_60) and (not rlt_check_216)))));
+
+  rlt_check_194 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_254)) else (pre rlt_check_252)));
+
+  rlt_check_92 = ((rlt_check_6 and KP_1) -> (if rlt_check_6 then KP_1 else (pre rlt_check_254)));
+
+  rlt_check_134 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_402))))));
+
+  rlt_check_71 = (true -> (not ((not rlt_check_6) and (pre rlt_check_212))));
+
+  rlt_check_62 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_346)))));
+
+  rlt_check_102 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_212)) else (pre rlt_check_346)));
+
+  rlt_check_430 = (not ((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and ((not rlt_check_294) and (not rlt_check_60))));
+
+  rlt_check_212 = (KP_2 -> (if rlt_check_6 then KP_2 else (pre rlt_check_212)));
+
+  rlt_check_236 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_296))))));
+
+  rlt_check_1 = (not KP_START);
+
+  rlt_check_256 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_296)))));
+
+  rlt_check_445 = (not ((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (rlt_check_192 and rlt_check_152)));
+
+  rlt_check_289 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_170)))));
+
+  rlt_check_290 = (true -> (not (rlt_check_6 and ((pre rlt_check_170) and (not rlt_check_216)))));
+
+  rlt_check_83 = (not (rlt_check_6 and KP_4));
+
+  rlt_check_291 = (true -> (not (rlt_check_6 and ((pre rlt_check_170) and rlt_check_216))));
+
+  rlt_check_426 = (not (((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and ((not rlt_check_112) and (not rlt_check_402))));
+
+  rlt_check_8 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_96)) else (pre rlt_check_8)));
+
+  rlt_check_88 = KP_0;
+
+  rlt_check_94 = KP_1;
+
+  rlt_check_220 = KP_2;
+
+  rlt_check_198 = KP_3;
+
+  rlt_check_340 = KP_4;
+
+  rlt_check_246 = KP_5;
+
+  rlt_check_344 = KP_6;
+
+  rlt_check_208 = KP_7;
+
+  rlt_check_250 = KP_8;
+
+  rlt_check_270 = KP_9;
+
+  rlt_check_89 = (not KP_0);
+
+  rlt_check_429 = (not ((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (rlt_check_60 and rlt_check_294)));
+
+  rlt_check_95 = (not KP_1);
+
+  rlt_check_221 = (not KP_2);
+
+  rlt_check_199 = (not KP_3);
+
+  rlt_check_341 = (not KP_4);
+
+  rlt_check_247 = (not KP_5);
+
+  rlt_check_345 = (not KP_6);
+
+  rlt_check_209 = (not KP_7);
+
+  rlt_check_178 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_294)))));
+
+  rlt_check_251 = (not KP_8);
+
+  rlt_check_271 = (not KP_9);
+
+  rlt_check_140 = ((not rlt_check_6) -> (not ((rlt_check_6 and (not (pre rlt_check_6))) and (not (pre rlt_check_216)))));
+
+  rlt_check_144 = (rlt_check_6 -> (not ((not ((not (pre rlt_check_6)) and (pre rlt_check_216))) and (not rlt_check_6))));
+
+  rlt_check_145 = ((not rlt_check_6) -> (not ((not ((not (pre rlt_check_6)) and (pre rlt_check_216))) and rlt_check_6)));
+
+  rlt_check_161 = (true -> (not (rlt_check_6 and ((pre rlt_check_192) and rlt_check_216))));
+
+  rlt_check_342 = ((rlt_check_6 and KP_6) -> (if rlt_check_6 then KP_6 else (pre rlt_check_96)));
+
+  rlt_check_166 = (not (rlt_check_6 and (not KP_CLEAR)));
+
+  rlt_check_338 = ((rlt_check_6 and KP_4) -> (if rlt_check_6 then KP_4 else (pre rlt_check_170)));
+
+  rlt_check_157 = (true -> (not ((not rlt_check_6) and (pre rlt_check_152))));
+
+  rlt_check_405 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_96)) else (pre rlt_check_8))));
+
+  rlt_check_262 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_402)))));
+
+  rlt_check_125 = (true -> (not ((not rlt_check_6) and (pre rlt_check_96))));
+
+  rlt_check_100 = (KP_CLEAR -> (if rlt_check_6 then KP_CLEAR else (pre rlt_check_100)));
+
+  rlt_check_130 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_114)) else (pre rlt_check_210)));
+
+  rlt_check_148 = (not (rlt_check_6 and (not KP_7)));
+
+  rlt_check_258 = (not (rlt_check_6 and (not KP_0)));
+
+  rlt_check_438 = (not ((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and ((not rlt_check_210) and (not rlt_check_114))));
+
+  rlt_check_11 = (not KP_CLEAR);
+
+  rlt_check_15 = (not KP_CLEAR);
+
+  rlt_check_440 = (not (((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (rlt_check_170 and (not rlt_check_90))));
+
+  rlt_check_443 = (not (((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and ((not rlt_check_90) and rlt_check_170)));
+
+  rlt_check_458 = (not ((not rlt_check_188) and (not rlt_check_296)));
+
+  rlt_check_214 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_170)) else (pre rlt_check_90)));
+
+  rlt_check_175 = (not (rlt_check_6 and KP_9));
+
+  rlt_check_63 = (true -> (not ((not rlt_check_6) and (pre rlt_check_346))));
+
+  rlt_check_237 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_296)))));
+
+  rlt_check_238 = (true -> (not (rlt_check_6 and ((pre rlt_check_296) and (not rlt_check_216)))));
+
+  rlt_check_99 = (true -> (not (1 = (pre MODE))));
+
+  rlt_check_61 = (not rlt_check_60);
+
+  rlt_check_308 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_296)) else (pre rlt_check_188)));
+
+  rlt_check_91 = (not rlt_check_90);
+
+  rlt_check_97 = (not rlt_check_96);
+
+  rlt_check_301 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_96)))));
+
+  rlt_check_302 = (true -> (not (rlt_check_6 and ((pre rlt_check_96) and (not rlt_check_216)))));
+
+  rlt_check_456 = (not (rlt_check_296 and (not rlt_check_188)));
+
+  rlt_check_459 = (not ((not rlt_check_188) and rlt_check_296));
+
+  rlt_check_141 = (true -> (not ((rlt_check_6 and (not (pre rlt_check_6))) and (pre rlt_check_216))));
+
+  rlt_check_142 = (true -> (not ((rlt_check_6 and (pre rlt_check_216)) and (not (pre rlt_check_6)))));
+
+  rlt_check_73 = (not (rlt_check_6 and KP_2));
+
+  rlt_check_155 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_402)) else (pre rlt_check_112))));
+
+  rlt_check_98 = (false -> (1 = (pre MODE)));
+
+  rlt_check_179 = (true -> (not ((not rlt_check_6) and (pre rlt_check_294))));
+
+  rlt_check_10 = KP_CLEAR;
+
+  rlt_check_14 = KP_CLEAR;
+
+  rlt_check_60 = (KP_7 -> (if rlt_check_6 then KP_7 else (pre rlt_check_60)));
+
+  rlt_check_118 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_306))))));
+
+  rlt_check_215 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_170)) else (pre rlt_check_90))));
+
+  rlt_check_4 = (not (rlt_check_6 and (not KP_3)));
+
+  rlt_check_146 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_60)))));
+
+  rlt_check_206 = ((rlt_check_6 and KP_7) -> (if rlt_check_6 then KP_7 else (pre rlt_check_60)));
+
+  rlt_check_131 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_114)) else (pre rlt_check_210))));
+
+  rlt_check_135 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_402)))));
+
+  rlt_check_136 = (true -> (not (rlt_check_6 and ((pre rlt_check_402) and (not rlt_check_216)))));
+
+  rlt_check_101 = (not rlt_check_100);
+
+  rlt_check_419 = (not rlt_check_100);
+
+  rlt_check_463 = (not rlt_check_100);
+
+  rlt_check_467 = (not rlt_check_100);
+
+  rlt_check_58 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic < 1)));
+
+  rlt_check_336 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic < 1)));
+
+  rlt_check_400 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic < 1)));
+
+  rlt_check_124 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_96)))));
+
+  rlt_check_113 = (not rlt_check_112);
+
+  rlt_check_115 = (not rlt_check_114);
+
+  rlt_check_450 = (not (((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and ((not rlt_check_346) and (not rlt_check_212))));
+
+  rlt_check_298 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_8)))));
+
+  rlt_check_448 = (not (((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (rlt_check_212 and (not rlt_check_346))));
+
+  rlt_check_451 = (not (((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and ((not rlt_check_346) and rlt_check_212)));
+
+  rlt_check_112 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_402)) else (pre rlt_check_112)));
+
+  rlt_check_183 = (true -> (not (rlt_check_6 and ((pre rlt_check_60) and rlt_check_216))));
+
+  rlt_check_149 = (not (rlt_check_6 and KP_7));
+
+  rlt_check_201 = (true -> (not ((not rlt_check_6) and (pre rlt_check_114))));
+
+  rlt_check_402 = (KP_8 -> (if rlt_check_6 then KP_8 else (pre rlt_check_402)));
+
+  rlt_check_410 = (not (rlt_check_6 and (rlt_check_216 and (not rlt_check_6))));
+
+  rlt_check_413 = (not (rlt_check_6 and ((not rlt_check_6) and rlt_check_216)));
+
+  rlt_check_153 = (not rlt_check_152);
+
+  rlt_check_187 = (true -> (not (pre KP_CLEAR)));
+
+  rlt_check_349 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_192)) else (pre rlt_check_152))));
+
+  rlt_check_309 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_296)) else (pre rlt_check_188))));
+
+  rlt_check_171 = (not rlt_check_170);
+
+  rlt_check_420 = (not ((((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and (not (rlt_check_402 and (not rlt_check_112)))) and (rlt_check_306 and (not rlt_check_190))));
+
+  rlt_check_423 = (not ((((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and (not (rlt_check_402 and (not rlt_check_112)))) and ((not rlt_check_190) and rlt_check_306)));
+
+  rlt_check_189 = (not rlt_check_188);
+
+  rlt_check_119 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_306)))));
+
+  rlt_check_120 = (true -> (not (rlt_check_6 and ((pre rlt_check_306) and (not rlt_check_216)))));
+
+  rlt_check_191 = (not rlt_check_190);
+
+  rlt_check_193 = (not rlt_check_192);
+
+  rlt_check_121 = (true -> (not (rlt_check_6 and ((pre rlt_check_306) and rlt_check_216))));
+
+  rlt_check_243 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_60)) else (pre rlt_check_294))));
+
+  rlt_check_93 = ((not (rlt_check_6 and KP_1)) -> (not (if rlt_check_6 then KP_1 else (pre rlt_check_254))));
+
+  rlt_check_454 = (not ((not (rlt_check_296 and (not rlt_check_188))) and ((not rlt_check_252) and (not rlt_check_254))));
+
+  rlt_check_227 = (true -> (not ((not rlt_check_6) and (pre rlt_check_252))));
+
+  rlt_check_286 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_90)))));
+
+  rlt_check_137 = (true -> (not (rlt_check_6 and ((pre rlt_check_402) and rlt_check_216))));
+
+  rlt_check_ = KP_START;
+
+  rlt_check_299 = (true -> (not ((not rlt_check_6) and (pre rlt_check_8))));
+
+  rlt_check_196 = ((rlt_check_6 and KP_3) -> (if rlt_check_6 then KP_3 else (pre rlt_check_192)));
+
+  rlt_check_259 = (not (rlt_check_6 and KP_0));
+
+  rlt_check_126 = (not (rlt_check_6 and (not KP_6)));
+
+  rlt_check_3 = (true -> (not ((not rlt_check_6) and (pre rlt_check_192))));
+
+  rlt_check_432 = (not (((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (rlt_check_96 and (not rlt_check_8))));
+
+  rlt_check_435 = (not (((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and ((not rlt_check_8) and rlt_check_96)));
+
+  rlt_check_343 = ((not (rlt_check_6 and KP_6)) -> (not (if rlt_check_6 then KP_6 else (pre rlt_check_96))));
+
+  rlt_check_287 = (true -> (not ((not rlt_check_6) and (pre rlt_check_90))));
+
+  rlt_check_77 = (not (rlt_check_6 and rlt_check_216));
+
+  rlt_check_223 = (not (rlt_check_6 and rlt_check_216));
+
+  rlt_check_273 = (not (rlt_check_6 and rlt_check_216));
+
+  rlt_check_96 = (KP_6 -> (if rlt_check_6 then KP_6 else (pre rlt_check_96)));
+
+  rlt_check_449 = (not (((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (rlt_check_212 and rlt_check_346)));
+
+  rlt_check_412 = (not (rlt_check_6 and ((not rlt_check_6) and (not rlt_check_216))));
+
+  rlt_check_105 = (true -> (not ((not rlt_check_6) and (pre rlt_check_210))));
+
+  rlt_check_446 = (not ((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and ((not rlt_check_152) and (not rlt_check_192))));
+
+  rlt_check_203 = (not (rlt_check_6 and KP_5));
+
+  rlt_check_296 = (KP_0 -> (if rlt_check_6 then KP_0 else (pre rlt_check_296)));
+
+  rlt_check_421 = (not ((((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and (not (rlt_check_402 and (not rlt_check_112)))) and (rlt_check_306 and rlt_check_190)));
+
+  rlt_check_422 = (not ((((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and (not (rlt_check_402 and (not rlt_check_112)))) and ((not rlt_check_190) and (not rlt_check_306))));
+
+  rlt_check_218 = ((rlt_check_6 and KP_2) -> (if rlt_check_6 then KP_2 else (pre rlt_check_212)));
+
+  rlt_check_235 = (true -> (not ((not rlt_check_6) and (pre rlt_check_188))));
+
+  rlt_check_303 = (true -> (not (rlt_check_6 and ((pre rlt_check_96) and rlt_check_216))));
+
+  rlt_check_268 = ((rlt_check_6 and KP_9) -> (if rlt_check_6 then KP_9 else (pre rlt_check_306)));
+
+  rlt_check_180 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_60))))));
+
+  rlt_check_207 = ((not (rlt_check_6 and KP_7)) -> (not (if rlt_check_6 then KP_7 else (pre rlt_check_60))));
+
+  rlt_check_167 = (not (rlt_check_6 and KP_CLEAR));
+
+  rlt_check_211 = (not rlt_check_210);
+
+  rlt_check_213 = (not rlt_check_212);
+
+  rlt_check_217 = (not rlt_check_216);
+
+  rlt_check_245 = ((not (rlt_check_6 and KP_5)) -> (not (if rlt_check_6 then KP_5 else (pre rlt_check_114))));
+
+  rlt_check_174 = (not (rlt_check_6 and (not KP_9)));
+
+  rlt_check_72 = (not (rlt_check_6 and (not KP_2)));
+
+  rlt_check_253 = (not rlt_check_252);
+
+  rlt_check_255 = (not rlt_check_254);
+
+  rlt_check_219 = ((not (rlt_check_6 and KP_2)) -> (not (if rlt_check_6 then KP_2 else (pre rlt_check_212))));
+
+  rlt_check_106 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_114))))));
+
+  rlt_check_17 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_306)) else (pre rlt_check_190))));
+
+  rlt_check_295 = (not rlt_check_294);
+
+  rlt_check_297 = (not rlt_check_296);
+
+  rlt_check_424 = (not (((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and (rlt_check_402 and (not rlt_check_112))));
+
+  rlt_check_427 = (not (((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and ((not rlt_check_112) and rlt_check_402)));
+
+  rlt_check_239 = (true -> (not (rlt_check_6 and ((pre rlt_check_296) and rlt_check_216))));
+
+  rlt_check_441 = (not (((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (rlt_check_170 and rlt_check_90)));
+
+  rlt_check_109 = (true -> (not (rlt_check_6 and ((pre rlt_check_114) and rlt_check_216))));
+
+  rlt_check_425 = (not (((((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and (not (rlt_check_96 and (not rlt_check_8)))) and (not (rlt_check_60 and (not rlt_check_294)))) and (rlt_check_402 and rlt_check_112)));
+
+  rlt_check_254 = (KP_1 -> (if rlt_check_6 then KP_1 else (pre rlt_check_254)));
+
+  rlt_check_165 = (true -> (not ((not rlt_check_6) and (pre rlt_check_100))));
+
+  rlt_check_436 = (not ((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (rlt_check_114 and (not rlt_check_210))));
+
+  rlt_check_439 = (not ((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and ((not rlt_check_210) and rlt_check_114)));
+
+  rlt_check_242 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_60)) else (pre rlt_check_294)));
+
+  rlt_check_190 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_306)) else (pre rlt_check_190)));
+
+  rlt_check_159 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_192)))));
+
+  rlt_check_160 = (true -> (not (rlt_check_6 and ((pre rlt_check_192) and (not rlt_check_216)))));
+
+  rlt_check_200 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_114)))));
+
+  rlt_check_56 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic > 5)));
+
+  rlt_check_334 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic > 5)));
+
+  rlt_check_398 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic > 5)));
+
+  rlt_check_5 = (not (rlt_check_6 and KP_3));
+
+  rlt_check_64 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_212))))));
+
+  rlt_check_154 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_402)) else (pre rlt_check_112)));
+
+  rlt_check_306 = (KP_9 -> (if rlt_check_6 then KP_9 else (pre rlt_check_306)));
+
+  rlt_check_65 = (true -> (not (rlt_check_6 and ((not rlt_check_216) and (pre rlt_check_212)))));
+
+  rlt_check_66 = (true -> (not (rlt_check_6 and ((pre rlt_check_212) and (not rlt_check_216)))));
+
+  rlt_check_444 = (not ((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (rlt_check_192 and (not rlt_check_152))));
+
+  rlt_check_447 = (not ((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and ((not rlt_check_152) and rlt_check_192)));
+
+  rlt_check_339 = ((not (rlt_check_6 and KP_4)) -> (not (if rlt_check_6 then KP_4 else (pre rlt_check_170))));
+
+  rlt_check_164 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_100)))));
+
+  rlt_check_244 = ((rlt_check_6 and KP_5) -> (if rlt_check_6 then KP_5 else (pre rlt_check_114)));
+
+  rlt_check_132 = (rlt_check_6 -> (not ((not rlt_check_6) and (not (pre rlt_check_112)))));
+
+  rlt_check_7 = (not rlt_check_6);
+
+  rlt_check_69 = (not rlt_check_6);
+
+  rlt_check_75 = (not rlt_check_6);
+
+  rlt_check_79 = (not rlt_check_6);
+
+  rlt_check_85 = (not rlt_check_6);
+
+  rlt_check_111 = (not rlt_check_6);
+
+  rlt_check_123 = (not rlt_check_6);
+
+  rlt_check_129 = (not rlt_check_6);
+
+  rlt_check_139 = (not rlt_check_6);
+
+  rlt_check_151 = (not rlt_check_6);
+
+  rlt_check_163 = (not rlt_check_6);
+
+  rlt_check_169 = (not rlt_check_6);
+
+  rlt_check_177 = (not rlt_check_6);
+
+  rlt_check_185 = (not rlt_check_6);
+
+  rlt_check_205 = (not rlt_check_6);
+
+  rlt_check_225 = (not rlt_check_6);
+
+  rlt_check_233 = (not rlt_check_6);
+
+  rlt_check_241 = (not rlt_check_6);
+
+  rlt_check_261 = (not rlt_check_6);
+
+  rlt_check_267 = (not rlt_check_6);
+
+  rlt_check_275 = (not rlt_check_6);
+
+  rlt_check_281 = (not rlt_check_6);
+
+  rlt_check_283 = (not rlt_check_6);
+
+  rlt_check_293 = (not rlt_check_6);
+
+  rlt_check_305 = (not rlt_check_6);
+
+  rlt_check_415 = (not rlt_check_6);
+
+  rlt_check_9 = (not rlt_check_8);
+
+  rlt_check_6 = (true -> (1 = (pre MODE)));
+
+  rlt_check_249 = ((not (rlt_check_6 and KP_8)) -> (not (if rlt_check_6 then KP_8 else (pre rlt_check_402))));
+
+  rlt_check_231 = (true -> (not (rlt_check_6 and ((pre rlt_check_254) and rlt_check_216))));
+
+  rlt_check_202 = (not (rlt_check_6 and (not KP_5)));
+
+  rlt_check_147 = (true -> (not ((not rlt_check_6) and (pre rlt_check_60))));
+
+  rlt_check_288 = ((not (rlt_check_6 and (not rlt_check_216))) -> (not (rlt_check_6 and ((not rlt_check_216) and (not (pre rlt_check_170))))));
+
+  rlt_check_170 = (KP_4 -> (if rlt_check_6 then KP_4 else (pre rlt_check_170)));
+
+  rlt_check_81 = (true -> (not ((not rlt_check_6) and (pre rlt_check_170))));
+
+  rlt_check_346 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_212)) else (pre rlt_check_346)));
+
+  rlt_check_265 = (not (rlt_check_6 and KP_8));
+
+  rlt_check_192 = (KP_3 -> (if rlt_check_6 then KP_3 else (pre rlt_check_192)));
+
+  rlt_check_434 = (not (((((((not (rlt_check_296 and (not rlt_check_188))) and (not (rlt_check_254 and (not rlt_check_252)))) and (not (rlt_check_212 and (not rlt_check_346)))) and (not (rlt_check_192 and (not rlt_check_152)))) and (not (rlt_check_170 and (not rlt_check_90)))) and (not (rlt_check_114 and (not rlt_check_210)))) and ((not rlt_check_8) and (not rlt_check_96))));
+
+  rlt_check_186 = (false -> (pre KP_CLEAR));
+
+  rlt_check_307 = (not rlt_check_306);
+
+  rlt_check_13 = ((not (rlt_check_6 and KP_CLEAR)) -> (not (if rlt_check_6 then KP_CLEAR else (pre rlt_check_100))));
+
+  rlt_check_252 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_254)) else (pre rlt_check_252)));
+
+  rlt_check_133 = (true -> (not ((not rlt_check_6) and (pre rlt_check_112))));
+
+  rlt_check_269 = ((not (rlt_check_6 and KP_9)) -> (not (if rlt_check_6 then KP_9 else (pre rlt_check_306))));
+
+  rlt_check_404 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_96)) else (pre rlt_check_8)));
+
+  rlt_check_57 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)));
+
+  rlt_check_59 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1)));
+
+  rlt_check_335 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)));
+
+  rlt_check_337 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1)));
+
+  rlt_check_399 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5)));
+
+  rlt_check_401 = (not ((microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic <= 5) and (microwave_inner_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_inner_mode_logic >= 1)));
+
+  rlt_check_67 = (true -> (not (rlt_check_6 and ((pre rlt_check_212) and rlt_check_216))));
+
+  rlt_check_347 = (not rlt_check_346);
+
+  rlt_check_103 = (true -> (not (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_212)) else (pre rlt_check_346))));
+
+  rlt_check_284 = (false -> (pre KP_START));
+
+  rlt_check_188 = (false -> (if rlt_check_6 then ((not rlt_check_216) and (pre rlt_check_296)) else (pre rlt_check_188)));
+
+  --%PROPERTY rlt_check_467;
+  --%PROPERTY rlt_check_466;
+  --%PROPERTY rlt_check_465;
+  --%PROPERTY rlt_check_464;
+  --%PROPERTY rlt_check_463;
+  --%PROPERTY rlt_check_462;
+  --%PROPERTY rlt_check_461;
+  --%PROPERTY rlt_check_460;
+  --%PROPERTY rlt_check_459;
+  --%PROPERTY rlt_check_458;
+  --%PROPERTY rlt_check_457;
+  --%PROPERTY rlt_check_456;
+  --%PROPERTY rlt_check_455;
+  --%PROPERTY rlt_check_454;
+  --%PROPERTY rlt_check_453;
+  --%PROPERTY rlt_check_452;
+  --%PROPERTY rlt_check_451;
+  --%PROPERTY rlt_check_450;
+  --%PROPERTY rlt_check_449;
+  --%PROPERTY rlt_check_448;
+  --%PROPERTY rlt_check_447;
+  --%PROPERTY rlt_check_446;
+  --%PROPERTY rlt_check_445;
+  --%PROPERTY rlt_check_444;
+  --%PROPERTY rlt_check_443;
+  --%PROPERTY rlt_check_442;
+  --%PROPERTY rlt_check_441;
+  --%PROPERTY rlt_check_440;
+  --%PROPERTY rlt_check_439;
+  --%PROPERTY rlt_check_438;
+  --%PROPERTY rlt_check_437;
+  --%PROPERTY rlt_check_436;
+  --%PROPERTY rlt_check_435;
+  --%PROPERTY rlt_check_434;
+  --%PROPERTY rlt_check_433;
+  --%PROPERTY rlt_check_432;
+  --%PROPERTY rlt_check_431;
+  --%PROPERTY rlt_check_430;
+  --%PROPERTY rlt_check_429;
+  --%PROPERTY rlt_check_428;
+  --%PROPERTY rlt_check_427;
+  --%PROPERTY rlt_check_426;
+  --%PROPERTY rlt_check_425;
+  --%PROPERTY rlt_check_424;
+  --%PROPERTY rlt_check_423;
+  --%PROPERTY rlt_check_422;
+  --%PROPERTY rlt_check_421;
+  --%PROPERTY rlt_check_420;
+  --%PROPERTY rlt_check_419;
+  --%PROPERTY rlt_check_418;
+  --%PROPERTY rlt_check_417;
+  --%PROPERTY rlt_check_416;
+  --%PROPERTY rlt_check_415;
+  --%PROPERTY rlt_check_414;
+  --%PROPERTY rlt_check_413;
+  --%PROPERTY rlt_check_412;
+  --%PROPERTY rlt_check_411;
+  --%PROPERTY rlt_check_410;
+  --%PROPERTY rlt_check_409;
+  --%PROPERTY rlt_check_408;
+  --%PROPERTY rlt_check_407;
+  --%PROPERTY rlt_check_406;
+  --%PROPERTY rlt_check_405;
+  --%PROPERTY rlt_check_404;
+  --%PROPERTY rlt_check_403;
+  --%PROPERTY rlt_check_402;
+  --%PROPERTY rlt_check_401;
+  --%PROPERTY rlt_check_400;
+  --%PROPERTY rlt_check_399;
+  --%PROPERTY rlt_check_398;
+  --%PROPERTY rlt_check_397;
+  --%PROPERTY rlt_check_396;
+  --%PROPERTY rlt_check_395;
+  --%PROPERTY rlt_check_394;
+  --%PROPERTY rlt_check_393;
+  --%PROPERTY rlt_check_392;
+  --%PROPERTY rlt_check_391;
+  --%PROPERTY rlt_check_390;
+  --%PROPERTY rlt_check_389;
+  --%PROPERTY rlt_check_388;
+  --%PROPERTY rlt_check_387;
+  --%PROPERTY rlt_check_386;
+  --%PROPERTY rlt_check_385;
+  --%PROPERTY rlt_check_384;
+  --%PROPERTY rlt_check_383;
+  --%PROPERTY rlt_check_382;
+  --%PROPERTY rlt_check_381;
+  --%PROPERTY rlt_check_380;
+  --%PROPERTY rlt_check_379;
+  --%PROPERTY rlt_check_378;
+  --%PROPERTY rlt_check_377;
+  --%PROPERTY rlt_check_376;
+  --%PROPERTY rlt_check_375;
+  --%PROPERTY rlt_check_374;
+  --%PROPERTY rlt_check_373;
+  --%PROPERTY rlt_check_372;
+  --%PROPERTY rlt_check_371;
+  --%PROPERTY rlt_check_370;
+  --%PROPERTY rlt_check_369;
+  --%PROPERTY rlt_check_368;
+  --%PROPERTY rlt_check_367;
+  --%PROPERTY rlt_check_366;
+  --%PROPERTY rlt_check_365;
+  --%PROPERTY rlt_check_364;
+  --%PROPERTY rlt_check_363;
+  --%PROPERTY rlt_check_362;
+  --%PROPERTY rlt_check_361;
+  --%PROPERTY rlt_check_360;
+  --%PROPERTY rlt_check_359;
+  --%PROPERTY rlt_check_358;
+  --%PROPERTY rlt_check_357;
+  --%PROPERTY rlt_check_356;
+  --%PROPERTY rlt_check_355;
+  --%PROPERTY rlt_check_354;
+  --%PROPERTY rlt_check_353;
+  --%PROPERTY rlt_check_352;
+  --%PROPERTY rlt_check_351;
+  --%PROPERTY rlt_check_350;
+  --%PROPERTY rlt_check_349;
+  --%PROPERTY rlt_check_348;
+  --%PROPERTY rlt_check_347;
+  --%PROPERTY rlt_check_346;
+  --%PROPERTY rlt_check_345;
+  --%PROPERTY rlt_check_344;
+  --%PROPERTY rlt_check_343;
+  --%PROPERTY rlt_check_342;
+  --%PROPERTY rlt_check_341;
+  --%PROPERTY rlt_check_340;
+  --%PROPERTY rlt_check_339;
+  --%PROPERTY rlt_check_338;
+  --%PROPERTY rlt_check_337;
+  --%PROPERTY rlt_check_336;
+  --%PROPERTY rlt_check_335;
+  --%PROPERTY rlt_check_334;
+  --%PROPERTY rlt_check_333;
+  --%PROPERTY rlt_check_332;
+  --%PROPERTY rlt_check_331;
+  --%PROPERTY rlt_check_330;
+  --%PROPERTY rlt_check_329;
+  --%PROPERTY rlt_check_328;
+  --%PROPERTY rlt_check_327;
+  --%PROPERTY rlt_check_326;
+  --%PROPERTY rlt_check_325;
+  --%PROPERTY rlt_check_324;
+  --%PROPERTY rlt_check_323;
+  --%PROPERTY rlt_check_322;
+  --%PROPERTY rlt_check_321;
+  --%PROPERTY rlt_check_320;
+  --%PROPERTY rlt_check_319;
+  --%PROPERTY rlt_check_318;
+  --%PROPERTY rlt_check_317;
+  --%PROPERTY rlt_check_316;
+  --%PROPERTY rlt_check_315;
+  --%PROPERTY rlt_check_314;
+  --%PROPERTY rlt_check_313;
+  --%PROPERTY rlt_check_312;
+  --%PROPERTY rlt_check_311;
+  --%PROPERTY rlt_check_310;
+  --%PROPERTY rlt_check_309;
+  --%PROPERTY rlt_check_308;
+  --%PROPERTY rlt_check_307;
+  --%PROPERTY rlt_check_306;
+  --%PROPERTY rlt_check_305;
+  --%PROPERTY rlt_check_304;
+  --%PROPERTY rlt_check_303;
+  --%PROPERTY rlt_check_302;
+  --%PROPERTY rlt_check_301;
+  --%PROPERTY rlt_check_300;
+  --%PROPERTY rlt_check_299;
+  --%PROPERTY rlt_check_298;
+  --%PROPERTY rlt_check_297;
+  --%PROPERTY rlt_check_296;
+  --%PROPERTY rlt_check_295;
+  --%PROPERTY rlt_check_294;
+  --%PROPERTY rlt_check_293;
+  --%PROPERTY rlt_check_292;
+  --%PROPERTY rlt_check_291;
+  --%PROPERTY rlt_check_290;
+  --%PROPERTY rlt_check_289;
+  --%PROPERTY rlt_check_288;
+  --%PROPERTY rlt_check_287;
+  --%PROPERTY rlt_check_286;
+  --%PROPERTY rlt_check_285;
+  --%PROPERTY rlt_check_284;
+  --%PROPERTY rlt_check_283;
+  --%PROPERTY rlt_check_282;
+  --%PROPERTY rlt_check_281;
+  --%PROPERTY rlt_check_280;
+  --%PROPERTY rlt_check_279;
+  --%PROPERTY rlt_check_278;
+  --%PROPERTY rlt_check_277;
+  --%PROPERTY rlt_check_276;
+  --%PROPERTY rlt_check_275;
+  --%PROPERTY rlt_check_274;
+  --%PROPERTY rlt_check_273;
+  --%PROPERTY rlt_check_272;
+  --%PROPERTY rlt_check_271;
+  --%PROPERTY rlt_check_270;
+  --%PROPERTY rlt_check_269;
+  --%PROPERTY rlt_check_268;
+  --%PROPERTY rlt_check_267;
+  --%PROPERTY rlt_check_266;
+  --%PROPERTY rlt_check_265;
+  --%PROPERTY rlt_check_264;
+  --%PROPERTY rlt_check_263;
+  --%PROPERTY rlt_check_262;
+  --%PROPERTY rlt_check_261;
+  --%PROPERTY rlt_check_260;
+  --%PROPERTY rlt_check_259;
+  --%PROPERTY rlt_check_258;
+  --%PROPERTY rlt_check_257;
+  --%PROPERTY rlt_check_256;
+  --%PROPERTY rlt_check_255;
+  --%PROPERTY rlt_check_254;
+  --%PROPERTY rlt_check_253;
+  --%PROPERTY rlt_check_252;
+  --%PROPERTY rlt_check_251;
+  --%PROPERTY rlt_check_250;
+  --%PROPERTY rlt_check_249;
+  --%PROPERTY rlt_check_248;
+  --%PROPERTY rlt_check_247;
+  --%PROPERTY rlt_check_246;
+  --%PROPERTY rlt_check_245;
+  --%PROPERTY rlt_check_244;
+  --%PROPERTY rlt_check_243;
+  --%PROPERTY rlt_check_242;
+  --%PROPERTY rlt_check_241;
+  --%PROPERTY rlt_check_240;
+  --%PROPERTY rlt_check_239;
+  --%PROPERTY rlt_check_238;
+  --%PROPERTY rlt_check_237;
+  --%PROPERTY rlt_check_236;
+  --%PROPERTY rlt_check_235;
+  --%PROPERTY rlt_check_234;
+  --%PROPERTY rlt_check_233;
+  --%PROPERTY rlt_check_232;
+  --%PROPERTY rlt_check_231;
+  --%PROPERTY rlt_check_230;
+  --%PROPERTY rlt_check_229;
+  --%PROPERTY rlt_check_228;
+  --%PROPERTY rlt_check_227;
+  --%PROPERTY rlt_check_226;
+  --%PROPERTY rlt_check_225;
+  --%PROPERTY rlt_check_224;
+  --%PROPERTY rlt_check_223;
+  --%PROPERTY rlt_check_222;
+  --%PROPERTY rlt_check_221;
+  --%PROPERTY rlt_check_220;
+  --%PROPERTY rlt_check_219;
+  --%PROPERTY rlt_check_218;
+  --%PROPERTY rlt_check_217;
+  --%PROPERTY rlt_check_216;
+  --%PROPERTY rlt_check_215;
+  --%PROPERTY rlt_check_214;
+  --%PROPERTY rlt_check_213;
+  --%PROPERTY rlt_check_212;
+  --%PROPERTY rlt_check_211;
+  --%PROPERTY rlt_check_210;
+  --%PROPERTY rlt_check_209;
+  --%PROPERTY rlt_check_208;
+  --%PROPERTY rlt_check_207;
+  --%PROPERTY rlt_check_206;
+  --%PROPERTY rlt_check_205;
+  --%PROPERTY rlt_check_204;
+  --%PROPERTY rlt_check_203;
+  --%PROPERTY rlt_check_202;
+  --%PROPERTY rlt_check_201;
+  --%PROPERTY rlt_check_200;
+  --%PROPERTY rlt_check_199;
+  --%PROPERTY rlt_check_198;
+  --%PROPERTY rlt_check_197;
+  --%PROPERTY rlt_check_196;
+  --%PROPERTY rlt_check_195;
+  --%PROPERTY rlt_check_194;
+  --%PROPERTY rlt_check_193;
+  --%PROPERTY rlt_check_192;
+  --%PROPERTY rlt_check_191;
+  --%PROPERTY rlt_check_190;
+  --%PROPERTY rlt_check_189;
+  --%PROPERTY rlt_check_188;
+  --%PROPERTY rlt_check_187;
+  --%PROPERTY rlt_check_186;
+  --%PROPERTY rlt_check_185;
+  --%PROPERTY rlt_check_184;
+  --%PROPERTY rlt_check_183;
+  --%PROPERTY rlt_check_182;
+  --%PROPERTY rlt_check_181;
+  --%PROPERTY rlt_check_180;
+  --%PROPERTY rlt_check_179;
+  --%PROPERTY rlt_check_178;
+  --%PROPERTY rlt_check_177;
+  --%PROPERTY rlt_check_176;
+  --%PROPERTY rlt_check_175;
+  --%PROPERTY rlt_check_174;
+  --%PROPERTY rlt_check_173;
+  --%PROPERTY rlt_check_172;
+  --%PROPERTY rlt_check_171;
+  --%PROPERTY rlt_check_170;
+  --%PROPERTY rlt_check_169;
+  --%PROPERTY rlt_check_168;
+  --%PROPERTY rlt_check_167;
+  --%PROPERTY rlt_check_166;
+  --%PROPERTY rlt_check_164;
+  --%PROPERTY rlt_check_163;
+  --%PROPERTY rlt_check_162;
+  --%PROPERTY rlt_check_161;
+  --%PROPERTY rlt_check_160;
+  --%PROPERTY rlt_check_159;
+  --%PROPERTY rlt_check_158;
+  --%PROPERTY rlt_check_157;
+  --%PROPERTY rlt_check_156;
+  --%PROPERTY rlt_check_155;
+  --%PROPERTY rlt_check_154;
+  --%PROPERTY rlt_check_153;
+  --%PROPERTY rlt_check_152;
+  --%PROPERTY rlt_check_151;
+  --%PROPERTY rlt_check_150;
+  --%PROPERTY rlt_check_149;
+  --%PROPERTY rlt_check_148;
+  --%PROPERTY rlt_check_147;
+  --%PROPERTY rlt_check_146;
+  --%PROPERTY rlt_check_145;
+  --%PROPERTY rlt_check_144;
+  --%PROPERTY rlt_check_143;
+  --%PROPERTY rlt_check_142;
+  --%PROPERTY rlt_check_141;
+  --%PROPERTY rlt_check_140;
+  --%PROPERTY rlt_check_139;
+  --%PROPERTY rlt_check_138;
+  --%PROPERTY rlt_check_137;
+  --%PROPERTY rlt_check_136;
+  --%PROPERTY rlt_check_135;
+  --%PROPERTY rlt_check_134;
+  --%PROPERTY rlt_check_133;
+  --%PROPERTY rlt_check_132;
+  --%PROPERTY rlt_check_131;
+  --%PROPERTY rlt_check_130;
+  --%PROPERTY rlt_check_129;
+  --%PROPERTY rlt_check_128;
+  --%PROPERTY rlt_check_127;
+  --%PROPERTY rlt_check_126;
+  --%PROPERTY rlt_check_125;
+  --%PROPERTY rlt_check_124;
+  --%PROPERTY rlt_check_123;
+  --%PROPERTY rlt_check_122;
+  --%PROPERTY rlt_check_121;
+  --%PROPERTY rlt_check_120;
+  --%PROPERTY rlt_check_119;
+  --%PROPERTY rlt_check_118;
+  --%PROPERTY rlt_check_117;
+  --%PROPERTY rlt_check_116;
+  --%PROPERTY rlt_check_115;
+  --%PROPERTY rlt_check_114;
+  --%PROPERTY rlt_check_113;
+  --%PROPERTY rlt_check_112;
+  --%PROPERTY rlt_check_111;
+  --%PROPERTY rlt_check_110;
+  --%PROPERTY rlt_check_109;
+  --%PROPERTY rlt_check_108;
+  --%PROPERTY rlt_check_107;
+  --%PROPERTY rlt_check_106;
+  --%PROPERTY rlt_check_105;
+  --%PROPERTY rlt_check_104;
+  --%PROPERTY rlt_check_103;
+  --%PROPERTY rlt_check_102;
+  --%PROPERTY rlt_check_101;
+  --%PROPERTY rlt_check_100;
+  --%PROPERTY rlt_check_99;
+  --%PROPERTY rlt_check_98;
+  --%PROPERTY rlt_check_97;
+  --%PROPERTY rlt_check_96;
+  --%PROPERTY rlt_check_95;
+  --%PROPERTY rlt_check_94;
+  --%PROPERTY rlt_check_93;
+  --%PROPERTY rlt_check_92;
+  --%PROPERTY rlt_check_91;
+  --%PROPERTY rlt_check_90;
+  --%PROPERTY rlt_check_89;
+  --%PROPERTY rlt_check_88;
+  --%PROPERTY rlt_check_87;
+  --%PROPERTY rlt_check_86;
+  --%PROPERTY rlt_check_85;
+  --%PROPERTY rlt_check_84;
+  --%PROPERTY rlt_check_83;
+  --%PROPERTY rlt_check_82;
+  --%PROPERTY rlt_check_81;
+  --%PROPERTY rlt_check_80;
+  --%PROPERTY rlt_check_79;
+  --%PROPERTY rlt_check_78;
+  --%PROPERTY rlt_check_77;
+  --%PROPERTY rlt_check_76;
+  --%PROPERTY rlt_check_75;
+  --%PROPERTY rlt_check_74;
+  --%PROPERTY rlt_check_73;
+  --%PROPERTY rlt_check_72;
+  --%PROPERTY rlt_check_71;
+  --%PROPERTY rlt_check_70;
+  --%PROPERTY rlt_check_69;
+  --%PROPERTY rlt_check_68;
+  --%PROPERTY rlt_check_67;
+  --%PROPERTY rlt_check_66;
+  --%PROPERTY rlt_check_65;
+  --%PROPERTY rlt_check_64;
+  --%PROPERTY rlt_check_63;
+  --%PROPERTY rlt_check_62;
+  --%PROPERTY rlt_check_61;
+  --%PROPERTY rlt_check_60;
+  --%PROPERTY rlt_check_59;
+  --%PROPERTY rlt_check_58;
+  --%PROPERTY rlt_check_57;
+  --%PROPERTY rlt_check_56;
+  --%PROPERTY rlt_check_55;
+  --%PROPERTY rlt_check_54;
+  --%PROPERTY rlt_check_53;
+  --%PROPERTY rlt_check_52;
+  --%PROPERTY rlt_check_51;
+  --%PROPERTY rlt_check_50;
+  --%PROPERTY rlt_check_49;
+  --%PROPERTY rlt_check_48;
+  --%PROPERTY rlt_check_47;
+  --%PROPERTY rlt_check_46;
+  --%PROPERTY rlt_check_45;
+  --%PROPERTY rlt_check_44;
+  --%PROPERTY rlt_check_43;
+  --%PROPERTY rlt_check_42;
+  --%PROPERTY rlt_check_41;
+  --%PROPERTY rlt_check_40;
+  --%PROPERTY rlt_check_39;
+  --%PROPERTY rlt_check_38;
+  --%PROPERTY rlt_check_37;
+  --%PROPERTY rlt_check_36;
+  --%PROPERTY rlt_check_35;
+  --%PROPERTY rlt_check_34;
+  --%PROPERTY rlt_check_33;
+  --%PROPERTY rlt_check_32;
+  --%PROPERTY rlt_check_31;
+  --%PROPERTY rlt_check_30;
+  --%PROPERTY rlt_check_29;
+  --%PROPERTY rlt_check_28;
+  --%PROPERTY rlt_check_27;
+  --%PROPERTY rlt_check_26;
+  --%PROPERTY rlt_check_25;
+  --%PROPERTY rlt_check_24;
+  --%PROPERTY rlt_check_23;
+  --%PROPERTY rlt_check_22;
+  --%PROPERTY rlt_check_21;
+  --%PROPERTY rlt_check_20;
+  --%PROPERTY rlt_check_19;
+  --%PROPERTY rlt_check_18;
+  --%PROPERTY rlt_check_17;
+  --%PROPERTY rlt_check_16;
+  --%PROPERTY rlt_check_15;
+  --%PROPERTY rlt_check_14;
+  --%PROPERTY rlt_check_13;
+  --%PROPERTY rlt_check_12;
+  --%PROPERTY rlt_check_11;
+  --%PROPERTY rlt_check_10;
+  --%PROPERTY rlt_check_9;
+  --%PROPERTY rlt_check_8;
+  --%PROPERTY rlt_check_7;
+  --%PROPERTY rlt_check_6;
+  --%PROPERTY rlt_check_5;
+  --%PROPERTY rlt_check_4;
+  --%PROPERTY rlt_check_3;
+  --%PROPERTY rlt_check_2;
+  --%PROPERTY rlt_check_1;
+  --%PROPERTY rlt_check_;
+
+tel;

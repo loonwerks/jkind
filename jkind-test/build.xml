@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="jkind-test">
+    <property environment="env"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="jkind-common.location" value="../jkind-common"/>
+    <property name="jkind.location" value="../jkind"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <path id="jkind-common.classpath">
+        <pathelement location="${jkind-common.location}/bin"/>
+        <pathelement location="${jkind-common.location}/dependencies/jxl.jar"/>
+    </path>
+    <path id="jkind.classpath">
+        <pathelement location="${jkind.location}/bin"/>
+        <pathelement location="${jkind.location}/dependencies/commons-cli-1.2.jar"/>
+        <pathelement location="${jkind.location}/dependencies/antlr-runtime-4.2.jar"/>
+        <path refid="jkind-common.classpath"/>
+    </path>
+    <path id="jkind-test.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="dependencies/hamcrest-core-1.3.jar"/>
+        <pathelement location="dependencies/junit-4.11.jar"/>
+        <path refid="jkind.classpath"/>
+        <path refid="jkind-common.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.xtend"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${jkind-common.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${jkind.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${jkind-common.location}" inheritAll="false" target="build-project"/>
+        <ant antfile="build.xml" dir="${jkind.location}" inheritAll="false" target="build-project"/>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="jkind-test.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="JKind JUnit" depends="build">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+        	<batchtest todir="${junit.output.dir}">
+        		<fileset dir="src">
+        	    	<include name="**/*Test*.java"/>
+        		</fileset>
+        	</batchtest>
+            <classpath refid="jkind-test.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>

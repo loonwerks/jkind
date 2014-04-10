@@ -1,0 +1,73 @@
+node main(
+  a : int;
+  b : int;
+  x : int;
+  y : int
+) returns (
+
+);
+var
+  min : int;
+  max : int;
+  fib1 : int;
+  fib2 : int;
+  toggle : bool;
+  down : int;
+  up : int;
+  ok1 : bool;
+  ok2 : bool;
+  ok3 : bool;
+  cex1 : bool;
+  cex2 : bool;
+  count_by~0.diff : int;
+  count_by~0.down : int;
+  count_by~0.up : int;
+  count_by~1.diff : int;
+  count_by~1.down : int;
+  count_by~1.up : int;
+let
+  min = (if (a < b) then a else b);
+
+  max = (if (a < b) then b else a);
+
+  ok1 = (((min <= max) and ((a = min) or (a = max))) and ((b = min) or (b = max)));
+
+  fib1 = (0 -> (pre fib2));
+
+  fib2 = (1 -> (pre (fib1 + fib2)));
+
+  cex1 = (fib2 <> 10946);
+
+  ok2 = (fib2 <> 10947);
+
+  toggle = (true -> (not (pre toggle)));
+
+  down = (if toggle then count_by~0.down else count_by~1.down);
+
+  up = (if toggle then count_by~0.up else count_by~1.up);
+
+  cex2 = (up < 100);
+
+  ok3 = (((x = 1) and (y = 2)) or ((x = 3) and (y = 4)));
+
+  count_by~0.diff = 1;
+
+  count_by~0.down = (0 -> ((pre count_by~0.down) - count_by~0.diff));
+
+  count_by~0.up = (0 -> ((pre count_by~0.up) + count_by~0.diff));
+
+  count_by~1.diff = 2;
+
+  count_by~1.down = (0 -> ((pre count_by~1.down) - count_by~1.diff));
+
+  count_by~1.up = (0 -> ((pre count_by~1.up) + count_by~1.diff));
+
+  assert ((x = (if toggle then 1 else 3)) and (y = (if toggle then 2 else 4)));
+
+  --%PROPERTY ok1;
+  --%PROPERTY cex1;
+  --%PROPERTY ok2;
+  --%PROPERTY cex2;
+  --%PROPERTY ok3;
+
+tel;

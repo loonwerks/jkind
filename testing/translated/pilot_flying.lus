@@ -1,0 +1,474 @@
+node main(
+  TS : bool;
+  CLK1 : bool;
+  CLK3 : bool;
+  CLK2 : bool;
+  CLK4 : bool
+) returns (
+  LPFS : bool;
+  RPFS : bool
+);
+var
+  clocks_are_quasi_synchronous : bool;
+  stable_state : bool;
+  all_clocks_ticked_once : bool;
+  at_least_one_pilot_flying_side : bool;
+  agree_on_pilot_flying_side : bool;
+  transfer_switch_changes_sides : bool;
+  left_side_initial_pilot_flying_side : bool;
+  pilot_flying_side_unchanged_unless_transfer_switch_pressed : bool;
+  calendar~0.CLK1 : bool;
+  calendar~0.CLK2 : bool;
+  calendar~0.CLK3 : bool;
+  calendar~0.CLK4 : bool;
+  calendar~0.ok : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.TS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK1 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK3 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK2 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK4 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LPFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RPFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RL_O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RS_PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LR_O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LS_PFS : bool;
+  ticked~0.c : bool;
+  ticked~0.b : bool;
+  ticked~1.c : bool;
+  ticked~1.b : bool;
+  ticked~2.c : bool;
+  ticked~2.b : bool;
+  ticked~3.c : bool;
+  ticked~3.b : bool;
+  PRESSED~0.p : bool;
+  PRESSED~0.b : bool;
+  PRESSED~1.p : bool;
+  PRESSED~1.b : bool;
+  CHANGED~0.p : bool;
+  CHANGED~0.b : bool;
+  CHANGED~1.p : bool;
+  CHANGED~1.b : bool;
+  calendar~0.qs_dfa~0.p : bool;
+  calendar~0.qs_dfa~0.q : bool;
+  calendar~0.qs_dfa~0.ok : bool;
+  calendar~0.qs_dfa~0.r : int;
+  calendar~0.qs_dfa~0.r_is_bounded : bool;
+  calendar~0.qs_dfa~1.p : bool;
+  calendar~0.qs_dfa~1.q : bool;
+  calendar~0.qs_dfa~1.ok : bool;
+  calendar~0.qs_dfa~1.r : int;
+  calendar~0.qs_dfa~1.r_is_bounded : bool;
+  calendar~0.qs_dfa~2.p : bool;
+  calendar~0.qs_dfa~2.q : bool;
+  calendar~0.qs_dfa~2.ok : bool;
+  calendar~0.qs_dfa~2.r : int;
+  calendar~0.qs_dfa~2.r_is_bounded : bool;
+  calendar~0.qs_dfa~3.p : bool;
+  calendar~0.qs_dfa~3.q : bool;
+  calendar~0.qs_dfa~3.ok : bool;
+  calendar~0.qs_dfa~3.r : int;
+  calendar~0.qs_dfa~3.r_is_bounded : bool;
+  calendar~0.qs_dfa~4.p : bool;
+  calendar~0.qs_dfa~4.q : bool;
+  calendar~0.qs_dfa~4.ok : bool;
+  calendar~0.qs_dfa~4.r : int;
+  calendar~0.qs_dfa~4.r_is_bounded : bool;
+  calendar~0.qs_dfa~5.p : bool;
+  calendar~0.qs_dfa~5.q : bool;
+  calendar~0.qs_dfa~5.ok : bool;
+  calendar~0.qs_dfa~5.r : int;
+  calendar~0.qs_dfa~5.r_is_bounded : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.TS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.OSPF : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Clock_Name : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Primary_Side : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.PFSL_PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.riseTS_O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.riseOSPF_O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.TS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.OSPF : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Clock_Name : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Primary_Side : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.PFSL_PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.riseTS_O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.riseOSPF_O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Clock_Name : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Init_Bool : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.prev_I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Clock_Name : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Init_Bool : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.prev_I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseTS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseOSPF : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Start : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Wait : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Stop : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Pilot_Flying : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T4 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T3 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Not_Pilot_Flying : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Inhibit : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state : subrange [1, 6] of int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.clk : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.pre_I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.clk : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.pre_I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseTS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseOSPF : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Start : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Wait : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Stop : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Pilot_Flying : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T4 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T3 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1 : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Not_Pilot_Flying : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Inhibit : int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state : subrange [1, 6] of int;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.clk : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.pre_I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.I : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.clk : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.O : bool;
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.pre_I : bool;
+let
+  clocks_are_quasi_synchronous = calendar~0.ok;
+
+  LPFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LPFS;
+
+  RPFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RPFS;
+
+  all_clocks_ticked_once = (((ticked~0.b and ticked~1.b) and ticked~2.b) and ticked~3.b);
+
+  stable_state = (not PRESSED~0.b);
+
+  at_least_one_pilot_flying_side = ((clocks_are_quasi_synchronous and all_clocks_ticked_once) => (LPFS or RPFS));
+
+  agree_on_pilot_flying_side = ((clocks_are_quasi_synchronous or (not clocks_are_quasi_synchronous)) and ((not PRESSED~1.b) => (LPFS = (not RPFS))));
+
+  transfer_switch_changes_sides = (((clocks_are_quasi_synchronous or (not clocks_are_quasi_synchronous)) and (((not LPFS) and PRESSED~1.b) => LPFS)) and (((not RPFS) and PRESSED~1.b) => RPFS));
+
+  left_side_initial_pilot_flying_side = (((clocks_are_quasi_synchronous or (not clocks_are_quasi_synchronous)) and LPFS) -> true);
+
+  pilot_flying_side_unchanged_unless_transfer_switch_pressed = (((clocks_are_quasi_synchronous or (not clocks_are_quasi_synchronous)) and stable_state) => ((not PRESSED~1.b) => (not (CHANGED~0.b or CHANGED~1.b))));
+
+  calendar~0.CLK1 = CLK1;
+
+  calendar~0.CLK2 = CLK3;
+
+  calendar~0.CLK3 = CLK2;
+
+  calendar~0.CLK4 = CLK4;
+
+  calendar~0.ok = (((((calendar~0.qs_dfa~0.ok and calendar~0.qs_dfa~1.ok) and calendar~0.qs_dfa~2.ok) and calendar~0.qs_dfa~3.ok) and calendar~0.qs_dfa~4.ok) and calendar~0.qs_dfa~5.ok);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.TS = TS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK1 = CLK1;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK3 = CLK3;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK2 = CLK2;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK4 = CLK4;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LS_PFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RS_PFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LR_O = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RL_O = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LPFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LS_PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RPFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RS_PFS;
+
+  ticked~0.c = CLK1;
+
+  ticked~0.b = ((false -> (pre ticked~0.b)) or ticked~0.c);
+
+  ticked~1.c = CLK2;
+
+  ticked~1.b = ((false -> (pre ticked~1.b)) or ticked~1.c);
+
+  ticked~2.c = CLK3;
+
+  ticked~2.b = ((false -> (pre ticked~2.b)) or ticked~2.c);
+
+  ticked~3.c = CLK4;
+
+  ticked~3.b = ((false -> (pre ticked~3.b)) or ticked~3.c);
+
+  PRESSED~0.p = (pre TS);
+
+  PRESSED~0.b = (false -> ((not (pre PRESSED~0.p)) and PRESSED~0.p));
+
+  PRESSED~1.p = TS;
+
+  PRESSED~1.b = (false -> ((not (pre PRESSED~1.p)) and PRESSED~1.p));
+
+  CHANGED~0.p = RPFS;
+
+  CHANGED~0.b = (false -> (not (CHANGED~0.p = (pre CHANGED~0.p))));
+
+  CHANGED~1.p = LPFS;
+
+  CHANGED~1.b = (false -> (not (CHANGED~1.p = (pre CHANGED~1.p))));
+
+  calendar~0.qs_dfa~0.p = calendar~0.CLK1;
+
+  calendar~0.qs_dfa~0.q = calendar~0.CLK2;
+
+  calendar~0.qs_dfa~0.ok = (not ((((0 -> (pre calendar~0.qs_dfa~0.r)) = 2) and calendar~0.qs_dfa~0.p) or (((0 -> (pre calendar~0.qs_dfa~0.r)) = (-2)) and calendar~0.qs_dfa~0.q)));
+
+  calendar~0.qs_dfa~0.r = (if (calendar~0.qs_dfa~0.p and calendar~0.qs_dfa~0.q) then 0 else (if calendar~0.qs_dfa~0.p then (if ((0 -> (pre calendar~0.qs_dfa~0.r)) < 0) then 1 else ((0 -> (pre calendar~0.qs_dfa~0.r)) + 1)) else (if calendar~0.qs_dfa~0.q then (if ((0 -> (pre calendar~0.qs_dfa~0.r)) > 0) then (-1) else ((0 -> (pre calendar~0.qs_dfa~0.r)) - 1)) else (0 -> (pre calendar~0.qs_dfa~0.r)))));
+
+  calendar~0.qs_dfa~0.r_is_bounded = ((calendar~0.qs_dfa~0.r <= 2) and (calendar~0.qs_dfa~0.r >= (-2)));
+
+  calendar~0.qs_dfa~1.p = calendar~0.CLK1;
+
+  calendar~0.qs_dfa~1.q = calendar~0.CLK3;
+
+  calendar~0.qs_dfa~1.ok = (not ((((0 -> (pre calendar~0.qs_dfa~1.r)) = 2) and calendar~0.qs_dfa~1.p) or (((0 -> (pre calendar~0.qs_dfa~1.r)) = (-2)) and calendar~0.qs_dfa~1.q)));
+
+  calendar~0.qs_dfa~1.r = (if (calendar~0.qs_dfa~1.p and calendar~0.qs_dfa~1.q) then 0 else (if calendar~0.qs_dfa~1.p then (if ((0 -> (pre calendar~0.qs_dfa~1.r)) < 0) then 1 else ((0 -> (pre calendar~0.qs_dfa~1.r)) + 1)) else (if calendar~0.qs_dfa~1.q then (if ((0 -> (pre calendar~0.qs_dfa~1.r)) > 0) then (-1) else ((0 -> (pre calendar~0.qs_dfa~1.r)) - 1)) else (0 -> (pre calendar~0.qs_dfa~1.r)))));
+
+  calendar~0.qs_dfa~1.r_is_bounded = ((calendar~0.qs_dfa~1.r <= 2) and (calendar~0.qs_dfa~1.r >= (-2)));
+
+  calendar~0.qs_dfa~2.p = calendar~0.CLK1;
+
+  calendar~0.qs_dfa~2.q = calendar~0.CLK4;
+
+  calendar~0.qs_dfa~2.ok = (not ((((0 -> (pre calendar~0.qs_dfa~2.r)) = 2) and calendar~0.qs_dfa~2.p) or (((0 -> (pre calendar~0.qs_dfa~2.r)) = (-2)) and calendar~0.qs_dfa~2.q)));
+
+  calendar~0.qs_dfa~2.r = (if (calendar~0.qs_dfa~2.p and calendar~0.qs_dfa~2.q) then 0 else (if calendar~0.qs_dfa~2.p then (if ((0 -> (pre calendar~0.qs_dfa~2.r)) < 0) then 1 else ((0 -> (pre calendar~0.qs_dfa~2.r)) + 1)) else (if calendar~0.qs_dfa~2.q then (if ((0 -> (pre calendar~0.qs_dfa~2.r)) > 0) then (-1) else ((0 -> (pre calendar~0.qs_dfa~2.r)) - 1)) else (0 -> (pre calendar~0.qs_dfa~2.r)))));
+
+  calendar~0.qs_dfa~2.r_is_bounded = ((calendar~0.qs_dfa~2.r <= 2) and (calendar~0.qs_dfa~2.r >= (-2)));
+
+  calendar~0.qs_dfa~3.p = calendar~0.CLK2;
+
+  calendar~0.qs_dfa~3.q = calendar~0.CLK3;
+
+  calendar~0.qs_dfa~3.ok = (not ((((0 -> (pre calendar~0.qs_dfa~3.r)) = 2) and calendar~0.qs_dfa~3.p) or (((0 -> (pre calendar~0.qs_dfa~3.r)) = (-2)) and calendar~0.qs_dfa~3.q)));
+
+  calendar~0.qs_dfa~3.r = (if (calendar~0.qs_dfa~3.p and calendar~0.qs_dfa~3.q) then 0 else (if calendar~0.qs_dfa~3.p then (if ((0 -> (pre calendar~0.qs_dfa~3.r)) < 0) then 1 else ((0 -> (pre calendar~0.qs_dfa~3.r)) + 1)) else (if calendar~0.qs_dfa~3.q then (if ((0 -> (pre calendar~0.qs_dfa~3.r)) > 0) then (-1) else ((0 -> (pre calendar~0.qs_dfa~3.r)) - 1)) else (0 -> (pre calendar~0.qs_dfa~3.r)))));
+
+  calendar~0.qs_dfa~3.r_is_bounded = ((calendar~0.qs_dfa~3.r <= 2) and (calendar~0.qs_dfa~3.r >= (-2)));
+
+  calendar~0.qs_dfa~4.p = calendar~0.CLK2;
+
+  calendar~0.qs_dfa~4.q = calendar~0.CLK4;
+
+  calendar~0.qs_dfa~4.ok = (not ((((0 -> (pre calendar~0.qs_dfa~4.r)) = 2) and calendar~0.qs_dfa~4.p) or (((0 -> (pre calendar~0.qs_dfa~4.r)) = (-2)) and calendar~0.qs_dfa~4.q)));
+
+  calendar~0.qs_dfa~4.r = (if (calendar~0.qs_dfa~4.p and calendar~0.qs_dfa~4.q) then 0 else (if calendar~0.qs_dfa~4.p then (if ((0 -> (pre calendar~0.qs_dfa~4.r)) < 0) then 1 else ((0 -> (pre calendar~0.qs_dfa~4.r)) + 1)) else (if calendar~0.qs_dfa~4.q then (if ((0 -> (pre calendar~0.qs_dfa~4.r)) > 0) then (-1) else ((0 -> (pre calendar~0.qs_dfa~4.r)) - 1)) else (0 -> (pre calendar~0.qs_dfa~4.r)))));
+
+  calendar~0.qs_dfa~4.r_is_bounded = ((calendar~0.qs_dfa~4.r <= 2) and (calendar~0.qs_dfa~4.r >= (-2)));
+
+  calendar~0.qs_dfa~5.p = calendar~0.CLK3;
+
+  calendar~0.qs_dfa~5.q = calendar~0.CLK4;
+
+  calendar~0.qs_dfa~5.ok = (not ((((0 -> (pre calendar~0.qs_dfa~5.r)) = 2) and calendar~0.qs_dfa~5.p) or (((0 -> (pre calendar~0.qs_dfa~5.r)) = (-2)) and calendar~0.qs_dfa~5.q)));
+
+  calendar~0.qs_dfa~5.r = (if (calendar~0.qs_dfa~5.p and calendar~0.qs_dfa~5.q) then 0 else (if calendar~0.qs_dfa~5.p then (if ((0 -> (pre calendar~0.qs_dfa~5.r)) < 0) then 1 else ((0 -> (pre calendar~0.qs_dfa~5.r)) + 1)) else (if calendar~0.qs_dfa~5.q then (if ((0 -> (pre calendar~0.qs_dfa~5.r)) > 0) then (-1) else ((0 -> (pre calendar~0.qs_dfa~5.r)) - 1)) else (0 -> (pre calendar~0.qs_dfa~5.r)))));
+
+  calendar~0.qs_dfa~5.r_is_bounded = ((calendar~0.qs_dfa~5.r <= 2) and (calendar~0.qs_dfa~5.r >= (-2)));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.TS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.TS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.OSPF = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RL_O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Clock_Name = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK1;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Primary_Side = true;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.PFSL_PFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.riseTS_O = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.riseOSPF_O = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.PFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.PFSL_PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.TS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.TS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.OSPF = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LR_O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Clock_Name = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK3;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Primary_Side = false;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.PFSL_PFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.riseTS_O = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.riseOSPF_O = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.PFS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.PFSL_PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.I = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.LS_PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Clock_Name = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK2;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Init_Bool = true;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.prev_I = (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Clock_Name then (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Init_Bool -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.I)) else (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Init_Bool -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.prev_I)));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.O = (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Clock_Name then Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.prev_I else (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.QS_Properties_Init_Bool -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~0.O)));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.I = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.RS_PFS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Clock_Name = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.CLK4;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Init_Bool = false;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.prev_I = (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Clock_Name then (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Init_Bool -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.I)) else (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Init_Bool -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.prev_I)));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.O = (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Clock_Name then Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.prev_I else (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.QS_Properties_Init_Bool -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Cross_Channel_Bus~1.O)));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseTS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.riseTS_O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseOSPF = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.riseOSPF_O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Clock_Name;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Primary_Side;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Inhibit = 2;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Not_Pilot_Flying = 3;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Pilot_Flying = 4;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Wait = 5;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Start = 1;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Stop = 6;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T4 = (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 2));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 3)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseTS);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 4)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseOSPF);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T3 = (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 5));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 1)) and (not Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 1)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state = (if (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 or Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2) then 2 else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T4 then 3 else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T3 then 4 else (if (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 or Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1) then 5 else (1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.state))))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS = (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 then true else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 then false else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2 then false else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1 then true else (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS))))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.I = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.TS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.clk = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Clock_Name;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.pre_I = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.clk => Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.I) and ((not Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.clk) => (false -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.pre_I))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.O = (false -> ((not (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.pre_I)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~0.I));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.I = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.OSPF;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.clk = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.QS_Properties_Clock_Name;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.pre_I = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.clk => Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.I) and ((not Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.clk) => (false -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.pre_I))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.O = (false -> ((not (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.pre_I)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~0.Signals_Rise~1.I));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseTS = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.riseTS_O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseOSPF = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.riseOSPF_O;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Clock_Name;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Primary_Side;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Inhibit = 2;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Not_Pilot_Flying = 3;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Pilot_Flying = 4;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Wait = 5;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Start = 1;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.St_Stop = 6;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T4 = (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 2));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 3)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseTS);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 4)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.riseOSPF);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T3 = (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 5));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 1)) and (not Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1 = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Clock_Name and ((1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state)) = 1)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side);
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state = (if (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 or Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2) then 2 else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T4 then 3 else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T3 then 4 else (if (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 or Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1) then 5 else (1 -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.state))))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS = (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T5 then true else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T6 then false else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T2 then false else (if Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.T1 then true else (Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.QS_Properties_Primary_Side -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Pilot_Flying_Pilot_Flying_Side_Logic~0.PFS))))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.I = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.TS;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.clk = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Clock_Name;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.pre_I = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.clk => Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.I) and ((not Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.clk) => (false -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.pre_I))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.O = (false -> ((not (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.pre_I)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~0.I));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.I = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.OSPF;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.clk = Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.QS_Properties_Clock_Name;
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.pre_I = ((Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.clk => Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.I) and ((not Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.clk) => (false -> (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.pre_I))));
+
+  Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.O = (false -> ((not (pre Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.pre_I)) and Pilot_Flying_PilotFlying_Pilot_Flying_Impl~0.Pilot_Flying_Side_Side_Impl~1.Signals_Rise~1.I));
+
+  assert clocks_are_quasi_synchronous;
+
+  assert (((CLK1 or CLK3) or CLK2) or CLK4);
+
+  --%PROPERTY at_least_one_pilot_flying_side;
+  --%PROPERTY left_side_initial_pilot_flying_side;
+  --%PROPERTY calendar~0.qs_dfa~0.r_is_bounded;
+  --%PROPERTY calendar~0.qs_dfa~1.r_is_bounded;
+  --%PROPERTY calendar~0.qs_dfa~2.r_is_bounded;
+  --%PROPERTY calendar~0.qs_dfa~3.r_is_bounded;
+  --%PROPERTY calendar~0.qs_dfa~4.r_is_bounded;
+  --%PROPERTY calendar~0.qs_dfa~5.r_is_bounded;
+
+tel;

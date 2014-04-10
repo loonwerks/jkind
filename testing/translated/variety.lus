@@ -1,0 +1,76 @@
+node main(
+  delta_x : int;
+  delta_y : int
+) returns (
+
+);
+var
+  p1.x : int;
+  p1.y : int;
+  p2.x : int;
+  p2.y : int;
+  delta.x : int;
+  delta.y : int;
+  ok1 : bool;
+  cex1 : bool;
+  abs~0.z : int;
+  abs~0.az : int;
+  abs~1.z : int;
+  abs~1.az : int;
+  add~0.p.x : int;
+  add~0.p.y : int;
+  add~0.q.x : int;
+  add~0.q.y : int;
+  add~0.r.x : int;
+  add~0.r.y : int;
+  add~0.x_coord : int;
+  add~0.y_coord : int;
+let
+  abs~0.z = delta_x;
+
+  abs~0.az = (if (abs~0.z >= 0) then abs~0.z else (-abs~0.z));
+
+  abs~1.z = delta_y;
+
+  abs~1.az = (if (abs~1.z >= 0) then abs~1.z else (-abs~1.z));
+
+  p1.x = ((0 -> (pre p1.x)) + delta_x);
+
+  p1.y = ((0 -> (pre p1.y)) + delta_y);
+
+  delta.x = delta_x;
+
+  delta.y = delta_y;
+
+  p2.x = add~0.r.x;
+
+  p2.y = add~0.r.y;
+
+  ok1 = ((p1.x = p2.x) and (p1.y = p2.y));
+
+  cex1 = (not ((p1.x = 20) and (p1.y = 13)));
+
+  add~0.p.x = (0 -> (pre p2.x));
+
+  add~0.p.y = (0 -> (pre p2.y));
+
+  add~0.q.x = delta.x;
+
+  add~0.q.y = delta.y;
+
+  add~0.x_coord = (add~0.p.x + add~0.q.x);
+
+  add~0.y_coord = (add~0.p.y + add~0.q.y);
+
+  add~0.r.x = add~0.x_coord;
+
+  add~0.r.y = add~0.y_coord;
+
+  assert (abs~0.az <= 2);
+
+  assert (abs~1.az <= 2);
+
+  --%PROPERTY ok1;
+  --%PROPERTY cex1;
+
+tel;

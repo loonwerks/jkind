@@ -1,0 +1,593 @@
+node main(
+  in : subrange [0, 3] of int
+) returns (
+  p1 : subrange [-1, 8] of int;
+  p2 : subrange [-1, 8] of int;
+  p3 : subrange [-1, 8] of int;
+  p4 : subrange [-1, 8] of int;
+  p5 : subrange [-1, 8] of int;
+  p6 : subrange [-1, 8] of int;
+  p7 : subrange [-1, 8] of int;
+  p8 : subrange [-1, 8] of int;
+  p9 : subrange [-1, 8] of int
+);
+var
+  solved : bool;
+  prop : bool;
+  inverted : bool;
+  distinct : bool;
+  square~0.in : subrange [0, 3] of int;
+  square~0.init : subrange [-1, 8] of int;
+  square~0.right : subrange [-1, 8] of int;
+  square~0.down : subrange [-1, 8] of int;
+  square~0.left : subrange [-1, 8] of int;
+  square~0.up : subrange [-1, 8] of int;
+  square~0.s : subrange [-1, 8] of int;
+  square~1.in : subrange [0, 3] of int;
+  square~1.init : subrange [-1, 8] of int;
+  square~1.right : subrange [-1, 8] of int;
+  square~1.down : subrange [-1, 8] of int;
+  square~1.left : subrange [-1, 8] of int;
+  square~1.up : subrange [-1, 8] of int;
+  square~1.s : subrange [-1, 8] of int;
+  square~2.in : subrange [0, 3] of int;
+  square~2.init : subrange [-1, 8] of int;
+  square~2.right : subrange [-1, 8] of int;
+  square~2.down : subrange [-1, 8] of int;
+  square~2.left : subrange [-1, 8] of int;
+  square~2.up : subrange [-1, 8] of int;
+  square~2.s : subrange [-1, 8] of int;
+  square~3.in : subrange [0, 3] of int;
+  square~3.init : subrange [-1, 8] of int;
+  square~3.right : subrange [-1, 8] of int;
+  square~3.down : subrange [-1, 8] of int;
+  square~3.left : subrange [-1, 8] of int;
+  square~3.up : subrange [-1, 8] of int;
+  square~3.s : subrange [-1, 8] of int;
+  square~4.in : subrange [0, 3] of int;
+  square~4.init : subrange [-1, 8] of int;
+  square~4.right : subrange [-1, 8] of int;
+  square~4.down : subrange [-1, 8] of int;
+  square~4.left : subrange [-1, 8] of int;
+  square~4.up : subrange [-1, 8] of int;
+  square~4.s : subrange [-1, 8] of int;
+  square~5.in : subrange [0, 3] of int;
+  square~5.init : subrange [-1, 8] of int;
+  square~5.right : subrange [-1, 8] of int;
+  square~5.down : subrange [-1, 8] of int;
+  square~5.left : subrange [-1, 8] of int;
+  square~5.up : subrange [-1, 8] of int;
+  square~5.s : subrange [-1, 8] of int;
+  square~6.in : subrange [0, 3] of int;
+  square~6.init : subrange [-1, 8] of int;
+  square~6.right : subrange [-1, 8] of int;
+  square~6.down : subrange [-1, 8] of int;
+  square~6.left : subrange [-1, 8] of int;
+  square~6.up : subrange [-1, 8] of int;
+  square~6.s : subrange [-1, 8] of int;
+  square~7.in : subrange [0, 3] of int;
+  square~7.init : subrange [-1, 8] of int;
+  square~7.right : subrange [-1, 8] of int;
+  square~7.down : subrange [-1, 8] of int;
+  square~7.left : subrange [-1, 8] of int;
+  square~7.up : subrange [-1, 8] of int;
+  square~7.s : subrange [-1, 8] of int;
+  square~8.in : subrange [0, 3] of int;
+  square~8.init : subrange [-1, 8] of int;
+  square~8.right : subrange [-1, 8] of int;
+  square~8.down : subrange [-1, 8] of int;
+  square~8.left : subrange [-1, 8] of int;
+  square~8.up : subrange [-1, 8] of int;
+  square~8.s : subrange [-1, 8] of int;
+  inverted~0.p1 : subrange [-1, 8] of int;
+  inverted~0.p2 : subrange [-1, 8] of int;
+  inverted~0.p3 : subrange [-1, 8] of int;
+  inverted~0.p4 : subrange [-1, 8] of int;
+  inverted~0.p5 : subrange [-1, 8] of int;
+  inverted~0.p6 : subrange [-1, 8] of int;
+  inverted~0.p7 : subrange [-1, 8] of int;
+  inverted~0.p8 : subrange [-1, 8] of int;
+  inverted~0.p9 : subrange [-1, 8] of int;
+  inverted~0.inv : bool;
+  inverted~0.inv~0.p : subrange [-1, 8] of int;
+  inverted~0.inv~0.q : subrange [-1, 8] of int;
+  inverted~0.inv~0.inv : bool;
+  inverted~0.inv~1.p : subrange [-1, 8] of int;
+  inverted~0.inv~1.q : subrange [-1, 8] of int;
+  inverted~0.inv~1.inv : bool;
+  inverted~0.inv~2.p : subrange [-1, 8] of int;
+  inverted~0.inv~2.q : subrange [-1, 8] of int;
+  inverted~0.inv~2.inv : bool;
+  inverted~0.inv~3.p : subrange [-1, 8] of int;
+  inverted~0.inv~3.q : subrange [-1, 8] of int;
+  inverted~0.inv~3.inv : bool;
+  inverted~0.inv~4.p : subrange [-1, 8] of int;
+  inverted~0.inv~4.q : subrange [-1, 8] of int;
+  inverted~0.inv~4.inv : bool;
+  inverted~0.inv~5.p : subrange [-1, 8] of int;
+  inverted~0.inv~5.q : subrange [-1, 8] of int;
+  inverted~0.inv~5.inv : bool;
+  inverted~0.inv~6.p : subrange [-1, 8] of int;
+  inverted~0.inv~6.q : subrange [-1, 8] of int;
+  inverted~0.inv~6.inv : bool;
+  inverted~0.inv~7.p : subrange [-1, 8] of int;
+  inverted~0.inv~7.q : subrange [-1, 8] of int;
+  inverted~0.inv~7.inv : bool;
+  inverted~0.inv~8.p : subrange [-1, 8] of int;
+  inverted~0.inv~8.q : subrange [-1, 8] of int;
+  inverted~0.inv~8.inv : bool;
+  inverted~0.inv~9.p : subrange [-1, 8] of int;
+  inverted~0.inv~9.q : subrange [-1, 8] of int;
+  inverted~0.inv~9.inv : bool;
+  inverted~0.inv~10.p : subrange [-1, 8] of int;
+  inverted~0.inv~10.q : subrange [-1, 8] of int;
+  inverted~0.inv~10.inv : bool;
+  inverted~0.inv~11.p : subrange [-1, 8] of int;
+  inverted~0.inv~11.q : subrange [-1, 8] of int;
+  inverted~0.inv~11.inv : bool;
+  inverted~0.inv~12.p : subrange [-1, 8] of int;
+  inverted~0.inv~12.q : subrange [-1, 8] of int;
+  inverted~0.inv~12.inv : bool;
+  inverted~0.inv~13.p : subrange [-1, 8] of int;
+  inverted~0.inv~13.q : subrange [-1, 8] of int;
+  inverted~0.inv~13.inv : bool;
+  inverted~0.inv~14.p : subrange [-1, 8] of int;
+  inverted~0.inv~14.q : subrange [-1, 8] of int;
+  inverted~0.inv~14.inv : bool;
+  inverted~0.inv~15.p : subrange [-1, 8] of int;
+  inverted~0.inv~15.q : subrange [-1, 8] of int;
+  inverted~0.inv~15.inv : bool;
+  inverted~0.inv~16.p : subrange [-1, 8] of int;
+  inverted~0.inv~16.q : subrange [-1, 8] of int;
+  inverted~0.inv~16.inv : bool;
+  inverted~0.inv~17.p : subrange [-1, 8] of int;
+  inverted~0.inv~17.q : subrange [-1, 8] of int;
+  inverted~0.inv~17.inv : bool;
+  inverted~0.inv~18.p : subrange [-1, 8] of int;
+  inverted~0.inv~18.q : subrange [-1, 8] of int;
+  inverted~0.inv~18.inv : bool;
+  inverted~0.inv~19.p : subrange [-1, 8] of int;
+  inverted~0.inv~19.q : subrange [-1, 8] of int;
+  inverted~0.inv~19.inv : bool;
+  inverted~0.inv~20.p : subrange [-1, 8] of int;
+  inverted~0.inv~20.q : subrange [-1, 8] of int;
+  inverted~0.inv~20.inv : bool;
+  inverted~0.inv~21.p : subrange [-1, 8] of int;
+  inverted~0.inv~21.q : subrange [-1, 8] of int;
+  inverted~0.inv~21.inv : bool;
+  inverted~0.inv~22.p : subrange [-1, 8] of int;
+  inverted~0.inv~22.q : subrange [-1, 8] of int;
+  inverted~0.inv~22.inv : bool;
+  inverted~0.inv~23.p : subrange [-1, 8] of int;
+  inverted~0.inv~23.q : subrange [-1, 8] of int;
+  inverted~0.inv~23.inv : bool;
+  inverted~0.inv~24.p : subrange [-1, 8] of int;
+  inverted~0.inv~24.q : subrange [-1, 8] of int;
+  inverted~0.inv~24.inv : bool;
+  inverted~0.inv~25.p : subrange [-1, 8] of int;
+  inverted~0.inv~25.q : subrange [-1, 8] of int;
+  inverted~0.inv~25.inv : bool;
+  inverted~0.inv~26.p : subrange [-1, 8] of int;
+  inverted~0.inv~26.q : subrange [-1, 8] of int;
+  inverted~0.inv~26.inv : bool;
+  inverted~0.inv~27.p : subrange [-1, 8] of int;
+  inverted~0.inv~27.q : subrange [-1, 8] of int;
+  inverted~0.inv~27.inv : bool;
+  inverted~0.inv~28.p : subrange [-1, 8] of int;
+  inverted~0.inv~28.q : subrange [-1, 8] of int;
+  inverted~0.inv~28.inv : bool;
+  inverted~0.inv~29.p : subrange [-1, 8] of int;
+  inverted~0.inv~29.q : subrange [-1, 8] of int;
+  inverted~0.inv~29.inv : bool;
+  inverted~0.inv~30.p : subrange [-1, 8] of int;
+  inverted~0.inv~30.q : subrange [-1, 8] of int;
+  inverted~0.inv~30.inv : bool;
+  inverted~0.inv~31.p : subrange [-1, 8] of int;
+  inverted~0.inv~31.q : subrange [-1, 8] of int;
+  inverted~0.inv~31.inv : bool;
+  inverted~0.inv~32.p : subrange [-1, 8] of int;
+  inverted~0.inv~32.q : subrange [-1, 8] of int;
+  inverted~0.inv~32.inv : bool;
+  inverted~0.inv~33.p : subrange [-1, 8] of int;
+  inverted~0.inv~33.q : subrange [-1, 8] of int;
+  inverted~0.inv~33.inv : bool;
+  inverted~0.inv~34.p : subrange [-1, 8] of int;
+  inverted~0.inv~34.q : subrange [-1, 8] of int;
+  inverted~0.inv~34.inv : bool;
+  inverted~0.inv~35.p : subrange [-1, 8] of int;
+  inverted~0.inv~35.q : subrange [-1, 8] of int;
+  inverted~0.inv~35.inv : bool;
+let
+  p1 = square~0.s;
+
+  p2 = square~1.s;
+
+  p3 = square~2.s;
+
+  p4 = square~3.s;
+
+  p5 = square~4.s;
+
+  p6 = square~5.s;
+
+  p7 = square~6.s;
+
+  p8 = square~7.s;
+
+  p9 = square~8.s;
+
+  solved = (((((((((p1 = 1) and (p2 = 2)) and (p3 = 3)) and (p4 = 4)) and (p5 = 5)) and (p6 = 6)) and (p7 = 7)) and (p8 = 8)) and (p9 = 0));
+
+  prop = (not solved);
+
+  inverted = inverted~0.inv;
+
+  distinct = ((((((((((((((((((((((((((((((((((((p1 <> p2) and (p1 <> p3)) and (p1 <> p4)) and (p1 <> p5)) and (p1 <> p6)) and (p1 <> p7)) and (p1 <> p8)) and (p1 <> p9)) and (p2 <> p3)) and (p2 <> p4)) and (p2 <> p5)) and (p2 <> p6)) and (p2 <> p7)) and (p2 <> p8)) and (p2 <> p9)) and (p3 <> p4)) and (p3 <> p5)) and (p3 <> p6)) and (p3 <> p7)) and (p3 <> p8)) and (p3 <> p9)) and (p4 <> p5)) and (p4 <> p6)) and (p4 <> p7)) and (p4 <> p8)) and (p4 <> p9)) and (p5 <> p6)) and (p5 <> p7)) and (p5 <> p8)) and (p5 <> p9)) and (p6 <> p7)) and (p6 <> p8)) and (p6 <> p9)) and (p7 <> p8)) and (p7 <> p9)) and (p8 <> p9));
+
+  square~0.in = in;
+
+  square~0.init = 2;
+
+  square~0.right = p2;
+
+  square~0.down = p4;
+
+  square~0.left = (-1);
+
+  square~0.up = (-1);
+
+  square~0.s = (square~0.init -> (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 0)) and (square~0.right <> (-1))) then (pre square~0.right) else (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 1)) and (square~0.down <> (-1))) then (pre square~0.down) else (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 2)) and (square~0.left <> (-1))) then (pre square~0.left) else (if ((((pre square~0.s) = 0) and ((pre square~0.in) = 3)) and (square~0.up <> (-1))) then (pre square~0.up) else (if (((pre square~0.left) = 0) and ((pre square~0.in) = 0)) then 0 else (if (((pre square~0.up) = 0) and ((pre square~0.in) = 1)) then 0 else (if (((pre square~0.right) = 0) and ((pre square~0.in) = 2)) then 0 else (if (((pre square~0.down) = 0) and ((pre square~0.in) = 3)) then 0 else (pre square~0.s))))))))));
+
+  square~1.in = in;
+
+  square~1.init = 5;
+
+  square~1.right = p3;
+
+  square~1.down = p5;
+
+  square~1.left = p1;
+
+  square~1.up = (-1);
+
+  square~1.s = (square~1.init -> (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 0)) and (square~1.right <> (-1))) then (pre square~1.right) else (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 1)) and (square~1.down <> (-1))) then (pre square~1.down) else (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 2)) and (square~1.left <> (-1))) then (pre square~1.left) else (if ((((pre square~1.s) = 0) and ((pre square~1.in) = 3)) and (square~1.up <> (-1))) then (pre square~1.up) else (if (((pre square~1.left) = 0) and ((pre square~1.in) = 0)) then 0 else (if (((pre square~1.up) = 0) and ((pre square~1.in) = 1)) then 0 else (if (((pre square~1.right) = 0) and ((pre square~1.in) = 2)) then 0 else (if (((pre square~1.down) = 0) and ((pre square~1.in) = 3)) then 0 else (pre square~1.s))))))))));
+
+  square~2.in = in;
+
+  square~2.init = 3;
+
+  square~2.right = (-1);
+
+  square~2.down = p6;
+
+  square~2.left = p2;
+
+  square~2.up = (-1);
+
+  square~2.s = (square~2.init -> (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 0)) and (square~2.right <> (-1))) then (pre square~2.right) else (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 1)) and (square~2.down <> (-1))) then (pre square~2.down) else (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 2)) and (square~2.left <> (-1))) then (pre square~2.left) else (if ((((pre square~2.s) = 0) and ((pre square~2.in) = 3)) and (square~2.up <> (-1))) then (pre square~2.up) else (if (((pre square~2.left) = 0) and ((pre square~2.in) = 0)) then 0 else (if (((pre square~2.up) = 0) and ((pre square~2.in) = 1)) then 0 else (if (((pre square~2.right) = 0) and ((pre square~2.in) = 2)) then 0 else (if (((pre square~2.down) = 0) and ((pre square~2.in) = 3)) then 0 else (pre square~2.s))))))))));
+
+  square~3.in = in;
+
+  square~3.init = 4;
+
+  square~3.right = p5;
+
+  square~3.down = p7;
+
+  square~3.left = (-1);
+
+  square~3.up = p1;
+
+  square~3.s = (square~3.init -> (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 0)) and (square~3.right <> (-1))) then (pre square~3.right) else (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 1)) and (square~3.down <> (-1))) then (pre square~3.down) else (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 2)) and (square~3.left <> (-1))) then (pre square~3.left) else (if ((((pre square~3.s) = 0) and ((pre square~3.in) = 3)) and (square~3.up <> (-1))) then (pre square~3.up) else (if (((pre square~3.left) = 0) and ((pre square~3.in) = 0)) then 0 else (if (((pre square~3.up) = 0) and ((pre square~3.in) = 1)) then 0 else (if (((pre square~3.right) = 0) and ((pre square~3.in) = 2)) then 0 else (if (((pre square~3.down) = 0) and ((pre square~3.in) = 3)) then 0 else (pre square~3.s))))))))));
+
+  square~4.in = in;
+
+  square~4.init = 0;
+
+  square~4.right = p6;
+
+  square~4.down = p8;
+
+  square~4.left = p4;
+
+  square~4.up = p2;
+
+  square~4.s = (square~4.init -> (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 0)) and (square~4.right <> (-1))) then (pre square~4.right) else (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 1)) and (square~4.down <> (-1))) then (pre square~4.down) else (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 2)) and (square~4.left <> (-1))) then (pre square~4.left) else (if ((((pre square~4.s) = 0) and ((pre square~4.in) = 3)) and (square~4.up <> (-1))) then (pre square~4.up) else (if (((pre square~4.left) = 0) and ((pre square~4.in) = 0)) then 0 else (if (((pre square~4.up) = 0) and ((pre square~4.in) = 1)) then 0 else (if (((pre square~4.right) = 0) and ((pre square~4.in) = 2)) then 0 else (if (((pre square~4.down) = 0) and ((pre square~4.in) = 3)) then 0 else (pre square~4.s))))))))));
+
+  square~5.in = in;
+
+  square~5.init = 8;
+
+  square~5.right = (-1);
+
+  square~5.down = p9;
+
+  square~5.left = p5;
+
+  square~5.up = p3;
+
+  square~5.s = (square~5.init -> (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 0)) and (square~5.right <> (-1))) then (pre square~5.right) else (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 1)) and (square~5.down <> (-1))) then (pre square~5.down) else (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 2)) and (square~5.left <> (-1))) then (pre square~5.left) else (if ((((pre square~5.s) = 0) and ((pre square~5.in) = 3)) and (square~5.up <> (-1))) then (pre square~5.up) else (if (((pre square~5.left) = 0) and ((pre square~5.in) = 0)) then 0 else (if (((pre square~5.up) = 0) and ((pre square~5.in) = 1)) then 0 else (if (((pre square~5.right) = 0) and ((pre square~5.in) = 2)) then 0 else (if (((pre square~5.down) = 0) and ((pre square~5.in) = 3)) then 0 else (pre square~5.s))))))))));
+
+  square~6.in = in;
+
+  square~6.init = 1;
+
+  square~6.right = p8;
+
+  square~6.down = (-1);
+
+  square~6.left = (-1);
+
+  square~6.up = p4;
+
+  square~6.s = (square~6.init -> (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 0)) and (square~6.right <> (-1))) then (pre square~6.right) else (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 1)) and (square~6.down <> (-1))) then (pre square~6.down) else (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 2)) and (square~6.left <> (-1))) then (pre square~6.left) else (if ((((pre square~6.s) = 0) and ((pre square~6.in) = 3)) and (square~6.up <> (-1))) then (pre square~6.up) else (if (((pre square~6.left) = 0) and ((pre square~6.in) = 0)) then 0 else (if (((pre square~6.up) = 0) and ((pre square~6.in) = 1)) then 0 else (if (((pre square~6.right) = 0) and ((pre square~6.in) = 2)) then 0 else (if (((pre square~6.down) = 0) and ((pre square~6.in) = 3)) then 0 else (pre square~6.s))))))))));
+
+  square~7.in = in;
+
+  square~7.init = 6;
+
+  square~7.right = p9;
+
+  square~7.down = (-1);
+
+  square~7.left = p7;
+
+  square~7.up = p5;
+
+  square~7.s = (square~7.init -> (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 0)) and (square~7.right <> (-1))) then (pre square~7.right) else (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 1)) and (square~7.down <> (-1))) then (pre square~7.down) else (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 2)) and (square~7.left <> (-1))) then (pre square~7.left) else (if ((((pre square~7.s) = 0) and ((pre square~7.in) = 3)) and (square~7.up <> (-1))) then (pre square~7.up) else (if (((pre square~7.left) = 0) and ((pre square~7.in) = 0)) then 0 else (if (((pre square~7.up) = 0) and ((pre square~7.in) = 1)) then 0 else (if (((pre square~7.right) = 0) and ((pre square~7.in) = 2)) then 0 else (if (((pre square~7.down) = 0) and ((pre square~7.in) = 3)) then 0 else (pre square~7.s))))))))));
+
+  square~8.in = in;
+
+  square~8.init = 7;
+
+  square~8.right = (-1);
+
+  square~8.down = (-1);
+
+  square~8.left = p8;
+
+  square~8.up = p6;
+
+  square~8.s = (square~8.init -> (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 0)) and (square~8.right <> (-1))) then (pre square~8.right) else (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 1)) and (square~8.down <> (-1))) then (pre square~8.down) else (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 2)) and (square~8.left <> (-1))) then (pre square~8.left) else (if ((((pre square~8.s) = 0) and ((pre square~8.in) = 3)) and (square~8.up <> (-1))) then (pre square~8.up) else (if (((pre square~8.left) = 0) and ((pre square~8.in) = 0)) then 0 else (if (((pre square~8.up) = 0) and ((pre square~8.in) = 1)) then 0 else (if (((pre square~8.right) = 0) and ((pre square~8.in) = 2)) then 0 else (if (((pre square~8.down) = 0) and ((pre square~8.in) = 3)) then 0 else (pre square~8.s))))))))));
+
+  inverted~0.p1 = p1;
+
+  inverted~0.p2 = p2;
+
+  inverted~0.p3 = p3;
+
+  inverted~0.p4 = p4;
+
+  inverted~0.p5 = p5;
+
+  inverted~0.p6 = p6;
+
+  inverted~0.p7 = p7;
+
+  inverted~0.p8 = p8;
+
+  inverted~0.p9 = p9;
+
+  inverted~0.inv = (((((((((((((((((((((((((((((((((((inverted~0.inv~0.inv xor inverted~0.inv~1.inv) xor inverted~0.inv~2.inv) xor inverted~0.inv~3.inv) xor inverted~0.inv~4.inv) xor inverted~0.inv~5.inv) xor inverted~0.inv~6.inv) xor inverted~0.inv~7.inv) xor inverted~0.inv~8.inv) xor inverted~0.inv~9.inv) xor inverted~0.inv~10.inv) xor inverted~0.inv~11.inv) xor inverted~0.inv~12.inv) xor inverted~0.inv~13.inv) xor inverted~0.inv~14.inv) xor inverted~0.inv~15.inv) xor inverted~0.inv~16.inv) xor inverted~0.inv~17.inv) xor inverted~0.inv~18.inv) xor inverted~0.inv~19.inv) xor inverted~0.inv~20.inv) xor inverted~0.inv~21.inv) xor inverted~0.inv~22.inv) xor inverted~0.inv~23.inv) xor inverted~0.inv~24.inv) xor inverted~0.inv~25.inv) xor inverted~0.inv~26.inv) xor inverted~0.inv~27.inv) xor inverted~0.inv~28.inv) xor inverted~0.inv~29.inv) xor inverted~0.inv~30.inv) xor inverted~0.inv~31.inv) xor inverted~0.inv~32.inv) xor inverted~0.inv~33.inv) xor inverted~0.inv~34.inv) xor inverted~0.inv~35.inv);
+
+  inverted~0.inv~0.p = inverted~0.p1;
+
+  inverted~0.inv~0.q = inverted~0.p2;
+
+  inverted~0.inv~0.inv = (((inverted~0.inv~0.p <> 0) and (inverted~0.inv~0.q <> 0)) and (inverted~0.inv~0.p > inverted~0.inv~0.q));
+
+  inverted~0.inv~1.p = inverted~0.p1;
+
+  inverted~0.inv~1.q = inverted~0.p3;
+
+  inverted~0.inv~1.inv = (((inverted~0.inv~1.p <> 0) and (inverted~0.inv~1.q <> 0)) and (inverted~0.inv~1.p > inverted~0.inv~1.q));
+
+  inverted~0.inv~2.p = inverted~0.p1;
+
+  inverted~0.inv~2.q = inverted~0.p4;
+
+  inverted~0.inv~2.inv = (((inverted~0.inv~2.p <> 0) and (inverted~0.inv~2.q <> 0)) and (inverted~0.inv~2.p > inverted~0.inv~2.q));
+
+  inverted~0.inv~3.p = inverted~0.p1;
+
+  inverted~0.inv~3.q = inverted~0.p5;
+
+  inverted~0.inv~3.inv = (((inverted~0.inv~3.p <> 0) and (inverted~0.inv~3.q <> 0)) and (inverted~0.inv~3.p > inverted~0.inv~3.q));
+
+  inverted~0.inv~4.p = inverted~0.p1;
+
+  inverted~0.inv~4.q = inverted~0.p6;
+
+  inverted~0.inv~4.inv = (((inverted~0.inv~4.p <> 0) and (inverted~0.inv~4.q <> 0)) and (inverted~0.inv~4.p > inverted~0.inv~4.q));
+
+  inverted~0.inv~5.p = inverted~0.p1;
+
+  inverted~0.inv~5.q = inverted~0.p7;
+
+  inverted~0.inv~5.inv = (((inverted~0.inv~5.p <> 0) and (inverted~0.inv~5.q <> 0)) and (inverted~0.inv~5.p > inverted~0.inv~5.q));
+
+  inverted~0.inv~6.p = inverted~0.p1;
+
+  inverted~0.inv~6.q = inverted~0.p8;
+
+  inverted~0.inv~6.inv = (((inverted~0.inv~6.p <> 0) and (inverted~0.inv~6.q <> 0)) and (inverted~0.inv~6.p > inverted~0.inv~6.q));
+
+  inverted~0.inv~7.p = inverted~0.p1;
+
+  inverted~0.inv~7.q = inverted~0.p9;
+
+  inverted~0.inv~7.inv = (((inverted~0.inv~7.p <> 0) and (inverted~0.inv~7.q <> 0)) and (inverted~0.inv~7.p > inverted~0.inv~7.q));
+
+  inverted~0.inv~8.p = inverted~0.p2;
+
+  inverted~0.inv~8.q = inverted~0.p3;
+
+  inverted~0.inv~8.inv = (((inverted~0.inv~8.p <> 0) and (inverted~0.inv~8.q <> 0)) and (inverted~0.inv~8.p > inverted~0.inv~8.q));
+
+  inverted~0.inv~9.p = inverted~0.p2;
+
+  inverted~0.inv~9.q = inverted~0.p4;
+
+  inverted~0.inv~9.inv = (((inverted~0.inv~9.p <> 0) and (inverted~0.inv~9.q <> 0)) and (inverted~0.inv~9.p > inverted~0.inv~9.q));
+
+  inverted~0.inv~10.p = inverted~0.p2;
+
+  inverted~0.inv~10.q = inverted~0.p5;
+
+  inverted~0.inv~10.inv = (((inverted~0.inv~10.p <> 0) and (inverted~0.inv~10.q <> 0)) and (inverted~0.inv~10.p > inverted~0.inv~10.q));
+
+  inverted~0.inv~11.p = inverted~0.p2;
+
+  inverted~0.inv~11.q = inverted~0.p6;
+
+  inverted~0.inv~11.inv = (((inverted~0.inv~11.p <> 0) and (inverted~0.inv~11.q <> 0)) and (inverted~0.inv~11.p > inverted~0.inv~11.q));
+
+  inverted~0.inv~12.p = inverted~0.p2;
+
+  inverted~0.inv~12.q = inverted~0.p7;
+
+  inverted~0.inv~12.inv = (((inverted~0.inv~12.p <> 0) and (inverted~0.inv~12.q <> 0)) and (inverted~0.inv~12.p > inverted~0.inv~12.q));
+
+  inverted~0.inv~13.p = inverted~0.p2;
+
+  inverted~0.inv~13.q = inverted~0.p8;
+
+  inverted~0.inv~13.inv = (((inverted~0.inv~13.p <> 0) and (inverted~0.inv~13.q <> 0)) and (inverted~0.inv~13.p > inverted~0.inv~13.q));
+
+  inverted~0.inv~14.p = inverted~0.p2;
+
+  inverted~0.inv~14.q = inverted~0.p9;
+
+  inverted~0.inv~14.inv = (((inverted~0.inv~14.p <> 0) and (inverted~0.inv~14.q <> 0)) and (inverted~0.inv~14.p > inverted~0.inv~14.q));
+
+  inverted~0.inv~15.p = inverted~0.p3;
+
+  inverted~0.inv~15.q = inverted~0.p4;
+
+  inverted~0.inv~15.inv = (((inverted~0.inv~15.p <> 0) and (inverted~0.inv~15.q <> 0)) and (inverted~0.inv~15.p > inverted~0.inv~15.q));
+
+  inverted~0.inv~16.p = inverted~0.p3;
+
+  inverted~0.inv~16.q = inverted~0.p5;
+
+  inverted~0.inv~16.inv = (((inverted~0.inv~16.p <> 0) and (inverted~0.inv~16.q <> 0)) and (inverted~0.inv~16.p > inverted~0.inv~16.q));
+
+  inverted~0.inv~17.p = inverted~0.p3;
+
+  inverted~0.inv~17.q = inverted~0.p6;
+
+  inverted~0.inv~17.inv = (((inverted~0.inv~17.p <> 0) and (inverted~0.inv~17.q <> 0)) and (inverted~0.inv~17.p > inverted~0.inv~17.q));
+
+  inverted~0.inv~18.p = inverted~0.p3;
+
+  inverted~0.inv~18.q = inverted~0.p7;
+
+  inverted~0.inv~18.inv = (((inverted~0.inv~18.p <> 0) and (inverted~0.inv~18.q <> 0)) and (inverted~0.inv~18.p > inverted~0.inv~18.q));
+
+  inverted~0.inv~19.p = inverted~0.p3;
+
+  inverted~0.inv~19.q = inverted~0.p8;
+
+  inverted~0.inv~19.inv = (((inverted~0.inv~19.p <> 0) and (inverted~0.inv~19.q <> 0)) and (inverted~0.inv~19.p > inverted~0.inv~19.q));
+
+  inverted~0.inv~20.p = inverted~0.p3;
+
+  inverted~0.inv~20.q = inverted~0.p9;
+
+  inverted~0.inv~20.inv = (((inverted~0.inv~20.p <> 0) and (inverted~0.inv~20.q <> 0)) and (inverted~0.inv~20.p > inverted~0.inv~20.q));
+
+  inverted~0.inv~21.p = inverted~0.p4;
+
+  inverted~0.inv~21.q = inverted~0.p5;
+
+  inverted~0.inv~21.inv = (((inverted~0.inv~21.p <> 0) and (inverted~0.inv~21.q <> 0)) and (inverted~0.inv~21.p > inverted~0.inv~21.q));
+
+  inverted~0.inv~22.p = inverted~0.p4;
+
+  inverted~0.inv~22.q = inverted~0.p6;
+
+  inverted~0.inv~22.inv = (((inverted~0.inv~22.p <> 0) and (inverted~0.inv~22.q <> 0)) and (inverted~0.inv~22.p > inverted~0.inv~22.q));
+
+  inverted~0.inv~23.p = inverted~0.p4;
+
+  inverted~0.inv~23.q = inverted~0.p7;
+
+  inverted~0.inv~23.inv = (((inverted~0.inv~23.p <> 0) and (inverted~0.inv~23.q <> 0)) and (inverted~0.inv~23.p > inverted~0.inv~23.q));
+
+  inverted~0.inv~24.p = inverted~0.p4;
+
+  inverted~0.inv~24.q = inverted~0.p8;
+
+  inverted~0.inv~24.inv = (((inverted~0.inv~24.p <> 0) and (inverted~0.inv~24.q <> 0)) and (inverted~0.inv~24.p > inverted~0.inv~24.q));
+
+  inverted~0.inv~25.p = inverted~0.p4;
+
+  inverted~0.inv~25.q = inverted~0.p9;
+
+  inverted~0.inv~25.inv = (((inverted~0.inv~25.p <> 0) and (inverted~0.inv~25.q <> 0)) and (inverted~0.inv~25.p > inverted~0.inv~25.q));
+
+  inverted~0.inv~26.p = inverted~0.p5;
+
+  inverted~0.inv~26.q = inverted~0.p6;
+
+  inverted~0.inv~26.inv = (((inverted~0.inv~26.p <> 0) and (inverted~0.inv~26.q <> 0)) and (inverted~0.inv~26.p > inverted~0.inv~26.q));
+
+  inverted~0.inv~27.p = inverted~0.p5;
+
+  inverted~0.inv~27.q = inverted~0.p7;
+
+  inverted~0.inv~27.inv = (((inverted~0.inv~27.p <> 0) and (inverted~0.inv~27.q <> 0)) and (inverted~0.inv~27.p > inverted~0.inv~27.q));
+
+  inverted~0.inv~28.p = inverted~0.p5;
+
+  inverted~0.inv~28.q = inverted~0.p8;
+
+  inverted~0.inv~28.inv = (((inverted~0.inv~28.p <> 0) and (inverted~0.inv~28.q <> 0)) and (inverted~0.inv~28.p > inverted~0.inv~28.q));
+
+  inverted~0.inv~29.p = inverted~0.p5;
+
+  inverted~0.inv~29.q = inverted~0.p9;
+
+  inverted~0.inv~29.inv = (((inverted~0.inv~29.p <> 0) and (inverted~0.inv~29.q <> 0)) and (inverted~0.inv~29.p > inverted~0.inv~29.q));
+
+  inverted~0.inv~30.p = inverted~0.p6;
+
+  inverted~0.inv~30.q = inverted~0.p7;
+
+  inverted~0.inv~30.inv = (((inverted~0.inv~30.p <> 0) and (inverted~0.inv~30.q <> 0)) and (inverted~0.inv~30.p > inverted~0.inv~30.q));
+
+  inverted~0.inv~31.p = inverted~0.p6;
+
+  inverted~0.inv~31.q = inverted~0.p8;
+
+  inverted~0.inv~31.inv = (((inverted~0.inv~31.p <> 0) and (inverted~0.inv~31.q <> 0)) and (inverted~0.inv~31.p > inverted~0.inv~31.q));
+
+  inverted~0.inv~32.p = inverted~0.p6;
+
+  inverted~0.inv~32.q = inverted~0.p9;
+
+  inverted~0.inv~32.inv = (((inverted~0.inv~32.p <> 0) and (inverted~0.inv~32.q <> 0)) and (inverted~0.inv~32.p > inverted~0.inv~32.q));
+
+  inverted~0.inv~33.p = inverted~0.p7;
+
+  inverted~0.inv~33.q = inverted~0.p8;
+
+  inverted~0.inv~33.inv = (((inverted~0.inv~33.p <> 0) and (inverted~0.inv~33.q <> 0)) and (inverted~0.inv~33.p > inverted~0.inv~33.q));
+
+  inverted~0.inv~34.p = inverted~0.p7;
+
+  inverted~0.inv~34.q = inverted~0.p9;
+
+  inverted~0.inv~34.inv = (((inverted~0.inv~34.p <> 0) and (inverted~0.inv~34.q <> 0)) and (inverted~0.inv~34.p > inverted~0.inv~34.q));
+
+  inverted~0.inv~35.p = inverted~0.p8;
+
+  inverted~0.inv~35.q = inverted~0.p9;
+
+  inverted~0.inv~35.inv = (((inverted~0.inv~35.p <> 0) and (inverted~0.inv~35.q <> 0)) and (inverted~0.inv~35.p > inverted~0.inv~35.q));
+
+  --%PROPERTY prop;
+  --%PROPERTY inverted;
+  --%PROPERTY distinct;
+
+tel;
