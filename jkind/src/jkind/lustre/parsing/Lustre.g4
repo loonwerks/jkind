@@ -53,7 +53,7 @@ expr: ID                                                       # idExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
-    | expr '{' ID ':=' expr '}'							   	   # recordUpdateExpr
+    | expr '{' ID ':=' expr '}'                                # recordUpdateExpr
     | expr '[' expr ']'                                        # arrayAccessExpr
     | expr '[' expr ':=' expr ']'                              # arrayUpdateExpr
     | 'pre' expr                                               # preExpr
@@ -69,7 +69,7 @@ expr: ID                                                       # idExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
-    | '(' expr (',' expr)+ ')'								   # tupleExpr
+    | '(' expr (',' expr)+ ')'                                 # tupleExpr
     | '(' expr ')'                                             # parenExpr
     ;
 
