@@ -24,7 +24,7 @@ public class LiftTuples extends AstMapVisitor {
 		if (left instanceof TupleExpr && e.op == BinaryOp.ARROW) {
 			return TupleUtil.mapBinary(e.op, (TupleExpr) left, (TupleExpr) right);
 		} else {
-			return new BinaryExpr(e.location, left, e.op, right);
+			return new BinaryExpr(left, e.op, right);
 		}
 	}
 
@@ -34,9 +34,9 @@ public class LiftTuples extends AstMapVisitor {
 		Expr thenExpr = e.thenExpr.accept(this);
 		Expr elseExpr = e.elseExpr.accept(this);
 		if (thenExpr instanceof TupleExpr) {
-			return TupleUtil.mapIf(e.cond, (TupleExpr) thenExpr, (TupleExpr) elseExpr);
+			return TupleUtil.mapIf(cond, (TupleExpr) thenExpr, (TupleExpr) elseExpr);
 		} else {
-			return new IfThenElseExpr(e.location, cond, thenExpr, elseExpr);
+			return new IfThenElseExpr(cond, thenExpr, elseExpr);
 		}
 	}
 
@@ -46,7 +46,7 @@ public class LiftTuples extends AstMapVisitor {
 		if (expr instanceof TupleExpr) {
 			return TupleUtil.mapUnary(e.op, (TupleExpr) expr);
 		} else {
-			return new UnaryExpr(e.location, e.op, expr);
+			return new UnaryExpr(e.op, expr);
 		}
 	}
 }
