@@ -70,7 +70,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (Node node : program.nodes) {
 			visitNode(node);
 		}
-
 		return passed;
 	}
 
@@ -525,7 +524,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (Expr expr : e.elements) {
 			types.add(expr.accept(this));
 		}
-		return new TupleType(types);
+		return compressTypes(types);
 	}
 
 	@Override
