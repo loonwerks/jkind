@@ -22,7 +22,7 @@ tel;
 node boat(choice, object : payload; farmer : side) returns (result : side);
 let
   result = LEFT -> if pre(choice) = object
-                   then swap(pre(result))
+                   then pre(swap(result))
                    else pre(result);
 tel;
 
@@ -41,7 +41,7 @@ let
     wolf = boat(choice, WOLF, farmer);
     goat = boat(choice, GOAT, farmer);
     cabbage = boat(choice, CABBAGE, farmer);
-    farmer = LEFT -> swap(pre(farmer));
+    farmer = LEFT -> pre(swap(farmer));
 
     nothing_eaten = (wolf = goat => farmer = goat) and
                     (goat = cabbage => farmer = cabbage);
