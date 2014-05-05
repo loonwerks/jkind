@@ -25,17 +25,24 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class Expr2FormulaVisitor implements ExprVisitor<Void> {
-	private final int column;
+	private int column;
+	private final String id;
 	private final Map<String, Integer> rowAssignments;
+	private final Map<String, String> intToEnum;
+	private final Map<String, String> enumToInt;
 
 	private final SortedSet<String> refs;
 	private final StringBuilder buf;
 
 	final private static int INITIAL_COLUMN = 1;
 
-	public Expr2FormulaVisitor(int column, Map<String, Integer> rowAssignments) {
+	public Expr2FormulaVisitor(String id, int column, Map<String, Integer> rowAssignments,
+			Map<String, String> intToEnum, Map<String, String> enumToInt) {
+		this.id = id;
 		this.column = column;
 		this.rowAssignments = rowAssignments;
+		this.intToEnum = intToEnum;
+		this.enumToInt = enumToInt;
 
 		this.refs = new TreeSet<>();
 		this.buf = new StringBuilder();
@@ -44,7 +51,7 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	@Override
 	public String toString() {
 		if (refs.isEmpty()) {
-			return buf.toString();
+			return wrap(buf.toString());
 		}
 
 		StringBuilder result = new StringBuilder();
@@ -58,10 +65,18 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 			first = false;
 		}
 		result.append("), \"\", ");
-		result.append(buf);
+		result.append(wrap(buf.toString()));
 		result.append(")");
 
 		return result.toString();
+	}
+
+	private String wrap(String formula) {
+		if (intToEnum.containsKey(id)) {
+			return "HLOOKUP(" + buf + "," + intToEnum.get(id) + ",2,FALSE)";
+		} else {
+			return formula;
+		}
 	}
 
 	@Override
@@ -179,15 +194,27 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 		// Excel uses 1-indexed rows and columns
 		String cell = toExcelColumn(column + 1) + Integer.toString(row + 1);
-		buf.append(cell);
+		if (enumToInt.containsKey(e.id)) {
+			buf.append("HLOOKUP(" + cell + "," + enumToInt.get(e.id) + ",2,FALSE)");
+		} else {
+			buf.append(cell);
+		}
 		refs.add(cell);
 		return null;
 	}
 
 	/**
-	 * 1 -> A 2 -> B ... 26 -> Z 27 -> AA 28 -> AB ...
+	 * <pre>
+	 *   1 -> A
+	 *   2 -> B 
+	 *   ... 
+	 *   26 -> Z 
+	 *   27 -> AA
+	 *   28 -> AB
+	 *   ...
+	 * </pre>
 	 */
-	public static String toExcelColumn(int col) {
+	private static String toExcelColumn(int col) {
 		StringBuilder result = new StringBuilder();
 		while (col > 0) {
 			char c = (char) ('A' + (col - 1) % 26);
@@ -238,7 +265,7 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 		throw new IllegalArgumentException(
 				"Records must be flattened before translation to formula");
 	}
-	
+
 	@Override
 	public Void visit(TupleExpr e) {
 		throw new IllegalArgumentException("Tuples must be flattened before translation to formula");
@@ -254,14 +281,11 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 				return null;
 			}
 
-			Expr2FormulaVisitor preVisitor = new Expr2FormulaVisitor(column - 1, rowAssignments);
-			e.expr.accept(preVisitor);
-
 			buf.append("(");
-			buf.append(preVisitor.buf);
+			column--;
+			e.expr.accept(this);
+			column++;
 			buf.append(")");
-
-			refs.addAll(preVisitor.refs);
 
 			return null;
 

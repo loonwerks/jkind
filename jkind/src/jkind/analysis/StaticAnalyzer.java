@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.analysis.evaluation.DivisionChecker;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
@@ -31,17 +32,17 @@ public class StaticAnalyzer {
 	private static boolean checkErrors(Program program, Level nonlinear) {
 		boolean result = true;
 		result = result && hasMainNode(program);
-		result = result && TypeChecker.check(program);
 		result = result && typesUnique(program);
-		result = result && SubrangesNonempty.check(program);
-		result = result && ArraysNonempty.check(program);
-		result = result && constantsUnique(program);
-		result = result && constantsConstant(program);
-		result = result && DivisionChecker.check(program);
+		result = result && enumsAndConstantsUnique(program);
 		result = result && nodesAndFunctionsUnique(program);
 		result = result && functionsHaveInputAndOutput(program);
-		result = result && NodeDependencyChecker.check(program);
 		result = result && variablesUnique(program);
+		result = result && TypeChecker.check(program);
+		result = result && SubrangesNonempty.check(program);
+		result = result && ArraysNonempty.check(program);
+		result = result && constantsConstant(program);
+		result = result && DivisionChecker.check(program);
+		result = result && NodeDependencyChecker.check(program);
 		result = result && assignmentsSound(program);
 		result = result && ConstantArrayAccessBounded.check(program);
 		result = result && propertiesUnique(program);
@@ -87,32 +88,46 @@ public class StaticAnalyzer {
 		return unique;
 	}
 
-	private static boolean constantsUnique(Program program) {
+	private static boolean enumsAndConstantsUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
+
+		for (TypeDef def : program.types) {
+			if (def.type instanceof EnumType) {
+				EnumType et = (EnumType) def.type;
+				for (String value : et.values) {
+					if (seen.contains(value)) {
+						System.out.println("Error at line " + def.location + " " + value
+								+ " defined multiple times");
+						unique = false;
+					} else {
+						seen.add(value);
+					}
+				}
+			}
+		}
+
 		for (Constant c : program.constants) {
 			if (seen.contains(c.id)) {
-				System.out.println("Error at line " + c.location + " constant " + c.id
-						+ " already defined");
+				System.out.println("Error at line " + c.location + " " + c.id
+						+ " defined multiple times");
 				unique = false;
 			} else {
 				seen.add(c.id);
 			}
 		}
-		return unique;
-	}
 
-	private static boolean constantsConstant(Program program) {
-		boolean constant = true;
-		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
-		for (Constant c : program.constants) {
-			if (!c.expr.accept(constantAnalyzer)) {
-				System.out.println("Error at line " + c.location + " constant " + c.id
-						+ " does not have a constant value");
-				constant = false;
+		for (Node node : program.nodes) {
+			for (VarDecl vd : Util.getVarDecls(node)) {
+				if (seen.contains(vd.id)) {
+					System.out.println("Error at line " + vd.location + " " + vd.id
+							+ " already defined globally");
+					unique = false;
+				}
 			}
 		}
-		return constant;
+
+		return unique;
 	}
 
 	private static boolean nodesAndFunctionsUnique(Program program) {
@@ -181,6 +196,19 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
+	}
+
+	private static boolean constantsConstant(Program program) {
+		boolean constant = true;
+		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
+		for (Constant c : program.constants) {
+			if (!c.expr.accept(constantAnalyzer)) {
+				System.out.println("Error at line " + c.location + " constant " + c.id
+						+ " does not have a constant value");
+				constant = false;
+			}
+		}
+		return constant;
 	}
 
 	private static boolean assignmentsSound(Program program) {

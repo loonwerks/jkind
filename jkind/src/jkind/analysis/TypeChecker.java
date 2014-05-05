@@ -19,6 +19,7 @@ import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
@@ -46,22 +47,21 @@ import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
-	private final Map<String, Type> typeTable;
-	private final Map<String, Type> constantTable;
-	private final Map<String, Type> variableTable;
+	private final Map<String, Type> typeTable = new HashMap<>();
+	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, EnumType> enumValueTable = new HashMap<>();
+	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Function> functionTable;
 	private final Map<String, Node> nodeTable;
 	private boolean passed;
 
 	private TypeChecker(Program program) {
-		this.typeTable = new HashMap<>();
-		this.constantTable = new HashMap<>();
-		this.variableTable = new HashMap<>();
 		this.functionTable = Util.getFunctionTable(program.functions);
 		this.nodeTable = Util.getNodeTable(program.nodes);
 		this.passed = true;
 		
 		populateTypeTable(program.types);
+		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
 	}
 
@@ -73,13 +73,23 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (Node node : program.nodes) {
 			visitNode(node);
 		}
-
 		return passed;
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
 			typeTable.put(def.id, resolveType(def.type));
+		}
+	}
+
+	private void populateEnumValueTable(List<TypeDef> typeDefs) {
+		for (TypeDef def : typeDefs) {
+			if (def.type instanceof EnumType) {
+				EnumType et = (EnumType) def.type;
+				for (String id : et.values) {
+					enumValueTable.put(id, et);
+				}
+			}
 		}
 	}
 
@@ -384,6 +394,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return variableTable.get(e.id);
 		} else if (constantTable.containsKey(e.id)) {
 			return constantTable.get(e.id);
+		} else if (enumValueTable.containsKey(e.id)) {
+			return enumValueTable.get(e.id);
 		} else {
 			error(e, "unknown variable " + e.id);
 			return null;
@@ -542,7 +554,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for (Expr expr : e.elements) {
 			types.add(expr.accept(this));
 		}
-		return new TupleType(types);
+		return compressTypes(types);
 	}
 
 	@Override

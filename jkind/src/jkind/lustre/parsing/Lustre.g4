@@ -26,6 +26,7 @@ varDeclGroup: ID (',' ID)* ':' type;
 
 topLevelType: type                                       # plainType
     | 'struct' '{' (ID ':' type) (';' ID ':' type)* '}'  # recordType
+    | 'enum' '{' ID (',' ID)* '}'                        # enumType
     ;
 
 type: 'int'                                              # intType
@@ -44,9 +45,7 @@ main: '--%MAIN' ';'?;
 
 assertion: 'assert' expr ';';
 
-equation: (lhs | '(' lhs ')') '=' expr ';'
-        | expr ';'
-        ;
+equation: (lhs | '(' lhs? ')') '=' expr ';';
 
 lhs: ID (',' ID)*;
 
@@ -58,7 +57,7 @@ expr: ID                                                       # idExpr
     | ID '(' (expr (',' expr)*)? ')'                           # callExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
-    | expr '{' ID ':=' expr '}'							   	   # recordUpdateExpr
+    | expr '{' ID ':=' expr '}'                                # recordUpdateExpr
     | expr '[' expr ']'                                        # arrayAccessExpr
     | expr '[' expr ':=' expr ']'                              # arrayUpdateExpr
     | 'pre' expr                                               # preExpr
@@ -74,8 +73,7 @@ expr: ID                                                       # idExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
-    | '(' expr (',' expr)+ ')'								   # tupleExpr
-    | '(' expr ')'                                             # parenExpr
+    | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 
 REAL: INT '.' INT;

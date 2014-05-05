@@ -23,6 +23,7 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.StreamDef;
+import jkind.solvers.UnknownResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
@@ -119,6 +120,8 @@ public class InvariantProcess extends Process {
 				Model model = getModel(result);
 				graph.refine(model, BigInteger.valueOf(k - 1));
 				debug("Base step refinement, graph size = " + graph.size());
+			} else if (result instanceof UnknownResult) {
+				throw new StopException();
 			}
 		} while (!graph.isTrivial() && result instanceof SatResult);
 

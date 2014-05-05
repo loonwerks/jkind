@@ -11,6 +11,7 @@ import jkind.excel.ExcelCounterexampleFormatter;
 import jkind.lustre.Function;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
@@ -138,6 +139,18 @@ public final class Counterexample {
 	 */
 	public Signal<BooleanValue> getBooleanSignal(String name) {
 		return getTypedSignal(name, BooleanValue.class);
+	}
+
+	/**
+	 * Get a specific enumerated value signal from the counterexample
+	 * 
+	 * @param name
+	 *            Name of the signal to retrieve
+	 * @return Enumerated value signal with the specified name, or
+	 *         <code>null</code> if it cannot be found
+	 */
+	public Signal<EnumValue> getEnumSignal(String name) {
+		return getTypedSignal(name, EnumValue.class);
 	}
 
 	/**

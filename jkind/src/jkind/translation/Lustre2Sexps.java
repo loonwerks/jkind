@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
@@ -56,6 +57,8 @@ public class Lustre2Sexps {
 			if (input.type instanceof SubrangeIntType) {
 				conjuncts.add(SexpUtil.subrangeConstraint(input.id, SexpUtil.I,
 						(SubrangeIntType) input.type));
+			} else if (input.type instanceof EnumType) {
+				conjuncts.add(SexpUtil.enumConstraint(input.id, SexpUtil.I, (EnumType) input.type));
 			}
 		}
 

@@ -8,23 +8,18 @@ type loc = subrange [-1, 8] of int;
 
 const OFF : loc = -1; -- An invalid location, used to mark edges
 
-type dir = subrange [0, 3] of int;
-
-const RIGHT : dir = 0;
-const DOWN : dir = 1;
-const LEFT : dir = 2;
-const UP : dir = 3;
+type dir = enum { Right, Down, Left, Up };
 
 node square(in : dir; init : loc; right, down, left, up : loc) returns (s : loc);
 let
-  s = init -> if pre(s) = 0 and pre(in) = RIGHT and right <> OFF then pre(right)
-              else if pre(s) = 0 and pre(in) = DOWN and down <> OFF then pre(down)
-              else if pre(s) = 0 and pre(in) = LEFT and left <> OFF then pre(left)
-              else if pre(s) = 0 and pre(in) = UP and up <> OFF then pre(up)
-              else if pre(left) = 0 and pre(in) = RIGHT then 0
-              else if pre(up) = 0 and pre(in) = DOWN then 0
-              else if pre(right) = 0 and pre(in) = LEFT then 0
-              else if pre(down) = 0 and pre(in) = UP then 0
+  s = init -> if pre(s) = 0 and pre(in) = Right and right <> OFF then pre(right)
+              else if pre(s) = 0 and pre(in) = Down and down <> OFF then pre(down)
+              else if pre(s) = 0 and pre(in) = Left and left <> OFF then pre(left)
+              else if pre(s) = 0 and pre(in) = Up and up <> OFF then pre(up)
+              else if pre(left) = 0 and pre(in) = Right then 0
+              else if pre(up) = 0 and pre(in) = Down then 0
+              else if pre(right) = 0 and pre(in) = Left then 0
+              else if pre(down) = 0 and pre(in) = Up then 0
               else pre(s);
 tel;
 

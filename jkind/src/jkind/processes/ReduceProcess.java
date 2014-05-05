@@ -19,6 +19,7 @@ import jkind.sexp.Sexp;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
@@ -100,6 +101,8 @@ public class ReduceProcess extends Process {
 				} else {
 					irreducible.addAll(coreInvariants);
 				}
+			} else if (result instanceof UnknownResult) {
+				throw new JKindException("Unknown result in invariant reducer");
 			}
 		}
 

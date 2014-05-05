@@ -1,4 +1,4 @@
-package jkind.results;
+package jkind.util;
 
 import java.math.BigInteger;
 import java.util.Comparator;

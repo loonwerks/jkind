@@ -1,0 +1,68 @@
+-- Turing machine simulated in Lustre.
+-- 4-state busy beaver on a 2-symbol language:
+--
+-- http://en.wikipedia.org/wiki/Busy_beaver
+--
+-- Expected output:
+--   INVALID PROPERTY: cex || K = 108
+--
+--
+-- The encoding of the tape uses three integer variables: left, head,
+-- and right.
+--
+--   * The symbol underneath the tape head is stored in 'head'.
+--
+--   * Everything to the left of the tape head is stored in 'left'
+--     using a special base-10 (for readability) encoding. The least
+--     significant digit of 'left' is the symbol one cell to the left
+--     of the tape head, the second least significant digit of 'left'
+--     is the symbol two cells to the left of the tape head, etc.
+
+--   * Everything to the right of the tape head is stored in 'right'
+--     using a similar base-10 notation. The least significant digit
+--     of 'right' is the symbol one cell to the right of the tape
+--     head, the second least significant digit of 'right' is the
+--     symbol two cells to the right of the tape head, etc.
+--
+-- For example, consider the tape:
+--
+--   ... 0 1 0 1 1 [0] 0 1 1 0 1 0 ...
+--
+-- Where the '...' parts are all zero and the tape head is at [0].
+-- Then left = 1011, head = 0, and right = 10110.
+--
+-- Since the tape only ever has a finite number of non-zero symbols on
+-- it, this encoding is sufficient. Moreover, we easily shift the tape
+-- left and right using 'div 10' and 'mod 10'.
+
+type state = enum { Halt, A, B, C, D };
+type move = enum { L, R };
+type symbol = int;
+
+node main() returns (left, right, head : int);
+var
+  write : symbol;
+  move : move;
+  state : state;
+
+  cex : bool;
+let
+  (left, head, right) = (0, 0, 0) ->
+    if pre state = Halt then pre (left, head, right) else
+    if move = L then (pre left div 10, pre left mod 10, 10*(pre right) + write)
+                else (10*(pre left) + write, pre right mod 10, pre right div 10);
+
+  (write, move, state) = (0, L, A) -> -- Only the initial state matters here
+         if pre (state, head) = (A, 0) then (1, R, B)
+    else if pre (state, head) = (A, 1) then (1, L, B)
+    else if pre (state, head) = (B, 0) then (1, L, A)
+    else if pre (state, head) = (B, 1) then (0, L, C)
+    else if pre (state, head) = (C, 0) then (1, R, Halt)
+    else if pre (state, head) = (C, 1) then (1, L, D)
+    else if pre (state, head) = (D, 0) then (1, R, D)
+    else if pre (state, head) = (D, 1) then (0, R, A)
+    else (0, L, Halt); -- Only the Halt state matters here
+
+  cex = state <> Halt;
+  --%PROPERTY cex;
+tel;

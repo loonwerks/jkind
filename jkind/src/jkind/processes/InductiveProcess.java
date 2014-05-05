@@ -14,6 +14,7 @@ import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
+import jkind.processes.messages.UnknownMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -22,6 +23,7 @@ import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
@@ -84,6 +86,9 @@ public class InductiveProcess extends Process {
 					InvariantMessage invariantMessage = (InvariantMessage) message;
 					invariants.addAll(invariantMessage.invariants);
 					assertNewInvariants(invariantMessage.invariants, k - 1);
+				} else if (message instanceof UnknownMessage) {
+					UnknownMessage unknownMessage = (UnknownMessage) message;
+					properties.removeAll(unknownMessage.unknown);
 				} else {
 					throw new JKindException("Unknown message type in inductive process: "
 							+ message.getClass().getCanonicalName());
@@ -138,6 +143,11 @@ public class InductiveProcess extends Process {
 				properties.removeAll(possiblyValid);
 				addPropertiesAsInvariants(k, possiblyValid);
 				sendValid(possiblyValid, k);
+				return;
+			} else if (result instanceof UnknownResult) {
+				properties.removeAll(possiblyValid);
+				// We report nothing in hopes that the base process at least
+				// finds a counterexample
 				return;
 			}
 		}

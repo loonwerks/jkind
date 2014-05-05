@@ -18,6 +18,7 @@ import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
@@ -52,6 +53,7 @@ import jkind.lustre.parsing.LustreParser.CallExprContext;
 import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
+import jkind.lustre.parsing.LustreParser.EnumTypeContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
 import jkind.lustre.parsing.LustreParser.FunctionContext;
@@ -63,7 +65,6 @@ import jkind.lustre.parsing.LustreParser.LhsContext;
 import jkind.lustre.parsing.LustreParser.NegateExprContext;
 import jkind.lustre.parsing.LustreParser.NodeContext;
 import jkind.lustre.parsing.LustreParser.NotExprContext;
-import jkind.lustre.parsing.LustreParser.ParenExprContext;
 import jkind.lustre.parsing.LustreParser.PlainTypeContext;
 import jkind.lustre.parsing.LustreParser.PreExprContext;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
@@ -214,6 +215,13 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 				fields.put(rctx.ID(i).getText(), type(rctx.type(i)));
 			}
 			return new RecordType(loc(ctx), id, fields);
+		} else if (ctx instanceof EnumTypeContext) {
+			EnumTypeContext ectx = (EnumTypeContext) ctx;
+			List<String> values = new ArrayList<>();
+			for (TerminalNode node : ectx.ID()) {
+				values.add(node.getText());
+			}
+			return new EnumType(loc(ctx), id, values);
 		} else {
 			throw new IllegalArgumentException(ctx.getClass().getSimpleName());
 		}
@@ -394,16 +402,17 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Expr visitTupleExpr(TupleExprContext ctx) {
+		// Treat singleton tuples as simply parentheses. This increases parsing
+		// performance by not having to decide between parenExpr and tupleExpr.
+		if (ctx.expr().size() == 1) {
+			return expr(ctx.expr(0));
+		}
+
 		List<Expr> elements = new ArrayList<>();
 		for (int i = 0; i < ctx.expr().size(); i++) {
 			elements.add(expr(ctx.expr(i)));
 		}
 		return new TupleExpr(loc(ctx), elements);
-	}
-
-	@Override
-	public Expr visitParenExpr(ParenExprContext ctx) {
-		return expr(ctx.expr());
 	}
 
 	private static Location loc(ParserRuleContext ctx) {

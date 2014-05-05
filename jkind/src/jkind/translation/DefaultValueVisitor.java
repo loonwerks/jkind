@@ -10,6 +10,7 @@ import java.util.Map;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BoolExpr;
+import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
@@ -31,6 +32,12 @@ public class DefaultValueVisitor implements TypeVisitor<Expr> {
 			elements.add(baseValue);
 		}
 		return new ArrayExpr(elements);
+	}
+	
+	@Override
+	public Expr visit(EnumType e) {
+		// Enums are already inlined
+		return new IntExpr(0);
 	}
 
 	@Override

@@ -25,9 +25,9 @@ let
   at_least_one_travelers =
     true -> (a <> pre a) or (b <> pre b) or (c <> pre c) or (d <> pre d);
 
-  no_more_than_two_travelers = true ->
-      b2i(a <> pre a) + b2i(b <> pre b) +
-      b2i(c <> pre c) + b2i(d <> pre d) <= 2;
+  no_more_than_two_travelers =
+      b2i(changed(a)) + b2i(changed(b)) + 
+      b2i(changed(c)) + b2i(changed(d)) <= 2;
 
   assert at_least_one_travelers;
   assert no_more_than_two_travelers;
@@ -68,4 +68,9 @@ tel;
 node b2i(x : bool) returns (y : int);
 let
   y = if x then 1 else 0;
+tel;
+
+node changed(x : bool) returns (c : bool);
+let
+  c = false -> x <> pre x;
 tel;

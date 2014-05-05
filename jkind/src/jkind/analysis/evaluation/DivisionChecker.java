@@ -45,7 +45,6 @@ public class DivisionChecker extends ExprIterVisitor {
 	}
 
 	public void visitNode(Node node) {
-		constantEvaluator.setHidden(node);
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
 		}

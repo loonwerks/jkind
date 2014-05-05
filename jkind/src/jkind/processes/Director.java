@@ -15,14 +15,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.invariant.Invariant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Function;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import jkind.lustre.values.EnumValue;
+import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
+import jkind.processes.messages.UnknownMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
@@ -47,6 +51,7 @@ public class Director {
 	private List<String> remainingProperties = new ArrayList<>();
 	private List<String> validProperties = new ArrayList<>();
 	private List<String> invalidProperties = new ArrayList<>();
+	private List<String> unknownProperties = new ArrayList<>();
 	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<>();
 	private Map<String, Decl> declarations;
 
@@ -101,8 +106,11 @@ public class Director {
 		}
 
 		processMessages(startTime);
-		if (!remainingProperties.isEmpty()) {
-			writer.writeUnknown(remainingProperties, convertInductiveCounterexamples());
+
+		unknownProperties.addAll(remainingProperties);
+		remainingProperties.clear();
+		if (!unknownProperties.isEmpty()) {
+			writer.writeUnknown(unknownProperties, convertInductiveCounterexamples());
 		}
 
 		writer.end();
@@ -235,6 +243,10 @@ public class Director {
 			} else if (message instanceof InductiveCounterexampleMessage) {
 				InductiveCounterexampleMessage icm = (InductiveCounterexampleMessage) message;
 				inductiveCounterexamples.put(icm.property, icm);
+			} else if (message instanceof UnknownMessage) {
+				UnknownMessage um = (UnknownMessage) message;
+				remainingProperties.removeAll(um.unknown);
+				unknownProperties.addAll(um.unknown);
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());
@@ -255,8 +267,8 @@ public class Director {
 			System.out.println("INVALID PROPERTIES: " + invalidProperties);
 			System.out.println();
 		}
-		if (!remainingProperties.isEmpty()) {
-			System.out.println("UNKNOWN PROPERTIES: " + remainingProperties);
+		if (!unknownProperties.isEmpty()) {
+			System.out.println("UNKNOWN PROPERTIES: " + unknownProperties);
 			System.out.println();
 		}
 	}
@@ -334,7 +346,19 @@ public class Director {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
 			jkind.solvers.Value value = model.getStreamValue(fn, key);
 			if (value != null) {
-				signal.putValue(i, Util.parseValue(Util.getName(type), value.toString()));
+				Value parsedValue = Util.parseValue(Util.getName(type), value.toString());
+				if (type instanceof EnumType) {
+					EnumType et = (EnumType) type;
+					IntegerValue iv = (IntegerValue) parsedValue;
+					int v = iv.value.intValue();
+					if (v < 0 || et.values.size() <= v) {
+						// This can happen due to looking before the initial
+						// state
+						continue;
+					}
+					parsedValue = new EnumValue(et.values.get(v));
+				}
+				signal.putValue(i, parsedValue);
 			}
 		}
 

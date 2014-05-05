@@ -2,11 +2,9 @@ package jkind.analysis.evaluation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -22,14 +20,12 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
-import jkind.lustre.Node;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
-import jkind.lustre.VarDecl;
 import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
@@ -39,19 +35,14 @@ import jkind.lustre.values.TupleValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
-import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
-	private final Map<String, Value> constants;
-	private final Set<String> hidden;
+	private final Map<String, Value> constants = new HashMap<>();;
 
 	public ConstantEvaluator() {
-		constants = new HashMap<>();
-		hidden = new HashSet<>();
 	}
 
 	public ConstantEvaluator(List<Constant> constants) {
-		this();
 		for (Constant c : constants) {
 			addConstant(c);
 		}
@@ -59,13 +50,6 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	public Value addConstant(Constant c) {
 		return constants.put(c.id, c.expr.accept(this));
-	}
-
-	public void setHidden(Node node) {
-		hidden.clear();
-		for (VarDecl decl : Util.getVarDecls(node)) {
-			hidden.add(decl.id);
-		}
 	}
 
 	@Override
@@ -147,11 +131,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IdExpr e) {
-		if (hidden.contains(e)) {
-			return null;
-		} else {
-			return constants.get(e.id);
-		}
+		return constants.get(e.id);
 	}
 
 	@Override

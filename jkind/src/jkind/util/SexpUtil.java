@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import jkind.invariant.Invariant;
+import jkind.lustre.EnumType;
 import jkind.lustre.SubrangeIntType;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -13,9 +14,16 @@ import jkind.sexp.Symbol;
 public class SexpUtil {
 	public static Sexp subrangeConstraint(String id, Sexp index, SubrangeIntType subrange) {
 		Sexp var = new Cons("$" + id, index);
-		Sexp low = new Cons("<=", Sexp.fromBigInt(subrange.low), var);
-		Sexp high = new Cons("<=", var, Sexp.fromBigInt(subrange.high));
-		return new Cons("and", low, high);
+		return boundConstraint(var, Sexp.fromBigInt(subrange.low), Sexp.fromBigInt(subrange.high));
+	}
+
+	public static Sexp enumConstraint(String id, Sexp index, EnumType et) {
+		Sexp var = new Cons("$" + id, index);
+		return boundConstraint(var, Sexp.fromInt(0), Sexp.fromInt(et.values.size() - 1));
+	}
+
+	private static Sexp boundConstraint(Sexp var, Sexp low, Sexp high) {
+		return new Cons("and", new Cons("<=", low, var), new Cons("<=", var, high));
 	}
 
 	public static Sexp conjoin(Collection<? extends Sexp> fns, Sexp i) {

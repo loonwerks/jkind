@@ -1,12 +1,9 @@
 package jkind.analysis;
 
-import java.util.List;
-
 import jkind.analysis.evaluation.ConstantEvaluator;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayType;
 import jkind.lustre.ArrayUpdateExpr;
-import jkind.lustre.Constant;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Location;
@@ -26,19 +23,18 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 	}
 
 	public boolean visitProgram(Program program) {
+		constantAnalyzer = new ConstantAnalyzer(program.constants);
 		constantEvaluator = new ConstantEvaluator(program.constants);
 		typeReconstructor = new TypeReconstructor(program);
 
 		for (Node node : program.nodes) {
-			visitNode(node, program.constants);
+			visitNode(node);
 		}
 
 		return passed;
 	}
 
-	public void visitNode(Node node, List<Constant> constants) {
-		constantAnalyzer = new ConstantAnalyzer(node, constants);
-		constantEvaluator.setHidden(node);
+	public void visitNode(Node node) {
 		typeReconstructor.setNodeContext(node);
 
 		for (Equation eq : node.equations) {

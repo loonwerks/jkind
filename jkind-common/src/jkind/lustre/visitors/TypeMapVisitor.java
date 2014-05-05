@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jkind.lustre.ArrayType;
+import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
@@ -22,6 +23,11 @@ public class TypeMapVisitor implements TypeVisitor<Type> {
 
 	@Override
 	public Type visit(NamedType e) {
+		return e;
+	}
+	
+	@Override
+	public Type visit(EnumType e) {
 		return e;
 	}
 
