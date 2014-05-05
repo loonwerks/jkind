@@ -10,7 +10,7 @@ let
   other = if side = Left then Right else Left;
 tel;
 
-node boat(choice, object : payload; farmer : side) returns (result : side);
+node boat(choice, object : payload) returns (result : side);
 let
   result = Left -> if pre(choice) = object
                    then pre(swap(result))
@@ -29,9 +29,9 @@ var
     wellformed : bool;
     prop : bool;
 let
-    wolf = boat(choice, Wolf, farmer);
-    goat = boat(choice, Goat, farmer);
-    cabbage = boat(choice, Cabbage, farmer);
+    wolf = boat(choice, Wolf);
+    goat = boat(choice, Goat);
+    cabbage = boat(choice, Cabbage);
     farmer = Left -> pre(swap(farmer));
 
     nothing_eaten = (wolf = goat => farmer = goat) and
