@@ -17,6 +17,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -50,6 +51,7 @@ import jkind.lustre.parsing.LustreParser.BoolTypeContext;
 import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
+import jkind.lustre.parsing.LustreParser.EnumTypeContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
 import jkind.lustre.parsing.LustreParser.IdExprContext;
@@ -199,6 +201,13 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 				fields.put(rctx.ID(i).getText(), type(rctx.type(i)));
 			}
 			return new RecordType(loc(ctx), id, fields);
+		} else if (ctx instanceof EnumTypeContext) {
+			EnumTypeContext ectx = (EnumTypeContext) ctx;
+			List<String> values = new ArrayList<>();
+			for (TerminalNode node : ectx.ID()) {
+				values.add(node.getText());
+			}
+			return new EnumType(loc(ctx), id, values);
 		} else {
 			throw new IllegalArgumentException(ctx.getClass().getSimpleName());
 		}

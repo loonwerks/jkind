@@ -21,7 +21,6 @@ import jkind.util.Util;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.SAXException;
 
-
 /**
  * The primary interface to JKind.
  */
@@ -71,28 +70,29 @@ public class JKindApi {
 	 * Set the solver to use (Yices, Z3, CVC4)
 	 */
 	public void setSolver(SolverOption solver) {
-		this.solver  = solver;
+		this.solver = solver;
 	}
-	
+
 	/**
 	 * Reduce and report the invariants used for a valid property
 	 */
 	public void setReduceInvariants() {
 		reduceInvariants = true;
 	}
-	
+
 	/**
 	 * Post-process counterexamples to have minimal input value changes
 	 */
 	public void setSmoothCounterexamples() {
 		smoothCounterexamples = true;
 	}
-	
+
 	/**
-	 * Post-process counterexamples using interval analysis to make them more general
+	 * Post-process counterexamples using interval analysis to make them more
+	 * general
 	 */
 	public void setIntervalGeneralization() {
-	    intervalGeneralization = true;
+		intervalGeneralization = true;
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class JKindApi {
 		Process process = null;
 		try (JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile)) {
 			XmlParseThread parseThread = new XmlParseThread(xmlStream, result);
-	
+
 			try {
 				result.start();
 				process = builder.start();
@@ -197,22 +197,22 @@ public class JKindApi {
 					process.destroy();
 					code = process.waitFor();
 				}
-				
+
 				xmlStream.done();
 				parseThread.join();
-				
+
 				if (monitor.isCanceled()) {
 					result.cancel();
 				} else {
 					result.done();
 				}
 				monitor.done();
-				
+
 				if (code != 0 && !monitor.isCanceled()) {
 					throw new JKindException("Abnormal termination, exit code " + code);
 				}
 			}
-	
+
 			if (parseThread.getThrowable() != null) {
 				throw new JKindException("Error parsing XML", parseThread.getThrowable());
 			}
@@ -277,10 +277,10 @@ public class JKindApi {
 		if (smoothCounterexamples) {
 			args.add("-smooth");
 		}
-		if(intervalGeneralization) {
-		    args.add("-interval");
+		if (intervalGeneralization) {
+			args.add("-interval");
 		}
-		
+
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);

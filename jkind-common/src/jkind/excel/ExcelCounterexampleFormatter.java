@@ -10,6 +10,7 @@ import jkind.JKindException;
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
@@ -146,6 +147,9 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
 			sheet.addCell(new Number(col, row, rv.value.doubleValue(), format));
+		} else if (value instanceof EnumValue) {
+			EnumValue ev = (EnumValue) value;
+			sheet.addCell(new Label(col, row, ev.value));
 		} else if (value instanceof NumericInterval) {
 			NumericInterval ni = (NumericInterval) value;
 			if (ni.isExact()) {

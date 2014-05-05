@@ -2,26 +2,17 @@
 
 -- This is an encoding of the wolf/goat/cabbage river crossing puzzle
 
-type payload = subrange [0, 3] of int;
-
-const EMPTY : payload = 0;
-const WOLF : payload = 1;
-const GOAT : payload = 2;
-const CABBAGE : payload = 3;
-
-type side = bool;
-
-const LEFT : side = false;
-const RIGHT : side = true;
+type payload = enum { Empty, Wolf, Goat, Cabbage };
+type side = enum { Left, Right };
 
 node swap(side : side) returns (other : side);
 let
-  other = if side = LEFT then RIGHT else LEFT;
+  other = if side = Left then Right else Left;
 tel;
 
 node boat(choice, object : payload; farmer : side) returns (result : side);
 let
-  result = LEFT -> if pre(choice) = object
+  result = Left -> if pre(choice) = object
                    then pre(swap(result))
                    else pre(result);
 tel;
@@ -38,20 +29,20 @@ var
     wellformed : bool;
     prop : bool;
 let
-    wolf = boat(choice, WOLF, farmer);
-    goat = boat(choice, GOAT, farmer);
-    cabbage = boat(choice, CABBAGE, farmer);
-    farmer = LEFT -> pre(swap(farmer));
+    wolf = boat(choice, Wolf, farmer);
+    goat = boat(choice, Goat, farmer);
+    cabbage = boat(choice, Cabbage, farmer);
+    farmer = Left -> pre(swap(farmer));
 
     nothing_eaten = (wolf = goat => farmer = goat) and
                     (goat = cabbage => farmer = cabbage);
 
-    wellformed = (choice = WOLF => farmer = wolf) and
-                 (choice = GOAT => farmer = goat) and
-                 (choice = CABBAGE => farmer = cabbage);
+    wellformed = (choice = Wolf => farmer = wolf) and
+                 (choice = Goat => farmer = goat) and
+                 (choice = Cabbage => farmer = cabbage);
 
-    solved = wolf = RIGHT and goat = RIGHT and
-             cabbage = RIGHT and farmer = RIGHT;
+    solved = wolf = Right and goat = Right and
+             cabbage = Right and farmer = Right;
 
     prop = not (historically(nothing_eaten and wellformed) and solved);
     --%PROPERTY prop;

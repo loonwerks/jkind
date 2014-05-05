@@ -124,6 +124,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	T visitEquation(@NotNull LustreParser.EquationContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#enumType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumType(@NotNull LustreParser.EnumTypeContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#preExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

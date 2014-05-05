@@ -14,7 +14,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.invariant.Invariant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Type;
+import jkind.lustre.values.EnumValue;
+import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
@@ -103,7 +106,7 @@ public class Director {
 		}
 
 		processMessages(startTime);
-		
+
 		unknownProperties.addAll(remainingProperties);
 		remainingProperties.clear();
 		if (!unknownProperties.isEmpty()) {
@@ -302,7 +305,19 @@ public class Director {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
 			jkind.solvers.Value value = model.getFunctionValue(fn, key);
 			if (value != null) {
-				signal.putValue(i, Util.parseValue(Util.getName(type), value.toString()));
+				Value parsedValue = Util.parseValue(Util.getName(type), value.toString());
+				if (type instanceof EnumType) {
+					EnumType et = (EnumType) type;
+					IntegerValue iv = (IntegerValue) parsedValue;
+					int v = iv.value.intValue();
+					if (v < 0 || et.values.size() <= v) {
+						// This can happen due to looking before the initial
+						// state
+						continue;
+					}
+					parsedValue = new EnumValue(et.values.get(v));
+				}
+				signal.putValue(i, parsedValue);
 			}
 		}
 

@@ -35,17 +35,8 @@
 -- it, this encoding is sufficient. Moreover, we easily shift the tape
 -- left and right using 'div 10' and 'mod 10'.
 
-type state = int;
-const HALT : state = 0;
-const A : state = 1;
-const B : state = 2;
-const C : state = 3;
-const D : state = 4;
-
-type move = bool;
-const L : move = false;
-const R : move = true;
-
+type state = enum { Halt, A, B, C, D };
+type move = enum { L, R };
 type symbol = int;
 
 node main() returns (left, right, head : int);
@@ -57,7 +48,7 @@ var
   cex : bool;
 let
   (left, head, right) = (0, 0, 0) ->
-    if pre state = HALT then pre (left, head, right) else
+    if pre state = Halt then pre (left, head, right) else
     if move = L then (pre left div 10, pre left mod 10, 10*(pre right) + write)
                 else (10*(pre left) + write, pre right mod 10, pre right div 10);
 
@@ -66,12 +57,12 @@ let
     else if pre (state, head) = (A, 1) then (1, L, B)
     else if pre (state, head) = (B, 0) then (1, L, A)
     else if pre (state, head) = (B, 1) then (0, L, C)
-    else if pre (state, head) = (C, 0) then (1, R, HALT)
+    else if pre (state, head) = (C, 0) then (1, R, Halt)
     else if pre (state, head) = (C, 1) then (1, L, D)
     else if pre (state, head) = (D, 0) then (1, R, D)
     else if pre (state, head) = (D, 1) then (0, R, A)
-    else (0, L, HALT); -- Only the HALT state matters here
+    else (0, L, Halt); -- Only the Halt state matters here
 
-  cex = state <> HALT;
+  cex = state <> Halt;
   --%PROPERTY cex;
 tel;

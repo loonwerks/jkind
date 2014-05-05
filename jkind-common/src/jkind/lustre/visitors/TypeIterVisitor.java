@@ -1,6 +1,7 @@
 package jkind.lustre.visitors;
 
 import jkind.lustre.ArrayType;
+import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -16,6 +17,11 @@ public class TypeIterVisitor implements TypeVisitor<Void> {
 	@Override
 	public Void visit(ArrayType e) {
 		e.base.accept(this);
+		return null;
+	}
+
+	@Override
+	public Void visit(EnumType e) {
 		return null;
 	}
 
@@ -38,8 +44,8 @@ public class TypeIterVisitor implements TypeVisitor<Void> {
 			t.accept(this);
 		}
 		return null;
-	}	
-	
+	}
+
 	@Override
 	public Void visit(SubrangeIntType e) {
 		return null;

@@ -14,6 +14,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -41,23 +42,25 @@ import jkind.util.Util;
 /**
  * Assuming everything is well-typed, this class can be used to quickly
  * reconstruct the type of an expression (often useful during translations).
- * This class treats subrange types as integer types.
+ * This class treats subrange and enumeration types as integer types.
  */
 public class TypeReconstructor implements ExprVisitor<Type> {
 	private final Map<String, Type> typeTable = new HashMap<>();
 	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable = new HashMap<>();
 
 	public TypeReconstructor(Program program) {
 		populateTypeTable(program.types);
+		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
 		nodeTable.putAll(Util.getNodeTable(program.nodes));
 	}
 
 	/**
-	 * This constructor is for use after user types, constants, and nodes have
-	 * all been inlined.
+	 * This constructor is for use after enumerated values, user types,
+	 * constants, and nodes have all been inlined.
 	 */
 	public TypeReconstructor() {
 	}
@@ -65,6 +68,17 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		for (TypeDef def : typeDefs) {
 			typeTable.put(def.id, resolveType(def.type));
+		}
+	}
+
+	private void populateEnumValueTable(List<TypeDef> typeDefs) {
+		for (TypeDef def : typeDefs) {
+			if (def.type instanceof EnumType) {
+				EnumType et = (EnumType) def.type;
+				for (String id : et.values) {
+					enumValueTable.put(id, et);
+				}
+			}
 		}
 	}
 
@@ -157,6 +171,8 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 			return variableTable.get(e.id);
 		} else if (constantTable.containsKey(e.id)) {
 			return constantTable.get(e.id);
+		} else if (enumValueTable.containsKey(e.id)) {
+			return NamedType.INT;
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -242,6 +258,11 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		return type.accept(new TypeMapVisitor() {
 			@Override
 			public Type visit(SubrangeIntType e) {
+				return NamedType.INT;
+			}
+			
+			@Override
+			public Type visit(EnumType e) {
 				return NamedType.INT;
 			}
 
