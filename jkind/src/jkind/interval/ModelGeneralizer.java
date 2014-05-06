@@ -9,12 +9,14 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
@@ -85,7 +87,7 @@ public class ModelGeneralizer {
 		} else if (type == NamedType.REAL) {
 			NumericInterval initial = (NumericInterval) originalInterval(id, i);
 			return realIntervalGeneralizer.generalize(id, i, initial);
-		} else if (type instanceof SubrangeIntType) {
+		} else if (type instanceof SubrangeIntType || type instanceof EnumType) {
 			return generalizeSubrangeIntInterval(id, i);
 		} else {
 			throw new IllegalArgumentException("Unknown type in generalization: " + type);
@@ -128,10 +130,31 @@ public class ModelGeneralizer {
 					cex.addSignal(signal);
 				}
 
-				signal.putValue(pair.i, value);
+				Type type = spec.typeMap.get(pair.id);
+				if (type instanceof EnumType) {
+					EnumType et = (EnumType) type;
+					int v = getExactInt(value);
+					if (v < 0 || et.values.size() <= v) {
+						// This can happen due to looking before the initial
+						// state
+						continue;
+					}
+					signal.putValue(pair.i, new EnumValue(et.values.get(v)));
+				} else {
+					signal.putValue(pair.i, value);
+				}
 			}
 		}
 		return cex;
+	}
+
+	private int getExactInt(Interval value) {
+		NumericInterval ni = (NumericInterval) value;
+		if (!ni.isExact()) {
+			throw new IllegalStateException();
+		}
+		IntEndpoint ie = (IntEndpoint) ni.getLow();
+		return ie.getValue().intValue();
 	}
 
 	private Interval originalInterval(String id, int i) {

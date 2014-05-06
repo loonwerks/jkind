@@ -7,6 +7,7 @@ import jkind.translation.tuples.FlattenTuples;
 
 public class Translate {
 	public static Node translate(Program program) {
+		program = InlineEnumValues.program(program);
 		program = InlineUserTypes.program(program);
 		program = InlineConstants.program(program);
 		program = RemoveCondacts.program(program);

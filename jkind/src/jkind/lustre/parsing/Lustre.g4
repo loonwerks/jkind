@@ -21,6 +21,7 @@ varDeclGroup: ID (',' ID)* ':' type;
 
 topLevelType: type                                       # plainType
     | 'struct' '{' (ID ':' type) (';' ID ':' type)* '}'  # recordType
+    | 'enum' '{' ID (',' ID)* '}'                        # enumType
     ;
 
 type: 'int'                                              # intType

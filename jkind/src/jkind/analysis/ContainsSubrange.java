@@ -1,6 +1,7 @@
 package jkind.analysis;
 
 import jkind.lustre.ArrayType;
+import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
@@ -16,6 +17,11 @@ public class ContainsSubrange implements TypeVisitor<Boolean> {
 	@Override
 	public Boolean visit(ArrayType e) {
 		return e.base.accept(this);
+	}
+	
+	@Override
+	public Boolean visit(EnumType e) {
+		return false;
 	}
 
 	@Override

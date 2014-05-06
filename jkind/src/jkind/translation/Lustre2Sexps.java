@@ -3,6 +3,7 @@ package jkind.translation;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.NamedType;
@@ -36,18 +37,20 @@ public class Lustre2Sexps {
 	private void createTransition(Node node) {
 		Expr2SexpVisitor visitor = new Expr2SexpVisitor(SexpUtil.I);
 		List<Sexp> conjuncts = new ArrayList<>();
-		
+
 		for (Equation eq : node.equations) {
 			conjuncts.add(equation2Sexp(eq, SexpUtil.I, visitor));
 		}
-		
+
 		for (VarDecl input : node.inputs) {
 			if (input.type instanceof SubrangeIntType) {
 				conjuncts.add(SexpUtil.subrangeConstraint(input.id, SexpUtil.I,
 						(SubrangeIntType) input.type));
+			} else if (input.type instanceof EnumType) {
+				conjuncts.add(SexpUtil.enumConstraint(input.id, SexpUtil.I, (EnumType) input.type));
 			}
 		}
-		
+
 		for (Expr assertion : node.assertions) {
 			conjuncts.add(assertion.accept(visitor));
 		}

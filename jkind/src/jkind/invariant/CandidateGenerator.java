@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
@@ -48,11 +49,24 @@ public class CandidateGenerator {
 				addCandidate(new Cons("not", s), "not " + id);
 			} else if (type instanceof SubrangeIntType) {
 				SubrangeIntType subrange = (SubrangeIntType) type;
-				addCandidate(SexpUtil.subrangeConstraint(id, SexpUtil.I, subrange), "(" + subrange.low
-						+ " <= " + id + " and " + id + " <= " + subrange.high + ")");
+				addCandidate(SexpUtil.subrangeConstraint(id, SexpUtil.I, subrange), "("
+						+ subrange.low + " <= " + id + " and " + id + " <= " + subrange.high + ")");
 
 				Sexp s = new Cons("$" + id, SexpUtil.I);
 				for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r
+						.add(BigInteger.ONE)) {
+					addCandidate(new Cons("=", s, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
+					// addCandidate(new Cons("/=", s, Sexp.fromBigInt(r)), "(" +
+					// id + " <> " + r + ")");
+				}
+			} else if (type instanceof EnumType) {
+				EnumType et = (EnumType) type;
+				addCandidate(SexpUtil.enumConstraint(id, SexpUtil.I, et), "(" + 0 + " <= " + id
+						+ " and " + id + " < " + et.values.size() + ")");
+
+				Sexp s = new Cons("$" + id, SexpUtil.I);
+				BigInteger size = BigInteger.valueOf(et.values.size());
+				for (BigInteger r = BigInteger.ZERO; r.compareTo(size) < 0; r = r
 						.add(BigInteger.ONE)) {
 					addCandidate(new Cons("=", s, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
 					// addCandidate(new Cons("/=", s, Sexp.fromBigInt(r)), "(" +
@@ -65,7 +79,8 @@ public class CandidateGenerator {
 	}
 
 	private void addCandidate(Sexp s, String text) {
-		StreamDef def = new StreamDef("can" + candidateIndex, NamedType.BOOL, new Lambda(SexpUtil.I, s));
+		StreamDef def = new StreamDef("can" + candidateIndex, NamedType.BOOL, new Lambda(
+				SexpUtil.I, s));
 		candidateIndex++;
 		candidates.add(new Candidate(def, text));
 	}

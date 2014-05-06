@@ -13,12 +13,14 @@ import java.util.Map;
 
 import jkind.JKindException;
 import jkind.interval.Interval;
+import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
@@ -56,11 +58,14 @@ public class Util {
 		return nodeTable;
 	}
 
+	/*
+	 * Get the name of the type as modeled by the SMT solvers
+	 */
 	public static String getName(Type type) {
 		if (type instanceof NamedType) {
 			NamedType namedType = (NamedType) type;
 			return namedType.name;
-		} else if (type instanceof SubrangeIntType) {
+		} else if (type instanceof SubrangeIntType || type instanceof EnumType) {
 			return "int";
 		} else {
 			throw new IllegalArgumentException("Cannot find name for type " + type);
@@ -87,6 +92,10 @@ public class Util {
 				BigInteger denom = strs.length > 1 ? new BigInteger(strs[1]) : BigInteger.ONE;
 				return new RealValue(new BigFraction(num, denom));
 			}
+			break;
+
+		default:
+			return new EnumValue(value);
 		}
 
 		throw new JKindException("Unable to parse " + value + " as " + type);

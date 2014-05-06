@@ -5,6 +5,7 @@ import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -49,6 +50,12 @@ public class WarnUnguardedPreVisitor extends ExprIterVisitor {
 			super.visit(e);
 		}
 		
+		return null;
+	}
+	
+	@Override
+	public Void visit(NodeCallExpr e) {
+		UNGUARDED.visitExprs(e.args);
 		return null;
 	}
 }

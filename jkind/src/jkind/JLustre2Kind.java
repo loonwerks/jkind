@@ -8,6 +8,7 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
+import jkind.translation.RemoveEnumTypes;
 import jkind.translation.Translate;
 import jkind.util.Util;
 
@@ -26,6 +27,7 @@ public class JLustre2Kind {
 			StaticAnalyzer.check(program, Level.WARNING);
 
 			Node main = Translate.translate(program);
+			main = RemoveEnumTypes.node(main);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 
