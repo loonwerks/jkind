@@ -2,7 +2,11 @@ package jkind.examples;
 
 import static org.junit.Assert.assertArrayEquals;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -31,6 +35,14 @@ public class TranslateTest {
 
 				String filename = file.toPath().getFileName().toString();
 				File translated = new File(translatedDirectory, filename);
+				
+//				BufferedWriter out = new BufferedWriter(new FileWriter(translated));
+//				for (String line : actual) {
+//					out.write(line);
+//					out.write("\n");
+//				}
+//				out.close();
+				
 				List<String> expected = Files.readAllLines(translated.toPath(), defaultCharset);
 				
 				assertArrayEquals(filename, expected.toArray(), actual);

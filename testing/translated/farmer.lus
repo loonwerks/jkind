@@ -1,38 +1,35 @@
 node main(
-  choice : subrange [0, 3] of int
+  choice : payload
 ) returns (
-  wolf : bool;
-  goat : bool;
-  cabbage : bool;
-  farmer : bool
+  wolf : side;
+  goat : side;
+  cabbage : side;
+  farmer : side
 );
 var
   solved : bool;
   nothing_eaten : bool;
   wellformed : bool;
   prop : bool;
-  boat~0.choice : subrange [0, 3] of int;
-  boat~0.object : subrange [0, 3] of int;
-  boat~0.farmer : bool;
-  boat~0.result : bool;
-  boat~1.choice : subrange [0, 3] of int;
-  boat~1.object : subrange [0, 3] of int;
-  boat~1.farmer : bool;
-  boat~1.result : bool;
-  boat~2.choice : subrange [0, 3] of int;
-  boat~2.object : subrange [0, 3] of int;
-  boat~2.farmer : bool;
-  boat~2.result : bool;
-  swap~0.side : bool;
-  swap~0.other : bool;
+  boat~0.choice : payload;
+  boat~0.object : payload;
+  boat~0.result : side;
+  boat~1.choice : payload;
+  boat~1.object : payload;
+  boat~1.result : side;
+  boat~2.choice : payload;
+  boat~2.object : payload;
+  boat~2.result : side;
+  swap~0.side : side;
+  swap~0.other : side;
   historically~0.x : bool;
   historically~0.holds : bool;
-  boat~0.swap~0.side : bool;
-  boat~0.swap~0.other : bool;
-  boat~1.swap~0.side : bool;
-  boat~1.swap~0.other : bool;
-  boat~2.swap~0.side : bool;
-  boat~2.swap~0.other : bool;
+  boat~0.swap~0.side : side;
+  boat~0.swap~0.other : side;
+  boat~1.swap~0.side : side;
+  boat~1.swap~0.other : side;
+  boat~2.swap~0.side : side;
+  boat~2.swap~0.other : side;
 let
   wolf = boat~0.result;
 
@@ -40,13 +37,13 @@ let
 
   cabbage = boat~2.result;
 
-  farmer = (false -> swap~0.other);
+  farmer = (0 -> (pre swap~0.other));
 
   nothing_eaten = (((wolf = goat) => (farmer = goat)) and ((goat = cabbage) => (farmer = cabbage)));
 
   wellformed = ((((choice = 1) => (farmer = wolf)) and ((choice = 2) => (farmer = goat))) and ((choice = 3) => (farmer = cabbage)));
 
-  solved = ((((wolf = true) and (goat = true)) and (cabbage = true)) and (farmer = true));
+  solved = ((((wolf = 1) and (goat = 1)) and (cabbage = 1)) and (farmer = 1));
 
   prop = (not (historically~0.holds and solved));
 
@@ -54,45 +51,39 @@ let
 
   boat~0.object = 1;
 
-  boat~0.farmer = farmer;
-
-  boat~0.result = (false -> (if ((pre boat~0.choice) = boat~0.object) then boat~0.swap~0.other else (pre boat~0.result)));
+  boat~0.result = (0 -> (if ((pre boat~0.choice) = boat~0.object) then (pre boat~0.swap~0.other) else (pre boat~0.result)));
 
   boat~1.choice = choice;
 
   boat~1.object = 2;
 
-  boat~1.farmer = farmer;
-
-  boat~1.result = (false -> (if ((pre boat~1.choice) = boat~1.object) then boat~1.swap~0.other else (pre boat~1.result)));
+  boat~1.result = (0 -> (if ((pre boat~1.choice) = boat~1.object) then (pre boat~1.swap~0.other) else (pre boat~1.result)));
 
   boat~2.choice = choice;
 
   boat~2.object = 3;
 
-  boat~2.farmer = farmer;
+  boat~2.result = (0 -> (if ((pre boat~2.choice) = boat~2.object) then (pre boat~2.swap~0.other) else (pre boat~2.result)));
 
-  boat~2.result = (false -> (if ((pre boat~2.choice) = boat~2.object) then boat~2.swap~0.other else (pre boat~2.result)));
+  swap~0.side = farmer;
 
-  swap~0.side = (pre farmer);
-
-  swap~0.other = (if (swap~0.side = false) then true else false);
+  swap~0.other = (if (swap~0.side = 0) then 1 else 0);
 
   historically~0.x = (nothing_eaten and wellformed);
 
   historically~0.holds = (historically~0.x and (true -> (pre historically~0.holds)));
 
-  boat~0.swap~0.side = (pre boat~0.result);
+  boat~0.swap~0.side = boat~0.result;
 
-  boat~0.swap~0.other = (if (boat~0.swap~0.side = false) then true else false);
+  boat~0.swap~0.other = (if (boat~0.swap~0.side = 0) then 1 else 0);
 
-  boat~1.swap~0.side = (pre boat~1.result);
+  boat~1.swap~0.side = boat~1.result;
 
-  boat~1.swap~0.other = (if (boat~1.swap~0.side = false) then true else false);
+  boat~1.swap~0.other = (if (boat~1.swap~0.side = 0) then 1 else 0);
 
-  boat~2.swap~0.side = (pre boat~2.result);
+  boat~2.swap~0.side = boat~2.result;
 
-  boat~2.swap~0.other = (if (boat~2.swap~0.side = false) then true else false);
+  boat~2.swap~0.other = (if (boat~2.swap~0.side = 0) then 1 else 0);
 
   --%PROPERTY prop;
 

@@ -38,6 +38,14 @@ var
   max~0.z : int;
   max~0.w : int;
   max~0.out : int;
+  changed~0.x : bool;
+  changed~0.c : bool;
+  changed~1.x : bool;
+  changed~1.c : bool;
+  changed~2.x : bool;
+  changed~2.c : bool;
+  changed~3.x : bool;
+  changed~3.c : bool;
   cost~0.state : bool;
   cost~0.value : int;
   cost~0.out : int;
@@ -88,7 +96,7 @@ let
 
   at_least_one_travelers = (true -> ((((a <> (pre a)) or (b <> (pre b))) or (c <> (pre c))) or (d <> (pre d))));
 
-  no_more_than_two_travelers = (true -> ((((b2i~0.y + b2i~1.y) + b2i~2.y) + b2i~3.y) <= 2));
+  no_more_than_two_travelers = ((((b2i~0.y + b2i~1.y) + b2i~2.y) + b2i~3.y) <= 2);
 
   cost = (0 -> ((pre cost) + max~0.out));
 
@@ -98,19 +106,19 @@ let
 
   prop2 = (not (solved and (cost = 15)));
 
-  b2i~0.x = (a <> (pre a));
+  b2i~0.x = changed~0.c;
 
   b2i~0.y = (if b2i~0.x then 1 else 0);
 
-  b2i~1.x = (b <> (pre b));
+  b2i~1.x = changed~1.c;
 
   b2i~1.y = (if b2i~1.x then 1 else 0);
 
-  b2i~2.x = (c <> (pre c));
+  b2i~2.x = changed~2.c;
 
   b2i~2.y = (if b2i~2.x then 1 else 0);
 
-  b2i~3.x = (d <> (pre d));
+  b2i~3.x = changed~3.c;
 
   b2i~3.y = (if b2i~3.x then 1 else 0);
 
@@ -123,6 +131,22 @@ let
   max~0.w = cost~3.out;
 
   max~0.out = max~0.max2~0.out;
+
+  changed~0.x = a;
+
+  changed~0.c = (false -> (changed~0.x <> (pre changed~0.x)));
+
+  changed~1.x = b;
+
+  changed~1.c = (false -> (changed~1.x <> (pre changed~1.x)));
+
+  changed~2.x = c;
+
+  changed~2.c = (false -> (changed~2.x <> (pre changed~2.x)));
+
+  changed~3.x = d;
+
+  changed~3.c = (false -> (changed~3.x <> (pre changed~3.x)));
 
   cost~0.state = a;
 
