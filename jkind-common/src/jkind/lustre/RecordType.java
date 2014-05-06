@@ -1,11 +1,11 @@
 package jkind.lustre;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
+import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
+import jkind.util.Util;
 
 public class RecordType extends Type {
 	final public String id;
@@ -13,8 +13,11 @@ public class RecordType extends Type {
 
 	public RecordType(Location location, String id, Map<String, Type> fields) {
 		super(location);
+		Assert.isNotNull(id);
+		Assert.isNotNull(fields);
+		Assert.isTrue(fields.size() > 0);
 		this.id = id;
-		this.fields = Collections.unmodifiableSortedMap(new TreeMap<>(fields));
+		this.fields = Util.safeStringSortedMap(fields);
 	}
 
 	public RecordType(String id, Map<String, Type> fields) {

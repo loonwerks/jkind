@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class BoolExpr extends Expr {
@@ -7,6 +8,7 @@ public class BoolExpr extends Expr {
 
 	public BoolExpr(Location location, boolean value) {
 		super(location);
+		Assert.isNotNull(value);
 		this.value = value;
 	}
 	

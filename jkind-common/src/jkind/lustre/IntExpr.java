@@ -2,6 +2,7 @@ package jkind.lustre;
 
 import java.math.BigInteger;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class IntExpr extends Expr {
@@ -9,6 +10,7 @@ public class IntExpr extends Expr {
 
 	public IntExpr(Location location, BigInteger value) {
 		super(location);
+		Assert.isNotNull(value);
 		this.value = value;
 	}
 	

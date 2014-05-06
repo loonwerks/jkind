@@ -2,6 +2,7 @@ package jkind.lustre;
 
 import java.math.BigDecimal;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class RealExpr extends Expr {
@@ -9,6 +10,7 @@ public class RealExpr extends Expr {
 
 	public RealExpr(Location location, BigDecimal value) {
 		super(location);
+		Assert.isNotNull(value);
 		this.value = value;
 	}
 	

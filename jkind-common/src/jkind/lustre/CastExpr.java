@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class CastExpr extends Expr {
@@ -8,6 +9,8 @@ public class CastExpr extends Expr {
 
 	public CastExpr(Location location, Type type, Expr expr) {
 		super(location);
+		Assert.isNotNull(type);
+		Assert.isNotNull(expr);
 		this.type = type;
 		this.expr = expr;
 	}

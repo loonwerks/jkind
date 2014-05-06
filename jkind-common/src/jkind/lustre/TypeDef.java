@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.AstVisitor;
 
 public class TypeDef extends Ast {
@@ -8,6 +9,8 @@ public class TypeDef extends Ast {
 
 	public TypeDef(Location location, String id, Type type) {
 		super(location);
+		Assert.isNotNull(id);
+		Assert.isNotNull(type);
 		this.id = id;
 		this.type = type;
 	}

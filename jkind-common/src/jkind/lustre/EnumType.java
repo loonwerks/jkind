@@ -1,9 +1,10 @@
 package jkind.lustre;
 
-import java.util.Collections;
 import java.util.List;
 
+import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
+import jkind.util.Util;
 
 public class EnumType extends Type {
 	final public String id;
@@ -11,8 +12,9 @@ public class EnumType extends Type {
 
 	public EnumType(Location location, String id, List<String> values) {
 		super(location);
+		Assert.isNotNull(id);
 		this.id = id;
-		this.values = Collections.unmodifiableList(values);
+		this.values = Util.safeList(values);
 	}
 
 	public EnumType(String id, List<String> values) {

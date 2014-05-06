@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.AstVisitor;
 
 
@@ -10,6 +11,9 @@ public class Constant extends Ast {
 
 	public Constant(Location location, String id, Type type, Expr expr) {
 		super(location);
+		Assert.isNotNull(id);
+		// 'type' can be null
+		Assert.isNotNull(expr);
 		this.id = id;
 		this.type = type;
 		this.expr = expr;

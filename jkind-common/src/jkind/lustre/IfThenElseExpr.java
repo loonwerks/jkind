@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 
@@ -10,6 +11,9 @@ public class IfThenElseExpr extends Expr {
 	
 	public IfThenElseExpr(Location location, Expr cond, Expr thenExpr, Expr elseExpr) {
 		super(location);
+		Assert.isNotNull(cond);
+		Assert.isNotNull(thenExpr);
+		Assert.isNotNull(elseExpr);
 		this.cond = cond;
 		this.thenExpr = thenExpr;
 		this.elseExpr = elseExpr;

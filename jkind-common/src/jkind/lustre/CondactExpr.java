@@ -1,10 +1,11 @@
 package jkind.lustre;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.util.Util;
 
 public class CondactExpr extends Expr {
 	final public Expr clock;
@@ -13,9 +14,11 @@ public class CondactExpr extends Expr {
 
 	public CondactExpr(Location loc, Expr clock, NodeCallExpr call, List<Expr> args) {
 		super(loc);
+		Assert.isNotNull(clock);
+		Assert.isNotNull(call);
 		this.clock = clock;
 		this.call = call;
-		this.args = Collections.unmodifiableList(args);
+		this.args = Util.safeList(args);
 	}
 	
 	public CondactExpr(Expr clock, NodeCallExpr call, List<Expr> args) {
