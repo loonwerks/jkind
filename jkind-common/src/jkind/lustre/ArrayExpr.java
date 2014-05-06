@@ -1,16 +1,16 @@
 package jkind.lustre;
 
-import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.util.Util;
 
 public class ArrayExpr extends Expr {
 	final public List<Expr> elements;
 
 	public ArrayExpr(Location loc, List<Expr> elements) {
 		super(loc);
-		this.elements = Collections.unmodifiableList(elements);
+		this.elements = Util.safeList(elements);
 	}
 	
 	public ArrayExpr(List<Expr> elements) {

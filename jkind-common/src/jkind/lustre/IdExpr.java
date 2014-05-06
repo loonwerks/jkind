@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 
@@ -8,6 +9,7 @@ public class IdExpr extends Expr {
 	
 	public IdExpr(Location location, String id) {
 		super(location);
+		Assert.isNotNull(id);
 		this.id = id;
 	}
 	

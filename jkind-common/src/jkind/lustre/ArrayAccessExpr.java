@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class ArrayAccessExpr extends Expr {
@@ -8,6 +9,8 @@ public class ArrayAccessExpr extends Expr {
 	
 	public ArrayAccessExpr(Location location, Expr array, Expr index) {
 		super(location);
+		Assert.isNotNull(array);
+		Assert.isNotNull(index);
 		this.array = array;
 		this.index = index;
 	}

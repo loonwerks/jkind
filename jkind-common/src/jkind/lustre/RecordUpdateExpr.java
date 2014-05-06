@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class RecordUpdateExpr extends Expr {
@@ -9,6 +10,9 @@ public class RecordUpdateExpr extends Expr {
 	
 	public RecordUpdateExpr(Location location, Expr record, String field, Expr value) {
 		super(location);
+		Assert.isNotNull(record);
+		Assert.isNotNull(field);
+		Assert.isNotNull(value);
 		this.record = record;
 		this.field = field;
 		this.value = value;

@@ -1,20 +1,20 @@
 package jkind.lustre;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import jkind.lustre.visitors.TypeVisitor;
+import jkind.util.Util;
 
 public class TupleType extends Type {
 	final public List<Type> types;
 
 	public TupleType(List<? extends Type> types) {
 		super(Location.NULL);
-		if (types.size() == 1) {
+		if (types != null && types.size() == 1) {
 			throw new IllegalArgumentException("Cannot construct singleton tuple type");
 		}
-		this.types = Collections.unmodifiableList(types);
+		this.types = Util.safeList(types);
 	}
 
 	public static Type compress(List<? extends Type> types) {

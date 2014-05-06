@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
 
 public class NamedType extends Type {
@@ -7,6 +8,10 @@ public class NamedType extends Type {
 
 	public NamedType(Location location, String name) {
 		super(location);
+		Assert.isNotNull(name);
+		Assert.isFalse(name.equals(BOOL.toString()));
+		Assert.isFalse(name.equals(INT.toString()));
+		Assert.isFalse(name.equals(REAL.toString()));
 		this.name = name;
 	}
 
@@ -14,17 +19,25 @@ public class NamedType extends Type {
 		this(Location.NULL, name);
 	}
 	
+	/*
+	 * Private constructor for built-in types
+	 */
+	private NamedType(String name, @SuppressWarnings("unused") Object unused) {
+		super(Location.NULL);
+		this.name = name;
+	}
+	
 	@Override
 	public String toString() {
 		return name;
 	}
 
-	final public static NamedType REAL = new NamedType("real");
-	final public static NamedType BOOL = new NamedType("bool");
-	final public static NamedType INT = new NamedType("int");
+	final public static NamedType BOOL = new NamedType("bool", null);
+	final public static NamedType INT = new NamedType("int", null);
+	final public static NamedType REAL = new NamedType("real", null);
 
 	public boolean isBuiltin() {
-		return (this == REAL || this == BOOL || this == INT);
+		return this == REAL || this == BOOL || this == INT;
 	}
 
 	@Override

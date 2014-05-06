@@ -1,7 +1,7 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
-
 
 public class ArrayType extends Type {
 	final public Type base;
@@ -9,6 +9,8 @@ public class ArrayType extends Type {
 
 	public ArrayType(Location location, Type base, int size) {
 		super(location);
+		Assert.isNotNull(base);
+		Assert.isTrue(size > 0);
 		this.base = base;
 		this.size = size;
 	}

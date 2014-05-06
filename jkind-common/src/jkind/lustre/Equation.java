@@ -3,7 +3,9 @@ package jkind.lustre;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.Assert;
 import jkind.lustre.visitors.AstVisitor;
+import jkind.util.Util;
 
 public class Equation extends Ast {
 	final public List<IdExpr> lhs;
@@ -11,7 +13,8 @@ public class Equation extends Ast {
 
 	public Equation(Location location, List<IdExpr> lhs, Expr expr) {
 		super(location);
-		this.lhs = Collections.unmodifiableList(lhs);
+		Assert.isNotNull(expr);
+		this.lhs = Util.safeList(lhs);
 		this.expr = expr;
 	}
 
