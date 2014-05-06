@@ -1,5 +1,6 @@
 package jkind.lustre;
 
+import jkind.Assert;
 import jkind.lustre.visitors.AstVisitor;
 
 
@@ -9,6 +10,8 @@ public class VarDecl extends Ast {
 
 	public VarDecl(Location location, String id, Type type) {
 		super(location);
+		Assert.isNotNull(id);
+		Assert.isNotNull(type);
 		this.id = id;
 		this.type = type;
 	}

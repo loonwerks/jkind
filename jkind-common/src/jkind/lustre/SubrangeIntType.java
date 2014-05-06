@@ -2,6 +2,7 @@ package jkind.lustre;
 
 import java.math.BigInteger;
 
+import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
 
 public class SubrangeIntType extends Type {
@@ -10,6 +11,9 @@ public class SubrangeIntType extends Type {
 
 	public SubrangeIntType(Location location, BigInteger low, BigInteger high) {
 		super(location);
+		Assert.isNotNull(low);
+		Assert.isNotNull(high);
+		Assert.isTrue(low.compareTo(high) <= 0);
 		this.low = low;
 		this.high = high;
 	}

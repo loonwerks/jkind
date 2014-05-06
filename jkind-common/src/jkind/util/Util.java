@@ -7,9 +7,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import jkind.JKindException;
 import jkind.interval.Interval;
@@ -158,5 +161,21 @@ public class Util {
 	
 	public static String getBase(String name) {
 		return name.substring(0, name.indexOf('.'));
+	}
+
+	public static <T> List<T> safeList(List<? extends T> original) {
+		if (original == null) {
+			return Collections.emptyList();
+		} else {
+			return Collections.unmodifiableList(new ArrayList<>(original));
+		}
+	}
+
+	public static <T> SortedMap<String, T> safeStringSortedMap(Map<String, T> original) {
+		TreeMap<String, T> map = new TreeMap<>(new StringNaturalOrdering());
+		if (original != null) {
+			map.putAll(original);
+		}
+		return Collections.unmodifiableSortedMap(map);
 	}
 }
