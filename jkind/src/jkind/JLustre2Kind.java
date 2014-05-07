@@ -19,7 +19,7 @@ public class JLustre2Kind {
 			String filename = settings.filename;
 
 			if (!filename.toLowerCase().endsWith(".lus")) {
-				System.out.println("Error: input file must have .lus extension");
+				Output.error("input file must have .lus extension");
 			}
 			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
 
@@ -44,7 +44,7 @@ public class JLustre2Kind {
 				System.out.println(result);
 			} else {
 				Util.writeToFile(result, new File(outFilename));
-				System.out.println("Wrote " + outFilename);
+				Output.println("Wrote " + outFilename);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();

@@ -12,7 +12,7 @@ public class JKindArgumentParser {
 	final private static String BMC = "bmc";
 	final private static String EXCEL = "excel";
 	final private static String INDUCT_CEX = "induct_cex";
-    final private static String INTERVAL = "interval";
+	final private static String INTERVAL = "interval";
 	final private static String N = "n";
 	final private static String NO_INV_GEN = "no_inv_gen";
 	final private static String REDUCE_INV = "reduce_inv";
@@ -21,16 +21,16 @@ public class JKindArgumentParser {
 	final private static String SOLVER = "solver";
 	final private static String TIMEOUT = "timeout";
 	final private static String XML = "xml";
+	final private static String XML_TO_STDOUT = "xml_to_stdout";
 	final private static String VERSION = "version";
 	final private static String HELP = "help";
-
 
 	private static Options getOptions() {
 		Options options = new Options();
 		options.addOption(BMC, false, "bounded model checking only (implies -" + NO_INV_GEN + ")");
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
-        options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
+		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(N, true, "number of iterations (default 200)");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
@@ -39,6 +39,7 @@ public class JKindArgumentParser {
 		options.addOption(SOLVER, true, "SMT solver (default: yices, alternatives: cvc4, z3)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
 		options.addOption(XML, false, "generate results in XML format");
+		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
 		options.addOption(VERSION, false, "display version information");
 		options.addOption(HELP, false, "print this message");
 
@@ -52,7 +53,7 @@ public class JKindArgumentParser {
 			checkSettings(settings);
 			return settings;
 		} catch (Throwable t) {
-			System.out.println("Error reading command line arguments: " + t.getMessage());
+			Output.error("reading command line arguments: " + t.getMessage());
 			System.exit(-1);
 			return null;
 		}
@@ -67,11 +68,13 @@ public class JKindArgumentParser {
 		JKindSettings settings = new JKindSettings();
 
 		ensureExclusive(line, EXCEL, XML);
+		ensureExclusive(line, EXCEL, XML_TO_STDOUT);
+		ensureExclusive(line, XML, XML_TO_STDOUT);
 		ensureExclusive(line, BMC, REDUCE_INV);
 		ensureExclusive(line, BMC, INDUCT_CEX);
 
 		if (line.hasOption(VERSION)) {
-			System.out.println("JKind " + Main.VERSION);
+			Output.println("JKind " + Main.VERSION);
 			System.exit(0);
 		}
 
@@ -121,10 +124,10 @@ public class JKindArgumentParser {
 		if (line.hasOption(SMOOTH)) {
 			settings.smoothCounterexamples = true;
 		}
-		
+
 		if (line.hasOption(INTERVAL)) {
-            settings.intervalGeneralization = true;
-        }
+			settings.intervalGeneralization = true;
+		}
 
 		if (line.hasOption(SOLVER)) {
 			String solver = line.getOptionValue(SOLVER);
@@ -135,7 +138,7 @@ public class JKindArgumentParser {
 			} else if (solver.equals("z3")) {
 				settings.solver = SolverOption.Z3;
 			} else {
-				System.out.println("Unknown solver: " + solver);
+				Output.error("unknown solver: " + solver);
 				System.exit(-1);
 			}
 		}
@@ -144,19 +147,24 @@ public class JKindArgumentParser {
 			settings.xml = true;
 		}
 		
+		if (line.hasOption(XML_TO_STDOUT)) {
+			settings.xmlToStdout = true;
+			settings.xml = true;
+		}
+
 		String[] input = line.getArgs();
 		if (input.length != 1) {
 			printHelp();
 			System.exit(-1);
 		}
 		settings.filename = input[0];
-		
+
 		return settings;
 	}
 
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
 		if (line.hasOption(opt1) && line.hasOption(opt2)) {
-			System.out.println("Error: cannot use option -" + opt1 + " with option -" + opt2);
+			Output.error("cannot use option -" + opt1 + " with option -" + opt2);
 			System.exit(-1);
 		}
 	}
@@ -164,21 +172,21 @@ public class JKindArgumentParser {
 	private static void checkSettings(JKindSettings settings) {
 		if (settings.solver == SolverOption.CVC4) {
 			if (settings.smoothCounterexamples) {
-				System.out.println("Smoothing not supported with CVC4");
+				Output.error("smoothing not supported with CVC4");
 				System.exit(-1);
 			}
 			if (settings.reduceInvariants) {
-				System.out.println("Invariant reduction not supported with CVC4");
+				Output.error("invariant reduction not supported with CVC4");
 				System.exit(-1);
 			}
 		}
 		if (settings.solver == SolverOption.Z3) {
 			if (settings.smoothCounterexamples) {
-				System.out.println("Smoothing not supported with Z3");
+				Output.error("smoothing not supported with Z3");
 				System.exit(-1);
 			}
 			if (settings.reduceInvariants) {
-				System.out.println("Invariant reduction not supported with Z3");
+				Output.error("invariant reduction not supported with Z3");
 				System.exit(-1);
 			}
 		}

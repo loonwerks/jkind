@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
@@ -325,8 +326,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			}
 			return new CondactExpr(loc(ctx), clock, call, args);
 		} else {
-			System.out.println("Error at line " + loc(ctx)
-					+ " second argument to condact must be a node call");
+			Output.error(loc(ctx), "second argument to condact must be a node call");
 			System.exit(-1);
 			return null;
 		}

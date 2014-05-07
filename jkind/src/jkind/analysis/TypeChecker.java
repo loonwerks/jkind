@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
@@ -697,7 +698,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 	private void error(Location location, String message) {
 		passed = false;
-		System.out.println("Type error at line " + location + " " + message);
+		Output.error(location, message);
 	}
 
 	private void error(Ast ast, String message) {

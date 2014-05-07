@@ -35,8 +35,8 @@ public class Main {
 	public static void main(String[] args) {
 		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -benchmark";
 		if (args.length == 0) {
-			System.out.println("JKind Suite " + VERSION);
-			System.out.println(availableEntryPoints);
+			Output.println("JKind Suite " + VERSION);
+			Output.println(availableEntryPoints);
 			System.exit(0);
 		}
 
@@ -61,15 +61,15 @@ public class Main {
 			break;
 
 		default:
-			System.out.println("Unknown entry point: " + entryPoint);
-			System.out.println(availableEntryPoints);
+			Output.error("unknown entry point: " + entryPoint);
+			Output.println(availableEntryPoints);
 			System.exit(-1);
 		}
 	}
 
 	public static Program parseLustre(String filename) throws IOException, RecognitionException {
 		if (!new File(filename).exists()) {
-			System.out.println("Error: cannot find file " + filename);
+			Output.error("cannot find file " + filename);
 			System.exit(-1);
 		}
 		

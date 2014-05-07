@@ -26,6 +26,7 @@ import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
 import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
@@ -208,7 +209,10 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		Value value = e.expr.accept(this);
 		if (value == null) {
 			return null;
+		} else if (e.op == UnaryOp.PRE) {
+			return value;
+		} else {
+			return value.applyUnaryOp(e.op);
 		}
-		return value.applyUnaryOp(e.op);
 	}
 }

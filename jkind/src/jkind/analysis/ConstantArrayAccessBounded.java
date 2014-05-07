@@ -1,5 +1,6 @@
 package jkind.analysis;
 
+import jkind.Output;
 import jkind.analysis.evaluation.ConstantEvaluator;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayType;
@@ -64,8 +65,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 			int index = evalIndex(indexExpr);
 			ArrayType arrayType = getArrayType(arrayExpr);
 			if (index < 0 || index >= arrayType.size) {
-				System.out.println("Error at line " + location + " index " + index
-						+ " out of range");
+				Output.error(location, "index " + index + " out of range");
 				passed = false;
 			}
 		}

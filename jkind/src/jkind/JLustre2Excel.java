@@ -16,7 +16,7 @@ public class JLustre2Excel {
 	public static void main(String args[]) {
 		try {
 			if (args.length != 1) {
-				System.out.println("usage: jlustre2excel <input>");
+				Output.println("usage: jlustre2excel <input>");
 				System.exit(-1);
 			}
 			String filename = args[0];
@@ -30,7 +30,7 @@ public class JLustre2Excel {
 
 			String outFilename = filename + ".xls";
 			new Node2Excel().convert(main, outFilename);
-			System.out.println("Wrote " + outFilename);
+			Output.println("Wrote " + outFilename);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -46,8 +46,8 @@ public class JLustre2Excel {
 				Set<String> seen = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 				for (String value : et.values) {
 					if (seen.contains(value)) {
-						System.out.println("Error at line " + et.location
-								+ " cannot handle enumerated values that differ only by case");
+						Output.error(et.location,
+								"cannot handle enumerated values that differ only by case");
 						unique = false;
 						break;
 					} else {

@@ -218,8 +218,7 @@ public class YicesSolver extends Solver {
 		}
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			System.out.println(string);
-			throw new JKindException("Error parsing Yices output");
+			throw new JKindException("Error parsing Yices output: " + string);
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();

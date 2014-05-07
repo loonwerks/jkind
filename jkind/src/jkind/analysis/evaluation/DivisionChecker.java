@@ -3,6 +3,7 @@ package jkind.analysis.evaluation;
 import java.math.BigInteger;
 import java.util.List;
 
+import jkind.Output;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Constant;
@@ -62,15 +63,13 @@ public class DivisionChecker extends ExprIterVisitor {
 			int rightSignum = signum(e.right.accept(constantEvaluator));
 
 			if (rightSignum == 0) {
-				System.out.println("Error at line " + e.location + " division by zero");
+				Output.error(e.location, "division by zero");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.INT_DIVIDE) {
-				System.out.println("Error at line " + e.location
-						+ " integer division by negative numbers is disabled");
+				Output.error(e.location, "integer division by negative numbers is disabled");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.MODULUS) {
-				System.out.println("Error at line " + e.location
-						+ " modulus by negative numbers is disabled");
+				Output.error(e.location, "modulus by negative numbers is disabled");
 				throw new DivisionException();
 			}
 		}
