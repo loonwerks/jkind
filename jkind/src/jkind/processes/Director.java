@@ -80,7 +80,7 @@ public class Director {
 			if (settings.excel) {
 				return new ExcelWriter(spec.filename + ".xls", spec.node);
 			} else if (settings.xml) {
-				return new XmlWriter(spec.filename + ".xml", spec.typeMap);
+				return new XmlWriter(spec.filename + ".xml", spec.typeMap, settings.xmlToStdout);
 			} else {
 				return new ConsoleWriter(new NodeLayout(spec.node));
 			}
@@ -149,14 +149,16 @@ public class Director {
 	}
 
 	private void printHeader() {
-		System.out.println("==========================================");
-		System.out.println("  JAVA KIND");
-		System.out.println("==========================================");
-		System.out.println();
-		System.out
-				.println("There are " + remainingProperties.size() + " properties to be checked.");
-		System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
-		System.out.println();
+		if (!settings.xmlToStdout) {
+			System.out.println("==========================================");
+			System.out.println("  JAVA KIND");
+			System.out.println("==========================================");
+			System.out.println();
+			System.out.println("There are " + remainingProperties.size()
+					+ " properties to be checked.");
+			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
+			System.out.println();
+		}
 	}
 
 	private void startThreads() {
@@ -255,21 +257,23 @@ public class Director {
 	}
 
 	private void printSummary() {
-		System.out.println("    -------------------------------------");
-		System.out.println("    --^^--        SUMMARY          --^^--");
-		System.out.println("    -------------------------------------");
-		System.out.println();
-		if (!validProperties.isEmpty()) {
-			System.out.println("VALID PROPERTIES: " + validProperties);
+		if (!settings.xmlToStdout) {
+			System.out.println("    -------------------------------------");
+			System.out.println("    --^^--        SUMMARY          --^^--");
+			System.out.println("    -------------------------------------");
 			System.out.println();
-		}
-		if (!invalidProperties.isEmpty()) {
-			System.out.println("INVALID PROPERTIES: " + invalidProperties);
-			System.out.println();
-		}
-		if (!unknownProperties.isEmpty()) {
-			System.out.println("UNKNOWN PROPERTIES: " + unknownProperties);
-			System.out.println();
+			if (!validProperties.isEmpty()) {
+				System.out.println("VALID PROPERTIES: " + validProperties);
+				System.out.println();
+			}
+			if (!invalidProperties.isEmpty()) {
+				System.out.println("INVALID PROPERTIES: " + invalidProperties);
+				System.out.println();
+			}
+			if (!unknownProperties.isEmpty()) {
+				System.out.println("UNKNOWN PROPERTIES: " + unknownProperties);
+				System.out.println();
+			}
 		}
 	}
 

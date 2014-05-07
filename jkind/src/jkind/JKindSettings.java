@@ -5,6 +5,7 @@ public class JKindSettings {
 	public int timeout = 100;
 	public boolean excel = false;
 	public boolean xml = false;
+	public boolean xmlToStdout = false;
 	public boolean scratch = false;
 	public boolean useInductiveProcess = true;
 	public boolean useInvariantProcess = true;
