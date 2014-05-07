@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.Output;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -68,7 +69,7 @@ public class NodeDependencyChecker {
 			while (!curr.equals(callStack.peekFirst())) {
 				callStack.removeFirst();
 			}
-			System.out.println("Error: recursive node calls: " + callStack);
+			Output.error("recursive node calls: " + callStack);
 			return false;
 		}
 

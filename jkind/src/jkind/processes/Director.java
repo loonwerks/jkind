@@ -13,6 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.Output;
 import jkind.invariant.Invariant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Type;
@@ -142,22 +143,22 @@ public class Director {
 		for (Process process : processes) {
 			if (process.getThrowable() != null) {
 				Throwable t = process.getThrowable();
-				System.out.println(process.getName() + " process failed");
-				t.printStackTrace(System.out);
+				Output.println(process.getName() + " process failed");
+				Output.printStackTrace(t);
 			}
 		}
 	}
 
 	private void printHeader() {
 		if (!settings.xmlToStdout) {
-			System.out.println("==========================================");
-			System.out.println("  JAVA KIND");
-			System.out.println("==========================================");
-			System.out.println();
-			System.out.println("There are " + remainingProperties.size()
+			Output.println("==========================================");
+			Output.println("  JAVA KIND");
+			Output.println("==========================================");
+			Output.println();
+			Output.println("There are " + remainingProperties.size()
 					+ " properties to be checked.");
-			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
-			System.out.println();
+			Output.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
+			Output.println();
 		}
 	}
 
@@ -258,21 +259,21 @@ public class Director {
 
 	private void printSummary() {
 		if (!settings.xmlToStdout) {
-			System.out.println("    -------------------------------------");
-			System.out.println("    --^^--        SUMMARY          --^^--");
-			System.out.println("    -------------------------------------");
-			System.out.println();
+			Output.println("    -------------------------------------");
+			Output.println("    --^^--        SUMMARY          --^^--");
+			Output.println("    -------------------------------------");
+			Output.println();
 			if (!validProperties.isEmpty()) {
-				System.out.println("VALID PROPERTIES: " + validProperties);
-				System.out.println();
+				Output.println("VALID PROPERTIES: " + validProperties);
+				Output.println();
 			}
 			if (!invalidProperties.isEmpty()) {
-				System.out.println("INVALID PROPERTIES: " + invalidProperties);
-				System.out.println();
+				Output.println("INVALID PROPERTIES: " + invalidProperties);
+				Output.println();
 			}
 			if (!unknownProperties.isEmpty()) {
-				System.out.println("UNKNOWN PROPERTIES: " + unknownProperties);
-				System.out.println();
+				Output.println("UNKNOWN PROPERTIES: " + unknownProperties);
+				Output.println();
 			}
 		}
 	}

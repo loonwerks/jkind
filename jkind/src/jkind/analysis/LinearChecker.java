@@ -1,5 +1,6 @@
 package jkind.analysis;
 
+import jkind.Output;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -48,8 +49,7 @@ public class LinearChecker extends ExprIterVisitor {
 		switch (e.op) {
 		case MULTIPLY:
 			if (!isConstant(e.left) && !isConstant(e.right)) {
-				System.out.println(level + " at line " + e.location
-						+ " non-constant multiplication");
+				Output.output(level, e.location, "non-constant multiplication");
 				passed = false;
 			}
 			break;
@@ -57,14 +57,14 @@ public class LinearChecker extends ExprIterVisitor {
 		case DIVIDE:
 		case INT_DIVIDE:
 			if (!isConstant(e.right)) {
-				System.out.println(level + " at line " + e.location + " non-constant division");
+				Output.output(level, e.location, "non-constant division");
 				passed = false;
 			}
 			break;
 
 		case MODULUS:
 			if (!isConstant(e.right)) {
-				System.out.println(level + " at line " + e.location + " non-constant modulus");
+				Output.output(level, e.location, "non-constant modulus");
 				passed = false;
 			}
 			break;

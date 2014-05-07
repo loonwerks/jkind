@@ -53,7 +53,7 @@ public class JKindArgumentParser {
 			checkSettings(settings);
 			return settings;
 		} catch (Throwable t) {
-			System.out.println("Error reading command line arguments: " + t.getMessage());
+			Output.error("reading command line arguments: " + t.getMessage());
 			System.exit(-1);
 			return null;
 		}
@@ -74,7 +74,7 @@ public class JKindArgumentParser {
 		ensureExclusive(line, BMC, INDUCT_CEX);
 
 		if (line.hasOption(VERSION)) {
-			System.out.println("JKind " + Main.VERSION);
+			Output.println("JKind " + Main.VERSION);
 			System.exit(0);
 		}
 
@@ -138,7 +138,7 @@ public class JKindArgumentParser {
 			} else if (solver.equals("z3")) {
 				settings.solver = SolverOption.Z3;
 			} else {
-				System.out.println("Unknown solver: " + solver);
+				Output.error("unknown solver: " + solver);
 				System.exit(-1);
 			}
 		}
@@ -164,7 +164,7 @@ public class JKindArgumentParser {
 
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
 		if (line.hasOption(opt1) && line.hasOption(opt2)) {
-			System.out.println("Error: cannot use option -" + opt1 + " with option -" + opt2);
+			Output.error("cannot use option -" + opt1 + " with option -" + opt2);
 			System.exit(-1);
 		}
 	}
@@ -172,21 +172,21 @@ public class JKindArgumentParser {
 	private static void checkSettings(JKindSettings settings) {
 		if (settings.solver == SolverOption.CVC4) {
 			if (settings.smoothCounterexamples) {
-				System.out.println("Smoothing not supported with CVC4");
+				Output.error("smoothing not supported with CVC4");
 				System.exit(-1);
 			}
 			if (settings.reduceInvariants) {
-				System.out.println("Invariant reduction not supported with CVC4");
+				Output.error("invariant reduction not supported with CVC4");
 				System.exit(-1);
 			}
 		}
 		if (settings.solver == SolverOption.Z3) {
 			if (settings.smoothCounterexamples) {
-				System.out.println("Smoothing not supported with Z3");
+				Output.error("smoothing not supported with Z3");
 				System.exit(-1);
 			}
 			if (settings.reduceInvariants) {
-				System.out.println("Invariant reduction not supported with Z3");
+				Output.error("invariant reduction not supported with Z3");
 				System.exit(-1);
 			}
 		}

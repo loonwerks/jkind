@@ -1,5 +1,6 @@
 package jkind.analysis;
 
+import jkind.Output;
 import jkind.lustre.ArrayType;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.TypeIterVisitor;
@@ -16,7 +17,7 @@ public class ArraysNonempty extends TypeIterVisitor {
 	@Override
 	public Void visit(ArrayType e) {
 		if (e.size == 0) {
-			System.out.println("Error at line " + e.location + " array is empty");
+			Output.error(e.location, "array is empty");
 			nonempty = false;
 		}
 		return null;
