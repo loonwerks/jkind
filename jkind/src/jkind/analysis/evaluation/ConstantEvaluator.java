@@ -65,13 +65,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(ArrayExpr e) {
-		List<Value> elements = new ArrayList<>();
-		for (Expr element : e.elements) {
-			Value value = element.accept(this);
-			if (value == null) {
-				return null;
-			}
-			elements.add(value);
+		List<Value> elements = visitExprs(e.elements);
+		if (elements == null) {
+			return null;
 		}
 		return new ArrayValue(elements);
 	}
@@ -193,13 +189,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(TupleExpr e) {
-		List<Value> elements = new ArrayList<>();
-		for (Expr element : e.elements) {
-			Value value = element.accept(this);
-			if (value == null) {
-				return null;
-			}
-			elements.add(value);
+		List<Value> elements = visitExprs(e.elements);
+		if (elements == null) {
+			return null;
 		}
 		return new TupleValue(elements);
 	}
@@ -214,5 +206,17 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		} else {
 			return value.applyUnaryOp(e.op);
 		}
+	}
+
+	private List<Value> visitExprs(List<Expr> es) {
+		List<Value> values = new ArrayList<>();
+		for (Expr e : es) {
+			Value value = e.accept(this);
+			if (value == null) {
+				return null;
+			}
+			values.add(value);
+		}
+		return values;
 	}
 }
