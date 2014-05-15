@@ -43,7 +43,6 @@ import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
-import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
@@ -57,7 +56,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private TypeChecker(Program program) {
 		this.nodeTable = Util.getNodeTable(program.nodes);
 		this.passed = true;
-		
+
 		populateTypeTable(program.types);
 		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
@@ -75,9 +74,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
-		for (TypeDef def : typeDefs) {
-			typeTable.put(def.id, resolveType(def.type));
-		}
+		typeTable.putAll(Util.createResolvedTypeTable(typeDefs));
 	}
 
 	private void populateEnumValueTable(List<TypeDef> typeDefs) {
@@ -126,12 +123,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private Type resolveType(Type type) {
-		try {
-			return Util.resolveType(type, typeTable);
-		} catch (TypeResolutionException e) {
-			error(e.type.location, "unknown type " + e.type);
-			return null;
-		}
+		return Util.resolveType(type, typeTable);
 	}
 
 	private boolean isIntBased(Type type) {

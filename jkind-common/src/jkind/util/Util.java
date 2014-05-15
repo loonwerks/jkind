@@ -21,6 +21,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
+import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.EnumValue;
@@ -106,6 +107,23 @@ public class Util {
 
 	public static Type resolveType(Type type, Map<String, Type> map) {
 		return TypeResolver.resolve(type, map);
+	}
+
+	public static Map<String, Type> createResolvedTypeTable(List<TypeDef> defs) {
+		Map<String, Type> resolved = new HashMap<>();
+		Map<String, Type> unresolved = createUnresolvedTypeTable(defs);
+		for (TypeDef def : defs) {
+			resolved.put(def.id, resolveType(def.type, unresolved));
+		}
+		return resolved;
+	}
+
+	private static Map<String, Type> createUnresolvedTypeTable(List<TypeDef> defs) {
+		Map<String, Type> unresolved = new HashMap<>();
+		for (TypeDef def : defs) {
+			unresolved.put(def.id, def.type);
+		}
+		return unresolved;
 	}
 
 	public static void writeToFile(String content, File file) throws IOException {

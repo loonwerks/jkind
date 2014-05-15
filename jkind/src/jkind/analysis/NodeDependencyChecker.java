@@ -1,13 +1,9 @@
 package jkind.analysis;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
-import jkind.Output;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -15,14 +11,17 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.ExprIterVisitor;
 
-public class NodeDependencyChecker {
+public class NodeDependencyChecker extends CycleChecker {
 	public static boolean check(Program program) {
-		Map<String, Set<String>> dependencies = new HashMap<>();
-		for (Node node : program.nodes) {
+		return new NodeDependencyChecker().check(program.nodes);
+	}
+
+	protected boolean check(List<Node> nodes) {
+		for (Node node : nodes) {
 			dependencies.put(node.id, getNodeDependencies(node));
 		}
 
-		return new NodeDependencyChecker(dependencies).check();
+		return super.checkDependencies();
 	}
 
 	private static Set<String> getNodeDependencies(Node node) {
@@ -44,43 +43,9 @@ public class NodeDependencyChecker {
 		}
 		return dependencies;
 	}
-
-	private Map<String, Set<String>> dependencies;
-	private Deque<String> callStack;
-
-	private NodeDependencyChecker(Map<String, Set<String>> dependencies) {
-		this.dependencies = dependencies;
-		this.callStack = new ArrayDeque<>();
-	}
-
-	private boolean check() {
-		for (String root : dependencies.keySet()) {
-			if (!check(root)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	private boolean check(String curr) {
-		if (callStack.contains(curr)) {
-			callStack.addLast(curr);
-			while (!curr.equals(callStack.peekFirst())) {
-				callStack.removeFirst();
-			}
-			Output.error("recursive node calls: " + callStack);
-			return false;
-		}
-
-		callStack.addLast(curr);
-		for (String next : dependencies.get(curr)) {
-			if (!check(next)) {
-				return false;
-			}
-		}
-		callStack.removeLast();
-
-		return true;
+	
+	@Override
+	protected String getError() {
+		return "cyclic node calls";
 	}
 }

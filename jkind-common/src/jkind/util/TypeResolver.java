@@ -21,10 +21,8 @@ public class TypeResolver extends TypeMapVisitor {
 	public Type visit(NamedType e) {
 		if (e.isBuiltin()) {
 			return e;
-		} else if (map.containsKey(e.name)) {
-			return map.get(e.name);
 		} else {
-			throw new TypeResolutionException(e);
+			return map.get(e.name).accept(this);
 		}
 	}
 }

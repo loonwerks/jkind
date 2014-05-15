@@ -33,6 +33,8 @@ public class StaticAnalyzer {
 		boolean result = true;
 		result = result && hasMainNode(program);
 		result = result && typesUnique(program);
+		result = result && TypesDefined.check(program);;
+		result = result && TypeDependencyChecker.check(program);
 		result = result && enumsAndConstantsUnique(program);
 		result = result && nodesUnique(program);
 		result = result && variablesUnique(program);
@@ -53,14 +55,6 @@ public class StaticAnalyzer {
 		return result;
 	}
 
-	private static boolean hasMainNode(Program program) {
-		if (program.getMainNode() == null) {
-			Output.error("no main node");
-			return false;
-		}
-		return true;
-	}
-
 	private static boolean checkWarnings(Program program, Level nonlinear) {
 		warnUnusedAsserts(program);
 		warnAlgebraicLoops(program);
@@ -69,6 +63,14 @@ public class StaticAnalyzer {
 			LinearChecker.check(program, nonlinear);
 		}
 
+		return true;
+	}
+
+	private static boolean hasMainNode(Program program) {
+		if (program.getMainNode() == null) {
+			Output.error("no main node");
+			return false;
+		}
 		return true;
 	}
 
