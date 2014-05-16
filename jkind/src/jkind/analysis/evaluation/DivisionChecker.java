@@ -1,56 +1,66 @@
 package jkind.analysis.evaluation;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import jkind.Output;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Constant;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.Node;
+import jkind.lustre.IdExpr;
 import jkind.lustre.Program;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
-import jkind.lustre.visitors.ExprIterVisitor;
+import jkind.lustre.visitors.AstIterVisitor;
 import jkind.util.BigFraction;
 
-public class DivisionChecker extends ExprIterVisitor {
+public class DivisionChecker extends AstIterVisitor {
 	private ConstantEvaluator constantEvaluator;
+	private final Map<String, Constant> constantDefinitions = new HashMap<>();
 
 	public static boolean check(Program program) {
 		try {
-			new DivisionChecker().visitProgram(program);
+			new DivisionChecker().visit(program);
 			return true;
 		} catch (DivisionException e) {
 			return false;
 		}
 	}
 
-	public void visitProgram(Program program) {
-		visitConstants(program.constants);
-		for (Node node : program.nodes) {
-			visitNode(node);
-		}
-	}
-
-	private void visitConstants(List<Constant> constants) {
-		constantEvaluator = new ConstantEvaluator();
+	@Override
+	protected void visitConstants(List<Constant> constants) {
 		for (Constant c : constants) {
-			// Check constants for division by zero, before admitting them
-			c.expr.accept(this);
-			constantEvaluator.addConstant(c);
+			constantDefinitions.put(c.id, c);
+		}
+
+		// In order to use a ConstantEvaluator, we first have to ensure that the
+		// constants themselves don't have division by zero. This is a bit
+		// tricky due to constants being defined in any order.
+		constantEvaluator = new ConstantEvaluator() {
+			@Override
+			public Value visit(IdExpr e) {
+				Value value = super.visit(e);
+				if (value == null) {
+					// Check constants on the fly
+					checkConstant(constantDefinitions.get(e.id));
+				}
+				return value;
+			}
+		};
+
+		for (Constant c : constants) {
+			if (!constantEvaluator.containsConstant(c.id)) {
+				checkConstant(c);
+			}
 		}
 	}
-
-	public void visitNode(Node node) {
-		for (Equation eq : node.equations) {
-			eq.expr.accept(this);
-		}
-		for (Expr e : node.assertions) {
-			e.accept(this);
-		}
+	
+	private void checkConstant(Constant c) {
+		c.accept(this);
+		constantEvaluator.addConstant(c);
 	}
 
 	@Override
@@ -62,15 +72,13 @@ public class DivisionChecker extends ExprIterVisitor {
 			int rightSignum = signum(e.right.accept(constantEvaluator));
 
 			if (rightSignum == 0) {
-				System.out.println("Error at line " + e.location + " division by zero");
+				Output.error(e.location, "division by zero");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.INT_DIVIDE) {
-				System.out.println("Error at line " + e.location
-						+ " integer division by negative numbers is disabled");
+				Output.error(e.location, "integer division by negative numbers is disabled");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.MODULUS) {
-				System.out.println("Error at line " + e.location
-						+ " modulus by negative numbers is disabled");
+				Output.error(e.location, "modulus by negative numbers is disabled");
 				throw new DivisionException();
 			}
 		}

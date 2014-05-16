@@ -20,9 +20,14 @@ public class XmlWriter extends Writer {
 	private PrintWriter out;
 	private Map<String, Type> types;
 
-	public XmlWriter(String filename, Map<String, Type> types) throws FileNotFoundException {
+	public XmlWriter(String filename, Map<String, Type> types, boolean useStdout)
+			throws FileNotFoundException {
 		this.types = types;
-		this.out = new PrintWriter(new FileOutputStream(filename), true);
+		if (useStdout) {
+			this.out = new PrintWriter(System.out, true);
+		} else {
+			this.out = new PrintWriter(new FileOutputStream(filename), true);
+		}
 	}
 
 	@Override

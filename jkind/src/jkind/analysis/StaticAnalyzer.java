@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.Output;
 import jkind.analysis.evaluation.DivisionChecker;
 import jkind.lustre.Constant;
 import jkind.lustre.EnumType;
@@ -32,13 +33,16 @@ public class StaticAnalyzer {
 		boolean result = true;
 		result = result && hasMainNode(program);
 		result = result && typesUnique(program);
+		result = result && TypesDefined.check(program);
+		result = result && TypeDependencyChecker.check(program);
 		result = result && enumsAndConstantsUnique(program);
+		result = result && constantsConstant(program);
+		result = result && ConstantDependencyChecker.check(program);
 		result = result && nodesUnique(program);
 		result = result && variablesUnique(program);
 		result = result && TypeChecker.check(program);
 		result = result && SubrangesNonempty.check(program);
 		result = result && ArraysNonempty.check(program);
-		result = result && constantsConstant(program);
 		result = result && DivisionChecker.check(program);
 		result = result && NodeDependencyChecker.check(program);
 		result = result && assignmentsSound(program);
@@ -52,14 +56,6 @@ public class StaticAnalyzer {
 		return result;
 	}
 
-	private static boolean hasMainNode(Program program) {
-		if (program.getMainNode() == null) {
-			System.out.println("Error: no main node");
-			return false;
-		}
-		return true;
-	}
-
 	private static boolean checkWarnings(Program program, Level nonlinear) {
 		warnUnusedAsserts(program);
 		warnAlgebraicLoops(program);
@@ -71,13 +67,20 @@ public class StaticAnalyzer {
 		return true;
 	}
 
+	private static boolean hasMainNode(Program program) {
+		if (program.getMainNode() == null) {
+			Output.error("no main node");
+			return false;
+		}
+		return true;
+	}
+
 	private static boolean typesUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 		for (TypeDef def : program.types) {
 			if (seen.contains(def.id)) {
-				System.out.println("Error at line " + def.location + " type " + def.id
-						+ " already defined");
+				Output.error(def.location, "type " + def.id + " already defined");
 				unique = false;
 			} else {
 				seen.add(def.id);
@@ -95,8 +98,7 @@ public class StaticAnalyzer {
 				EnumType et = (EnumType) def.type;
 				for (String value : et.values) {
 					if (seen.contains(value)) {
-						System.out.println("Error at line " + def.location + " " + value
-								+ " defined multiple times");
+						Output.error(def.location, value + " defined multiple times");
 						unique = false;
 					} else {
 						seen.add(value);
@@ -107,8 +109,7 @@ public class StaticAnalyzer {
 
 		for (Constant c : program.constants) {
 			if (seen.contains(c.id)) {
-				System.out.println("Error at line " + c.location + " " + c.id
-						+ " defined multiple times");
+				Output.error(c.location, c.id + " defined multiple times");
 				unique = false;
 			} else {
 				seen.add(c.id);
@@ -118,8 +119,7 @@ public class StaticAnalyzer {
 		for (Node node : program.nodes) {
 			for (VarDecl vd : Util.getVarDecls(node)) {
 				if (seen.contains(vd.id)) {
-					System.out.println("Error at line " + vd.location + " " + vd.id
-							+ " already defined globally");
+					Output.error(vd.location, vd.id + " already defined globally");
 					unique = false;
 				}
 			}
@@ -128,13 +128,24 @@ public class StaticAnalyzer {
 		return unique;
 	}
 
+	private static boolean constantsConstant(Program program) {
+		boolean constant = true;
+		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
+		for (Constant c : program.constants) {
+			if (!c.expr.accept(constantAnalyzer)) {
+				Output.error(c.location, "constant " + c.id + " does not have a constant value");
+				constant = false;
+			}
+		}
+		return constant;
+	}
+
 	private static boolean nodesUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 		for (Node node : program.nodes) {
 			if (seen.contains(node.id)) {
-				System.out.println("Error at line " + node.location + " node " + node.id
-						+ " already defined");
+				Output.error(node.location, "node " + node.id + " already defined");
 				unique = false;
 			} else {
 				seen.add(node.id);
@@ -156,27 +167,13 @@ public class StaticAnalyzer {
 		Set<String> seen = new HashSet<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			if (seen.contains(decl.id)) {
-				System.out.println("Error at line " + decl.location + " variable " + decl.id
-						+ " already declared");
+				Output.error(decl.location, "variable " + decl.id + " already declared");
 				unique = false;
 			} else {
 				seen.add(decl.id);
 			}
 		}
 		return unique;
-	}
-
-	private static boolean constantsConstant(Program program) {
-		boolean constant = true;
-		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
-		for (Constant c : program.constants) {
-			if (!c.expr.accept(constantAnalyzer)) {
-				System.out.println("Error at line " + c.location + " constant " + c.id
-						+ " does not have a constant value");
-				constant = false;
-			}
-		}
-		return constant;
 	}
 
 	private static boolean assignmentsSound(Program program) {
@@ -200,20 +197,18 @@ public class StaticAnalyzer {
 					toAssign.remove(idExpr.id);
 					assigned.add(idExpr.id);
 				} else if (assigned.contains(idExpr.id)) {
-					System.out.println("Error at line " + idExpr.location + " variable '"
-							+ idExpr.id + "' cannot be reassigned");
+					Output.error(idExpr.location, "variable '" + idExpr.id
+							+ "' cannot be reassigned");
 					sound = false;
 				} else {
-					System.out.println("Error at line " + idExpr.location + " variable '"
-							+ idExpr.id + "' cannot be assigned");
+					Output.error(idExpr.location, "variable '" + idExpr.id + "' cannot be assigned");
 					sound = false;
 				}
 			}
 		}
 
 		if (!toAssign.isEmpty()) {
-			System.out.println("Error in node '" + node.id + "' variables must be assigned: "
-					+ toAssign);
+			Output.error("in node '" + node.id + "' variables must be assigned: " + toAssign);
 			sound = false;
 		}
 
@@ -227,8 +222,8 @@ public class StaticAnalyzer {
 			Set<String> seen = new HashSet<>();
 			for (String prop : node.properties) {
 				if (seen.contains(prop)) {
-					System.out.println("Error: property '" + prop
-							+ "' declared multiple times in node '" + node.id + "'");
+					Output.error("in node '" + node.id + "' property '" + prop
+							+ "' declared multiple times");
 					unique = false;
 				} else {
 					seen.add(prop);
@@ -246,8 +241,7 @@ public class StaticAnalyzer {
 			Set<String> variables = new HashSet<>(Util.getIds(Util.getVarDecls(node)));
 			for (String prop : node.properties) {
 				if (!variables.contains(prop)) {
-					System.out.println("Error: property '" + prop + "' does not exist in node '"
-							+ node.id + "'");
+					Output.error("in node '" + node.id + "' property '" + prop + "' does not exist");
 					exist = false;
 				}
 			}
@@ -263,7 +257,8 @@ public class StaticAnalyzer {
 			Set<String> booleans = getBooleans(node);
 			for (String prop : node.properties) {
 				if (!booleans.contains(prop)) {
-					System.out.println("Error: property '" + prop + "' does not have type bool");
+					Output.error("in node '" + node.id + "' property '" + prop
+							+ "' does not have type bool");
 					allBoolean = false;
 				}
 			}
@@ -289,8 +284,7 @@ public class StaticAnalyzer {
 			}
 
 			for (Expr expr : node.assertions) {
-				System.out.println("Warning at line " + expr.location
-						+ " assertion in subnode ignored");
+				Output.warning(expr.location, "assertion in subnode ignored");
 			}
 		}
 	}
@@ -318,11 +312,13 @@ public class StaticAnalyzer {
 	private static boolean checkAlgebraicLoops(String node, String id, List<String> stack,
 			List<String> covered, Map<String, Set<String>> directDepends) {
 		if (stack.contains(id)) {
-			System.out.print("Warning in node '" + node + "' possible algebraic loop: ");
+			StringBuilder text = new StringBuilder();
+			text.append("in node '" + node + "' possible algebraic loop: ");
 			for (String s : stack.subList(stack.indexOf(id), stack.size())) {
-				System.out.print(s + " -> ");
+				text.append(s + " -> ");
 			}
-			System.out.println(id);
+			text.append(id);
+			Output.warning(text.toString());
 			return true;
 		}
 

@@ -25,7 +25,6 @@ import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class ConstantAnalyzer implements ExprVisitor<Boolean> {
@@ -126,11 +125,7 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(UnaryExpr e) {
-		if (e.op == UnaryOp.PRE) {
-			return false;
-		} else {
-			return e.expr.accept(this);
-		}
+		return e.expr.accept(this);
 	}
 
 	private Boolean visitExprs(Collection<Expr> exprs) {

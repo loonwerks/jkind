@@ -26,7 +26,7 @@ public class JLustre2KindArgumentParser {
 		try {
 			return getSettings(parser.parse(getOptions(), args));
 		} catch (Throwable t) {
-			System.out.println("Error reading command line arguments: " + t.getMessage());
+			Output.error("reading command line arguments: " + t.getMessage());
 			System.exit(-1);
 			return null;
 		}
@@ -40,7 +40,7 @@ public class JLustre2KindArgumentParser {
 	private static JLustre2KindSettings getSettings(CommandLine line) {
 		JLustre2KindSettings settings = new JLustre2KindSettings();
 		if (line.hasOption(VERSION)) {
-			System.out.println("JLustre2Kind " + Main.VERSION);
+			Output.println("JLustre2Kind " + Main.VERSION);
 			System.exit(0);
 		}
 

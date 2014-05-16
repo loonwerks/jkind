@@ -18,8 +18,8 @@ public class ArrayUpdateExpr extends Expr {
 		this.value = value;
 	}
 	
-	public ArrayUpdateExpr(Expr expr, Expr index, Expr value) {
-		this(Location.NULL, expr, index, value);
+	public ArrayUpdateExpr(Expr array, Expr index, Expr value) {
+		this(Location.NULL, array, index, value);
 	}
 
 	@Override

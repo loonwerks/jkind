@@ -21,9 +21,7 @@ public class InlineUserTypes extends AstMapVisitor {
 	
 	@Override
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
-		for (TypeDef e : es) {
-			types.put(e.id, Util.resolveType(e.type, types));
-		}
+		types.putAll(Util.createResolvedTypeTable(es));
 		return Collections.emptyList();
 	}
 

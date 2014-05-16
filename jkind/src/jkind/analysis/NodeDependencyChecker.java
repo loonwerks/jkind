@@ -1,85 +1,47 @@
 package jkind.analysis;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
+import jkind.Output;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
-import jkind.lustre.visitors.ExprIterVisitor;
+import jkind.lustre.visitors.AstIterVisitor;
+import jkind.util.CycleFinder;
 
 public class NodeDependencyChecker {
 	public static boolean check(Program program) {
+		return new NodeDependencyChecker().check(program.nodes);
+	}
+
+	protected boolean check(List<Node> nodes) {
 		Map<String, Set<String>> dependencies = new HashMap<>();
-		for (Node node : program.nodes) {
+		for (Node node : nodes) {
 			dependencies.put(node.id, getNodeDependencies(node));
 		}
 
-		return new NodeDependencyChecker(dependencies).check();
+		List<String> cycle = CycleFinder.findCycle(dependencies);
+		if (cycle != null) {
+			Output.error("cyclic node calls: " + cycle);
+			return false;
+		}
+		return true;
 	}
 
 	private static Set<String> getNodeDependencies(Node node) {
 		final Set<String> dependencies = new HashSet<>();
-		ExprIterVisitor nodeCallCollector = new ExprIterVisitor() {
+		new AstIterVisitor() {
 			@Override
 			public Void visit(NodeCallExpr e) {
 				dependencies.add(e.node);
 				super.visit(e);
 				return null;
 			}
-		};
-
-		for (Equation eq : node.equations) {
-			eq.expr.accept(nodeCallCollector);
-		}
-		for (Expr e : node.assertions) {
-			e.accept(nodeCallCollector);
-		}
+		}.visit(node);
 		return dependencies;
-	}
-
-	private Map<String, Set<String>> dependencies;
-	private Deque<String> callStack;
-
-	private NodeDependencyChecker(Map<String, Set<String>> dependencies) {
-		this.dependencies = dependencies;
-		this.callStack = new ArrayDeque<>();
-	}
-
-	private boolean check() {
-		for (String root : dependencies.keySet()) {
-			if (!check(root)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	private boolean check(String curr) {
-		if (callStack.contains(curr)) {
-			callStack.addLast(curr);
-			while (!curr.equals(callStack.peekFirst())) {
-				callStack.removeFirst();
-			}
-			System.out.println("Error: recursive node calls: " + callStack);
-			return false;
-		}
-
-		callStack.addLast(curr);
-		for (String next : dependencies.get(curr)) {
-			if (!check(next)) {
-				return false;
-			}
-		}
-		callStack.removeLast();
-
-		return true;
 	}
 }

@@ -1,5 +1,6 @@
 package jkind.analysis;
 
+import jkind.Output;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
@@ -32,7 +33,7 @@ public class WarnUnguardedPreVisitor extends ExprIterVisitor {
 			if (this == GUARDED) {
 				e.expr.accept(UNGUARDED);
 			} else {
-				System.out.println("Warning at line " + e.location + " unguarded pre expression");
+				Output.warning(e.location, "unguarded pre expression");
 			}
 		} else {
 			super.visit(e);

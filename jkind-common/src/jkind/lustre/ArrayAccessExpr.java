@@ -15,12 +15,12 @@ public class ArrayAccessExpr extends Expr {
 		this.index = index;
 	}
 	
-	public ArrayAccessExpr(Expr expr, Expr index) {
-		this(Location.NULL, expr, index);
+	public ArrayAccessExpr(Expr array, Expr index) {
+		this(Location.NULL, array, index);
 	}
 	
-	public ArrayAccessExpr(Expr expr, int index) {
-		this(expr, new IntExpr(index));
+	public ArrayAccessExpr(Expr array, int index) {
+		this(array, new IntExpr(index));
 	}
 
 	@Override

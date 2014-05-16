@@ -183,8 +183,7 @@ public abstract class SmtLib2Solver extends Solver {
 		}
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			System.out.println(string);
-			throw new JKindException("Error parsing " + name + " output");
+			throw new JKindException("Error parsing " + name + " output: " + string);
 		}
 
 		return ModelExtractor.getModel(ctx);

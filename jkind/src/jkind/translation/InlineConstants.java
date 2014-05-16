@@ -21,7 +21,7 @@ public class InlineConstants extends AstMapVisitor {
 	@Override
 	protected List<Constant> visitConstants(List<Constant> es) {
 		for (Constant e : es) {
-			constants.put(e.id, e.expr.accept(this));
+			constants.put(e.id, e.expr);
 		}
 		
 		return Collections.emptyList();
@@ -30,7 +30,7 @@ public class InlineConstants extends AstMapVisitor {
 	@Override
 	public Expr visit(IdExpr e) {
 		if (constants.containsKey(e.id)) {
-			return constants.get(e.id);
+			return constants.get(e.id).accept(this);
 		} else {
 			return e;
 		}
