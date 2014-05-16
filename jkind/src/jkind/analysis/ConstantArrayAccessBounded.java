@@ -1,5 +1,7 @@
 package jkind.analysis;
 
+import java.math.BigInteger;
+
 import jkind.Output;
 import jkind.analysis.evaluation.ConstantEvaluator;
 import jkind.lustre.ArrayAccessExpr;
@@ -62,9 +64,10 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 
 	private void checkAccess(Location location, Expr arrayExpr, Expr indexExpr) {
 		if (isConstant(indexExpr)) {
-			int index = evalIndex(indexExpr);
+			BigInteger index = evalIndex(indexExpr);
 			ArrayType arrayType = getArrayType(arrayExpr);
-			if (index < 0 || index >= arrayType.size) {
+			if (index.compareTo(BigInteger.ZERO) < 0
+					|| index.compareTo(BigInteger.valueOf(arrayType.size)) >= 0) {
 				Output.error(location, "index " + index + " out of range");
 				passed = false;
 			}
@@ -79,8 +82,8 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 		return e.accept(constantAnalyzer);
 	}
 
-	private int evalIndex(Expr e) {
+	private BigInteger evalIndex(Expr e) {
 		IntegerValue iv = (IntegerValue) e.accept(constantEvaluator);
-		return iv.value.intValue();
+		return iv.value;
 	}
 }

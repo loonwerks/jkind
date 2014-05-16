@@ -44,12 +44,12 @@ import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
-import jkind.util.TypeResolutionException;
 import jkind.util.Util;
 
 public class TypeChecker implements ExprVisitor<Type> {
 	private final Map<String, Type> typeTable = new HashMap<>();
 	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, Expr> constantDefinitionTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Function> functionTable;
@@ -60,7 +60,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		this.functionTable = Util.getFunctionTable(program.functions);
 		this.nodeTable = Util.getNodeTable(program.nodes);
 		this.passed = true;
-		
+
 		populateTypeTable(program.types);
 		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
@@ -78,9 +78,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
-		for (TypeDef def : typeDefs) {
-			typeTable.put(def.id, resolveType(def.type));
-		}
+		typeTable.putAll(Util.createResolvedTypeTable(typeDefs));
 	}
 
 	private void populateEnumValueTable(List<TypeDef> typeDefs) {
@@ -95,6 +93,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private void populateConstantTable(List<Constant> constants) {
+		// The constantDefinitionTable is used for constants whose type has not
+		// yet been computed
+		for (Constant c : constants) {
+			constantDefinitionTable.put(c.id, c.expr);
+		}
+
 		for (Constant c : constants) {
 			Type actual = c.expr.accept(this);
 			if (c.type == null) {
@@ -129,12 +133,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private Type resolveType(Type type) {
-		try {
-			return Util.resolveType(type, typeTable);
-		} catch (TypeResolutionException e) {
-			error(e.type.location, "unknown type " + e.type);
-			return null;
-		}
+		return Util.resolveType(type, typeTable);
 	}
 
 	private boolean isIntBased(Type type) {
@@ -395,6 +394,8 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return variableTable.get(e.id);
 		} else if (constantTable.containsKey(e.id)) {
 			return constantTable.get(e.id);
+		} else if (constantDefinitionTable.containsKey(e.id)) {
+			return constantDefinitionTable.get(e.id).accept(this);
 		} else if (enumValueTable.containsKey(e.id)) {
 			return enumValueTable.get(e.id);
 		} else {

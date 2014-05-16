@@ -38,12 +38,17 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
-	private final Map<String, Value> constants = new HashMap<>();;
+	private final Map<String, Value> constants = new HashMap<>();
+	private final Map<String, Expr> constantDefinitions = new HashMap<>();
 
 	public ConstantEvaluator() {
 	}
 
 	public ConstantEvaluator(List<Constant> constants) {
+		for (Constant c : constants) {
+			constantDefinitions.put(c.id, c.expr);
+		}
+		
 		for (Constant c : constants) {
 			addConstant(c);
 		}
@@ -51,6 +56,10 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	public Value addConstant(Constant c) {
 		return constants.put(c.id, c.expr.accept(this));
+	}
+
+	public boolean containsConstant(String id) {
+		return constants.containsKey(id);
 	}
 
 	@Override
@@ -65,13 +74,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(ArrayExpr e) {
-		List<Value> elements = new ArrayList<>();
-		for (Expr element : e.elements) {
-			Value value = element.accept(this);
-			if (value == null) {
-				return null;
-			}
-			elements.add(value);
+		List<Value> elements = visitExprs(e.elements);
+		if (elements == null) {
+			return null;
 		}
 		return new ArrayValue(elements);
 	}
@@ -132,7 +137,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IdExpr e) {
-		return constants.get(e.id);
+		if (!constants.containsKey(e.id)) {
+			return constants.get(e.id);
+		} else {
+			return constantDefinitions.get(e.id).accept(this);
+		}
 	}
 
 	@Override
@@ -193,13 +202,9 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(TupleExpr e) {
-		List<Value> elements = new ArrayList<>();
-		for (Expr element : e.elements) {
-			Value value = element.accept(this);
-			if (value == null) {
-				return null;
-			}
-			elements.add(value);
+		List<Value> elements = visitExprs(e.elements);
+		if (elements == null) {
+			return null;
 		}
 		return new TupleValue(elements);
 	}
@@ -214,5 +219,17 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		} else {
 			return value.applyUnaryOp(e.op);
 		}
+	}
+
+	private List<Value> visitExprs(List<Expr> es) {
+		List<Value> values = new ArrayList<>();
+		for (Expr e : es) {
+			Value value = e.accept(this);
+			if (value == null) {
+				return null;
+			}
+			values.add(value);
+		}
+		return values;
 	}
 }
