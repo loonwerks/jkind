@@ -38,12 +38,17 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
-	private final Map<String, Value> constants = new HashMap<>();;
+	private final Map<String, Value> constants = new HashMap<>();
+	private final Map<String, Expr> constantDefinitions = new HashMap<>();
 
 	public ConstantEvaluator() {
 	}
 
 	public ConstantEvaluator(List<Constant> constants) {
+		for (Constant c : constants) {
+			constantDefinitions.put(c.id, c.expr);
+		}
+		
 		for (Constant c : constants) {
 			addConstant(c);
 		}
@@ -51,6 +56,10 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	public Value addConstant(Constant c) {
 		return constants.put(c.id, c.expr.accept(this));
+	}
+
+	public boolean containsConstant(String id) {
+		return constants.containsKey(id);
 	}
 
 	@Override
@@ -123,7 +132,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IdExpr e) {
-		return constants.get(e.id);
+		if (!constants.containsKey(e.id)) {
+			return constants.get(e.id);
+		} else {
+			return constantDefinitions.get(e.id).accept(this);
+		}
 	}
 
 	@Override

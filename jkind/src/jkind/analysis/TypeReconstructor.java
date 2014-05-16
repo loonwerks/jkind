@@ -47,6 +47,7 @@ import jkind.util.Util;
 public class TypeReconstructor implements ExprVisitor<Type> {
 	private final Map<String, Type> typeTable = new HashMap<>();
 	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, Expr> constantDefinitionTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable = new HashMap<>();
@@ -83,6 +84,10 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	}
 
 	private void populateConstantTable(List<Constant> constants) {
+		for (Constant c : constants) {
+			constantDefinitionTable.put(c.id, c.expr);
+		}
+		
 		for (Constant c : constants) {
 			if (c.type == null) {
 				constantTable.put(c.id, c.expr.accept(this));
@@ -171,6 +176,8 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 			return variableTable.get(e.id);
 		} else if (constantTable.containsKey(e.id)) {
 			return constantTable.get(e.id);
+		} else if (constantDefinitionTable.containsKey(e.id)) {
+			return constantDefinitionTable.get(e.id).accept(this);
 		} else if (enumValueTable.containsKey(e.id)) {
 			return NamedType.INT;
 		} else {

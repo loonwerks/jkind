@@ -33,15 +33,16 @@ public class StaticAnalyzer {
 		boolean result = true;
 		result = result && hasMainNode(program);
 		result = result && typesUnique(program);
-		result = result && TypesDefined.check(program);;
+		result = result && TypesDefined.check(program);
 		result = result && TypeDependencyChecker.check(program);
 		result = result && enumsAndConstantsUnique(program);
+		result = result && constantsConstant(program);
+		result = result && ConstantDependencyChecker.check(program);
 		result = result && nodesUnique(program);
 		result = result && variablesUnique(program);
 		result = result && TypeChecker.check(program);
 		result = result && SubrangesNonempty.check(program);
 		result = result && ArraysNonempty.check(program);
-		result = result && constantsConstant(program);
 		result = result && DivisionChecker.check(program);
 		result = result && NodeDependencyChecker.check(program);
 		result = result && assignmentsSound(program);
@@ -127,6 +128,18 @@ public class StaticAnalyzer {
 		return unique;
 	}
 
+	private static boolean constantsConstant(Program program) {
+		boolean constant = true;
+		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
+		for (Constant c : program.constants) {
+			if (!c.expr.accept(constantAnalyzer)) {
+				Output.error(c.location, "constant " + c.id + " does not have a constant value");
+				constant = false;
+			}
+		}
+		return constant;
+	}
+
 	private static boolean nodesUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
@@ -161,18 +174,6 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
-	}
-
-	private static boolean constantsConstant(Program program) {
-		boolean constant = true;
-		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
-		for (Constant c : program.constants) {
-			if (!c.expr.accept(constantAnalyzer)) {
-				Output.error(c.location, "constant " + c.id + " does not have a constant value");
-				constant = false;
-			}
-		}
-		return constant;
 	}
 
 	private static boolean assignmentsSound(Program program) {
