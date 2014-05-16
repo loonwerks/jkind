@@ -48,7 +48,7 @@ import jkind.util.Util;
 public class TypeChecker implements ExprVisitor<Type> {
 	private final Map<String, Type> typeTable = new HashMap<>();
 	private final Map<String, Type> constantTable = new HashMap<>();
-	private final Map<String, Expr> constantDefinitionTable = new HashMap<>();
+	private final Map<String, Constant> constantDefinitionTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable;
@@ -93,18 +93,28 @@ public class TypeChecker implements ExprVisitor<Type> {
 		// The constantDefinitionTable is used for constants whose type has not
 		// yet been computed
 		for (Constant c : constants) {
-			constantDefinitionTable.put(c.id, c.expr);
+			constantDefinitionTable.put(c.id, c);
 		}
 
 		for (Constant c : constants) {
-			Type actual = c.expr.accept(this);
-			if (c.type == null) {
-				constantTable.put(c.id, actual);
-			} else {
-				Type expected = resolveType(c.type);
-				compareTypeAssignment(c.expr, expected, actual);
-				constantTable.put(c.id, expected);
-			}
+			addConstant(c);
+		}
+	}
+	
+	private Type addConstant(Constant c) {
+		if (constantTable.containsKey(c.id)) {
+			return constantTable.get(c.id);
+		}
+		
+		Type actual = c.expr.accept(this);
+		if (c.type == null) {
+			constantTable.put(c.id, actual);
+			return actual;
+		} else {
+			Type expected = resolveType(c.type);
+			compareTypeAssignment(c.expr, expected, actual);
+			constantTable.put(c.id, expected);
+			return expected;
 		}
 	}
 
@@ -387,7 +397,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		} else if (constantTable.containsKey(e.id)) {
 			return constantTable.get(e.id);
 		} else if (constantDefinitionTable.containsKey(e.id)) {
-			return constantDefinitionTable.get(e.id).accept(this);
+			return addConstant(constantDefinitionTable.get(e.id));
 		} else if (enumValueTable.containsKey(e.id)) {
 			return enumValueTable.get(e.id);
 		} else {

@@ -14,7 +14,7 @@ public class CycleFinder {
 
 	private final Deque<String> callStack = new ArrayDeque<>();
 	private final Map<String, Set<String>> dependencies;
-	
+
 	private CycleFinder(Map<String, Set<String>> dependencies) {
 		this.dependencies = dependencies;
 	}
@@ -29,7 +29,7 @@ public class CycleFinder {
 
 		return null;
 	}
-	
+
 	private List<String> findCycle(String curr) {
 		if (callStack.contains(curr)) {
 			callStack.addLast(curr);
@@ -39,14 +39,16 @@ public class CycleFinder {
 			return new ArrayList<>(callStack);
 		}
 
-		callStack.addLast(curr);
-		for (String next : dependencies.get(curr)) {
-			List<String> cycle = findCycle(next);
-			if (cycle != null) {
-				return cycle;
+		if (dependencies.containsKey(curr)) {
+			callStack.addLast(curr);
+			for (String next : dependencies.get(curr)) {
+				List<String> cycle = findCycle(next);
+				if (cycle != null) {
+					return cycle;
+				}
 			}
+			callStack.removeLast();
 		}
-		callStack.removeLast();
 
 		return null;
 	}
