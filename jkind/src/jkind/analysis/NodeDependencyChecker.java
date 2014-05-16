@@ -7,12 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.Output;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
-import jkind.lustre.visitors.ExprIterVisitor;
+import jkind.lustre.visitors.AstIterVisitor;
 
 public class NodeDependencyChecker {
 	public static boolean check(Program program) {
@@ -35,21 +33,14 @@ public class NodeDependencyChecker {
 
 	private static Set<String> getNodeDependencies(Node node) {
 		final Set<String> dependencies = new HashSet<>();
-		ExprIterVisitor nodeCallCollector = new ExprIterVisitor() {
+		new AstIterVisitor() {
 			@Override
 			public Void visit(NodeCallExpr e) {
 				dependencies.add(e.node);
 				super.visit(e);
 				return null;
 			}
-		};
-
-		for (Equation eq : node.equations) {
-			eq.expr.accept(nodeCallCollector);
-		}
-		for (Expr e : node.assertions) {
-			e.accept(nodeCallCollector);
-		}
+		}.visit(node);
 		return dependencies;
 	}
 }
