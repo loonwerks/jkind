@@ -67,9 +67,7 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
-		for (TypeDef def : typeDefs) {
-			typeTable.put(def.id, resolveType(def.type));
-		}
+		typeTable.putAll(Util.createResolvedTypeTable(typeDefs));
 	}
 
 	private void populateEnumValueTable(List<TypeDef> typeDefs) {
