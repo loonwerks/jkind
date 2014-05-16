@@ -12,6 +12,7 @@ import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.visitors.TypeIterVisitor;
+import jkind.util.CycleFinder;
 
 public class TypeDependencyChecker {
 	public static boolean check(Program program) {

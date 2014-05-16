@@ -11,6 +11,7 @@ import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.AstIterVisitor;
+import jkind.util.CycleFinder;
 
 public class NodeDependencyChecker {
 	public static boolean check(Program program) {

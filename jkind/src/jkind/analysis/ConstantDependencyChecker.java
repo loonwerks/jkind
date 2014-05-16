@@ -12,6 +12,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.ExprIterVisitor;
+import jkind.util.CycleFinder;
 
 public class ConstantDependencyChecker {
 	public static boolean check(Program program) {

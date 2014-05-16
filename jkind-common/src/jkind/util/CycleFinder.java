@@ -1,4 +1,4 @@
-package jkind.analysis;
+package jkind.util;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
