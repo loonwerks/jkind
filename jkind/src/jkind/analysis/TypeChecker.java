@@ -79,12 +79,9 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private void populateEnumValueTable(List<TypeDef> typeDefs) {
-		for (TypeDef def : typeDefs) {
-			if (def.type instanceof EnumType) {
-				EnumType et = (EnumType) def.type;
-				for (String id : et.values) {
-					enumValueTable.put(id, et);
-				}
+		for (EnumType et : Util.getEnumTypes(typeDefs)) {
+			for (String id : et.values) {
+				enumValueTable.put(id, et);
 			}
 		}
 	}
@@ -100,12 +97,12 @@ public class TypeChecker implements ExprVisitor<Type> {
 			addConstant(c);
 		}
 	}
-	
+
 	private Type addConstant(Constant c) {
 		if (constantTable.containsKey(c.id)) {
 			return constantTable.get(c.id);
 		}
-		
+
 		Type actual = c.expr.accept(this);
 		if (c.type == null) {
 			constantTable.put(c.id, actual);

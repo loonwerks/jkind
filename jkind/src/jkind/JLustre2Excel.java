@@ -8,9 +8,9 @@ import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.EnumType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.lustre.TypeDef;
 import jkind.translation.Node2Excel;
 import jkind.translation.Translate;
+import jkind.util.Util;
 
 public class JLustre2Excel {
 	public static void main(String args[]) {
@@ -38,19 +38,16 @@ public class JLustre2Excel {
 	private static void checkUniqueEnumValues(Program program) {
 		boolean unique = true;
 
-		for (TypeDef def : program.types) {
-			if (def.type instanceof EnumType) {
-				EnumType et = (EnumType) def.type;
-				Set<String> seen = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-				for (String value : et.values) {
-					if (seen.contains(value)) {
-						Output.error(et.location,
-								"cannot handle enumerated values that differ only by case");
-						unique = false;
-						break;
-					} else {
-						seen.add(value);
-					}
+		for (EnumType et : Util.getEnumTypes(program.types)) {
+			Set<String> seen = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+			for (String value : et.values) {
+				if (seen.contains(value)) {
+					Output.error(et.location,
+							"cannot handle enumerated values that differ only by case");
+					unique = false;
+					break;
+				} else {
+					seen.add(value);
 				}
 			}
 		}

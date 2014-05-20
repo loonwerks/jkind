@@ -176,4 +176,14 @@ public class Util {
 		}
 		return Collections.unmodifiableSortedMap(map);
 	}
+
+	public static List<EnumType> getEnumTypes(List<TypeDef> types) {
+		List<EnumType> enums = new ArrayList<>();
+		for (TypeDef def : types) {
+			if (def.type instanceof EnumType) {
+				enums.add((EnumType) def.type);
+			}
+		}
+		return enums;
+	}
 }

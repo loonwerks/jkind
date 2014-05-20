@@ -14,12 +14,14 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -29,6 +31,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
@@ -36,6 +39,7 @@ import jkind.lustre.values.TupleValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
+import jkind.util.Util;
 
 public class ConstantEvaluator implements ExprVisitor<Value> {
 	private final Map<String, Value> constants = new HashMap<>();
@@ -44,12 +48,18 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public ConstantEvaluator() {
 	}
 
-	public ConstantEvaluator(List<Constant> constants) {
-		for (Constant c : constants) {
+	public ConstantEvaluator(Program program) {
+		for (EnumType et : Util.getEnumTypes(program.types)) {
+			for (String id : et.values) {
+				constants.put(id, new EnumValue(id));
+			}
+		}
+		
+		for (Constant c : program.constants) {
 			constantDefinitions.put(c.id, c.expr);
 		}
 		
-		for (Constant c : constants) {
+		for (Constant c : program.constants) {
 			addConstant(c);
 		}
 	}
@@ -132,7 +142,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IdExpr e) {
-		if (!constants.containsKey(e.id)) {
+		if (constants.containsKey(e.id)) {
 			return constants.get(e.id);
 		} else {
 			return constantDefinitions.get(e.id).accept(this);

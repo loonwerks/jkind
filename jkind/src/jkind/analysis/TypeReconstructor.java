@@ -71,12 +71,9 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	}
 
 	private void populateEnumValueTable(List<TypeDef> typeDefs) {
-		for (TypeDef def : typeDefs) {
-			if (def.type instanceof EnumType) {
-				EnumType et = (EnumType) def.type;
-				for (String id : et.values) {
-					enumValueTable.put(id, et);
-				}
+		for (EnumType et : Util.getEnumTypes(typeDefs)) {
+			for (String id : et.values) {
+				enumValueTable.put(id, et);
 			}
 		}
 	}
@@ -85,7 +82,7 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		for (Constant c : constants) {
 			constantDefinitionTable.put(c.id, c.expr);
 		}
-		
+
 		for (Constant c : constants) {
 			if (c.type == null) {
 				constantTable.put(c.id, c.expr.accept(this));
@@ -265,7 +262,7 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 			public Type visit(SubrangeIntType e) {
 				return NamedType.INT;
 			}
-			
+
 			@Override
 			public Type visit(EnumType e) {
 				return NamedType.INT;

@@ -11,6 +11,7 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.Program;
 import jkind.lustre.TypeDef;
 import jkind.lustre.visitors.AstMapVisitor;
+import jkind.util.Util;
 
 public class InlineEnumValues extends AstMapVisitor {
 	public static Program program(Program program) {
@@ -18,18 +19,15 @@ public class InlineEnumValues extends AstMapVisitor {
 	}
 
 	private final Map<String, IntExpr> enumValues = new HashMap<>();
-	
+
 	@Override
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
-		for (TypeDef def : es) {
-			if (def.type instanceof EnumType) {
-				EnumType et = (EnumType) def.type;
-				for (int i = 0; i < et.values.size(); i++) {
-					enumValues.put(et.values.get(i), new IntExpr(i));
-				}
+		for (EnumType et : Util.getEnumTypes(es)) {
+			for (int i = 0; i < et.values.size(); i++) {
+				enumValues.put(et.values.get(i), new IntExpr(i));
 			}
 		}
-		
+
 		return es;
 	}
 
