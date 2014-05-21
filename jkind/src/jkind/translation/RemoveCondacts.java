@@ -193,7 +193,7 @@ public class RemoveCondacts {
 	}
 
 	private Node clockNodeCalls(Node node, final IdExpr clock) {
-		return node = (Node) node.accept(new AstMapVisitor() {
+		return (Node) node.accept(new AstMapVisitor() {
 			@Override
 			public Expr visit(NodeCallExpr e) {
 				List<Expr> args = new ArrayList<>();
