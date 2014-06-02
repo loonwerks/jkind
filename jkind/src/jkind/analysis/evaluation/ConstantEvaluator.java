@@ -151,7 +151,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IfThenElseExpr e) {
-		BooleanValue cond = (BooleanValue) e.accept(this);
+		BooleanValue cond = (BooleanValue) e.cond.accept(this);
 		if (cond == null) {
 			return null;
 		}
