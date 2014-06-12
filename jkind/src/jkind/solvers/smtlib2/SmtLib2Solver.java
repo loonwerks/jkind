@@ -9,6 +9,7 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Label;
+import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
@@ -162,7 +163,7 @@ public abstract class SmtLib2Solver extends Solver {
 		}
 	}
 
-	protected SmtLib2Model parseModel(String string) {
+	protected Model parseModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -196,11 +197,11 @@ public abstract class SmtLib2Solver extends Solver {
 
 	@Override
 	public void push() {
-		send("(push)");
+		send("(push 1)");
 	}
 
 	@Override
 	public void pop() {
-		send("(pop)");
+		send("(pop 1)");
 	}
 }

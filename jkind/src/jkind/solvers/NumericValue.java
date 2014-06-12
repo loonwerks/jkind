@@ -1,5 +1,9 @@
 package jkind.solvers;
 
+import java.math.BigInteger;
+
+import jkind.util.BigFraction;
+
 
 public class NumericValue extends Value {
 	private String val;
@@ -8,6 +12,14 @@ public class NumericValue extends Value {
 		this.val = val;
 	}
 	
+	public NumericValue(BigInteger i) {
+		this.val = i.toString();
+	}
+
+	public NumericValue(BigFraction f) {
+		this.val = f.toString();
+	}
+
 	@Override
 	public String toString() {
 		return val;
