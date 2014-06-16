@@ -11,6 +11,16 @@ let
   --%PROPERTY lemma;
 tel;
 
+node counter2() returns (x : int);
+var
+  lemma : bool;
+let
+  x = -1 -> 1 + pre x;
+
+  lemma = x >= -1;
+  --%PROPERTY lemma;
+tel;
+
 node ten() returns (ten : bool);
 let
   ten = counter() >= 10;
@@ -18,6 +28,6 @@ tel;
 
 node main() returns (prop : bool);
 let
-  prop = counter() < 10 or ten();
+  prop = counter2() < 10 or ten();
   --%PROPERTY prop;
 tel;
