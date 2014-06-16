@@ -68,8 +68,13 @@ public class Main {
 	}
 
 	public static Program parseLustre(String filename) throws IOException, RecognitionException {
-		if (!new File(filename).exists()) {
+		File file = new File(filename);
+		if (!file.exists() || !file.isFile()) {
 			Output.error("cannot find file " + filename);
+			System.exit(-1);
+		}
+		if (!file.canRead()) {
+			Output.error("cannot read file " + filename);
 			System.exit(-1);
 		}
 		
