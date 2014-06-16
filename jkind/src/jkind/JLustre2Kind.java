@@ -34,8 +34,10 @@ public class JLustre2Kind {
 			String result = main.toString();
 			if (settings.encode) {
 				result = result.replaceAll("\\.", "~dot~");
+				// We want to escape array brackets, but not subrange brackets
 				result = result.replaceAll("\\[", "~lbrack~");
 				result = result.replaceAll("\\]", "~rbrack~");
+				result = result.replaceAll("subrange ~lbrack~(-?[0-9]+, -?[0-9]+)~rbrack~", "subrange [$1]");
 			}
 			
 			if (settings.stdout) {
