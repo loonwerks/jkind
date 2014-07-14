@@ -95,16 +95,13 @@ public class StaticAnalyzer {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 
-		for (TypeDef def : program.types) {
-			if (def.type instanceof EnumType) {
-				EnumType et = (EnumType) def.type;
-				for (String value : et.values) {
-					if (seen.contains(value)) {
-						Output.error(def.location, value + " defined multiple times");
-						unique = false;
-					} else {
-						seen.add(value);
-					}
+		for (EnumType et : Util.getEnumTypes(program.types)) {
+			for (String value : et.values) {
+				if (seen.contains(value)) {
+					Output.error(et.location, value + " defined multiple times");
+					unique = false;
+				} else {
+					seen.add(value);
 				}
 			}
 		}
@@ -198,7 +195,7 @@ public class StaticAnalyzer {
 
 	private static boolean constantsConstant(Program program) {
 		boolean constant = true;
-		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program.constants);
+		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program);
 		for (Constant c : program.constants) {
 			if (!c.expr.accept(constantAnalyzer)) {
 				Output.error(c.location, "constant " + c.id + " does not have a constant value");

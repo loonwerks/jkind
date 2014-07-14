@@ -213,7 +213,11 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			RecordTypeContext rctx = (RecordTypeContext) ctx;
 			Map<String, Type> fields = new HashMap<>();
 			for (int i = 0; i < rctx.ID().size(); i++) {
-				fields.put(rctx.ID(i).getText(), type(rctx.type(i)));
+				String field = rctx.ID(i).getText();
+				if (fields.containsKey(field)) {
+					fatal(ctx, "field declared multiple times: " + field);
+				}
+				fields.put(field, type(rctx.type(i)));
 			}
 			return new RecordType(loc(ctx), id, fields);
 		} else if (ctx instanceof EnumTypeContext) {
@@ -326,8 +330,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			}
 			return new CondactExpr(loc(ctx), clock, call, args);
 		} else {
-			Output.error(loc(ctx), "second argument to condact must be a node call");
-			System.exit(-1);
+			fatal(ctx, "second argument to condact must be a node call");
 			return null;
 		}
 	}
@@ -386,7 +389,11 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	public Expr visitRecordExpr(RecordExprContext ctx) {
 		Map<String, Expr> fields = new HashMap<>();
 		for (int i = 0; i < ctx.expr().size(); i++) {
-			fields.put(ctx.ID(i + 1).getText(), expr(ctx.expr(i)));
+			String field = ctx.ID(i + 1).getText();
+			if (fields.containsKey(field)) {
+				fatal(ctx, "field assigned multiple times: " + field);
+			}
+			fields.put(field, expr(ctx.expr(i)));
 		}
 		return new RecordExpr(loc(ctx), ctx.ID(0).getText(), fields);
 	}
@@ -425,5 +432,10 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	private static Location loc(Token token) {
 		return new Location(token.getLine(), token.getCharPositionInLine());
+	}
+
+	private static void fatal(ParserRuleContext ctx, String text) {
+		Output.error(loc(ctx), text);
+		System.exit(-1);
 	}
 }

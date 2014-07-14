@@ -2,7 +2,6 @@ package jkind.analysis;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.ArrayAccessExpr;
@@ -15,10 +14,12 @@ import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -26,6 +27,7 @@ import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.util.Util;
 
 public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	private final Set<String> constants = new HashSet<>();
@@ -33,9 +35,14 @@ public class ConstantAnalyzer implements ExprVisitor<Boolean> {
 	public ConstantAnalyzer() {
 	}
 
-	public ConstantAnalyzer(List<Constant> constantDecls) {
-		for (Constant c : constantDecls) {
+	public ConstantAnalyzer(Program program) {
+		for (Constant c : program.constants) {
 			constants.add(c.id);
+		}
+		for (EnumType et : Util.getEnumTypes(program.types)) {
+			for (String id : et.values) {
+				constants.add(id);
+			}
 		}
 	}
 

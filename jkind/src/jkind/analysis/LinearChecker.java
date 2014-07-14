@@ -23,7 +23,7 @@ public class LinearChecker extends ExprIterVisitor {
 	}
 
 	public boolean visitProgram(Program program) {
-		constantAnalyzer = new ConstantAnalyzer(program.constants);
+		constantAnalyzer = new ConstantAnalyzer(program);
 		
 		for (Node node : program.nodes) {
 			visitNode(node);

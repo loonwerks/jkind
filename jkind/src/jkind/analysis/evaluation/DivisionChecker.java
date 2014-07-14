@@ -2,24 +2,49 @@ package jkind.analysis.evaluation;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.Output;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Program;
+import jkind.lustre.TypeDef;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.AstIterVisitor;
 import jkind.util.BigFraction;
+import jkind.util.Util;
 
 public class DivisionChecker extends AstIterVisitor {
-	private ConstantEvaluator constantEvaluator;
 	private final Map<String, Constant> constantDefinitions = new HashMap<>();
+	private final Set<String> enumeratedValues = new HashSet<>();
+
+	// In order to use a ConstantEvaluator, we first have to ensure that the
+	// constants themselves don't have division by zero. This is a bit
+	// tricky due to constants being defined in any order.
+	private ConstantEvaluator constantEvaluator = new ConstantEvaluator() {
+		@Override
+		public Value visit(IdExpr e) {
+			if (enumeratedValues.contains(e.id)) {
+				return new EnumValue(e.id);
+			}
+			
+			Value value = super.visit(e);
+			if (value == null) {
+				// Check constants on the fly
+				checkConstant(constantDefinitions.get(e.id));
+			}
+			return value;
+		}
+	};
 
 	public static boolean check(Program program) {
 		try {
@@ -31,25 +56,17 @@ public class DivisionChecker extends AstIterVisitor {
 	}
 
 	@Override
+	protected void visitTypeDefs(List<TypeDef> es) {
+		for (EnumType et : Util.getEnumTypes(es)) {
+			enumeratedValues.addAll(et.values);
+		}
+	}
+
+	@Override
 	protected void visitConstants(List<Constant> constants) {
 		for (Constant c : constants) {
 			constantDefinitions.put(c.id, c);
 		}
-
-		// In order to use a ConstantEvaluator, we first have to ensure that the
-		// constants themselves don't have division by zero. This is a bit
-		// tricky due to constants being defined in any order.
-		constantEvaluator = new ConstantEvaluator() {
-			@Override
-			public Value visit(IdExpr e) {
-				Value value = super.visit(e);
-				if (value == null) {
-					// Check constants on the fly
-					checkConstant(constantDefinitions.get(e.id));
-				}
-				return value;
-			}
-		};
 
 		for (Constant c : constants) {
 			if (!constantEvaluator.containsConstant(c.id)) {
@@ -57,7 +74,7 @@ public class DivisionChecker extends AstIterVisitor {
 			}
 		}
 	}
-	
+
 	private void checkConstant(Constant c) {
 		c.accept(this);
 		constantEvaluator.addConstant(c);

@@ -57,9 +57,13 @@ public class XmlWriter extends Writer {
 		out.println("    <Answer>valid</Answer>");
 		out.println("    <K>" + k + "</K>");
 		for (Invariant invariant : invariants) {
-			out.println("    <Invariant>" + invariant + "</Invariant>");
+			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 		}
 		out.println("  </Property>");
+	}
+
+	private String escape(Invariant invariant) {
+		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
@@ -114,6 +115,17 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 				write(entry.getValue());
 				if (iterator.hasNext()) {
 					write("; ");
+				}
+			}
+			write("}");
+		} else if (type instanceof EnumType) {
+			EnumType enumType = (EnumType) type;
+			write("enum {");
+			Iterator<String> iterator = enumType.values.iterator();
+			while (iterator.hasNext()) {
+				write(iterator.next());
+				if (iterator.hasNext()) {
+					write(", ");
 				}
 			}
 			write("}");
