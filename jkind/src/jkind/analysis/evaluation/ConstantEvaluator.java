@@ -144,8 +144,10 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	public Value visit(IdExpr e) {
 		if (constants.containsKey(e.id)) {
 			return constants.get(e.id);
-		} else {
+		} else if (constantDefinitions.containsKey(e.id)) {
 			return constantDefinitions.get(e.id).accept(this);
+		} else {
+			return null;
 		}
 	}
 
