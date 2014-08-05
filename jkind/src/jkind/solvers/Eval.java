@@ -63,9 +63,15 @@ public class Eval {
 		switch (fn) {
 		case "=":
 			return BoolValue.fromBool(args.get(0).equals(args.get(1)));
-		case "-":
-			NumericValue x = (NumericValue) args.get(0);
-			return new NumericValue("-" + x);
+		case "-": {
+			BigInteger p = new BigInteger(args.get(0).toString());
+			if (args.size() == 1) {
+				return new NumericValue(p.negate().toString());
+			} else {
+				BigInteger q = new BigInteger(args.get(1).toString());
+				return new NumericValue(p.subtract(q).toString());
+			}
+		}
 		case "/": {
 			NumericValue p = (NumericValue) args.get(0);
 			NumericValue q = (NumericValue) args.get(1);
