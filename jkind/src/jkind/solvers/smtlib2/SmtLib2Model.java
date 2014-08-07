@@ -54,12 +54,19 @@ public class SmtLib2Model extends Model {
 		}
 	}
 
-	public Lambda getFunction(String fn) {
-		return functions.get(fn);
-	}
-
 	@Override
 	public Set<String> getFunctionNames() {
 		return new HashSet<>(functions.keySet());
+	}
+	
+	@Override
+	public SmtLib2Model slice(Set<String> keep) {
+		SmtLib2Model sliced = new SmtLib2Model();
+		for (String fn : getFunctionNames()) {
+			if (fn.startsWith("$") && keep.contains(fn.substring(1))) {
+				sliced.addFunction(fn, functions.get(fn));
+			}
+		}
+		return sliced;
 	}
 }

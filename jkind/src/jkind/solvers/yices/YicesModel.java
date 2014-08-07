@@ -99,4 +99,15 @@ public class YicesModel extends Model {
 	public void addFunction(String name, YicesFunction fn) {
 		functions.put(name, fn);
 	}
+	
+	@Override
+	public YicesModel slice(Set<String> keep) {
+		YicesModel sliced = new YicesModel();
+		for (String fn : getFunctionNames()) {
+			if (fn.startsWith("$") && keep.contains(fn.substring(1))) {
+				sliced.functions.put(fn, getFunction(fn));
+			}
+		}
+		return sliced;
+	}
 }
