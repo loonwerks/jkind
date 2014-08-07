@@ -14,7 +14,6 @@ import jkind.lustre.values.Value;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Lambda;
-import jkind.solvers.StreamDef;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
@@ -22,7 +21,6 @@ public class CandidateGenerator {
 	private Specification spec;
 
 	private List<Candidate> candidates;
-	private int candidateIndex;
 	private InitialStepEvaluator evaluator;
 
 	public CandidateGenerator(Specification spec) {
@@ -32,7 +30,6 @@ public class CandidateGenerator {
 
 	public List<Candidate> generate() {
 		candidates = new ArrayList<>();
-		candidateIndex = 0;
 
 		candidates.add(Candidate.TRUE);
 		candidates.add(Candidate.FALSE);
@@ -112,9 +109,6 @@ public class CandidateGenerator {
 	}
 
 	private void addCandidate(Sexp s, String text) {
-		StreamDef def = new StreamDef("can" + candidateIndex, NamedType.BOOL, new Lambda(
-				SexpUtil.I, s));
-		candidateIndex++;
-		candidates.add(new Candidate(def, text));
+		candidates.add(new Candidate(new Lambda(SexpUtil.I, s), text));
 	}
 }

@@ -76,12 +76,12 @@ public class Graph {
 	}
 
 	public Sexp toInvariant(Sexp index) {
-		return SexpUtil.conjoinInvariants(toInvariants(false), index);
+		return SexpUtil.conjoinInvariants(toInvariants(), index);
 	}
 
 	public List<Invariant> toFinalInvariants() {
 		removeTrivialInvariants();
-		return toInvariants(true);
+		return toInvariants();
 	}
 
 	private void removeTrivialInvariants() {
@@ -104,13 +104,13 @@ public class Graph {
 		removeUselessNodes();
 	}
 
-	private List<Invariant> toInvariants(boolean pure) {
+	private List<Invariant> toInvariants() {
 		List<Invariant> invariants = new ArrayList<>();
 		for (Node node : nodes) {
-			invariants.addAll(node.toInvariants(pure));
+			invariants.addAll(node.toInvariants());
 		}
 		for (Edge edge : getEdges()) {
-			invariants.add(edge.toInvariant(pure));
+			invariants.add(edge.toInvariant());
 		}
 		return invariants;
 	}

@@ -20,14 +20,6 @@ public class StreamDef {
 	public Symbol getId() {
 		return decl.getId();
 	}
-	
-	public Lambda getLambda() {
-		return lambda;
-	}
-	
-	public Sexp instantiate(Sexp arg) {
-		return lambda.instantiate(arg);
-	}
 
 	public Sexp getArg() {
 		return lambda.getArg();
@@ -36,11 +28,7 @@ public class StreamDef {
 	public Type getType() {
 		return decl.getType();
 	}
-	
-	public StreamDecl getDecl() {
-		return decl;
-	}
-	
+
 	public Sexp getBody() {
 		return lambda.getBody();
 	}

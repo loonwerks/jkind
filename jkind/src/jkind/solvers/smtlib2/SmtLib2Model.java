@@ -36,8 +36,6 @@ public class SmtLib2Model extends Model {
 		Lambda lambda;
 		if (functions.containsKey(fn)) {
 			lambda = functions.get(fn);
-		} else if (definitions.containsKey(fn)) {
-			lambda = definitions.get(fn).getLambda();
 		} else {
 			lambda = new Lambda(SexpUtil.I, getDefaultValue(fn));
 			functions.put(fn, lambda);

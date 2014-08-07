@@ -10,11 +10,6 @@ public abstract class Model {
 	public abstract Set<String> getFunctionNames();
 	public abstract Model slice(Set<String> keep);
 
-	protected Map<String, StreamDef> definitions;
-	public void setDefinitions(Map<String, StreamDef> definitions) {
-		this.definitions = definitions;
-	}
-	
 	protected Map<String, StreamDecl> declarations;
 	public void setDeclarations(Map<String, StreamDecl> declarations) {
 		this.declarations = declarations;

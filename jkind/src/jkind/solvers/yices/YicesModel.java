@@ -7,10 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.lustre.NamedType;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import jkind.solvers.BoolValue;
-import jkind.solvers.Eval;
 import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Value;
@@ -32,12 +29,17 @@ public class YicesModel extends Model {
 		getOrCreateFunction(name).addValue(index, value);
 	}
 
-	public YicesFunction getOrCreateFunction(String name) {
+	private YicesFunction getOrCreateFunction(String name) {
 		YicesFunction fn = functions.get(name);
 		if (fn == null) {
-			fn = new YicesFunction();
-			functions.put(name, fn);
+			fn = createFunction(name);
 		}
+		return fn;
+	}
+
+	private YicesFunction createFunction(String name) {
+		YicesFunction fn = new YicesFunction();
+		functions.put(name, fn);
 		return fn;
 	}
 
@@ -65,16 +67,11 @@ public class YicesModel extends Model {
 	@Override
 	public Value getFunctionValue(String name, BigInteger index) {
 		YicesFunction fn = getFunction(name);
-		if (fn != null) {
-			return fn.getValue(index);
-		} else if (definitions.containsKey(name)) {
-			Sexp s = definitions.get(name).getLambda().instantiate(new Symbol(index.toString()));
-			return new Eval(this).eval(s);
-		} else {
-			fn = getOrCreateFunction(name);
+		if (fn == null) {
+			fn = createFunction(name);
 			fn.setDefaultValue(getDefaultValue(name));
-			return fn.getValue(index);
 		}
+		return fn.getValue(index);
 	}
 
 	private Value getDefaultValue(String name) {
@@ -95,7 +92,7 @@ public class YicesModel extends Model {
 		}
 		return fns;
 	}
-	
+
 	@Override
 	public YicesModel slice(Set<String> keep) {
 		YicesModel sliced = new YicesModel();

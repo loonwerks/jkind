@@ -2,35 +2,29 @@ package jkind.invariant;
 
 import java.math.BigInteger;
 
-import jkind.lustre.NamedType;
-import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.BoolValue;
+import jkind.solvers.Eval;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
-import jkind.solvers.StreamDef;
 import jkind.util.SexpUtil;
 
 public class Candidate {
-	final public StreamDef def;
+	final public Lambda lambda;
 	final public String text;
 
-	public Candidate(StreamDef def, String text) {
-		this.def = def;
+	public Candidate(Lambda lambda, String text) {
+		this.lambda = lambda;
 		this.text = text;
 	}
 
 	public boolean isTrue(Model model, BigInteger k) {
-		return model.getFunctionValue(def.getId().toString(), k) == BoolValue.TRUE;
+		return new Eval(model).eval(lambda.instantiate(new Symbol(k.toString()))) == BoolValue.TRUE;
 	}
 
-	public Sexp index(Sexp index, boolean pure) {
-		if (pure) {
-			return def.instantiate(index);
-		} else {
-			return new Cons(def.getId(), index);
-		}
+	public Sexp index(Sexp index) {
+		return lambda.instantiate(index);
 	}
 
 	@Override
@@ -38,8 +32,8 @@ public class Candidate {
 		return text;
 	}
 
-	final public static Candidate TRUE = new Candidate(new StreamDef("canTrue", NamedType.BOOL,
-			new Lambda(SexpUtil.I, new Symbol("true"))), "true");
-	final public static Candidate FALSE = new Candidate(new StreamDef("canFalse", NamedType.BOOL,
-			new Lambda(SexpUtil.I, new Symbol("false"))), "false");
+	final public static Candidate TRUE = new Candidate(new Lambda(SexpUtil.I, new Symbol("true")),
+			"true");
+	final public static Candidate FALSE = new Candidate(
+			new Lambda(SexpUtil.I, new Symbol("false")), "false");
 }

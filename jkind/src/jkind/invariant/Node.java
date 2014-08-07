@@ -30,17 +30,17 @@ public class Node {
 		return candidates.size() <= 1;
 	}
 
-	public List<Invariant> toInvariants(boolean pure) {
+	public List<Invariant> toInvariants() {
 		List<Invariant> invariants = new ArrayList<>();
 		
 		Iterator<Candidate> iterator = candidates.iterator();
 		Candidate first = iterator.next();
-		Sexp firstSexp = first.index(SexpUtil.I, pure);
+		Sexp firstSexp = first.index(SexpUtil.I);
 		
 		while (iterator.hasNext()) {
 			Candidate other = iterator.next();
 			String text = first + " = " + other;
-			Lambda lambda = new Lambda(SexpUtil.I, new Cons("=", firstSexp, other.index(SexpUtil.I, pure)));
+			Lambda lambda = new Lambda(SexpUtil.I, new Cons("=", firstSexp, other.index(SexpUtil.I)));
 			invariants.add(new Invariant(lambda, text));
 		}
 		

@@ -31,7 +31,6 @@ import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.solvers.Model;
 import jkind.solvers.StreamDecl;
-import jkind.solvers.StreamDef;
 import jkind.translation.Specification;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
@@ -291,7 +290,6 @@ public class Director {
 	private Counterexample extractCounterexample(int k, BigInteger offset, Model model) {
 		Counterexample cex = new Counterexample(k);
 		model.setDeclarations(declarations);
-		model.setDefinitions(Collections.<String, StreamDef> emptyMap());
 		for (String fn : new TreeSet<>(model.getFunctionNames())) {
 			cex.addSignal(extractSignal(fn, k, offset, model));
 		}

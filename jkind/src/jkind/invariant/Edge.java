@@ -14,12 +14,12 @@ public class Edge {
 		this.destination = destination;
 	}
 
-	public Invariant toInvariant(boolean pure) {
+	public Invariant toInvariant() {
 		Candidate sRep = source.getRepresentative();
 		Candidate dRep = destination.getRepresentative();
 
 		String text = sRep + " => " + dRep;
-		Sexp body = new Cons("=>", sRep.index(SexpUtil.I, pure), dRep.index(SexpUtil.I, pure));
+		Sexp body = new Cons("=>", sRep.index(SexpUtil.I), dRep.index(SexpUtil.I));
 		Lambda lambda = new Lambda(SexpUtil.I, body);
 		
 		return new Invariant(lambda, text);

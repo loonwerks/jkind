@@ -22,19 +22,16 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.StreamDecl;
-import jkind.solvers.StreamDef;
 import jkind.solvers.UnknownResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
-	private Map<String, StreamDef> definitions;
 	private Map<String, StreamDecl> declarations;
 
 	public InvariantProcess(Specification spec, JKindSettings settings) {
 		super("Invariant", spec, settings, null);
-		definitions = new HashMap<>();
 		declarations = new HashMap<>();
 		for (StreamDecl decl : spec.translation.getDeclarations()) {
 			declarations.put(decl.getId().toString(), decl);
@@ -95,16 +92,7 @@ public class InvariantProcess extends Process {
 	private Graph createGraph() {
 		List<Candidate> candidates = new CandidateGenerator(spec).generate();
 		debug("Proposed " + candidates.size() + " candidates");
-		Graph graph = new Graph(candidates);
-		defineCandidates(candidates);
-		return graph;
-	}
-
-	private void defineCandidates(List<Candidate> candidates) {
-		for (Candidate candidate : candidates) {
-			definitions.put(candidate.def.getId().toString(), candidate.def);
-			solver.send(candidate.def);
-		}
+		return new Graph(candidates);
 	}
 
 	private void refineBaseStep(int k, Graph graph) {
@@ -133,7 +121,6 @@ public class InvariantProcess extends Process {
 
 	private Model getModel(Result result) {
 		Model model = ((SatResult) result).getModel();
-		model.setDefinitions(definitions);
 		model.setDeclarations(declarations);
 		return model;
 	}
