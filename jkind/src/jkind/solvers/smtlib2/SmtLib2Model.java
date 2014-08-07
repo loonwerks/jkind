@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.lustre.Type;
+import jkind.lustre.values.Value;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Eval;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
-import jkind.solvers.Value;
 import jkind.util.SexpUtil;
 
 public class SmtLib2Model extends Model {

@@ -7,6 +7,7 @@ import java.util.List;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.lustre.values.BooleanValue;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
@@ -15,7 +16,6 @@ import jkind.processes.messages.UnknownMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -84,8 +84,8 @@ public class BaseProcess extends Process {
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
-					if (!v.getBool()) {
+					BooleanValue v = (BooleanValue) model.getFunctionValue("$" + p, index);
+					if (!v.value) {
 						invalid.add(p);
 						iterator.remove();
 					}

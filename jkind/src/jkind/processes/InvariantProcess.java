@@ -10,13 +10,13 @@ import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
 import jkind.invariant.Invariant;
+import jkind.lustre.values.IntegerValue;
 import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
-import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
@@ -149,8 +149,8 @@ public class InvariantProcess extends Process {
 	}
 
 	private BigInteger getN(Model model) {
-		NumericValue value = (NumericValue) model.getValue(Keywords.N.toString());
-		return new BigInteger(value.toString());
+		IntegerValue iv = (IntegerValue) model.getValue(Keywords.N.toString());
+		return iv.value;
 	}
 
 	private Sexp getInductiveQuery(int k, Graph graph) {

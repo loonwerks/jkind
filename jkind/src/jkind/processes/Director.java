@@ -31,7 +31,6 @@ import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
@@ -295,21 +294,20 @@ public class Director {
 
 		for (int i = 0; i < k; i++) {
 			BigInteger key = BigInteger.valueOf(i).add(offset);
-			jkind.solvers.Value value = model.getFunctionValue(fn, key);
+			Value value = model.getFunctionValue(fn, key);
 			if (value != null) {
-				Value parsedValue = Util.parseValue(Util.getName(type), value.toString());
 				if (type instanceof EnumType) {
 					EnumType et = (EnumType) type;
-					IntegerValue iv = (IntegerValue) parsedValue;
+					IntegerValue iv = (IntegerValue) value;
 					int v = iv.value.intValue();
 					if (v < 0 || et.values.size() <= v) {
 						// This can happen due to looking before the initial
 						// state
 						continue;
 					}
-					parsedValue = new EnumValue(et.values.get(v));
+					value = new EnumValue(et.values.get(v));
 				}
-				signal.putValue(i, parsedValue);
+				signal.putValue(i, value);
 			}
 		}
 

@@ -4,9 +4,10 @@ import java.math.BigInteger;
 import java.util.Map;
 
 import jkind.lustre.Type;
-import jkind.solvers.BoolValue;
-import jkind.solvers.NumericValue;
-import jkind.solvers.Value;
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.RealValue;
+import jkind.lustre.values.Value;
 import jkind.solvers.yices.YicesModel;
 import jkind.solvers.yices2.Yices2Parser.AliasContext;
 import jkind.solvers.yices2.Yices2Parser.FunctionContext;
@@ -14,7 +15,6 @@ import jkind.solvers.yices2.Yices2Parser.FunctionValueContext;
 import jkind.solvers.yices2.Yices2Parser.IntegerContext;
 import jkind.solvers.yices2.Yices2Parser.IntegerNumericContext;
 import jkind.solvers.yices2.Yices2Parser.NegativeIntegerContext;
-import jkind.solvers.yices2.Yices2Parser.NumericContext;
 import jkind.solvers.yices2.Yices2Parser.PositiveIntegerContext;
 import jkind.solvers.yices2.Yices2Parser.QuotientContext;
 import jkind.solvers.yices2.Yices2Parser.QuotientNumericContext;
@@ -62,19 +62,13 @@ public class ModelExtractorListener extends Yices2BaseListener {
 
 	private Value value(ValueContext ctx) {
 		if (ctx.BOOL() != null) {
-			return BoolValue.fromBool(ctx.BOOL().getText().equals("true"));
-		} else {
-			return numericValue(ctx.numeric());
-		}
-	}
-	
-	private NumericValue numericValue(NumericContext ctx) {
-		if (ctx instanceof IntegerNumericContext) {
-			IntegerNumericContext ictx = (IntegerNumericContext) ctx;
-			return new NumericValue(integer(ictx.integer()));
-		} else if (ctx instanceof QuotientNumericContext) {
-			QuotientNumericContext qctx = (QuotientNumericContext) ctx;
-			return new NumericValue(quotient(qctx.quotient()));
+			return BooleanValue.fromBoolean(ctx.BOOL().getText().equals("true"));
+		} else if (ctx.numeric() instanceof IntegerNumericContext) {
+			IntegerNumericContext ictx = (IntegerNumericContext) ctx.numeric();
+			return new IntegerValue(integer(ictx.integer()));
+		} else if (ctx.numeric() instanceof QuotientNumericContext) {
+			QuotientNumericContext qctx = (QuotientNumericContext) ctx.numeric();
+			return new RealValue(quotient(qctx.quotient()));
 		} else {
 			throw new IllegalArgumentException();
 		}

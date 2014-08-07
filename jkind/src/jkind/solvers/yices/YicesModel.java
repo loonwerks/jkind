@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.lustre.Type;
+import jkind.lustre.values.Value;
 import jkind.solvers.Model;
-import jkind.solvers.Value;
 
 public class YicesModel extends Model {
 	private final Map<String, String> aliases = new HashMap<>();

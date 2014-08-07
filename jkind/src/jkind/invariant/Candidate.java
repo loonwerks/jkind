@@ -2,9 +2,9 @@ package jkind.invariant;
 
 import java.math.BigInteger;
 
+import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.BoolValue;
 import jkind.solvers.Eval;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
@@ -20,7 +20,7 @@ public class Candidate {
 	}
 
 	public boolean isTrue(Model model, BigInteger k) {
-		return new Eval(model).eval(lambda.instantiate(new Symbol(k.toString()))) == BoolValue.TRUE;
+		return new Eval(model).eval(lambda.instantiate(new Symbol(k.toString()))) == BooleanValue.TRUE;
 	}
 
 	public Sexp index(Sexp index) {

@@ -5,20 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.Type;
-import jkind.solvers.BoolValue;
+import jkind.lustre.values.Value;
 import jkind.solvers.Label;
-import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.Value;
 import jkind.solvers.yices.YicesParser.AliasContext;
 import jkind.solvers.yices.YicesParser.FunctionContext;
 import jkind.solvers.yices.YicesParser.SatResultContext;
 import jkind.solvers.yices.YicesParser.UnsatCoreContext;
 import jkind.solvers.yices.YicesParser.UnsatResultContext;
-import jkind.solvers.yices.YicesParser.ValueContext;
 import jkind.solvers.yices.YicesParser.VariableContext;
+import jkind.util.Util;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -61,22 +59,14 @@ public class ResultExtractorListener extends YicesBaseListener {
 
 	@Override
 	public void enterVariable(VariableContext ctx) {
-		model.addValue(ctx.ID().getText(), value(ctx.value()));
+		model.addValue(ctx.ID().getText(), Util.parseValue("int", ctx.value().getText()));
 	}
 
 	@Override
 	public void enterFunction(FunctionContext ctx) {
 		String fn = ctx.ID().getText();
 		BigInteger arg = new BigInteger(ctx.integer().getText());
-		Value value = value(ctx.value());
+		Value value = Util.parseValue(streamTypes.get(fn).toString(), ctx.value().getText());
 		model.addFunctionValue(fn, arg, value);
-	}
-
-	private Value value(ValueContext ctx) {
-		if (ctx.BOOL() != null) {
-			return BoolValue.fromBool(ctx.BOOL().getText().equals("true"));
-		} else {
-			return new NumericValue(ctx.numeric().getText());
-		}
 	}
 }

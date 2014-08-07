@@ -7,6 +7,14 @@ import java.util.List;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.BigFraction;
+import jkind.util.Util;
+import jkind.lustre.BinaryOp;
+import jkind.lustre.UnaryOp;
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.RealValue;
+import jkind.lustre.values.Value;
 
 public class Eval {
 	private Model model;
@@ -27,11 +35,13 @@ public class Eval {
 
 	private Value evalSymbol(String sym) {
 		if (sym.equals("true")) {
-			return BoolValue.TRUE;
+			return BooleanValue.TRUE;
 		} else if (sym.equals("false")) {
-			return BoolValue.FALSE;
+			return BooleanValue.FALSE;
+		} else if (sym.contains("/")) {
+			return Util.parseValue("real", sym);
 		} else {
-			return new NumericValue(sym);
+			return Util.parseValue("int", sym);
 		}
 	}
 
@@ -42,10 +52,10 @@ public class Eval {
 		} else if (fn.equals("and")) {
 			for (Sexp arg : sexp.args) {
 				if (!isTrue(eval(arg))) {
-					return BoolValue.FALSE;
+					return BooleanValue.FALSE;
 				}
 			}
-			return BoolValue.TRUE;
+			return BooleanValue.TRUE;
 		}
 
 		List<Value> args = new ArrayList<>();
@@ -56,52 +66,58 @@ public class Eval {
 	}
 
 	private boolean isTrue(Value v) {
-		return v == BoolValue.TRUE;
+		return v == BooleanValue.TRUE;
 	}
 
 	private Value evalFunction(String fn, List<Value> args) {
 		switch (fn) {
 		case "=":
-			return BoolValue.fromBool(args.get(0).equals(args.get(1)));
+			return BooleanValue.fromBoolean(args.get(0).equals(args.get(1)));
 		case "-": {
-			BigInteger p = new BigInteger(args.get(0).toString());
 			if (args.size() == 1) {
-				return new NumericValue(p.negate().toString());
+				return args.get(0).applyUnaryOp(UnaryOp.NEGATIVE);
 			} else {
-				BigInteger q = new BigInteger(args.get(1).toString());
-				return new NumericValue(p.subtract(q).toString());
+				return applyBinaryOp(args.get(0), BinaryOp.MINUS, args.get(1));
 			}
 		}
-		case "/": {
-			NumericValue p = (NumericValue) args.get(0);
-			NumericValue q = (NumericValue) args.get(1);
-			return new NumericValue(p + "/" + q);
-		}
-		case "<=": {
-			BigInteger p = new BigInteger(args.get(0).toString());
-			BigInteger q = new BigInteger(args.get(1).toString());
-			return BoolValue.fromBool(p.compareTo(q) <= 0);
-		}
-		case ">=": {
-			BigInteger p = new BigInteger(args.get(0).toString());
-			BigInteger q = new BigInteger(args.get(1).toString());
-			return BoolValue.fromBool(p.compareTo(q) >= 0);
-		}
-		case "<": {
-			BigInteger p = new BigInteger(args.get(0).toString());
-			BigInteger q = new BigInteger(args.get(1).toString());
-			return BoolValue.fromBool(p.compareTo(q) < 0);
-		}
-		case ">": {
-			BigInteger p = new BigInteger(args.get(0).toString());
-			BigInteger q = new BigInteger(args.get(1).toString());
-			return BoolValue.fromBool(p.compareTo(q) > 0);
-		}
+		case "/":
+			return applyBinaryOp(args.get(0), BinaryOp.DIVIDE, args.get(1));
+		case "<=":
+			return applyBinaryOp(args.get(0), BinaryOp.LESSEQUAL, args.get(1));
+		case ">=":
+			return applyBinaryOp(args.get(0), BinaryOp.GREATEREQUAL, args.get(1));
+		case "<":
+			return applyBinaryOp(args.get(0), BinaryOp.LESS, args.get(1));
+		case ">":
+			return applyBinaryOp(args.get(0), BinaryOp.GREATER, args.get(1));
 		case "not":
-			return BoolValue.fromBool(!isTrue(args.get(0)));
+			return args.get(0).applyUnaryOp(UnaryOp.NOT);
 		default:
 			BigInteger index = new BigInteger(args.get(0).toString());
 			return model.getFunctionValue(fn, index);
+		}
+	}
+
+	private Value applyBinaryOp(Value left, BinaryOp op, Value right) {
+		if (op == BinaryOp.DIVIDE) {
+			left = promote(left);
+			right = promote(right);
+		} else if (left instanceof RealValue && right instanceof IntegerValue) {
+			right = promote(right);
+		} else if (left instanceof IntegerValue && right instanceof RealValue) {
+			left = promote(left);
+		}
+		return left.applyBinaryOp(op, right);
+	}
+
+	private RealValue promote(Value value) {
+		if (value instanceof IntegerValue) {
+			IntegerValue iv = (IntegerValue) value;
+			return new RealValue(new BigFraction(iv.value));
+		} else if (value instanceof RealValue) {
+			return (RealValue) value;
+		} else {
+			throw new IllegalArgumentException();
 		}
 	}
 }

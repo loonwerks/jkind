@@ -4,8 +4,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import jkind.solvers.Value;
-
+import jkind.lustre.values.Value;
 
 public class YicesFunction {
 	private final Map<BigInteger, Value> values = new HashMap<>();

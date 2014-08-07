@@ -8,6 +8,8 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.invariant.Invariant;
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.IntegerValue;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -18,9 +20,7 @@ import jkind.processes.messages.UnknownMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
-import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
@@ -133,8 +133,8 @@ public class InductiveProcess extends Process {
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getFunctionValue("$" + p, index);
-					if (!v.getBool()) {
+					BooleanValue v = (BooleanValue) model.getFunctionValue("$" + p, index);
+					if (!v.value) {
 						sendInductiveCounterexample(p, n, k + 1, model);
 						iterator.remove();
 					}
@@ -164,8 +164,8 @@ public class InductiveProcess extends Process {
 	}
 
 	private BigInteger getN(Model model) {
-		NumericValue value = (NumericValue) model.getValue(Keywords.N.toString());
-		return new BigInteger(value.toString());
+		IntegerValue iv = (IntegerValue) model.getValue(Keywords.N.toString());
+		return iv.value;
 	}
 
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
