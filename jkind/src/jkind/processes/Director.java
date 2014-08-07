@@ -295,7 +295,7 @@ public class Director {
 		Counterexample cex = new Counterexample(k);
 		model.setDeclarations(declarations);
 		model.setDefinitions(Collections.<String, StreamDef> emptyMap());
-		for (String fn : new TreeSet<>(model.getFunctions())) {
+		for (String fn : new TreeSet<>(model.getFunctionNames())) {
 			cex.addSignal(extractSignal(fn, k, offset, model));
 		}
 		return cex;

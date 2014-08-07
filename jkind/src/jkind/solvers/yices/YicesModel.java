@@ -16,36 +16,37 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.Value;
 
 public class YicesModel extends Model {
-	private Map<String, String> aliases;
-	private Map<String, Value> valueAssignments;
-	private Map<String, Map<BigInteger, Value>> functionAssignments;
-
-	public YicesModel() {
-		this.aliases = new HashMap<>();
-		this.valueAssignments = new HashMap<>();
-		this.functionAssignments = new HashMap<>();
-	}
+	private Map<String, String> aliases = new HashMap<>();
+	private Map<String, Value> values = new HashMap<>();
+	private Map<String, YicesFunction> functions = new HashMap<>();
 
 	public void addAlias(String from, String to) {
 		aliases.put(from, to);
 	}
 
-	public void addValue(String id, Value v) {
-		valueAssignments.put(id, v);
+	public void addValue(String name, Value value) {
+		values.put(name, value);
 	}
 
-	public void addFunctionValue(String fn, BigInteger arg, Value v) {
-		Map<BigInteger, Value> fnMap = functionAssignments.get(fn);
-		if (fnMap == null) {
-			fnMap = new HashMap<>();
-			functionAssignments.put(fn, fnMap);
+	public void addFunctionValue(String name, BigInteger index, Value value) {
+		getOrCreateFunction(name).addValue(index, value);
+	}
+
+	public YicesFunction getOrCreateFunction(String name) {
+		YicesFunction fn = functions.get(name);
+		if (fn == null) {
+			fn = new YicesFunction();
+			functions.put(name, fn);
 		}
-
-		fnMap.put(arg, v);
+		return fn;
 	}
 
-	private String getAlias(String id) {
-		String result = id;
+	public void addFunctionDefault(String name, Value defaultValue) {
+		getOrCreateFunction(name).setDefaultValue(defaultValue);
+	}
+
+	private String getAlias(String name) {
+		String result = name;
 		while (aliases.containsKey(result)) {
 			result = aliases.get(result);
 		}
@@ -54,30 +55,30 @@ public class YicesModel extends Model {
 
 	@Override
 	public Value getValue(Symbol sym) {
-		return valueAssignments.get(getAlias(sym.toString()));
+		return values.get(getAlias(sym.toString()));
 	}
 
-	public Map<BigInteger, Value> getFunction(String fn) {
-		return functionAssignments.get(getAlias(fn));
+	public YicesFunction getFunction(String name) {
+		return functions.get(getAlias(name));
 	}
 
 	@Override
-	public Value getFunctionValue(String fn, BigInteger index) {
-		fn = getAlias(fn);
-		if (functionAssignments.containsKey(fn) && functionAssignments.get(fn).containsKey(index)) {
-			return functionAssignments.get(fn).get(index);
-		} else if (definitions.containsKey(fn)) {
-			Sexp s = definitions.get(fn).getLambda().instantiate(new Symbol(index.toString()));
+	public Value getFunctionValue(String name, BigInteger index) {
+		YicesFunction fn = getFunction(name);
+		if (fn != null) {
+			return fn.getValue(index);
+		} else if (definitions.containsKey(name)) {
+			Sexp s = definitions.get(name).getLambda().instantiate(new Symbol(index.toString()));
 			return new Eval(this).eval(s);
 		} else {
-			Value value = getDefaultValue(fn);
-			addFunctionValue(fn, index, value);
-			return value;
+			fn = getOrCreateFunction(name);
+			fn.setDefaultValue(getDefaultValue(name));
+			return fn.getValue(index);
 		}
 	}
 
-	private Value getDefaultValue(String fn) {
-		if (declarations.get(fn).getType() == NamedType.BOOL) {
+	private Value getDefaultValue(String name) {
+		if (declarations.get(name).getType() == NamedType.BOOL) {
 			return BoolValue.TRUE;
 		} else {
 			return new NumericValue("0");
@@ -85,13 +86,17 @@ public class YicesModel extends Model {
 	}
 
 	@Override
-	public Set<String> getFunctions() {
-		Set<String> fns = new HashSet<>(functionAssignments.keySet());
+	public Set<String> getFunctionNames() {
+		Set<String> fns = new HashSet<>(functions.keySet());
 		for (String alias : aliases.keySet()) {
 			if (getFunction(alias) != null) {
 				fns.add(alias);
 			}
 		}
 		return fns;
+	}
+
+	public void addFunction(String name, YicesFunction fn) {
+		functions.put(name, fn);
 	}
 }

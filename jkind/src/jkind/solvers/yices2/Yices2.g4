@@ -6,13 +6,15 @@ alias: '(' '=' ID ID ')';
 
 variable: '(' '=' ID value ')';
 
-function: '(' 'function' ID functionType functionValue* ')';
+function: '(' 'function' ID functionType functionValue* default_? ')';
 
 functionType: '(' 'type' '(' '->' type* ')' ')';
 
 type: 'int' | 'real' | 'bool';
 
 functionValue: '(' '=' '(' ID integer ')' value ')';
+
+default_: '(' 'default' value ')';
 
 value: BOOL | numeric;
 

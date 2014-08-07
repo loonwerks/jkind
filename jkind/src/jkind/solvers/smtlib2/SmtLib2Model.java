@@ -65,7 +65,7 @@ public class SmtLib2Model extends Model {
 	}
 	
 	@Override
-	public Set<String> getFunctions() {
+	public Set<String> getFunctionNames() {
 		return new HashSet<>(functions.keySet());
 	}
 }

@@ -9,17 +9,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface Yices2Listener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#positiveInteger}.
-	 * @param ctx the parse tree
-	 */
-	void enterPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#positiveInteger}.
-	 * @param ctx the parse tree
-	 */
-	void exitPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#quotient}.
 	 * @param ctx the parse tree
 	 */
@@ -29,17 +18,6 @@ public interface Yices2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitQuotient(@NotNull Yices2Parser.QuotientContext ctx);
-
-	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#integerNumeric}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#integerNumeric}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#model}.
@@ -64,6 +42,72 @@ public interface Yices2Listener extends ParseTreeListener {
 	void exitNegativeInteger(@NotNull Yices2Parser.NegativeIntegerContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#alias}.
+	 * @param ctx the parse tree
+	 */
+	void enterAlias(@NotNull Yices2Parser.AliasContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#alias}.
+	 * @param ctx the parse tree
+	 */
+	void exitAlias(@NotNull Yices2Parser.AliasContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterType(@NotNull Yices2Parser.TypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitType(@NotNull Yices2Parser.TypeContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#function}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction(@NotNull Yices2Parser.FunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#function}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction(@NotNull Yices2Parser.FunctionContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#functionValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#functionValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#positiveInteger}.
+	 * @param ctx the parse tree
+	 */
+	void enterPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#positiveInteger}.
+	 * @param ctx the parse tree
+	 */
+	void exitPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#integerNumeric}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#integerNumeric}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#functionType}.
 	 * @param ctx the parse tree
 	 */
@@ -75,15 +119,15 @@ public interface Yices2Listener extends ParseTreeListener {
 	void exitFunctionType(@NotNull Yices2Parser.FunctionTypeContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#alias}.
+	 * Enter a parse tree produced by {@link Yices2Parser#default_}.
 	 * @param ctx the parse tree
 	 */
-	void enterAlias(@NotNull Yices2Parser.AliasContext ctx);
+	void enterDefault_(@NotNull Yices2Parser.Default_Context ctx);
 	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#alias}.
+	 * Exit a parse tree produced by {@link Yices2Parser#default_}.
 	 * @param ctx the parse tree
 	 */
-	void exitAlias(@NotNull Yices2Parser.AliasContext ctx);
+	void exitDefault_(@NotNull Yices2Parser.Default_Context ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#value}.
@@ -108,17 +152,6 @@ public interface Yices2Listener extends ParseTreeListener {
 	void exitQuotientNumeric(@NotNull Yices2Parser.QuotientNumericContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#type}.
-	 * @param ctx the parse tree
-	 */
-	void enterType(@NotNull Yices2Parser.TypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#type}.
-	 * @param ctx the parse tree
-	 */
-	void exitType(@NotNull Yices2Parser.TypeContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#variable}.
 	 * @param ctx the parse tree
 	 */
@@ -128,26 +161,4 @@ public interface Yices2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariable(@NotNull Yices2Parser.VariableContext ctx);
-
-	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#functionValue}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#functionValue}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx);
-
-	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#function}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunction(@NotNull Yices2Parser.FunctionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#function}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunction(@NotNull Yices2Parser.FunctionContext ctx);
 }

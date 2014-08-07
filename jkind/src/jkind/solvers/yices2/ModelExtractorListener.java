@@ -7,6 +7,7 @@ import jkind.solvers.NumericValue;
 import jkind.solvers.Value;
 import jkind.solvers.yices.YicesModel;
 import jkind.solvers.yices2.Yices2Parser.AliasContext;
+import jkind.solvers.yices2.Yices2Parser.FunctionContext;
 import jkind.solvers.yices2.Yices2Parser.FunctionValueContext;
 import jkind.solvers.yices2.Yices2Parser.IntegerContext;
 import jkind.solvers.yices2.Yices2Parser.IntegerNumericContext;
@@ -42,6 +43,15 @@ public class ModelExtractorListener extends Yices2BaseListener {
 		BigInteger arg = integer(ctx.integer());
 		Value value = value(ctx.value());
 		model.addFunctionValue(fn, arg, value);
+	}
+	
+	@Override
+	public void enterFunction(FunctionContext ctx) {
+		if (ctx.default_() != null) {
+			String fn = ctx.ID().getText();
+			Value value = value(ctx.default_().value());
+			model.addFunctionDefault(fn, value);
+		}
 	}
 
 	private Value value(ValueContext ctx) {

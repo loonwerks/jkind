@@ -17,19 +17,6 @@ public class Yices2BaseListener implements Yices2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterQuotient(@NotNull Yices2Parser.QuotientContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -37,19 +24,6 @@ public class Yices2BaseListener implements Yices2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitQuotient(@NotNull Yices2Parser.QuotientContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -82,6 +56,84 @@ public class Yices2BaseListener implements Yices2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAlias(@NotNull Yices2Parser.AliasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlias(@NotNull Yices2Parser.AliasContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterType(@NotNull Yices2Parser.TypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitType(@NotNull Yices2Parser.TypeContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunction(@NotNull Yices2Parser.FunctionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunction(@NotNull Yices2Parser.FunctionContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPositiveInteger(@NotNull Yices2Parser.PositiveIntegerContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntegerNumeric(@NotNull Yices2Parser.IntegerNumericContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunctionType(@NotNull Yices2Parser.FunctionTypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -95,13 +147,13 @@ public class Yices2BaseListener implements Yices2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAlias(@NotNull Yices2Parser.AliasContext ctx) { }
+	@Override public void enterDefault_(@NotNull Yices2Parser.Default_Context ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAlias(@NotNull Yices2Parser.AliasContext ctx) { }
+	@Override public void exitDefault_(@NotNull Yices2Parser.Default_Context ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -134,19 +186,6 @@ public class Yices2BaseListener implements Yices2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterType(@NotNull Yices2Parser.TypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitType(@NotNull Yices2Parser.TypeContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterVariable(@NotNull Yices2Parser.VariableContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -154,32 +193,6 @@ public class Yices2BaseListener implements Yices2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVariable(@NotNull Yices2Parser.VariableContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFunctionValue(@NotNull Yices2Parser.FunctionValueContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFunction(@NotNull Yices2Parser.FunctionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFunction(@NotNull Yices2Parser.FunctionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

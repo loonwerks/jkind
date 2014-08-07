@@ -24,14 +24,8 @@ public class Yices2Solver extends SmtLib2Solver {
 	public void initialize() {
 		send("(set-option :produce-models true)");
 
-		/*
-		 * From Bruno Dutertre: You can also give command-line option
-		 * --logic=QF_UFLIA. In principle, this means uninterpreted functions +
-		 * linear integer arithmetic. But yices does not enforce this
-		 * restriction. Since QF_UFLIA requires the Simplex solver, linear real
-		 * arithmetic is automatically supported too.
-		 */
-		send("(set-logic QF_UFLIA)");
+		/* send("(set-logic QF_UFLIRA)"); */
+		send("(set-logic QF_AUFLIRA)");
 	}
 
 	@Override
