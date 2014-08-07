@@ -33,7 +33,12 @@ public class YicesSolver extends Solver {
 	final private static String DONE = "@DONE";
 
 	public YicesSolver() {
-		super(new ProcessBuilder("yices"));
+		super(new ProcessBuilder(getYices()));
+	}
+
+	private static String getYices() {
+		String yicesBin = System.getenv("YICES_BIN");
+		return yicesBin != null ? yicesBin : "yices";
 	}
 
 	@Override

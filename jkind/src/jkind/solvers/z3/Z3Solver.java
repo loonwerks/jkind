@@ -13,16 +13,21 @@ import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Z3Solver extends SmtLib2Solver {
 	public Z3Solver() {
-		super(new ProcessBuilder("z3", "-smt2", "-in"), "Z3");
+		super(new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
+	}
+
+	private static String getZ3() {
+		String z3Bin = System.getenv("Z3_BIN");
+		return z3Bin != null ? z3Bin : "z3";
 	}
 
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
 	}
-	
+
 	private int assumCount = 1;
-	
+
 	@Override
 	public Result query(Sexp sexp) {
 		Result result;

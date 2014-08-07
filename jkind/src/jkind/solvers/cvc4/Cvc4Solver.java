@@ -4,7 +4,12 @@ import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Cvc4Solver extends SmtLib2Solver {
 	public Cvc4Solver() {
-		super(new ProcessBuilder("cvc4", "--lang", "smt"), "CVC4");
+		super(new ProcessBuilder(getCVC4(), "--lang", "smt"), "CVC4");
+	}
+
+	private static String getCVC4() {
+		String cvc4Bin = System.getenv("CVC4_BIN");
+		return cvc4Bin != null ? cvc4Bin : "cvc4";
 	}
 
 	@Override
