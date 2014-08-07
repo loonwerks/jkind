@@ -27,8 +27,8 @@ public class SmtLib2Model extends Model {
 	}
 
 	@Override
-	public Value getValue(Symbol sym) {
-		return new Eval(this).eval(values.get(sym.toString()));
+	public Value getValue(String name) {
+		return new Eval(this).eval(values.get(name));
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class SmtLib2Model extends Model {
 		SmtLib2Model sliced = new SmtLib2Model();
 		for (String fn : getFunctionNames()) {
 			if (fn.startsWith("$") && keep.contains(fn.substring(1))) {
-				sliced.addFunction(fn, functions.get(fn));
+				sliced.functions.put(fn, functions.get(fn));
 			}
 		}
 		return sliced;

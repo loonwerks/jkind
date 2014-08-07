@@ -54,8 +54,8 @@ public class YicesModel extends Model {
 	}
 
 	@Override
-	public Value getValue(Symbol sym) {
-		return values.get(getAlias(sym.toString()));
+	public Value getValue(String name) {
+		return values.get(getAlias(name));
 	}
 
 	public YicesFunction getFunction(String name) {
@@ -94,10 +94,6 @@ public class YicesModel extends Model {
 			}
 		}
 		return fns;
-	}
-
-	public void addFunction(String name, YicesFunction fn) {
-		functions.put(name, fn);
 	}
 	
 	@Override

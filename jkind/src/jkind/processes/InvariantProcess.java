@@ -176,7 +176,7 @@ public class InvariantProcess extends Process {
 	}
 
 	private BigInteger getN(Model model) {
-		NumericValue value = (NumericValue) model.getValue(Keywords.N);
+		NumericValue value = (NumericValue) model.getValue(Keywords.N.toString());
 		return new BigInteger(value.toString());
 	}
 
