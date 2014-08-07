@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
+import jkind.lustre.Type;
 import jkind.sexp.Sexp;
 
 public abstract class Solver {
@@ -28,7 +31,8 @@ public abstract class Solver {
 	
 	public abstract void push();
 	public abstract void pop();
-	
+
+	protected final Map<String, Type> streamTypes = new HashMap<>();
 	
 	/** Backend */
 	

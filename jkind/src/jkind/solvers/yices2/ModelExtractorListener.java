@@ -1,7 +1,9 @@
 package jkind.solvers.yices2;
 
 import java.math.BigInteger;
+import java.util.Map;
 
+import jkind.lustre.Type;
 import jkind.solvers.BoolValue;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Value;
@@ -21,8 +23,12 @@ import jkind.solvers.yices2.Yices2Parser.VariableContext;
 import jkind.util.BigFraction;
 
 public class ModelExtractorListener extends Yices2BaseListener {
-	private YicesModel model = new YicesModel();
+	private final YicesModel model;
 	
+	public ModelExtractorListener(Map<String, Type> streamTypes) {
+		this.model = new YicesModel(streamTypes);
+	}
+
 	public YicesModel getModel() {
 		return model;
 	}

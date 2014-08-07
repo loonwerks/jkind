@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends Solver {
-	final private static String DONE = "@DONE";
+	private static final String DONE = "@DONE";
 
 	public YicesSolver() {
 		super(new ProcessBuilder(getYices()));
@@ -71,6 +71,7 @@ public class YicesSolver extends Solver {
 
 	@Override
 	public void send(StreamDecl decl) {
+		streamTypes.put(decl.getId().toString(), decl.getType());
 		Sexp type = new Cons("->", new Symbol("int"), type(decl.getType()));
 		send(new Cons("define", decl.getId(), new Symbol("::"), type));
 	}
@@ -194,7 +195,7 @@ public class YicesSolver extends Solver {
 		}
 	}
 
-	private static Result parseYices(String string) throws RecognitionException {
+	private Result parseYices(String string) throws RecognitionException {
 		CharStream stream = new ANTLRInputStream(string);
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -219,7 +220,7 @@ public class YicesSolver extends Solver {
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ResultExtractorListener extractor = new ResultExtractorListener();
+		ResultExtractorListener extractor = new ResultExtractorListener(streamTypes);
 		walker.walk(extractor, ctx);
 		return extractor.getResult();
 	}

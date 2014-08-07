@@ -2,9 +2,7 @@ package jkind.processes;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
@@ -21,21 +19,15 @@ import jkind.solvers.Model;
 import jkind.solvers.NumericValue;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
-import jkind.solvers.StreamDecl;
 import jkind.solvers.UnknownResult;
 import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public class InvariantProcess extends Process {
 	private InductiveProcess inductiveProcess;
-	private Map<String, StreamDecl> declarations;
 
 	public InvariantProcess(Specification spec, JKindSettings settings) {
 		super("Invariant", spec, settings, null);
-		declarations = new HashMap<>();
-		for (StreamDecl decl : spec.translation.getDeclarations()) {
-			declarations.put(decl.getId().toString(), decl);
-		}
 	}
 
 	public void setInductiveProcess(InductiveProcess inductiveProcess) {
@@ -108,7 +100,7 @@ public class InvariantProcess extends Process {
 			result = solver.query(graph.toInvariant(Sexp.fromInt(k - 1)));
 
 			if (result instanceof SatResult) {
-				Model model = getModel(result);
+				Model model = ((SatResult) result).getModel();
 				graph.refine(model, BigInteger.valueOf(k - 1));
 				debug("Base step refinement, graph size = " + graph.size());
 			} else if (result instanceof UnknownResult) {
@@ -117,12 +109,6 @@ public class InvariantProcess extends Process {
 		} while (!graph.isTrivial() && result instanceof SatResult);
 
 		solver.pop();
-	}
-
-	private Model getModel(Result result) {
-		Model model = ((SatResult) result).getModel();
-		model.setDeclarations(declarations);
-		return model;
 	}
 
 	private void assertBaseTransition(int i) {
@@ -143,7 +129,7 @@ public class InvariantProcess extends Process {
 			result = solver.query(getInductiveQuery(k, graph));
 
 			if (result instanceof SatResult) {
-				Model model = getModel(result);
+				Model model = ((SatResult) result).getModel();
 				BigInteger index = getN(model).add(BigInteger.valueOf(k));
 				graph.refine(model, index);
 				debug("Inductive step refinement, graph size = " + graph.size());

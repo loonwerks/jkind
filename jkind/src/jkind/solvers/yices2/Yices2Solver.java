@@ -55,7 +55,7 @@ public class Yices2Solver extends SmtLib2Solver {
 
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ModelExtractorListener extractor = new ModelExtractorListener();
+		ModelExtractorListener extractor = new ModelExtractorListener(streamTypes);
 		walker.walk(extractor, ctx);
 		return extractor.getModel();
 	}

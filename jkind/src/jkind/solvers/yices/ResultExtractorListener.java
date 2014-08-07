@@ -2,7 +2,9 @@ package jkind.solvers.yices;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
+import jkind.lustre.Type;
 import jkind.solvers.BoolValue;
 import jkind.solvers.Label;
 import jkind.solvers.NumericValue;
@@ -23,14 +25,19 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class ResultExtractorListener extends YicesBaseListener {
 	private Result result;
 	private YicesModel model;
+	private final Map<String, Type> streamTypes;
 	
+	public ResultExtractorListener(Map<String, Type> streamTypes) {
+		this.streamTypes = streamTypes;
+	}
+
 	public Result getResult() {
 		return result;
 	}
 
 	@Override
 	public void enterSatResult(SatResultContext ctx) {
-		model = new YicesModel();
+		model = new YicesModel(streamTypes);
 		result = new SatResult(model);
 	}
 	

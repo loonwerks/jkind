@@ -58,6 +58,7 @@ public abstract class SmtLib2Solver extends Solver {
 
 	@Override
 	public void send(StreamDecl decl) {
+		streamTypes.put(decl.getId().toString(), decl.getType());
 		send(new Cons("declare-fun", decl.getId(), new Cons("Int"), type(decl.getType())));
 	}
 
@@ -187,7 +188,7 @@ public abstract class SmtLib2Solver extends Solver {
 			throw new JKindException("Error parsing " + name + " output: " + string);
 		}
 
-		return ModelExtractor.getModel(ctx);
+		return ModelExtractor.getModel(ctx, streamTypes);
 	}
 
 	@Override

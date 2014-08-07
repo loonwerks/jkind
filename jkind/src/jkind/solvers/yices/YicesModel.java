@@ -6,16 +6,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.NamedType;
-import jkind.solvers.BoolValue;
+import jkind.lustre.Type;
 import jkind.solvers.Model;
-import jkind.solvers.NumericValue;
 import jkind.solvers.Value;
 
 public class YicesModel extends Model {
-	private Map<String, String> aliases = new HashMap<>();
-	private Map<String, Value> values = new HashMap<>();
-	private Map<String, YicesFunction> functions = new HashMap<>();
+	private final Map<String, String> aliases = new HashMap<>();
+	private final Map<String, Value> values = new HashMap<>();
+	private final Map<String, YicesFunction> functions = new HashMap<>();
+
+	public YicesModel(Map<String, Type> streamTypes) {
+		super(streamTypes);
+	}
 
 	public void addAlias(String from, String to) {
 		aliases.put(from, to);
@@ -69,17 +71,9 @@ public class YicesModel extends Model {
 		YicesFunction fn = getFunction(name);
 		if (fn == null) {
 			fn = createFunction(name);
-			fn.setDefaultValue(getDefaultValue(name));
+			fn.setDefaultValue(getDefaultStreamValue(name));
 		}
 		return fn.getValue(index);
-	}
-
-	private Value getDefaultValue(String name) {
-		if (declarations.get(name).getType() == NamedType.BOOL) {
-			return BoolValue.TRUE;
-		} else {
-			return new NumericValue("0");
-		}
 	}
 
 	@Override
@@ -95,7 +89,7 @@ public class YicesModel extends Model {
 
 	@Override
 	public YicesModel slice(Set<String> keep) {
-		YicesModel sliced = new YicesModel();
+		YicesModel sliced = new YicesModel(streamTypes);
 		for (String fn : getFunctionNames()) {
 			if (fn.startsWith("$") && keep.contains(fn.substring(1))) {
 				sliced.functions.put(fn, getFunction(fn));

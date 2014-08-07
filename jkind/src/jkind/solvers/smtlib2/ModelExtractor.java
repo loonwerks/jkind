@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import jkind.lustre.Type;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -17,8 +19,8 @@ import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.SymbolBodyContext;
 
 public class ModelExtractor {
-	public static SmtLib2Model getModel(ModelContext ctx) {
-		SmtLib2Model model = new SmtLib2Model();
+	public static SmtLib2Model getModel(ModelContext ctx, Map<String, Type> streamTypes) {
+		SmtLib2Model model = new SmtLib2Model(streamTypes);
 		for (DefineContext defineCtx : ctx.define()) {
 			walkDefine(defineCtx, model);
 		}

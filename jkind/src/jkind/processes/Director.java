@@ -30,7 +30,6 @@ import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.solvers.Model;
-import jkind.solvers.StreamDecl;
 import jkind.translation.Specification;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
@@ -48,7 +47,6 @@ public class Director {
 	private List<String> invalidProperties = new ArrayList<>();
 	private List<String> unknownProperties = new ArrayList<>();
 	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<>();
-	private Map<String, StreamDecl> declarations;
 
 	private BaseProcess baseProcess;
 	private InductiveProcess inductiveProcess;
@@ -67,11 +65,6 @@ public class Director {
 		this.spec = spec;
 		this.writer = getWriter(spec);
 		this.remainingProperties.addAll(spec.node.properties);
-
-		this.declarations = new HashMap<>();
-		for (StreamDecl decl : spec.translation.getDeclarations()) {
-			this.declarations.put(decl.getId().toString(), decl);
-		}
 	}
 
 	private Writer getWriter(Specification spec) {
@@ -289,7 +282,6 @@ public class Director {
 
 	private Counterexample extractCounterexample(int k, BigInteger offset, Model model) {
 		Counterexample cex = new Counterexample(k);
-		model.setDeclarations(declarations);
 		for (String fn : new TreeSet<>(model.getFunctionNames())) {
 			cex.addSignal(extractSignal(fn, k, offset, model));
 		}
