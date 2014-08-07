@@ -285,28 +285,34 @@ public class JKindApi {
 	}
 
 	private String[] getJKindCommand() {
-		if (Util.isWindows()) {
-			/*
-			 * On Windows, invoking Process.destroy does not kill the
-			 * subprocesses of the destroyed process. If we were to run
-			 * jkind.bat and kill it, only the cmd.exe process which is running
-			 * the batch file would be killed. The underlying JKind process
-			 * would continue to its natural end. To avoid this, we search the
-			 * user's path for the jkind.jar file and invoke it directly.
-			 */
+		/*
+		 * On Windows, invoking Process.destroy does not kill the subprocesses
+		 * of the destroyed process. If we were to run jkind.bat and kill it,
+		 * only the cmd.exe process which is running the batch file would be
+		 * killed. The underlying JKind process would continue to its natural
+		 * end. To avoid this, we search the user's path for the jkind.jar file
+		 * and invoke it directly.
+		 * 
+		 * In order to support JKIND_HOME or PATH as the location for JKind, we
+		 * now search in non-windows environments too.
+		 */
 
-			File jar = findJKindJar();
-			if (jar == null) {
-				throw new JKindException("Unable to find jkind.jar on system PATH");
-			}
-			return new String[] { "java", "-jar", jar.toString(), "-jkind" };
-		} else {
-			return new String[] { "jkind" };
+		File jar = findJKindJar();
+		if (jar == null) {
+			throw new JKindException("Unable to find jkind.jar in JKIND_HOME or on system PATH");
 		}
+		return new String[] { "java", "-jar", jar.toString(), "-jkind" };
 	}
 
 	private File findJKindJar() {
-		String path = System.getenv("PATH");
+		File jar = findJKindJar(System.getenv("JKIND_HOME"));
+		if (jar == null) {
+			jar = findJKindJar(System.getenv("PATH"));
+		}
+		return jar;
+	}
+
+	private File findJKindJar(String path) {
 		if (path == null) {
 			return null;
 		}
@@ -317,6 +323,7 @@ public class JKindApi {
 				return jar;
 			}
 		}
+
 		return null;
 	}
 
