@@ -1,5 +1,7 @@
 package jkind.solvers.z3;
 
+import java.io.File;
+
 import jkind.lustre.NamedType;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -17,8 +19,11 @@ public class Z3Solver extends SmtLib2Solver {
 	}
 
 	private static String getZ3() {
-		String z3Bin = System.getenv("Z3_BIN");
-		return z3Bin != null ? z3Bin : "z3";
+		String home = System.getenv("Z3_HOME");
+		if (home != null) {
+			return new File(new File(home, "bin"), "z3").toString();
+		}
+		return "z3";
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package jkind.solvers.cvc4;
 
+import java.io.File;
+
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Cvc4Solver extends SmtLib2Solver {
@@ -8,8 +10,11 @@ public class Cvc4Solver extends SmtLib2Solver {
 	}
 
 	private static String getCVC4() {
-		String cvc4Bin = System.getenv("CVC4_BIN");
-		return cvc4Bin != null ? cvc4Bin : "cvc4";
+		String home = System.getenv("CVC4_HOME");
+		if (home != null) {
+			return new File(new File(home, "bin"), "cvc4").toString();
+		}
+		return "cvc4";
 	}
 
 	@Override

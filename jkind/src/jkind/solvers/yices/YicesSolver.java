@@ -1,5 +1,6 @@
 package jkind.solvers.yices;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,8 +38,11 @@ public class YicesSolver extends Solver {
 	}
 
 	private static String getYices() {
-		String yicesBin = System.getenv("YICES_BIN");
-		return yicesBin != null ? yicesBin : "yices";
+		String home = System.getenv("YICES_HOME");
+		if (home != null) {
+			return new File(new File(home, "bin"), "yices").toString();
+		}
+		return "yices";
 	}
 
 	@Override
