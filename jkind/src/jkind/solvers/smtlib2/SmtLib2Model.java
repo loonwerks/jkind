@@ -15,13 +15,8 @@ import jkind.solvers.Value;
 import jkind.util.SexpUtil;
 
 public class SmtLib2Model extends Model {
-	private HashMap<String, Sexp> values;
-	private HashMap<String, Lambda> functions;
-
-	public SmtLib2Model() {
-		this.values = new HashMap<>();
-		this.functions = new HashMap<>();
-	}
+	private HashMap<String, Sexp> values = new HashMap<>();
+	private HashMap<String, Lambda> functions = new HashMap<>();
 
 	public void addValue(String id, Sexp sexp) {
 		values.put(id, sexp);
@@ -47,7 +42,7 @@ public class SmtLib2Model extends Model {
 			lambda = new Lambda(SexpUtil.I, getDefaultValue(fn));
 			functions.put(fn, lambda);
 		}
-		
+
 		return new Eval(this).eval(lambda.instantiate(new Symbol(index.toString())));
 	}
 
@@ -59,11 +54,10 @@ public class SmtLib2Model extends Model {
 		}
 	}
 
-	
 	public Lambda getFunction(String fn) {
 		return functions.get(fn);
 	}
-	
+
 	@Override
 	public Set<String> getFunctionNames() {
 		return new HashSet<>(functions.keySet());
