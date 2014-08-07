@@ -318,7 +318,7 @@ public class JKindApi {
 		}
 
 		for (String element : path.split(File.pathSeparator)) {
-			File jar = new File(new File(element), "jkind.jar");
+			File jar = new File(element, "jkind.jar");
 			if (jar.exists()) {
 				return jar;
 			}
