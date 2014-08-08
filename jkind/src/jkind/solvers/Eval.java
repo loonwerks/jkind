@@ -72,7 +72,7 @@ public class Eval {
 	private Value evalFunction(String fn, List<Value> args) {
 		switch (fn) {
 		case "=":
-			return BooleanValue.fromBoolean(args.get(0).equals(args.get(1)));
+			return checkEquality(args.get(0), args.get(1));
 		case "-": {
 			if (args.size() == 1) {
 				return args.get(0).applyUnaryOp(UnaryOp.NEGATIVE);
@@ -96,6 +96,15 @@ public class Eval {
 			BigInteger index = new BigInteger(args.get(0).toString());
 			return model.getFunctionValue(fn, index);
 		}
+	}
+
+	private Value checkEquality(Value left, Value right) {
+		if (left instanceof RealValue && right instanceof IntegerValue) {
+			right = promote(right);
+		} else if (left instanceof IntegerValue && right instanceof RealValue) {
+			left = promote(left);
+		}
+		return BooleanValue.fromBoolean(left.equals(right));
 	}
 
 	private Value applyBinaryOp(Value left, BinaryOp op, Value right) {
