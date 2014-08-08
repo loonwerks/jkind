@@ -119,17 +119,6 @@ public interface Yices2Listener extends ParseTreeListener {
 	void exitFunctionType(@NotNull Yices2Parser.FunctionTypeContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link Yices2Parser#default_}.
-	 * @param ctx the parse tree
-	 */
-	void enterDefault_(@NotNull Yices2Parser.Default_Context ctx);
-	/**
-	 * Exit a parse tree produced by {@link Yices2Parser#default_}.
-	 * @param ctx the parse tree
-	 */
-	void exitDefault_(@NotNull Yices2Parser.Default_Context ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#value}.
 	 * @param ctx the parse tree
 	 */
@@ -150,6 +139,17 @@ public interface Yices2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitQuotientNumeric(@NotNull Yices2Parser.QuotientNumericContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link Yices2Parser#defaultValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterDefaultValue(@NotNull Yices2Parser.DefaultValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link Yices2Parser#defaultValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitDefaultValue(@NotNull Yices2Parser.DefaultValueContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link Yices2Parser#variable}.

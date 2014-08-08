@@ -24,11 +24,11 @@ public class Yices2Parser extends Parser {
 	};
 	public static final int
 		RULE_model = 0, RULE_alias = 1, RULE_variable = 2, RULE_function = 3, 
-		RULE_functionType = 4, RULE_type = 5, RULE_functionValue = 6, RULE_default_ = 7, 
+		RULE_functionType = 4, RULE_type = 5, RULE_functionValue = 6, RULE_defaultValue = 7, 
 		RULE_value = 8, RULE_integer = 9, RULE_quotient = 10, RULE_numeric = 11;
 	public static final String[] ruleNames = {
 		"model", "alias", "variable", "function", "functionType", "type", "functionValue", 
-		"default_", "value", "integer", "quotient", "numeric"
+		"defaultValue", "value", "integer", "quotient", "numeric"
 	};
 
 	@Override
@@ -222,8 +222,8 @@ public class Yices2Parser extends Parser {
 	}
 
 	public static class FunctionContext extends ParserRuleContext {
-		public Default_Context default_() {
-			return getRuleContext(Default_Context.class,0);
+		public DefaultValueContext defaultValue() {
+			return getRuleContext(DefaultValueContext.class,0);
 		}
 		public FunctionValueContext functionValue(int i) {
 			return getRuleContext(FunctionValueContext.class,i);
@@ -280,7 +280,7 @@ public class Yices2Parser extends Parser {
 			_la = _input.LA(1);
 			if (_la==8) {
 				{
-				setState(55); default_();
+				setState(55); defaultValue();
 				}
 			}
 
@@ -448,27 +448,27 @@ public class Yices2Parser extends Parser {
 		return _localctx;
 	}
 
-	public static class Default_Context extends ParserRuleContext {
+	public static class DefaultValueContext extends ParserRuleContext {
 		public ValueContext value() {
 			return getRuleContext(ValueContext.class,0);
 		}
-		public Default_Context(ParserRuleContext parent, int invokingState) {
+		public DefaultValueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_default_; }
+		@Override public int getRuleIndex() { return RULE_defaultValue; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).enterDefault_(this);
+			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).enterDefaultValue(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).exitDefault_(this);
+			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).exitDefaultValue(this);
 		}
 	}
 
-	public final Default_Context default_() throws RecognitionException {
-		Default_Context _localctx = new Default_Context(_ctx, getState());
-		enterRule(_localctx, 14, RULE_default_);
+	public final DefaultValueContext defaultValue() throws RecognitionException {
+		DefaultValueContext _localctx = new DefaultValueContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_defaultValue);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{

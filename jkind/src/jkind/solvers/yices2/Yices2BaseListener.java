@@ -147,19 +147,6 @@ public class Yices2BaseListener implements Yices2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDefault_(@NotNull Yices2Parser.Default_Context ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitDefault_(@NotNull Yices2Parser.Default_Context ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterValue(@NotNull Yices2Parser.ValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -180,6 +167,19 @@ public class Yices2BaseListener implements Yices2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitQuotientNumeric(@NotNull Yices2Parser.QuotientNumericContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDefaultValue(@NotNull Yices2Parser.DefaultValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDefaultValue(@NotNull Yices2Parser.DefaultValueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

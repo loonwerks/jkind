@@ -53,9 +53,9 @@ public class ModelExtractorListener extends Yices2BaseListener {
 	
 	@Override
 	public void enterFunction(FunctionContext ctx) {
-		if (ctx.default_() != null) {
+		if (ctx.defaultValue() != null) {
 			String fn = ctx.ID().getText();
-			Value value = value(ctx.default_().value());
+			Value value = value(ctx.defaultValue().value());
 			model.addFunctionDefault(fn, value);
 		}
 	}
