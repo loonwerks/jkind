@@ -66,7 +66,7 @@ public class ResultExtractorListener extends YicesBaseListener {
 	public void enterFunction(FunctionContext ctx) {
 		String fn = ctx.ID().getText();
 		BigInteger arg = new BigInteger(ctx.integer().getText());
-		Value value = Util.parseValue(streamTypes.get(fn).toString(), ctx.value().getText());
+		Value value = Util.parseValue(Util.getName(streamTypes.get(fn)), ctx.value().getText());
 		model.addFunctionValue(fn, arg, value);
 	}
 }

@@ -4,13 +4,13 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.util.BigFraction;
+import jkind.util.Util;
 
 public abstract class Model {
 	protected final Map<String, Type> streamTypes;
@@ -20,15 +20,16 @@ public abstract class Model {
 	}
 
 	protected Value getDefaultStreamValue(String name) {
-		Type type = streamTypes.get(name);
-		if (type == NamedType.BOOL) {
+		String typeName = Util.getName(streamTypes.get(name));
+		switch (typeName) {
+		case "bool":
 			return BooleanValue.TRUE;
-		} else if (type == NamedType.INT) {
+		case "int":
 			return new IntegerValue(BigInteger.ZERO);
-		} else if (type == NamedType.REAL) {
+		case "real":
 			return new RealValue(BigFraction.ZERO);
-		} else {
-			throw new IllegalArgumentException("Unknown stream type: " + type);
+		default:
+			throw new IllegalArgumentException("Unknown stream type: " + typeName);
 		}
 	}
 
