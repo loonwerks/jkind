@@ -12,13 +12,13 @@ public class Specification {
 	final public Node node;
 	final public DependencyMap dependencyMap;
 	final public Map<String, Type> typeMap;
-	final public Lustre2Sexps translation;
+	final public TransitionRelation transitionRelation;
 
 	public Specification(String filename, Node node, DependencyMap dependencyMap) {
 		this.filename = filename;
 		this.node = node;
 		this.dependencyMap = dependencyMap;
 		this.typeMap = Util.getTypeMap(node);
-		this.translation = new Lustre2Sexps(node);
+		this.transitionRelation = Lustre2Sexp.constructTransitionRelation(node);
 	}
 }

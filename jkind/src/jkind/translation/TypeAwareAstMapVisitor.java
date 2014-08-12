@@ -9,7 +9,7 @@ import jkind.lustre.visitors.AstMapVisitor;
 
 public class TypeAwareAstMapVisitor extends AstMapVisitor {
 	private TypeReconstructor typeReconstructor = new TypeReconstructor();
-	
+
 	protected Type getType(Expr e) {
 		return e.accept(typeReconstructor);
 	}

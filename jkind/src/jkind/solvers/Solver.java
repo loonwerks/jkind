@@ -7,20 +7,20 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import jkind.JKindException;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
+import jkind.translation.TransitionRelation;
 
 public abstract class Solver {
 	public abstract void initialize();
-	
+
 	public abstract void send(Sexp sexp);
-	public abstract void send(StreamDecl decl);
-	public abstract void send(StreamDef def);
-	public abstract void send(VarDecl decl);
+	public abstract void define(VarDecl decl);
+	public abstract void define(TransitionRelation lambda);
 	
 	public abstract Label weightedAssert(Sexp sexp, int weight);
 	public abstract Label labelledAssert(Sexp sexp);
@@ -32,7 +32,7 @@ public abstract class Solver {
 	public abstract void push();
 	public abstract void pop();
 
-	protected final Map<String, Type> streamTypes = new HashMap<>();
+	protected final Map<String, Type> varTypes = new HashMap<>();
 	
 	/** Backend */
 	
@@ -78,15 +78,7 @@ public abstract class Solver {
 			debug = null;
 		}
 	}
-	
-	/** Utility */
 
-	public void send(List<StreamDecl> decls) {
-		for (StreamDecl decl : decls) {
-			send(decl);
-		}
-	}
-	
 	
 	/** Debugging */
 	

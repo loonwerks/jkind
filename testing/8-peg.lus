@@ -17,7 +17,7 @@ tel;
 
 node valid(loc : int) returns (v : bool);
 let
-  v = (loc = 1 or loc = 2 or loc = 3 or loc = 4 or loc = 5 or loc = 6 or loc = 7 or loc = 8 or loc = 9);
+  v = (1 <= loc and loc <= 9);
 tel;
 
 node blue_peg(in : int; init : int; p1, p2, p3, p4, p5, p6, p7 : int) returns (b : int);

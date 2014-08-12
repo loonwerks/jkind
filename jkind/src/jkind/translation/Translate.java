@@ -14,6 +14,7 @@ public class Translate {
 		Node main = InlineNodeCalls.program(program);
 		main = FlattenTuples.node(main);
 		main = FlattenCompoundTypes.node(main);
+		main = FlattenPres.node(main);
 		return main;
 	}
 }

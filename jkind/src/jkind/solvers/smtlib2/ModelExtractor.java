@@ -10,7 +10,6 @@ import jkind.lustre.Type;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.Lambda;
 import jkind.solvers.smtlib2.SmtLib2Parser.BodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ConsBodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DefineContext;
@@ -19,8 +18,8 @@ import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.SymbolBodyContext;
 
 public class ModelExtractor {
-	public static SmtLib2Model getModel(ModelContext ctx, Map<String, Type> streamTypes) {
-		SmtLib2Model model = new SmtLib2Model(streamTypes);
+	public static SmtLib2Model getModel(ModelContext ctx, Map<String, Type> varTypes) {
+		SmtLib2Model model = new SmtLib2Model(varTypes);
 		for (DefineContext defineCtx : ctx.define()) {
 			walkDefine(defineCtx, model);
 		}
@@ -28,14 +27,9 @@ public class ModelExtractor {
 	}
 
 	public static void walkDefine(DefineContext ctx, SmtLib2Model model) {
-		String fn = getId(ctx.id());
+		String var = getId(ctx.id());
 		Sexp body = sexp(ctx.body());
-		if (ctx.arg() == null) {
-			model.addValue(fn, body);
-		} else {
-			Symbol arg = new Symbol(getId(ctx.arg().id()));
-			model.addFunction(fn, new Lambda(arg, body));
-		}
+		model.addValue(var, body);
 	}
 
 	private static String getId(IdContext id) {
@@ -63,11 +57,11 @@ public class ModelExtractor {
 			BigDecimal d = new BigDecimal(string);
 			BigInteger numerator = d.unscaledValue();
 			BigInteger denominator = BigDecimal.TEN.pow(d.scale()).toBigInteger();
-			
+
 			BigInteger gcd = numerator.gcd(denominator);
 			numerator = numerator.divide(gcd);
 			denominator = denominator.divide(gcd);
-			
+
 			if (denominator.equals(BigInteger.ONE)) {
 				return numerator.toString();
 			} else {

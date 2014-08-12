@@ -13,6 +13,7 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
 import jkind.solvers.Lambda;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
@@ -57,13 +58,15 @@ public class CandidateGenerator {
 	}
 
 	private void addIntCandidates(String id) {
-		Sexp s = new Cons("$" + id, SexpUtil.I);
+		Sexp var = new Symbol(id);
 		BigInteger init = getConstantInitialValue(id);
 		if (init != null) {
-			addCandidate(new Cons(">=", s, Sexp.fromBigInt(init)), "(" + id + " >= " + init + ")");
-			addCandidate(new Cons("<=", s, Sexp.fromBigInt(init)), "(" + id + " <= " + init + ")");
+			addCandidate(id, new Cons(">=", var, Sexp.fromBigInt(init)), "(" + id + " >= " + init
+					+ ")");
+			addCandidate(id, new Cons("<=", var, Sexp.fromBigInt(init)), "(" + id + " <= " + init
+					+ ")");
 		} else {
-			addCandidate(new Cons(">=", s, Sexp.fromInt(0)), "(" + id + " >= 0)");
+			addCandidate(id, new Cons(">=", var, Sexp.fromInt(0)), "(" + id + " >= 0)");
 		}
 	}
 
@@ -77,38 +80,29 @@ public class CandidateGenerator {
 	}
 
 	private void addBoolCandidates(String id) {
-		Sexp s = new Cons("$" + id, SexpUtil.I);
-		addCandidate(s, id);
-		addCandidate(new Cons("not", s), "not " + id);
+		Sexp var = new Symbol(id);
+		addCandidate(id, var, id);
+		addCandidate(id, new Cons("not", var), "not " + id);
 	}
 
 	private void addSubrangeCandidates(String id, SubrangeIntType subrange) {
-		addCandidate(SexpUtil.subrangeConstraint(id, SexpUtil.I, subrange), "(" + subrange.low
-				+ " <= " + id + " and " + id + " <= " + subrange.high + ")");
+		Sexp var = new Symbol(id);
+		addCandidate(id, SexpUtil.subrangeConstraint(id, subrange), "(" + subrange.low + " <= "
+				+ id + " and " + id + " <= " + subrange.high + ")");
 
-		Sexp s = new Cons("$" + id, SexpUtil.I);
 		for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r
 				.add(BigInteger.ONE)) {
-			addCandidate(new Cons("=", s, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
-			// addCandidate(new Cons("/=", s, Sexp.fromBigInt(r)), "(" +
-			// id + " <> " + r + ")");
+			addCandidate(id, new Cons("=", var, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
 		}
 	}
 
 	private void addEnumCandidates(String id, EnumType et) {
-		addCandidate(SexpUtil.enumConstraint(id, SexpUtil.I, et), "(" + 0 + " <= " + id + " and "
-				+ id + " < " + et.values.size() + ")");
-
-		Sexp s = new Cons("$" + id, SexpUtil.I);
-		BigInteger size = BigInteger.valueOf(et.values.size());
-		for (BigInteger r = BigInteger.ZERO; r.compareTo(size) < 0; r = r.add(BigInteger.ONE)) {
-			addCandidate(new Cons("=", s, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
-			// addCandidate(new Cons("/=", s, Sexp.fromBigInt(r)), "(" +
-			// id + " <> " + r + ")");
-		}
+		BigInteger low = BigInteger.ZERO;
+		BigInteger high = BigInteger.valueOf(et.values.size() - 1);
+		addSubrangeCandidates(id, new SubrangeIntType(low, high));
 	}
 
-	private void addCandidate(Sexp s, String text) {
-		candidates.add(new Candidate(new Lambda(SexpUtil.I, s), text));
+	private void addCandidate(String id, Sexp s, String text) {
+		candidates.add(new Candidate(new Lambda(id, s), text));
 	}
 }

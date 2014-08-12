@@ -1,6 +1,5 @@
 package jkind.processes;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +8,6 @@ import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.invariant.Invariant;
 import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.IntegerValue;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -25,7 +23,6 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
@@ -54,9 +51,11 @@ public class InductiveProcess extends Process {
 
 	@Override
 	public void main() {
+		createVariables(-1);
 		for (int k = 0; k <= settings.n; k++) {
 			debug("K = " + k);
 			processMessagesAndWait(k);
+			createVariables(k);
 			assertTransitionAndInvariants(k);
 			checkProperties(k);
 			if (properties.isEmpty()) {
@@ -64,12 +63,6 @@ public class InductiveProcess extends Process {
 			}
 		}
 		sendStop();
-	}
-
-	@Override
-	protected void initializeSolver() {
-		super.initializeSolver();
-		declareN();
 	}
 
 	private void processMessagesAndWait(int k) {
@@ -107,17 +100,13 @@ public class InductiveProcess extends Process {
 
 	private void assertInvariants(List<Invariant> invariants, int i) {
 		for (Invariant invariant : invariants) {
-			assertInvariant(invariant, i);
+			solver.send(new Cons("assert", invariant.instantiate(i)));
 		}
 	}
 
-	private void assertInvariant(Invariant invariant, int i) {
-		solver.send(new Cons("assert", invariant.instantiate(getIndex(i))));
-	}
-
-	private void assertTransitionAndInvariants(int offset) {
-		solver.send(new Cons("assert", new Cons(Keywords.T, getIndex(offset))));
-		assertInvariants(invariants, offset);
+	private void assertTransitionAndInvariants(int k) {
+		assertInductiveTransition(k);
+		assertInvariants(invariants, k);
 	}
 
 	private void checkProperties(int k) {
@@ -128,14 +117,12 @@ public class InductiveProcess extends Process {
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				BigInteger n = getN(model);
-				BigInteger index = n.add(BigInteger.valueOf(k));
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BooleanValue v = (BooleanValue) model.getFunctionValue("$" + p, index);
+					BooleanValue v = (BooleanValue) model.getValue(SexpUtil.offset(p, k));
 					if (!v.value) {
-						sendInductiveCounterexample(p, n, k + 1, model);
+						sendInductiveCounterexample(p, k + 1, model);
 						iterator.remove();
 					}
 				}
@@ -163,27 +150,18 @@ public class InductiveProcess extends Process {
 		assertNewInvariants(propertiesAsInvariants, k);
 	}
 
-	private BigInteger getN(Model model) {
-		IntegerValue iv = (IntegerValue) model.getValue(Keywords.N.toString());
-		return iv.value;
-	}
-
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(SexpUtil.conjoinStreams(possiblyValid, getIndex(i)));
+			hyps.add(SexpUtil.conjoinOffsets(possiblyValid, i));
 		}
-		Sexp conc = SexpUtil.conjoinStreams(possiblyValid, getIndex(k));
+		Sexp conc = SexpUtil.conjoinOffsets(possiblyValid, k);
 
 		if (hyps.isEmpty()) {
 			return conc;
 		} else {
 			return new Cons("=>", new Cons("and", hyps), conc);
 		}
-	}
-
-	private Sexp getIndex(int offset) {
-		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
 	private void sendValid(List<String> valid, int k) {
@@ -196,9 +174,9 @@ public class InductiveProcess extends Process {
 		}
 	}
 
-	private void sendInductiveCounterexample(String p, BigInteger n, int k, Model model) {
+	private void sendInductiveCounterexample(String p, int k, Model model) {
 		if (settings.inductiveCounterexamples) {
-			director.incoming.add(new InductiveCounterexampleMessage(p, n, k, model));
+			director.incoming.add(new InductiveCounterexampleMessage(p, k, model));
 		}
 	}
 

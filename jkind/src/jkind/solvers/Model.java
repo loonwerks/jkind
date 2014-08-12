@@ -9,32 +9,36 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.sexp.Symbol;
 import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public abstract class Model {
-	protected final Map<String, Type> streamTypes;
-
-	public Model(Map<String, Type> streamTypes) {
-		this.streamTypes = streamTypes;
+	protected Map<String, Type> varTypes;
+	
+	public Model(Map<String, Type> varTypes) {
+		this.varTypes = varTypes;
 	}
+	
+	public abstract Value getValue(String name);
+	public abstract Set<String> getVariableNames();
+	public abstract Model slice(Set<String> keep);
 
-	protected Value getDefaultStreamValue(String name) {
-		String typeName = Util.getName(streamTypes.get(name));
-		switch (typeName) {
+	public Value getValue(Symbol symbol) {
+		return getValue(symbol.str);
+	}
+	
+	protected Value getDefaultValue(Type type) {
+		switch (Util.getName(type)) {
 		case "bool":
-			return BooleanValue.TRUE;
+			return BooleanValue.FALSE;
 		case "int":
 			return new IntegerValue(BigInteger.ZERO);
 		case "real":
 			return new RealValue(BigFraction.ZERO);
 		default:
-			throw new IllegalArgumentException("Unknown stream type: " + typeName);
+			throw new IllegalArgumentException("Unable to construct default value for type: "
+					+ type);
 		}
 	}
-
-	public abstract Value getValue(String name);
-	public abstract Value getFunctionValue(String name, BigInteger index);
-	public abstract Set<String> getFunctionNames();
-	public abstract Model slice(Set<String> keep);
 }

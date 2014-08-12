@@ -1,6 +1,5 @@
 package jkind.invariant;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,8 +74,8 @@ public class Graph {
 		}
 	}
 
-	public Sexp toInvariant(Sexp index) {
-		return SexpUtil.conjoinInvariants(toInvariants(), index);
+	public Sexp toInvariant(int k) {
+		return SexpUtil.conjoinInvariants(toInvariants(), k);
 	}
 
 	public List<Invariant> toFinalInvariants() {
@@ -115,13 +114,13 @@ public class Graph {
 		return invariants;
 	}
 
-	public void refine(Model model, BigInteger k) {
+	public void refine(Model model, int k) {
 		splitNodes(model, k);
 		removeEmptyNodes();
 		removeUselessNodes();
 	}
 
-	private void splitNodes(Model model, BigInteger k) {
+	private void splitNodes(Model model, int k) {
 		List<Node> newNodes = new ArrayList<>();
 		List<Edge> newEdges = new ArrayList<>();
 		Map<Node, List<Node>> chains = new HashMap<>();

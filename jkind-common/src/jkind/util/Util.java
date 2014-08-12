@@ -99,10 +99,18 @@ public class Util {
 			break;
 
 		default:
-			return new EnumValue(value);
+			if (Character.isAlphabetic(value.charAt(0))) {
+				return new EnumValue(value);
+			} else {
+				throw new IllegalArgumentException("Invalid enumeration value: " + value);
+			}
 		}
 
 		throw new JKindException("Unable to parse " + value + " as " + type);
+	}
+
+	public static Value parseValue(Type type, String value) {
+		return parseValue(getName(type), value);
 	}
 
 	public static Type resolveType(Type type, Map<String, Type> map) {

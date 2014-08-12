@@ -60,6 +60,13 @@ public final class Counterexample {
 		return signals.get(name);
 	}
 
+	public Signal<Value> getOrCreateSignal(String name) {
+		if (!signals.containsKey(name)) {
+			signals.put(name, new Signal<>(name));
+		}
+		return signals.get(name);
+	}
+
 	/**
 	 * Get a specific step of the counterexample
 	 * 

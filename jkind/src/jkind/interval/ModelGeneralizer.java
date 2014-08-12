@@ -1,6 +1,5 @@
 package jkind.interval;
 
-import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +24,7 @@ import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
+import jkind.util.SexpUtil;
 
 public class ModelGeneralizer {
 	private final Specification spec;
@@ -241,7 +241,7 @@ public class ModelGeneralizer {
 	}
 
 	private Interval getFromBasisModel(IdIndexPair pair) {
-		Value value = basisModel.getFunctionValue("$" + pair.id, BigInteger.valueOf(pair.i));
+		Value value = basisModel.getValue(SexpUtil.offset(pair.id, pair.i));
 
 		if (value instanceof BooleanValue) {
 			BooleanValue bv = (BooleanValue) value;

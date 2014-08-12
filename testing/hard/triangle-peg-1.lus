@@ -2,7 +2,7 @@
 --   INVALID PROPERTIES: [prop]
 -- K = 14
 
--- This problem requires a long time (26m with yices on an i7)
+-- This problem requires a long time (2m with yices on an i7)
 
 -- The 15-peg triangle peg board game:
 --

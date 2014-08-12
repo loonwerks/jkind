@@ -10,8 +10,6 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.solvers.yices.YicesModel;
 import jkind.solvers.yices2.Yices2Parser.AliasContext;
-import jkind.solvers.yices2.Yices2Parser.FunctionContext;
-import jkind.solvers.yices2.Yices2Parser.FunctionValueContext;
 import jkind.solvers.yices2.Yices2Parser.IntegerContext;
 import jkind.solvers.yices2.Yices2Parser.IntegerNumericContext;
 import jkind.solvers.yices2.Yices2Parser.NegativeIntegerContext;
@@ -25,8 +23,8 @@ import jkind.util.BigFraction;
 public class ModelExtractorListener extends Yices2BaseListener {
 	private final YicesModel model;
 	
-	public ModelExtractorListener(Map<String, Type> streamTypes) {
-		this.model = new YicesModel(streamTypes);
+	public ModelExtractorListener(Map<String, Type> varTypes) {
+		this.model = new YicesModel(varTypes);
 	}
 
 	public YicesModel getModel() {
@@ -41,23 +39,6 @@ public class ModelExtractorListener extends Yices2BaseListener {
 	@Override
 	public void enterVariable(VariableContext ctx) {
 		model.addValue(ctx.ID().getText(), value(ctx.value()));
-	}
-
-	@Override
-	public void enterFunctionValue(FunctionValueContext ctx) {
-		String fn = ctx.ID().getText();
-		BigInteger arg = integer(ctx.integer());
-		Value value = value(ctx.value());
-		model.addFunctionValue(fn, arg, value);
-	}
-	
-	@Override
-	public void enterFunction(FunctionContext ctx) {
-		if (ctx.defaultValue() != null) {
-			String fn = ctx.ID().getText();
-			Value value = value(ctx.defaultValue().value());
-			model.addFunctionDefault(fn, value);
-		}
 	}
 
 	private Value value(ValueContext ctx) {

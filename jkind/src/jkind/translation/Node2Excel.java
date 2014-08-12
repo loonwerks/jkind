@@ -50,7 +50,7 @@ public class Node2Excel {
 		createRowAssignments(main);
 		row += 1;
 		createEnumerations(sheet, main);
-		
+
 		// Print headers
 		List<String> rows = Util.getIds(Util.getVarDecls(main));
 		for (String row : rows) {
@@ -62,7 +62,8 @@ public class Node2Excel {
 			String id = eq.lhs.get(0).id;
 			int row = rowAssignments.get(id);
 			for (int col = 1; col <= LENGTH; col++) {
-				Expr2FormulaVisitor visitor = new Expr2FormulaVisitor(id, col, rowAssignments, intToEnum, enumToInt);
+				Expr2FormulaVisitor visitor = new Expr2FormulaVisitor(id, col, rowAssignments,
+						intToEnum, enumToInt);
 				eq.expr.accept(visitor);
 				String formula = visitor.toString();
 				if (!formula.isEmpty()) {
@@ -77,10 +78,10 @@ public class Node2Excel {
 				hideRow(sheet, rowAssignments.get(local.id));
 			}
 		}
-		
+
 		// Hide enumerations
 		for (int i = enumerationsStartRow; i < row; i++) {
-				hideRow(sheet, i);
+			hideRow(sheet, i);
 		}
 
 		workbook.write();
@@ -109,8 +110,7 @@ public class Node2Excel {
 	 * Note: The index and match functions do not work in JExcelApi. Nor do
 	 * array literals. Otherwise, this conversion would be much easier.
 	 */
-	private void createEnumerations(WritableSheet sheet, Node main)
-			throws JXLException {
+	private void createEnumerations(WritableSheet sheet, Node main) throws JXLException {
 		Map<EnumType, String> intToEnumCache = new HashMap<>();
 		Map<EnumType, String> enumToIntCache = new HashMap<>();
 

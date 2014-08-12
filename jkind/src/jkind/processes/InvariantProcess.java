@@ -1,6 +1,5 @@
 package jkind.processes;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
 import jkind.invariant.Invariant;
-import jkind.lustre.values.IntegerValue;
 import jkind.processes.messages.InvariantMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
@@ -20,7 +18,6 @@ import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
-import jkind.translation.Keywords;
 import jkind.translation.Specification;
 
 public class InvariantProcess extends Process {
@@ -35,12 +32,6 @@ public class InvariantProcess extends Process {
 	}
 
 	@Override
-	protected void initializeSolver() {
-		super.initializeSolver();
-		declareN();
-	}
-
-	@Override
 	public void main() {
 		try {
 			Graph graph = createGraph();
@@ -49,15 +40,18 @@ public class InvariantProcess extends Process {
 				return;
 			}
 
+			createVariables(-1);
+			createVariables(0);
 			for (int k = 1; k <= settings.n; k++) {
 				debug("K = " + k);
 
-				refineBaseStep(k, graph);
+				refineBaseStep(k - 1, graph);
 				if (graph.isTrivial()) {
 					debug("No invariants remaining after base step");
 					return;
 				}
 
+				createVariables(k);
 				sendInvariant(refineInductiveStep(k, graph));
 			}
 		} catch (StopException se) {
@@ -91,17 +85,18 @@ public class InvariantProcess extends Process {
 		solver.push();
 		Result result;
 
-		for (int i = 0; i < k; i++) {
-			assertBaseTransition(i);
+		for (int i = 0; i <= k; i++) {
+			assertBaseTransition(k);
 		}
 
 		do {
 			checkForStopMessage();
-			result = solver.query(graph.toInvariant(Sexp.fromInt(k - 1)));
+
+			result = solver.query(graph.toInvariant(k));
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				graph.refine(model, BigInteger.valueOf(k - 1));
+				graph.refine(model, k);
 				debug("Base step refinement, graph size = " + graph.size());
 			} else if (result instanceof UnknownResult) {
 				throw new StopException();
@@ -109,10 +104,6 @@ public class InvariantProcess extends Process {
 		} while (!graph.isTrivial() && result instanceof SatResult);
 
 		solver.pop();
-	}
-
-	private void assertBaseTransition(int i) {
-		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(i))));
 	}
 
 	private Graph refineInductiveStep(int k, Graph original) {
@@ -126,12 +117,12 @@ public class InvariantProcess extends Process {
 
 		do {
 			checkForStopMessage();
+
 			result = solver.query(getInductiveQuery(k, graph));
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				BigInteger index = getN(model).add(BigInteger.valueOf(k));
-				graph.refine(model, index);
+				graph.refine(model, k);
 				debug("Inductive step refinement, graph size = " + graph.size());
 			}
 		} while (!graph.isTrivial() && result instanceof SatResult);
@@ -140,25 +131,12 @@ public class InvariantProcess extends Process {
 		return graph;
 	}
 
-	private void assertInductiveTransition(int k) {
-		solver.send(new Cons("assert", new Cons(Keywords.T, getInductiveIndex(k))));
-	}
-
-	private Sexp getInductiveIndex(int offset) {
-		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
-	}
-
-	private BigInteger getN(Model model) {
-		IntegerValue iv = (IntegerValue) model.getValue(Keywords.N.toString());
-		return iv.value;
-	}
-
 	private Sexp getInductiveQuery(int k, Graph graph) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(graph.toInvariant(getInductiveIndex(i)));
+			hyps.add(graph.toInvariant(i));
 		}
-		Sexp conc = graph.toInvariant(getInductiveIndex(k));
+		Sexp conc = graph.toInvariant(k);
 
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}

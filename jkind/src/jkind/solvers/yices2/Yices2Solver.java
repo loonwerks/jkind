@@ -23,10 +23,7 @@ public class Yices2Solver extends SmtLib2Solver {
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
-
-		// Either logic QF_UFLIRA or QF_AUFLIRA would work for us. The latter
-		// seems to have slightly better branching search behavior.
-		send("(set-logic QF_AUFLIRA)");
+		send("(set-logic QF_LIRA)");
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class Yices2Solver extends SmtLib2Solver {
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ModelExtractorListener extractor = new ModelExtractorListener(streamTypes);
+		ModelExtractorListener extractor = new ModelExtractorListener(varTypes);
 		walker.walk(extractor, ctx);
 		return extractor.getModel();
 	}

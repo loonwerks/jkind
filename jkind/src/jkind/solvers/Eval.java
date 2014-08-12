@@ -1,20 +1,19 @@
 package jkind.solvers;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
-import jkind.util.BigFraction;
-import jkind.util.Util;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.sexp.Cons;
+import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
+import jkind.util.BigFraction;
+import jkind.util.Util;
 
 public class Eval {
 	private Model model;
@@ -25,7 +24,7 @@ public class Eval {
 
 	public Value eval(Sexp sexp) {
 		if (sexp instanceof Symbol) {
-			return evalSymbol(((Symbol) sexp).sym);
+			return evalSymbol(((Symbol) sexp).str);
 		} else if (sexp instanceof Cons) {
 			return evalCons((Cons) sexp);
 		} else {
@@ -38,6 +37,8 @@ public class Eval {
 			return BooleanValue.TRUE;
 		} else if (sym.equals("false")) {
 			return BooleanValue.FALSE;
+		} else if (!Character.isDigit(sym.charAt(0))) {
+			return model.getValue(sym);
 		} else if (sym.contains("/")) {
 			return Util.parseValue("real", sym);
 		} else {
@@ -46,7 +47,7 @@ public class Eval {
 	}
 
 	private Value evalCons(Cons sexp) {
-		String fn = ((Symbol) sexp.head).sym;
+		String fn = ((Symbol) sexp.head).str;
 		if (fn.equals("ite")) {
 			return isTrue(eval(sexp.args.get(0))) ? eval(sexp.args.get(1)) : eval(sexp.args.get(2));
 		} else if (fn.equals("and")) {
@@ -93,8 +94,7 @@ public class Eval {
 		case "not":
 			return args.get(0).applyUnaryOp(UnaryOp.NOT);
 		default:
-			BigInteger index = new BigInteger(args.get(0).toString());
-			return model.getFunctionValue(fn, index);
+			throw new IllegalArgumentException();
 		}
 	}
 
