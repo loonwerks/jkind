@@ -9,11 +9,11 @@ import jkind.sexp.Symbol;
 
 public class Quoting {
 	public static boolean needsQuotes(Symbol symb) {
-		return symb.sym.contains("[");
+		return symb.str.contains("[");
 	}
 
 	public static Symbol quoteSymbol(Symbol symb) {
-		return new Symbol("|" + symb.sym + "|");
+		return new Symbol("|" + symb.str + "|");
 	}
 	
 	public static Sexp quoteSexp(Sexp sexp) {

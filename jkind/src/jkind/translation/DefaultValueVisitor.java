@@ -33,7 +33,7 @@ public class DefaultValueVisitor implements TypeVisitor<Expr> {
 		}
 		return new ArrayExpr(elements);
 	}
-	
+
 	@Override
 	public Expr visit(EnumType e) {
 		// Enums are already inlined

@@ -21,4 +21,8 @@ public abstract class Sexp {
 			return new Cons("-", new Symbol("0"), new Symbol(i.negate().toString()));
 		}
 	}
+
+	public static Sexp fromBoolean(boolean b) {
+		return new Symbol(b ? "true" : "false");
+	}
 }

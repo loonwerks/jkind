@@ -21,7 +21,6 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.BiMap;
 import jkind.util.SexpUtil;
@@ -29,12 +28,6 @@ import jkind.util.SexpUtil;
 public class ReduceProcess extends Process {
 	public ReduceProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Reduction", spec, settings, director);
-	}
-
-	@Override
-	protected void initializeSolver() {
-		super.initializeSolver();
-		declareN();
 	}
 
 	@Override
@@ -85,6 +78,8 @@ public class ReduceProcess extends Process {
 
 		BiMap<Label, Invariant> labelling = new BiMap<>();
 
+		createVariables(-1);
+		createVariables(0);
 		while (true) {
 			Sexp query = getUnsatCoreQuery(k, irreducible);
 			Result result = solver.query(query);
@@ -92,6 +87,7 @@ public class ReduceProcess extends Process {
 			if (result instanceof SatResult) {
 				k++;
 				assertInvariants(k - 1, invariants, labelling);
+				createVariables(k);
 			} else if (result instanceof UnsatResult) {
 				List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
 				minimizeUnsatCore(query, unsatCore, labelling.keySet());
@@ -125,13 +121,9 @@ public class ReduceProcess extends Process {
 	private Sexp getInvariantAssertion(Invariant invariant, int k) {
 		List<Sexp> conjuncts = new ArrayList<>();
 		for (int i = 0; i <= k; i++) {
-			conjuncts.add(invariant.instantiate(getInductiveIndex(i)));
+			conjuncts.add(invariant.instantiate(i));
 		}
 		return new Cons("and", conjuncts);
-	}
-
-	private Sexp getInductiveIndex(int offset) {
-		return new Cons("+", Keywords.N, Sexp.fromInt(offset));
 	}
 
 	private Set<Invariant> getInvariants(List<Label> unsatCore, BiMap<Label, Invariant> labelling) {
@@ -145,14 +137,22 @@ public class ReduceProcess extends Process {
 	private Sexp getUnsatCoreQuery(int k, Collection<Invariant> irreducible) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i <= k; i++) {
-			hyps.add(new Cons(Keywords.T, getInductiveIndex(i)));
+			hyps.add(getInductiveTransition(i));
 			if (i < k) {
-				hyps.add(SexpUtil.conjoinInvariants(irreducible, getInductiveIndex(i)));
+				hyps.add(SexpUtil.conjoinInvariants(irreducible, i));
 			}
 		}
 		
-		Sexp conc = SexpUtil.conjoinInvariants(irreducible, getInductiveIndex(k));
+		Sexp conc = SexpUtil.conjoinInvariants(irreducible, k);
 		return new Cons("=>", new Cons("and", hyps), conc);
+	}
+
+	protected Sexp getInductiveTransition(int k) {
+		if (k == 0) {
+			return getTransition(0, INIT);
+		} else {
+			return getTransition(k, Sexp.fromBoolean(false));
+		}
 	}
 
 	private void minimizeUnsatCore(Sexp query, List<Label> unsatCore, Set<Label> allLabels) {

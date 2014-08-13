@@ -10,17 +10,24 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.analysis.YicesArithOnlyCheck;
+import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
+import jkind.lustre.SubrangeIntType;
+import jkind.lustre.VarDecl;
 import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
 import jkind.solvers.Solver;
-import jkind.solvers.VarDecl;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.yices.YicesSolver;
+import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
-import jkind.translation.Keywords;
 import jkind.translation.Specification;
+import jkind.translation.TransitionRelation;
+import jkind.util.SexpUtil;
+import jkind.util.Util;
 
 public abstract class Process implements Runnable {
 	protected Specification spec;
@@ -66,6 +73,7 @@ public abstract class Process implements Runnable {
 			return "yc";
 		case CVC4:
 		case Z3:
+		case YICES2:
 			return "smt2";
 		}
 		return null;
@@ -94,7 +102,7 @@ public abstract class Process implements Runnable {
 	protected void initializeSolver() {
 		switch (settings.solver) {
 		case YICES:
-			solver = new YicesSolver();
+			solver = new YicesSolver(YicesArithOnlyCheck.check(spec.node));
 			break;
 
 		case CVC4:
@@ -104,6 +112,10 @@ public abstract class Process implements Runnable {
 		case Z3:
 			solver = new Z3Solver();
 			break;
+
+		case YICES2:
+			solver = new Yices2Solver();
+			break;
 		}
 
 		if (settings.scratch) {
@@ -111,13 +123,8 @@ public abstract class Process implements Runnable {
 		}
 
 		solver.initialize();
-		solver.send(spec.translation.getDeclarations());
-		solver.send(spec.translation.getTransition());
-	}
-
-	protected void declareN() {
-		solver.send(new VarDecl(Keywords.N, NamedType.INT));
-		solver.send(new Cons("assert", new Cons(">=", Keywords.N, Sexp.fromInt(0))));
+		solver.define(spec.transitionRelation);
+		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}
 
 	public Throwable getThrowable() {
@@ -135,5 +142,84 @@ public abstract class Process implements Runnable {
 
 	public String getName() {
 		return name;
+	}
+
+	/** Utility */
+
+	protected void createVariables(int k) {
+		for (VarDecl vd : getOffsetVarDecls(k)) {
+			solver.define(vd);
+		}
+
+		// Constrain input by type
+		if (k >= 0) {
+			for (VarDecl vd : getOffsetInputVarDecls(k)) {
+				if (vd.type instanceof SubrangeIntType) {
+					SubrangeIntType subrangeType = (SubrangeIntType) vd.type;
+					solver.send(new Cons("assert", SexpUtil.subrangeConstraint(vd.id, subrangeType)));
+				} else if (vd.type instanceof EnumType) {
+					EnumType enumType = (EnumType) vd.type;
+					solver.send(new Cons("assert", SexpUtil.enumConstraint(vd.id, enumType)));
+				}
+			}
+		}
+	}
+
+	protected List<VarDecl> getOffsetVarDecls(int k) {
+		return getOffsetVarDecls(k, Util.getVarDecls(spec.node));
+	}
+
+	protected List<VarDecl> getOffsetInputVarDecls(int k) {
+		return getOffsetVarDecls(k, spec.node.inputs);
+	}
+
+	protected List<VarDecl> getOffsetVarDecls(int k, List<VarDecl> varDecls) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl vd : varDecls) {
+			result.add(SexpUtil.offset(vd, k));
+		}
+		return result;
+	}
+
+	protected void assertBaseTransition(int k) {
+		assertTransition(k, k == 0);
+	}
+
+	protected static final Symbol INIT = new Symbol("%init");
+
+	protected void defineInductiveInit() {
+		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
+	}
+
+	protected void assertInductiveTransition(int k) {
+		if (k == 0) {
+			assertTransition(0, INIT);
+		} else {
+			assertTransition(k, false);
+		}
+	}
+
+	protected void assertTransition(int k, boolean init) {
+		assertTransition(k, Sexp.fromBoolean(init));
+	}
+
+	protected void assertTransition(int k, Sexp init) {
+		solver.send(new Cons("assert", getTransition(k, init)));
+	}
+
+	protected Sexp getTransition(int k, Sexp init) {
+		List<Sexp> args = new ArrayList<>();
+		args.add(init);
+		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
+		args.addAll(getSymbols(getOffsetVarDecls(k)));
+		return new Cons(TransitionRelation.T, args);
+	}
+
+	protected List<Sexp> getSymbols(List<VarDecl> varDecls) {
+		List<Sexp> result = new ArrayList<>();
+		for (VarDecl vd : varDecls) {
+			result.add(new Symbol(vd.id));
+		}
+		return result;
 	}
 }

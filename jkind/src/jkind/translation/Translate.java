@@ -14,6 +14,7 @@ public class Translate {
 		program = SplitFunctions.program(program);
 		program = FlattenTuples.program(program);
 		program = FlattenCompoundTypes.program(program);
+		program = FlattenPres.program(program);
 		return program;
 	}
 }

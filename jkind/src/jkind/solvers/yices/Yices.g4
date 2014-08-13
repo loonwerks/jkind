@@ -9,11 +9,11 @@ unsatResult: 'unsat' unsatCore?;
 
 model: (alias | variable | function | predefined)+;
 
-unsatAssertions: 'unsatisfied' 'assertion' 'ids' ':' INT+; 
+unsatAssertions: 'unsatisfied' 'assertion' 'ids:' INT+; 
 
-cost: 'cost' ':' INT;
+cost: 'cost:' INT;
 
-unsatCore: 'unsat' 'core' 'ids' ':' INT+;
+unsatCore: 'unsat' 'core' 'ids:' INT+;
 
 alias: '(' '=' ID ID ')';
 
@@ -32,7 +32,7 @@ integer: '-'? INT;
 numeric: '-'? INT ('/' INT)?;
 
 fragment DIGIT: [0-9];
-fragment SYMBOL: [a-zA-Z_@$#%!.^~\[\]];
+fragment SYMBOL: [a-zA-Z_@$#%!.^~\[\]:];
 
 INT: DIGIT+;
 ID: SYMBOL (SYMBOL | DIGIT)*;

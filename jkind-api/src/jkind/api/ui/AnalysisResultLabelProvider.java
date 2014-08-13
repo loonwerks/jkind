@@ -23,7 +23,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 
 	public AnalysisResultLabelProvider(Column column, ColumnViewer viewer) {
 		this.column = column;
-		workingSpinner = new Spinner("/working.gif", viewer);
+		workingSpinner = new Spinner("/icons/working.gif", viewer);
 	}
 
 	@Override
@@ -56,13 +56,13 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return "";
 	}
 
-	private static final Image EMPTY_IMAGE = loadImage("/empty.png");
-	private static final Image VALID_IMAGE = loadImage("/valid.png");
-	private static final Image INVALID_IMAGE = loadImage("/invalid.png");
-	private static final Image UNKNOWN_IMAGE = loadImage("/unknown.png");
-	private static final Image WAITING_IMAGE = loadImage("/waiting.png");
-	private static final Image CANCEL_IMAGE = loadImage("/cancel.png");
-	private static final Image ERROR_IMAGE = loadImage("/error.png");
+	private static final Image EMPTY_IMAGE = loadImage("/icons/empty.png");
+	private static final Image VALID_IMAGE = loadImage("/icons/valid.png");
+	private static final Image INVALID_IMAGE = loadImage("/icons/invalid.png");
+	private static final Image UNKNOWN_IMAGE = loadImage("/icons/unknown.png");
+	private static final Image WAITING_IMAGE = loadImage("/icons/waiting.png");
+	private static final Image CANCEL_IMAGE = loadImage("/icons/cancel.png");
+	private static final Image ERROR_IMAGE = loadImage("/icons/error.png");
 	private Spinner workingSpinner;
 
 	private static Image loadImage(String filename) {

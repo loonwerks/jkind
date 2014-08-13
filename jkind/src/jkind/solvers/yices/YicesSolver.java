@@ -1,11 +1,14 @@
 package jkind.solvers.yices;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.lustre.NamedType;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -14,11 +17,9 @@ import jkind.solvers.FunctionDecl;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.Solver;
-import jkind.solvers.StreamDecl;
-import jkind.solvers.StreamDef;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.VarDecl;
 import jkind.solvers.yices.YicesParser.ResultContext;
+import jkind.translation.TransitionRelation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -32,17 +33,31 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends Solver {
-	final private static String DONE = "@DONE";
+	private static final String DONE = "@DONE";
+	private final boolean arithOnly;
 
-	public YicesSolver() {
-		super(new ProcessBuilder("yices"));
+	public YicesSolver(boolean arithOnly) {
+		super(new ProcessBuilder(getYices()));
+		this.arithOnly = arithOnly;
+	}
+
+	private static String getYices() {
+		String home = System.getenv("YICES_HOME");
+		if (home != null) {
+			return new File(new File(home, "bin"), "yices").toString();
+		}
+		return "yices";
 	}
 
 	@Override
 	public void initialize() {
 		send("(set-evidence! true)");
-		send("(define to_int::(-> x::real (subtype (y::int) (and (<= y x) (< x (+ y 1))))))");
-		send("(define to_real::(-> x::int (subtype (y::real) (= y x))))");
+		if (arithOnly) {
+			send("(set-arith-only! true)");
+		} else {
+			send("(define to_int::(-> x::real (subtype (y::int) (and (<= y x) (< x (+ y 1))))))");
+			send("(define to_real::(-> x::int (subtype (y::real) (= y x))))");
+		}
 	}
 
 	@Override
@@ -63,13 +78,10 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
-	public void send(StreamDecl decl) {
-		Sexp type = new Cons("->", new Symbol("int"), type(decl.getOutput()));
-		send(new Cons("define", decl.getId(), new Symbol("::"), type));
-	}
-	
-	@Override
 	public void send(FunctionDecl decl) {
+		if (null == null) {
+			throw new UnsupportedOperationException();
+		}
 		List<Sexp> args = new ArrayList<>();
 		for (Type input : decl.getInputs()) {
 			args.add(type(input));
@@ -83,16 +95,34 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
-	public void send(StreamDef def) {
-		Sexp argType = new Cons(def.getArg(), new Symbol("::"), new Symbol("int"));
-		Sexp type = new Cons("->", new Symbol("int"), type(def.getType()));
-		Sexp lambda = new Cons("lambda", argType, def.getBody());
-		send(new Cons("define", def.getId(), new Symbol("::"), type, lambda));
+	public void define(VarDecl decl) {
+		varTypes.put(decl.id, decl.type);
+		send(new Cons("define", new Symbol(decl.id), new Symbol("::"), type(decl.type)));
 	}
 
 	@Override
-	public void send(VarDecl decl) {
-		send(new Cons("define", decl.id, new Symbol("::"), type(decl.type)));
+	public void define(TransitionRelation lambda) {
+		send(new Cons("define", TransitionRelation.T, new Symbol("::"), type(lambda),
+				lambda(lambda)));
+	}
+
+	private Sexp type(TransitionRelation lambda) {
+		List<Sexp> args = new ArrayList<>();
+		for (VarDecl vd : lambda.getInputs()) {
+			args.add(type(vd.type));
+		}
+		args.add(type(NamedType.BOOL));
+		return new Cons("->", args);
+	}
+
+	private Sexp lambda(TransitionRelation lambda) {
+		List<Sexp> args = new ArrayList<>();
+		for (VarDecl vd : lambda.getInputs()) {
+			args.add(new Symbol(vd.id));
+			args.add(new Symbol("::"));
+			args.add(type(vd.type));
+		}
+		return new Cons("lambda", new Cons(args), lambda.getBody());
 	}
 
 	private int labelCount = 1;
@@ -197,7 +227,7 @@ public class YicesSolver extends Solver {
 		}
 	}
 
-	private static Result parseYices(String string) throws RecognitionException {
+	private Result parseYices(String string) throws RecognitionException {
 		CharStream stream = new ANTLRInputStream(string);
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -222,7 +252,7 @@ public class YicesSolver extends Solver {
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ResultExtractorListener extractor = new ResultExtractorListener();
+		ResultExtractorListener extractor = new ResultExtractorListener(varTypes);
 		walker.walk(extractor, ctx);
 		return extractor.getResult();
 	}

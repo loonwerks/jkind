@@ -1,15 +1,11 @@
 package jkind.invariant;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
 import jkind.solvers.Lambda;
 import jkind.solvers.Model;
-import jkind.util.SexpUtil;
 
 public class Node {
 	private List<Candidate> candidates;
@@ -30,29 +26,29 @@ public class Node {
 		return candidates.size() <= 1;
 	}
 
-	public List<Invariant> toInvariants(boolean pure) {
+	public List<Invariant> toInvariants() {
 		List<Invariant> invariants = new ArrayList<>();
 		
 		Iterator<Candidate> iterator = candidates.iterator();
 		Candidate first = iterator.next();
-		Sexp firstSexp = first.index(SexpUtil.I, pure);
+		Lambda firstLambda = first.getLambda();
 		
 		while (iterator.hasNext()) {
 			Candidate other = iterator.next();
 			String text = first + " = " + other;
-			Lambda lambda = new Lambda(SexpUtil.I, new Cons("=", firstSexp, other.index(SexpUtil.I, pure)));
+			Lambda lambda = Lambda.cons("=", firstLambda, other.getLambda());
 			invariants.add(new Invariant(lambda, text));
 		}
 		
 		return invariants;
 	}
 
-	public List<Node> split(Model model, BigInteger k) {
+	public List<Node> split(Model model, int offset) {
 		List<Candidate> falses = new ArrayList<>();
 		List<Candidate> trues = new ArrayList<>();
 		
 		for (Candidate candidate : candidates) {
-			if (candidate.isTrue(model, k)) {
+			if (candidate.isTrue(model, offset)) {
 				trues.add(candidate);
 			} else {
 				falses.add(candidate);

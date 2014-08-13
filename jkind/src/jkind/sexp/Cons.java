@@ -25,10 +25,10 @@ public class Cons extends Sexp {
 		this(head, Arrays.asList(args));
 	}
 	
-	public Cons(List<Sexp> body) {
-		this(body.get(0), body.subList(1, body.size()));
+	public Cons(List<Sexp> sexps) {
+		this(sexps.get(0), sexps.subList(1, sexps.size()));
 	}
-
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

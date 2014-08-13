@@ -1,33 +1,34 @@
 -- This file has one top level property which requires subnode
--- properties in order to prove
+-- properties in order to prove. It's somewhat obfuscated to avoid
+-- automatic invariant generation.
 
-node counter() returns (x : int);
+node counter(rand : bool) returns (x : int);
 var
   lemma : bool;
 let
-  x = -1 -> 1 + pre x;
+  x = (if rand then -1 else -1) -> 1 + pre x;
 
   lemma = x >= -1;
   --%PROPERTY lemma;
 tel;
 
-node counter2() returns (x : int);
+node counter2(rand : bool) returns (x : int);
 var
   lemma : bool;
 let
-  x = -1 -> 1 + pre x;
+  x = (if rand then -1 else -1) -> 1 + pre x;
 
   lemma = x >= -1;
   --%PROPERTY lemma;
 tel;
 
-node ten() returns (ten : bool);
+node ten(rand : bool) returns (ten : bool);
 let
-  ten = counter() >= 10;
+  ten = counter(rand) >= 10;
 tel;
 
-node main() returns (prop : bool);
+node main(rand : bool) returns (prop : bool);
 let
-  prop = counter2() < 10 or ten();
+  prop = counter2(rand) < 10 or ten(rand);
   --%PROPERTY prop;
 tel;

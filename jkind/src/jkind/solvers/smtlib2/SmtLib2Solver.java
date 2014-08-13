@@ -5,22 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.lustre.NamedType;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.FunctionDecl;
 import jkind.solvers.Label;
+import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
-import jkind.solvers.StreamDecl;
-import jkind.solvers.StreamDef;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.VarDecl;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
-import jkind.translation.Keywords;
+import jkind.translation.TransitionRelation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -57,19 +57,10 @@ public abstract class SmtLib2Solver extends Solver {
 					+ "probably due to internal JKind error", e);
 		}
 	}
-
-	@Override
-	public void send(StreamDecl decl) {
-		send(new Cons("declare-fun", decl.getId(), new Cons("Int"), type(decl.getOutput())));
-	}
 	
 	@Override
 	public void send(FunctionDecl decl) {
-		List<Sexp> inputs = new ArrayList<>();
-		for (Type input : decl.getInputs()) {
-			inputs.add(type(input));
-		}
-		send(new Cons("declare-fun", decl.getId(), new Cons(inputs), type(decl.getOutput())));
+		throw new UnsupportedOperationException();
 	}
 
 	private Symbol type(Type type) {
@@ -81,14 +72,23 @@ public abstract class SmtLib2Solver extends Solver {
 	}
 
 	@Override
-	public void send(StreamDef def) {
-		Sexp arg = new Cons(def.getArg(), new Symbol("Int"));
-		send(new Cons("define-fun", def.getId(), new Cons(arg), type(def.getType()), def.getBody()));
+	public void define(VarDecl decl) {
+		varTypes.put(decl.id, decl.type);
+		send(new Cons("declare-fun", new Symbol(decl.id), new Symbol("()"), type(decl.type)));
 	}
 
 	@Override
-	public void send(VarDecl decl) {
-		send(new Cons("declare-fun", decl.id, new Symbol("()"), type(decl.type)));
+	public void define(TransitionRelation lambda) {
+		send(new Cons("define-fun", TransitionRelation.T, inputs(lambda.getInputs()),
+				type(NamedType.BOOL), lambda.getBody()));
+	}
+
+	private Sexp inputs(List<VarDecl> inputs) {
+		List<Sexp> args = new ArrayList<>();
+		for (VarDecl vd : inputs) {
+			args.add(new Cons(vd.id, type(vd.type)));
+		}
+		return new Cons(args);
 	}
 
 	private int labelCount = 1;
@@ -133,7 +133,7 @@ public abstract class SmtLib2Solver extends Solver {
 	protected boolean isSat(String output) {
 		return output.trim().equals("sat");
 	}
-	
+
 	protected boolean isUnsat(String output) {
 		return output.trim().equals("unsat");
 	}
@@ -147,7 +147,7 @@ public abstract class SmtLib2Solver extends Solver {
 				debug("; " + name + ": " + line);
 				if (line == null) {
 					throw new JKindException(name + " terminated unexpectedly");
-				} else if (line.contains("define-fun " + Keywords.T + " ")) {
+				} else if (line.contains("define-fun " + TransitionRelation.T + " ")) {
 					// No need to parse the transition relation
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
@@ -174,7 +174,7 @@ public abstract class SmtLib2Solver extends Solver {
 		}
 	}
 
-	protected SmtLib2Model parseModel(String string) {
+	protected Model parseModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -198,7 +198,7 @@ public abstract class SmtLib2Solver extends Solver {
 			throw new JKindException("Error parsing " + name + " output: " + string);
 		}
 
-		return ModelExtractor.getModel(ctx);
+		return ModelExtractor.getModel(ctx, varTypes);
 	}
 
 	@Override
@@ -208,11 +208,11 @@ public abstract class SmtLib2Solver extends Solver {
 
 	@Override
 	public void push() {
-		send("(push)");
+		send("(push 1)");
 	}
 
 	@Override
 	public void pop() {
-		send("(pop)");
+		send("(pop 1)");
 	}
 }

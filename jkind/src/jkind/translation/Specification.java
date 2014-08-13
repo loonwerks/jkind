@@ -15,7 +15,7 @@ public class Specification {
 	final public Node node;
 	final public DependencyMap dependencyMap;
 	final public Map<String, Type> typeMap;
-	final public Lustre2Sexps translation;
+	final public TransitionRelation transitionRelation;
 
 	public Specification(String filename, List<Function> functions, Node node,
 			DependencyMap dependencyMap) {
@@ -24,6 +24,6 @@ public class Specification {
 		this.node = node;
 		this.dependencyMap = dependencyMap;
 		this.typeMap = Util.getTypeMap(node);
-		this.translation = new Lustre2Sexps(functions, node);
+		this.transitionRelation = Lustre2Sexp.constructTransitionRelation(node);
 	}
 }

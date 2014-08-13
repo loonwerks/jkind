@@ -12,29 +12,84 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
+import jkind.lustre.Node;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.SexpUtil;
+import jkind.util.Util;
 
-public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
-	final private Symbol iSym;
-	private int offset = 0;
+public class Lustre2Sexp implements ExprVisitor<Sexp> {
+	public static TransitionRelation constructTransitionRelation(Node node) {
+		List<Sexp> conjuncts = new ArrayList<>();
 
-	public Expr2SexpVisitor(Symbol iSym) {
-		this.iSym = iSym;
+		for (Equation eq : node.equations) {
+			Sexp body = eq.expr.accept(new Lustre2Sexp());
+			Sexp head = eq.lhs.get(0).accept(new Lustre2Sexp());
+			conjuncts.add(new Cons("=", head, body));
+		}
+
+		for (Expr assertion : node.assertions) {
+			conjuncts.add(assertion.accept(new Lustre2Sexp()));
+		}
+
+		List<VarDecl> inputs = new ArrayList<>();
+		inputs.add(new VarDecl(INIT.str, NamedType.BOOL));
+		inputs.addAll(pre(Util.getVarDecls(node)));
+		inputs.addAll(curr(Util.getVarDecls(node)));
+
+		return new TransitionRelation(inputs, new Cons("and", conjuncts));
 	}
+
+	private static Symbol INIT = new Symbol("%init");
+
+	private static Symbol curr(String id) {
+		return new Symbol("$" + id);
+	}
+
+	private static Symbol pre(String id) {
+		return new Symbol("$" + id + "%pre");
+	}
+
+	private static VarDecl curr(VarDecl vd) {
+		return new VarDecl(curr(vd.id).str, vd.type);
+	}
+
+	private static VarDecl pre(VarDecl vd) {
+		return new VarDecl(pre(vd.id).str, vd.type);
+	}
+
+	private static List<VarDecl> curr(List<VarDecl> varDecls) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl vd : varDecls) {
+			result.add(curr(vd));
+		}
+		return result;
+	}
+
+	private static List<VarDecl> pre(List<VarDecl> varDecls) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl vd : varDecls) {
+			result.add(pre(vd));
+		}
+		return result;
+	}
+
+	private boolean pre = false;
 
 	@Override
 	public Sexp visit(ArrayAccessExpr e) {
@@ -62,8 +117,11 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 			return new Cons("not", new Cons("=", left, right));
 
 		case ARROW:
-			Sexp cond = new Cons("=", iSym, Sexp.fromInt(-offset));
-			return new Cons("ite", cond, left, right);
+			if (pre) {
+				throw new IllegalArgumentException(
+						"Arrows cannot be nested under pre during translation to sexp");
+			}
+			return new Cons("ite", INIT, left, right);
 
 		default:
 			return new Cons(e.op.toString(), left, right);
@@ -72,9 +130,9 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(BoolExpr e) {
-		return e.value ? new Symbol("true") : new Symbol("false");
+		return Sexp.fromBoolean(e.value);
 	}
-	
+
 	@Override
 	public Sexp visit(CastExpr e) {
 		if (e.type == NamedType.REAL) {
@@ -92,7 +150,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 		for (Expr arg : e.args) {
 			args.add(arg.accept(this));
 		}
-		return new Cons("$$" + e.name, args);
+		return new Cons(SexpUtil.function(e.name), args);
 	}
 
 	@Override
@@ -102,7 +160,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(IdExpr e) {
-		return new Cons("$" + e.id, new Cons("+", iSym, Sexp.fromInt(offset)));
+		return pre ? pre(e.id) : curr(e.id);
 	}
 
 	@Override
@@ -137,7 +195,7 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	public Sexp visit(RecordUpdateExpr e) {
 		throw new IllegalArgumentException("Records must be flattened before translation to sexp");
 	}
-	
+
 	@Override
 	public Sexp visit(TupleExpr e) {
 		throw new IllegalArgumentException("Tuples must be flattened before translation to sexp");
@@ -147,9 +205,13 @@ public class Expr2SexpVisitor implements ExprVisitor<Sexp> {
 	public Sexp visit(UnaryExpr e) {
 		switch (e.op) {
 		case PRE:
-			offset--;
+			if (pre) {
+				throw new IllegalArgumentException(
+						"Nested pres must be removed before translation to sexp");
+			}
+			pre = true;
 			Sexp expr = e.expr.accept(this);
-			offset++;
+			pre = false;
 			return expr;
 
 		case NEGATIVE:

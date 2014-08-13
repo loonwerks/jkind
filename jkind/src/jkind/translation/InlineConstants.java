@@ -17,16 +17,16 @@ public class InlineConstants extends AstMapVisitor {
 	}
 
 	private final Map<String, Expr> constants = new HashMap<>();
-	
+
 	@Override
 	protected List<Constant> visitConstants(List<Constant> es) {
 		for (Constant e : es) {
 			constants.put(e.id, e.expr);
 		}
-		
+
 		return Collections.emptyList();
 	}
-	
+
 	@Override
 	public Expr visit(IdExpr e) {
 		if (constants.containsKey(e.id)) {

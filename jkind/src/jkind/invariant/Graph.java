@@ -1,6 +1,5 @@
 package jkind.invariant;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,13 +74,13 @@ public class Graph {
 		}
 	}
 
-	public Sexp toInvariant(Sexp index) {
-		return SexpUtil.conjoinInvariants(toInvariants(false), index);
+	public Sexp toInvariant(int k) {
+		return SexpUtil.conjoinInvariants(toInvariants(), k);
 	}
 
 	public List<Invariant> toFinalInvariants() {
 		removeTrivialInvariants();
-		return toInvariants(true);
+		return toInvariants();
 	}
 
 	private void removeTrivialInvariants() {
@@ -104,24 +103,24 @@ public class Graph {
 		removeUselessNodes();
 	}
 
-	private List<Invariant> toInvariants(boolean pure) {
+	private List<Invariant> toInvariants() {
 		List<Invariant> invariants = new ArrayList<>();
 		for (Node node : nodes) {
-			invariants.addAll(node.toInvariants(pure));
+			invariants.addAll(node.toInvariants());
 		}
 		for (Edge edge : getEdges()) {
-			invariants.add(edge.toInvariant(pure));
+			invariants.add(edge.toInvariant());
 		}
 		return invariants;
 	}
 
-	public void refine(Model model, BigInteger k) {
+	public void refine(Model model, int k) {
 		splitNodes(model, k);
 		removeEmptyNodes();
 		removeUselessNodes();
 	}
 
-	private void splitNodes(Model model, BigInteger k) {
+	private void splitNodes(Model model, int k) {
 		List<Node> newNodes = new ArrayList<>();
 		List<Edge> newEdges = new ArrayList<>();
 		Map<Node, List<Node>> chains = new HashMap<>();

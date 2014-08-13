@@ -2,64 +2,48 @@ package jkind.solvers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.SexpUtil;
 
 public class Lambda {
-	final private List<Symbol> args;
+	final private Set<String> inputs;
 	final private Sexp body;
 
-	public Lambda(List<Symbol> args, Sexp body) {
-		this.args = args;
+	public Lambda(Set<String> inputs, Sexp body) {
+		this.inputs = inputs;
 		this.body = body;
 	}
 
-	/*
-	 * For convenience we provide a single argument interface to lambda and do
-	 * run-time error checking on it.
-	 */
-	public Lambda(Symbol arg, Sexp body) {
-		this.args = Collections.singletonList(arg);
-		this.body = body;
+	public Lambda(String input, Sexp body) {
+		this(Collections.singleton(input), body);
 	}
 
-	public List<Symbol> getArgs() {
-		return args;
+	public Lambda(Sexp body) {
+		this(Collections.<String> emptySet(), body);
 	}
 
-	public Symbol getArg() {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException();
-		}
-		return args.get(0);
+	public Sexp instantiate(int k) {
+		return instantiate(body, k);
 	}
-
-	public Sexp getBody() {
-		return body;
-	}
-
-	public Sexp instantiate(List<? extends Sexp> actuals) {
-		if (args.size() != actuals.size()) {
-			throw new IllegalArgumentException();
-		}
-		return substitute(body, args, actuals);
-	}
-
-	private static Sexp substitute(Sexp sexp, List<Symbol> xs, List<? extends Sexp> ts) {
+	
+	private Sexp instantiate(Sexp sexp, int k) {
 		if (sexp instanceof Cons) {
 			Cons cons = (Cons) sexp;
 			List<Sexp> args = new ArrayList<>();
 			for (Sexp arg : cons.args) {
-				args.add(substitute(arg, xs, ts));
+				args.add(instantiate(arg, k));
 			}
-			return new Cons(substitute(cons.head, xs, ts), args);
+			return new Cons(instantiate(cons.head, k), args);
 		} else if (sexp instanceof Symbol) {
-			int i = xs.indexOf(sexp);
-			if (i >= 0) {
-				return ts.get(i);
+			Symbol symbol = (Symbol) sexp;
+			if (inputs.contains(symbol.str)) {
+				return SexpUtil.offset(symbol.str, k);
 			} else {
 				return sexp;
 			}
@@ -68,10 +52,11 @@ public class Lambda {
 		}
 	}
 
-	public Sexp instantiate(Sexp actual) {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException();
-		}
-		return substitute(body, args, Collections.singletonList(actual));
+	public static Lambda cons(String head, Lambda lambda1, Lambda lambda2) {
+		Set<String> inputs = new HashSet<>();
+		inputs.addAll(lambda1.inputs);
+		inputs.addAll(lambda2.inputs);
+		Sexp body = new Cons(head, lambda1.body, lambda2.body);
+		return new Lambda(inputs, body);
 	}
 }

@@ -9,23 +9,18 @@ import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
-import jkind.translation.Keywords;
 import jkind.translation.Specification;
+import jkind.util.SexpUtil;
 
 public class SmoothProcess extends Process {
 	private Process cexProcess;
 
 	public SmoothProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Smoothing", spec, settings, director);
-	}
-
-	@Override
-	protected void initializeSolver() {
-		super.initializeSolver();
 	}
 
 	@Override
@@ -64,14 +59,16 @@ public class SmoothProcess extends Process {
 
 		solver.push();
 
-		for (int i = 1; i <= k; i++) {
-			assertTransition(i);
-			if (i > 1) {
+		createVariables(-1);
+		for (int i = 0; i < k; i++) {
+			createVariables(i);
+			assertBaseTransition(i);
+			if (i > 0) {
 				assertDeltaCost(i, relevant);
 			}
 		}
 
-		Result result = solver.maxsatQuery(new Cons("$" + property, Sexp.fromInt(k - 1)));
+		Result result = solver.maxsatQuery(SexpUtil.offset(property, k - 1));
 		if (!(result instanceof SatResult)) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
@@ -81,16 +78,11 @@ public class SmoothProcess extends Process {
 		sendCounterexample(property, k, smoothModel);
 	}
 
-	private void assertTransition(int k) {
-		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(k - 1))));
-	}
-
 	private void assertDeltaCost(int k, Set<String> relevant) {
 		for (VarDecl input : spec.node.inputs) {
 			if (relevant.contains(input.id)) {
-				String id = "$" + input.id;
-				Cons prev = new Cons(id, Sexp.fromInt(k - 2));
-				Cons curr = new Cons(id, Sexp.fromInt(k - 1));
+				Symbol prev = SexpUtil.offset(input.id, k - 1);
+				Symbol curr = SexpUtil.offset(input.id, k);
 				solver.weightedAssert(new Cons("=", prev, curr), 1);
 			}
 		}

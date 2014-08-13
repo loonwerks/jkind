@@ -38,7 +38,7 @@ public class DivisionChecker extends AstIterVisitor {
 			}
 			
 			Value value = super.visit(e);
-			if (value == null) {
+			if (value == null && constantDefinitions.containsKey(e.id)) {
 				// Check constants on the fly
 				checkConstant(constantDefinitions.get(e.id));
 			}

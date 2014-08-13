@@ -2,27 +2,27 @@ package jkind.sexp;
 
 
 public class Symbol extends Sexp {
-	final public String sym;
+	final public String str;
 
 	public Symbol(String sym) {
-		this.sym = sym;
+		this.str = sym;
 	}
 
 	@Override
 	public String toString() {
-		return sym;
+		return str;
 	}
 
 	@Override
 	protected void toBuilder(StringBuilder sb) {
-		sb.append(sym);
+		sb.append(str);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((sym == null) ? 0 : sym.hashCode());
+		result = prime * result + ((str == null) ? 0 : str.hashCode());
 		return result;
 	}
 
@@ -38,11 +38,11 @@ public class Symbol extends Sexp {
 			return false;
 		}
 		Symbol other = (Symbol) obj;
-		if (sym == null) {
-			if (other.sym != null) {
+		if (str == null) {
+			if (other.str != null) {
 				return false;
 			}
-		} else if (!sym.equals(other.sym)) {
+		} else if (!str.equals(other.str)) {
 			return false;
 		}
 		return true;

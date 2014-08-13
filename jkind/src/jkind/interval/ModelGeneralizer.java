@@ -1,6 +1,5 @@
 package jkind.interval;
 
-import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,16 +15,16 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
+import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
-import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import jkind.util.Util;
+import jkind.util.SexpUtil;
 
 public class ModelGeneralizer {
 	private final Specification spec;
@@ -243,23 +242,21 @@ public class ModelGeneralizer {
 	}
 
 	private Interval getFromBasisModel(IdIndexPair pair) {
-		jkind.solvers.Value raw = basisModel.getStreamValue("$" + pair.id,
-				BigInteger.valueOf(pair.i));
+		Value value = basisModel.getValue(SexpUtil.offset(pair.id, pair.i));
 
-		if (raw instanceof BoolValue) {
-			BoolValue bv = (BoolValue) raw;
-			return bv.getBool() ? BoolInterval.TRUE : BoolInterval.FALSE;
+		if (value instanceof BooleanValue) {
+			BooleanValue bv = (BooleanValue) value;
+			return bv.value ? BoolInterval.TRUE : BoolInterval.FALSE;
+		} else if (value instanceof IntegerValue) {
+			IntegerValue iv = (IntegerValue) value;
+			IntEndpoint endpoint = new IntEndpoint(iv.value);
+			return new NumericInterval(endpoint, endpoint);
+		} else if (value instanceof RealValue) {
+			RealValue rv = (RealValue) value;
+			RealEndpoint endpoint = new RealEndpoint(rv.value);
+			return new NumericInterval(endpoint, endpoint);
 		} else {
-			Value parsed = Util.parseValue(Util.getName(spec.typeMap.get(pair.id)), raw.toString());
-			if (parsed instanceof IntegerValue) {
-				IntegerValue iv = (IntegerValue) parsed;
-				IntEndpoint endpoint = new IntEndpoint(iv.value);
-				return new NumericInterval(endpoint, endpoint);
-			} else {
-				RealValue rv = (RealValue) parsed;
-				RealEndpoint endpoint = new RealEndpoint(rv.value);
-				return new NumericInterval(endpoint, endpoint);
-			}
+			throw new IllegalArgumentException("Unknown interval type: " + value.getClass().getName());
 		}
 	}
 }

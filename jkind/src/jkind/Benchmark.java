@@ -1,6 +1,7 @@
 package jkind;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
@@ -77,6 +78,12 @@ public class Benchmark {
 		ProcessBuilder pb = new ProcessBuilder(args);
 		pb.redirectErrorStream(true);
 		pb.redirectOutput(Redirect.appendTo(LOG));
+		
+		try (FileWriter out = new FileWriter(LOG, true)) {
+			out.write(args.toString());
+			out.write(System.lineSeparator());
+			out.close();
+		}
 
 		long start = System.nanoTime();
 		Process process = pb.start();

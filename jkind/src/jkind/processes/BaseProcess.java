@@ -1,12 +1,12 @@
 package jkind.processes;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.lustre.values.BooleanValue;
 import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.InvalidMessage;
 import jkind.processes.messages.Message;
@@ -14,19 +14,17 @@ import jkind.processes.messages.StopMessage;
 import jkind.processes.messages.UnknownMessage;
 import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.solvers.BoolValue;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
-import jkind.translation.Keywords;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
 	private Process cexProcess;
+	private List<String> validProperties = new ArrayList<>();
 
 	public BaseProcess(Specification spec, JKindSettings settings, Director director) {
 		super("Base", spec, settings, director);
@@ -42,13 +40,15 @@ public class BaseProcess extends Process {
 
 	@Override
 	public void main() {
-		for (int k = 1; k <= settings.n; k++) {
-			debug("K = " + k);
+		createVariables(-1);
+		for (int k = 0; k < settings.n; k++) {
+			debug("K = " + (k + 1));
 			processMessages();
 			if (properties.isEmpty()) {
 				break;
 			}
-			assertTransition(k);
+			createVariables(k);
+			assertBaseTransition(k);
 			checkProperties(k);
 			assertProperties(k);
 		}
@@ -61,6 +61,7 @@ public class BaseProcess extends Process {
 			if (message instanceof ValidMessage) {
 				ValidMessage validMessage = (ValidMessage) message;
 				properties.removeAll(validMessage.valid);
+				validProperties.addAll(validMessage.valid);
 			} else {
 				throw new JKindException("Unknown message type in base process: "
 						+ message.getClass().getCanonicalName());
@@ -68,24 +69,19 @@ public class BaseProcess extends Process {
 		}
 	}
 
-	private void assertTransition(int k) {
-		solver.send(new Cons("assert", new Cons(Keywords.T, Sexp.fromInt(k - 1))));
-	}
-
 	private void checkProperties(int k) {
 		Result result;
 		do {
-			result = solver.query(SexpUtil.conjoinStreams(properties, Sexp.fromInt(k - 1)));
+			result = solver.query(SexpUtil.conjoinOffsets(properties, k));
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				BigInteger index = BigInteger.valueOf(k - 1);
 				List<String> invalid = new ArrayList<>();
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BoolValue v = (BoolValue) model.getStreamValue("$" + p, index);
-					if (!v.getBool()) {
+					BooleanValue v = (BooleanValue) model.getValue(SexpUtil.offset(p, k));
+					if (!v.value) {
 						invalid.add(p);
 						iterator.remove();
 					}
@@ -101,7 +97,7 @@ public class BaseProcess extends Process {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		InvalidMessage im = new InvalidMessage(invalid, k, model);
+		InvalidMessage im = new InvalidMessage(invalid, k + 1, model);
 		if (cexProcess != null) {
 			cexProcess.incoming.add(im);
 		} else {
@@ -115,7 +111,7 @@ public class BaseProcess extends Process {
 
 	private void sendBaseStep(int k) {
 		if (inductiveProcess != null) {
-			inductiveProcess.incoming.add(new BaseStepMessage(k));
+			inductiveProcess.incoming.add(new BaseStepMessage(k + 1));
 		}
 	}
 
@@ -129,7 +125,10 @@ public class BaseProcess extends Process {
 
 	private void assertProperties(int k) {
 		if (!properties.isEmpty()) {
-			solver.send(new Cons("assert", SexpUtil.conjoinStreams(properties, Sexp.fromInt(k - 1))));
+			solver.send(new Cons("assert", SexpUtil.conjoinOffsets(properties, k)));
+		}
+		if (!validProperties.isEmpty()) {
+			solver.send(new Cons("assert", SexpUtil.conjoinOffsets(validProperties, k)));
 		}
 	}
 

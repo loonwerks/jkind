@@ -18,7 +18,7 @@ public class InlineUserTypes extends AstMapVisitor {
 	}
 
 	private final Map<String, Type> types = new HashMap<>();
-	
+
 	@Override
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
 		types.putAll(Util.createResolvedTypeTable(es));

@@ -6,37 +6,48 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import jkind.JKindException;
+import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
+import jkind.translation.TransitionRelation;
 
 public abstract class Solver {
 	public abstract void initialize();
-	
+
 	public abstract void send(Sexp sexp);
-	public abstract void send(StreamDecl decl);
+
+	public abstract void define(VarDecl decl);
+
+	public abstract void define(TransitionRelation lambda);
+
 	public abstract void send(FunctionDecl decl);
-	public abstract void send(StreamDef def);
-	public abstract void send(VarDecl decl);
-	
+
 	public abstract Label weightedAssert(Sexp sexp, int weight);
+
 	public abstract Label labelledAssert(Sexp sexp);
+
 	public abstract void retract(Label label);
-	
+
 	public abstract Result query(Sexp sexp);
+
 	public abstract Result maxsatQuery(Sexp sexp);
-	
+
 	public abstract void push();
+
 	public abstract void pop();
-	
-	
+
+	protected final Map<String, Type> varTypes = new HashMap<>();
+
 	/** Backend */
-	
+
 	protected Process process;
 	protected BufferedWriter toSolver;
 	protected BufferedReader fromSolver;
-	
+
 	protected Solver(ProcessBuilder pb) {
 		pb.redirectErrorStream(true);
 		try {
@@ -48,7 +59,6 @@ public abstract class Solver {
 		toSolver = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		fromSolver = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	}
-	
 
 	private void addShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {
@@ -69,35 +79,17 @@ public abstract class Solver {
 			process.destroy();
 			process = null;
 		}
-		
+
 		if (debug != null) {
 			debug.close();
 			debug = null;
 		}
 	}
-	
-	/** Utility */
-
-	public void send(List<Decl> decls) {
-		for (Decl decl : decls) {
-			send(decl);
-		}
-	}
-
-	private void send(Decl decl) {
-		if (decl instanceof StreamDecl) {
-			send((StreamDecl) decl);
-		} else if (decl instanceof FunctionDecl) {
-			send((FunctionDecl) decl);
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
 
 	/** Debugging */
-	
+
 	protected PrintWriter debug;
-	
+
 	public void setDebug(PrintWriter debug) {
 		this.debug = debug;
 	}

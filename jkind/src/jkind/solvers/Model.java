@@ -1,31 +1,44 @@
 package jkind.solvers;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.lustre.Type;
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.RealValue;
+import jkind.lustre.values.Value;
 import jkind.sexp.Symbol;
+import jkind.util.BigFraction;
+import jkind.util.Util;
 
 public abstract class Model {
-	public abstract Value getValue(Symbol sym);
-	public abstract Value getFunctionValue(String fn, List<Value> inputs);
-	public abstract Set<String> getFunctions();
+	protected Map<String, Type> varTypes;
+	
+	public Model(Map<String, Type> varTypes) {
+		this.varTypes = varTypes;
+	}
+	
+	public abstract Value getValue(String name);
+	public abstract Set<String> getVariableNames();
+	public abstract Model slice(Set<String> keep);
 
-	protected Map<String, StreamDef> definitions;
-	public void setDefinitions(Map<String, StreamDef> definitions) {
-		this.definitions = definitions;
+	public Value getValue(Symbol symbol) {
+		return getValue(symbol.str);
 	}
-	
-	protected Map<String, Decl> declarations;
-	public void setDeclarations(Map<String, Decl> declarations) {
-		this.declarations = declarations;
-	}
-	
-	public Value getStreamValue(String fn, BigInteger index) {
-		List<Value> inputs = new ArrayList<>();
-		inputs.add(new NumericValue(index.toString()));
-		return getFunctionValue(fn, inputs);
+
+	protected Value getDefaultValue(Type type) {
+		switch (Util.getName(type)) {
+		case "bool":
+			return BooleanValue.FALSE;
+		case "int":
+			return new IntegerValue(BigInteger.ZERO);
+		case "real":
+			return new RealValue(BigFraction.ZERO);
+		default:
+			throw new IllegalArgumentException("Unable to construct default value for type: "
+					+ type);
+		}
 	}
 }
