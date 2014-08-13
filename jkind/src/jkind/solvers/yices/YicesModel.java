@@ -85,7 +85,7 @@ public class YicesModel extends Model {
 	}
 
 	public YicesFunction getFunction(String name) {
-		return functions.get(aliases.get(name));
+		return functions.get(getAlias(name));
 	}
 
 	@Override

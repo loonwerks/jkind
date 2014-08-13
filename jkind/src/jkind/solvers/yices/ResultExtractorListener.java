@@ -73,8 +73,8 @@ public class ResultExtractorListener extends YicesBaseListener {
 	
 	@Override
 	public void enterFunction(FunctionContext ctx) {
-		String name = SexpUtil.decodeFunction(ctx.ID().getText());
-		Function fn = functionTable.get(name);
+		String id = ctx.ID().getText();
+		Function fn = functionTable.get(SexpUtil.decodeFunction(id));
 		
 		List<Value> inputs = new ArrayList<>();
 		int i = 0;
@@ -84,6 +84,6 @@ public class ResultExtractorListener extends YicesBaseListener {
 		}
 		Value output = Util.parseValue(fn.outputs.get(0).type, ctx.value(i).getText());
 		
-		model.addFunctionValue(name, inputs, output);
+		model.addFunctionValue(id, inputs, output);
 	}
 }

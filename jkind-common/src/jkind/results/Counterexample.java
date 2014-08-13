@@ -38,7 +38,7 @@ public final class Counterexample {
 
 	private void initializeFunctionTable(List<Function> functions) {
 		for (Function function : functions) {
-			String name = Util.getBase(function.id);
+			String name = Util.getBaseFunctionName(function.id);
 			FunctionTable table = getOrCreateTable(name, function.inputs);
 			table.addOutput(function.outputs.get(0));
 		}

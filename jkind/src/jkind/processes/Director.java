@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -34,6 +35,7 @@ import jkind.solvers.yices.YicesFunction;
 import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
+import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
@@ -283,7 +285,7 @@ public class Director {
 
 	private Counterexample extractCounterexample(int k, Model model) {
 		Counterexample cex = new Counterexample(k, spec.functions);
-		
+
 		for (String var : model.getVariableNames()) {
 			String base = SexpUtil.getBaseName(var);
 			int offset = SexpUtil.getOffset(var);
@@ -306,12 +308,25 @@ public class Director {
 	}
 
 	private void extractCounterexampleFunction(Counterexample cex, String name, YicesFunction fn) {
-		String base = SexpUtil.decodeFunction(name);
+		String decoded = SexpUtil.decodeFunction(name);
+		Function fnDecl = getFunction(spec.functions, decoded);
+		VarDecl outputDecl = fnDecl.outputs.get(0);
+		String base = Util.getBaseFunctionName(decoded);
 		
-		List<Value> inputs;
-		VarDecl output;
-		Value outputValue;
-		cex.addFunctionValue(base, inputs, output, outputValue);
+		for (Entry<List<Value>, Value> entry : fn.entrySet()) {
+			List<Value> inputs = entry.getKey();
+			Value output = entry.getValue();
+			cex.addFunctionValue(base, inputs, outputDecl, output);
+		}
+	}
+
+	private Function getFunction(List<Function> functions, String name) {
+		for (Function function : functions) {
+			if (function.id.equals(name)) {
+				return function;
+			}
+		}
+		return null;
 	}
 
 	private Value convert(String base, Value value) {

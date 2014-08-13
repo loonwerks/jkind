@@ -46,7 +46,7 @@ public class FlattenCompoundFunctionOutputs extends AstMapVisitor {
 		Expr originalFnId = new IdExpr(output.id);
 		for (ExprType et : CompoundUtil.flattenExpr(originalFnId, output.type)) {
 			String newOutputId = et.expr.toString();
-			String newFnId = Util.getBase(fn.id) + "." + newOutputId;
+			String newFnId = Util.getBaseFunctionName(fn.id) + "." + newOutputId;
 			result.add(new Function(newFnId, fn.inputs, new VarDecl(newOutputId, et.type)));
 		}
 		return result;

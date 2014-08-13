@@ -185,7 +185,7 @@ public class Util {
 		return a.subtract(a.mod(b)).divide(b);
 	}
 	
-	public static String getBase(String name) {
+	public static String getBaseFunctionName(String name) {
 		return name.substring(0, name.indexOf('.'));
 	}
 
