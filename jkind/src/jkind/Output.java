@@ -23,7 +23,17 @@ public class Output {
 	public static void output(Level level, String text) {
 		println(level + " " + text);
 	}
-
+	
+	public static void fatal(String text) {
+		error(text);
+		System.exit(-1);
+	}
+	
+	public static void fatal(Location loc, String text) {
+		error(loc, text);
+		System.exit(-1);
+	}
+	
 	public static void output(Level level, Location loc, String text) {
 		println(level + " at line " + loc + " " + text);
 	}

@@ -435,7 +435,6 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private static void fatal(ParserRuleContext ctx, String text) {
-		Output.error(loc(ctx), text);
-		System.exit(-1);
+		Output.fatal(loc(ctx), text);
 	}
 }

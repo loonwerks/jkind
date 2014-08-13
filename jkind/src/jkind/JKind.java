@@ -17,6 +17,17 @@ public class JKind {
 			String filename = settings.filename;
 			Program program = Main.parseLustre(filename);
 			
+			if (!program.functions.isEmpty()) {
+				if (settings.solver != SolverOption.YICES) {
+					Output.error("uninterpreted functions not supported with " + settings.solver);
+					System.exit(-1);
+				} 
+				if (settings.intervalGeneralization) {
+					Output.error("uninterpreted functions not supported with interval generalization");
+					System.exit(-1);
+				}
+			}
+			
 			Level nonlinear = settings.solver == SolverOption.Z3 ? Level.WARNING : Level.ERROR;
 			StaticAnalyzer.check(program, nonlinear);
 
