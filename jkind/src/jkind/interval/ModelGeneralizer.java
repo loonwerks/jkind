@@ -122,23 +122,12 @@ public class ModelGeneralizer {
 			IdIndexPair pair = entry.getKey();
 			Interval value = entry.getValue();
 
-			if (!value.isArbitrary()) {
-				Signal<Value> signal = cex.getSignal(pair.id);
-				if (signal == null) {
-					signal = new Signal<>(pair.id);
-					cex.addSignal(signal);
-				}
-
+			if (!value.isArbitrary() && pair.i >= 0) {
+				Signal<Value> signal = cex.getOrCreateSignal(pair.id);
 				Type type = spec.typeMap.get(pair.id);
 				if (type instanceof EnumType) {
 					EnumType et = (EnumType) type;
-					int v = getExactInt(value);
-					if (v < 0 || et.values.size() <= v) {
-						// This can happen due to looking before the initial
-						// state
-						continue;
-					}
-					signal.putValue(pair.i, new EnumValue(et.values.get(v)));
+					signal.putValue(pair.i, new EnumValue(et.values.get(getExactInt(value))));
 				} else {
 					signal.putValue(pair.i, value);
 				}
