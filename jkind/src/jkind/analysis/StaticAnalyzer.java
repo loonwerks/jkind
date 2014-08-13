@@ -18,6 +18,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 import jkind.util.Util;
@@ -39,6 +40,7 @@ public class StaticAnalyzer {
 		result = result && enumsAndConstantsUnique(program);
 		result = result && nodesAndFunctionsUnique(program);
 		result = result && functionsHaveInputAndOutput(program);
+		result = result && functionsHaveUnconstrainedOutputTypes(program);
 		result = result && ConstantDependencyChecker.check(program);
 		result = result && variablesUnique(program);
 		result = result && TypeChecker.check(program);
@@ -163,6 +165,21 @@ public class StaticAnalyzer {
 				Output.error(function.location, " function " + function.id
 						+ " must have at least one output");
 				valid = false;
+			}
+		}
+		return valid;
+	}
+
+	private static boolean functionsHaveUnconstrainedOutputTypes(Program program) {
+		boolean valid = true;
+		Map<String, Type> typeTable = Util.createResolvedTypeTable(program.types);
+		for (Function function : program.functions) {
+			for (VarDecl output : function.outputs) {
+				if (ContainsConstrainedType.check(output.type, typeTable)) {
+					Output.error(function.location, "function " + function.id
+							+ " may not use constrained output type (subrange or enumeration)");
+					valid = false;
+				}
 			}
 		}
 		return valid;
