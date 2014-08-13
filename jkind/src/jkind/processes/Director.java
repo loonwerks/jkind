@@ -1,14 +1,11 @@
 package jkind.processes;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -19,7 +16,6 @@ import jkind.invariant.Invariant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Function;
 import jkind.lustre.Type;
-import jkind.lustre.VarDecl;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
@@ -36,7 +32,6 @@ import jkind.solvers.Model;
 import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
-import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
@@ -287,7 +282,7 @@ public class Director {
 	private Counterexample extractCounterexample(int k, Model model) {
 		Counterexample cex = new Counterexample(k, spec.functions);
 		
-		for (String var : new TreeSet<>(model.getVariableNames())) {
+		for (String var : model.getVariableNames()) {
 			String base = SexpUtil.getBaseName(var);
 			int offset = SexpUtil.getOffset(var);
 			if (offset >= 0 && !base.startsWith("%")) {
