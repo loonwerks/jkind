@@ -314,8 +314,14 @@ public class Director {
 		String base = Util.getBaseFunctionName(decoded);
 		
 		for (Entry<List<Value>, Value> entry : fn.entrySet()) {
-			List<Value> inputs = entry.getKey();
-			Value output = entry.getValue();
+			List<Value> inputs = new ArrayList<>();
+			int i = 0;
+			for (Value input : entry.getKey()) {
+				VarDecl decl = fnDecl.inputs.get(i);
+				inputs.add(convert(decl.type, input));
+				i++;
+			}
+			Value output = convert(outputDecl.type, entry.getValue());
 			cex.addFunctionValue(base, inputs, outputDecl, output);
 		}
 	}
@@ -330,7 +336,10 @@ public class Director {
 	}
 
 	private Value convert(String base, Value value) {
-		Type type = spec.typeMap.get(base);
+		return convert(spec.typeMap.get(base), value);
+	}
+
+	private Value convert(Type type, Value value) {
 		if (type instanceof EnumType) {
 			EnumType et = (EnumType) type;
 			IntegerValue iv = (IntegerValue) value;

@@ -3,6 +3,10 @@ type point = struct {x : int; y : int};
 function f(p, q : point) returns (A : point[5]);
 function g(in_dist : int) returns (dist : int);
 
+type unit = enum { unit };
+
+function u(ignore : unit) returns (A : point[5]);
+
 node historically(x : bool) returns (ok : bool);
 let
     ok = x and (true -> pre ok);
@@ -13,7 +17,7 @@ var
     cex, ok : bool;
     ctr : int;
 let
-  cex = not (f(p1, p2) = f(p2, p1));
+  cex = not (f(p1, p2) = f(p2, p1) and u(unit)[1].x = u(unit)[3].y);
   --%PROPERTY cex;
 
   ctr = 0 -> (g(pre ctr) + pre ctr);
