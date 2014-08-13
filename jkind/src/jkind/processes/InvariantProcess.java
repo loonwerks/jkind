@@ -86,7 +86,7 @@ public class InvariantProcess extends Process {
 		Result result;
 
 		for (int i = 0; i <= k; i++) {
-			assertBaseTransition(k);
+			assertBaseTransition(i);
 		}
 
 		do {
