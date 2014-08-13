@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -280,7 +279,7 @@ public class Director {
 
 	private Counterexample extractCounterexample(int k, Model model) {
 		Counterexample cex = new Counterexample(k);
-		for (String var : new TreeSet<>(model.getVariableNames())) {
+		for (String var : model.getVariableNames()) {
 			String base = SexpUtil.getBaseName(var);
 			int offset = SexpUtil.getOffset(var);
 			if (offset >= 0 && !base.startsWith("%")) {
