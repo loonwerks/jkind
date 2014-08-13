@@ -150,7 +150,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		for (Expr arg : e.args) {
 			args.add(arg.accept(this));
 		}
-		return new Cons(SexpUtil.function(e.name), args);
+		return new Cons(SexpUtil.encodeFunction(e.name), args);
 	}
 
 	@Override

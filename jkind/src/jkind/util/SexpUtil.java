@@ -69,17 +69,28 @@ public class SexpUtil {
 	}
 
 	public static boolean isMangledStreamName(String var) {
-		return var.startsWith("$") && var.substring(1).contains("$") && !isFunctionName(var);
+		return var.startsWith("$") && var.substring(1).contains("$") && !isEncodedFunction(var);
 	}
 
-	public static Symbol function(String name) {
+	public static Symbol encodeFunction(String name) {
 		return new Symbol("$$" + name);
 	}
 	
-	public static boolean isFunctionName(String fn) {
+	public static boolean isEncodedFunction(String fn) {
 		return fn.startsWith("$$");
 	}
+
+	public static String decodeFunction(String fn) {
+		ensureIsEncodedFunction(fn);
+		return fn.substring(2);
+	}
 	
+	private static void ensureIsEncodedFunction(String fn) {
+		if (!isEncodedFunction(fn)) {
+			throw new IllegalArgumentException("Not an encoded function name: " + fn);
+		}
+	}
+
 	public static Sexp conjoinOffsets(List<String> ids, int k) {
 		if (ids.isEmpty()) {
 			return new Symbol("true");

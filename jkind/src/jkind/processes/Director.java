@@ -16,6 +16,7 @@ import jkind.invariant.Invariant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Function;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
@@ -29,6 +30,7 @@ import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.solvers.Model;
+import jkind.solvers.yices.YicesFunction;
 import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
@@ -291,14 +293,25 @@ public class Director {
 				signal.putValue(offset, value);
 			}
 		}
-		
-		int todo_support_other_solvers;
-		YicesModel yicesModel = (YicesModel) model;
-		for (Function fn : model.getFunctions()) {
-			cex.addFunction(fn);
+
+		if (model instanceof YicesModel) {
+			YicesModel yicesModel = (YicesModel) model;
+			for (String name : yicesModel.getFunctionNames()) {
+				YicesFunction fn = yicesModel.getFunction(name);
+				extractCounterexampleFunction(cex, name, fn);
+			}
 		}
 
 		return cex;
+	}
+
+	private void extractCounterexampleFunction(Counterexample cex, String name, YicesFunction fn) {
+		String base = SexpUtil.decodeFunction(name);
+		
+		List<Value> inputs;
+		VarDecl output;
+		Value outputValue;
+		cex.addFunctionValue(base, inputs, output, outputValue);
 	}
 
 	private Value convert(String base, Value value) {

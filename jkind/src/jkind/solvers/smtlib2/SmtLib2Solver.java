@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -12,7 +13,6 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.FunctionDecl;
 import jkind.solvers.Label;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
@@ -59,7 +59,7 @@ public abstract class SmtLib2Solver extends Solver {
 	}
 	
 	@Override
-	public void send(FunctionDecl decl) {
+	public void declare(Function fn) {
 		throw new UnsupportedOperationException();
 	}
 

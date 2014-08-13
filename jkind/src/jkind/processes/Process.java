@@ -102,7 +102,8 @@ public abstract class Process implements Runnable {
 	protected void initializeSolver() {
 		switch (settings.solver) {
 		case YICES:
-			solver = new YicesSolver(YicesArithOnlyCheck.check(spec.node));
+			solver = new YicesSolver(YicesArithOnlyCheck.check(spec.node),
+					Util.getFunctionTable(spec.functions));
 			break;
 
 		case CVC4:
@@ -123,6 +124,7 @@ public abstract class Process implements Runnable {
 		}
 
 		solver.initialize();
+		solver.declare(spec.functions);
 		solver.define(spec.transitionRelation);
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
+import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -13,13 +15,13 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.FunctionDecl;
 import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.Solver;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
 import jkind.translation.TransitionRelation;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -35,10 +37,12 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 public class YicesSolver extends Solver {
 	private static final String DONE = "@DONE";
 	private final boolean arithOnly;
+	private final Map<String, Function> functionTable;
 
-	public YicesSolver(boolean arithOnly) {
+	public YicesSolver(boolean arithOnly, Map<String, Function> functionTable) {
 		super(new ProcessBuilder(getYices()));
 		this.arithOnly = arithOnly;
+		this.functionTable = functionTable;
 	}
 
 	private static String getYices() {
@@ -77,19 +81,6 @@ public class YicesSolver extends Solver {
 		}
 	}
 
-	@Override
-	public void send(FunctionDecl decl) {
-		if (null == null) {
-			throw new UnsupportedOperationException();
-		}
-		List<Sexp> args = new ArrayList<>();
-		for (Type input : decl.getInputs()) {
-			args.add(type(input));
-		}
-		args.add(type(decl.getOutput()));
-		send(new Cons("define", decl.getId(), new Symbol("::"), new Cons("->", args)));
-	}
-
 	private Symbol type(Type type) {
 		return new Symbol(Util.getName(type));
 	}
@@ -123,6 +114,16 @@ public class YicesSolver extends Solver {
 			args.add(type(vd.type));
 		}
 		return new Cons("lambda", new Cons(args), lambda.getBody());
+	}
+
+	@Override
+	public void declare(Function fn) {
+		List<Sexp> args = new ArrayList<>();
+		for (VarDecl input : fn.inputs) {
+			args.add(type(input.type));
+		}
+		args.add(type(fn.outputs.get(0).type));
+		send(new Cons("define", SexpUtil.encodeFunction(fn.id), new Symbol("::"), new Cons("->", args)));
 	}
 
 	private int labelCount = 1;
@@ -252,7 +253,7 @@ public class YicesSolver extends Solver {
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ResultExtractorListener extractor = new ResultExtractorListener(varTypes);
+		ResultExtractorListener extractor = new ResultExtractorListener(varTypes, functionTable);
 		walker.walk(extractor, ctx);
 		return extractor.getResult();
 	}

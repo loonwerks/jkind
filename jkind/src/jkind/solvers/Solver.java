@@ -7,9 +7,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jkind.JKindException;
+import jkind.lustre.Function;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
@@ -19,25 +21,18 @@ public abstract class Solver {
 	public abstract void initialize();
 
 	public abstract void send(Sexp sexp);
-
 	public abstract void define(VarDecl decl);
-
 	public abstract void define(TransitionRelation lambda);
-
-	public abstract void send(FunctionDecl decl);
+	public abstract void declare(Function fn);
 
 	public abstract Label weightedAssert(Sexp sexp, int weight);
-
 	public abstract Label labelledAssert(Sexp sexp);
 
 	public abstract void retract(Label label);
-
 	public abstract Result query(Sexp sexp);
-
 	public abstract Result maxsatQuery(Sexp sexp);
 
 	public abstract void push();
-
 	public abstract void pop();
 
 	protected final Map<String, Type> varTypes = new HashMap<>();
@@ -97,6 +92,14 @@ public abstract class Solver {
 	public void debug(String str) {
 		if (debug != null) {
 			debug.println(str);
+		}
+	}
+	
+	/** Utility */
+
+	public void declare(List<Function> functions) {
+		for (Function fn : functions) {
+			declare(fn);
 		}
 	}
 }

@@ -2,6 +2,7 @@ package jkind.analysis;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
+import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.Node;
 import jkind.lustre.visitors.AstIterVisitor;
@@ -26,6 +27,12 @@ public class YicesArithOnlyCheck extends AstIterVisitor {
 		} else {
 			super.visit(e);
 		}
+		return null;
+	}
+
+	@Override
+	public Void visit(CallExpr e) {
+		arithOnly = false;
 		return null;
 	}
 
