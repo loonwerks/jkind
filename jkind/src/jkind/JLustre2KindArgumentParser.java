@@ -26,8 +26,7 @@ public class JLustre2KindArgumentParser {
 		try {
 			return getSettings(parser.parse(getOptions(), args));
 		} catch (Throwable t) {
-			Output.error("reading command line arguments: " + t.getMessage());
-			System.exit(-1);
+			Output.fatal("reading command line arguments: " + t.getMessage());
 			return null;
 		}
 	}
