@@ -16,14 +16,13 @@ public class JLustre2Excel {
 	public static void main(String args[]) {
 		try {
 			if (args.length != 1) {
-				Output.println("usage: jlustre2excel <input>");
-				System.exit(-1);
+				Output.fatal("usage: jlustre2excel <input>");
 			}
 			String filename = args[0];
 
 			Program program = Main.parseLustre(filename);
 			StaticAnalyzer.check(program, Level.WARNING);
-			checkUniqueEnumValues(program);
+			ensureUniqueEnumValues(program);
 
 			Node main = Translate.translate(program);
 			String outFilename = filename + ".xls";
@@ -35,25 +34,17 @@ public class JLustre2Excel {
 		}
 	}
 
-	private static void checkUniqueEnumValues(Program program) {
-		boolean unique = true;
-
+	private static void ensureUniqueEnumValues(Program program) {
 		for (EnumType et : Util.getEnumTypes(program.types)) {
 			Set<String> seen = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 			for (String value : et.values) {
 				if (seen.contains(value)) {
-					Output.error(et.location,
+					Output.fatal(et.location,
 							"cannot handle enumerated values that differ only by case");
-					unique = false;
-					break;
 				} else {
 					seen.add(value);
 				}
 			}
-		}
-
-		if (!unique) {
-			System.exit(-1);
 		}
 	}
 }

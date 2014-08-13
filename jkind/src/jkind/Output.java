@@ -20,6 +20,16 @@ public class Output {
 		output(Level.ERROR, loc, text);
 	}
 
+	public static void fatal(String text) {
+		error(text);
+		System.exit(-1);
+	}
+
+	public static void fatal(Location loc, String text) {
+		error(loc, text);
+		System.exit(-1);
+	}
+
 	public static void output(Level level, String text) {
 		println(level + " " + text);
 	}
@@ -27,15 +37,15 @@ public class Output {
 	public static void output(Level level, Location loc, String text) {
 		println(level + " at line " + loc + " " + text);
 	}
-	
+
 	public static void println(String text) {
 		System.out.println(text);
 	}
-	
+
 	public static void println() {
 		System.out.println();
 	}
-	
+
 	public static void printf(String format, Object... args) {
 		System.out.printf(format, args);
 	}

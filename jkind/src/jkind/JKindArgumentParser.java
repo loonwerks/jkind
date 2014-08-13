@@ -53,8 +53,7 @@ public class JKindArgumentParser {
 			checkSettings(settings);
 			return settings;
 		} catch (Throwable t) {
-			Output.error("reading command line arguments: " + t.getMessage());
-			System.exit(-1);
+			Output.fatal("reading command line arguments: " + t.getMessage());
 			return null;
 		}
 	}
@@ -166,20 +165,17 @@ public class JKindArgumentParser {
 
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
 		if (line.hasOption(opt1) && line.hasOption(opt2)) {
-			Output.error("cannot use option -" + opt1 + " with option -" + opt2);
-			System.exit(-1);
+			Output.fatal("cannot use option -" + opt1 + " with option -" + opt2);
 		}
 	}
 
 	private static void checkSettings(JKindSettings settings) {
 		if (settings.solver != SolverOption.YICES) {
 			if (settings.smoothCounterexamples) {
-				Output.error("smoothing not supported with " + settings.solver);
-				System.exit(-1);
+				Output.fatal("smoothing not supported with " + settings.solver);
 			}
 			if (settings.reduceInvariants) {
-				Output.error("invariant reduction not supported with " + settings.solver);
-				System.exit(-1);
+				Output.fatal("invariant reduction not supported with " + settings.solver);
 			}
 		}
 	}
