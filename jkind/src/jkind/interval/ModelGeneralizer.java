@@ -118,7 +118,6 @@ public class ModelGeneralizer {
 		}
 
 		Counterexample cex = new Counterexample(k, spec.functions);
-		int todo_add_function_values_to_cex;
 		for (Entry<IdIndexPair, Interval> entry : cache.entrySet()) {
 			IdIndexPair pair = entry.getKey();
 			Interval value = entry.getValue();
