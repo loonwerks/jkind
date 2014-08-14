@@ -8,7 +8,7 @@ import java.util.Set;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
-import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 
 public class YicesModel extends Model {
 	private final Map<String, String> aliases = new HashMap<>();
@@ -56,7 +56,8 @@ public class YicesModel extends Model {
 	public YicesModel slice(Set<String> keep) {
 		YicesModel sliced = new YicesModel(varTypes);
 		for (String var : getVariableNames()) {
-			if (SexpUtil.isMangledStreamName(var) && keep.contains(SexpUtil.getBaseName(var))) {
+			StreamIndex si = StreamIndex.decode(var);
+			if (si != null && keep.contains(si.getStream())) {
 				sliced.values.put(var, getValue(var));
 			}
 		}

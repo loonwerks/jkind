@@ -9,8 +9,8 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
-import jkind.sexp.Symbol;
 import jkind.util.BigFraction;
+import jkind.util.StreamIndex;
 import jkind.util.Util;
 
 public abstract class Model {
@@ -24,8 +24,8 @@ public abstract class Model {
 	public abstract Set<String> getVariableNames();
 	public abstract Model slice(Set<String> keep);
 
-	public Value getValue(Symbol symbol) {
-		return getValue(symbol.str);
+	public Value getValue(StreamIndex si) {
+		return getValue(si.getEncoded().str);
 	}
 	
 	protected Value getDefaultValue(Type type) {

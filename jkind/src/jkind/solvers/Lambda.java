@@ -9,7 +9,7 @@ import java.util.Set;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 
 public class Lambda {
 	final private Set<String> inputs;
@@ -43,7 +43,7 @@ public class Lambda {
 		} else if (sexp instanceof Symbol) {
 			Symbol symbol = (Symbol) sexp;
 			if (inputs.contains(symbol.str)) {
-				return SexpUtil.offset(symbol.str, k);
+				return new StreamIndex(symbol.str, k).getEncoded();
 			} else {
 				return symbol;
 			}

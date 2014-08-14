@@ -29,7 +29,7 @@ import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
@@ -280,15 +280,18 @@ public class Director {
 	private Counterexample extractCounterexample(int k, Model model) {
 		Counterexample cex = new Counterexample(k);
 		for (String var : model.getVariableNames()) {
-			String base = SexpUtil.getBaseName(var);
-			int offset = SexpUtil.getOffset(var);
-			if (offset >= 0 && !base.startsWith("%")) {
-				Signal<Value> signal = cex.getOrCreateSignal(base);
-				Value value = convert(base, model.getValue(var));
-				signal.putValue(offset, value);
+			StreamIndex si = StreamIndex.decode(var);
+			if (si.getIndex() >= 0 && !isInternal(si.getStream())) {
+				Signal<Value> signal = cex.getOrCreateSignal(si.getStream());
+				Value value = convert(si.getStream(), model.getValue(var));
+				signal.putValue(si.getIndex(), value);
 			}
 		}
 		return cex;
+	}
+
+	private boolean isInternal(String stream) {
+		return stream.startsWith("%");
 	}
 
 	private Value convert(String base, Value value) {

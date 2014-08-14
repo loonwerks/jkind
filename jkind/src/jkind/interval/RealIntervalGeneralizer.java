@@ -3,6 +3,7 @@ package jkind.interval;
 import java.math.BigInteger;
 
 import jkind.util.BigFraction;
+import jkind.util.StreamIndex;
 
 public class RealIntervalGeneralizer {
 	private final ModelGeneralizer generalizer;
@@ -14,21 +15,21 @@ public class RealIntervalGeneralizer {
 		this.generalizer = generalizer;
 	}
 
-	public Interval generalize(String id, int i, NumericInterval initial) {
+	public Interval generalize(StreamIndex si, NumericInterval initial) {
 		NumericInterval curr = initial;
-		curr = generalizeRealIntervalLow(id, i, curr);
-		curr = generalizeRealIntervalHigh(id, i, curr);
+		curr = generalizeRealIntervalLow(si, curr);
+		curr = generalizeRealIntervalHigh(si, curr);
 		return curr;
 	}
 
-	private NumericInterval generalizeRealIntervalLow(String id, int i, NumericInterval curr) {
+	private NumericInterval generalizeRealIntervalLow(StreamIndex si, NumericInterval curr) {
 		NumericInterval next = new NumericInterval(RealEndpoint.NEGATIVE_INFINITY, curr.getHigh());
-		if (generalizer.modelConsistent(id, i, next)) {
+		if (generalizer.modelConsistent(si, next)) {
 			return next;
 		}
 
 		BigFraction a = ((RealEndpoint) curr.getLow()).getValue();
-		BigFraction b = getLowerBoundReal(id, i, curr);
+		BigFraction b = getLowerBoundReal(si, curr);
 		// Invariant b < true lower bound <= a
 		while (true) {
 			if (a.subtract(b).compareTo(REAL_THRESHHOLD) < 0) {
@@ -37,7 +38,7 @@ public class RealIntervalGeneralizer {
 
 			BigFraction guess = a.add(b).divide(TWO);
 			next = new NumericInterval(new RealEndpoint(guess), curr.getHigh());
-			if (generalizer.modelConsistent(id, i, next)) {
+			if (generalizer.modelConsistent(si, next)) {
 				a = guess;
 			} else {
 				b = guess;
@@ -45,14 +46,14 @@ public class RealIntervalGeneralizer {
 		}
 	}
 
-	private BigFraction getLowerBoundReal(String id, int i, NumericInterval curr) {
+	private BigFraction getLowerBoundReal(StreamIndex si, NumericInterval curr) {
 		BigFraction gap = BigFraction.ONE;
 		BigFraction low = ((RealEndpoint) curr.getLow()).getValue();
 		while (true) {
 			low = low.subtract(gap);
 			gap = gap.multiply(TWO);
 			NumericInterval next = new NumericInterval(new RealEndpoint(low), curr.getHigh());
-			if (generalizer.modelConsistent(id, i, next)) {
+			if (generalizer.modelConsistent(si, next)) {
 				curr = next;
 			} else {
 				return low;
@@ -60,14 +61,14 @@ public class RealIntervalGeneralizer {
 		}
 	}
 
-	private NumericInterval generalizeRealIntervalHigh(String id, int i, NumericInterval curr) {
+	private NumericInterval generalizeRealIntervalHigh(StreamIndex si, NumericInterval curr) {
 		NumericInterval next = new NumericInterval(curr.getLow(), RealEndpoint.POSITIVE_INFINITY);
-		if (generalizer.modelConsistent(id, i, next)) {
+		if (generalizer.modelConsistent(si, next)) {
 			return next;
 		}
 
 		BigFraction a = ((RealEndpoint) curr.getHigh()).getValue();
-		BigFraction b = getUpperBoundReal(id, i, curr);
+		BigFraction b = getUpperBoundReal(si, curr);
 		// Invariant a <= true upper bound < b
 		while (true) {
 			if (b.subtract(a).compareTo(REAL_THRESHHOLD) < 0) {
@@ -76,7 +77,7 @@ public class RealIntervalGeneralizer {
 			
 			BigFraction guess = a.add(b).divide(TWO);
 			next = new NumericInterval(curr.getLow(), new RealEndpoint(guess));
-			if (generalizer.modelConsistent(id, i, next)) {
+			if (generalizer.modelConsistent(si, next)) {
 				a = guess;
 			} else {
 				b = guess;
@@ -84,14 +85,14 @@ public class RealIntervalGeneralizer {
 		}
 	}
 
-	private BigFraction getUpperBoundReal(String id, int i, NumericInterval curr) {
+	private BigFraction getUpperBoundReal(StreamIndex si, NumericInterval curr) {
 		BigFraction gap = BigFraction.ONE;
 		BigFraction high = ((RealEndpoint) curr.getHigh()).getValue();
 		while (true) {
 			high = high.add(gap);
 			gap = gap.multiply(TWO);
 			NumericInterval next = new NumericInterval(curr.getLow(), new RealEndpoint(high));
-			if (generalizer.modelConsistent(id, i, next)) {
+			if (generalizer.modelConsistent(si, next)) {
 				curr = next;
 			} else {
 				return high;

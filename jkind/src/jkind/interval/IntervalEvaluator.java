@@ -22,6 +22,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
+import jkind.util.StreamIndex;
 
 public class IntervalEvaluator implements ExprVisitor<Interval> {
 	private final ModelGeneralizer generalizer;
@@ -90,7 +91,7 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 
 	@Override
 	public Interval visit(IdExpr e) {
-		return generalizer.evalId(e.id, i);
+		return generalizer.evalId(new StreamIndex(e.id, i));
 	}
 
 	@Override

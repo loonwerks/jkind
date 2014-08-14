@@ -19,7 +19,7 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
-import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 
 public class BaseProcess extends Process {
 	private InductiveProcess inductiveProcess;
@@ -72,7 +72,7 @@ public class BaseProcess extends Process {
 	private void checkProperties(int k) {
 		Result result;
 		do {
-			result = solver.query(SexpUtil.conjoinOffsets(properties, k));
+			result = solver.query(StreamIndex.conjoinEncodings(properties, k));
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
@@ -80,7 +80,8 @@ public class BaseProcess extends Process {
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BooleanValue v = (BooleanValue) model.getValue(SexpUtil.offset(p, k));
+					StreamIndex si = new StreamIndex(p, k);
+					BooleanValue v = (BooleanValue) model.getValue(si);
 					if (!v.value) {
 						invalid.add(p);
 						iterator.remove();
@@ -124,11 +125,13 @@ public class BaseProcess extends Process {
 	}
 
 	private void assertProperties(int k) {
+		assertProperties(properties, k);
+		assertProperties(validProperties, k);
+	}
+
+	private void assertProperties(List<String> properties, int k) {
 		if (!properties.isEmpty()) {
-			solver.send(new Cons("assert", SexpUtil.conjoinOffsets(properties, k)));
-		}
-		if (!validProperties.isEmpty()) {
-			solver.send(new Cons("assert", SexpUtil.conjoinOffsets(validProperties, k)));
+			solver.send(new Cons("assert", StreamIndex.conjoinEncodings(properties, k)));
 		}
 	}
 

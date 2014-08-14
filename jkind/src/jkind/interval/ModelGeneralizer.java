@@ -24,7 +24,7 @@ import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 
 public class ModelGeneralizer {
 	private final Specification spec;
@@ -32,11 +32,11 @@ public class ModelGeneralizer {
 	private final Model basisModel;
 	private final int k;
 
-	private final Map<IdIndexPair, Interval> cache = new HashMap<>();
+	private final Map<StreamIndex, Interval> cache = new HashMap<>();
 	private final Map<String, Expr> equations = new HashMap<>();
 
-	private final Queue<IdIndexPair> toGeneralize = new ArrayDeque<>();
-	private final Map<IdIndexPair, Interval> generalized = new HashMap<>();
+	private final Queue<StreamIndex> toGeneralize = new ArrayDeque<>();
+	private final Map<StreamIndex, Interval> generalized = new HashMap<>();
 
 	private final ReverseDependencyMap dependsOn;
 
@@ -68,46 +68,46 @@ public class ModelGeneralizer {
 		// More items may be added to the toGeneralize queue as prior
 		// generalizations make them relevant
 		while (!toGeneralize.isEmpty()) {
-			IdIndexPair pair = toGeneralize.remove();
-			Interval interval = generalizeInterval(pair.id, pair.i);
-			generalized.put(pair, interval);
+			StreamIndex si = toGeneralize.remove();
+			Interval interval = generalizeInterval(si);
+			generalized.put(si, interval);
 		}
 
 		return extractCounterexample();
 	}
 
-	private Interval generalizeInterval(String id, int i) {
-		Type type = spec.typeMap.get(id);
+	private Interval generalizeInterval(StreamIndex si) {
+		Type type = spec.typeMap.get(si.getStream());
 		if (type == NamedType.BOOL) {
-			return generalizeBoolInterval(id, i);
+			return generalizeBoolInterval(si);
 		} else if (type == NamedType.INT) {
-			NumericInterval initial = (NumericInterval) originalInterval(id, i);
-			return intIntervalGeneralizer.generalize(id, i, initial);
+			NumericInterval initial = (NumericInterval) originalInterval(si);
+			return intIntervalGeneralizer.generalize(si, initial);
 		} else if (type == NamedType.REAL) {
-			NumericInterval initial = (NumericInterval) originalInterval(id, i);
-			return realIntervalGeneralizer.generalize(id, i, initial);
+			NumericInterval initial = (NumericInterval) originalInterval(si);
+			return realIntervalGeneralizer.generalize(si, initial);
 		} else if (type instanceof SubrangeIntType || type instanceof EnumType) {
-			return generalizeSubrangeIntInterval(id, i);
+			return generalizeSubrangeIntInterval(si);
 		} else {
 			throw new IllegalArgumentException("Unknown type in generalization: " + type);
 		}
 	}
 
-	private Interval generalizeBoolInterval(String id, int i) {
-		if (modelConsistent(id, i, BoolInterval.ARBITRARY)) {
+	private Interval generalizeBoolInterval(StreamIndex si) {
+		if (modelConsistent(si, BoolInterval.ARBITRARY)) {
 			return BoolInterval.ARBITRARY;
 		} else {
-			return originalInterval(id, i);
+			return originalInterval(si);
 		}
 	}
 
-	private Interval generalizeSubrangeIntInterval(String id, int i) {
+	private Interval generalizeSubrangeIntInterval(StreamIndex si) {
 		NumericInterval next = new NumericInterval(IntEndpoint.NEGATIVE_INFINITY,
 				IntEndpoint.POSITIVE_INFINITY);
-		if (modelConsistent(id, i, next)) {
+		if (modelConsistent(si, next)) {
 			return next;
 		} else {
-			return originalInterval(id, i);
+			return originalInterval(si);
 		}
 	}
 
@@ -118,22 +118,26 @@ public class ModelGeneralizer {
 		}
 
 		Counterexample cex = new Counterexample(k);
-		for (Entry<IdIndexPair, Interval> entry : cache.entrySet()) {
-			IdIndexPair pair = entry.getKey();
+		for (Entry<StreamIndex, Interval> entry : cache.entrySet()) {
+			StreamIndex si = entry.getKey();
 			Interval value = entry.getValue();
 
-			if (!value.isArbitrary() && pair.i >= 0) {
-				Signal<Value> signal = cex.getOrCreateSignal(pair.id);
-				Type type = spec.typeMap.get(pair.id);
-				if (type instanceof EnumType) {
-					EnumType et = (EnumType) type;
-					signal.putValue(pair.i, new EnumValue(et.values.get(getExactInt(value))));
-				} else {
-					signal.putValue(pair.i, value);
-				}
+			if (!value.isArbitrary() && si.getIndex() >= 0) {
+				Signal<Value> signal = cex.getOrCreateSignal(si.getStream());
+				Type type = spec.typeMap.get(si.getStream());
+				signal.putValue(si.getIndex(), convert(type, value));
 			}
 		}
 		return cex;
+	}
+
+	private Value convert(Type type, Interval value) {
+		if (type instanceof EnumType) {
+			EnumType et = (EnumType) type;
+			return new EnumValue(et.values.get(getExactInt(value)));
+		} else {
+			return value;
+		}
 	}
 
 	private int getExactInt(Interval value) {
@@ -145,12 +149,12 @@ public class ModelGeneralizer {
 		return ie.getValue().intValue();
 	}
 
-	private Interval originalInterval(String id, int i) {
-		return eval(id, i);
+	private Interval originalInterval(StreamIndex si) {
+		return eval(si);
 	}
 
 	private boolean modelConsistent() {
-		BoolInterval interval = (BoolInterval) eval(property, k - 1);
+		BoolInterval interval = (BoolInterval) eval(new StreamIndex(property, k - 1));
 		if (!interval.isFalse()) {
 			return false;
 		}
@@ -165,18 +169,18 @@ public class ModelGeneralizer {
 		return true;
 	}
 
-	public boolean modelConsistent(String id, int i, Interval proposedValue) {
-		clearCacheFrom(id, i);
-		cache.put(new IdIndexPair(id, i), proposedValue);
+	public boolean modelConsistent(StreamIndex si, Interval proposedValue) {
+		clearCacheFrom(si);
+		cache.put(si, proposedValue);
 		boolean result = modelConsistent();
-		clearCacheFrom(id, i);
+		clearCacheFrom(si);
 		return result;
 	}
 
-	private void clearCacheFrom(String id, int step) {
-		for (String recompute : dependsOn.get(id)) {
-			for (int i = step; i < k; i++) {
-				cache.remove(new IdIndexPair(recompute, i));
+	private void clearCacheFrom(StreamIndex si) {
+		for (String recompute : dependsOn.get(si.getStream())) {
+			for (int i = si.getIndex(); i < k; i++) {
+				cache.remove(new StreamIndex(recompute, i));
 			}
 		}
 	}
@@ -185,53 +189,53 @@ public class ModelGeneralizer {
 		private static final long serialVersionUID = 1L;
 	}
 
-	private final Set<IdIndexPair> working = new HashSet<>();
+	private final Set<StreamIndex> working = new HashSet<>();
 
 	private Interval eval(Expr expr, int i) {
 		return expr.accept(new IntervalEvaluator(i, this));
 	}
 
-	private Interval eval(String id, int i) {
-		return eval(new IdExpr(id), i);
+	private Interval eval(StreamIndex si) {
+		return eval(new IdExpr(si.getStream()), si.getIndex());
 	}
 
 	/*
 	 * The IntervalEvaluator will call back in to this class to look up ids.
 	 */
-	public Interval evalId(String id, int i) {
-		IdIndexPair pair = new IdIndexPair(id, i);
-		if (cache.containsKey(pair)) {
-			return cache.get(pair);
+	public Interval evalId(StreamIndex si) {
+		if (cache.containsKey(si)) {
+			return cache.get(si);
 		}
 
 		Interval result;
-		if (equations.containsKey(id) && i >= 0) {
-			pair = new IdIndexPair(id, i);
-			if (working.contains(pair)) {
+		if (equations.containsKey(si.getStream()) && si.getIndex() >= 0) {
+			if (working.contains(si)) {
 				throw new AlgebraicLoopException();
 			}
 
-			working.add(pair);
-			result = eval(equations.get(id), i);
-			working.remove(pair);
+			working.add(si);
+			result = eval(equations.get(si.getStream()), si.getIndex());
+			working.remove(si);
 
-		} else if (generalized.containsKey(pair)) {
-			result = generalized.get(pair);
+		} else if (generalized.containsKey(si)) {
+			result = generalized.get(si);
 		} else {
-			result = getFromBasisModel(pair);
+			result = getFromBasisModel(si);
 			// Due to checking all assertions, we may hit variables that our
 			// property doesn't depend on. We detect and ignore these variables.
-			if (i >= 0 && dependsOn.get(id) != null) {
-				toGeneralize.add(pair);
+			if (si.getIndex() >= 0 && dependsOn.get(si.getStream()) != null) {
+				toGeneralize.add(si);
 			}
 		}
-		cache.put(pair, result);
+		cache.put(si, result);
 		return result;
 	}
 
-	private Interval getFromBasisModel(IdIndexPair pair) {
-		Value value = basisModel.getValue(SexpUtil.offset(pair.id, pair.i));
+	private Interval getFromBasisModel(StreamIndex si) {
+		return valueToInterval(basisModel.getValue(si));
+	}
 
+	private Interval valueToInterval(Value value) {
 		if (value instanceof BooleanValue) {
 			BooleanValue bv = (BooleanValue) value;
 			return bv.value ? BoolInterval.TRUE : BoolInterval.FALSE;
@@ -244,7 +248,8 @@ public class ModelGeneralizer {
 			RealEndpoint endpoint = new RealEndpoint(rv.value);
 			return new NumericInterval(endpoint, endpoint);
 		} else {
-			throw new IllegalArgumentException("Unknown interval type: " + value.getClass().getName());
+			throw new IllegalArgumentException("Unknown interval type: "
+					+ value.getClass().getName());
 		}
 	}
 }

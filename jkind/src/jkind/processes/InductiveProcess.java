@@ -25,6 +25,7 @@ import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 
 public class InductiveProcess extends Process {
 	private int kLimit = 0;
@@ -120,7 +121,8 @@ public class InductiveProcess extends Process {
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
-					BooleanValue v = (BooleanValue) model.getValue(SexpUtil.offset(p, k));
+					StreamIndex si = new StreamIndex(p, k);
+					BooleanValue v = (BooleanValue) model.getValue(si);
 					if (!v.value) {
 						sendInductiveCounterexample(p, k + 1, model);
 						iterator.remove();
@@ -153,15 +155,11 @@ public class InductiveProcess extends Process {
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(SexpUtil.conjoinOffsets(possiblyValid, i));
+			hyps.add(StreamIndex.conjoinEncodings(possiblyValid, i));
 		}
-		Sexp conc = SexpUtil.conjoinOffsets(possiblyValid, k);
+		Sexp conc = StreamIndex.conjoinEncodings(possiblyValid, k);
 
-		if (hyps.isEmpty()) {
-			return conc;
-		} else {
-			return new Cons("=>", new Cons("and", hyps), conc);
-		}
+		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
 	private void sendValid(List<String> valid, int k) {

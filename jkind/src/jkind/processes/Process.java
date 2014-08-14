@@ -27,6 +27,7 @@ import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Specification;
 import jkind.translation.TransitionRelation;
 import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 import jkind.util.Util;
 
 public abstract class Process implements Runnable {
@@ -176,7 +177,8 @@ public abstract class Process implements Runnable {
 	protected List<VarDecl> getOffsetVarDecls(int k, List<VarDecl> varDecls) {
 		List<VarDecl> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
-			result.add(SexpUtil.offset(vd, k));
+			StreamIndex si = new StreamIndex(vd.id, k);
+			result.add(new VarDecl(si.getEncoded().str, vd.type));
 		}
 		return result;
 	}
