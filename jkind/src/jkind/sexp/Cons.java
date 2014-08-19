@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Cons extends Sexp {
 	final public Sexp head;
-	final public List<Sexp> args;
+	final public List<? extends Sexp> args;
 	
-	public Cons(Sexp head, List<Sexp> args) {
+	public Cons(Sexp head, List<? extends Sexp> args) {
 		this.head = head;
 		this.args = args;
 	}
@@ -16,7 +16,7 @@ public class Cons extends Sexp {
 		this(head, Arrays.asList(args));
 	}
 	
-	public Cons(String head, List<Sexp> args) {
+	public Cons(String head, List<? extends Sexp> args) {
 		this.head = new Symbol(head);
 		this.args = args;
 	}

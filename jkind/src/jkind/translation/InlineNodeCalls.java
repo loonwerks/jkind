@@ -15,6 +15,8 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
+import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
@@ -35,16 +37,16 @@ public class InlineNodeCalls extends AstMapVisitor {
 		Node main = program.getMainNode();
 		nodeTable.putAll(Util.getNodeTable(program.nodes));
 
-		List<Expr> assertions = visitAssertions(main.assertions);
-		List<Equation> equations = visitEquationsQueue(main.equations);
-
-		List<VarDecl> locals = append(main.locals, newLocals);
-		List<String> properties = append(main.properties, newProperties);
-
-		main = new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				properties, assertions);
-
-		return new Program(program.types, program.constants, program.functions, main);
+		NodeBuilder builder = new NodeBuilder(main);
+		builder.clearAssertions();
+		builder.addAssertions(visitAssertions(main.assertions));
+		builder.clearEquations();
+		builder.addEquations(visitEquationsQueue(main.equations));
+		builder.addLocals(newLocals);
+		builder.addProperties(newProperties);
+		main = builder.build();
+		
+		return new ProgramBuilder(program).clearNodes().addNode(main).build();
 	}
 
 	public List<Equation> visitEquationsQueue(List<Equation> equations) {
@@ -159,12 +161,5 @@ public class InlineNodeCalls extends AstMapVisitor {
 		for (String property : properties) {
 			newProperties.add(translation.get(property).id);
 		}
-	}
-
-	private static <T> List<T> append(List<T> list1, List<T> list2) {
-		List<T> result = new ArrayList<>();
-		result.addAll(list1);
-		result.addAll(list2);
-		return result;
 	}
 }

@@ -21,6 +21,7 @@ import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
+import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
@@ -114,36 +115,33 @@ public class RemoveCondacts {
 	}
 
 	private Node addClock(Node node, IdExpr clock) {
-		List<VarDecl> inputs = new ArrayList<>();
-		inputs.add(new VarDecl(clock.id, NamedType.BOOL));
-		inputs.addAll(node.inputs);
-		return new Node(node.id, inputs, node.outputs, node.locals, node.equations,
-				node.properties, node.assertions);
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.clearInputs();
+		builder.addInput(new VarDecl(clock.id, NamedType.BOOL));
+		builder.addInputs(node.inputs);
+		return builder.build();
 	}
 
 	private Node clockOutputs(Node node, IdExpr clock) {
-		List<VarDecl> inputs = new ArrayList<>(node.inputs);
-		List<VarDecl> outputs = new ArrayList<>();
-		List<VarDecl> locals = new ArrayList<>(node.locals);
-		locals.addAll(node.outputs);
-		List<Equation> equations = new ArrayList<>(node.equations);
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.clearOutputs();
+		builder.addLocals(node.outputs);
 
 		for (VarDecl output : node.outputs) {
 			VarDecl dflt = new VarDecl(output.id + "~default", output.type);
-			inputs.add(dflt);
+			builder.addInput(dflt);
 
 			VarDecl clocked = new VarDecl(output.id + "~clocked", output.type);
-			outputs.add(clocked);
+			builder.addOutput(clocked);
 
 			// clocked = if clock then output else (default -> pre clocked)
 			Equation eq = new Equation(new IdExpr(clocked.id), new IfThenElseExpr(clock,
 					new IdExpr(output.id), new BinaryExpr(new IdExpr(dflt.id), BinaryOp.ARROW,
 							new UnaryExpr(UnaryOp.PRE, new IdExpr(clocked.id)))));
-			equations.add(eq);
+			builder.addEquation(eq);
 		}
 
-		return new Node(node.id, inputs, outputs, locals, equations, node.properties,
-				node.assertions);
+		return builder.build();
 	}
 
 	private Node clockArrowsAndPres(Node node, final IdExpr clock) {
@@ -179,17 +177,15 @@ public class RemoveCondacts {
 			}
 		});
 
-		List<VarDecl> locals = new ArrayList<>(node.locals);
-		locals.addAll(preLocals);
-		locals.add(init);
-		List<Equation> equations = new ArrayList<>(node.equations);
-		equations.addAll(preEquations);
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.addLocals(preLocals);
+		builder.addLocal(init);
+		builder.addEquations(preEquations);
 		// init = true -> if pre clock then false else pre init
-		equations.add(new Equation(new IdExpr(init.id), new BinaryExpr(new BoolExpr(true),
+		builder.addEquation(new Equation(new IdExpr(init.id), new BinaryExpr(new BoolExpr(true),
 				BinaryOp.ARROW, new IfThenElseExpr(new UnaryExpr(UnaryOp.PRE, clock), new BoolExpr(
 						false), new UnaryExpr(UnaryOp.PRE, new IdExpr(init.id))))));
-		return new Node(node.id, node.inputs, node.outputs, locals, equations, node.properties,
-				node.assertions);
+		return builder.build();
 	}
 
 	private Node clockNodeCalls(Node node, final IdExpr clock) {
@@ -248,26 +244,23 @@ public class RemoveCondacts {
 	}
 
 	private Node clockProperties(Node node, final IdExpr clock) {
-		List<VarDecl> locals = new ArrayList<>(node.locals);
-		List<Equation> equations = new ArrayList<>(node.equations);
-		List<String> properties = new ArrayList<>();
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.clearProperties();
 
 		for (String property : node.properties) {
 			VarDecl clocked = new VarDecl(property + "~clocked_property", NamedType.BOOL);
-			locals.add(clocked);
+			builder.addLocal(clocked);
 			// clocked_property = clock => property
-			equations.add(new Equation(new IdExpr(clocked.id), new BinaryExpr(clock,
+			builder.addEquation(new Equation(new IdExpr(clocked.id), new BinaryExpr(clock,
 					BinaryOp.IMPLIES, new IdExpr(property))));
-			properties.add(clocked.id);
+			builder.addProperty(clocked.id);
 		}
 
-		return new Node(node.id, node.inputs, node.outputs, locals, equations, properties,
-				node.assertions);
+		return builder.build();
 	}
 
 	private Node renameNode(Node node, String id) {
-		return new Node(id, node.inputs, node.outputs, node.locals, node.equations,
-				node.properties, node.assertions);
+		return new NodeBuilder(node).setId(id).build();
 	}
 
 	private Program getResult() {

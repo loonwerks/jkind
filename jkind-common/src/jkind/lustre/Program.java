@@ -1,7 +1,5 @@
 package jkind.lustre;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.visitors.AstVisitor;
@@ -29,25 +27,8 @@ public class Program extends Ast {
 	}
 
 	public Program(List<TypeDef> types, List<Constant> constants, List<Function> functions,
-			List<Node> nodes) {
-		this(Location.NULL, types, constants, functions, nodes, null);
-	}
-	
-	public Program(List<TypeDef> types, List<Constant> constants, List<Function> functions,
-			Node node) {
-		this(Location.NULL, types, constants, functions, Collections.singletonList(node), null);
-	}
-
-	public Program(List<TypeDef> types, List<Constant> constants, List<Node> nodes) {
-		this(Location.NULL, types, constants, null, nodes, null);
-	}
-
-	public Program(List<Node> nodes) {
-		this(Location.NULL, null, null, null, nodes, null);
-	}
-
-	public Program(Node... nodes) {
-		this(Location.NULL, null, null, null, Arrays.asList(nodes), null);
+			List<Node> nodes, String main) {
+		this(Location.NULL, types, constants, functions, nodes, main);
 	}
 
 	public Node getMainNode() {

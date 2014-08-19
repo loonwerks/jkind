@@ -35,6 +35,7 @@ import jkind.solvers.yices.YicesFunction;
 import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -287,12 +288,11 @@ public class Director {
 		Counterexample cex = new Counterexample(k, spec.functions);
 
 		for (String var : model.getVariableNames()) {
-			String base = SexpUtil.getBaseName(var);
-			int offset = SexpUtil.getOffset(var);
-			if (offset >= 0 && !base.startsWith("%")) {
-				Signal<Value> signal = cex.getOrCreateSignal(base);
-				Value value = convert(base, model.getValue(var));
-				signal.putValue(offset, value);
+			StreamIndex si = StreamIndex.decode(var);
+			if (si.getIndex() >= 0 && !isInternal(si.getStream())) {
+				Signal<Value> signal = cex.getOrCreateSignal(si.getStream());
+				Value value = convert(si.getStream(), model.getValue(var));
+				signal.putValue(si.getIndex(), value);
 			}
 		}
 
@@ -333,6 +333,10 @@ public class Director {
 			}
 		}
 		return null;
+	}
+	
+	private boolean isInternal(String stream) {
+		return stream.startsWith("%");
 	}
 
 	private Value convert(String base, Value value) {

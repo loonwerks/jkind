@@ -11,6 +11,7 @@ import jkind.lustre.Program;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
+import jkind.lustre.builders.NodeBuilder;
 
 public class FlattenPres extends TypeAwareAstMapVisitor {
 	public static Program program(Program program) {
@@ -23,15 +24,10 @@ public class FlattenPres extends TypeAwareAstMapVisitor {
 
 	@Override
 	public Node visit(Node e) {
-		List<VarDecl> locals = new ArrayList<>(visitVarDecls(e.locals));
-		List<Equation> equations = new ArrayList<>(visitEquations(e.equations));
-		List<Expr> assertions = visitAssertions(e.assertions);
-
-		locals.addAll(newLocals);
-		equations.addAll(newEquations);
-
-		return new Node(e.location, e.id, e.inputs, e.outputs, locals, equations, e.properties,
-				assertions);
+		NodeBuilder builder = new NodeBuilder(super.visit(e));
+		builder.addLocals(newLocals);
+		builder.addEquations(newEquations);
+		return builder.build();
 	}
 
 	private IdExpr getFreshId() {

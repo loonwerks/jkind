@@ -32,7 +32,7 @@ public class Quoting {
 		}
 	}
 
-	private static List<Sexp> quoteSexps(List<Sexp> sexps) {
+	private static List<Sexp> quoteSexps(List<? extends Sexp> sexps) {
 		List<Sexp> result = new ArrayList<>();
 		for (Sexp sexp : sexps) {
 			result.add(quoteSexp(sexp));

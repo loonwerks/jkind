@@ -14,7 +14,7 @@ import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.translation.Specification;
-import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 
 public class SmoothProcess extends Process {
 	private Process cexProcess;
@@ -68,7 +68,7 @@ public class SmoothProcess extends Process {
 			}
 		}
 
-		Result result = solver.maxsatQuery(SexpUtil.offset(property, k - 1));
+		Result result = solver.maxsatQuery(new StreamIndex(property, k - 1).getEncoded());
 		if (!(result instanceof SatResult)) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
@@ -81,8 +81,8 @@ public class SmoothProcess extends Process {
 	private void assertDeltaCost(int k, Set<String> relevant) {
 		for (VarDecl input : spec.node.inputs) {
 			if (relevant.contains(input.id)) {
-				Symbol prev = SexpUtil.offset(input.id, k - 1);
-				Symbol curr = SexpUtil.offset(input.id, k);
+				Symbol prev = new StreamIndex(input.id, k - 1).getEncoded();
+				Symbol curr = new StreamIndex(input.id, k).getEncoded();
 				solver.weightedAssert(new Cons("=", prev, curr), 1);
 			}
 		}

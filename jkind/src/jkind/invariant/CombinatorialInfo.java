@@ -8,36 +8,26 @@ import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.visitors.ExprIterVisitor;
+import jkind.lustre.visitors.ExprDisjunctiveVisitor;
 
 public class CombinatorialInfo {
-	private Set<String> combinatorialIds;
-	
+	private Set<String> combinatorialIds = new HashSet<>();
+
 	public CombinatorialInfo(Node node) {
-		this.combinatorialIds = new HashSet<>();
 		for (Equation eq : node.equations) {
-			if (isCombinatorialExpr(eq.expr)) {
+			if (!containsPre(eq.expr)) {
 				combinatorialIds.add(eq.lhs.get(0).id);
 			}
 		}
 	}
 
-	private boolean isCombinatorialExpr(Expr expr) {
-		final boolean flag[] = {true};
-		
-		expr.accept(new ExprIterVisitor() {
+	private boolean containsPre(Expr expr) {
+		return expr.accept(new ExprDisjunctiveVisitor() {
 			@Override
-			public Void visit(UnaryExpr e) {
-				if (e.op == UnaryOp.PRE) {
-					flag[0] = false;
-					return null;
-				} else {
-					return super.visit(e);
-				}
+			public Boolean visit(UnaryExpr e) {
+				return e.op == UnaryOp.PRE || super.visit(e);
 			}
 		});
-		
-		return flag[0];
 	}
 
 	public boolean isCombinatorial(String id) {

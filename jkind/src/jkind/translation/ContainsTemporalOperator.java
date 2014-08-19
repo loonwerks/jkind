@@ -5,34 +5,20 @@ import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.visitors.ExprIterVisitor;
+import jkind.lustre.visitors.ExprDisjunctiveVisitor;
 
-public class ContainsTemporalOperator extends ExprIterVisitor {
+public class ContainsTemporalOperator extends ExprDisjunctiveVisitor {
 	public static boolean check(Expr e) {
-		ContainsTemporalOperator visitor = new ContainsTemporalOperator();
-		e.accept(visitor);
-		return visitor.containsTemporalOperator;
-	}
-
-	private boolean containsTemporalOperator = false;
-
-	@Override
-	public Void visit(BinaryExpr e) {
-		if (e.op == BinaryOp.ARROW) {
-			containsTemporalOperator = true;
-		} else {
-			super.visit(e);
-		}
-		return null;
+		return e.accept(new ContainsTemporalOperator());
 	}
 
 	@Override
-	public Void visit(UnaryExpr e) {
-		if (e.op == UnaryOp.PRE) {
-			containsTemporalOperator = true;
-		} else {
-			super.visit(e);
-		}
-		return null;
+	public Boolean visit(BinaryExpr e) {
+		return e.op == BinaryOp.ARROW || super.visit(e);
+	}
+
+	@Override
+	public Boolean visit(UnaryExpr e) {
+		return e.op == UnaryOp.PRE || super.visit(e);
 	}
 }
