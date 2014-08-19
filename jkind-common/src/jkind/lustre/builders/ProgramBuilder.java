@@ -15,6 +15,16 @@ public class ProgramBuilder {
 	private List<Node> nodes = new ArrayList<>();
 	private String main;
 
+	public ProgramBuilder() {
+	}
+
+	public ProgramBuilder(Program program) {
+		this.types = new ArrayList<>(program.types);
+		this.constants = new ArrayList<>(program.constants);
+		this.nodes = new ArrayList<>(program.nodes);
+		this.main = program.main;
+	}
+
 	public ProgramBuilder addType(TypeDef type) {
 		this.types.add(type);
 		return this;
@@ -59,12 +69,12 @@ public class ProgramBuilder {
 		this.nodes.clear();
 		return this;
 	}
-	
+
 	public ProgramBuilder setMain(String main) {
 		this.main = main;
 		return this;
 	}
-	
+
 	public Program build() {
 		return new Program(types, constants, nodes, main);
 	}
