@@ -34,14 +34,14 @@ public class NodeDependencyChecker {
 
 	private static Set<String> getNodeDependencies(Node node) {
 		final Set<String> dependencies = new HashSet<>();
-		new AstIterVisitor() {
+		node.accept(new AstIterVisitor() {
 			@Override
 			public Void visit(NodeCallExpr e) {
 				dependencies.add(e.node);
 				super.visit(e);
 				return null;
 			}
-		}.visit(node);
+		});
 		return dependencies;
 	}
 }
