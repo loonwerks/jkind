@@ -24,9 +24,13 @@ public class Program extends Ast {
 			this.main = main;
 		}
 	}
-
+	
 	public Program(List<TypeDef> types, List<Constant> constants, List<Node> nodes) {
 		this(Location.NULL, types, constants, nodes, null);
+	}
+	
+	public Program(List<TypeDef> types, List<Constant> constants, List<Node> nodes, String main) {
+		this(Location.NULL, types, constants, nodes, main);
 	}
 
 	public Program(List<Node> nodes) {

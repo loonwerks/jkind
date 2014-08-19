@@ -15,6 +15,7 @@ import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
+import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.util.Util;
 
@@ -22,15 +23,16 @@ public class InlineNodeCalls extends ExprMapVisitor {
 	public static Node program(Program program) {
 		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
 		Node main = program.getMainNode();
-
-		List<Expr> assertions = inliner.visitExprs(main.assertions);
-		List<Equation> equations = inliner.visitEquationsQueue(main.equations);
-
-		List<VarDecl> locals = append(main.locals, inliner.newLocals);
-		List<String> properties = append(main.properties, inliner.newProperties);
-
-		return new Node(main.location, main.id, main.inputs, main.outputs, locals, equations,
-				properties, assertions);
+		
+		NodeBuilder builder = new NodeBuilder(main);
+		builder.clearAssertions();
+		builder.addAssertions(inliner.visitExprs(main.assertions));
+		builder.clearEquations();
+		builder.addEquations(inliner.visitEquationsQueue(main.equations));
+		builder.addLocals(inliner.newLocals);
+		builder.addProperties(inliner.newProperties);
+		
+		return builder.build();
 	}
 
 	private final Map<String, Node> nodeTable;
@@ -144,12 +146,5 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		for (String property : properties) {
 			newProperties.add(translation.get(property).id);
 		}
-	}
-
-	private static <T> List<T> append(List<T> list1, List<T> list2) {
-		List<T> result = new ArrayList<>();
-		result.addAll(list1);
-		result.addAll(list2);
-		return result;
 	}
 }
