@@ -10,10 +10,11 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
+import jkind.lustre.visitors.AstMapVisitor;
 
-public class LustreSlicer {
+public class LustreSlicer extends AstMapVisitor {
 	public static Node slice(Node node, DependencyMap depMap) {
-		return sliceByKeep(node, getPropertyDependencies(node, depMap));
+		return new LustreSlicer(getPropertyDependencies(node, depMap)).visit(node);
 	}
 
 	private static Set<String> getPropertyDependencies(Node node, DependencyMap depMap) {
@@ -24,17 +25,14 @@ public class LustreSlicer {
 		return keep;
 	}
 
-	private static Node sliceByKeep(Node node, Set<String> keep) {
-		List<VarDecl> inputs = sliceVarDecls(node.inputs, keep);
-		List<VarDecl> outputs = sliceVarDecls(node.outputs, keep);
-		List<VarDecl> locals = sliceVarDecls(node.locals, keep);
-		List<Equation> equations = sliceEquations(node.equations, keep);
-		List<Expr> assertions = sliceAssertions(node.assertions, keep);
-		return new Node(node.location, node.id, inputs, outputs, locals, equations,
-				node.properties, assertions);
+	private final Set<String> keep;
+
+	private LustreSlicer(Set<String> keep) {
+		this.keep = keep;
 	}
 
-	private static List<VarDecl> sliceVarDecls(List<VarDecl> decls, Set<String> keep) {
+	@Override
+	protected List<VarDecl> visitVarDecls(List<VarDecl> decls) {
 		List<VarDecl> sliced = new ArrayList<>();
 		for (VarDecl decl : decls) {
 			if (keep.contains(decl.id)) {
@@ -44,7 +42,8 @@ public class LustreSlicer {
 		return sliced;
 	}
 
-	private static List<Equation> sliceEquations(List<Equation> equations, Set<String> keep) {
+	@Override
+	protected List<Equation> visitEquations(List<Equation> equations) {
 		List<Equation> sliced = new ArrayList<>();
 		for (Equation eq : equations) {
 			if (containsAny(keep, eq.lhs)) {
@@ -53,8 +52,9 @@ public class LustreSlicer {
 		}
 		return sliced;
 	}
-	
-	private static List<Expr> sliceAssertions(List<Expr> assertions, Set<String> keep) {
+
+	@Override
+	protected List<Expr> visitAssertions(List<Expr> assertions) {
 		List<Expr> sliced = new ArrayList<>();
 		for (Expr assertion : assertions) {
 			Set<String> deps = IdExtractorVisitor.getIds(assertion);
