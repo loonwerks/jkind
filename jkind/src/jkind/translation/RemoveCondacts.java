@@ -22,6 +22,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.AstMapVisitor;
 import jkind.util.Util;
 
@@ -264,7 +265,6 @@ public class RemoveCondacts {
 	}
 
 	private Program getResult() {
-		return new Program(program.location, program.types, program.constants, program.functions,
-				resultNodes, program.main);
+		return new ProgramBuilder(program).clearNodes().addNodes(resultNodes).build();
 	}
 }

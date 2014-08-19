@@ -6,29 +6,29 @@ import java.util.List;
 public class Cons extends Sexp {
 	final public Sexp head;
 	final public List<? extends Sexp> args;
-	
+
 	public Cons(Sexp head, List<? extends Sexp> args) {
 		this.head = head;
 		this.args = args;
 	}
-	
+
 	public Cons(Sexp head, Sexp... args) {
 		this(head, Arrays.asList(args));
 	}
-	
+
 	public Cons(String head, List<? extends Sexp> args) {
 		this.head = new Symbol(head);
 		this.args = args;
 	}
-	
+
 	public Cons(String head, Sexp... args) {
 		this(head, Arrays.asList(args));
 	}
-	
+
 	public Cons(List<Sexp> sexps) {
 		this(sexps.get(0), sexps.subList(1, sexps.size()));
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
