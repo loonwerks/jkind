@@ -54,7 +54,7 @@ public class ExprConjunctiveVisitor implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(CondactExpr e) {
-		return true;
+		return e.clock.accept(this) && e.call.accept(this) && visitExprs(e.args);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class ExprConjunctiveVisitor implements ExprVisitor<Boolean> {
 
 	@Override
 	public Boolean visit(NodeCallExpr e) {
-		return true;
+		return visitExprs(e.args);
 	}
 
 	@Override
