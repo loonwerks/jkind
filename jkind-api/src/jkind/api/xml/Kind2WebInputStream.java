@@ -50,7 +50,7 @@ public class Kind2WebInputStream extends InputStream {
 				return -1;
 			}
 			buffer = retrieveJob();
-			if (buffer == null) {
+			if (buffer == null || done) {
 				done = true;
 				return -1;
 			}
@@ -58,10 +58,6 @@ public class Kind2WebInputStream extends InputStream {
 		}
 
 		return buffer.charAt(index++);
-	}
-
-	public boolean isDone() {
-		return done;
 	}
 
 	private void submitJob() throws IOException {
@@ -154,6 +150,7 @@ public class Kind2WebInputStream extends InputStream {
 	public void close() {
 		if (jobId != null && !done) {
 			cancelJob();
+			done = true;
 		}
 	}
 
