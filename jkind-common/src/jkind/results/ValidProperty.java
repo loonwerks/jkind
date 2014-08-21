@@ -3,6 +3,8 @@ package jkind.results;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.util.Util;
+
 /**
  * A valid property
  */
@@ -15,7 +17,7 @@ public final class ValidProperty extends Property {
 		super(name);
 		this.k = k;
 		this.runtime = runtime;
-		this.invariants = invariants;
+		this.invariants = Util.safeList(invariants);
 	}
 	
 	/**

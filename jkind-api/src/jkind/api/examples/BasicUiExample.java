@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jkind.api.JKindApi;
+import jkind.api.KindApi;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.Status;
@@ -136,7 +137,8 @@ public class BasicUiExample {
 				new Thread("Analysis") {
 					@Override
 					public void run() {
-						new JKindApi().execute(file, result, monitor);
+						KindApi api = new JKindApi();
+						api.execute(file, result, monitor);
 					}
 				}.start();
 			}

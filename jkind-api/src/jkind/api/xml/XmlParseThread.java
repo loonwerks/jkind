@@ -1,6 +1,5 @@
 package jkind.api.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -8,9 +7,9 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import jkind.JKindException;
+import jkind.api.Backend;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.interval.IntEndpoint;
@@ -34,18 +33,19 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class XmlParseThread extends Thread {
 	private final InputStream xmlStream;
 	private final JKindResult result;
+	private final Backend backend;
 	private final DocumentBuilderFactory factory;
 	private volatile Throwable throwable;
 
-	public XmlParseThread(InputStream xmlStream, JKindResult result) {
+	public XmlParseThread(InputStream xmlStream, JKindResult result, Backend backend) {
 		super("Xml Parse");
 		this.xmlStream = xmlStream;
 		this.result = result;
+		this.backend = backend;
 		this.factory = DocumentBuilderFactory.newInstance();
 	}
 
@@ -63,8 +63,7 @@ public class XmlParseThread extends Thread {
 		 * on their own lines.
 		 */
 
-		try {
-			LineInputStream lines = new LineInputStream(xmlStream);
+		try (LineInputStream lines = new LineInputStream(xmlStream)) {
 			StringBuilder buffer = null;
 			String line;
 			while ((line = lines.readLine()) != null) {
@@ -84,16 +83,15 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	public void parsePropetyXml(String propertyXml) throws ParserConfigurationException {
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document doc;
+	public void parsePropetyXml(String propertyXml) {
+		Property prop;
 		try {
-			doc = builder.parse(new InputSource(new StringReader(propertyXml)));
-		} catch (SAXException | IOException e) {
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document doc = builder.parse(new InputSource(new StringReader(propertyXml)));
+			prop = getProperty(doc.getDocumentElement());
+		} catch (Exception e) {
 			throw new JKindException("Error parsing: " + propertyXml, e);
 		}
-
-		Property prop = getProperty(doc.getDocumentElement());
 
 		PropertyResult pr = result.getPropertyResult(prop.getName());
 		if (pr == null) {
@@ -160,10 +158,21 @@ public class XmlParseThread extends Thread {
 		}
 
 		Counterexample cex = new Counterexample(k);
-		for (Element signalElement : getElements(cexElement, "Signal")) {
+		for (Element signalElement : getElements(cexElement, getSignalTag())) {
 			cex.addSignal(getSignal(signalElement));
 		}
 		return cex;
+	}
+
+	protected String getSignalTag() {
+		switch (backend) {
+		case JKIND:
+			return "Signal";
+		case KIND2:
+			return "Stream";
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	private Signal<Value> getSignal(Element signalElement) {
@@ -175,10 +184,21 @@ public class XmlParseThread extends Thread {
 
 		Signal<Value> signal = new Signal<>(name);
 		for (Element valueElement : getElements(signalElement, "Value")) {
-			int time = Integer.parseInt(valueElement.getAttribute("time"));
+			int time = Integer.parseInt(valueElement.getAttribute(getTimeAttribute()));
 			signal.putValue(time, getValue(valueElement, type));
 		}
 		return signal;
+	}
+
+	protected String getTimeAttribute() {
+		switch (backend) {
+		case JKIND:
+			return "time";
+		case KIND2:
+			return "instant";
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	private Value getValue(Element valueElement, String type) {
