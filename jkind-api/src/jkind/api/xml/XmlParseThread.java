@@ -67,13 +67,17 @@ public class XmlParseThread extends Thread {
 			StringBuilder buffer = null;
 			String line;
 			while ((line = lines.readLine()) != null) {
-				if (line.contains("</Property>")) {
+				boolean beginProperty = line.contains("<Property");
+				boolean endProperty = line.contains("</Property>");
+				if (beginProperty && endProperty) {
+					parsePropetyXml(line);
+				} else if (beginProperty) {
+					buffer = new StringBuilder();
+					buffer.append(line);
+				} else if (endProperty) {
 					buffer.append(line);
 					parsePropetyXml(buffer.toString());
 					buffer = null;
-				} else if (line.contains("<Property")) {
-					buffer = new StringBuilder();
-					buffer.append(line);
 				} else if (buffer != null) {
 					buffer.append(line);
 				}
