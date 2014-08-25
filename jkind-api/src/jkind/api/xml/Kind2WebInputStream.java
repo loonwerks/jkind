@@ -118,13 +118,7 @@ public class Kind2WebInputStream extends InputStream {
 			content.append(line).append("\n");
 		}
 		conn.getInputStream().close();
-
-		Pattern pattern = Pattern.compile(".*<para>(.*)</para>.*", Pattern.DOTALL);
-		Matcher match = pattern.matcher(content.toString());
-		if (!match.matches()) {
-			throw new IllegalArgumentException(content.toString());
-		}
-		String body = match.group(1);
+		String body = content.toString();
 
 		if (body.startsWith("<Jobstatus msg=\"completed\">")) {
 			return null;
