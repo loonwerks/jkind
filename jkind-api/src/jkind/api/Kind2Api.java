@@ -8,6 +8,7 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.api.results.JKindResult;
 import jkind.api.xml.XmlParseThread;
+import jkind.lustre.Program;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -16,7 +17,24 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class Kind2Api extends KindApi {
 	private static final long POLL_INTERVAL = 100;
-
+	
+	/**
+	 * Run Kind on a Lustre program
+	 * 
+	 * @param program
+	 *            Lustre program
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 */
+	@Override
+	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
+		program = WorkaroundKind2RecordAccess.program(program);
+		execute(program.toString(), result, monitor);
+	}
+	
 	/**
 	 * Run Kind2 on a Lustre program
 	 * 

@@ -11,6 +11,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
 public class FlattenPres extends TypeAwareAstMapVisitor {
 	public static Node node(Node node) {

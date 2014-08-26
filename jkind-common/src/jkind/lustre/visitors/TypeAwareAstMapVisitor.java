@@ -1,11 +1,9 @@
-package jkind.translation;
+package jkind.lustre.visitors;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
-import jkind.lustre.visitors.AstMapVisitor;
 
 public class TypeAwareAstMapVisitor extends AstMapVisitor {
 	private TypeReconstructor typeReconstructor = new TypeReconstructor();

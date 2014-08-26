@@ -1,4 +1,4 @@
-package jkind.analysis;
+package jkind.lustre.visitors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +35,6 @@ import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
-import jkind.lustre.visitors.ExprVisitor;
-import jkind.lustre.visitors.TypeMapVisitor;
 import jkind.util.Util;
 
 /**

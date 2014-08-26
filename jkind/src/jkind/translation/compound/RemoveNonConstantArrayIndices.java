@@ -17,8 +17,8 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.values.IntegerValue;
+import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 import jkind.translation.DefaultValueVisitor;
-import jkind.translation.TypeAwareAstMapVisitor;
 
 /**
  * Replace all non-constant array indices using if-then-else expressions.

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jkind.analysis.TypeReconstructor;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
@@ -24,6 +23,7 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.AstMapVisitor;
+import jkind.lustre.visitors.TypeReconstructor;
 import jkind.util.Util;
 
 /**
