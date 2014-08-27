@@ -54,10 +54,11 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnknown(List<String> props,
-			Map<String, Counterexample> inductiveCounterexamples) {
+	public void writeUnknown(List<String> props, int trueFor,
+			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
 		for (String prop : props) {
-			properties.add(new UnknownProperty(prop, inductiveCounterexamples.get(prop)));
+			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop),
+					runtime));
 		}
 	}
 }

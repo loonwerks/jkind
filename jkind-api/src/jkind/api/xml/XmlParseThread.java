@@ -110,6 +110,7 @@ public class XmlParseThread extends Thread {
 	private Property getProperty(Element propertyElement) {
 		String name = propertyElement.getAttribute("name");
 		double runtime = getRuntime(getElement(propertyElement, "Runtime"));
+		int trueFor = getTrueFor(getElement(propertyElement, "TrueFor"));
 		int k = getK(getElement(propertyElement, "K"));
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
 		List<String> invariants = getInvariants(getElements(propertyElement, "Invariant"));
@@ -123,7 +124,7 @@ public class XmlParseThread extends Thread {
 			return new InvalidProperty(name, cex, runtime);
 
 		case "unknown":
-			return new UnknownProperty(name, cex);
+			return new UnknownProperty(name, trueFor, cex, runtime);
 
 		default:
 			throw new JKindException("Unknown property answer in XML file: " + answer);
@@ -135,6 +136,13 @@ public class XmlParseThread extends Thread {
 			return 0;
 		}
 		return Double.parseDouble(runtimeNode.getTextContent());
+	}
+
+	private int getTrueFor(Node trueForNode) {
+		if (trueForNode == null) {
+			return 0;
+		}
+		return Integer.parseInt(trueForNode.getTextContent());
 	}
 
 	private int getK(Node kNode) {

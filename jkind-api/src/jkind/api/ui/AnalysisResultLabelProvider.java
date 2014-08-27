@@ -8,6 +8,7 @@ import jkind.api.results.PropertyResult;
 import jkind.api.results.ResultsUtil;
 import jkind.api.results.Status;
 import jkind.api.ui.AnalysisResultColumnViewer.Column;
+import jkind.results.UnknownProperty;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -40,7 +41,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 				case WORKING:
 					return pr.getStatus().toString() + "... (" + pr.getElapsed() + "s)";
 				default:
-					return pr.getStatus().toString() + " (" + pr.getElapsed() + "s)";
+					return getFinalStatus(pr) + " (" + pr.getElapsed() + "s)";
 				}
 			}
 		} else if (element instanceof AnalysisResult) {
@@ -54,6 +55,15 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		}
 
 		return "";
+	}
+
+	private String getFinalStatus(PropertyResult pr) {
+		if (pr.getProperty() instanceof UnknownProperty) {
+			UnknownProperty up = (UnknownProperty) pr.getProperty();
+			return pr.getStatus().toString() + " [true for " + up.getTrueFor() + " steps]";
+		} else {
+			return pr.getStatus().toString();
+		}
 	}
 
 	private static final Image EMPTY_IMAGE = loadImage("/icons/empty.png");

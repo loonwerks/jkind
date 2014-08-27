@@ -99,7 +99,8 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new UnknownProperty(name, rename(property.getInductiveCounterexample()));
+		return new UnknownProperty(name, property.getTrueFor(),
+				rename(property.getInductiveCounterexample()), property.getRuntime());
 	}
 
 	/**
@@ -113,7 +114,7 @@ public abstract class Renaming {
 		if (cex == null) {
 			return null;
 		}
-		
+
 		Counterexample result = new Counterexample(cex.getLength());
 		for (Signal<Value> signal : cex.getSignals()) {
 			Signal<Value> newSignal = rename(signal);
@@ -126,6 +127,7 @@ public abstract class Renaming {
 
 	/**
 	 * Rename signal
+	 * 
 	 * @param <T>
 	 * 
 	 * @param signal
@@ -138,8 +140,8 @@ public abstract class Renaming {
 		if (name == null) {
 			return null;
 		}
-		
-		Signal<T> newSignal = new Signal<>(name); 
+
+		Signal<T> newSignal = new Signal<>(name);
 		for (Entry<Integer, T> entry : signal.getValues().entrySet()) {
 			newSignal.putValue(entry.getKey(), entry.getValue());
 		}

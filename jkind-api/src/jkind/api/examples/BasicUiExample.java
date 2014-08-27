@@ -138,6 +138,7 @@ public class BasicUiExample {
 					@Override
 					public void run() {
 						KindApi api = new JKindApi();
+						api.setTimeout(3);
 						api.execute(file, result, monitor);
 					}
 				}.start();
