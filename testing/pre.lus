@@ -1,12 +1,13 @@
 -- Expected output:
 -- VALID PROPERTIES: [ok1]
--- INVALID PROPERTIES: [cex2, cex3, cex1]
+-- INVALID PROPERTIES: [cex2, cex3, cex4, cex1]
 
 node main(x : int; s : subrange [0, 1] of int) returns ();
 var
     y, z1, z2, w : int;
-    ok1, cex1, cex2, cex3 : bool;
+    ok1, cex1, cex2, cex3, cex4 : bool;
     pre_s : int;
+    r : subrange [0, 1] of int;
 let
     y = 1 -> pre(2 -> pre x);
 
@@ -27,4 +28,8 @@ let
     pre_s = pre(s);
     cex3 = 0 <= pre_s and pre_s <= 1;
     --%PROPERTY cex3;
+
+    r = pre(r);
+    cex4 = 0 <= r and r <= 1;
+    --%PROPERTY cex4;
 tel;
