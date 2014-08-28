@@ -307,7 +307,7 @@ public class Director {
 		if (type instanceof EnumType) {
 			EnumType et = (EnumType) type;
 			IntegerValue iv = (IntegerValue) value;
-			return new EnumValue(et.values.get(iv.value.intValue()));
+			return new EnumValue(et.getValue(iv.value.intValue(), ""));
 		}
 		return value;
 	}

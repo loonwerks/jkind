@@ -99,7 +99,7 @@ public class Util {
 			break;
 
 		default:
-			if (Character.isAlphabetic(value.charAt(0))) {
+			if (value.isEmpty() || Character.isAlphabetic(value.charAt(0))) {
 				return new EnumValue(value);
 			} else {
 				throw new IllegalArgumentException("Invalid enumeration value: " + value);

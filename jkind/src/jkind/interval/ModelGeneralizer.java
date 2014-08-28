@@ -134,7 +134,7 @@ public class ModelGeneralizer {
 	private Value convert(Type type, Interval value) {
 		if (type instanceof EnumType) {
 			EnumType et = (EnumType) type;
-			return new EnumValue(et.values.get(getExactInt(value)));
+			return new EnumValue(et.getValue(getExactInt(value), ""));
 		} else {
 			return value;
 		}
