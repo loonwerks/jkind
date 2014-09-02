@@ -8,20 +8,30 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
+import jkind.lustre.visitors.AstIterVisitor;
 
 public class InlineEquations {
 	public static Node node(Node node) {
 		Map<String, Expr> equations = getCombinatorialEquations(node);
+		final Map<String, Integer> uses = new HashMap<>();
+
+		node.accept(new AstIterVisitor() {
+			@Override
+			public Void visit(IdExpr e) {
+				Integer v = uses.get(e.id);
+				if (v == null) {
+					v = 0;
+				}
+				uses.put(e.id, v + 1);
+				return null;
+			}
+		});
+
 		return new SubstitutionVisitor(equations) {
-			private int depth = 0;
-			
 			@Override
 			public Expr visit(IdExpr e) {
-				if (depth < 10 && map.containsKey(e.id)) {
-					depth++;
-					Expr replacement = map.get(e.id).accept(this);
-					depth--;
-					return replacement;
+				if (map.containsKey(e.id) && uses.get(e.id) <= 5) {
+					return map.get(e.id).accept(this);
 				} else {
 					return e;
 				}
