@@ -1,4 +1,4 @@
-package jkind.api;
+package jkind.api.workarounds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,8 @@ public class WorkaroundKind2RecordAccess extends TypeAwareAstMapVisitor {
 
 	@Override
 	public Node visit(Node e) {
+		newLocals.clear();
+		newEquations.clear();
 		NodeBuilder builder = new NodeBuilder(super.visit(e));
 		builder.addLocals(newLocals);
 		builder.addEquations(newEquations);

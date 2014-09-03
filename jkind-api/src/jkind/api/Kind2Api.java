@@ -7,6 +7,8 @@ import java.util.List;
 
 import jkind.JKindException;
 import jkind.api.results.JKindResult;
+import jkind.api.workarounds.WorkaroundKind2ForwardReference;
+import jkind.api.workarounds.WorkaroundKind2RecordAccess;
 import jkind.api.xml.XmlParseThread;
 import jkind.lustre.Program;
 
@@ -32,6 +34,7 @@ public class Kind2Api extends KindApi {
 	@Override
 	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
 		program = WorkaroundKind2RecordAccess.program(program);
+		program = WorkaroundKind2ForwardReference.program(program);
 		execute(program.toString(), result, monitor);
 	}
 	
