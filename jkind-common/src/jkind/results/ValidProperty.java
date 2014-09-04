@@ -3,19 +3,19 @@ package jkind.results;
 import java.util.Collections;
 import java.util.List;
 
+import jkind.util.Util;
+
 /**
  * A valid property
  */
 public final class ValidProperty extends Property {
 	private final int k;
-	private final double runtime;
 	private final List<String> invariants;
 
 	public ValidProperty(String name, int k, double runtime, List<String> invariants) {
-		super(name);
+		super(name, runtime);
 		this.k = k;
-		this.runtime = runtime;
-		this.invariants = invariants;
+		this.invariants = Util.safeList(invariants);
 	}
 	
 	/**
@@ -30,12 +30,5 @@ public final class ValidProperty extends Property {
 	 */
 	public List<String> getInvariants() {
 		return Collections.unmodifiableList(invariants);
-	}
-
-	/**
-	 * Runtime of verification measured in seconds
-	 */
-	public double getRuntime() {
-		return runtime;
 	}
 }

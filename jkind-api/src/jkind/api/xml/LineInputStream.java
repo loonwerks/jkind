@@ -3,7 +3,9 @@ package jkind.api.xml;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class LineInputStream {
+import jkind.JKindException;
+
+public class LineInputStream implements AutoCloseable {
 	private final InputStream source;
 
 	public LineInputStream(InputStream source) {
@@ -26,6 +28,15 @@ public class LineInputStream {
 			return null;
 		} else {
 			return buffer.toString();
+		}
+	}
+
+	@Override
+	public void close() {
+		try {
+			source.close();
+		} catch (IOException e) {
+			throw new JKindException("Error closing input stream", e);
 		}
 	}
 }

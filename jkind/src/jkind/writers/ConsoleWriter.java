@@ -9,12 +9,12 @@ import jkind.results.layout.Layout;
 
 public class ConsoleWriter extends Writer {
 	private final Layout layout;
-	
+
 	public ConsoleWriter(Layout layout) {
 		super();
 		this.layout = layout;
 	}
-	
+
 	@Override
 	public void begin() {
 	}
@@ -52,8 +52,13 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnknown(List<String> props,
-			Map<String, Counterexample> inductiveCounterexamples) {
+	public void writeUnknown(List<String> props, int trueFor,
+			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
+		writeLine();
+		System.out.println("UNKNOWN PROPERTIES: " + props + " || True for " + trueFor + " steps"
+				+ " || Time = " + runtime);
+		writeLine();
+		System.out.println();
 		for (String prop : props) {
 			Counterexample cex = inductiveCounterexamples.get(prop);
 			if (cex != null) {

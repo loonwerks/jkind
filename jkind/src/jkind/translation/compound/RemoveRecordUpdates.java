@@ -9,7 +9,7 @@ import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
-import jkind.translation.TypeAwareAstMapVisitor;
+import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
 /**
  * Removes all record updates via expansion to full record expressions.

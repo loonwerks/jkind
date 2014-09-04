@@ -20,6 +20,14 @@ public class EnumType extends Type {
 	public EnumType(String id, List<String> values) {
 		this(Location.NULL, id, values);
 	}
+	
+	public String getValue(int i, String dflt) {
+		if (0 <= i && i < values.size()) {
+			return values.get(i);
+		} else {
+			return dflt;
+		}
+	}
 
 	@Override
 	public String toString() {

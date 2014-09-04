@@ -21,6 +21,7 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
+import jkind.processes.messages.BaseStepMessage;
 import jkind.processes.messages.CounterexampleMessage;
 import jkind.processes.messages.InductiveCounterexampleMessage;
 import jkind.processes.messages.InvalidMessage;
@@ -50,7 +51,7 @@ public class Director {
 	private List<String> remainingProperties = new ArrayList<>();
 	private List<String> validProperties = new ArrayList<>();
 	private List<String> invalidProperties = new ArrayList<>();
-	private List<String> unknownProperties = new ArrayList<>();
+	private int baseStep = 0;
 	private Map<String, InductiveCounterexampleMessage> inductiveCounterexamples = new HashMap<>();
 
 	private BaseProcess baseProcess;
@@ -104,10 +105,9 @@ public class Director {
 
 		processMessages(startTime);
 
-		unknownProperties.addAll(remainingProperties);
-		remainingProperties.clear();
-		if (!unknownProperties.isEmpty()) {
-			writer.writeUnknown(unknownProperties, convertInductiveCounterexamples());
+		if (!remainingProperties.isEmpty()) {
+			writer.writeUnknown(remainingProperties, baseStep, convertInductiveCounterexamples(),
+					getRuntime(startTime));
 		}
 
 		writer.end();
@@ -210,7 +210,7 @@ public class Director {
 	private void processMessages(long startTime) {
 		while (!incoming.isEmpty()) {
 			Message message = incoming.poll();
-			double runtime = (System.currentTimeMillis() - startTime) / 1000.0;
+			double runtime = getRuntime(startTime);
 			if (message instanceof ValidMessage) {
 				ValidMessage vm = (ValidMessage) message;
 				remainingProperties.removeAll(vm.valid);
@@ -243,12 +243,20 @@ public class Director {
 			} else if (message instanceof UnknownMessage) {
 				UnknownMessage um = (UnknownMessage) message;
 				remainingProperties.removeAll(um.unknown);
-				unknownProperties.addAll(um.unknown);
+				writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(),
+						runtime);
+			} else if (message instanceof BaseStepMessage) {
+				BaseStepMessage bsm = (BaseStepMessage) message;
+				baseStep = bsm.step;
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());
 			}
 		}
+	}
+
+	private double getRuntime(long startTime) {
+		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
 
 	private void printSummary() {
@@ -265,8 +273,8 @@ public class Director {
 				Output.println("INVALID PROPERTIES: " + invalidProperties);
 				Output.println();
 			}
-			if (!unknownProperties.isEmpty()) {
-				Output.println("UNKNOWN PROPERTIES: " + unknownProperties);
+			if (!remainingProperties.isEmpty()) {
+				Output.println("UNKNOWN PROPERTIES: " + remainingProperties);
 				Output.println();
 			}
 		}
@@ -347,7 +355,7 @@ public class Director {
 		if (type instanceof EnumType) {
 			EnumType et = (EnumType) type;
 			IntegerValue iv = (IntegerValue) value;
-			return new EnumValue(et.values.get(iv.value.intValue()));
+			return new EnumValue(et.getValue(iv.value.intValue(), ""));
 		}
 		return value;
 	}

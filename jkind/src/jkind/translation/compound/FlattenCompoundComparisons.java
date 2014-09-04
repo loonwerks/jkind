@@ -11,7 +11,7 @@ import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.translation.TypeAwareAstMapVisitor;
+import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
 /**
  * Expand equalities and inequalities on records and arrays

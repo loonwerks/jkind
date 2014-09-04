@@ -16,6 +16,6 @@ public abstract class Writer {
 
 	public abstract void writeInvalid(String prop, Counterexample cex, double runtime);
 
-	public abstract void writeUnknown(List<String> props,
-			Map<String, Counterexample> inductiveCounterexamples);
+	public abstract void writeUnknown(List<String> props, int trueFor,
+			Map<String, Counterexample> inductiveCounterexamples, double runtime);
 }

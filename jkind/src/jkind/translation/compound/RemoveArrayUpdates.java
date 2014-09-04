@@ -10,7 +10,7 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Program;
-import jkind.translation.TypeAwareAstMapVisitor;
+import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
 /**
  * Replace all non-constant array indices using if-then-else expressions. Remove

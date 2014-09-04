@@ -87,6 +87,13 @@ public class CandidateGenerator {
 
 	private void addSubrangeCandidates(String id, SubrangeIntType subrange) {
 		Sexp var = new Symbol(id);
+
+		/*
+		 * This range constraint candidate is not guaranteed to be an invariant
+		 * since pre-initial states are unconstrained and may taint current
+		 * states even though they pass our simple form of subrange type
+		 * checking.
+		 */
 		addCandidate(id, SexpUtil.subrangeConstraint(id, subrange), "(" + subrange.low + " <= "
 				+ id + " and " + id + " <= " + subrange.high + ")");
 

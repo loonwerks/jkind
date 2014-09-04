@@ -5,10 +5,12 @@ package jkind.results;
  * Abstract class of property result from JKind
  */
 public abstract class Property {
-	protected final String name;
+	private final String name;
+	private final double runtime;
 
-	public Property(String name) {
+	public Property(String name, double runtime) {
 		this.name = name;
+		this.runtime = runtime;
 	}
 
 	/**
@@ -16,5 +18,12 @@ public abstract class Property {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Runtime of the property measured in seconds
+	 */
+	public double getRuntime() {
+		return runtime;
 	}
 }
