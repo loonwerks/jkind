@@ -137,7 +137,7 @@ public class Kind2WebInputStream extends InputStream {
 				return match.group(1);
 			}
 		}
-		return null;
+		throw new JKindException("Failed to receive job id from " + baseUri);
 	}
 
 	@Override
