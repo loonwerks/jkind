@@ -19,6 +19,7 @@ public class ExcelWriter extends Writer {
 	final private File file;
 	final private Node node;
 	final private List<Property> properties = new ArrayList<>();
+	private ExcelFormatter formatter;
 
 	public ExcelWriter(String filename, Node node) {
 		this.file = new File(filename);
@@ -27,13 +28,13 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void begin() {
+		formatter = new ExcelFormatter(file, new NodeLayout(node));
 	}
 
 	@Override
 	public void end() {
-		try (ExcelFormatter formatter = new ExcelFormatter(file, new NodeLayout(node))) {
-			formatter.write(properties);
-		}
+		formatter.write(properties);
+		formatter.close();
 	}
 
 	@Override

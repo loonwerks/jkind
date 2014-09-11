@@ -31,6 +31,8 @@ public class Kind2WebExample {
 	private static List<String> getKindArgs() {
 		List<String> args = new ArrayList<>();
 		args.add("-xml");
+		args.add("--timeout_wall");
+		args.add("100");
 		return args;
 	}
 
