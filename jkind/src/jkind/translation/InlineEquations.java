@@ -2,6 +2,7 @@ package jkind.translation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import jkind.invariant.CombinatorialInfo;
 import jkind.lustre.Equation;
@@ -9,11 +10,16 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.visitors.AstIterVisitor;
+import jkind.lustre.visitors.AstMapVisitor;
 
 public class InlineEquations {
+	private static final int USES_THRESHOLD = 5;
+	private static final int SIZE_THRESHOLD = 5;
+
 	public static Node node(Node node) {
-		Map<String, Expr> equations = getCombinatorialEquations(node);
+		final Map<String, Expr> equations = getCombinatorialEquations(node);
 		final Map<String, Integer> uses = new HashMap<>();
+		final Stack<String> stack = new Stack<>();
 
 		node.accept(new AstIterVisitor() {
 			@Override
@@ -27,13 +33,32 @@ public class InlineEquations {
 			}
 		});
 
-		return new SubstitutionVisitor(equations) {
+		int todo_reconstruct_inlined_variables;
+
+		return new AstMapVisitor() {
 			@Override
 			public Expr visit(IdExpr e) {
-				if (map.containsKey(e.id) && uses.get(e.id) <= 5) {
-					return map.get(e.id).accept(this);
+				if (shouldInline(e.id)) {
+					stack.push(e.id);
+					Expr v = equations.get(e.id).accept(this);
+					stack.pop();
+					return v;
 				} else {
 					return e;
+				}
+			}
+
+			private boolean shouldInline(String id) {
+				if (stack.contains(id)) {
+					return false;
+				} else if (!equations.containsKey(id)) {
+					return false;
+				} else if (uses.get(id) <= USES_THRESHOLD) {
+					return true;
+				} else if (equations.get(id).accept(new SizeVisitor()) <= SIZE_THRESHOLD) {
+					return true;
+				} else {
+					return false;
 				}
 			}
 		}.visit(node);
