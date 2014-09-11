@@ -230,7 +230,7 @@ public class JKindApi extends KindApi {
 
 		File jar = findJKindJar();
 		if (jar == null) {
-			throw new JKindException("Unable to find jkind.jar in JKIND_HOME or on system PATH");
+			throw new JKindException("Unable to find jkind-functions.jar in JKIND_HOME or on system PATH");
 		}
 		return new String[] { "java", "-jar", jar.toString(), "-jkind" };
 	}
