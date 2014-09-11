@@ -249,7 +249,7 @@ public class JKindApi extends KindApi {
 		}
 
 		for (String element : path.split(File.pathSeparator)) {
-			File jar = new File(element, "jkind.jar");
+			File jar = new File(element, "jkind-functions.jar");
 			if (jar.exists()) {
 				return jar;
 			}
