@@ -278,7 +278,11 @@ public class XmlParseThread extends Thread {
 			return getIntervalValue(intervalElement, type);
 		}
 
-		return Util.parseValue(type, valueElement.getTextContent());
+		String content = valueElement.getTextContent();
+		if (content.isEmpty()) {
+			return null;
+		}
+		return Util.parseValue(type, content);
 	}
 
 	private Interval getIntervalValue(Element intervalElement, String type) {

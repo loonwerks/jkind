@@ -196,10 +196,16 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			List<Value> outputs = map.get(inputs);
 			col = 1;
 			for (Value input : inputs) {
-				writeValue(input, col++, defaultFormat);
+				if (!Util.isArbitrary(input)) {
+					writeValue(input, col, defaultFormat);
+				}
+				col++;
 			}
 			for (Value output : outputs) {
-				writeValue(output, col++, defaultFormat);
+				if (!Util.isArbitrary(output)) {
+					writeValue(output, col, defaultFormat);
+				}
+				col++;
 			}
 			row++;
 		}

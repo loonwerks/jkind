@@ -134,10 +134,12 @@ public class XmlWriter extends Writer {
 		for (List<Value> inputs : map.keySet()) {
 			out.println("        <FunctionValue>");
 			for (Value input : inputs) {
-				out.println("          <ArgumentValue>" + formatValue(input) + "</ArgumentValue>");
+				String formatted = !Util.isArbitrary(input) ? formatValue(input) : "";
+				out.println("          <ArgumentValue>" + formatted + "</ArgumentValue>");
 			}
 			for (Value output : map.get(inputs)) {
-				out.println("          <ArgumentValue>" + formatValue(output) + "</ArgumentValue>");
+				String formatted = !Util.isArbitrary(output) ? formatValue(output) : "";
+				out.println("          <ArgumentValue>" + formatted + "</ArgumentValue>");
 			}
 			out.println("        </FunctionValue>");
 		}
