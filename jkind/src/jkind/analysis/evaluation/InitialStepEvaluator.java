@@ -18,7 +18,6 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -34,6 +33,7 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
+import jkind.util.Util;
 
 /**
  * This class is used by invariant generation to suggest upper and lower bounds
@@ -115,16 +115,7 @@ public class InitialStepEvaluator implements ExprVisitor<Value> {
 		if (value == null) {
 			return null;
 		}
-
-		if (e.type == NamedType.REAL && value instanceof IntegerValue) {
-			IntegerValue iv = (IntegerValue) value;
-			return new RealValue(new BigFraction(iv.value));
-		} else if (e.type == NamedType.INT && value instanceof RealValue) {
-			RealValue rv = (RealValue) value;
-			return new IntegerValue(rv.value.floor());
-		} else {
-			throw new IllegalArgumentException();
-		}
+		return Util.cast(e.type, value);
 	}
 
 	@Override

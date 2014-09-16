@@ -214,4 +214,16 @@ public class Util {
 		}
 		return enums;
 	}
+
+	public static Value cast(Type type, Value value) {
+		if (type == NamedType.REAL && value instanceof IntegerValue) {
+			IntegerValue iv = (IntegerValue) value;
+			return new RealValue(new BigFraction(iv.value));
+		} else if (type == NamedType.INT && value instanceof RealValue) {
+			RealValue rv = (RealValue) value;
+			return new IntegerValue(rv.value.floor());
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
 }

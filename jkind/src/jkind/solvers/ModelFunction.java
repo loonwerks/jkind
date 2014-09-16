@@ -1,4 +1,4 @@
-package jkind.solvers.yices;
+package jkind.solvers;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 import jkind.lustre.values.Value;
 
-public class YicesFunction {
+public class ModelFunction {
 	private final Map<List<Value>, Value> values = new HashMap<>();
 
 	public void addValue(List<Value> inputs, Value output) {

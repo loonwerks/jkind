@@ -10,7 +10,7 @@ import jkind.lustre.values.Value;
 import jkind.sexp.Sexp;
 import jkind.solvers.Eval;
 import jkind.solvers.Model;
-import jkind.util.StreamIndex;
+import jkind.solvers.ModelFunction;
 
 public class SmtLib2Model extends Model {
 	private final Map<String, Sexp> values = new HashMap<>();
@@ -38,14 +38,12 @@ public class SmtLib2Model extends Model {
 	}
 
 	@Override
-	public SmtLib2Model slice(Set<String> keep) {
-		SmtLib2Model sliced = new SmtLib2Model(varTypes);
-		for (String var : getVariableNames()) {
-			StreamIndex si = StreamIndex.decode(var);
-			if (si != null && keep.contains(si.getStream())) {
-				sliced.values.put(var, values.get(var));
-			}
-		}
-		return sliced;
+	public ModelFunction getFunction(String name) {
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public Set<String> getFunctionNames() {
+		throw new IllegalArgumentException();
 	}
 }

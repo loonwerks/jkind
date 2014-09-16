@@ -9,13 +9,13 @@ import java.util.Set;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
+import jkind.solvers.ModelFunction;
 import jkind.util.SexpUtil;
-import jkind.util.StreamIndex;
 
 public class YicesModel extends Model {
 	private final Map<String, String> aliases = new HashMap<>();
 	private final Map<String, Value> values = new HashMap<>();
-	private final Map<String, YicesFunction> functions = new HashMap<>();
+	private final Map<String, ModelFunction> functions = new HashMap<>();
 
 	public YicesModel(Map<String, Type> varTypes) {
 		super(varTypes);
@@ -30,15 +30,15 @@ public class YicesModel extends Model {
 	}
 
 	public void addFunctionValue(String name, List<Value> inputs, Value output) {
-		YicesFunction fn = getOrCreateFunction(name);
+		ModelFunction fn = getOrCreateFunction(name);
 		fn.addValue(inputs, output);
 	}
 
-	private YicesFunction getOrCreateFunction(String name) {
+	private ModelFunction getOrCreateFunction(String name) {
 		if (functions.containsKey(name)) {
 			return functions.get(name);
 		} else {
-			YicesFunction fn = new YicesFunction();
+			ModelFunction fn = new ModelFunction();
 			functions.put(name, fn);
 			return fn;
 		}
@@ -74,6 +74,7 @@ public class YicesModel extends Model {
 		return result;
 	}
 
+	@Override
 	public Set<String> getFunctionNames() {
 		Set<String> result = new HashSet<>();
 		for (String name : aliases.keySet()) {
@@ -85,25 +86,8 @@ public class YicesModel extends Model {
 		return result;
 	}
 
-	public YicesFunction getFunction(String name) {
-		return functions.get(getAlias(name));
-	}
-
 	@Override
-	public YicesModel slice(Set<String> keep) {
-		YicesModel sliced = new YicesModel(varTypes);
-		
-		for (String var : getVariableNames()) {
-			StreamIndex si = StreamIndex.decode(var);
-			if (si != null && keep.contains(si.getStream())) {
-				sliced.values.put(var, getValue(var));
-			}
-		}
-		
-		for (String fn : getFunctionNames()) {
-			sliced.functions.put(fn, getFunction(fn));
-		}
-		
-		return sliced;
+	public ModelFunction getFunction(String name) {
+		return functions.get(getAlias(name));
 	}
 }

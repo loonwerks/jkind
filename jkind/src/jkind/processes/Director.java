@@ -31,8 +31,9 @@ import jkind.processes.messages.ValidMessage;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
+import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
-import jkind.solvers.yices.YicesFunction;
+import jkind.solvers.ModelFunction;
 import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
@@ -227,7 +228,8 @@ public class Director {
 				invalidProperties.addAll(im.invalid);
 				inductiveCounterexamples.keySet().removeAll(im.invalid);
 				for (String invalidProp : im.invalid) {
-					Model slicedModel = im.model.slice(spec.dependencyMap.get(invalidProp));
+					Model slicedModel = ModelSlicer.slice(im.model,
+							spec.dependencyMap.get(invalidProp));
 					Counterexample cex = extractCounterexample(im.k, slicedModel);
 					writer.writeInvalid(invalidProp, cex, runtime);
 				}
@@ -285,7 +287,7 @@ public class Director {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			Model slicedModel = icm.model.slice(spec.dependencyMap.get(icm.property));
+			Model slicedModel = ModelSlicer.slice(icm.model, spec.dependencyMap.get(icm.property));
 			result.put(prop, extractCounterexample(icm.k, slicedModel));
 		}
 
@@ -307,7 +309,7 @@ public class Director {
 		if (model instanceof YicesModel) {
 			YicesModel yicesModel = (YicesModel) model;
 			for (String name : yicesModel.getFunctionNames()) {
-				YicesFunction fn = yicesModel.getFunction(name);
+				ModelFunction fn = yicesModel.getFunction(name);
 				extractCounterexampleFunction(cex, name, fn);
 			}
 		}
@@ -315,7 +317,7 @@ public class Director {
 		return cex;
 	}
 
-	private void extractCounterexampleFunction(Counterexample cex, String name, YicesFunction fn) {
+	private void extractCounterexampleFunction(Counterexample cex, String name, ModelFunction fn) {
 		String decoded = SexpUtil.decodeFunction(name);
 		Function fnDecl = getFunction(spec.functions, decoded);
 		VarDecl outputDecl = fnDecl.outputs.get(0);

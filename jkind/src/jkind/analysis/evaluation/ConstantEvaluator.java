@@ -20,7 +20,6 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -123,16 +122,7 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		if (value == null) {
 			return null;
 		}
-
-		if (e.type == NamedType.REAL && value instanceof IntegerValue) {
-			IntegerValue iv = (IntegerValue) value;
-			return new RealValue(new BigFraction(iv.value));
-		} else if (e.type == NamedType.INT && value instanceof RealValue) {
-			RealValue rv = (RealValue) value;
-			return new IntegerValue(rv.value.floor());
-		} else {
-			throw new IllegalArgumentException();
-		}
+		return Util.cast(e.type, value);
 	}
 	
 	@Override
