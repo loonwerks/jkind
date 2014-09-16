@@ -28,6 +28,7 @@ import jkind.processes.messages.ValidMessage;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
+import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
@@ -220,7 +221,8 @@ public class Director {
 				invalidProperties.addAll(im.invalid);
 				inductiveCounterexamples.keySet().removeAll(im.invalid);
 				for (String invalidProp : im.invalid) {
-					Model slicedModel = im.model.slice(spec.dependencyMap.get(invalidProp));
+					Model slicedModel = ModelSlicer.slice(im.model,
+							spec.dependencyMap.get(invalidProp));
 					Counterexample cex = extractCounterexample(im.k, slicedModel);
 					writer.writeInvalid(invalidProp, cex, runtime);
 				}
@@ -278,7 +280,7 @@ public class Director {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			Model slicedModel = icm.model.slice(spec.dependencyMap.get(icm.property));
+			Model slicedModel = ModelSlicer.slice(icm.model, spec.dependencyMap.get(icm.property));
 			result.put(prop, extractCounterexample(icm.k, slicedModel));
 		}
 

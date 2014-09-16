@@ -22,7 +22,6 @@ public abstract class Model {
 	
 	public abstract Value getValue(String name);
 	public abstract Set<String> getVariableNames();
-	public abstract Model slice(Set<String> keep);
 
 	public Value getValue(StreamIndex si) {
 		return getValue(si.getEncoded().str);
