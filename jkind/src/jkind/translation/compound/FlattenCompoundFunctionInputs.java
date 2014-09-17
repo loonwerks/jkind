@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.lustre.CallExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -41,14 +41,14 @@ public class FlattenCompoundFunctionInputs extends AstMapVisitor {
 	}
 
 	@Override
-	public Expr visit(CallExpr e) {
+	public Expr visit(FunctionCallExpr e) {
 		Function fn = originalFunctionTable.get(e.name);
 		List<Expr> args = visitExprs(e.args);
 		List<Expr> flatArgs = new ArrayList<>();
 		for (int i = 0; i < args.size(); i++) {
 			flatArgs.addAll(flattenExpr(args.get(i), fn.inputs.get(i).type));
 		}
-		return new CallExpr(e.name, flatArgs);
+		return new FunctionCallExpr(e.name, flatArgs);
 	}
 
 	private List<Expr> flattenExpr(Expr expr, Type type) {

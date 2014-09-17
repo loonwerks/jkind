@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
@@ -15,7 +17,6 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
@@ -23,12 +24,14 @@ import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -91,6 +94,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private String main;
+	private Set<String> functionNames = new HashSet<>();
 
 	public Program program(ProgramContext ctx) {
 		List<TypeDef> types = types(ctx.typedef());
@@ -128,6 +132,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			List<VarDecl> inputs = varDecls(ctx.input);
 			List<VarDecl> outputs = varDecls(ctx.output);
 			functions.add(new Function(loc(ctx), id, inputs, outputs));
+			functionNames.add(id);
 		}
 		return functions;
 	}
@@ -309,30 +314,38 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
-	public CallExpr visitCallExpr(CallExprContext ctx) {
+	public Expr visitCallExpr(CallExprContext ctx) {
 		String name = ctx.ID().getText();
 		List<Expr> args = new ArrayList<>();
 		for (ExprContext arg : ctx.expr()) {
 			args.add(expr(arg));
 		}
-		return new CallExpr(loc(ctx), name, args);
+
+		if (functionNames.contains(name)) {
+			return new FunctionCallExpr(loc(ctx), name, args);
+		} else {
+			return new NodeCallExpr(loc(ctx), name, args);
+		}
 	}
 
 	@Override
 	public Expr visitCondactExpr(CondactExprContext ctx) {
 		Expr clock = expr(ctx.expr(0));
-		if (ctx.expr(1) instanceof CallExprContext) {
+		if (!(ctx.expr(1) instanceof CallExprContext)) {
 			CallExprContext callCtx = (CallExprContext) ctx.expr(1);
-			CallExpr call = visitCallExpr(callCtx);
-			List<Expr> args = new ArrayList<>();
-			for (int i = 2; i < ctx.expr().size(); i++) {
-				args.add(expr(ctx.expr(i)));
+			Expr call = visitCallExpr(callCtx);
+			if (call instanceof NodeCallExpr) {
+				NodeCallExpr nodeCall = (NodeCallExpr) call;
+				List<Expr> args = new ArrayList<>();
+				for (int i = 2; i < ctx.expr().size(); i++) {
+					args.add(expr(ctx.expr(i)));
+				}
+				return new CondactExpr(loc(ctx), clock, nodeCall, args);
 			}
-			return new CondactExpr(loc(ctx), clock, call, args);
-		} else {
-			fatal(ctx, "second argument to condact must be a node call");
-			return null;
 		}
+
+		fatal(ctx, "second argument to condact must be a node call");
+		return null;
 	}
 
 	@Override

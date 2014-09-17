@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jkind.lustre.CallExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -82,7 +82,7 @@ public class WorkaroundKind2ForwardReference {
 		final Set<String> dependencies = new HashSet<>();
 		node.accept(new AstIterVisitor() {
 			@Override
-			public Void visit(CallExpr e) {
+			public Void visit(NodeCallExpr e) {
 				dependencies.add(e.name);
 				return null;
 			}

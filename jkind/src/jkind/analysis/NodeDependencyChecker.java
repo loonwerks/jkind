@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.Output;
-import jkind.lustre.CallExpr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.AstIterVisitor;
 import jkind.util.CycleFinder;
@@ -36,7 +36,7 @@ public class NodeDependencyChecker {
 		final Set<String> dependencies = new HashSet<>();
 		node.accept(new AstIterVisitor() {
 			@Override
-			public Void visit(CallExpr e) {
+			public Void visit(NodeCallExpr e) {
 				dependencies.add(e.name);
 				super.visit(e);
 				return null;

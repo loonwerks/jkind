@@ -5,11 +5,12 @@ import java.util.Set;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.EnumType;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.util.Util;
@@ -37,17 +38,22 @@ public class ConstantAnalyzer extends ExprConjunctiveVisitor {
 	}
 
 	@Override
-	public Boolean visit(CallExpr e) {
+	public Boolean visit(CondactExpr e) {
 		return false;
 	}
 
 	@Override
-	public Boolean visit(CondactExpr e) {
+	public Boolean visit(FunctionCallExpr e) {
 		return false;
 	}
 
 	@Override
 	public Boolean visit(IdExpr e) {
 		return constants.contains(e.id);
+	}
+
+	@Override
+	public Boolean visit(NodeCallExpr e) {
+		return false;
 	}
 }

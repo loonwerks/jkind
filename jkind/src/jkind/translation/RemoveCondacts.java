@@ -7,7 +7,6 @@ import java.util.Map;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -15,6 +14,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
@@ -81,7 +81,7 @@ public class RemoveCondacts {
 		return (Node) node.accept(new AstMapVisitor() {
 			@Override
 			public Expr visit(CondactExpr e) {
-				CallExpr call = (CallExpr) e.call.accept(this);
+				NodeCallExpr call = (NodeCallExpr) e.call.accept(this);
 
 				List<Expr> args = new ArrayList<>();
 				args.add(e.clock.accept(this));
@@ -89,7 +89,7 @@ public class RemoveCondacts {
 				args.addAll(visitExprs(e.args));
 
 				Node condact = createCondactNode(call.name);
-				return new CallExpr(condact.id, args);
+				return new NodeCallExpr(condact.id, args);
 			}
 		});
 	}
@@ -192,23 +192,18 @@ public class RemoveCondacts {
 	private Node clockNodeCalls(Node node, final IdExpr clock) {
 		return (Node) node.accept(new AstMapVisitor() {
 			@Override
-			public Expr visit(CallExpr e) {
-				if (nodeTable.containsKey(e.name)) {
-					List<Expr> args = new ArrayList<>();
-					args.add(clock);
-					args.addAll(visitExprs(e.args));
-	
-					Node clocked = createClockedNode(e.name);
-					return new CallExpr(clocked.id, args);
-				} else {
-					// Nothing needs to be done for functions, just recurse
-					return super.visit(e);
-				}
+			public Expr visit(NodeCallExpr e) {
+				List<Expr> args = new ArrayList<>();
+				args.add(clock);
+				args.addAll(visitExprs(e.args));
+
+				Node clocked = createClockedNode(e.name);
+				return new NodeCallExpr(clocked.id, args);
 			}
 
 			@Override
 			public Expr visit(CondactExpr e) {
-				CallExpr call = (CallExpr) super.visit(e.call);
+				NodeCallExpr call = (NodeCallExpr) super.visit(e.call);
 
 				List<Expr> args = new ArrayList<>();
 				args.add(new BinaryExpr(e.clock.accept(this), BinaryOp.AND, clock));
@@ -216,7 +211,7 @@ public class RemoveCondacts {
 				args.addAll(visitExprs(e.args));
 
 				Node condact = createCondactNode(call.name);
-				return new CallExpr(condact.id, args);
+				return new NodeCallExpr(condact.id, args);
 			}
 		});
 	}

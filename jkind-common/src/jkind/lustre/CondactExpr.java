@@ -9,10 +9,10 @@ import jkind.util.Util;
 
 public class CondactExpr extends Expr {
 	final public Expr clock;
-	final public CallExpr call;
+	final public NodeCallExpr call;
 	final public List<Expr> args;
 
-	public CondactExpr(Location loc, Expr clock, CallExpr call, List<Expr> args) {
+	public CondactExpr(Location loc, Expr clock, NodeCallExpr call, List<Expr> args) {
 		super(loc);
 		Assert.isNotNull(clock);
 		Assert.isNotNull(call);
@@ -21,11 +21,11 @@ public class CondactExpr extends Expr {
 		this.args = Util.safeList(args);
 	}
 	
-	public CondactExpr(Expr clock, CallExpr call, List<Expr> args) {
+	public CondactExpr(Expr clock, NodeCallExpr call, List<Expr> args) {
 		this(Location.NULL, clock, call, args);
 	}
 	
-	public CondactExpr(Expr clock, CallExpr call, Expr... args) {
+	public CondactExpr(Expr clock, NodeCallExpr call, Expr... args) {
 		this(Location.NULL, clock, call, Arrays.asList(args));
 	}
 

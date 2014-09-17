@@ -16,7 +16,6 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.Ast;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
@@ -24,12 +23,14 @@ import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -373,7 +374,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return null;
 		}
 
-		List<Type> expected = visitCallExpr(e.call);
+		List<Type> expected = visitNodeCallExpr(e.call);
 		if (expected == null) {
 			return null;
 		}
@@ -393,6 +394,45 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 
 		return expected;
+	}
+
+	@Override
+	public Type visit(FunctionCallExpr e) {
+		Function function = functionTable.get(e.name);
+		if (function != null) {
+			return compressTypes(visitCallExpr(e, e.args, function.inputs, function.outputs));
+		}
+
+		error(e, "unknown function " + e.name);
+		return null;
+	}
+
+	private List<Type> visitCallExpr(Expr e, List<Expr> args, List<VarDecl> inputs,
+			List<VarDecl> outputs) {
+		List<Type> actual = new ArrayList<>();
+		for (Expr arg : args) {
+			actual.add(arg.accept(this));
+		}
+
+		List<Type> expected = new ArrayList<>();
+		for (VarDecl input : inputs) {
+			expected.add(resolveType(input.type));
+		}
+
+		if (actual.size() != expected.size()) {
+			error(e, "expected " + expected.size() + " arguments, but found " + actual.size());
+			return null;
+		}
+
+		for (int i = 0; i < expected.size(); i++) {
+			compareTypeAssignment(args.get(i), expected.get(i), actual.get(i));
+		}
+
+		List<Type> result = new ArrayList<>();
+		for (VarDecl decl : outputs) {
+			result.add(resolveType(decl.type));
+		}
+		return result;
 	}
 
 	@Override
@@ -427,50 +467,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	@Override
-	public Type visit(CallExpr e) {
-		return compressTypes(visitCallExpr(e));
+	public Type visit(NodeCallExpr e) {
+		return compressTypes(visitNodeCallExpr(e));
 	}
-
-	private List<Type> visitCallExpr(CallExpr e) {
+	
+	public List<Type> visitNodeCallExpr(NodeCallExpr e) {
 		Node node = nodeTable.get(e.name);
 		if (node != null) {
-			return visitCallExpr(e, node.inputs, node.outputs);
+			return visitCallExpr(e, e.args, node.inputs, node.outputs);
 		}
 
-		Function function = functionTable.get(e.name);
-		if (function != null) {
-			return visitCallExpr(e, function.inputs, function.outputs);
-		}
-
-		error(e, "unknown function or node " + e.name);
+		error(e, "unknown node " + e.name);
 		return null;
-	}
-
-	private List<Type> visitCallExpr(CallExpr e, List<VarDecl> inputs, List<VarDecl> outputs) {
-		List<Type> actual = new ArrayList<>();
-		for (Expr arg : e.args) {
-			actual.add(arg.accept(this));
-		}
-
-		List<Type> expected = new ArrayList<>();
-		for (VarDecl input : inputs) {
-			expected.add(resolveType(input.type));
-		}
-
-		if (actual.size() != expected.size()) {
-			error(e, "expected " + expected.size() + " arguments, but found " + actual.size());
-			return null;
-		}
-
-		for (int i = 0; i < expected.size(); i++) {
-			compareTypeAssignment(e.args.get(i), expected.get(i), actual.get(i));
-		}
-
-		List<Type> result = new ArrayList<>();
-		for (VarDecl decl : outputs) {
-			result.add(resolveType(decl.type));
-		}
-		return result;
 	}
 
 	@Override

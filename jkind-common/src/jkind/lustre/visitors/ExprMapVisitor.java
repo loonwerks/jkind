@@ -11,13 +11,14 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -53,21 +54,21 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	}
 
 	@Override
-	public Expr visit(CallExpr e) {
-		return new CallExpr(e.location, e.name, visitExprs(e.args));
-	}
-
-	@Override
 	public Expr visit(CastExpr e) {
 		return new CastExpr(e.location, e.type, e.expr.accept(this));
 	}
 
 	@Override
 	public Expr visit(CondactExpr e) {
-		return new CondactExpr(e.location, e.clock.accept(this), (CallExpr) e.call.accept(this),
-				visitExprs(e.args));
+		return new CondactExpr(e.location, e.clock.accept(this),
+				(NodeCallExpr) e.call.accept(this), visitExprs(e.args));
 	}
 
+	@Override
+	public Expr visit(FunctionCallExpr e) {
+		return new FunctionCallExpr(e.location, e.name, visitExprs(e.args));
+	}
+	
 	@Override
 	public Expr visit(IdExpr e) {
 		return e;
@@ -77,6 +78,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	public Expr visit(IfThenElseExpr e) {
 		return new IfThenElseExpr(e.location, e.cond.accept(this), e.thenExpr.accept(this),
 				e.elseExpr.accept(this));
+	}
+
+	@Override
+	public Expr visit(NodeCallExpr e) {
+		return new NodeCallExpr(e.location, e.name, visitExprs(e.args));
 	}
 
 	@Override
@@ -105,9 +111,10 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(RecordUpdateExpr e) {
-		return new RecordUpdateExpr(e.location, e.record.accept(this), e.field, e.value.accept(this));
+		return new RecordUpdateExpr(e.location, e.record.accept(this), e.field,
+				e.value.accept(this));
 	}
-	
+
 	@Override
 	public Expr visit(TupleExpr e) {
 		return new TupleExpr(e.location, visitExprs(e.elements));

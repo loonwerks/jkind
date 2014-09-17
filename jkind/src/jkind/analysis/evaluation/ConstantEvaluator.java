@@ -11,15 +11,16 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -53,11 +54,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 				constants.put(id, new EnumValue(id));
 			}
 		}
-		
+
 		for (Constant c : program.constants) {
 			constantDefinitions.put(c.id, c.expr);
 		}
-		
+
 		for (Constant c : program.constants) {
 			addConstant(c);
 		}
@@ -124,14 +125,14 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 		}
 		return Util.cast(e.type, value);
 	}
-	
+
 	@Override
-	public Value visit(CallExpr e) {
+	public Value visit(CondactExpr e) {
 		return null;
 	}
 
 	@Override
-	public Value visit(CondactExpr e) {
+	public Value visit(FunctionCallExpr e) {
 		return null;
 	}
 
@@ -163,6 +164,11 @@ public class ConstantEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(IntExpr e) {
 		return new IntegerValue(e.value);
+	}
+
+	@Override
+	public Value visit(NodeCallExpr e) {
+		return null;
 	}
 
 	@Override

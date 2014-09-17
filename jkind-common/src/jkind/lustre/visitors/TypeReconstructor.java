@@ -11,18 +11,19 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
@@ -150,12 +151,18 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	}
 
 	@Override
-	public Type visit(CallExpr e) {
-		if (functionTable.containsKey(e.name)) {
-			return getOutputType(functionTable.get(e.name).outputs);
-		} else {
-			return getOutputType(nodeTable.get(e.name).outputs);
-		}
+	public Type visit(CastExpr e) {
+		return e.type;
+	}
+
+	@Override
+	public Type visit(CondactExpr e) {
+		return e.call.accept(this);
+	}
+
+	@Override
+	public Type visit(FunctionCallExpr e) {
+		return getOutputType(functionTable.get(e.name).outputs);
 	}
 
 	private Type getOutputType(List<VarDecl> outputs) {
@@ -164,16 +171,6 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 			types.add(resolveType(output.type));
 		}
 		return TupleType.compress(types);
-	}
-
-	@Override
-	public Type visit(CastExpr e) {
-		return e.type;
-	}
-
-	@Override
-	public Type visit(CondactExpr e) {
-		return e.call.accept(this);
 	}
 
 	@Override
@@ -199,6 +196,11 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	@Override
 	public Type visit(IntExpr e) {
 		return NamedType.INT;
+	}
+
+	@Override
+	public Type visit(NodeCallExpr e) {
+		return getOutputType(nodeTable.get(e.name).outputs);
 	}
 
 	@Override

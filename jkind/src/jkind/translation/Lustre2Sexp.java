@@ -9,16 +9,17 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -145,17 +146,17 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	}
 
 	@Override
-	public Sexp visit(CallExpr e) {
+	public Sexp visit(CondactExpr e) {
+		throw new IllegalArgumentException("Condacts must be removed before translation to sexp");
+	}
+
+	@Override
+	public Sexp visit(FunctionCallExpr e) {
 		List<Sexp> args = new ArrayList<>();
 		for (Expr arg : e.args) {
 			args.add(arg.accept(this));
 		}
 		return new Cons(SexpUtil.encodeFunction(e.name), args);
-	}
-
-	@Override
-	public Sexp visit(CondactExpr e) {
-		throw new IllegalArgumentException("Condacts must be removed before translation to sexp");
 	}
 
 	@Override
@@ -174,6 +175,11 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		return Sexp.fromBigInt(e.value);
 	}
 
+	@Override
+	public Sexp visit(NodeCallExpr e) {
+		throw new IllegalArgumentException("Node calls must be removed before translation to sexp");
+	}
+	
 	@Override
 	public Sexp visit(RealExpr e) {
 		Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());

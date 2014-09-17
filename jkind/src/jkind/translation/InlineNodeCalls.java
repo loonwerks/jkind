@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import jkind.lustre.CallExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
@@ -45,7 +45,7 @@ public class InlineNodeCalls extends AstMapVisitor {
 		builder.addLocals(newLocals);
 		builder.addProperties(newProperties);
 		main = builder.build();
-		
+
 		return new ProgramBuilder(program).clearNodes().addNode(main).build();
 	}
 
@@ -61,31 +61,27 @@ public class InlineNodeCalls extends AstMapVisitor {
 	}
 
 	@Override
-	public Expr visit(CallExpr e) {
-		if (isNodeCall(e)) {
-			// Detect duplicate node calls to reduce code size
-			String key = getKey(e);
-			if (inlinedCalls.containsKey(key)) {
-				return inlinedCalls.get(key);
-			} else {
-				Expr result = TupleExpr.compress(visitNodeCallExpr(e));
-				inlinedCalls.put(key, result);
-				return result;
-			}
+	public Expr visit(NodeCallExpr e) {
+		// Detect duplicate node calls to reduce code size
+		String key = getKey(e);
+		if (inlinedCalls.containsKey(key)) {
+			return inlinedCalls.get(key);
 		} else {
-			return super.visit(e);
+			Expr result = TupleExpr.compress(visitNodeCallExpr(e));
+			inlinedCalls.put(key, result);
+			return result;
 		}
 	}
 
-	private String getKey(CallExpr e) {
-		return new CallExpr(getOriginalName(e), e.args).toString();
+	private String getKey(NodeCallExpr e) {
+		return new NodeCallExpr(getOriginalName(e), e.args).toString();
 	}
 
-	private String getOriginalName(CallExpr e) {
+	private String getOriginalName(NodeCallExpr e) {
 		return e.name.substring(e.name.lastIndexOf('.') + 1);
 	}
 
-	public List<IdExpr> visitNodeCallExpr(CallExpr e) {
+	public List<IdExpr> visitNodeCallExpr(NodeCallExpr e) {
 		String prefix = newPrefix(e.name);
 		Node node = nodeTable.get(getOriginalName(e));
 
@@ -100,10 +96,6 @@ public class InlineNodeCalls extends AstMapVisitor {
 			result.add(translation.get(decl.id));
 		}
 		return result;
-	}
-
-	private boolean isNodeCall(CallExpr e) {
-		return nodeTable.containsKey(getOriginalName(e));
 	}
 
 	private Map<String, IdExpr> getTranslation(String prefix, Node node) {
@@ -129,12 +121,8 @@ public class InlineNodeCalls extends AstMapVisitor {
 			Map<String, IdExpr> translation) {
 		SubstitutionVisitor substitution = new SubstitutionVisitor(translation) {
 			@Override
-			public Expr visit(CallExpr e) {
-				if (isNodeCall(e)) {
-					return new CallExpr(e.location, prefix + e.name, visitExprs(e.args));
-				} else {
-					return super.visit(e);
-				}
+			public Expr visit(NodeCallExpr e) {
+				return new NodeCallExpr(e.location, prefix + e.name, visitExprs(e.args));
 			}
 		};
 

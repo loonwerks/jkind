@@ -7,13 +7,14 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -48,11 +49,6 @@ public class ExprConjunctiveVisitor implements ExprVisitor<Boolean> {
 	}
 
 	@Override
-	public Boolean visit(CallExpr e) {
-		return visitExprs(e.args);
-	}
-
-	@Override
 	public Boolean visit(CastExpr e) {
 		return e.expr.accept(this);
 	}
@@ -60,6 +56,11 @@ public class ExprConjunctiveVisitor implements ExprVisitor<Boolean> {
 	@Override
 	public Boolean visit(CondactExpr e) {
 		return e.clock.accept(this) && e.call.accept(this) && visitExprs(e.args);
+	}
+
+	@Override
+	public Boolean visit(FunctionCallExpr e) {
+		return visitExprs(e.args);
 	}
 
 	@Override
@@ -75,6 +76,11 @@ public class ExprConjunctiveVisitor implements ExprVisitor<Boolean> {
 	@Override
 	public Boolean visit(IntExpr e) {
 		return true;
+	}
+
+	@Override
+	public Boolean visit(NodeCallExpr e) {
+		return visitExprs(e.args);
 	}
 
 	@Override

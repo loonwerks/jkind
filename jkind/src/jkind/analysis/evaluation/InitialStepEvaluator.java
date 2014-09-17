@@ -10,15 +10,16 @@ import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -105,11 +106,6 @@ public class InitialStepEvaluator implements ExprVisitor<Value> {
 	}
 
 	@Override
-	public Value visit(CallExpr e) {
-		return null;
-	}
-
-	@Override
 	public Value visit(CastExpr e) {
 		Value value = e.expr.accept(this);
 		if (value == null) {
@@ -121,6 +117,11 @@ public class InitialStepEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(CondactExpr e) {
 		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public Value visit(FunctionCallExpr e) {
+		return null;
 	}
 
 	@Override
@@ -145,6 +146,11 @@ public class InitialStepEvaluator implements ExprVisitor<Value> {
 	@Override
 	public Value visit(IntExpr e) {
 		return new IntegerValue(e.value);
+	}
+
+	@Override
+	public Value visit(NodeCallExpr e) {
+		return null;
 	}
 
 	@Override

@@ -9,13 +9,14 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -178,14 +179,14 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(CallExpr e) {
-		throw new IllegalArgumentException(
-				"Uninterpreted functions are not supported in Excel translation");
+	public Void visit(CondactExpr e) {
+		throw new IllegalArgumentException("Condacts must be removed before translation to formula");
 	}
 
 	@Override
-	public Void visit(CondactExpr e) {
-		throw new IllegalArgumentException("Condacts must be removed before translation to formula");
+	public Void visit(FunctionCallExpr e) {
+		throw new IllegalArgumentException(
+				"Uninterpreted functions are not supported in Excel translation");
 	}
 
 	@Override
@@ -240,6 +241,12 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	public Void visit(IntExpr e) {
 		buf.append(e.value);
 		return null;
+	}
+
+	@Override
+	public Void visit(NodeCallExpr e) {
+		throw new IllegalArgumentException(
+				"Node calls must be removed before translation to formula");
 	}
 
 	@Override

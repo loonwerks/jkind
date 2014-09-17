@@ -7,13 +7,14 @@ import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
-import jkind.lustre.CallExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
+import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -56,12 +57,6 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(CallExpr e) {
-		visitExprs(e.args);
-		return null;
-	}
-
-	@Override
 	public Void visit(CastExpr e) {
 		e.expr.accept(this);
 		return null;
@@ -71,6 +66,12 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	public Void visit(CondactExpr e) {
 		e.clock.accept(this);
 		e.call.accept(this);
+		visitExprs(e.args);
+		return null;
+	}
+
+	@Override
+	public Void visit(FunctionCallExpr e) {
 		visitExprs(e.args);
 		return null;
 	}
@@ -90,6 +91,12 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(IntExpr e) {
+		return null;
+	}
+
+	@Override
+	public Void visit(NodeCallExpr e) {
+		visitExprs(e.args);
 		return null;
 	}
 

@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.lustre.CallExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.VarDecl;
@@ -26,7 +26,7 @@ public class SplitFunctions extends AstMapVisitor {
 	}
 
 	private final Map<String, Function> originalFunctionTable = new HashMap<>();
-	
+
 	@Override
 	public Program visit(Program program) {
 		originalFunctionTable.putAll(Util.getFunctionTable(program.functions));
@@ -46,12 +46,12 @@ public class SplitFunctions extends AstMapVisitor {
 	}
 
 	@Override
-	public Expr visit(CallExpr e) {
+	public Expr visit(FunctionCallExpr e) {
 		Function function = originalFunctionTable.get(e.name);
 		List<Expr> args = visitExprs(e.args);
 		List<Expr> exprs = new ArrayList<>();
 		for (VarDecl output : function.outputs) {
-			exprs.add(new CallExpr(e.name + "." + output.id, args));
+			exprs.add(new FunctionCallExpr(e.name + "." + output.id, args));
 		}
 		return TupleExpr.compress(exprs);
 	}
