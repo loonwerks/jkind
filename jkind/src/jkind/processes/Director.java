@@ -34,7 +34,6 @@ import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.solvers.ModelFunction;
-import jkind.solvers.yices.YicesModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
@@ -306,12 +305,9 @@ public class Director {
 			}
 		}
 
-		if (model instanceof YicesModel) {
-			YicesModel yicesModel = (YicesModel) model;
-			for (String name : yicesModel.getFunctionNames()) {
-				ModelFunction fn = yicesModel.getFunction(name);
-				extractCounterexampleFunction(cex, name, fn);
-			}
+		for (String name : model.getFunctionNames()) {
+			ModelFunction fn = model.getFunction(name);
+			extractCounterexampleFunction(cex, name, fn);
 		}
 
 		return cex;
@@ -322,7 +318,7 @@ public class Director {
 		Function fnDecl = getFunction(spec.functions, decoded);
 		VarDecl outputDecl = fnDecl.outputs.get(0);
 		String base = Util.getBaseFunctionName(decoded);
-		
+
 		for (Entry<List<Value>, Value> entry : fn.entrySet()) {
 			List<Value> inputs = new ArrayList<>();
 			int i = 0;
@@ -344,7 +340,7 @@ public class Director {
 		}
 		return null;
 	}
-	
+
 	private boolean isInternal(String stream) {
 		return stream.startsWith("%");
 	}
