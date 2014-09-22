@@ -2,9 +2,9 @@ package jkind.results;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.Value;
@@ -13,7 +13,7 @@ import jkind.util.Util;
 public class FunctionTable {
 	private final List<VarDecl> inputs;
 	private final List<VarDecl> outputs = new ArrayList<>();
-	private final Map<List<Value>, List<Value>> map = new HashMap<>();
+	private final Map<List<Value>, List<Value>> map = new TreeMap<>(new ListValueComparator());
 
 	public FunctionTable(List<VarDecl> inputs) {
 		this.inputs = inputs;
