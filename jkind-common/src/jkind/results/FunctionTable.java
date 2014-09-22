@@ -56,4 +56,8 @@ public class FunctionTable {
 	public void setOutputs(List<Value> inputValues, List<Value> outputValues) {
 		map.put(new ArrayList<>(inputValues), new ArrayList<>(outputValues));
 	}
+	
+	public boolean isEmpty() {
+		return map.isEmpty();
+	}
 }

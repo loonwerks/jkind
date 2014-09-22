@@ -238,8 +238,11 @@ public final class Counterexample {
 			text.append(NEWLINE);
 			text.append("FUNCTIONS");
 			for (String fn : functionTables.keySet()) {
-				appendFunction(text, fn, functionTables.get(fn));
-				text.append(NEWLINE);
+				FunctionTable table = functionTables.get(fn);
+				if (!table.isEmpty()) {
+					appendFunction(text, fn, table);
+					text.append(NEWLINE);
+				}
 			}
 		}
 
@@ -282,9 +285,6 @@ public final class Counterexample {
 
 	private void appendFunction(StringBuilder text, String fn, FunctionTable table) {
 		Map<List<Value>, List<Value>> map = table.getMap();
-		if (map.isEmpty()) {
-			return;
-		}
 		
 		List<List<String>> display = new ArrayList<>();
 		List<String> header = new ArrayList<>();
