@@ -18,4 +18,8 @@ public class ModelFunction {
 	public Set<Entry<List<Value>, Value>> entrySet() {
 		return values.entrySet();
 	}
+
+	public Value getValue(List<Value> args) {
+		return values.get(args);
+	}
 }

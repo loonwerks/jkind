@@ -12,13 +12,11 @@ import jkind.util.Util;
 
 public class FunctionTable {
 	private final List<VarDecl> inputs;
-	private final List<VarDecl> outputs;
-	private final Map<List<Value>, List<Value>> map;
-	
+	private final List<VarDecl> outputs = new ArrayList<>();
+	private final Map<List<Value>, List<Value>> map = new HashMap<>();
+
 	public FunctionTable(List<VarDecl> inputs) {
 		this.inputs = inputs;
-		this.outputs = new ArrayList<>();
-		this.map = new HashMap<>();
 	}
 
 	public List<VarDecl> getInputs() {
@@ -28,23 +26,23 @@ public class FunctionTable {
 	public List<VarDecl> getOutputs() {
 		return outputs;
 	}
-	
+
 	public List<String> getInputNames() {
 		return Util.getIds(inputs);
-	}	
-	
+	}
+
 	public List<String> getOutputNames() {
 		return Util.getIds(outputs);
 	}
-	
+
 	public Map<List<Value>, List<Value>> getMap() {
 		return map;
 	}
-	
+
 	public void addOutput(VarDecl output) {
 		outputs.add(output);
 	}
-	
+
 	public void setOutput(List<Value> inputs, VarDecl output, Value outputValue) {
 		List<Value> outputValues = map.get(inputs);
 		if (outputValues == null) {
