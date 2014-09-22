@@ -152,6 +152,18 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(FunctionCallExpr e) {
+		if (e.args.isEmpty()) {
+			return visitNullaryFunctionCall(e);
+		} else {
+			return visitFunctionCall(e);
+		}
+	}
+
+	private Sexp visitNullaryFunctionCall(FunctionCallExpr e) {
+		return SexpUtil.encodeFunction(e.name);
+	}
+
+	private Sexp visitFunctionCall(FunctionCallExpr e) {
 		List<Sexp> args = new ArrayList<>();
 		for (Expr arg : e.args) {
 			args.add(arg.accept(this));
@@ -179,7 +191,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	public Sexp visit(NodeCallExpr e) {
 		throw new IllegalArgumentException("Node calls must be removed before translation to sexp");
 	}
-	
+
 	@Override
 	public Sexp visit(RealExpr e) {
 		Sexp numerator = Sexp.fromBigInt(e.value.unscaledValue());

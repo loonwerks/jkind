@@ -118,12 +118,26 @@ public class YicesSolver extends Solver {
 
 	@Override
 	public void declare(Function fn) {
+		if (fn.inputs.isEmpty()) {
+			declareNullaryFunction(fn);
+		} else {
+			declareFunction(fn);
+		}
+	}
+
+	private void declareNullaryFunction(Function fn) {
+		send(new Cons("define", SexpUtil.encodeFunction(fn.id), new Symbol("::"),
+				type(fn.outputs.get(0).type)));
+	}
+
+	private void declareFunction(Function fn) {
 		List<Sexp> args = new ArrayList<>();
 		for (VarDecl input : fn.inputs) {
 			args.add(type(input.type));
 		}
 		args.add(type(fn.outputs.get(0).type));
-		send(new Cons("define", SexpUtil.encodeFunction(fn.id), new Symbol("::"), new Cons("->", args)));
+		send(new Cons("define", SexpUtil.encodeFunction(fn.id), new Symbol("::"), new Cons("->",
+				args)));
 	}
 
 	private int labelCount = 1;

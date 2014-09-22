@@ -39,7 +39,7 @@ public class StaticAnalyzer {
 		result = result && TypeDependencyChecker.check(program);
 		result = result && enumsAndConstantsUnique(program);
 		result = result && nodesAndFunctionsUnique(program);
-		result = result && functionsHaveInputAndOutput(program);
+		result = result && functionsHaveOutput(program);
 		result = result && functionsHaveUnconstrainedOutputTypes(program);
 		result = result && ConstantDependencyChecker.check(program);
 		result = result && variablesUnique(program);
@@ -153,14 +153,9 @@ public class StaticAnalyzer {
 		return unique;
 	}
 
-	private static boolean functionsHaveInputAndOutput(Program program) {
+	private static boolean functionsHaveOutput(Program program) {
 		boolean valid = true;
 		for (Function function : program.functions) {
-			if (function.inputs.isEmpty()) {
-				Output.error(function.location, "function " + function.id
-						+ " must have at least one input");
-				valid = false;
-			}
 			if (function.outputs.isEmpty()) {
 				Output.error(function.location, " function " + function.id
 						+ " must have at least one output");

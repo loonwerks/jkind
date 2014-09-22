@@ -1,6 +1,7 @@
 package jkind.solvers.yices;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -64,18 +65,32 @@ public class ResultExtractorListener extends YicesBaseListener {
 
 	@Override
 	public void enterVariable(VariableContext ctx) {
-		String var = ctx.ID().getText();
-		Type type = varTypes.get(var);
-		if (type != null) {
-			model.addValue(var, Util.parseValue(type, ctx.value().getText()));
+		String id = ctx.ID().getText();
+		if (SexpUtil.isEncodedFunction(id)) {
+			enterNullaryFunction(id, ctx);
+		} else {
+			enterVariable(id, ctx);
 		}
 	}
-	
+
+	private void enterNullaryFunction(String id, VariableContext ctx) {
+		Function fn = functionTable.get(SexpUtil.decodeFunction(id));
+		Value output = Util.parseValue(fn.outputs.get(0).type, ctx.value().getText());
+		model.addFunctionValue(id, Collections.<Value> emptyList(), output);
+	}
+
+	private void enterVariable(String id, VariableContext ctx) {
+		Type type = varTypes.get(id);
+		if (type != null) {
+			model.addValue(id, Util.parseValue(type, ctx.value().getText()));
+		}
+	}
+
 	@Override
 	public void enterFunction(FunctionContext ctx) {
 		String id = ctx.ID().getText();
 		Function fn = functionTable.get(SexpUtil.decodeFunction(id));
-		
+
 		List<Value> inputs = new ArrayList<>();
 		int i = 0;
 		for (VarDecl vd : fn.inputs) {
@@ -83,7 +98,7 @@ public class ResultExtractorListener extends YicesBaseListener {
 			i++;
 		}
 		Value output = Util.parseValue(fn.outputs.get(0).type, ctx.value(i).getText());
-		
+
 		model.addFunctionValue(id, inputs, output);
 	}
 }
