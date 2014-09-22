@@ -3,7 +3,6 @@ package jkind;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.EnumType;
 import jkind.lustre.Node;
@@ -16,12 +15,12 @@ public class JLustre2Excel {
 	public static void main(String args[]) {
 		try {
 			if (args.length != 1) {
-				Output.fatal("usage: jlustre2excel <input>");
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "usage: jlustre2excel <input>");
 			}
 			String filename = args[0];
 
 			Program program = Main.parseLustre(filename);
-			StaticAnalyzer.check(program, Level.WARNING);
+			StaticAnalyzer.check(program, SolverOption.Z3);
 			ensureUniqueEnumValues(program);
 
 			Node main = Translate.translate(program);
@@ -30,7 +29,7 @@ public class JLustre2Excel {
 			Output.println("Wrote " + outFilename);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 
@@ -39,7 +38,7 @@ public class JLustre2Excel {
 			Set<String> seen = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 			for (String value : et.values) {
 				if (seen.contains(value)) {
-					Output.fatal(et.location,
+					Output.fatal(ExitCodes.UNSUPPORTED_FEATURE, et.location,
 							"cannot handle enumerated values that differ only by case");
 				} else {
 					seen.add(value);

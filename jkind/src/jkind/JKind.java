@@ -1,6 +1,5 @@
 package jkind;
 
-import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -16,9 +15,8 @@ public class JKind {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			String filename = settings.filename;
 			Program program = Main.parseLustre(filename);
-			
-			Level nonlinear = settings.solver == SolverOption.Z3 ? Level.WARNING : Level.ERROR;
-			StaticAnalyzer.check(program, nonlinear);
+	
+			StaticAnalyzer.check(program, settings.solver);
 
 			Node main = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
@@ -28,7 +26,7 @@ public class JKind {
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 }

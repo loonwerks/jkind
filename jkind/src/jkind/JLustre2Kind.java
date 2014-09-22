@@ -2,7 +2,6 @@ package jkind;
 
 import java.io.File;
 
-import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -24,7 +23,7 @@ public class JLustre2Kind {
 			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
 
 			Program program = Main.parseLustre(filename);
-			StaticAnalyzer.check(program, Level.WARNING);
+			StaticAnalyzer.check(program, SolverOption.Z3);
 
 			Node main = Translate.translate(program);
 			main = RemoveEnumTypes.node(main);
@@ -48,7 +47,7 @@ public class JLustre2Kind {
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 }

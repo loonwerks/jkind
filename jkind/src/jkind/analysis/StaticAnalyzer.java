@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.ExitCodes;
 import jkind.Output;
+import jkind.SolverOption;
 import jkind.analysis.evaluation.DivisionChecker;
 import jkind.lustre.Constant;
 import jkind.lustre.EnumType;
@@ -22,49 +24,57 @@ import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
-	public static void check(Program program, Level nonlinear) {
-		if (!checkErrors(program, nonlinear)) {
-			System.exit(-1);
-		}
-		checkWarnings(program, nonlinear);
+	public static void check(Program program, SolverOption solver) {
+		checkErrors(program, solver);
+		checkSolverLimitations(program, solver);
+		checkWarnings(program, solver);
 	}
 
-	private static boolean checkErrors(Program program, Level nonlinear) {
-		boolean result = true;
-		result = result && hasMainNode(program);
-		result = result && typesUnique(program);
-		result = result && TypesDefined.check(program);
-		result = result && TypeDependencyChecker.check(program);
-		result = result && enumsAndConstantsUnique(program);
-		result = result && ConstantDependencyChecker.check(program);
-		result = result && nodesUnique(program);
-		result = result && variablesUnique(program);
-		result = result && TypeChecker.check(program);
-		result = result && SubrangesNonempty.check(program);
-		result = result && ArraysNonempty.check(program);
-		result = result && constantsConstant(program);
-		result = result && DivisionChecker.check(program);
-		result = result && NodeDependencyChecker.check(program);
-		result = result && assignmentsSound(program);
-		result = result && ConstantArrayAccessBounded.check(program);
-		result = result && propertiesUnique(program);
-		result = result && propertiesExist(program);
-		result = result && propertiesBoolean(program);
-		if (nonlinear == Level.ERROR) {
-			result = result && LinearChecker.check(program, nonlinear);
+	private static void checkErrors(Program program, SolverOption solver) {
+		boolean valid = true;
+		valid = valid && hasMainNode(program);
+		valid = valid && typesUnique(program);
+		valid = valid && TypesDefined.check(program);
+		valid = valid && TypeDependencyChecker.check(program);
+		valid = valid && enumsAndConstantsUnique(program);
+		valid = valid && ConstantDependencyChecker.check(program);
+		valid = valid && nodesUnique(program);
+		valid = valid && variablesUnique(program);
+		valid = valid && TypeChecker.check(program);
+		valid = valid && SubrangesNonempty.check(program);
+		valid = valid && ArraysNonempty.check(program);
+		valid = valid && constantsConstant(program);
+		valid = valid && DivisionChecker.check(program);
+		valid = valid && NodeDependencyChecker.check(program);
+		valid = valid && assignmentsSound(program);
+		valid = valid && ConstantArrayAccessBounded.check(program);
+		valid = valid && propertiesUnique(program);
+		valid = valid && propertiesExist(program);
+		valid = valid && propertiesBoolean(program);
+		if (solver == SolverOption.Z3) {
+			valid = valid && LinearChecker.check(program, Level.ERROR);
 		}
-		return result;
+		
+		if (!valid) {
+			System.exit(ExitCodes.STATIC_ANALYSIS_ERROR);
+		}
 	}
 
-	private static boolean checkWarnings(Program program, Level nonlinear) {
+	private static void checkSolverLimitations(Program program, SolverOption solver) {
+		if (solver == SolverOption.YICES2) {
+			if (!Yices2FeatureChecker.check(program)) {
+				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
+			}
+		}
+	}
+
+	private static void checkWarnings(Program program, SolverOption solver) {
 		warnUnusedAsserts(program);
 		warnAlgebraicLoops(program);
 		WarnUnguardedPreVisitor.check(program);
-		if (nonlinear == Level.WARNING) {
-			LinearChecker.check(program, nonlinear);
+		if (solver == SolverOption.Z3) {
+			LinearChecker.check(program, Level.WARNING);
 		}
-
-		return true;
 	}
 
 	private static boolean hasMainNode(Program program) {
