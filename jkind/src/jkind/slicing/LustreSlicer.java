@@ -1,9 +1,7 @@
 package jkind.slicing;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -17,17 +15,17 @@ public class LustreSlicer extends AstMapVisitor {
 		return new LustreSlicer(getPropertyDependencies(node, depMap)).visit(node);
 	}
 
-	private static Set<String> getPropertyDependencies(Node node, DependencyMap depMap) {
-		Set<String> keep = new HashSet<>();
+	private static DependencySet getPropertyDependencies(Node node, DependencyMap depMap) {
+		DependencySet keep = new DependencySet();
 		for (String prop : node.properties) {
-			keep.addAll(depMap.get(prop));
+			keep.addAll(depMap.get(Dependency.variable(prop)));
 		}
 		return keep;
 	}
 
-	private final Set<String> keep;
+	private final DependencySet keep;
 
-	private LustreSlicer(Set<String> keep) {
+	private LustreSlicer(DependencySet keep) {
 		this.keep = keep;
 	}
 
@@ -35,7 +33,7 @@ public class LustreSlicer extends AstMapVisitor {
 	protected List<VarDecl> visitVarDecls(List<VarDecl> decls) {
 		List<VarDecl> sliced = new ArrayList<>();
 		for (VarDecl decl : decls) {
-			if (keep.contains(decl.id)) {
+			if (keep.contains(Dependency.variable(decl.id))) {
 				sliced.add(decl);
 			}
 		}
@@ -57,17 +55,17 @@ public class LustreSlicer extends AstMapVisitor {
 	protected List<Expr> visitAssertions(List<Expr> assertions) {
 		List<Expr> sliced = new ArrayList<>();
 		for (Expr assertion : assertions) {
-			Set<String> deps = IdExtractorVisitor.getIds(assertion);
-			if (deps.size() == 0 || keep.contains(deps.iterator().next())) {
+			DependencySet deps = DependencyVisitor.get(assertion);
+			if (deps.isEmpty() || keep.contains(deps.iterator().next())) {
 				sliced.add(assertion);
 			}
 		}
 		return sliced;
 	}
 
-	private static boolean containsAny(Set<String> keep, List<IdExpr> lhs) {
+	private static boolean containsAny(DependencySet set, List<IdExpr> lhs) {
 		for (IdExpr idExpr : lhs) {
-			if (keep.contains(idExpr.id)) {
+			if (set.contains(Dependency.variable(idExpr.id))) {
 				return true;
 			}
 		}

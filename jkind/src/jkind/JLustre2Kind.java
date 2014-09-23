@@ -30,7 +30,7 @@ public class JLustre2Kind {
 			Node main = program.getMainNode();
 			main = RemoveEnumTypes.node(main);
 			
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
+			DependencyMap dependencyMap = new DependencyMap(main, main.properties, program.functions);
 			main = LustreSlicer.slice(main, dependencyMap);
 
 			String result = main.toString();

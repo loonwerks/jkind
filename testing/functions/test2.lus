@@ -1,0 +1,14 @@
+-- This file has one property which is true. It demonstrates the need
+-- to include functions in dependency analysis.
+
+function f(a : int) returns (b : bool);
+
+node main(x, y : int) returns (ok : bool);
+let
+  assert f(x) = f(0);
+  assert f(y) = f(0);
+  assert f(x);
+
+  ok = f(y);
+  --%PROPERTY ok;
+tel;

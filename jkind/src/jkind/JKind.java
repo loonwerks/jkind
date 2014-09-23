@@ -33,7 +33,7 @@ public class JKind {
 
 			program = Translate.translate(program);
 			Node main = program.getMainNode();
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
+			DependencyMap dependencyMap = new DependencyMap(main, main.properties, program.functions);
 			main = LustreSlicer.slice(main, dependencyMap);
 			Specification spec = new Specification(filename, program.functions, main, dependencyMap);
 			new Director(settings, spec).run();

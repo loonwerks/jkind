@@ -1,7 +1,5 @@
 package jkind.processes;
 
-import java.util.Set;
-
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.lustre.VarDecl;
@@ -10,6 +8,8 @@ import jkind.processes.messages.Message;
 import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Symbol;
+import jkind.slicing.Dependency;
+import jkind.slicing.DependencySet;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -55,7 +55,7 @@ public class SmoothProcess extends Process {
 
 	private void smooth(String property, int k) {
 		debug("Smoothing: " + property);
-		Set<String> relevant = spec.dependencyMap.get(property);
+		DependencySet relevant = spec.dependencyMap.get(Dependency.variable(property));
 
 		solver.push();
 
@@ -78,9 +78,9 @@ public class SmoothProcess extends Process {
 		sendCounterexample(property, k, smoothModel);
 	}
 
-	private void assertDeltaCost(int k, Set<String> relevant) {
+	private void assertDeltaCost(int k, DependencySet relevant) {
 		for (VarDecl input : spec.node.inputs) {
-			if (relevant.contains(input.id)) {
+			if (relevant.contains(Dependency.variable(input.id))) {
 				Symbol prev = new StreamIndex(input.id, k - 1).getEncoded();
 				Symbol curr = new StreamIndex(input.id, k).getEncoded();
 				solver.weightedAssert(new Cons("=", prev, curr), 1);

@@ -22,6 +22,9 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.slicing.Dependency;
+import jkind.slicing.DependencySet;
+import jkind.slicing.DependencyType;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
@@ -53,7 +56,8 @@ public class ModelGeneralizer {
 			equations.put(eq.lhs.get(0).id, eq.expr);
 		}
 
-		dependsOn = new ReverseDependencyMap(spec.node, spec.dependencyMap.get(property));
+		DependencySet deps = spec.dependencyMap.get(Dependency.variable(property));
+		dependsOn = new ReverseDependencyMap(spec.node, deps);
 
 		intIntervalGeneralizer = new IntIntervalGeneralizer(this);
 		realIntervalGeneralizer = new RealIntervalGeneralizer(this);
@@ -178,9 +182,11 @@ public class ModelGeneralizer {
 	}
 
 	private void clearCacheFrom(StreamIndex si) {
-		for (String recompute : dependsOn.get(si.getStream())) {
-			for (int i = si.getIndex(); i < k; i++) {
-				cache.remove(new StreamIndex(recompute, i));
+		for (Dependency recompute : dependsOn.get(si.getStream())) {
+			if (recompute.type == DependencyType.VARIABLE) {
+				for (int i = si.getIndex(); i < k; i++) {
+					cache.remove(new StreamIndex(recompute.name, i));
+				}
 			}
 		}
 	}
