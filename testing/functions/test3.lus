@@ -1,0 +1,16 @@
+-- This file has one property which is false. It demonstrates the need
+-- to include assertions when slicing counterexamples. The
+-- counterexample should define f on the domain [0, 10].
+
+function f(a : int) returns (b : bool);
+
+node main() returns (cex : bool);
+var
+  ctr : int;
+let
+  ctr = 0 -> 1 + pre ctr;
+  assert f(ctr);
+
+  ok = ctr < 10;
+  --%PROPERTY ok;
+tel;

@@ -49,8 +49,9 @@ public class ModelSlicer implements ExprVisitor<Value> {
 
 	private Model original;
 	private Map<String, Expr> equations = new HashMap<>();
+	private List<Expr> assertions;
 	private int k;
-	private SimpleModel sliced;
+	private SimpleModel sliced = new SimpleModel();
 	private Set<StreamIndex> visited = new HashSet<>();
 
 	private ModelSlicer(Model original, Node node) {
@@ -58,13 +59,21 @@ public class ModelSlicer implements ExprVisitor<Value> {
 		for (Equation eq : node.equations) {
 			equations.put(eq.lhs.get(0).id, eq.expr);
 		}
-
-		this.sliced = new SimpleModel();
+		this.assertions = node.assertions;
 	}
 
 	public Model slice(String property, int k) {
 		this.k = k - 1;
+
 		new IdExpr(property).accept(this);
+
+		for (int i = 0; i < k; i++) {
+			this.k = i;
+			for (Expr assertion : assertions) {
+				assertion.accept(this);
+			}
+		}
+
 		return sliced;
 	}
 
