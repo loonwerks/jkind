@@ -43,23 +43,27 @@ import jkind.util.StreamIndex;
 import jkind.util.Util;
 
 public class ModelSlicer implements ExprVisitor<Value> {
-	public static Model slice(Model original, Node node, String property, int k) {
-		return new ModelSlicer(original, node).slice(property, k);
+	public static Model slice(Model original, Node node, DependencyMap dependencyMap,
+			String property, int k) {
+		return new ModelSlicer(original, node, dependencyMap).slice(property, k);
 	}
 
-	private Model original;
-	private Map<String, Expr> equations = new HashMap<>();
-	private List<Expr> assertions;
-	private int k;
-	private SimpleModel sliced = new SimpleModel();
-	private Set<StreamIndex> visited = new HashSet<>();
+	private final Model original;
+	private final Map<String, Expr> equations = new HashMap<>();
+	private final List<Expr> assertions;
+	private final DependencyMap dependencyMap;
 
-	private ModelSlicer(Model original, Node node) {
+	private int k;
+	private final SimpleModel sliced = new SimpleModel();
+	private final Set<StreamIndex> visited = new HashSet<>();
+
+	private ModelSlicer(Model original, Node node, DependencyMap dependencyMap) {
 		this.original = original;
 		for (Equation eq : node.equations) {
 			equations.put(eq.lhs.get(0).id, eq.expr);
 		}
 		this.assertions = node.assertions;
+		this.dependencyMap = dependencyMap;
 	}
 
 	public Model slice(String property, int k) {
@@ -70,11 +74,20 @@ public class ModelSlicer implements ExprVisitor<Value> {
 		for (int i = 0; i < k; i++) {
 			this.k = i;
 			for (Expr assertion : assertions) {
-				assertion.accept(this);
+				if (assertionRelevant(assertion, property)) {
+					assertion.accept(this);
+				}
 			}
 		}
 
 		return sliced;
+	}
+
+	private boolean assertionRelevant(Expr assertion, String property) {
+		DependencySet propertyDependencies = dependencyMap.get(Dependency.variable(property));
+		DependencySet assertionDependencies = DependencyVisitor.get(assertion);
+		return !assertionDependencies.isEmpty()
+				&& propertyDependencies.contains(assertionDependencies.iterator().next());
 	}
 
 	@Override

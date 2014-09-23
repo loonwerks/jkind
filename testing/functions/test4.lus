@@ -1,0 +1,24 @@
+-- This file has two properties which are false. It demonstrates the
+-- need to include only some assertions when slicing counterexamples.
+-- The counterexample cex1 should only contain f and the
+-- counterexample cex2 shoudl only contain g.
+
+function f(in : int) returns (out : bool);
+function g(in : int) returns (out : bool);
+
+node main() returns (cex1, cex2 : bool);
+var
+  ctr1, ctr2 : int;
+let
+  ctr1 = 0 -> 1 + pre ctr1;
+  assert f(ctr1);
+
+  ctr2 = 0 -> 1 + pre ctr2;
+  assert g(ctr2);
+
+  cex1 = ctr1 < 3;
+  --%PROPERTY cex1;
+
+  cex2 = ctr2 < 3;
+  --%PROPERTY cex2;
+tel;

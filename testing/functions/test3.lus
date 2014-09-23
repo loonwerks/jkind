@@ -2,7 +2,7 @@
 -- to include assertions when slicing counterexamples. The
 -- counterexample should define f on the domain [0, 10].
 
-function f(a : int) returns (b : bool);
+function f(in : int) returns (out : bool);
 
 node main() returns (cex : bool);
 var
@@ -11,6 +11,6 @@ let
   ctr = 0 -> 1 + pre ctr;
   assert f(ctr);
 
-  ok = ctr < 10;
-  --%PROPERTY ok;
+  cex = ctr < 10;
+  --%PROPERTY cex;
 tel;

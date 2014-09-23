@@ -1,7 +1,7 @@
 -- This file has one property which is true. It demonstrates the need
 -- to include functions in dependency analysis.
 
-function f(a : int) returns (b : bool);
+function f(in : int) returns (out : bool);
 
 node main(x, y : int) returns (ok : bool);
 let
