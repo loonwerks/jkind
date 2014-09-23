@@ -20,14 +20,14 @@ public class Output {
 		output(Level.ERROR, loc, text);
 	}
 
-	public static void fatal(String text) {
+	public static void fatal(int exitCode, String text) {
 		error(text);
-		System.exit(-1);
+		System.exit(exitCode);
 	}
 
-	public static void fatal(Location loc, String text) {
+	public static void fatal(int exitCode, Location loc, String text) {
 		error(loc, text);
-		System.exit(-1);
+		System.exit(exitCode);
 	}
 
 	public static void output(Level level, String text) {

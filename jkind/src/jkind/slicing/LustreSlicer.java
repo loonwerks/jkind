@@ -56,7 +56,7 @@ public class LustreSlicer extends AstMapVisitor {
 		List<Expr> sliced = new ArrayList<>();
 		for (Expr assertion : assertions) {
 			DependencySet deps = DependencyVisitor.get(assertion);
-			if (deps.isEmpty() || keep.contains(deps.iterator().next())) {
+			if (deps.isEmpty() || keep.contains(deps.first())) {
 				sliced.add(assertion);
 			}
 		}

@@ -1,9 +1,7 @@
 package jkind.interval;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import jkind.lustre.Equation;
@@ -14,21 +12,20 @@ import jkind.slicing.DependencySet;
 import jkind.slicing.DependencyVisitor;
 
 public class ReverseDependencyMap {
-	private Map<Dependency, Set<Dependency>> map;
+	private Map<Dependency, DependencySet> map = new HashMap<>();
 
-	public ReverseDependencyMap(Node node, DependencySet deps) {
-		this.map = new HashMap<>();
+	public ReverseDependencyMap(Node node, DependencySet roots) {
 		computeOneStepDependencies(node);
-		closeDependencies(deps);
+		closeDependencies(roots);
 	}
 
 	private void computeOneStepDependencies(Node node) {
 		for (Equation eq : node.equations) {
 			DependencySet deps = DependencyVisitor.get(eq.expr);
 			for (Dependency dep : deps) {
-				Set<Dependency> set = map.get(dep);
+				DependencySet set = map.get(dep);
 				if (set == null) {
-					set = new HashSet<>();
+					set = new DependencySet();
 					map.put(dep, set);
 				}
 				for (IdExpr idExpr : eq.lhs) {
@@ -38,19 +35,20 @@ public class ReverseDependencyMap {
 		}
 	}
 
-	private void closeDependencies(DependencySet deps) {
-		Map<Dependency, Set<Dependency>> transMap = new HashMap<>();
-		for (Dependency root : deps) {
+
+	private void closeDependencies(DependencySet roots) {
+		Map<Dependency, DependencySet> transMap = new HashMap<>();
+		for (Dependency root : roots) {
 			transMap.put(root, computeClosure(root));
 		}
 		map = transMap;
 	}
 
-	private Set<Dependency> computeClosure(Dependency dep) {
-		Set<Dependency> closure = new HashSet<>();
-		closure.add(dep);
+	private DependencySet computeClosure(Dependency root) {
+		DependencySet closure = new DependencySet();
+		closure.add(root);
 		Stack<Dependency> todo = new Stack<>();
-		todo.push(dep);
+		todo.push(root);
 
 		while (!todo.empty()) {
 			Dependency curr = todo.pop();
@@ -66,7 +64,7 @@ public class ReverseDependencyMap {
 		return closure;
 	}
 
-	public Set<Dependency> get(String id) {
-		return map.get(id);
+	public DependencySet get(Dependency dep) {
+		return map.get(dep);
 	}
 }

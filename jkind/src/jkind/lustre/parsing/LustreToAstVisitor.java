@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.ExitCodes;
 import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -448,6 +449,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private static void fatal(ParserRuleContext ctx, String text) {
-		Output.fatal(loc(ctx), text);
+		Output.error(loc(ctx), text);
+		System.exit(ExitCodes.PARSE_ERROR);
 	}
 }

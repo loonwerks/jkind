@@ -63,17 +63,17 @@ public class Main {
 		default:
 			Output.error("unknown entry point: " + entryPoint);
 			Output.println(availableEntryPoints);
-			System.exit(-1);
+			System.exit(ExitCodes.UNKNOWN_ENTRY_POINT);
 		}
 	}
 
 	public static Program parseLustre(String filename) throws IOException, RecognitionException {
 		File file = new File(filename);
 		if (!file.exists() || !file.isFile()) {
-			Output.fatal("cannot find file " + filename);
+			Output.fatal(ExitCodes.FILE_NOT_FOUND, "cannot find file " + filename);
 		}
 		if (!file.canRead()) {
-			Output.fatal("cannot read file " + filename);
+			Output.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
 		}
 		
 		CharStream stream = new ANTLRFileStream(filename);
@@ -99,7 +99,7 @@ public class Main {
 		}
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			System.exit(-1);
+			System.exit(ExitCodes.PARSE_ERROR);
 		}
 
 		return new LustreToAstVisitor().program(program);

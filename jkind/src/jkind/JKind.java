@@ -1,6 +1,5 @@
 package jkind;
 
-import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -16,31 +15,33 @@ public class JKind {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			String filename = settings.filename;
 			Program program = Main.parseLustre(filename);
-			
-			if (!program.functions.isEmpty()) {
-				if (settings.solver != SolverOption.YICES) {
-					Output.error("uninterpreted functions not supported with " + settings.solver);
-					System.exit(-1);
-				} 
-				if (settings.intervalGeneralization) {
-					Output.error("uninterpreted functions not supported with interval generalization");
-					System.exit(-1);
-				}
-			}
-			
-			Level nonlinear = settings.solver == SolverOption.Z3 ? Level.WARNING : Level.ERROR;
-			StaticAnalyzer.check(program, nonlinear);
+
+			checkFunctionsCompatibility(program, settings);
+			StaticAnalyzer.check(program, settings.solver);
 
 			program = Translate.translate(program);
 			Node main = program.getMainNode();
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties, program.functions);
-			main = LustreSlicer.slice(main, dependencyMap);
-			Specification spec = new Specification(filename, program.functions, main, dependencyMap);
+			DependencyMap depMap = new DependencyMap(main, main.properties, program.functions);
+			main = LustreSlicer.slice(main, depMap);
+			Specification spec = new Specification(filename, program.functions, main, depMap);
 			new Director(settings, spec).run();
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		}
+	}
+
+	private static void checkFunctionsCompatibility(Program program, JKindSettings settings) {
+		if (!program.functions.isEmpty()) {
+			if (settings.solver != SolverOption.YICES) {
+				Output.error("uninterpreted functions not supported with " + settings.solver);
+				System.exit(ExitCodes.INVALID_OPTIONS);
+			}
+			if (settings.intervalGeneralization) {
+				Output.error("uninterpreted functions not supported with interval generalization");
+				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
+			}
 		}
 	}
 }

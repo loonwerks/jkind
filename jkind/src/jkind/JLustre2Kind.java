@@ -2,7 +2,6 @@ package jkind;
 
 import java.io.File;
 
-import jkind.analysis.Level;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -24,14 +23,14 @@ public class JLustre2Kind {
 			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
 
 			Program program = Main.parseLustre(filename);
-			StaticAnalyzer.check(program, Level.WARNING);
-			
+			StaticAnalyzer.check(program, SolverOption.Z3);
+
 			program = Translate.translate(program);
 			Node main = program.getMainNode();
 			main = RemoveEnumTypes.node(main);
-			
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties, program.functions);
-			main = LustreSlicer.slice(main, dependencyMap);
+
+			DependencyMap depMap = new DependencyMap(main, main.properties, program.functions);
+			main = LustreSlicer.slice(main, depMap);
 
 			String result = main.toString();
 			if (settings.encode) {
@@ -39,9 +38,10 @@ public class JLustre2Kind {
 				// We want to escape array brackets, but not subrange brackets
 				result = result.replaceAll("\\[", "~lbrack~");
 				result = result.replaceAll("\\]", "~rbrack~");
-				result = result.replaceAll("subrange ~lbrack~(-?[0-9]+, -?[0-9]+)~rbrack~", "subrange [$1]");
+				result = result.replaceAll("subrange ~lbrack~(-?[0-9]+, -?[0-9]+)~rbrack~",
+						"subrange [$1]");
 			}
-			
+
 			if (settings.stdout) {
 				System.out.println(result);
 			} else {
@@ -50,7 +50,7 @@ public class JLustre2Kind {
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 }

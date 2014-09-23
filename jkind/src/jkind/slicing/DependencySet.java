@@ -31,4 +31,8 @@ public class DependencySet implements Iterable<Dependency> {
 	public Iterator<Dependency> iterator() {
 		return set.iterator();
 	}
+
+	public Dependency first() {
+		return iterator().next();
+	}
 }

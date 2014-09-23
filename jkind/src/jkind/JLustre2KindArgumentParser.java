@@ -26,7 +26,7 @@ public class JLustre2KindArgumentParser {
 		try {
 			return getSettings(parser.parse(getOptions(), args));
 		} catch (Throwable t) {
-			Output.fatal("reading command line arguments: " + t.getMessage());
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "reading command line arguments: " + t.getMessage());
 			return null;
 		}
 	}
@@ -59,7 +59,7 @@ public class JLustre2KindArgumentParser {
 		String[] input = line.getArgs();
 		if (input.length != 1) {
 			printHelp();
-			System.exit(-1);
+			System.exit(ExitCodes.INVALID_OPTIONS);
 		}
 		settings.filename = input[0];
 		

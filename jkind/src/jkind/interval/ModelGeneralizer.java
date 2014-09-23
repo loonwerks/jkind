@@ -182,7 +182,7 @@ public class ModelGeneralizer {
 	}
 
 	private void clearCacheFrom(StreamIndex si) {
-		for (Dependency recompute : dependsOn.get(si.getStream())) {
+		for (Dependency recompute : dependsOn.get(Dependency.variable(si.getStream()))) {
 			if (recompute.type == DependencyType.VARIABLE) {
 				for (int i = si.getIndex(); i < k; i++) {
 					cache.remove(new StreamIndex(recompute.name, i));
@@ -229,7 +229,7 @@ public class ModelGeneralizer {
 			result = getFromBasisModel(si);
 			// Due to checking all assertions, we may hit variables that our
 			// property doesn't depend on. We detect and ignore these variables.
-			if (si.getIndex() >= 0 && dependsOn.get(si.getStream()) != null) {
+			if (si.getIndex() >= 0 && dependsOn.get(Dependency.variable(si.getStream())) != null) {
 				toGeneralize.add(si);
 			}
 		}

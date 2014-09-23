@@ -53,7 +53,8 @@ public class JKindArgumentParser {
 			checkSettings(settings);
 			return settings;
 		} catch (Throwable t) {
-			Output.fatal("reading command line arguments: " + t.getMessage());
+			Output.fatal(ExitCodes.INVALID_OPTIONS,
+					"reading command line arguments: " + t.getMessage());
 			return null;
 		}
 	}
@@ -140,7 +141,7 @@ public class JKindArgumentParser {
 				settings.solver = SolverOption.YICES2;
 			} else {
 				Output.error("unknown solver: " + solver);
-				System.exit(-1);
+				System.exit(ExitCodes.INVALID_OPTIONS);
 			}
 		}
 
@@ -156,7 +157,7 @@ public class JKindArgumentParser {
 		String[] input = line.getArgs();
 		if (input.length != 1) {
 			printHelp();
-			System.exit(-1);
+			System.exit(ExitCodes.INVALID_OPTIONS);
 		}
 		settings.filename = input[0];
 
@@ -165,17 +166,20 @@ public class JKindArgumentParser {
 
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
 		if (line.hasOption(opt1) && line.hasOption(opt2)) {
-			Output.fatal("cannot use option -" + opt1 + " with option -" + opt2);
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "cannot use option -" + opt1 + " with option -"
+					+ opt2);
 		}
 	}
 
 	private static void checkSettings(JKindSettings settings) {
 		if (settings.solver != SolverOption.YICES) {
 			if (settings.smoothCounterexamples) {
-				Output.fatal("smoothing not supported with " + settings.solver);
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
+						+ settings.solver);
 			}
 			if (settings.reduceInvariants) {
-				Output.fatal("invariant reduction not supported with " + settings.solver);
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "invariant reduction not supported with "
+						+ settings.solver);
 			}
 		}
 	}

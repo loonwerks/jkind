@@ -14,7 +14,7 @@ import jkind.util.Util;
 public class Benchmark {
 	private static final File LOG = new File("results.log");
 
-	private static int N = 3;
+	private static int N = 1;
 
 	public static void main(String args[]) {
 		try {
@@ -34,7 +34,7 @@ public class Benchmark {
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 
