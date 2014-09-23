@@ -91,7 +91,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 				writeSection(category, signals, length);
 			}
 
-			if (!cex.getFunctionTables().isEmpty()) {
+			if (cex.hasNonEmptyFunction()) {
 				row++;
 				sheet.addCell(new Label(0, row, "Functions", boldFormat));
 				row++;

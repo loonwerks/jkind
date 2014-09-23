@@ -122,6 +122,10 @@ public class XmlWriter extends Writer {
 	}
 
 	private void writeFunction(String fn, FunctionTable table) {
+		if (table.isEmpty()) {
+			return;
+		}
+		
 		out.println("      <Function name=\"" + fn + "\">");
 		for (VarDecl input : table.getInputs()) {
 			out.println("        <Input name=\"" + input.id + "\" type=\"" + input.type + "\"/>");

@@ -234,7 +234,7 @@ public final class Counterexample {
 			appendSection(text, category, signals);
 		}
 
-		if (!functionTables.isEmpty()) {
+		if (hasNonEmptyFunction()) {
 			text.append(NEWLINE);
 			text.append("FUNCTIONS");
 			for (String fn : functionTables.keySet()) {
@@ -247,6 +247,15 @@ public final class Counterexample {
 		}
 
 		return text.toString();
+	}
+
+	public boolean hasNonEmptyFunction() {
+		for (FunctionTable table : functionTables.values()) {
+			if (!table.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private List<Signal<Value>> getCategorySignals(Layout layout, String category) {
