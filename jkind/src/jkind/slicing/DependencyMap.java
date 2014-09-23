@@ -16,10 +16,9 @@ import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
 
 public class DependencyMap {
-	private Map<String, Set<String>> map;
+	private Map<Dependency, DependencySet> map = new HashMap<>();
 
 	public DependencyMap(Node node, List<String> roots) {
-		this.map = new HashMap<>();
 		computeOneStepDependencies(node);
 		analyzeAssertions(node.assertions);
 		closeDependencies(roots);
@@ -27,13 +26,13 @@ public class DependencyMap {
 
 	private void computeOneStepDependencies(Node node) {
 		for (VarDecl input : node.inputs) {
-			map.put(input.id, new HashSet<String>());
+			map.put(new Dependency(input.id), new DependencySet());
 		}
-
+		
 		for (Equation eq : node.equations) {
-			Set<String> deps = IdExtractorVisitor.getIds(eq.expr);
+			DependencySet deps = DependencyVisitor.get(eq.expr);
 			for (IdExpr idExpr : eq.lhs) {
-				map.put(idExpr.id, deps);
+				map.put(new Dependency(idExpr.id), deps);
 			}
 		}
 	}
@@ -46,52 +45,51 @@ public class DependencyMap {
 	 */
 	private void analyzeAssertions(List<Expr> assertions) {
 		for (Expr assertion : assertions) {
-			Set<String> ids = IdExtractorVisitor.getIds(assertion);
+			DependencySet assertionDependencies = DependencyVisitor.get(assertion);
 
 			// Everything mentioned in an assertion creates bidirectional
 			// dependencies for all its dependencies
-			Queue<String> todo = new ArrayDeque<>(ids);
-			Set<String> seen = new HashSet<>();
+			Queue<Dependency> todo = new ArrayDeque<>(assertionDependencies.getSet());
+			Set<Dependency> seen = new HashSet<>();
 			while (!todo.isEmpty()) {
-				String id = todo.remove();
-				if (seen.contains(id)) {
+				Dependency curr = todo.remove();
+				if (!seen.add(curr)) {
 					continue;
-				} else {
-					seen.add(id);
 				}
 
-				Set<String> deps = map.get(id);
-				for (String dep : deps) {
-					map.get(dep).add(id);
+				DependencySet deps = map.get(curr);
+				for (Dependency dep : deps) {
+					map.get(dep).add(curr);
 				}
-				todo.addAll(deps);
+				todo.addAll(deps.getSet());
 			}
 
 			// All variables in an assertion depend on all other variables in it
-			for (String id : ids) {
-				map.get(id).addAll(ids);
+			for (Dependency dep : assertionDependencies) {
+				map.get(dep).addAll(assertionDependencies);
 			}
 		}
 	}
 
 	private void closeDependencies(List<String> roots) {
-		Map<String, Set<String>> transMap = new HashMap<>();
-		for (String root : roots) {
-			transMap.put(root, computeClosure(root));
+		Map<Dependency, DependencySet> transMap = new HashMap<>();
+		for (String variableRoot : roots) {
+			Dependency dep = new Dependency(variableRoot);
+			transMap.put(dep, computeClosure(dep));
 		}
 		map = transMap;
 	}
 
-	private Set<String> computeClosure(String root) {
-		Set<String> closure = new HashSet<>();
-		closure.add(root);
-		Stack<String> todo = new Stack<>();
-		todo.push(root);
+	private DependencySet computeClosure(Dependency dep) {
+		DependencySet closure = new DependencySet();
+		closure.add(dep);
+		Stack<Dependency> todo = new Stack<>();
+		todo.push(dep);
 
 		while (!todo.empty()) {
-			String curr = todo.pop();
+			Dependency curr = todo.pop();
 			if (map.containsKey(curr)) {
-				for (String next : map.get(curr)) {
+				for (Dependency next : map.get(curr)) {
 					if (!closure.contains(next)) {
 						closure.add(next);
 						todo.push(next);
@@ -102,7 +100,11 @@ public class DependencyMap {
 		return closure;
 	}
 
-	public Set<String> get(String id) {
-		return map.get(id);
+	public DependencySet get(Dependency dependency) {
+		return map.get(dependency);
+	}
+
+	public DependencySet get(String var) {
+		return get(new Dependency(var));
 	}
 }

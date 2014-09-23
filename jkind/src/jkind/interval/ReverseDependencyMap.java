@@ -1,32 +1,31 @@
 package jkind.interval;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
-import jkind.slicing.IdExtractorVisitor;
+import jkind.slicing.Dependency;
+import jkind.slicing.DependencySet;
+import jkind.slicing.DependencyVisitor;
 
 public class ReverseDependencyMap {
-	private Map<String, Set<String>> map;
+	private Map<Dependency, DependencySet> map = new HashMap<>();
 
-	public ReverseDependencyMap(Node node, Set<String> roots) {
-		this.map = new HashMap<>();
+	public ReverseDependencyMap(Node node, DependencySet roots) {
 		computeOneStepDependencies(node);
 		closeDependencies(roots);
 	}
 
 	private void computeOneStepDependencies(Node node) {
 		for (Equation eq : node.equations) {
-			Set<String> deps = IdExtractorVisitor.getIds(eq.expr);
-			for (String dep : deps) {
-				Set<String> set = map.get(dep);
+			DependencySet deps = DependencyVisitor.get(eq.expr);
+			for (Dependency dep : deps) {
+				DependencySet set = map.get(dep);
 				if (set == null) {
-					set = new HashSet<>();
+					set = new DependencySet();
 					map.put(dep, set);
 				}
 				for (IdExpr idExpr : eq.lhs) {
@@ -36,24 +35,24 @@ public class ReverseDependencyMap {
 		}
 	}
 
-	private void closeDependencies(Set<String> roots) {
-		Map<String, Set<String>> transMap = new HashMap<>();
-		for (String root : roots) {
+	private void closeDependencies(DependencySet roots) {
+		Map<Dependency, DependencySet> transMap = new HashMap<>();
+		for (Dependency root : roots) {
 			transMap.put(root, computeClosure(root));
 		}
 		map = transMap;
 	}
 
-	private Set<String> computeClosure(String root) {
-		Set<String> closure = new HashSet<>();
+	private DependencySet computeClosure(Dependency root) {
+		DependencySet closure = new DependencySet();
 		closure.add(root);
-		Stack<String> todo = new Stack<>();
+		Stack<Dependency> todo = new Stack<>();
 		todo.push(root);
 
 		while (!todo.empty()) {
-			String curr = todo.pop();
+			Dependency curr = todo.pop();
 			if (map.containsKey(curr)) {
-				for (String next : map.get(curr)) {
+				for (Dependency next : map.get(curr)) {
 					if (!closure.contains(next)) {
 						closure.add(next);
 						todo.push(next);
@@ -64,7 +63,7 @@ public class ReverseDependencyMap {
 		return closure;
 	}
 
-	public Set<String> get(String id) {
+	public DependencySet get(String id) {
 		return map.get(id);
 	}
 }

@@ -1,20 +1,17 @@
 package jkind.slicing;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.visitors.ExprIterVisitor;
 
-public class IdExtractorVisitor extends ExprIterVisitor {
-	public static Set<String> getIds(Expr expr) {
-		IdExtractorVisitor visitor = new IdExtractorVisitor();
+public class DependencyVisitor extends ExprIterVisitor {
+	public static DependencySet get(Expr expr) {
+		DependencyVisitor visitor = new DependencyVisitor();
 		expr.accept(visitor);
 		return visitor.set;
 	}
 	
-	private Set<String> set = new HashSet<>();
+	private DependencySet set = new DependencySet();
 	
 	@Override
 	public Void visit(IdExpr e) {

@@ -22,6 +22,7 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.slicing.Dependency;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
@@ -178,9 +179,9 @@ public class ModelGeneralizer {
 	}
 
 	private void clearCacheFrom(StreamIndex si) {
-		for (String recompute : dependsOn.get(si.getStream())) {
+		for (Dependency recompute : dependsOn.get(si.getStream())) {
 			for (int i = si.getIndex(); i < k; i++) {
-				cache.remove(new StreamIndex(recompute, i));
+				cache.remove(new StreamIndex(recompute.name, i));
 			}
 		}
 	}
