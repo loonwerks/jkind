@@ -1,4 +1,4 @@
-package jkind.api.ui;
+package jkind.api.ui.results;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,7 +7,7 @@ import jkind.api.results.AnalysisResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.ResultsUtil;
 import jkind.api.results.Status;
-import jkind.api.ui.AnalysisResultColumnViewer.Column;
+import jkind.api.ui.results.AnalysisResultColumnViewer.Column;
 import jkind.results.UnknownProperty;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;

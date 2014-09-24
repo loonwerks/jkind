@@ -86,6 +86,19 @@ public final class Counterexample {
 		Collections.sort(result, new SignalNaturalOrdering());
 		return result;
 	}
+	
+	/**
+	 * All signals in the counterexample belonging to the given category in the given layout
+	 */
+	public List<Signal<Value>> getCategorySignals(Layout layout, String category) {
+		List<Signal<Value>> result = new ArrayList<>();
+		for (Signal<Value> signal : getSignals()) {
+			if (category.equals(layout.getCategory(signal.getName()))) {
+				result.add(signal);
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * Get a specific signal from the counterexample
@@ -256,16 +269,6 @@ public final class Counterexample {
 			}
 		}
 		return false;
-	}
-
-	private List<Signal<Value>> getCategorySignals(Layout layout, String category) {
-		List<Signal<Value>> result = new ArrayList<>();
-		for (Signal<Value> signal : getSignals()) {
-			if (category.equals(layout.getCategory(signal.getName()))) {
-				result.add(signal);
-			}
-		}
-		return result;
 	}
 
 	private void appendSection(StringBuilder text, String category, List<Signal<Value>> signals) {

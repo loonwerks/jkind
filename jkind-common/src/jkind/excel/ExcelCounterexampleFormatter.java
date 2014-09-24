@@ -3,7 +3,6 @@ package jkind.excel;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -87,7 +86,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			int length = cex.getLength();
 			writeStepsHeader(length);
 			for (String category : layout.getCategories()) {
-				List<Signal<Value>> signals = getCategorySignals(cex, category);
+				List<Signal<Value>> signals = cex.getCategorySignals(layout, category);
 				writeSection(category, signals, length);
 			}
 
@@ -112,16 +111,6 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			sheet.addCell(new Number(col, row, col - 1));
 		}
 		row++;
-	}
-
-	private List<Signal<Value>> getCategorySignals(Counterexample cex, String category) {
-		List<Signal<Value>> signals = new ArrayList<>();
-		for (Signal<Value> signal : cex.getSignals()) {
-			if (category.equals(layout.getCategory(signal.getName()))) {
-				signals.add(signal);
-			}
-		}
-		return signals;
 	}
 
 	private void writeSection(String category, List<Signal<Value>> signals, int k)
