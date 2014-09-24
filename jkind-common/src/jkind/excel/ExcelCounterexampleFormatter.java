@@ -181,6 +181,10 @@ public class ExcelCounterexampleFormatter implements Closeable {
 	}
 
 	private void writeFunction(String name, FunctionTable table) throws WriteException {
+		if (table.isEmpty()) {
+			return;
+		}
+		
 		int col = 0;
 		sheet.addCell(new Label(col++, row, name, defaultFormat));
 		for (String input : table.getInputNames()) {
