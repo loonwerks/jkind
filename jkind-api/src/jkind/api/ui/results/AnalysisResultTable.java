@@ -1,4 +1,4 @@
-package jkind.api.ui;
+package jkind.api.ui.results;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnViewer;

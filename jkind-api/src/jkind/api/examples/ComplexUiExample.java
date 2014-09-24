@@ -13,7 +13,7 @@ import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.Renaming;
 import jkind.api.results.Status;
-import jkind.api.ui.AnalysisResultTree;
+import jkind.api.ui.results.AnalysisResultTree;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;

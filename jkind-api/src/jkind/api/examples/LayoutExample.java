@@ -26,12 +26,18 @@ public class LayoutExample {
 		NullProgressMonitor monitor = new NullProgressMonitor();
 		new JKindApi().execute(file, result, monitor);
 
-		/*
-		 * For demonstration purposes we group signals based on the first letter
-		 * of their name. Note that variables with leading underscores will be
-		 * dropped since getCategory() on them will return a value that does not
-		 * appear in the results of getCategories().
-		 */
+		File xlsFile = new File(args[0] + ".xls");
+		result.toExcel(xlsFile, getLayout());
+		System.out.println("Details written to " + xlsFile);
+	}
+
+	/*
+	 * For demonstration purposes we group signals based on the first letter of
+	 * their name. Note that variables with leading underscores will be dropped
+	 * since getCategory() on them will return a value that does not appear in
+	 * the results of getCategories().
+	 */
+	public static Layout getLayout() {
 		Layout layout = new Layout() {
 			@Override
 			public String getCategory(String signal) {
@@ -47,9 +53,6 @@ public class LayoutExample {
 				return categories;
 			}
 		};
-
-		File xlsFile = new File(args[0] + ".xls");
-		result.toExcel(xlsFile, layout);
-		System.out.println("Details written to " + xlsFile);
+		return layout;
 	}
 }

@@ -14,7 +14,7 @@ import jkind.api.KindApi;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.Status;
-import jkind.api.ui.AnalysisResultTable;
+import jkind.api.ui.results.AnalysisResultTable;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
 

@@ -15,11 +15,10 @@ import jkind.lustre.values.Value;
  */
 public final class Signal<T extends Value> implements Comparable<Signal<T>> {
 	private final String name;
-	private final Map<Integer, T> values;
+	private final Map<Integer, T> values = new HashMap<>();
 
 	public Signal(String name) {
 		this.name = name;
-		this.values = new HashMap<>();
 	}
 
 	/**
@@ -67,6 +66,12 @@ public final class Signal<T extends Value> implements Comparable<Signal<T>> {
 			}
 		}
 		return castSignal;
+	}
+	
+	public Signal<T> rename(String newName) {
+		Signal<T> copy = new Signal<>(newName);
+		copy.values.putAll(values);
+		return copy;
 	}
 
 	@Override

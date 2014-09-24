@@ -1,4 +1,4 @@
-package jkind.api.ui;
+package jkind.api.ui.results;
 
 import jkind.api.results.AnalysisResult;
 
