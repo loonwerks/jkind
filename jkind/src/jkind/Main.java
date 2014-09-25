@@ -59,6 +59,10 @@ public class Main {
 		case "-benchmark":
 			Benchmark.main(subArgs);
 			break;
+			
+		case "-jlustre2ast":
+			JLustre2Ast.main(subArgs);
+			break;
 
 		default:
 			Output.error("unknown entry point: " + entryPoint);
