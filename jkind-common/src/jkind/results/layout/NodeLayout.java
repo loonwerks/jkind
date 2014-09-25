@@ -1,47 +1,38 @@
 package jkind.results.layout;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.util.Util;
 
 /**
- * A layout for the inputs, ouputs, and locals of a Lustre node
+ * A layout for the inputs, outputs, and locals of a Lustre node
  */
 public class NodeLayout implements Layout {
-	private final Map<String, String> map;
-	
 	private static final String INPUTS = "Inputs";
 	private static final String OUTPUTS = "Outputs";
 	private static final String LOCALS = "Locals";
 	private static final String INLINED = "Inlined";
 	private static final String[] CATEGORIES = { INPUTS, OUTPUTS, LOCALS, INLINED };
 
+	private final Set<String> inputs;
+	private final Set<String> outputs;
+	private final Set<String> locals;
+
 	public NodeLayout(Node node) {
 		if (node == null) {
 			throw new IllegalArgumentException("Unable to create layout for null node");
 		}
-		
-		this.map = new HashMap<>();
-		for (String input : Util.getIds(node.inputs)) {
-			map.put(input, INPUTS);
-		}
-		for (String input : Util.getIds(node.outputs)) {
-			map.put(input, OUTPUTS);
-		}
-		for (String local : Util.getIds(node.locals)) {
-			if (local.contains("~")) {
-				map.put(local, INLINED);
-			} else {
-				map.put(local, LOCALS);
-			}
-		}
+
+		this.inputs = getPrefix(Util.getIds(node.inputs));
+		this.outputs = getPrefix(Util.getIds(node.outputs));
+		this.locals = getPrefix(Util.getIds(node.locals));
 	}
-	
+
 	public NodeLayout(Program program) {
 		this(program.getMainNode());
 	}
@@ -53,6 +44,29 @@ public class NodeLayout implements Layout {
 
 	@Override
 	public String getCategory(String signal) {
-		return map.get(signal);
+		String prefix = getPrefix(signal);
+		if (prefix.contains("~")) {
+			return INLINED;
+		} else if (inputs.contains(prefix)) {
+			return INPUTS;
+		} else if (outputs.contains(prefix)) {
+			return OUTPUTS;
+		} else if (locals.contains(prefix)) {
+			return LOCALS;
+		} else {
+			return null;
+		}
+	}
+
+	private String getPrefix(String signal) {
+		return signal.split("\\.|\\[")[0];
+	}
+
+	private Set<String> getPrefix(List<String> signals) {
+		Set<String> prefixes = new HashSet<>();
+		for (String signal : signals) {
+			prefixes.add(getPrefix(signal));
+		}
+		return prefixes;
 	}
 }
