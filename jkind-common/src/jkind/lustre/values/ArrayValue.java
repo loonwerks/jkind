@@ -19,9 +19,24 @@ public class ArrayValue extends Value {
 	}
 
 	public ArrayValue update(int index, Value value) {
-		List<Value> copy = new ArrayList<>(elements);
-		copy.set(index, value);
-		return new ArrayValue(copy);
+		if (validIndex(index)) {
+			List<Value> copy = new ArrayList<>(elements);
+			copy.set(index, value);
+			return new ArrayValue(copy);
+		} else {
+			return this;
+		}
+	}
+
+	public Value get(int index) {
+		if (validIndex(index)) {
+			return elements.get(index);
+		}
+		return null;
+	}
+
+	private boolean validIndex(int index) {
+		return 0 <= index && index < elements.size();
 	}
 
 	@Override
