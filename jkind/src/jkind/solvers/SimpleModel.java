@@ -1,4 +1,4 @@
-package jkind.slicing;
+package jkind.solvers;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,7 +7,6 @@ import java.util.Set;
 
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
-import jkind.solvers.Model;
 import jkind.util.StreamIndex;
 
 public class SimpleModel extends Model {
