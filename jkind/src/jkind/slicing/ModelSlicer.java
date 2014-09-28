@@ -1,48 +1,28 @@
 package jkind.slicing;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
-import jkind.lustre.ArrayUpdateExpr;
+import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.CastExpr;
-import jkind.lustre.CondactExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
 import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.RealExpr;
-import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
-import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
-import jkind.lustre.visitors.ExprVisitor;
 import jkind.solvers.Model;
 import jkind.solvers.ModelFunction;
-import jkind.util.BigFraction;
 import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
-import jkind.util.Util;
 
-public class ModelSlicer implements ExprVisitor<Value> {
+public class ModelSlicer extends Evaluator {
 	public static Model slice(Model original, Node node, DependencyMap dependencyMap,
 			String property, int k) {
 		return new ModelSlicer(original, node, dependencyMap).slice(property, k);
@@ -91,21 +71,6 @@ public class ModelSlicer implements ExprVisitor<Value> {
 	}
 
 	@Override
-	public Value visit(ArrayAccessExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public Value visit(ArrayExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public Value visit(ArrayUpdateExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
 	public Value visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
 			if (k == 0) {
@@ -115,22 +80,7 @@ public class ModelSlicer implements ExprVisitor<Value> {
 			}
 		}
 
-		return e.left.accept(this).applyBinaryOp(e.op, e.right.accept(this));
-	}
-
-	@Override
-	public Value visit(BoolExpr e) {
-		return BooleanValue.fromBoolean(e.value);
-	}
-
-	@Override
-	public Value visit(CastExpr e) {
-		return Util.cast(e.type, e.expr.accept(this));
-	}
-
-	@Override
-	public Value visit(CondactExpr e) {
-		throw new IllegalArgumentException();
+		return super.visit(e);
 	}
 
 	@Override
@@ -168,51 +118,6 @@ public class ModelSlicer implements ExprVisitor<Value> {
 	}
 
 	@Override
-	public Value visit(IfThenElseExpr e) {
-		BooleanValue cond = (BooleanValue) e.cond.accept(this);
-		if (cond.value) {
-			return e.thenExpr.accept(this);
-		} else {
-			return e.elseExpr.accept(this);
-		}
-	}
-
-	@Override
-	public Value visit(IntExpr e) {
-		return new IntegerValue(e.value);
-	}
-
-	@Override
-	public Value visit(NodeCallExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public Value visit(RealExpr e) {
-		return new RealValue(new BigFraction(e.value));
-	}
-
-	@Override
-	public Value visit(RecordAccessExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public Value visit(RecordExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public Value visit(RecordUpdateExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public Value visit(TupleExpr e) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
 	public Value visit(UnaryExpr e) {
 		if (e.op == UnaryOp.PRE) {
 			k--;
@@ -220,15 +125,7 @@ public class ModelSlicer implements ExprVisitor<Value> {
 			k++;
 			return value;
 		} else {
-			return e.expr.accept(this).applyUnaryOp(e.op);
+			return super.visit(e);
 		}
-	}
-
-	private List<Value> visitExprs(List<Expr> exprs) {
-		List<Value> values = new ArrayList<>();
-		for (Expr expr : exprs) {
-			values.add(expr.accept(this));
-		}
-		return values;
 	}
 }
