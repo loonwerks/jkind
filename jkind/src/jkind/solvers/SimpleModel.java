@@ -1,4 +1,4 @@
-package jkind.slicing;
+package jkind.solvers;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,13 +7,11 @@ import java.util.Set;
 
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
-import jkind.solvers.Model;
-import jkind.solvers.ModelFunction;
 import jkind.util.StreamIndex;
 
 public class SimpleModel extends Model {
 	private final Map<String, Value> values = new HashMap<>();
-	private final Map<String, ModelFunction> functions = new HashMap<>();
+	private final Map<String, SimpleFunction> functions = new HashMap<>();
 	
 	public SimpleModel() {
 		super(Collections.<String, Type> emptyMap());
@@ -33,7 +31,7 @@ public class SimpleModel extends Model {
 		return values.keySet();
 	}
 
-	public void addFunction(String name, ModelFunction function) {
+	public void addFunction(String name, SimpleFunction function) {
 		functions.put(name, function);
 	}
 	
@@ -43,7 +41,7 @@ public class SimpleModel extends Model {
 	}
 
 	@Override
-	public ModelFunction getFunction(String name) {
+	public SimpleFunction getFunction(String name) {
 		return functions.get(name);
 	}
 }

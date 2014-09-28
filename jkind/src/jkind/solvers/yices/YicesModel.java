@@ -9,13 +9,13 @@ import java.util.Set;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
-import jkind.solvers.ModelFunction;
+import jkind.solvers.SimpleFunction;
 import jkind.util.SexpUtil;
 
 public class YicesModel extends Model {
 	private final Map<String, String> aliases = new HashMap<>();
 	private final Map<String, Value> values = new HashMap<>();
-	private final Map<String, ModelFunction> functions = new HashMap<>();
+	private final Map<String, SimpleFunction> functions = new HashMap<>();
 
 	public YicesModel(Map<String, Type> varTypes) {
 		super(varTypes);
@@ -30,15 +30,15 @@ public class YicesModel extends Model {
 	}
 
 	public void addFunctionValue(String name, List<Value> inputs, Value output) {
-		ModelFunction fn = getOrCreateFunction(name);
+		SimpleFunction fn = getOrCreateFunction(name);
 		fn.addValue(inputs, output);
 	}
 
-	private ModelFunction getOrCreateFunction(String name) {
+	private SimpleFunction getOrCreateFunction(String name) {
 		if (functions.containsKey(name)) {
 			return functions.get(name);
 		} else {
-			ModelFunction fn = new ModelFunction();
+			SimpleFunction fn = new SimpleFunction();
 			functions.put(name, fn);
 			return fn;
 		}
@@ -87,7 +87,7 @@ public class YicesModel extends Model {
 	}
 
 	@Override
-	public ModelFunction getFunction(String name) {
+	public SimpleFunction getFunction(String name) {
 		return functions.get(getAlias(name));
 	}
 }

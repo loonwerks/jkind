@@ -8,7 +8,7 @@ import java.util.Set;
 
 import jkind.lustre.values.Value;
 
-public class ModelFunction {
+public class SimpleFunction extends Function {
 	private final Map<List<Value>, Value> values = new HashMap<>();
 
 	public void addValue(List<Value> inputs, Value output) {
@@ -19,6 +19,7 @@ public class ModelFunction {
 		return values.entrySet();
 	}
 
+	@Override
 	public Value getValue(List<Value> args) {
 		return values.get(args);
 	}

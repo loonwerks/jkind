@@ -10,7 +10,7 @@ import jkind.lustre.values.Value;
 import jkind.sexp.Sexp;
 import jkind.solvers.Eval;
 import jkind.solvers.Model;
-import jkind.solvers.ModelFunction;
+import jkind.solvers.SimpleFunction;
 
 public class SmtLib2Model extends Model {
 	private final Map<String, Sexp> values = new HashMap<>();
@@ -38,7 +38,7 @@ public class SmtLib2Model extends Model {
 	}
 
 	@Override
-	public ModelFunction getFunction(String name) {
+	public SimpleFunction getFunction(String name) {
 		throw new IllegalArgumentException();
 	}
 

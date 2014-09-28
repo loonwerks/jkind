@@ -32,8 +32,8 @@ import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
-import jkind.solvers.Model;
-import jkind.solvers.ModelFunction;
+import jkind.solvers.SimpleFunction;
+import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
@@ -227,7 +227,8 @@ public class Director {
 				invalidProperties.addAll(im.invalid);
 				inductiveCounterexamples.keySet().removeAll(im.invalid);
 				for (String invalidProp : im.invalid) {
-					Model slicedModel = ModelSlicer.slice(im.model, spec.node, spec.dependencyMap, invalidProp, im.k);
+					SimpleModel slicedModel = ModelSlicer.slice(im.model, spec.node,
+							spec.dependencyMap, invalidProp, im.k);
 					Counterexample cex = extractCounterexample(im.k, slicedModel);
 					writer.writeInvalid(invalidProp, cex, runtime);
 				}
@@ -285,14 +286,15 @@ public class Director {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			Model slicedModel = ModelSlicer.slice(icm.model, spec.node, spec.dependencyMap, icm.property, icm.k);
+			SimpleModel slicedModel = ModelSlicer.slice(icm.model, spec.node, spec.dependencyMap,
+					icm.property, icm.k);
 			result.put(prop, extractCounterexample(icm.k, slicedModel));
 		}
 
 		return result;
 	}
 
-	private Counterexample extractCounterexample(int k, Model model) {
+	private Counterexample extractCounterexample(int k, SimpleModel model) {
 		Counterexample cex = new Counterexample(k, spec.functions);
 
 		for (String var : model.getVariableNames()) {
@@ -305,14 +307,14 @@ public class Director {
 		}
 
 		for (String name : model.getFunctionNames()) {
-			ModelFunction fn = model.getFunction(name);
+			SimpleFunction fn = model.getFunction(name);
 			extractCounterexampleFunction(cex, name, fn);
 		}
 
 		return cex;
 	}
 
-	private void extractCounterexampleFunction(Counterexample cex, String name, ModelFunction fn) {
+	private void extractCounterexampleFunction(Counterexample cex, String name, SimpleFunction fn) {
 		String decoded = SexpUtil.decodeFunction(name);
 		Function fnDecl = getFunction(spec.functions, decoded);
 		VarDecl outputDecl = fnDecl.outputs.get(0);

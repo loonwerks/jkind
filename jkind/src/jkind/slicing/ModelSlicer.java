@@ -1,10 +1,8 @@
 package jkind.slicing;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BinaryExpr;
@@ -18,12 +16,13 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
-import jkind.solvers.ModelFunction;
+import jkind.solvers.SimpleFunction;
+import jkind.solvers.SimpleModel;
 import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 
 public class ModelSlicer extends Evaluator {
-	public static Model slice(Model original, Node node, DependencyMap dependencyMap,
+	public static SimpleModel slice(Model original, Node node, DependencyMap dependencyMap,
 			String property, int k) {
 		return new ModelSlicer(original, node, dependencyMap).slice(property, k);
 	}
@@ -35,7 +34,6 @@ public class ModelSlicer extends Evaluator {
 
 	private int k;
 	private final SimpleModel sliced = new SimpleModel();
-	private final Set<StreamIndex> visited = new HashSet<>();
 
 	private ModelSlicer(Model original, Node node, DependencyMap dependencyMap) {
 		this.original = original;
@@ -46,21 +44,37 @@ public class ModelSlicer extends Evaluator {
 		this.dependencyMap = dependencyMap;
 	}
 
-	public Model slice(String property, int k) {
-		this.k = k - 1;
+	public SimpleModel slice(String property, int k) {
+		sliceVariables(property);
+		sliceFunctions(property, k);
+		return sliced;
+	}
 
-		new IdExpr(property).accept(this);
+	private void sliceVariables(String property) {
+		DependencySet keep = dependencyMap.get(Dependency.variable(property));
+		for (String var : original.getVariableNames()) {
+			StreamIndex si = StreamIndex.decode(var);
+			if (si != null && keep.contains(Dependency.variable(si.getStream()))) {
+				sliced.addValue(si, original.getValue(var));
+			}
+		}
+	}
+
+	private void sliceFunctions(String property, int k) {
+		eval(new IdExpr(property), k - 1);
 
 		for (int i = 0; i < k; i++) {
-			this.k = i;
 			for (Expr assertion : assertions) {
 				if (assertionRelevant(assertion, property)) {
-					assertion.accept(this);
+					eval(assertion, i);
 				}
 			}
 		}
+	}
 
-		return sliced;
+	private void eval(Expr expr, int k) {
+		this.k = k;
+		expr.accept(this);
 	}
 
 	private boolean assertionRelevant(Expr assertion, String property) {
@@ -88,9 +102,9 @@ public class ModelSlicer extends Evaluator {
 		List<Value> args = visitExprs(e.args);
 		String enc = SexpUtil.encodeFunction(e.name).str;
 		Value value = original.getFunction(enc).getValue(args);
-		ModelFunction fn = sliced.getFunction(enc);
+		SimpleFunction fn = sliced.getFunction(enc);
 		if (fn == null) {
-			fn = new ModelFunction();
+			fn = new SimpleFunction();
 			sliced.addFunction(enc, fn);
 		}
 		fn.addValue(args, value);
@@ -99,22 +113,7 @@ public class ModelSlicer extends Evaluator {
 
 	@Override
 	public Value visit(IdExpr e) {
-		StreamIndex si = new StreamIndex(e.id, k);
-
-		Value value = sliced.getValue(si);
-		if (value != null) {
-			return value;
-		}
-
-		if (equations.containsKey(e.id) && !visited.contains(si) && k >= 0) {
-			visited.add(si);
-			value = equations.get(e.id).accept(this);
-		} else {
-			value = original.getValue(si);
-		}
-
-		sliced.addValue(si, value);
-		return value;
+		return sliced.getValue(new StreamIndex(e.id, k));
 	}
 
 	@Override

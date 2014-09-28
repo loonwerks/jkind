@@ -23,7 +23,7 @@ public abstract class Model {
 	public abstract Value getValue(String name);
 	public abstract Set<String> getVariableNames();
 
-	public abstract ModelFunction getFunction(String name);
+	public abstract Function getFunction(String name);
 	public abstract Set<String> getFunctionNames();
 	
 	public Value getValue(StreamIndex si) {
