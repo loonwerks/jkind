@@ -45,13 +45,13 @@ public class ModelSlicer extends Evaluator {
 	}
 
 	public SimpleModel slice(String property, int k) {
-		sliceVariables(property);
-		sliceFunctions(property, k);
+		DependencySet keep = dependencyMap.get(Dependency.variable(property));
+		sliceVariables(keep);
+		sliceFunctions(keep, k);
 		return sliced;
 	}
 
-	private void sliceVariables(String property) {
-		DependencySet keep = dependencyMap.get(Dependency.variable(property));
+	private void sliceVariables(DependencySet keep) {
 		for (String var : original.getVariableNames()) {
 			StreamIndex si = StreamIndex.decode(var);
 			if (si != null && keep.contains(Dependency.variable(si.getStream()))) {
@@ -60,28 +60,40 @@ public class ModelSlicer extends Evaluator {
 		}
 	}
 
-	private void sliceFunctions(String property, int k) {
-		eval(new IdExpr(property), k - 1);
+	private void sliceFunctions(DependencySet keep, int k) {
+		evalEquations(keep, k);
+		evalAssertions(keep, k);
+	}
 
-		for (int i = 0; i < k; i++) {
-			for (Expr assertion : assertions) {
-				if (assertionRelevant(assertion, property)) {
+	private void evalEquations(DependencySet keep, int k) {
+		for (Dependency dep : keep.getSet()) {
+			if (dep.type == DependencyType.VARIABLE && equations.containsKey(dep.name)) {
+				Expr expr = equations.get(dep.name);
+				for (int i = 0; i < k; i++) {
+					eval(expr, i);
+				}
+			}
+		}
+	}
+
+	private void evalAssertions(DependencySet keep, int k) {
+		for (Expr assertion : assertions) {
+			if (assertionRelevant(assertion, keep)) {
+				for (int i = 0; i < k; i++) {
 					eval(assertion, i);
 				}
 			}
 		}
 	}
 
+	private boolean assertionRelevant(Expr assertion, DependencySet keep) {
+		DependencySet assertionDependencies = DependencyVisitor.get(assertion);
+		return !assertionDependencies.isEmpty() && keep.contains(assertionDependencies.first());
+	}
+
 	private void eval(Expr expr, int k) {
 		this.k = k;
 		expr.accept(this);
-	}
-
-	private boolean assertionRelevant(Expr assertion, String property) {
-		DependencySet propertyDependencies = dependencyMap.get(Dependency.variable(property));
-		DependencySet assertionDependencies = DependencyVisitor.get(assertion);
-		return !assertionDependencies.isEmpty()
-				&& propertyDependencies.contains(assertionDependencies.iterator().next());
 	}
 
 	@Override
