@@ -228,7 +228,7 @@ public class Director {
 				inductiveCounterexamples.keySet().removeAll(im.invalid);
 				for (String invalidProp : im.invalid) {
 					SimpleModel slicedModel = ModelSlicer.slice(im.model, spec.node,
-							spec.dependencyMap, invalidProp, im.k);
+							spec.dependencyMap, invalidProp, im.k, ModelSlicer.Type.REGULAR);
 					Counterexample cex = extractCounterexample(im.k, slicedModel);
 					writer.writeInvalid(invalidProp, cex, runtime);
 				}
@@ -287,7 +287,7 @@ public class Director {
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
 			SimpleModel slicedModel = ModelSlicer.slice(icm.model, spec.node, spec.dependencyMap,
-					icm.property, icm.k);
+					icm.property, icm.k, ModelSlicer.Type.INDUCTIVE);
 			result.put(prop, extractCounterexample(icm.k, slicedModel));
 		}
 
