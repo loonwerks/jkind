@@ -24,6 +24,7 @@ import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.yices.YicesSolver;
 import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
+import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.translation.TransitionRelation;
 import jkind.util.SexpUtil;
@@ -187,7 +188,7 @@ public abstract class Process implements Runnable {
 		assertTransition(k, k == 0);
 	}
 
-	protected static final Symbol INIT = new Symbol("%init");
+	protected static final Symbol INIT = Lustre2Sexp.INIT;
 
 	protected void defineInductiveInit() {
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));

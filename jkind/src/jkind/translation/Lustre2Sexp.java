@@ -54,7 +54,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		return new TransitionRelation(inputs, new Cons("and", conjuncts));
 	}
 
-	private static Symbol INIT = new Symbol("%init");
+	public static final Symbol INIT = new Symbol("%init");
 
 	private static Symbol curr(String id) {
 		return new Symbol("$" + id);
