@@ -16,6 +16,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
+import jkind.solvers.Function;
 import jkind.solvers.Model;
 import jkind.solvers.SimpleFunction;
 import jkind.solvers.SimpleModel;
@@ -120,7 +121,8 @@ public class ModelSlicer extends Evaluator {
 	public Value visit(FunctionCallExpr e) {
 		List<Value> args = visitExprs(e.args);
 		String enc = SexpUtil.encodeFunction(e.name).str;
-		Value value = original.getFunction(enc).getValue(args);
+		Function originalFn = original.getFunction(enc);
+		Value value = originalFn == null ? null : originalFn.getValue(args);
 		SimpleFunction fn = sliced.getFunction(enc);
 		if (fn == null) {
 			fn = new SimpleFunction();

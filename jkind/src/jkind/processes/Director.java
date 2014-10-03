@@ -323,6 +323,10 @@ public class Director {
 		for (Entry<List<Value>, Value> entry : fn.entrySet()) {
 			List<Value> inputs = new ArrayList<>();
 			int i = 0;
+			if (entry.getKey() == null) {
+				continue;
+			}
+			
 			for (Value input : entry.getKey()) {
 				VarDecl decl = fnDecl.inputs.get(i);
 				inputs.add(convert(decl.type, input));
