@@ -187,6 +187,9 @@ public abstract class Process implements Runnable {
 	}
 
 	protected void assertBaseTransition(int k) {
+		if (k == 0) {
+			solver.send(new Cons("assert", INIT));
+		}
 		assertTransition(k, k == 0);
 	}
 

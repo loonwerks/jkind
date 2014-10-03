@@ -14,38 +14,36 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
 import jkind.solvers.SimpleFunction;
 import jkind.solvers.SimpleModel;
+import jkind.translation.Lustre2Sexp;
 import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 
 public class ModelSlicer extends Evaluator {
-	public static enum Type { REGULAR, INDUCTIVE };
-	
 	public static SimpleModel slice(Model original, Node node, DependencyMap dependencyMap,
-			String property, int k, Type type) {
-		return new ModelSlicer(original, node, dependencyMap, type).slice(property, k);
+			String property, int k) {
+		return new ModelSlicer(original, node, dependencyMap).slice(property, k);
 	}
 
 	private final Model original;
 	private final Map<String, Expr> equations = new HashMap<>();
 	private final List<Expr> assertions;
 	private final DependencyMap dependencyMap;
-	private final Type type;
 
 	private int k;
 	private final SimpleModel sliced = new SimpleModel();
 
-	private ModelSlicer(Model original, Node node, DependencyMap dependencyMap, Type type) {
+	private ModelSlicer(Model original, Node node, DependencyMap dependencyMap) {
 		this.original = original;
 		for (Equation eq : node.equations) {
 			equations.put(eq.lhs.get(0).id, eq.expr);
 		}
 		this.assertions = node.assertions;
 		this.dependencyMap = dependencyMap;
-		this.type = type;
 	}
 
 	private SimpleModel slice(String property, int k) {
@@ -103,8 +101,7 @@ public class ModelSlicer extends Evaluator {
 	@Override
 	public Value visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
-			// Heuristic: For inductive cex, assume that we are never in the initial state
-			if (k == 0 && type == Type.REGULAR) {
+			if (k == 0 && initialCounterexample()) {
 				return e.left.accept(this);
 			} else {
 				return e.right.accept(this);
@@ -112,6 +109,11 @@ public class ModelSlicer extends Evaluator {
 		}
 
 		return super.visit(e);
+	}
+
+	private boolean initialCounterexample() {
+		BooleanValue init = (BooleanValue) original.getValue(Lustre2Sexp.INIT.str);
+		return init.value;
 	}
 
 	@Override
