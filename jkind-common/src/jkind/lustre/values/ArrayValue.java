@@ -1,5 +1,6 @@
 package jkind.lustre.values;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,25 +19,26 @@ public class ArrayValue extends Value {
 		this.elements = Collections.unmodifiableList(elements);
 	}
 
-	public ArrayValue update(int index, Value value) {
+	public ArrayValue update(BigInteger index, Value value) {
 		if (validIndex(index)) {
 			List<Value> copy = new ArrayList<>(elements);
-			copy.set(index, value);
+			copy.set(index.intValue(), value);
 			return new ArrayValue(copy);
 		} else {
 			return this;
 		}
 	}
 
-	public Value get(int index) {
+	public Value get(BigInteger index) {
 		if (validIndex(index)) {
-			return elements.get(index);
+			return elements.get(index.intValue());
 		}
 		return null;
 	}
 
-	private boolean validIndex(int index) {
-		return 0 <= index && index < elements.size();
+	private boolean validIndex(BigInteger index) {
+		return BigInteger.ZERO.compareTo(index) <= 0
+				&& index.compareTo(BigInteger.valueOf(elements.size())) < 0;
 	}
 
 	@Override

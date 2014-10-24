@@ -42,7 +42,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 		if (array == null || index == null) {
 			return null;
 		}
-		return array.get(index.value.intValue());
+		return array.get(index.value);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 		if (array == null || index == null || value == null) {
 			return null;
 		}
-		return array.update(index.value.intValue(), value);
+		return array.update(index.value, value);
 	}
 
 	@Override
