@@ -247,7 +247,16 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Type visitArrayType(ArrayTypeContext ctx) {
-		return new ArrayType(loc(ctx), type(ctx.type()), Integer.parseInt(ctx.INT().getText()));
+		try {
+			int index = Integer.parseInt(ctx.INT().getText());
+			if (index == 0) {
+				fatal(ctx, "array size must be non-zero");
+			}
+			return new ArrayType(loc(ctx), type(ctx.type()), index);
+		} catch (NumberFormatException nfe) {
+			fatal(ctx, "array size too large: " + ctx.INT().getText());
+			return null;
+		}
 	}
 
 	@Override
