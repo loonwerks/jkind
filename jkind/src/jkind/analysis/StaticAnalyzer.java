@@ -51,7 +51,7 @@ public class StaticAnalyzer {
 		valid = valid && propertiesUnique(program);
 		valid = valid && propertiesExist(program);
 		valid = valid && propertiesBoolean(program);
-		if (solver == SolverOption.Z3) {
+		if (solver != SolverOption.Z3) {
 			valid = valid && LinearChecker.check(program, Level.ERROR);
 		}
 		
