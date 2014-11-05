@@ -18,4 +18,6 @@ public abstract class Writer {
 
 	public abstract void writeUnknown(List<String> props, int trueFor,
 			Map<String, Counterexample> inductiveCounterexamples, double runtime);
+
+	public abstract void writeBaseStep(List<String> props, int k);
 }

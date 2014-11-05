@@ -134,4 +134,9 @@ public class XmlWriter extends Writer {
 		}
 		out.println("  </Property>");
 	}
+
+	@Override
+	public void writeBaseStep(List<String> props, int k) {
+		out.println("  <Progress source=\"bmc\">" + k + "</Progress>");
+	}
 }

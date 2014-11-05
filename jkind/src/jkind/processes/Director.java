@@ -243,6 +243,9 @@ public class Director {
 			} else if (message instanceof BaseStepMessage) {
 				BaseStepMessage bsm = (BaseStepMessage) message;
 				baseStep = bsm.step;
+				if (!remainingProperties.isEmpty()) {
+					writer.writeBaseStep(remainingProperties, baseStep);
+				}
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());

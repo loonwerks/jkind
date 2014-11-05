@@ -62,4 +62,8 @@ public class ExcelWriter extends Writer {
 					runtime));
 		}
 	}
+
+	@Override
+	public void writeBaseStep(List<String> props, int k) {
+	}
 }

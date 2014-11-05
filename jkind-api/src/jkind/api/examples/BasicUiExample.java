@@ -63,7 +63,7 @@ public class BasicUiExample {
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			List<String> properties = new ArrayList<>();
-			Pattern pattern = Pattern.compile(".*--%PROPERTY +([a-zA-Z_0-9]*) *;.*");
+			Pattern pattern = Pattern.compile("[ \t]*--%PROPERTY +([a-zA-Z_0-9]*) *;.*");
 			String line;
 
 			while ((line = reader.readLine()) != null) {
@@ -89,7 +89,7 @@ public class BasicUiExample {
 		 */
 		shell.pack();
 		Point size = shell.getSize();
-		shell.setSize(size.x, Math.min(size.y, 500));
+		shell.setSize(Math.max(size.x, 700), Math.min(size.y, 500));
 		shell.open();
 
 		while (!shell.isDisposed()) {
@@ -138,7 +138,7 @@ public class BasicUiExample {
 					@Override
 					public void run() {
 						KindApi api = new JKindApi();
-						api.setTimeout(3);
+						api.setTimeout(10);
 						api.execute(file, result, monitor);
 					}
 				}.start();

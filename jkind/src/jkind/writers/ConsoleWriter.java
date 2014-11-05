@@ -71,4 +71,8 @@ public class ConsoleWriter extends Writer {
 			}
 		}
 	}
+
+	@Override
+	public void writeBaseStep(List<String> props, int k) {
+	}
 }

@@ -6,11 +6,13 @@ import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 
 public class PropertyResult extends AnalysisResult {
-	private int elapsed;
-	private Status status;
 	private Property property;
 	private final Renaming renaming;
 	private boolean invertStatus = false;
+
+	private int elapsed;
+	private int baseProgress;
+	private Status status;
 
 	public PropertyResult(String name, Renaming renaming, boolean invertStatus) {
 		this(name, renaming);
@@ -25,16 +27,20 @@ public class PropertyResult extends AnalysisResult {
 		this.renaming = renaming;
 	}
 
+	public Property getProperty() {
+		return property;
+	}
+
 	public int getElapsed() {
 		return elapsed;
 	}
 
-	public Status getStatus() {
-		return status;
+	public int getBaseProgress() {
+		return baseProgress;
 	}
 
-	public Property getProperty() {
-		return property;
+	public Status getStatus() {
+		return status;
 	}
 
 	public void setProperty(Property original) {
@@ -72,6 +78,12 @@ public class PropertyResult extends AnalysisResult {
 	public void done() {
 		if (status == Status.WORKING || status == Status.WAITING) {
 			setStatus(Status.ERROR);
+		}
+	}
+
+	public void setBaseProgress(int k) {
+		if (status == Status.WORKING) {
+			pcs.firePropertyChange("progress", baseProgress, baseProgress = k);
 		}
 	}
 

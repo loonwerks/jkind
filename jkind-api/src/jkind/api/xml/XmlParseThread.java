@@ -69,7 +69,9 @@ public class XmlParseThread extends Thread {
 			while ((line = lines.readLine()) != null) {
 				boolean beginProperty = line.contains("<Property");
 				boolean endProperty = line.contains("</Property>");
-				if (beginProperty && endProperty) {
+				if (line.contains("<Progress") && line.contains("</Progress>")) {
+					parseProgressXml(line);
+				} else if (beginProperty && endProperty) {
 					parsePropetyXml(line);
 				} else if (beginProperty) {
 					buffer = new StringBuilder();
@@ -87,16 +89,27 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	public void parsePropetyXml(String propertyXml) {
-		Property prop;
+	private Element parseXml(String xml) {
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(new InputSource(new StringReader(propertyXml)));
-			prop = getProperty(doc.getDocumentElement());
+			Document doc = builder.parse(new InputSource(new StringReader(xml)));
+			return doc.getDocumentElement();
 		} catch (Exception e) {
-			throw new JKindException("Error parsing: " + propertyXml, e);
+			throw new JKindException("Error parsing: " + xml, e);
 		}
+	}
+	
+	private void parseProgressXml(String progressXml) {
+		Element progressElement = parseXml(progressXml);
+		String source = progressElement.getAttribute("source");
+		if ("bmc".equals(source)) {
+			int k = Integer.parseInt(progressElement.getTextContent());
+			result.setBaseProgress(k);
+		}
+	}
 
+	public void parsePropetyXml(String propertyXml) {
+		Property prop = getProperty(parseXml(propertyXml));
 		PropertyResult pr = result.getPropertyResult(prop.getName());
 		if (pr == null) {
 			pr = result.addProperty(prop.getName());

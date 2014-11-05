@@ -39,7 +39,8 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 				case WAITING:
 					return pr.getStatus().toString();
 				case WORKING:
-					return pr.getStatus().toString() + "... (" + pr.getElapsed() + "s)";
+					return pr.getStatus().toString() + "... " + getProgress(pr) + "("
+							+ pr.getElapsed() + "s)";
 				default:
 					return getFinalStatus(pr) + " (" + pr.getElapsed() + "s)";
 				}
@@ -57,10 +58,22 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return "";
 	}
 
+	private String getProgress(PropertyResult pr) {
+		if (pr.getBaseProgress() == 0) {
+			return "";
+		}
+
+		return trueFor(pr.getBaseProgress()) + " ";
+	}
+
+	private String trueFor(int steps) {
+		return "[true for " + steps + " steps]";
+	}
+
 	private String getFinalStatus(PropertyResult pr) {
 		if (pr.getProperty() instanceof UnknownProperty) {
 			UnknownProperty up = (UnknownProperty) pr.getProperty();
-			return pr.getStatus().toString() + " [true for " + up.getTrueFor() + " steps]";
+			return pr.getStatus().toString() + " " + trueFor(up.getTrueFor());
 		} else {
 			return pr.getStatus().toString();
 		}
