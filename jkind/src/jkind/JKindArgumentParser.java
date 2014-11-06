@@ -130,17 +130,9 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(SOLVER)) {
-			String solver = line.getOptionValue(SOLVER);
-			if (solver.equals("yices")) {
-				settings.solver = SolverOption.YICES;
-			} else if (solver.equals("cvc4")) {
-				settings.solver = SolverOption.CVC4;
-			} else if (solver.equals("z3")) {
-				settings.solver = SolverOption.Z3;
-			} else if (solver.equals("yices2")) {
-				settings.solver = SolverOption.YICES2;
-			} else {
-				Output.error("unknown solver: " + solver);
+			settings.solver = getSolverOption(line.getOptionValue(SOLVER));
+			if (settings.solver == null) {
+				Output.error("unknown solver: " + line.getOptionValue(SOLVER));
 				System.exit(ExitCodes.INVALID_OPTIONS);
 			}
 		}
@@ -162,6 +154,15 @@ public class JKindArgumentParser {
 		settings.filename = input[0];
 
 		return settings;
+	}
+
+	private static SolverOption getSolverOption(String solver) {
+		for (SolverOption option : SolverOption.values()) {
+			if (solver.equals(option.toString())) {
+				return option;
+			}
+		}
+		return null;
 	}
 
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {

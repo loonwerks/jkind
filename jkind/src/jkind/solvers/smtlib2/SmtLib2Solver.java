@@ -106,18 +106,21 @@ public abstract class SmtLib2Solver extends Solver {
 
 	@Override
 	public Result query(Sexp sexp) {
-		Result result;
+		Result result = null;
 		push();
 
 		send(new Cons("assert", new Cons("not", sexp)));
 		send("(check-sat)");
 		send("(echo \"" + DONE + "\")");
-		if (isSat(readFromSolver())) {
+		String status = readFromSolver();
+		if (isSat(status)) {
 			send("(get-model)");
 			send("(echo \"" + DONE + "\")");
-			result = new SatResult(parseModel(readFromSolver()));
-		} else {
+			result = new SatResult(parseModel(status));
+		} else if (isUnsat(status)) {
 			result = new UnsatResult();
+		} else {
+			throw new IllegalArgumentException("Unknown result: " + result);
 		}
 
 		pop();
@@ -143,17 +146,17 @@ public abstract class SmtLib2Solver extends Solver {
 					throw new JKindException(name + " terminated unexpectedly");
 				} else if (line.contains("define-fun " + TransitionRelation.T + " ")) {
 					// No need to parse the transition relation
+				} else if (isDone(line)) {
+					break;
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {
 						debug("; " + name + ": " + line);
-						if (line.contains(DONE)) {
+						if (isDone(line)) {
 							break;
 						}
 					}
 					throw new JKindException(name + " error (see scratch file for details)");
-				} else if (line.contains(DONE)) {
-					break;
 				} else {
 					content.append(line);
 					content.append("\n");
@@ -166,6 +169,10 @@ public abstract class SmtLib2Solver extends Solver {
 		} catch (IOException e) {
 			throw new JKindException("Unable to read from " + name, e);
 		}
+	}
+
+	protected boolean isDone(String line) {
+		return line.contains(DONE);
 	}
 
 	protected Model parseModel(String string) {

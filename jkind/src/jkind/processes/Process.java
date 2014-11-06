@@ -21,6 +21,7 @@ import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Solver;
 import jkind.solvers.cvc4.Cvc4Solver;
+import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.yices.YicesSolver;
 import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
@@ -76,9 +77,10 @@ public abstract class Process implements Runnable {
 		case CVC4:
 		case Z3:
 		case YICES2:
+		case MATHSAT:
 			return "smt2";
 		}
-		return null;
+		throw new IllegalArgumentException("Unknown solver: " + settings.solver);
 	}
 
 	protected abstract void main();
@@ -102,31 +104,29 @@ public abstract class Process implements Runnable {
 	}
 
 	protected void initializeSolver() {
-		switch (settings.solver) {
-		case YICES:
-			solver = new YicesSolver(YicesArithOnlyCheck.check(spec.node));
-			break;
-
-		case CVC4:
-			solver = new Cvc4Solver();
-			break;
-
-		case Z3:
-			solver = new Z3Solver();
-			break;
-
-		case YICES2:
-			solver = new Yices2Solver();
-			break;
-		}
-
+		solver = getSolver();
 		if (settings.scratch) {
 			solver.setDebug(scratch);
 		}
-
 		solver.initialize();
 		solver.define(spec.transitionRelation);
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
+	}
+
+	private Solver getSolver() {
+		switch (settings.solver) {
+		case YICES:
+			return new YicesSolver(YicesArithOnlyCheck.check(spec.node));
+		case CVC4:
+			return new Cvc4Solver();
+		case Z3:
+			return new Z3Solver();
+		case YICES2:
+			return new Yices2Solver();
+		case MATHSAT:
+			return new MathSatSolver();
+		}
+		throw new IllegalArgumentException("Unknown solver: " + settings.solver);
 	}
 
 	public Throwable getThrowable() {
