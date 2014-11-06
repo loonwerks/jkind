@@ -50,7 +50,10 @@ public class Z3Solver extends SmtLib2Solver {
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
-			result = new UnknownResult();
+			// Even for unknown we can get a partial model
+			send("(get-model)");
+			send("(echo \"" + DONE + "\")");
+			result = new UnknownResult(parseModel(readFromSolver()));
 		}
 
 		return result;

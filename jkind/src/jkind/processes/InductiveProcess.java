@@ -116,8 +116,8 @@ public class InductiveProcess extends Process {
 		while (!possiblyValid.isEmpty()) {
 			Result result = solver.query(getInductiveQuery(k, possiblyValid));
 
-			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
+			if (result instanceof SatResult || result instanceof UnknownResult) {
+				Model model = getModel(result);
 				Iterator<String> iterator = possiblyValid.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
@@ -133,12 +133,17 @@ public class InductiveProcess extends Process {
 				addPropertiesAsInvariants(k, possiblyValid);
 				sendValid(possiblyValid, k);
 				return;
-			} else if (result instanceof UnknownResult) {
-				properties.removeAll(possiblyValid);
-				// We report nothing in hopes that the base process at least
-				// finds a counterexample
-				return;
 			}
+		}
+	}
+
+	private Model getModel(Result result) {
+		if (result instanceof SatResult) {
+			return ((SatResult) result).getModel();
+		} else if (result instanceof UnknownResult) {
+			return ((UnknownResult) result).getModel();
+		} else {
+			throw new IllegalArgumentException();
 		}
 	}
 
