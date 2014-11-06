@@ -65,6 +65,10 @@ public class StaticAnalyzer {
 			if (!Yices2FeatureChecker.check(program)) {
 				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
 			}
+		} else if (solver == SolverOption.MATHSAT) {
+			if (!MathSatFeatureChecker.check(program)) {
+				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
+			}
 		}
 	}
 
