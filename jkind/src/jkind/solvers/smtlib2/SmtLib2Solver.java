@@ -116,7 +116,7 @@ public abstract class SmtLib2Solver extends Solver {
 		if (isSat(status)) {
 			send("(get-model)");
 			send("(echo \"" + DONE + "\")");
-			result = new SatResult(parseModel(status));
+			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
