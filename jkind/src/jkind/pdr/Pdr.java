@@ -6,11 +6,8 @@ import java.util.List;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
-import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
-import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
-import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Pdr {
 	private final List<Frame> trace = new ArrayList<>();
@@ -34,31 +31,28 @@ public class Pdr {
 		trace.add(new Frame(I));
 		trace.add(new Frame());
 
-		while (true) {
-			Cube cex = blockCubes();
-			if (cex != null) {
-				return cex;
+		try {
+			while (true) {
+				blockCubes();
+				if (propogateClauses()) {
+					return null;
+				}
 			}
-
-			if (propogateClauses()) {
-				return null;
-			}
+		} catch (CounterexampleException cex) {
+			return cex.getInit();
 		}
 	}
 
-	private Cube blockCubes() {
+	private void blockCubes() {
 		while (true) {
 			// exists P-cube c s.t. c |= trace.last() /\ ~P
 			Model m = checkSat(and(lastFrame(), not(P)));
 			if (m == null) {
-				return null;
+				return;
 			}
 
 			Cube c = extractCube(m);
-			Cube cex = recBlock(c, trace.size() - 1);
-			if (cex != null) {
-				return cex;
-			}
+			recBlock(c, trace.size() - 1);
 		}
 	}
 
@@ -81,34 +75,27 @@ public class Pdr {
 		return false;
 	}
 
-	private Cube recBlock(Cube s, int i) {
-		Term query = and(trace.get(0), s);
-		if (checkSat(query) != null) {
-			return s;
+	private void recBlock(Cube s, int i) {
+		if (checkSat(and(trace.get(0), s)) != null) {
+			throw new CounterexampleException(s);
 		}
 
 		if (i == 0) {
-			return null;
+			return;
 		}
 
 		while (true) {
-			query = and(trace.get(i - 1), T, not(s), prime(s));
-			Cube c = extractCube(checkSat(query));
+			Cube c = extractCube(checkSat(and(trace.get(i - 1), T, not(s), prime(s))));
 			if (c == null) {
 				break;
 			}
 
 			c.setNext(s);
-			Cube result = recBlock(c, i - 1);
-			if (result != null) {
-				return result;
-			}
+			recBlock(c, i - 1);
 		}
 
 		// TODO: Generalize s
 		trace.get(i).add(s);
-
-		return null;
 	}
 
 	private Cube extractCube(Model model) {
