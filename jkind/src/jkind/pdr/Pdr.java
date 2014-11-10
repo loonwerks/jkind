@@ -23,6 +23,7 @@ public class Pdr {
 
 	public Pdr(Sexp I, Sexp T, Sexp P) {
 		solver.setLogic(Logics.QF_UFLIRA);
+		solver.setOption(":verbosity", 3);
 
 		solver.declareFun("x", new Sort[0], solver.sort("Bool"));
 		solver.declareFun("y", new Sort[0], solver.sort("Bool"));
@@ -91,18 +92,17 @@ public class Pdr {
 	}
 
 	private Cube recBlock(Cube s, int i) {
+		Term query = Util.and(solver, trace.get(0).toTerm(solver), s.toTerm(solver));
+		if (checkSat(query) != null) {
+			return s;
+		}
+		
 		if (i == 0) {
-			Term query = Util.and(solver, trace.get(0).toTerm(solver), s.toTerm(solver));
-			if (checkSat(query) == null) {
-				return null;
-			} else {
-				return s;
-			}
+			return null;
 		}
 
 		while (true) {
-			// TODO: Check overlap with I?
-			Term query = Util.and(solver, trace.get(i - 1).toTerm(solver), T,
+			query = Util.and(solver, trace.get(i - 1).toTerm(solver), T,
 					s.negate().toTerm(solver), s.prime(solver).toTerm(solver));
 			Cube c = extractCube(checkSat(query));
 			if (c == null) {
