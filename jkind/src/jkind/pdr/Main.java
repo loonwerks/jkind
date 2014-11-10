@@ -1,27 +1,30 @@
 package jkind.pdr;
 
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BinaryOp;
+import jkind.lustre.Equation;
+import jkind.lustre.IdExpr;
+import jkind.lustre.IntExpr;
+import jkind.lustre.NamedType;
+import jkind.lustre.Node;
+import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
+import jkind.lustre.VarDecl;
+import jkind.lustre.builders.NodeBuilder;
 
 public class Main {
 	public static void main(String[] args) {
-		Symbol x = new Symbol("x");
-		Symbol y = new Symbol("y");
-		Symbol z = new Symbol("z");
-		Sexp nx = new Cons("not", x);
-		Sexp ny = new Cons("not", y);
-		Sexp nz = new Cons("not", z);
-		Sexp I = new Cons("and", nx, ny, z);
-		
-		Symbol xp = new Symbol("x'");
-		Symbol yp = new Symbol("y'");
-		Symbol zp = new Symbol("z'");
-		Sexp T = new Cons("and", new Cons("=", xp, y), new Cons("=", yp, z), new Cons("=", zp, x));
-		
-		Sexp P = nx;
-		
-		Pdr pdr = new Pdr(I, T, P);
+		NodeBuilder builder = new NodeBuilder("main");
+		builder.addOutput(new VarDecl("x", NamedType.INT));
+		builder.addOutput(new VarDecl("ok", NamedType.BOOL));
+		builder.addEquation(new Equation(new IdExpr("x"), new BinaryExpr(new IntExpr(0),
+				BinaryOp.ARROW, new BinaryExpr(new UnaryExpr(UnaryOp.PRE, new IdExpr("x")),
+						BinaryOp.PLUS, new IntExpr(1)))));
+		builder.addEquation(new Equation(new IdExpr("ok"), new BinaryExpr(new IdExpr("x"), BinaryOp.NOTEQUAL, new IntExpr(-1))));
+		builder.addProperty("ok");
+		Node node = builder.build();
+
+		Pdr pdr = new Pdr(node);
 		showCex(pdr.check());
 	}
 

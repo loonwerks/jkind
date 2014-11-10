@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.lustre.NamedType;
+import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
+import jkind.util.Util;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
@@ -17,14 +19,20 @@ public class Pdr {
 	private final Term T;
 	private final Term P;
 
-	public Pdr(Sexp I, Sexp T, Sexp P) {
-		solver.addVariable(new VarDecl("x", NamedType.BOOL));
-		solver.addVariable(new VarDecl("y", NamedType.BOOL));
-		solver.addVariable(new VarDecl("z", NamedType.BOOL));
-
-		this.I = solver.convert(I);
-		this.T = solver.convert(T);
-		this.P = solver.convert(P);
+	public Pdr(Node node) {
+		for (VarDecl vd : Util.getVarDecls(node)) {
+			solver.addVariable(vd);
+		}
+		
+		Lustre2Term lustre2Term = new Lustre2Term(solver);
+		solver.addVariable(lustre2Term.getInitVariable());
+		this.I = lustre2Term.getInit();
+		this.T = lustre2Term.getTransition(node);
+		this.P = lustre2Term.getProperty(node);
+		
+		System.out.println(I);
+		System.out.println(T);
+		System.out.println(P);
 	}
 
 	public Cube check() {
@@ -44,15 +52,10 @@ public class Pdr {
 	}
 
 	private void blockCubes() {
-		while (true) {
-			// exists P-cube c s.t. c |= trace.last() /\ ~P
-			Model m = checkSat(and(lastFrame(), not(P)));
-			if (m == null) {
-				return;
-			}
-
-			Cube c = extractCube(m);
-			recBlock(c, trace.size() - 1);
+		Model m;
+		// exists P-cube c s.t. c |= trace.last() /\ ~P
+		while ((m = checkSat(and(lastFrame(), not(P)))) != null) {
+			recBlock(extractCube(m), trace.size() - 1);
 		}
 	}
 
@@ -60,14 +63,12 @@ public class Pdr {
 		trace.add(new Frame());
 		for (int i = 1; i < trace.size() - 1; i++) {
 			for (Cube c : trace.get(i).getCubes()) {
-				Term query = and(trace.get(i), T, prime(c));
-				if (checkSat(query) == null) {
+				if (checkSat(and(trace.get(i), T, prime(c))) == null) {
 					trace.get(i + 1).add(c);
 				}
 			}
 
-			Term query = and(trace.get(i + 1), not(trace.get(i)));
-			if (checkSat(query) == null) {
+			if (checkSat(and(trace.get(i + 1), not(trace.get(i)))) == null) {
 				return true;
 			}
 		}

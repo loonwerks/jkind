@@ -1,5 +1,7 @@
 package jkind.pdr;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +10,6 @@ import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
@@ -96,28 +95,6 @@ public class PdrSolver {
 		throw new IllegalArgumentException("Unhandled type " + type);
 	}
 
-	public Term convert(Sexp sexp) {
-		if (sexp instanceof Symbol) {
-			return convert((Symbol) sexp);
-		} else if (sexp instanceof Cons) {
-			return convert((Cons) sexp);
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	private Term convert(Symbol symbol) {
-		return script.term(symbol.str);
-	}
-
-	private Term convert(Cons cons) {
-		Term[] args = new Term[cons.args.size()];
-		for (int i = 0; i < cons.args.size(); i++) {
-			args[i] = convert(cons.args.get(i));
-		}
-		return script.term(cons.head.toString(), args);
-	}
-
 	public Term not(Term term) {
 		return Util.not(script, term);
 	}
@@ -130,6 +107,10 @@ public class PdrSolver {
 		return Util.and(script, terms);
 	}
 
+	public Term and(List<Term> conjuncts) {
+		return and(conjuncts.toArray(new Term[conjuncts.size()]));
+	}
+	
 	public Term toTerm(Frame frame) {
 		return frame.toTerm(script);
 	}
@@ -140,5 +121,17 @@ public class PdrSolver {
 
 	public Term prime(Cube c) {
 		return new NameAppender(script, "'").append(c.toTerm(script));
+	}
+
+	public Term term(String funcname, Term... params) {
+		return script.term(funcname, params);
+	}
+
+	public Term numeral(BigInteger num) {
+		return script.numeral(num);
+	}
+
+	public Term decimal(BigDecimal decimal) {
+		return script.decimal(decimal);
 	}
 }
