@@ -28,17 +28,6 @@ public class Cube {
 		return next;
 	}
 
-	public Clause negate() {
-		Clause negated = new Clause();
-		for (Term pos : positive) {
-			negated.addNegative(pos);
-		}
-		for (Term neg : negative) {
-			negated.addPositive(neg);
-		}
-		return negated;
-	}
-	
 	public Term toTerm(Script solver) {
 		Term[] terms = new Term[positive.size() + negative.size()];
 		for (int i = 0; i < positive.size(); i++) {
@@ -50,20 +39,54 @@ public class Cube {
 		return Util.and(solver, terms);
 	}
 
-	public Cube prime(Script solver) {
-		Prime prime = new Prime(solver);
-		Cube c = new Cube();
-		for (Term pos : positive) {
-			c.addPositive(prime.prime(pos));
-		}
-		for (Term neg : negative) {
-			c.addNegative(prime.prime(neg));
-		}
-		return c;
-	}
-	
 	@Override
 	public String toString() {
 		return positive + " and ~" + negative;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((negative == null) ? 0 : negative.hashCode());
+		result = prime * result + ((next == null) ? 0 : next.hashCode());
+		result = prime * result + ((positive == null) ? 0 : positive.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Cube)) {
+			return false;
+		}
+		Cube other = (Cube) obj;
+		if (negative == null) {
+			if (other.negative != null) {
+				return false;
+			}
+		} else if (!negative.equals(other.negative)) {
+			return false;
+		}
+		if (next == null) {
+			if (other.next != null) {
+				return false;
+			}
+		} else if (!next.equals(other.next)) {
+			return false;
+		}
+		if (positive == null) {
+			if (other.positive != null) {
+				return false;
+			}
+		} else if (!positive.equals(other.positive)) {
+			return false;
+		}
+		return true;
 	}
 }

@@ -9,7 +9,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Frame {
 	private final Term term;
-	private final Set<Clause> clauses = new HashSet<>();
+	private final Set<Cube> cubes = new HashSet<>();
 
 	public Frame(Term term) {
 		this.term = term;
@@ -19,29 +19,29 @@ public class Frame {
 		this.term = null;
 	}
 
-	public Term toTerm(Script solver) {
-		if (term != null && !clauses.isEmpty()) {
-			throw new IllegalArgumentException("Clauses in initial frame");
+	public Term toTerm(Script script) {
+		if (term != null && !cubes.isEmpty()) {
+			throw new IllegalArgumentException("Cannot block cube in initial frame");
 		}
 		
 		if (term != null) {
 			return term;
 		}
 		
-		Term[] terms = new Term[clauses.size()];
+		Term[] terms = new Term[cubes.size()];
 		int i = 0;
-		for (Clause c : clauses) {
-			terms[i] = c.toTerm(solver);
+		for (Cube c : cubes) {
+			terms[i] = Util.not(script, c.toTerm(script));
 			i++;
 		}
-		return Util.and(solver, terms);
+		return Util.and(script, terms);
 	}
 
-	public void add(Clause c) {
-		clauses.add(c);
+	public void add(Cube c) {
+		cubes.add(c);
 	}
 
-	public Set<Clause> getClauses() {
-		return clauses;
+	public Set<Cube> getCubes() {
+		return cubes;
 	}
 }

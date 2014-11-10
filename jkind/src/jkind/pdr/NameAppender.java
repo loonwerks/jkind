@@ -4,14 +4,16 @@ import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
-public class Prime {
-	private final Script solver;
+public class NameAppender {
+	private final Script script;
+	private final String suffix;
 
-	public Prime(Script solver) {
-		this.solver = solver;
+	public NameAppender(Script script, String suffix) {
+		this.script = script;
+		this.suffix = suffix;
 	}
 
-	public Term prime(Term t) {
+	public Term append(Term t) {
 		if (t instanceof ApplicationTerm) {
 			return prime((ApplicationTerm) t);
 		}
@@ -25,17 +27,17 @@ public class Prime {
 			if (name.equals("true") || name.equals("false")) {
 				return at;
 			} else {
-				return solver.term(name + "'");
+				return script.term(name + suffix);
 			}
 		} else {
-			return solver.term(name, prime(at.getParameters()));
+			return script.term(name, prime(at.getParameters()));
 		}
 	}
 
 	private Term[] prime(Term[] terms) {
 		Term[] result = new Term[terms.length];
 		for (int i = 0; i < terms.length; i++) {
-			result[i] = prime(terms[i]);
+			result[i] = append(terms[i]);
 		}
 		return result;
 	}
