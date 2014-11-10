@@ -52,4 +52,9 @@ public class Clause {
 		}
 		return c;
 	}
+	
+	@Override
+	public String toString() {
+		return positive + " or ~" + negative;
+	}
 }

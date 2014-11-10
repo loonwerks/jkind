@@ -1,15 +1,9 @@
 package jkind.pdr;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
-import jkind.solvers.Result;
-import jkind.solvers.UnsatResult;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
@@ -29,50 +23,123 @@ public class Pdr {
 
 	public Pdr(Sexp I, Sexp T, Sexp P) {
 		solver.setLogic(Logics.QF_UFLIRA);
-		
+
 		solver.declareFun("x", new Sort[0], solver.sort("Bool"));
 		solver.declareFun("y", new Sort[0], solver.sort("Bool"));
 		solver.declareFun("z", new Sort[0], solver.sort("Bool"));
 		solver.declareFun("x'", new Sort[0], solver.sort("Bool"));
 		solver.declareFun("y'", new Sort[0], solver.sort("Bool"));
 		solver.declareFun("z'", new Sort[0], solver.sort("Bool"));
-		
-		this.I = convert(I);
-		this.T = convert(T);
-		this.P = convert(P);
+
+		SexpConvert sexpConvert = new SexpConvert(solver);
+		this.I = sexpConvert.convert(I);
+		this.T = sexpConvert.convert(T);
+		this.P = sexpConvert.convert(P);
 	}
 
-	private Term convert(Sexp sexp) {
-		if (sexp instanceof Symbol) {
-			return convert((Symbol) sexp);
-		} else if (sexp instanceof Cons) {
-			return convert((Cons) sexp);
-		} else {
+	public Cube check() {
+		trace.add(new Frame(I));
+		trace.add(new Frame());
+
+		while (true) {
+			Cube cex = blockCubes();
+			if (cex != null) {
+				return cex;
+			}
+
+			if (propogateClauses()) {
+				return null;
+			}
+		}
+	}
+
+	private Cube blockCubes() {
+		while (true) {
+			// exists P-cube c s.t. c |= trace.last() /\ ~P
+			Model m = checkSat(Util.and(solver, lastFrame().getTerm(solver), Util.not(solver, P)));
+			if (m == null) {
+				return null;
+			}
+
+			Cube c = extractCube(m);
+			Cube cex = recBlock(c, trace.size() - 1);
+			if (cex != null) {
+				return cex;
+			}
+		}
+	}
+
+	private boolean propogateClauses() {
+		trace.add(new Frame());
+		for (int i = 1; i < trace.size() - 1; i++) {
+			for (Clause c : trace.get(i).getClauses()) {
+				Term query = Util.and(solver, trace.get(i).getTerm(solver), T,
+						c.negate().prime(solver).toTerm(solver));
+				if (checkSat(query) == null) {
+					trace.get(i + 1).add(c);
+				}
+			}
+
+			Term query = Util.and(solver, Util.not(solver, trace.get(i).getTerm(solver)), trace
+					.get(i + 1).getTerm(solver));
+			if (checkSat(query) == null) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private Cube recBlock(Cube s, int i) {
+		if (i == 0) {
+			return s;
+		}
+
+		Term currFrame = trace.get(i).getTerm(solver);
+
+		while (true) {
+			Term query = Util.and(solver, currFrame, T, s.negate().toTerm(solver), s.prime(solver)
+					.toTerm(solver));
+			Cube c = extractCube(checkSat(query));
+			if (c == null) {
+				break;
+			}
+			
+			c.setNext(s);
+			Cube result = recBlock(c, i - 1);
+			if (result != null) {
+				return result;
+			}
+		}
+
+		// TODO: Generalize ~s
+		Clause g = s.negate();
+
+		trace.get(i).add(g);
+
+		return null;
+	}
+
+	private Model checkSat(Term query) {
+		solver.push(1);
+		solver.assertTerm(query);
+		switch (solver.checkSat()) {
+		case UNSAT:
+			solver.pop(1);
+			return null;
+
+		case SAT:
+			Model model = solver.getModel();
+			solver.pop(1);
+			return model;
+
+		default:
 			throw new IllegalArgumentException();
 		}
 	}
 
-	private Term convert(Symbol symbol) {
-		return solver.term(symbol.str);
-	}
-
-	private Term convert(Cons cons) {
-		Term[] args = new Term[cons.args.size()];
-		for (int i = 0; i < cons.args.size(); i++) {
-			args[i] = convert(cons.args.get(i));
-		}
-		return solver.term(cons.head.toString(), args);
-	}
-
-	public boolean check() {
-		trace.add(new Frame(I));
-		trace.add(new Frame());
-		while (true) {
-			// exists P-cube c s.t. c |= trace.last() /\ ~P
-			Model m = checkSat(Util.and(solver, lastFrame().getTerm(solver), Util.not(solver, P)));
-			Cube c = extractCube(m);
-			return recBlock(c, trace.size() - 1);
-		}
+	private Frame lastFrame() {
+		return trace.get(trace.size() - 1);
 	}
 
 	private Cube extractCube(Model m) {
@@ -110,42 +177,5 @@ public class Pdr {
 			return at.getFunction().getName().equals("true");
 		}
 		return false;
-	}
-
-	private boolean recBlock(Cube s, int i) {
-		if (i == 0) {
-			return false;
-		}
-
-		Term currFrame = trace.get(i).getTerm(solver);
-		Term query = Util.and(solver, currFrame, T, s.negate().toTerm(solver), s.prime(solver)
-				.toTerm(solver));
-		Cube c = extractCube(checkSat(query));
-		while (c != null) {
-
-		}
-		return false;
-	}
-
-	private Model checkSat(Term query) {
-		solver.push(1);
-		solver.assertTerm(query);
-		switch (solver.checkSat()) {
-		case UNSAT:
-			solver.pop(1);
-			return null;
-
-		case SAT:
-			Model model = solver.getModel();
-			solver.pop(1);
-			return model;
-
-		default:
-			throw new IllegalArgumentException();
-		}
-	}
-
-	private Frame lastFrame() {
-		return trace.get(trace.size() - 1);
 	}
 }

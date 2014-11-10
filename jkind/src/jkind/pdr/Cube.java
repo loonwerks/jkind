@@ -10,6 +10,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Util;
 public class Cube {
 	private final List<Term> positive = new ArrayList<>();
 	private final List<Term> negative = new ArrayList<>();
+	private Cube next;
 
 	public void addPositive(Term t) {
 		positive.add(t);
@@ -17,6 +18,14 @@ public class Cube {
 
 	public void addNegative(Term t) {
 		negative.add(t);
+	}
+	
+	public void setNext(Cube next) {
+		this.next = next;
+	}
+	
+	public Cube getNext() {
+		return next;
 	}
 
 	public Clause negate() {
@@ -51,5 +60,10 @@ public class Cube {
 			c.addPositive(prime.prime(neg));
 		}
 		return c;
+	}
+	
+	@Override
+	public String toString() {
+		return positive + " and ~" + negative;
 	}
 }
