@@ -56,7 +56,7 @@ public class Pdr {
 	private Cube blockCubes() {
 		while (true) {
 			// exists P-cube c s.t. c |= trace.last() /\ ~P
-			Model m = checkSat(Util.and(solver, lastFrame().getTerm(solver), Util.not(solver, P)));
+			Model m = checkSat(Util.and(solver, lastFrame().toTerm(solver), Util.not(solver, P)));
 			if (m == null) {
 				return null;
 			}
@@ -73,15 +73,15 @@ public class Pdr {
 		trace.add(new Frame());
 		for (int i = 1; i < trace.size() - 1; i++) {
 			for (Clause c : trace.get(i).getClauses()) {
-				Term query = Util.and(solver, trace.get(i).getTerm(solver), T,
+				Term query = Util.and(solver, trace.get(i).toTerm(solver), T,
 						c.negate().prime(solver).toTerm(solver));
 				if (checkSat(query) == null) {
 					trace.get(i + 1).add(c);
 				}
 			}
 
-			Term query = Util.and(solver, Util.not(solver, trace.get(i).getTerm(solver)), trace
-					.get(i + 1).getTerm(solver));
+			Term query = Util.and(solver, Util.not(solver, trace.get(i).toTerm(solver)),
+					trace.get(i + 1).toTerm(solver));
 			if (checkSat(query) == null) {
 				return true;
 			}
@@ -92,19 +92,23 @@ public class Pdr {
 
 	private Cube recBlock(Cube s, int i) {
 		if (i == 0) {
-			return s;
+			Term query = Util.and(solver, trace.get(0).toTerm(solver), s.toTerm(solver));
+			if (checkSat(query) == null) {
+				return null;
+			} else {
+				return s;
+			}
 		}
 
-		Term currFrame = trace.get(i).getTerm(solver);
-
 		while (true) {
-			Term query = Util.and(solver, currFrame, T, s.negate().toTerm(solver), s.prime(solver)
-					.toTerm(solver));
+			// TODO: Check overlap with I?
+			Term query = Util.and(solver, trace.get(i - 1).toTerm(solver), T,
+					s.negate().toTerm(solver), s.prime(solver).toTerm(solver));
 			Cube c = extractCube(checkSat(query));
 			if (c == null) {
 				break;
 			}
-			
+
 			c.setNext(s);
 			Cube result = recBlock(c, i - 1);
 			if (result != null) {

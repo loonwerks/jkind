@@ -19,7 +19,7 @@ public class Main {
 		Symbol zp = new Symbol("z'");
 		Sexp T = new Cons("and", new Cons("=", xp, y), new Cons("=", yp, z), new Cons("=", zp, x));
 		
-		Sexp P = nx;
+		Sexp P = new Cons("or", nx, ny);
 		
 		Pdr pdr = new Pdr(I, T, P);
 		showCex(pdr.check());

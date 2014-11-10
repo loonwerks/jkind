@@ -1,15 +1,15 @@
 package jkind.pdr;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Clause {
-	private final List<Term> positive = new ArrayList<>();
-	private final List<Term> negative = new ArrayList<>();
+	private final Set<Term> positive = new HashSet<>();
+	private final Set<Term> negative = new HashSet<>();
 
 	public void addPositive(Term t) {
 		positive.add(t);
@@ -32,11 +32,12 @@ public class Clause {
 
 	public Term toTerm(Script solver) {
 		Term[] terms = new Term[positive.size() + negative.size()];
-		for (int i = 0; i < positive.size(); i++) {
-			terms[i] = positive.get(i);
+		int i = 0;
+		for (Term pos : positive) {
+			terms[i++] = pos;
 		}
-		for (int i = 0; i < negative.size(); i++) {
-			terms[i + positive.size()] = Util.not(solver, negative.get(i));
+		for (Term neg : negative) {
+			terms[i++] = Util.not(solver, neg);
 		}
 		return Util.or(solver, terms);
 	}
@@ -48,7 +49,7 @@ public class Clause {
 			c.addPositive(prime.prime(pos));
 		}
 		for (Term neg : negative) {
-			c.addPositive(prime.prime(neg));
+			c.addNegative(prime.prime(neg));
 		}
 		return c;
 	}
@@ -56,5 +57,43 @@ public class Clause {
 	@Override
 	public String toString() {
 		return positive + " or ~" + negative;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((negative == null) ? 0 : negative.hashCode());
+		result = prime * result + ((positive == null) ? 0 : positive.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Clause)) {
+			return false;
+		}
+		Clause other = (Clause) obj;
+		if (negative == null) {
+			if (other.negative != null) {
+				return false;
+			}
+		} else if (!negative.equals(other.negative)) {
+			return false;
+		}
+		if (positive == null) {
+			if (other.positive != null) {
+				return false;
+			}
+		} else if (!positive.equals(other.positive)) {
+			return false;
+		}
+		return true;
 	}
 }

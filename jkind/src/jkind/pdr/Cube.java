@@ -57,7 +57,7 @@ public class Cube {
 			c.addPositive(prime.prime(pos));
 		}
 		for (Term neg : negative) {
-			c.addPositive(prime.prime(neg));
+			c.addNegative(prime.prime(neg));
 		}
 		return c;
 	}

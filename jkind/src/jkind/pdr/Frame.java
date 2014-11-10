@@ -1,7 +1,7 @@
 package jkind.pdr;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
@@ -9,7 +9,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Frame {
 	private final Term term;
-	private final List<Clause> clauses = new ArrayList<>();
+	private final Set<Clause> clauses = new HashSet<>();
 
 	public Frame(Term term) {
 		this.term = term;
@@ -19,7 +19,7 @@ public class Frame {
 		this.term = null;
 	}
 
-	public Term getTerm(Script solver) {
+	public Term toTerm(Script solver) {
 		if (term != null && !clauses.isEmpty()) {
 			throw new IllegalArgumentException("Clauses in initial frame");
 		}
@@ -29,8 +29,10 @@ public class Frame {
 		}
 		
 		Term[] terms = new Term[clauses.size()];
-		for (int i = 0; i < clauses.size(); i++) {
-			terms[i] = clauses.get(i).toTerm(solver);
+		int i = 0;
+		for (Clause c : clauses) {
+			terms[i] = c.toTerm(solver);
+			i++;
 		}
 		return Util.and(solver, terms);
 	}
@@ -39,7 +41,7 @@ public class Frame {
 		clauses.add(c);
 	}
 
-	public List<Clause> getClauses() {
+	public Set<Clause> getClauses() {
 		return clauses;
 	}
 }
