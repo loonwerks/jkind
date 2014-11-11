@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
@@ -50,17 +51,17 @@ public class PdrSolver {
 		}
 	}
 
-	public Cube extractCube(Model model, List<Term> variables) {
+	public Cube extractCube(Model model, Set<Predicate> predicates, List<Term> variables) {
 		if (model == null) {
 			return null;
 		}
 
 		Cube c = new Cube();
-		for (Term v : variables) {
-			if (isTrue(model.evaluate(v))) {
-				c.addPositive(v);
+		for (Predicate pred : predicates) {
+			if (isTrue(model.evaluate(pred.apply(script, variables)))) {
+				c.addPositive(pred);
 			} else {
-				c.addNegative(v);
+				c.addNegative(pred);
 			}
 		}
 		return c;
@@ -128,18 +129,6 @@ public class PdrSolver {
 		return and(conjuncts.toArray(new Term[conjuncts.size()]));
 	}
 
-	public Term toTerm(Frame frame) {
-		return frame.toTerm(script);
-	}
-
-	public Term toTerm(Cube s) {
-		return s.toTerm(script);
-	}
-
-	public Term prime(Cube c) {
-		return new NameAppender(script, "'").append(c.toTerm(script));
-	}
-
 	public Term term(String funcname, Term... params) {
 		return script.term(funcname, params);
 	}
@@ -150,5 +139,17 @@ public class PdrSolver {
 
 	public Term decimal(BigDecimal decimal) {
 		return script.decimal(decimal);
+	}
+
+	public Term frame(Frame frame) {
+		return frame.toTerm(script);
+	}
+
+	public Term cube(Cube s) {
+		return s.toTerm(script);
+	}
+
+	public Term apply(Cube s, List<Term> arguments) {
+		return s.apply(script, arguments);
 	}
 }

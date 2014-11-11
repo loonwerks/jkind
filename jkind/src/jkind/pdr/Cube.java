@@ -8,35 +8,46 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Cube {
-	private final List<Term> positive = new ArrayList<>();
-	private final List<Term> negative = new ArrayList<>();
+	private final List<Predicate> positive = new ArrayList<>();
+	private final List<Predicate> negative = new ArrayList<>();
 	private Cube next;
 
-	public void addPositive(Term t) {
-		positive.add(t);
+	public void addPositive(Predicate p) {
+		positive.add(p);
 	}
 
-	public void addNegative(Term t) {
-		negative.add(t);
+	public void addNegative(Predicate p) {
+		negative.add(p);
 	}
-	
+
 	public void setNext(Cube next) {
 		this.next = next;
 	}
-	
+
 	public Cube getNext() {
 		return next;
 	}
 
-	public Term toTerm(Script solver) {
+	public Term toTerm(Script script) {
 		Term[] terms = new Term[positive.size() + negative.size()];
 		for (int i = 0; i < positive.size(); i++) {
-			terms[i] = positive.get(i);
+			terms[i] = positive.get(i).toTerm();
 		}
 		for (int i = 0; i < negative.size(); i++) {
-			terms[i + positive.size()] = Util.not(solver, negative.get(i));
+			terms[i + positive.size()] = Util.not(script, negative.get(i).toTerm());
 		}
-		return Util.and(solver, terms);
+		return Util.and(script, terms);
+	}
+
+	public Term apply(Script script, List<Term> arguments) {
+		Term[] terms = new Term[positive.size() + negative.size()];
+		for (int i = 0; i < positive.size(); i++) {
+			terms[i] = positive.get(i).apply(script, arguments);
+		}
+		for (int i = 0; i < negative.size(); i++) {
+			terms[i + positive.size()] = Util.not(script, negative.get(i).apply(script, arguments));
+		}
+		return Util.and(script, terms);
 	}
 
 	@Override

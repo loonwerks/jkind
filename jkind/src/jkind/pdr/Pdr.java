@@ -18,23 +18,21 @@ public class Pdr {
 	private final Term T;
 	private final Term P;
 
-	public Pdr(Node node) {		
+	private final List<Term> base;
+	private final List<Term> prime;
+
+	public Pdr(Node node) {
 		Lustre2Term lustre2Term = new Lustre2Term(solver);
 		solver.setVarDecls(lustre2Term.getVariables(node));
-		List<Term> base = solver.getVariables("");
-		List<Term> prime = solver.getVariables("'");
-		
-		// TODO: These should be parameterized?
+		this.base = solver.getVariables("");
+		this.prime = solver.getVariables("'");
+
 		this.I = lustre2Term.getInit();
 		this.T = lustre2Term.getTransition(node);
 		this.P = lustre2Term.getProperty(node);
-		
-		System.out.println(base);
+
 		predicates.addAll(PredicateCollector.collect(I, base));
 		predicates.addAll(PredicateCollector.collect(P, base));
-		System.out.println(predicates);
-
-		System.exit(-1);
 	}
 
 	public Cube check() {
@@ -103,10 +101,6 @@ public class Pdr {
 		}
 	}
 
-	private Cube extractCube(Model model) {
-		return solver.extractCube(model);
-	}
-
 	private Frame lastFrame() {
 		return trace.get(trace.size() - 1);
 	}
@@ -119,23 +113,27 @@ public class Pdr {
 		return solver.not(term);
 	}
 
-	private Term and(Frame frame, Term... terms) {
-		return solver.and(solver.toTerm(frame), solver.and(terms));
-	}
-
-	private Term and(Frame frame, Cube s) {
-		return solver.and(solver.toTerm(frame), solver.toTerm(s));
-	}
-
-	private Term prime(Cube c) {
-		return solver.prime(c);
-	}
-
 	private Term not(Frame frame) {
-		return solver.not(solver.toTerm(frame));
+		return solver.not(solver.frame(frame));
 	}
 
 	private Term not(Cube s) {
-		return solver.not(solver.toTerm(s));
+		return solver.not(solver.cube(s));
+	}
+
+	private Term and(Frame frame, Term... terms) {
+		return solver.and(solver.frame(frame), solver.and(terms));
+	}
+
+	private Term and(Frame frame, Cube s) {
+		return solver.and(solver.frame(frame), solver.cube(s));
+	}
+	
+	private Cube extractCube(Model model) {
+		return solver.extractCube(model, predicates, base);
+	}
+
+	private Term prime(Cube c) {
+		return solver.apply(c, prime);
 	}
 }
