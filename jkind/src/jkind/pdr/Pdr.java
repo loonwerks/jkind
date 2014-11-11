@@ -108,7 +108,7 @@ public class Pdr {
 			if (c == null) {
 				break;
 			}
-			
+
 			// TODO: Generalize c
 
 			c.setNext(s);
@@ -123,12 +123,31 @@ public class Pdr {
 
 	private boolean refine(CounterexampleException cex) {
 		List<Cube> cubes = getCubes(cex);
-		for (int i = 0; i < cubes.size(); i++) {
-			List<Term> vars = solver.getVariables("$" + i);
-			
+		List<Term> conjuncts = new ArrayList<>();
+
+		List<Term> vars = solver.getVariables("$0");
+		for (int i = 0; i < cubes.size() - 1; i++) {
+			List<Term> nextVars = solver.getVariables("$" + (i + 1));
+			conjuncts.add(solver.apply(cubes.get(i), vars));
+			conjuncts.add(solver.subst(solver.subst(T, base, vars), prime, nextVars));
+			vars = nextVars;
 		}
+		conjuncts.add(solver.apply(cubes.get(cubes.size() - 1), vars));
+		conjuncts.add(solver.not(solver.subst(P, base, vars)));
 		
-		return false;
+		Model m = checkSat(solver.and(conjuncts));
+		if (m != null) {
+			return false;
+		}
+
+		if (cubes.size() < 2) {
+			throw new IllegalArgumentException();
+		} else if (cubes.size() == 2) {
+			// Counterexample too short for interpolation
+			// TODO: Double check this
+			trace.get(1).add(cubes.get(1));
+		}
+		return true;
 	}
 
 	private List<Cube> getCubes(CounterexampleException cex) {
