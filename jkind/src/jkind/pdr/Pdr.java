@@ -35,8 +35,8 @@ public class Pdr {
 		this.T = lustre2Term.getTransition(node);
 		this.P = lustre2Term.getProperty(node);
 
-		predicates.addAll(PredicateCollector.collect(I, base));
-		predicates.addAll(PredicateCollector.collect(P, base));
+		predicates.addAll(PredicateCollector.collect(I));
+		predicates.addAll(PredicateCollector.collect(P));
 
 		this.bar = solver.getVariables("-");
 		this.barPrime = solver.getVariables("-'");
@@ -54,7 +54,7 @@ public class Pdr {
 		// TODO: Clean up
 		Frame f = new Frame();
 		Cube c = new Cube();
-		c.addPositive(new Predicate(I, base));
+		c.addPositive(new Predicate(I));
 		f.add(c);
 		trace.add(f);
 
@@ -164,11 +164,11 @@ public class Pdr {
 		List<Term> vars = solver.getVariables("$0");
 		for (int i = 0; i < cubes.size() - 1; i++) {
 			List<Term> nextVars = solver.getVariables("$" + (i + 1));
-			conjuncts.add(solver.apply(cubes.get(i), vars));
+			conjuncts.add(apply(cubes.get(i), vars));
 			conjuncts.add(T(vars, nextVars));
 			vars = nextVars;
 		}
-		conjuncts.add(solver.apply(cubes.get(cubes.size() - 1), vars));
+		conjuncts.add(apply(cubes.get(cubes.size() - 1), vars));
 		conjuncts.add(not(P(vars)));
 
 		Model m = checkSat(solver.and(conjuncts));
@@ -199,7 +199,7 @@ public class Pdr {
 		Term[] terms = new Term[predicates.size()];
 		int i = 0;
 		for (Predicate p : predicates) {
-			terms[i++] = solver.term("=", solver.apply(p, variables1), solver.apply(p, variables2));
+			terms[i++] = solver.term("=", apply(p, variables1), apply(p, variables2));
 		}
 		return solver.and(terms);
 	}
@@ -241,15 +241,23 @@ public class Pdr {
 	}
 
 	private Cube extractCube(Model model) {
-		return solver.extractCube(model, predicates, base);
+		return solver.extractCube(model, predicates);
 	}
 
 	private Term prime(Cube cube) {
-		return solver.apply(cube, prime);
+		return apply(cube, prime);
 	}
 
 	private Term prime(Term term) {
 		return solver.subst(term, base, prime);
+	}
+
+	private Term apply(Cube cube, List<Term> arguments) {
+		return solver.subst(solver.cube(cube), base, arguments);
+	}
+
+	private Term apply(Predicate p, List<Term> arguments) {
+		return solver.subst(p.getTerm(), base, arguments);
 	}
 
 	private Term T(List<Term> variables1, List<Term> variables2) {

@@ -39,17 +39,6 @@ public class Cube {
 		return Util.and(script, terms);
 	}
 
-	public Term apply(Script script, List<Term> arguments) {
-		Term[] terms = new Term[positive.size() + negative.size()];
-		for (int i = 0; i < positive.size(); i++) {
-			terms[i] = positive.get(i).apply(script, arguments);
-		}
-		for (int i = 0; i < negative.size(); i++) {
-			terms[i + positive.size()] = Util.not(script, negative.get(i).apply(script, arguments));
-		}
-		return Util.and(script, terms);
-	}
-
 	@Override
 	public String toString() {
 		return positive + " and ~" + negative;

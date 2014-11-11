@@ -51,14 +51,14 @@ public class PdrSolver {
 		}
 	}
 
-	public Cube extractCube(Model model, Set<Predicate> predicates, List<Term> variables) {
+	public Cube extractCube(Model model, Set<Predicate> predicates) {
 		if (model == null) {
 			return null;
 		}
 
 		Cube c = new Cube();
 		for (Predicate pred : predicates) {
-			if (isTrue(model.evaluate(pred.apply(script, variables)))) {
+			if (isTrue(model.evaluate(pred.getTerm()))) {
 				c.addPositive(pred);
 			} else {
 				c.addNegative(pred);
@@ -149,15 +149,7 @@ public class PdrSolver {
 		return s.toTerm(script);
 	}
 
-	public Term apply(Cube s, List<Term> arguments) {
-		return s.apply(script, arguments);
-	}
-
 	public Term subst(Term term, List<Term> variables, List<Term> arguments) {
 		return Subst.apply(script, term, variables, arguments);
-	}
-
-	public Term apply(Predicate p, List<Term> arguments) {
-		return p.apply(script, arguments);
 	}
 }
