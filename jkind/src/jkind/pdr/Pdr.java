@@ -15,7 +15,7 @@ public class Pdr {
 	private final Set<Predicate> predicates = new HashSet<>();
 
 	private final Term I;
-	private final Term Tp;
+	private Term Tp;
 	private final Term T;
 	private final Term P;
 
@@ -35,18 +35,28 @@ public class Pdr {
 		this.T = lustre2Term.getTransition(node);
 		this.P = lustre2Term.getProperty(node);
 
-		this.bar = solver.getVariables("-");
-		this.barPrime = solver.getVariables("-'");
-		this.Tp = solver.and(eqP(base, bar),
-				solver.subst(solver.subst(T, base, bar), prime, barPrime), eqP(barPrime, prime));
-
 		predicates.addAll(PredicateCollector.collect(I, base));
 		predicates.addAll(PredicateCollector.collect(P, base));
+
+		this.bar = solver.getVariables("-");
+		this.barPrime = solver.getVariables("-'");
+		this.Tp = computeTp();
+
+	}
+
+	private Term computeTp() {
+		return and(eqP(base, bar), T(bar, barPrime), eqP(barPrime, prime));
 	}
 
 	public Cube check() {
 		trace.add(new Frame(I));
-		trace.add(new Frame());
+
+		// TODO: Clean up
+		Frame f = new Frame();
+		Cube c = new Cube();
+		c.addPositive(new Predicate(I, base));
+		f.add(c);
+		trace.add(f);
 
 		try {
 			while (true) {
@@ -123,29 +133,53 @@ public class Pdr {
 
 	private boolean refine(CounterexampleException cex) {
 		List<Cube> cubes = getCubes(cex);
+		if (cubes.size() < 2) {
+			throw new IllegalArgumentException();
+		} else if (cubes.size() == 2) {
+			return refineByBlocking(cubes);
+		} else {
+			return refineByPredicates(cubes);
+		}
+	}
+
+	private boolean refineByBlocking(List<Cube> cubes) {
+		// Counterexample too short for interpolation
+		// TODO: Double check this
+		if (cubes.size() != 2) {
+			throw new IllegalArgumentException();
+		}
+
+		Model m = checkSat(and(cubes.get(0), T, prime(cubes.get(1)), not(prime(P))));
+		if (m != null) {
+			return false;
+		} else {
+			trace.get(1).add(cubes.get(1));
+			return true;
+		}
+	}
+
+	private boolean refineByPredicates(List<Cube> cubes) {
 		List<Term> conjuncts = new ArrayList<>();
 
 		List<Term> vars = solver.getVariables("$0");
 		for (int i = 0; i < cubes.size() - 1; i++) {
 			List<Term> nextVars = solver.getVariables("$" + (i + 1));
 			conjuncts.add(solver.apply(cubes.get(i), vars));
-			conjuncts.add(solver.subst(solver.subst(T, base, vars), prime, nextVars));
+			conjuncts.add(T(vars, nextVars));
 			vars = nextVars;
 		}
 		conjuncts.add(solver.apply(cubes.get(cubes.size() - 1), vars));
-		conjuncts.add(solver.not(solver.subst(P, base, vars)));
-		
+		conjuncts.add(not(P(vars)));
+
 		Model m = checkSat(solver.and(conjuncts));
 		if (m != null) {
 			return false;
 		}
 
-		if (cubes.size() < 2) {
-			throw new IllegalArgumentException();
-		} else if (cubes.size() == 2) {
-			// Counterexample too short for interpolation
-			// TODO: Double check this
+		else if (cubes.size() == 2) {
 			trace.get(1).add(cubes.get(1));
+		} else {
+
 		}
 		return true;
 	}
@@ -193,15 +227,35 @@ public class Pdr {
 		return solver.and(solver.frame(frame), solver.and(terms));
 	}
 
-	private Term and(Frame frame, Cube s) {
-		return solver.and(solver.frame(frame), solver.cube(s));
+	private Term and(Term... terms) {
+		return solver.and(terms);
+	}
+
+	private Term and(Frame frame, Cube cube) {
+		return solver.and(solver.frame(frame), solver.cube(cube));
+	}
+
+	private Term and(Cube cube, Term... terms) {
+		return solver.and(solver.cube(cube), solver.and(terms));
 	}
 
 	private Cube extractCube(Model model) {
 		return solver.extractCube(model, predicates, base);
 	}
 
-	private Term prime(Cube c) {
-		return solver.apply(c, prime);
+	private Term prime(Cube cube) {
+		return solver.apply(cube, prime);
+	}
+
+	private Term prime(Term term) {
+		return solver.subst(term, base, prime);
+	}
+
+	private Term T(List<Term> variables1, List<Term> variables2) {
+		return solver.subst(solver.subst(T, base, variables1), prime, variables2);
+	}
+
+	private Term P(List<Term> variables) {
+		return solver.subst(P, base, variables);
 	}
 }
