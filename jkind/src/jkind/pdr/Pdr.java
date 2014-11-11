@@ -181,7 +181,8 @@ public class Pdr {
 		} else {
 
 		}
-		return true;
+		
+		throw new UnsupportedOperationException();
 	}
 
 	private List<Cube> getCubes(CounterexampleException cex) {

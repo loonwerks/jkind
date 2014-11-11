@@ -1,7 +1,6 @@
 package jkind.pdr;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
@@ -9,29 +8,24 @@ import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class PredicateCollector {
-	private final List<Term> variables;
 	private final Set<Predicate> predicates = new HashSet<>();
 
-	public PredicateCollector(List<Term> variables) {
-		this.variables = variables;
-	}
-
-	public static Set<Predicate> collect(Term term, List<Term> variables) {
-		PredicateCollector collector = new PredicateCollector(variables);
-		collector.collect(term);
+	public static Set<Predicate> collect(Term term) {
+		PredicateCollector collector = new PredicateCollector();
+		collector.walk(term);
 		return collector.predicates;
 	}
 
-	private void collect(Term term) {
+	private void walk(Term term) {
 		if (term instanceof ApplicationTerm) {
 			ApplicationTerm at = (ApplicationTerm) term;
-			collect(at);
+			walk(at);
 		} else {
 			throw new IllegalArgumentException("Unhandled: " + term.getClass().getSimpleName());
 		}
 	}
 
-	private void collect(ApplicationTerm at) {
+	private void walk(ApplicationTerm at) {
 		if (at.getParameters().length == 0) {
 			String name = at.getFunction().getName();
 			if (name.equals("true") || name.equals("false")) {
@@ -39,12 +33,12 @@ public class PredicateCollector {
 			}
 		} else if (booleanParamaters(at)) {
 			for (Term sub : at.getParameters()) {
-				collect(sub);
+				walk(sub);
 			}
 			return;
 		}
 
-		predicates.add(new Predicate(at, variables));
+		predicates.add(new Predicate(at));
 	}
 
 	private boolean booleanParamaters(ApplicationTerm at) {

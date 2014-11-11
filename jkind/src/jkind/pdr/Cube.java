@@ -31,10 +31,10 @@ public class Cube {
 	public Term toTerm(Script script) {
 		Term[] terms = new Term[positive.size() + negative.size()];
 		for (int i = 0; i < positive.size(); i++) {
-			terms[i] = positive.get(i).toTerm();
+			terms[i] = positive.get(i).getTerm();
 		}
 		for (int i = 0; i < negative.size(); i++) {
-			terms[i + positive.size()] = Util.not(script, negative.get(i).toTerm());
+			terms[i + positive.size()] = Util.not(script, negative.get(i).getTerm());
 		}
 		return Util.and(script, terms);
 	}
