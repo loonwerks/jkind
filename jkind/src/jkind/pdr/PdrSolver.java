@@ -152,4 +152,8 @@ public class PdrSolver {
 	public Term apply(Cube s, List<Term> arguments) {
 		return s.apply(script, arguments);
 	}
+
+	public Term subst(Term term, List<Term> variables, List<Term> arguments) {
+		return Subst.apply(script, term, variables, arguments);
+	}
 }

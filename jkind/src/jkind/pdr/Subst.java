@@ -3,6 +3,7 @@ package jkind.pdr;
 import java.util.List;
 
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
+import de.uni_freiburg.informatik.ultimate.logic.ConstantTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
@@ -14,8 +15,9 @@ public class Subst {
 		}
 
 		if (term instanceof ApplicationTerm) {
-			ApplicationTerm at = (ApplicationTerm) term;
-			return apply(script, at, variables, arguments);
+			return apply(script, (ApplicationTerm) term, variables, arguments);
+		} else if (term instanceof ConstantTerm) {
+			return term;
 		}
 
 		throw new IllegalArgumentException("Unhandled: " + term.getClass().getSimpleName());
@@ -28,6 +30,6 @@ public class Subst {
 		for (int i = 0; i < parameters.length; i++) {
 			terms[i] = apply(script, parameters[i], variables, arguments);
 		}
-		return script.term(term.getFunction().getName(), term);
+		return script.term(term.getFunction().getName(), terms);
 	}
 }

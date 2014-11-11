@@ -15,21 +15,29 @@ public class Pdr {
 	private final Set<Predicate> predicates = new HashSet<>();
 
 	private final Term I;
+	private final Term Tp;
 	private final Term T;
 	private final Term P;
 
 	private final List<Term> base;
 	private final List<Term> prime;
+	private final List<Term> bar;
+	private final List<Term> barPrime;
 
 	public Pdr(Node node) {
 		Lustre2Term lustre2Term = new Lustre2Term(solver);
 		solver.setVarDecls(lustre2Term.getVariables(node));
+		
 		this.base = solver.getVariables("");
 		this.prime = solver.getVariables("'");
 
 		this.I = lustre2Term.getInit();
 		this.T = lustre2Term.getTransition(node);
 		this.P = lustre2Term.getProperty(node);
+		
+		this.bar = solver.getVariables("-");
+		this.barPrime = solver.getVariables("-'");
+		this.Tp = solver.subst(solver.subst(T, base, bar), prime, barPrime);
 
 		predicates.addAll(PredicateCollector.collect(I, base));
 		predicates.addAll(PredicateCollector.collect(P, base));
