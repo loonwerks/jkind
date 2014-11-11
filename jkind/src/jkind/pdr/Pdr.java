@@ -27,17 +27,18 @@ public class Pdr {
 	public Pdr(Node node) {
 		Lustre2Term lustre2Term = new Lustre2Term(solver);
 		solver.setVarDecls(lustre2Term.getVariables(node));
-		
+
 		this.base = solver.getVariables("");
 		this.prime = solver.getVariables("'");
 
 		this.I = lustre2Term.getInit();
 		this.T = lustre2Term.getTransition(node);
 		this.P = lustre2Term.getProperty(node);
-		
+
 		this.bar = solver.getVariables("-");
 		this.barPrime = solver.getVariables("-'");
-		this.Tp = solver.subst(solver.subst(T, base, bar), prime, barPrime);
+		this.Tp = solver.and(eqP(base, bar),
+				solver.subst(solver.subst(T, base, bar), prime, barPrime), eqP(barPrime, prime));
 
 		predicates.addAll(PredicateCollector.collect(I, base));
 		predicates.addAll(PredicateCollector.collect(P, base));
@@ -63,7 +64,14 @@ public class Pdr {
 		Model m;
 		// exists P-cube c s.t. c |= trace.last() /\ ~P
 		while ((m = checkSat(and(lastFrame(), not(P)))) != null) {
-			recBlock(extractCube(m), trace.size() - 1);
+			try {
+				// TODO: Generalize cube
+				recBlock(extractCube(m), trace.size() - 1);
+			} catch (CounterexampleException cex) {
+				if (!refine(cex)) {
+					throw cex;
+				}
+			}
 		}
 	}
 
@@ -71,11 +79,13 @@ public class Pdr {
 		trace.add(new Frame());
 		for (int i = 1; i < trace.size() - 1; i++) {
 			for (Cube c : trace.get(i).getCubes()) {
-				if (checkSat(and(trace.get(i), T, prime(c))) == null) {
+				if (checkSat(and(trace.get(i), Tp, prime(c))) == null) {
+					// TODO: Check subsumption
 					trace.get(i + 1).add(c);
 				}
 			}
 
+			// TODO: Check more efficiently?
 			if (checkSat(and(trace.get(i + 1), not(trace.get(i)))) == null) {
 				return true;
 			}
@@ -94,10 +104,12 @@ public class Pdr {
 		}
 
 		while (true) {
-			Cube c = extractCube(checkSat(and(trace.get(i - 1), T, not(s), prime(s))));
+			Cube c = extractCube(checkSat(and(trace.get(i - 1), Tp, not(s), prime(s))));
 			if (c == null) {
 				break;
 			}
+			
+			// TODO: Generalize c
 
 			c.setNext(s);
 			recBlock(c, i - 1);
@@ -107,6 +119,35 @@ public class Pdr {
 		for (int j = 1; j <= i; j++) {
 			trace.get(j).add(s);
 		}
+	}
+
+	private boolean refine(CounterexampleException cex) {
+		List<Cube> cubes = getCubes(cex);
+		for (int i = 0; i < cubes.size(); i++) {
+			List<Term> vars = solver.getVariables("$" + i);
+			
+		}
+		
+		return false;
+	}
+
+	private List<Cube> getCubes(CounterexampleException cex) {
+		List<Cube> result = new ArrayList<>();
+		Cube curr = cex.getInit();
+		while (curr != null) {
+			result.add(curr);
+			curr = curr.getNext();
+		}
+		return result;
+	}
+
+	private Term eqP(List<Term> variables1, List<Term> variables2) {
+		Term[] terms = new Term[predicates.size()];
+		int i = 0;
+		for (Predicate p : predicates) {
+			terms[i++] = solver.term("=", solver.apply(p, variables1), solver.apply(p, variables2));
+		}
+		return solver.and(terms);
 	}
 
 	private Frame lastFrame() {
@@ -136,7 +177,7 @@ public class Pdr {
 	private Term and(Frame frame, Cube s) {
 		return solver.and(solver.frame(frame), solver.cube(s));
 	}
-	
+
 	private Cube extractCube(Model model) {
 		return solver.extractCube(model, predicates, base);
 	}

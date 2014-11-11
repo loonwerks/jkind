@@ -156,4 +156,8 @@ public class PdrSolver {
 	public Term subst(Term term, List<Term> variables, List<Term> arguments) {
 		return Subst.apply(script, term, variables, arguments);
 	}
+
+	public Term apply(Predicate p, List<Term> arguments) {
+		return p.apply(script, arguments);
+	}
 }
