@@ -1,38 +1,40 @@
 package jkind.pdr;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.VarDecl;
-import jkind.sexp.Sexp;
-import jkind.util.Util;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Pdr {
 	private final List<Frame> trace = new ArrayList<>();
 	private final PdrSolver solver = new PdrSolver();
+	private final Set<Predicate> predicates = new HashSet<>();
 
 	private final Term I;
 	private final Term T;
 	private final Term P;
 
-	public Pdr(Node node) {
-		for (VarDecl vd : Util.getVarDecls(node)) {
-			solver.addVariable(vd);
-		}
-		
+	public Pdr(Node node) {		
 		Lustre2Term lustre2Term = new Lustre2Term(solver);
-		solver.addVariable(lustre2Term.getInitVariable());
+		solver.setVarDecls(lustre2Term.getVariables(node));
+		List<Term> base = solver.getVariables("");
+		List<Term> prime = solver.getVariables("'");
+		
+		// TODO: These should be parameterized?
 		this.I = lustre2Term.getInit();
 		this.T = lustre2Term.getTransition(node);
 		this.P = lustre2Term.getProperty(node);
 		
-		System.out.println(I);
-		System.out.println(T);
-		System.out.println(P);
+		System.out.println(base);
+		predicates.addAll(PredicateCollector.collect(I, base));
+		predicates.addAll(PredicateCollector.collect(P, base));
+		System.out.println(predicates);
+
+		System.exit(-1);
 	}
 
 	public Cube check() {
@@ -96,7 +98,9 @@ public class Pdr {
 		}
 
 		// TODO: Generalize s
-		trace.get(i).add(s);
+		for (int j = 1; j <= i; j++) {
+			trace.get(j).add(s);
+		}
 	}
 
 	private Cube extractCube(Model model) {

@@ -3,7 +3,9 @@ package jkind.pdr;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
@@ -21,7 +23,9 @@ import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 
 public class PdrSolver {
 	private final Script script = new SMTInterpol();
-	private final List<Term> variables = new ArrayList<>();
+	
+	private List<VarDecl> varDecls;
+	private final Map<String, List<Term>> variableLists = new HashMap<>();
 
 	public PdrSolver() {
 		script.setLogic(Logics.QF_UFLIRA);
@@ -46,7 +50,7 @@ public class PdrSolver {
 		}
 	}
 
-	public Cube extractCube(Model model) {
+	public Cube extractCube(Model model, List<Term> variables) {
 		if (model == null) {
 			return null;
 		}
@@ -70,11 +74,24 @@ public class PdrSolver {
 		return false;
 	}
 
-	public void addVariable(VarDecl vd) {
-		Sort sort = getSort(vd.type);
-		script.declareFun(vd.id, new Sort[0], sort);
-		script.declareFun(vd.id + "'", new Sort[0], sort);
-		variables.add(script.term(vd.id));
+	public void setVarDecls(List<VarDecl> varDecls) {
+		this.varDecls = varDecls;
+	}
+	
+	public List<Term> getVariables(String suffix) {
+		if (variableLists.containsKey(suffix)) {
+			return variableLists.get(suffix);
+		}
+		
+		List<Term> result = new ArrayList<>();
+		for (VarDecl vd : varDecls) {
+			String name = vd.id + suffix;
+			Sort sort = getSort(vd.type);
+			script.declareFun(name, new Sort[0], sort);
+			result.add(script.term(name));
+		}
+		variableLists.put(suffix, result);
+		return result;
 	}
 
 	private Sort getSort(Type type) {
@@ -110,7 +127,7 @@ public class PdrSolver {
 	public Term and(List<Term> conjuncts) {
 		return and(conjuncts.toArray(new Term[conjuncts.size()]));
 	}
-	
+
 	public Term toTerm(Frame frame) {
 		return frame.toTerm(script);
 	}

@@ -26,6 +26,7 @@ import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.util.Util;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Lustre2Term implements ExprVisitor<Term> {
@@ -37,12 +38,15 @@ public class Lustre2Term implements ExprVisitor<Term> {
 		this.solver = solver;
 	}
 
-	public VarDecl getInitVariable() {
-		return new VarDecl(INIT, NamedType.BOOL);
-	}
-
 	public Term getInit() {
 		return solver.term(INIT);
+	}
+
+	public List<VarDecl> getVariables(Node node) {
+		List<VarDecl> variables = new ArrayList<>();
+		variables.addAll(Util.getVarDecls(node));
+		variables.add(new VarDecl(INIT, NamedType.BOOL));
+		return variables;
 	}
 
 	public Term getTransition(Node node) {
@@ -65,7 +69,8 @@ public class Lustre2Term implements ExprVisitor<Term> {
 
 	public Term getProperty(Node node) {
 		// TODO: Multi-property?
-		return solver.term(node.properties.get(0));
+		Term prop = solver.term(node.properties.get(0));
+		return solver.or(prop, solver.term(INIT));
 	}
 	
 	private String prime(String str) {

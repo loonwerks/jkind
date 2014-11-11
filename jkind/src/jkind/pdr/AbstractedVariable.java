@@ -5,27 +5,28 @@ import java.util.List;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
-public class Predicate {
-	private final AbstractedTerm abs;
+public class AbstractedVariable extends AbstractedTerm {
+	private final int index;
 
-	public Predicate(Term body, List<Term> variables) {
-		this.abs = AbstractedTerm.make(body, variables);
+	public AbstractedVariable(int index) {
+		this.index = index;
 	}
 
+	@Override
 	public Term apply(Script script, List<Term> arguments) {
-		return abs.apply(script, arguments);
+		return arguments.get(index);
 	}
-	
+
 	@Override
 	public String toString() {
-		return abs.toString();
+		return "#" + index;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((abs == null) ? 0 : abs.hashCode());
+		result = prime * result + index;
 		return result;
 	}
 
@@ -37,15 +38,11 @@ public class Predicate {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Predicate)) {
+		if (!(obj instanceof AbstractedVariable)) {
 			return false;
 		}
-		Predicate other = (Predicate) obj;
-		if (abs == null) {
-			if (other.abs != null) {
-				return false;
-			}
-		} else if (!abs.equals(other.abs)) {
+		AbstractedVariable other = (AbstractedVariable) obj;
+		if (index != other.index) {
 			return false;
 		}
 		return true;
