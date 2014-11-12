@@ -1,30 +1,26 @@
 package jkind.pdr;
 
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BinaryOp;
-import jkind.lustre.Equation;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
+import java.io.IOException;
+
+import jkind.SolverOption;
+import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
-import jkind.lustre.VarDecl;
-import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.Program;
+import jkind.slicing.DependencyMap;
+import jkind.slicing.LustreSlicer;
+import jkind.translation.Translate;
+
+import org.antlr.v4.runtime.RecognitionException;
 
 public class Main {
-	public static void main(String[] args) {
-		NodeBuilder builder = new NodeBuilder("main");
-		builder.addOutput(new VarDecl("x", NamedType.INT));
-		builder.addOutput(new VarDecl("ok", NamedType.BOOL));
-		builder.addEquation(new Equation(new IdExpr("x"), new BinaryExpr(new IntExpr(0),
-				BinaryOp.ARROW, new BinaryExpr(new UnaryExpr(UnaryOp.PRE, new IdExpr("x")),
-						BinaryOp.PLUS, new IntExpr(1)))));
-		builder.addEquation(new Equation(new IdExpr("ok"), new BinaryExpr(new IdExpr("x"), BinaryOp.NOTEQUAL, new IntExpr(10))));
-		builder.addProperty("ok");
-		Node node = builder.build();
+	public static void main(String[] args) throws RecognitionException, IOException {
+		Program program = jkind.Main.parseLustre(args[0]);
+		StaticAnalyzer.check(program, SolverOption.YICES);
 
-		Pdr pdr = new Pdr(node);
+		Node main = Translate.translate(program);
+		main = LustreSlicer.slice(main, new DependencyMap(main, main.properties));
+
+		Pdr pdr = new Pdr(main);
 		showCex(pdr.check());
 	}
 

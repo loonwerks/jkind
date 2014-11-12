@@ -175,7 +175,6 @@ public class Pdr {
 			predicates.addAll(preds);
 		}
 		System.out.println();
-		
 		Tp = computeTp();
 
 		return true;
