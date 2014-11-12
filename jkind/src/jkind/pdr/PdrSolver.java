@@ -13,6 +13,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
@@ -24,11 +25,12 @@ import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 
 public class PdrSolver {
 	private final Script script = new SMTInterpol();
-	
+
 	private List<VarDecl> varDecls;
 	private final Map<String, List<Term>> variableLists = new HashMap<>();
 
 	public PdrSolver() {
+		script.setOption(":produce-interpolants", true);
 		script.setLogic(Logics.QF_UFLIRA);
 		script.setOption(":verbosity", 3);
 	}
@@ -45,6 +47,25 @@ public class PdrSolver {
 			Model model = script.getModel();
 			script.pop(1);
 			return model;
+
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public Term getInterpolant(Term a, Term b) {
+		script.push(1);
+		script.assertTerm(script.annotate(a, new Annotation(":named", "A")));
+		script.assertTerm(script.annotate(b, new Annotation(":named", "B")));
+		switch (script.checkSat()) {
+		case UNSAT:
+			Term[] interps = script.getInterpolants(new Term[] { script.term("A"), script.term("B") });
+			script.pop(1);
+			return interps[0];
+
+		case SAT:
+			script.pop(1);
+			return null;
 
 		default:
 			throw new IllegalArgumentException();
@@ -78,12 +99,12 @@ public class PdrSolver {
 	public void setVarDecls(List<VarDecl> varDecls) {
 		this.varDecls = varDecls;
 	}
-	
+
 	public List<Term> getVariables(String suffix) {
 		if (variableLists.containsKey(suffix)) {
 			return variableLists.get(suffix);
 		}
-		
+
 		List<Term> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
 			String name = vd.id + suffix;

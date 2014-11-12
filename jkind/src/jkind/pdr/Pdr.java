@@ -159,30 +159,34 @@ public class Pdr {
 	}
 
 	private boolean refineByPredicates(List<Cube> cubes) {
-		List<Term> conjuncts = new ArrayList<>();
+		List<Term> vars0 = solver.getVariables("$0");
+		List<Term> vars1 = solver.getVariables("$1");
+		Term A = and(apply(cubes.get(0), vars0), T(vars0, vars1));
 
-		List<Term> vars = solver.getVariables("$0");
-		for (int i = 0; i < cubes.size() - 1; i++) {
+		List<Term> conjunctsB = new ArrayList<>();
+
+		List<Term> vars = vars1;
+		for (int i = 1; i < cubes.size() - 1; i++) {
 			List<Term> nextVars = solver.getVariables("$" + (i + 1));
-			conjuncts.add(apply(cubes.get(i), vars));
-			conjuncts.add(T(vars, nextVars));
+			conjunctsB.add(apply(cubes.get(i), vars));
+			conjunctsB.add(T(vars, nextVars));
 			vars = nextVars;
 		}
-		conjuncts.add(apply(cubes.get(cubes.size() - 1), vars));
-		conjuncts.add(not(P(vars)));
+		conjunctsB.add(apply(cubes.get(cubes.size() - 1), vars));
+		conjunctsB.add(not(P(vars)));
+		Term B = solver.and(conjunctsB);
 
-		Model m = checkSat(solver.and(conjuncts));
-		if (m != null) {
+		Term interp = getInterpolant(A, B);
+		if (interp == null) {
 			return false;
 		}
 
-		else if (cubes.size() == 2) {
-			trace.get(1).add(cubes.get(1));
-		} else {
+		Set<Predicate> preds = PredicateCollector.collect(subst(interp, vars1, base));
+		System.out.println(preds);
+		predicates.addAll(preds);
+		Tp = computeTp();
 
-		}
-		
-		throw new UnsupportedOperationException();
+		return true;
 	}
 
 	private List<Cube> getCubes(CounterexampleException cex) {
@@ -266,5 +270,13 @@ public class Pdr {
 
 	private Term P(List<Term> variables) {
 		return solver.subst(P, base, variables);
+	}
+
+	private Term getInterpolant(Term a, Term b) {
+		return solver.getInterpolant(a, b);
+	}
+
+	private Term subst(Term term, List<Term> variables, List<Term> arguments) {
+		return solver.subst(term, variables, arguments);
 	}
 }
