@@ -53,15 +53,21 @@ public class PdrSolver {
 		}
 	}
 
-	public Term getInterpolant(Term a, Term b) {
+	public Term[] getInterpolants(List<Term> terms) {
 		script.push(1);
-		script.assertTerm(script.annotate(a, new Annotation(":named", "A")));
-		script.assertTerm(script.annotate(b, new Annotation(":named", "B")));
+
+		Term[] names = new Term[terms.size()];
+		for (int i = 0; i < terms.size(); i++) {
+			String name = "%interp" + i;
+			script.assertTerm(script.annotate(terms.get(i), new Annotation(":named", name)));
+			names[i] = script.term(name);
+		}
+
 		switch (script.checkSat()) {
 		case UNSAT:
-			Term[] interps = script.getInterpolants(new Term[] { script.term("A"), script.term("B") });
+			Term[] interps = script.getInterpolants(names);
 			script.pop(1);
-			return interps[0];
+			return interps;
 
 		case SAT:
 			script.pop(1);

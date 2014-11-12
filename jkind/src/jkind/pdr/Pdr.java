@@ -51,13 +51,6 @@ public class Pdr {
 	public Cube check() {
 		trace.add(new Frame(I));
 
-		// TODO: Clean up
-		Frame f = new Frame();
-		Cube c = new Cube();
-		c.addPositive(new Predicate(I));
-		f.add(c);
-		trace.add(f);
-
 		try {
 			while (true) {
 				blockCubes();
@@ -159,31 +152,30 @@ public class Pdr {
 	}
 
 	private boolean refineByPredicates(List<Cube> cubes) {
-		List<Term> vars0 = solver.getVariables("$0");
-		List<Term> vars1 = solver.getVariables("$1");
-		Term A = and(apply(cubes.get(0), vars0), T(vars0, vars1));
+		List<Term> pieces = new ArrayList<>();
 
-		List<Term> conjunctsB = new ArrayList<>();
-
-		List<Term> vars = vars1;
-		for (int i = 1; i < cubes.size() - 1; i++) {
+		List<Term> vars = solver.getVariables("$0");
+		for (int i = 0; i < cubes.size() - 1; i++) {
 			List<Term> nextVars = solver.getVariables("$" + (i + 1));
-			conjunctsB.add(apply(cubes.get(i), vars));
-			conjunctsB.add(T(vars, nextVars));
+			pieces.add(and(apply(cubes.get(i), vars), T(vars, nextVars)));
 			vars = nextVars;
 		}
-		conjunctsB.add(apply(cubes.get(cubes.size() - 1), vars));
-		conjunctsB.add(not(P(vars)));
-		Term B = solver.and(conjunctsB);
+		pieces.add(and(apply(cubes.get(cubes.size() - 1), vars), not(P(vars))));
 
-		Term interp = getInterpolant(A, B);
-		if (interp == null) {
+		Term[] interpolants = getInterpolants(pieces);
+		if (interpolants == null) {
 			return false;
 		}
 
-		Set<Predicate> preds = PredicateCollector.collect(subst(interp, vars1, base));
-		System.out.println(preds);
-		predicates.addAll(preds);
+		System.out.println();
+		for (int i = 0; i < cubes.size() - 1; i++) {
+			vars = solver.getVariables("$" + (i + 1));
+			Set<Predicate> preds = PredicateCollector.collect(subst(interpolants[i], vars, base));
+			System.out.println("New predicates: " + preds);
+			predicates.addAll(preds);
+		}
+		System.out.println();
+		
 		Tp = computeTp();
 
 		return true;
@@ -272,8 +264,8 @@ public class Pdr {
 		return solver.subst(P, base, variables);
 	}
 
-	private Term getInterpolant(Term a, Term b) {
-		return solver.getInterpolant(a, b);
+	private Term[] getInterpolants(List<Term> terms) {
+		return solver.getInterpolants(terms);
 	}
 
 	private Term subst(Term term, List<Term> variables, List<Term> arguments) {

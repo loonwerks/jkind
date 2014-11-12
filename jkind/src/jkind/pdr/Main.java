@@ -20,7 +20,7 @@ public class Main {
 		builder.addEquation(new Equation(new IdExpr("x"), new BinaryExpr(new IntExpr(0),
 				BinaryOp.ARROW, new BinaryExpr(new UnaryExpr(UnaryOp.PRE, new IdExpr("x")),
 						BinaryOp.PLUS, new IntExpr(1)))));
-		builder.addEquation(new Equation(new IdExpr("ok"), new BinaryExpr(new IdExpr("x"), BinaryOp.NOTEQUAL, new IntExpr(-1))));
+		builder.addEquation(new Equation(new IdExpr("ok"), new BinaryExpr(new IdExpr("x"), BinaryOp.NOTEQUAL, new IntExpr(10))));
 		builder.addProperty("ok");
 		Node node = builder.build();
 
