@@ -98,6 +98,7 @@ public class Pdr {
 	}
 
 	private void recBlock(Cube s, int i) {
+		// TODO: Use priority queue
 		if (checkSat(and(trace.get(0), s)) != null) {
 			throw new CounterexampleException(s);
 		}
