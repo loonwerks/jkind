@@ -44,4 +44,8 @@ public class Frame {
 	public Set<Cube> getCubes() {
 		return cubes;
 	}
+
+	public boolean isEmpty() {
+		return term == null && cubes.isEmpty();
+	}
 }

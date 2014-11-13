@@ -1,275 +1,171 @@
 package jkind.pdr;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import jkind.lustre.Node;
-import de.uni_freiburg.informatik.ultimate.logic.Model;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
+import jkind.pdr.PdrSat.Option;
 
 public class Pdr {
-	private final List<Frame> trace = new ArrayList<>();
-	private final PdrSolver solver = new PdrSolver();
-	private final Set<Predicate> predicates = new HashSet<>();
-
-	private final Term I;
-	private Term Tp;
-	private final Term T;
-	private final Term P;
-
-	private final List<Term> base;
-	private final List<Term> prime;
-	private final List<Term> bar;
-	private final List<Term> barPrime;
+	private final Node node;
+	private final List<Frame> F = new ArrayList<>();
+	private PdrSat Z;
 
 	public Pdr(Node node) {
-		Lustre2Term lustre2Term = new Lustre2Term(solver);
-		solver.setVarDecls(lustre2Term.getVariables(node));
-
-		this.base = solver.getVariables("");
-		this.prime = solver.getVariables("'");
-
-		this.I = lustre2Term.getInit();
-		this.T = lustre2Term.getTransition(node);
-		this.P = lustre2Term.getProperty(node);
-
-		predicates.addAll(PredicateCollector.collect(I));
-		predicates.addAll(PredicateCollector.collect(P));
-
-		this.bar = solver.getVariables("-");
-		this.barPrime = solver.getVariables("-'");
-		this.Tp = computeTp();
-
+		this.node = node;
 	}
 
-	private Term computeTp() {
-		return and(eqP(base, bar), T(bar, barPrime), eqP(barPrime, prime));
-	}
+	public Cube pdrMain() {
+		Z = new PdrSat(node, F);
+		
+		// Create F_INF and F[0]
+		F.add(new Frame());
+		addFrame(Z.initialFrame());
 
-	public Cube check() {
-		trace.add(new Frame(I));
-
-		try {
-			while (true) {
-				blockCubes();
-				if (propogateClauses()) {
+		while (true) {
+			Cube c = Z.getBadCube();
+			if (c != null) {
+				recBlockCube(new TCube(c, depth()));
+			} else {
+				addFrame(new Frame());
+				if (propogateBlockedCubes()) {
 					return null;
 				}
 			}
-		} catch (CounterexampleException cex) {
-			return cex.getInit();
 		}
 	}
 
-	private void blockCubes() {
-		Model m;
-		// exists P-cube c s.t. c |= trace.last() /\ ~P
-		while ((m = checkSat(and(lastFrame(), not(P)))) != null) {
-			try {
-				// TODO: Generalize cube
-				recBlock(extractCube(m), trace.size() - 1);
-			} catch (CounterexampleException cex) {
-				if (!refine(cex)) {
-					throw cex;
+	private void recBlockCube(TCube s0) {
+		PriorityQueue<TCube> Q = new PriorityQueue<>();
+		Q.add(s0);
+
+		while (!Q.isEmpty()) {
+			TCube s = Q.poll();
+
+			if (s.getFrame() == 0) {
+				if (Z.refine(getCubes(s.getCube()))) {
+					throw new CounterexampleException(s.getCube());
+				} else {
+					continue;
+				}
+			}
+			
+			if (!isBlocked(s)) {
+				assert (!Z.isInitial(s.getCube()));
+				TCube z = Z.solveRelative(s, Option.EXTRACT_MODEL);
+				
+				if (z.getFrame() != TCube.FRAME_NULL) {
+					// Cube 's' was blocked by image of predecessor
+					generalize(z);
+					
+					// Push z as far forward as possible
+					while (z.getFrame() < depth() - 1) {
+						TCube nz = Z.solveRelative(z.next());
+						if (nz.getFrame() != TCube.FRAME_NULL) {
+							z = nz;
+						} else {
+							break;
+						}
+					}
+					
+					if (s.getFrame() < depth() && z.getFrame() != TCube.FRAME_INF) {
+						Q.add(s.next());
+					}
+				} else {
+					// Cube 's' was not blocked by image of predecessor
+					z.setFrame(s.getFrame() - 1);
+					Q.add(z);
+					Q.add(s);
 				}
 			}
 		}
 	}
 
-	private boolean propogateClauses() {
-		System.out.println("Propogating");
-		trace.add(new Frame());
-		for (int i = 1; i < trace.size() - 1; i++) {
-			for (Cube c : trace.get(i).getCubes()) {
-				if (checkSat(and(trace.get(i), Tp, prime(c))) == null) {
-					// TODO: Check subsumption
-					trace.get(i + 1).add(c);
+	private boolean isBlocked(TCube s) {
+		// Check syntactic subsumption (faster than SAT):
+		for (int d = s.getFrame(); d < F.size(); d++) {
+			for (Cube c : F.get(d).getCubes()) {
+				if (c.subsumes(s.getCube())) {
+					return true;
 				}
 			}
+		}
+		
+		// Semantics subsumption thru SAT:
+		return Z.isBlocked(s);
+	}
 
-			// TODO: Check more efficiently?
-			if (checkSat(and(trace.get(i + 1), not(trace.get(i)))) == null) {
+	private void generalize(TCube s) {
+		List<Predicate> positives = new ArrayList<>(s.getCube().getPositive());
+		List<Predicate> negatives = new ArrayList<>(s.getCube().getNegative());
+		
+		for (Predicate p : positives) {
+			s.getCube().removePositive(p);
+			if (Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
+				s.getCube().addPositive(p);
+			}
+		}
+		
+		for (Predicate p : negatives) {
+			s.getCube().removeNegative(p);
+			if (Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
+				s.getCube().addNegative(p);
+			}
+		}
+	}
+
+	private int depth() {
+		return F.size() - 2;
+	}
+
+	private void addFrame(Frame frame) {
+		F.add(F.size() - 2, frame);
+	}
+	
+	private boolean propogateBlockedCubes() {
+		for (int k = 1; k < depth(); k++) {
+			for (Cube c : new ArrayList<>(F.get(k).getCubes())) {
+				TCube s = Z.solveRelative(new TCube(c, k + 1), Option.NO_IND);
+				if (s.getFrame() != TCube.FRAME_NULL) {
+					addBlockedCube(s);
+				}
+			}
+			
+			if (F.get(k).isEmpty()) {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
 
-	private void recBlock(Cube s, int i) {
-		// TODO: Use priority queue
-		if (checkSat(and(trace.get(0), s)) != null) {
-			throw new CounterexampleException(s);
-		}
-
-		if (i == 0) {
-			return;
-		}
-
-		while (true) {
-			Cube c = extractCube(checkSat(and(trace.get(i - 1), Tp, not(s), prime(s))));
-			if (c == null) {
-				break;
+	private void addBlockedCube(TCube s) {
+		int k = Math.min(s.getFrame(), depth() + 1);
+		
+		// Remove subsumed clauses:
+		for (int d = 1; d <= k; d++) {
+			Set<Cube> cubes = F.get(d).getCubes();
+			for (Cube c : new ArrayList<>(cubes)) {
+				if (s.getCube().subsumes(c)) {
+					cubes.remove(c);
+				}
 			}
-
-			// TODO: Generalize c
-
-			c.setNext(s);
-			recBlock(c, i - 1);
 		}
-
-		// TODO: Generalize s
-		for (int j = 1; j <= i; j++) {
-			trace.get(j).add(s);
-		}
+		
+		// Store clause
+		F.get(k).add(s.getCube());
+		Z.blockCubeInSolver(s);
 	}
 
-	private boolean refine(CounterexampleException cex) {
-		List<Cube> cubes = getCubes(cex);
-		if (cubes.size() < 2) {
-			throw new IllegalArgumentException();
-		} else if (cubes.size() == 2) {
-			return refineByBlocking(cubes);
-		} else {
-			return refineByPredicates(cubes);
-		}
-	}
-
-	private boolean refineByBlocking(List<Cube> cubes) {
-		// Counterexample too short for interpolation
-		// TODO: Double check this
-		if (cubes.size() != 2) {
-			throw new IllegalArgumentException();
-		}
-
-		Model m = checkSat(and(cubes.get(0), T, prime(cubes.get(1)), not(prime(P))));
-		if (m != null) {
-			return false;
-		} else {
-			trace.get(1).add(cubes.get(1));
-			return true;
-		}
-	}
-
-	private boolean refineByPredicates(List<Cube> cubes) {
-		List<Term> pieces = new ArrayList<>();
-
-		List<Term> vars = solver.getVariables("$0");
-		for (int i = 0; i < cubes.size() - 1; i++) {
-			List<Term> nextVars = solver.getVariables("$" + (i + 1));
-			pieces.add(and(apply(cubes.get(i), vars), T(vars, nextVars)));
-			vars = nextVars;
-		}
-		pieces.add(and(apply(cubes.get(cubes.size() - 1), vars), not(P(vars))));
-
-		Term[] interpolants = getInterpolants(pieces);
-		if (interpolants == null) {
-			return false;
-		}
-
-		System.out.println();
-		for (int i = 0; i < cubes.size() - 1; i++) {
-			vars = solver.getVariables("$" + (i + 1));
-			Set<Predicate> preds = PredicateCollector.collect(subst(interpolants[i], vars, base));
-			System.out.println("New predicates: " + preds);
-			predicates.addAll(preds);
-		}
-		System.out.println();
-		Tp = computeTp();
-
-		return true;
-	}
-
-	private List<Cube> getCubes(CounterexampleException cex) {
+	private List<Cube> getCubes(Cube init) {
 		List<Cube> result = new ArrayList<>();
-		Cube curr = cex.getInit();
+		Cube curr = init;
 		while (curr != null) {
 			result.add(curr);
 			curr = curr.getNext();
 		}
 		return result;
-	}
-
-	private Term eqP(List<Term> variables1, List<Term> variables2) {
-		Term[] terms = new Term[predicates.size()];
-		int i = 0;
-		for (Predicate p : predicates) {
-			terms[i++] = solver.term("=", apply(p, variables1), apply(p, variables2));
-		}
-		return solver.and(terms);
-	}
-
-	private Frame lastFrame() {
-		return trace.get(trace.size() - 1);
-	}
-
-	private Model checkSat(Term query) {
-		return solver.checkSat(query);
-	}
-
-	private Term not(Term term) {
-		return solver.not(term);
-	}
-
-	private Term not(Frame frame) {
-		return solver.not(solver.frame(frame));
-	}
-
-	private Term not(Cube s) {
-		return solver.not(solver.cube(s));
-	}
-
-	private Term and(Frame frame, Term... terms) {
-		return solver.and(solver.frame(frame), solver.and(terms));
-	}
-
-	private Term and(Term... terms) {
-		return solver.and(terms);
-	}
-
-	private Term and(Frame frame, Cube cube) {
-		return solver.and(solver.frame(frame), solver.cube(cube));
-	}
-
-	private Term and(Cube cube, Term... terms) {
-		return solver.and(solver.cube(cube), solver.and(terms));
-	}
-
-	private Cube extractCube(Model model) {
-		return solver.extractCube(model, predicates);
-	}
-
-	private Term prime(Cube cube) {
-		return apply(cube, prime);
-	}
-
-	private Term prime(Term term) {
-		return solver.subst(term, base, prime);
-	}
-
-	private Term apply(Cube cube, List<Term> arguments) {
-		return solver.subst(solver.cube(cube), base, arguments);
-	}
-
-	private Term apply(Predicate p, List<Term> arguments) {
-		return solver.subst(p.getTerm(), base, arguments);
-	}
-
-	private Term T(List<Term> variables1, List<Term> variables2) {
-		return solver.subst(solver.subst(T, base, variables1), prime, variables2);
-	}
-
-	private Term P(List<Term> variables) {
-		return solver.subst(P, base, variables);
-	}
-
-	private Term[] getInterpolants(List<Term> terms) {
-		return solver.getInterpolants(terms);
-	}
-
-	private Term subst(Term term, List<Term> variables, List<Term> arguments) {
-		return solver.subst(term, variables, arguments);
 	}
 }

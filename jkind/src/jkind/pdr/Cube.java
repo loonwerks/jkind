@@ -8,6 +8,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Cube {
+	// TODO: Single predicate list?
 	private final List<Predicate> positive = new ArrayList<>();
 	private final List<Predicate> negative = new ArrayList<>();
 	private Cube next;
@@ -18,6 +19,36 @@ public class Cube {
 
 	public void addNegative(Predicate p) {
 		negative.add(p);
+	}
+
+	public void removePositive(Predicate p) {
+		positive.remove(p);
+	}
+
+	public void removeNegative(Predicate p) {
+		negative.remove(p);
+	}
+
+	public List<Predicate> getPositive() {
+		return positive;
+	}
+
+	public List<Predicate> getNegative() {
+		return negative;
+	}
+
+	public boolean subsumes(Cube other) {
+		for (Predicate p : positive) {
+			if (!other.positive.contains(p)) {
+				return false;
+			}
+		}
+		for (Predicate p : negative) {
+			if (!other.negative.contains(p)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public void setNext(Cube next) {

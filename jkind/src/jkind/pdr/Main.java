@@ -21,8 +21,7 @@ public class Main {
 		Node main = Translate.translate(program);
 		main = LustreSlicer.slice(main, new DependencyMap(main, main.properties));
 
-		Pdr pdr = new Pdr(main);
-		showCex(pdr.check());
+		showCex(new Pdr(main).pdrMain());
 		long stop = System.currentTimeMillis();
 		System.out.println((stop - start) / 1000.0);
 	}
