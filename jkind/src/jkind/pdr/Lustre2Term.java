@@ -1,5 +1,7 @@
 package jkind.pdr;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,25 +28,26 @@ import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
-import jkind.util.Util;
+import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
+import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Lustre2Term implements ExprVisitor<Term> {
 	public static final String INIT = "%init";
-	private final PdrSolver solver;
+	private final Script script;
 	private boolean pre = false;
-	
-	public Lustre2Term(PdrSolver solver) {
-		this.solver = solver;
+
+	public Lustre2Term(Script script) {
+		this.script = script;
 	}
 
 	public Term getInit() {
-		return solver.term(INIT);
+		return script.term(INIT);
 	}
 
 	public List<VarDecl> getVariables(Node node) {
 		List<VarDecl> variables = new ArrayList<>();
-		variables.addAll(Util.getVarDecls(node));
+		variables.addAll(jkind.util.Util.getVarDecls(node));
 		variables.add(new VarDecl(INIT, NamedType.BOOL));
 		return variables;
 	}
@@ -55,22 +58,22 @@ public class Lustre2Term implements ExprVisitor<Term> {
 		for (Equation eq : node.equations) {
 			Term body = eq.expr.accept(this);
 			Term head = eq.lhs.get(0).accept(this);
-			conjuncts.add(solver.term("=", head, body));
+			conjuncts.add(term("=", head, body));
 		}
 
 		for (Expr assertion : node.assertions) {
 			conjuncts.add(assertion.accept(this));
 		}
 		
-		conjuncts.add(solver.not(solver.term(prime(INIT))));
+		conjuncts.add(not(term(prime(INIT))));
 
-		return solver.and(conjuncts);
+		return and(conjuncts);
 	}
 
 	public Term getProperty(Node node) {
 		// TODO: Multi-property?
-		Term prop = solver.term(node.properties.get(0));
-		return solver.or(prop, solver.term(INIT));
+		Term prop = term(node.properties.get(0));
+		return or(prop, term(INIT));
 	}
 	
 	private String prime(String str) {
@@ -100,31 +103,31 @@ public class Lustre2Term implements ExprVisitor<Term> {
 		switch (e.op) {
 		case NOTEQUAL:
 		case XOR:
-			return solver.term("not", solver.term("=", left, right));
+			return not(term("=", left, right));
 
 		case ARROW:
 			if (pre) {
 				throw new IllegalArgumentException(
 						"Arrows cannot be nested under pre during translation to Term");
 			}
-			return solver.term("ite", solver.term(INIT), left, right);
+			return ite(term(INIT), left, right);
 
 		default:
-			return solver.term(e.op.toString(), left, right);
+			return term(e.op.toString(), left, right);
 		}
 	}
 
 	@Override
 	public Term visit(BoolExpr e) {
-		return solver.term(Boolean.toString(e.value));
+		return term(Boolean.toString(e.value));
 	}
 
 	@Override
 	public Term visit(CastExpr e) {
 		if (e.type == NamedType.REAL) {
-			return solver.term("to_real", e.expr.accept(this));
+			return term("to_real", e.expr.accept(this));
 		} else if (e.type == NamedType.INT) {
-			return solver.term("to_int", e.expr.accept(this));
+			return term("to_int", e.expr.accept(this));
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -137,18 +140,18 @@ public class Lustre2Term implements ExprVisitor<Term> {
 
 	@Override
 	public Term visit(IdExpr e) {
-		return pre ? solver.term(e.id) : solver.term(prime(e.id));
+		return pre ? term(e.id) : term(prime(e.id));
 	}
 
 	@Override
 	public Term visit(IfThenElseExpr e) {
-		return solver.term("ite", e.cond.accept(this), e.thenExpr.accept(this),
+		return term("ite", e.cond.accept(this), e.thenExpr.accept(this),
 				e.elseExpr.accept(this));
 	}
 
 	@Override
 	public Term visit(IntExpr e) {
-		return solver.numeral(e.value);
+		return numeral(e.value);
 	}
 
 	@Override
@@ -158,7 +161,7 @@ public class Lustre2Term implements ExprVisitor<Term> {
 
 	@Override
 	public Term visit(RealExpr e) {
-		return solver.decimal(e.value);
+		return decimal(e.value);
 	}
 
 	@Override
@@ -195,10 +198,38 @@ public class Lustre2Term implements ExprVisitor<Term> {
 			return expr;
 
 		case NEGATIVE:
-			return solver.term("-", e.expr.accept(this));
+			return term("-", e.expr.accept(this));
 
 		default:
-			return solver.term(e.op.toString(), e.expr.accept(this));
+			return term(e.op.toString(), e.expr.accept(this));
 		}
+	}
+
+	private Term term(String funcname, Term... params) {
+		return script.term(funcname, params);
+	}
+
+	private Term not(Term term) {
+		return Util.not(script, term);
+	}
+
+	private Term and(List<Term> conjuncts) {
+		return Util.and(script, conjuncts.toArray(new Term[conjuncts.size()]));
+	}
+
+	private Term or(Term... disjuncts) {
+		return Util.or(script, disjuncts);
+	}
+
+	private Term ite(Term cond, Term thenPart, Term elsePart) {
+		return Util.ite(script, cond, thenPart, elsePart);
+	}
+
+	private Term numeral(BigInteger value) {
+		return script.numeral(value);
+	}
+
+	private Term decimal(BigDecimal value) {
+		return script.decimal(value);
 	}
 }
