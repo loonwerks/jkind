@@ -79,6 +79,7 @@ public class Pdr {
 	}
 
 	private boolean propogateClauses() {
+		System.out.println("Propogating");
 		trace.add(new Frame());
 		for (int i = 1; i < trace.size() - 1; i++) {
 			for (Cube c : trace.get(i).getCubes()) {
