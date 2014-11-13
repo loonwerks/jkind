@@ -1,7 +1,5 @@
 package jkind.pdr;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,19 +28,17 @@ import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
-import de.uni_freiburg.informatik.ultimate.logic.Util;
 
-public class Lustre2Term implements ExprVisitor<Term> {
+public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	public static final String INIT = "%init";
-	private final Script script;
 	private boolean pre = false;
 
 	public Lustre2Term(Script script) {
-		this.script = script;
+		super(script);
 	}
 
 	public Term getInit() {
-		return script.term(INIT);
+		return term(INIT);
 	}
 
 	public List<VarDecl> getVariables(Node node) {
@@ -203,33 +199,5 @@ public class Lustre2Term implements ExprVisitor<Term> {
 		default:
 			return term(e.op.toString(), e.expr.accept(this));
 		}
-	}
-
-	private Term term(String funcname, Term... params) {
-		return script.term(funcname, params);
-	}
-
-	private Term not(Term term) {
-		return Util.not(script, term);
-	}
-
-	private Term and(List<Term> conjuncts) {
-		return Util.and(script, conjuncts.toArray(new Term[conjuncts.size()]));
-	}
-
-	private Term or(Term... disjuncts) {
-		return Util.or(script, disjuncts);
-	}
-
-	private Term ite(Term cond, Term thenPart, Term elsePart) {
-		return Util.ite(script, cond, thenPart, elsePart);
-	}
-
-	private Term numeral(BigInteger value) {
-		return script.numeral(value);
-	}
-
-	private Term decimal(BigDecimal value) {
-		return script.decimal(value);
 	}
 }
