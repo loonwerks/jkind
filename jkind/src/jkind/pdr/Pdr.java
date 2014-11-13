@@ -8,6 +8,15 @@ import java.util.Set;
 import jkind.lustre.Node;
 import jkind.pdr.PdrSat.Option;
 
+/**
+ * PDR algorithm based on
+ * "Efficient implementation of property directed reachability" by Niklas Een,
+ * Alan Mishchenko, and Robert Brayton.
+ * 
+ * SMT extension based on
+ * "IC3 Modulo Theories via Implicit Predicate Abstraction" by Alessandro
+ * Cimatti, Alberto Griggio, Sergio Mover, and Stefano Tonetta
+ */
 public class Pdr {
 	private final Node node;
 	private final List<Frame> F = new ArrayList<>();
@@ -19,7 +28,7 @@ public class Pdr {
 
 	public Cube pdrMain() {
 		Z = new PdrSat(node, F);
-		
+
 		// Create F_INF and F[0]
 		F.add(new Frame());
 		addFrame(Z.initialFrame());
@@ -51,15 +60,15 @@ public class Pdr {
 					continue;
 				}
 			}
-			
+
 			if (!isBlocked(s)) {
 				assert (!Z.isInitial(s.getCube()));
 				TCube z = Z.solveRelative(s, Option.EXTRACT_MODEL);
-				
+
 				if (z.getFrame() != TCube.FRAME_NULL) {
 					// Cube 's' was blocked by image of predecessor
 					generalize(z);
-					
+
 					// Push z as far forward as possible
 					while (z.getFrame() < depth() - 1) {
 						TCube nz = Z.solveRelative(z.next());
@@ -69,7 +78,7 @@ public class Pdr {
 							break;
 						}
 					}
-					
+
 					if (s.getFrame() < depth() && z.getFrame() != TCube.FRAME_INF) {
 						Q.add(s.next());
 					}
@@ -92,7 +101,7 @@ public class Pdr {
 				}
 			}
 		}
-		
+
 		// Semantics subsumption thru SAT:
 		return Z.isBlocked(s);
 	}
@@ -100,14 +109,14 @@ public class Pdr {
 	private void generalize(TCube s) {
 		List<Predicate> positives = new ArrayList<>(s.getCube().getPositive());
 		List<Predicate> negatives = new ArrayList<>(s.getCube().getNegative());
-		
+
 		for (Predicate p : positives) {
 			s.getCube().removePositive(p);
 			if (Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
 				s.getCube().addPositive(p);
 			}
 		}
-		
+
 		for (Predicate p : negatives) {
 			s.getCube().removeNegative(p);
 			if (Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
@@ -123,7 +132,7 @@ public class Pdr {
 	private void addFrame(Frame frame) {
 		F.add(F.size() - 2, frame);
 	}
-	
+
 	private boolean propogateBlockedCubes() {
 		for (int k = 1; k < depth(); k++) {
 			for (Cube c : new ArrayList<>(F.get(k).getCubes())) {
@@ -132,18 +141,18 @@ public class Pdr {
 					addBlockedCube(s);
 				}
 			}
-			
+
 			if (F.get(k).isEmpty()) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	private void addBlockedCube(TCube s) {
 		int k = Math.min(s.getFrame(), depth() + 1);
-		
+
 		// Remove subsumed clauses:
 		for (int d = 1; d <= k; d++) {
 			Set<Cube> cubes = F.get(d).getCubes();
@@ -153,7 +162,7 @@ public class Pdr {
 				}
 			}
 		}
-		
+
 		// Store clause
 		F.get(k).add(s.getCube());
 		Z.blockCubeInSolver(s);
