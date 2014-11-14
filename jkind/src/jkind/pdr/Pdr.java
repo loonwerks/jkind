@@ -33,26 +33,30 @@ public class Pdr {
 		F.add(new Frame());
 		addFrame(Z.createInitialFrame());
 
-		while (true) {
-			Cube c = Z.getBadCube();
-			if (c != null) {
-				recBlockCube(new TCube(c, depth()));
-			} else {
-				addFrame(new Frame());
-				System.out.println("Before propogation: ");
-				for (Frame frame : F) {
-					System.out.println("Frame: " + frame);
+		try {
+			while (true) {
+				Cube c = Z.getBadCube();
+				if (c != null) {
+					recBlockCube(new TCube(c, depth()));
+				} else {
+					addFrame(new Frame());
+					System.out.println("Before propogation: ");
+					for (Frame frame : F) {
+						System.out.println("Frame: " + frame);
+					}
+					System.out.println();
+					if (propogateBlockedCubes()) {
+						return null;
+					}
+					System.out.println("After propogation: ");
+					for (Frame frame : F) {
+						System.out.println("Frame: " + frame);
+					}
+					System.out.println();
 				}
-				System.out.println();
-				if (propogateBlockedCubes()) {
-					return null;
-				}
-				System.out.println("After propogation: ");
-				for (Frame frame : F) {
-					System.out.println("Frame: " + frame);
-				}
-				System.out.println();
 			}
+		} catch (CounterexampleException cex) {
+			return cex.getInit();
 		}
 	}
 
@@ -88,12 +92,14 @@ public class Pdr {
 						}
 					}
 
+					addBlockedCube(z);
 					if (s.getFrame() < depth() && z.getFrame() != TCube.FRAME_INF) {
 						Q.add(s.next());
 					}
 				} else {
 					// Cube 's' was not blocked by image of predecessor
 					z.setFrame(s.getFrame() - 1);
+					z.getCube().setNext(s.getCube());
 					Q.add(z);
 					Q.add(s);
 				}
@@ -121,14 +127,14 @@ public class Pdr {
 
 		for (Predicate p : positives) {
 			s.getCube().removePositive(p);
-			if (Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
+			if (Z.isInitial(s.getCube()) || Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
 				s.getCube().addPositive(p);
 			}
 		}
 
 		for (Predicate p : negatives) {
 			s.getCube().removeNegative(p);
-			if (Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
+			if (Z.isInitial(s.getCube()) || Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
 				s.getCube().addNegative(p);
 			}
 		}

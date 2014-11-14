@@ -60,7 +60,11 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public Cube getBadCube() {
-		return checkSat(and(lastFrame(), not(P)));
+		return checkSat(and(R(depth()), not(P)));
+	}
+
+	private int depth() {
+		return F.size() - 2;
 	}
 
 	private Term lastFrame() {
@@ -154,7 +158,7 @@ public class PdrSat extends ScriptUser {
 	public boolean isBlocked(TCube s) {
 		int frame = s.getFrame();
 		Cube cube = s.getCube();
-		Term query = and(R(frame - 1), TAbstract, prime(cube));
+		Term query = and(R(frame), cube);
 		return checkSat(query) == null;
 	}
 
@@ -243,5 +247,9 @@ public class PdrSat extends ScriptUser {
 
 	private Term subst(Term term, List<Term> variables, List<Term> arguments) {
 		return Subst.apply(script, term, variables, arguments);
+	}
+
+	private Term and(Term term, Cube cube) {
+		return and(term, cube.toTerm(script));
 	}
 }
