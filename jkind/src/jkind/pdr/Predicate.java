@@ -6,6 +6,7 @@ public class Predicate {
 	private final Term term;
 
 	public Predicate(Term term) {
+		assert term != null;
 		this.term = term;
 	}
 
@@ -18,14 +19,9 @@ public class Predicate {
 		return term.toString();
 	}
 
-	// TODO: Equality on terms?
-
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((term == null) ? 0 : term.hashCode());
-		return result;
+		return term.hashCode();
 	}
 
 	@Override
@@ -33,20 +29,10 @@ public class Predicate {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
+		if (obj instanceof Predicate) {
+			Predicate other = (Predicate) obj;
+			return term.equals(other.term);
 		}
-		if (!(obj instanceof Predicate)) {
-			return false;
-		}
-		Predicate other = (Predicate) obj;
-		if (term == null) {
-			if (other.term != null) {
-				return false;
-			}
-		} else if (!term.equals(other.term)) {
-			return false;
-		}
-		return true;
+		return false;
 	}
 }
