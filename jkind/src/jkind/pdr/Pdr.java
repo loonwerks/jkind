@@ -31,7 +31,7 @@ public class Pdr {
 
 		// Create F_INF and F[0]
 		F.add(new Frame());
-		addFrame(Z.initialFrame());
+		addFrame(Z.createInitialFrame());
 
 		while (true) {
 			Cube c = Z.getBadCube();

@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uni_freiburg.informatik.ultimate.logic.Script;
-import de.uni_freiburg.informatik.ultimate.logic.Sort;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
-import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
+import de.uni_freiburg.informatik.ultimate.logic.Model;
+import de.uni_freiburg.informatik.ultimate.logic.Sort;
+import de.uni_freiburg.informatik.ultimate.logic.Term;
+import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 
 public class PdrSat extends ScriptUser {
 	private final Node node;
@@ -30,7 +31,7 @@ public class PdrSat extends ScriptUser {
 	private final Term I;
 	private final Term T;
 	private final Term P;
-	
+
 	private final Set<Predicate> predicates = new HashSet<>();
 	private Term TAbstract;
 
@@ -56,13 +57,64 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public Cube getBadCube() {
-		// TODO Auto-generated method stub
-		return null;
+		return checkSat(and(R(depth()), not(P)));
+	}
+
+	public Term R(int k) {
+		List<Term> conjuncts = new ArrayList<>();
+		for (int i = k; i < F.size(); i++) {
+			conjuncts.add(F.get(i).toTerm(script));
+		}
+		return and(conjuncts);
+	}
+
+	private int depth() {
+		return F.size() - 2;
+	}
+
+	private Cube checkSat(Term assertion) {
+		script.push(1);
+		script.assertTerm(assertion);
+		switch (script.checkSat()) {
+		case UNSAT:
+			script.pop(1);
+			return null;
+
+		case SAT:
+			Cube cube = extractCube();
+			script.pop(1);
+			return cube;
+
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private Cube extractCube() {
+		Model model = script.getModel();
+		Cube result = new Cube();
+		for (Predicate p : predicates) {
+			if (isTrue(model.evaluate(p.getTerm()))) {
+				result.addPositive(p);
+			} else {
+				result.addNegative(p);
+			}
+		}
+		return result;
+	}
+
+	private boolean isTrue(Term term) {
+		if (term instanceof ApplicationTerm) {
+			ApplicationTerm at = (ApplicationTerm) term;
+			return at.getFunction().getName().equals("true");
+		}
+		return false;
 	}
 
 	public boolean isInitial(Cube cube) {
-		// TODO Auto-generated method stub
-		return false;
+		// Given our Lustre translation, a frame is initial if it does not
+		// contain ~init
+		return !cube.getNegative().contains(new Predicate(I));
 	}
 
 	public enum Option {
@@ -70,8 +122,26 @@ public class PdrSat extends ScriptUser {
 	};
 
 	public TCube solveRelative(TCube s, Option option) {
-		// TODO Auto-generated method stub
-		return null;
+		int frame = s.getFrame();
+		Cube cube = s.getCube();
+
+		Term query;
+		if (option == Option.NO_IND) {
+			query = and(R(frame - 1), TAbstract, prime(cube));
+		} else {
+			query = and(R(frame - 1), not(cube), TAbstract, prime(cube));
+		}
+
+		// TODO: Make use of DEFAULT vs EXTRACT_MODEL?
+
+		Cube p = checkSat(query);
+		if (p == null) {
+			// UNSAT
+			// TODO: Generalize based on unsat cores
+			return s;
+		} else {
+			return new TCube(p, TCube.FRAME_NULL);
+		}
 	}
 
 	public TCube solveRelative(TCube s) {
@@ -79,27 +149,23 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public boolean isBlocked(TCube s) {
-		// TODO Auto-generated method stub
-		return false;
+		int frame = s.getFrame();
+		Cube cube = s.getCube();
+		Term query = and(R(frame - 1), TAbstract, prime(cube));
+		return checkSat(query) == null;
 	}
 
 	public void blockCubeInSolver(TCube s) {
-		// TODO Auto-generated method stub
-
+		// Nothing to do until we make better use of incremental solving and
+		// activation literals
 	}
 
-	public void refine(Cube cube) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public Frame initialFrame() {
-		// TODO Auto-generated method stub
-		return null;
+	public Frame createInitialFrame() {
+		return new Frame(I);
 	}
 
 	public boolean refine(List<Cube> cubes) {
-		// TODO Auto-generated method stub
+		// TODO do refinement
 		return false;
 	}
 
@@ -110,13 +176,13 @@ public class PdrSat extends ScriptUser {
 	}
 
 	private Term T(List<Term> variables1, List<Term> variables2) {
-		return solver.subst(solver.subst(T, base, variables1), prime, variables2);
+		return subst(subst(T, base, variables1), prime, variables2);
 	}
 
 	private Term P(List<Term> variables) {
-		return solver.subst(P, base, variables);
+		return subst(P, base, variables);
 	}
-	
+
 	private Term eqP(List<Term> variables1, List<Term> variables2) {
 		Term[] terms = new Term[predicates.size()];
 		int i = 0;
@@ -158,5 +224,21 @@ public class PdrSat extends ScriptUser {
 		}
 
 		throw new IllegalArgumentException("Unhandled type " + type);
+	}
+
+	private Term not(Cube cube) {
+		return not(cube.toTerm(script));
+	}
+
+	private Term prime(Cube cube) {
+		return subst(cube.toTerm(script), base, prime);
+	}
+
+	private Term apply(Predicate p, List<Term> arguments) {
+		return subst(p.getTerm(), base, arguments);
+	}
+
+	private Term subst(Term term, List<Term> variables, List<Term> arguments) {
+		return Subst.apply(script, term, variables, arguments);
 	}
 }

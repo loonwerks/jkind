@@ -23,7 +23,7 @@ public class Subst {
 		throw new IllegalArgumentException("Unhandled: " + term.getClass().getSimpleName());
 	}
 
-	public static Term apply(Script script, ApplicationTerm term, List<Term> variables,
+	private static Term apply(Script script, ApplicationTerm term, List<Term> variables,
 			List<Term> arguments) {
 		Term[] parameters = term.getParameters();
 		Term[] terms = new Term[parameters.length];
