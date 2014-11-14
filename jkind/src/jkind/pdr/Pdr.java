@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import de.uni_freiburg.informatik.ultimate.logic.Term;
 import jkind.lustre.Node;
 import jkind.pdr.PdrSat.Option;
 
@@ -40,19 +41,9 @@ public class Pdr {
 					recBlockCube(new TCube(c, depth()));
 				} else {
 					addFrame(new Frame());
-					System.out.println("Before propogation: ");
-					for (Frame frame : F) {
-						System.out.println("Frame: " + frame);
-					}
-					System.out.println();
 					if (propogateBlockedCubes()) {
 						return null;
 					}
-					System.out.println("After propogation: ");
-					for (Frame frame : F) {
-						System.out.println("Frame: " + frame);
-					}
-					System.out.println();
 				}
 			}
 		} catch (CounterexampleException cex) {
@@ -121,21 +112,14 @@ public class Pdr {
 		return Z.isBlocked(s);
 	}
 
+	// TODO: Move to pdrsat?
 	private void generalize(TCube s) {
-		List<Predicate> positives = new ArrayList<>(s.getCube().getPositive());
-		List<Predicate> negatives = new ArrayList<>(s.getCube().getNegative());
+		List<Term> pLiterals = new ArrayList<>(s.getCube().getPLiterals());
 
-		for (Predicate p : positives) {
-			s.getCube().removePositive(p);
+		for (Term p : pLiterals) {
+			s.getCube().removePLiteral(p);
 			if (Z.isInitial(s.getCube()) || Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
-				s.getCube().addPositive(p);
-			}
-		}
-
-		for (Predicate p : negatives) {
-			s.getCube().removeNegative(p);
-			if (Z.isInitial(s.getCube()) || Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
-				s.getCube().addNegative(p);
+				s.getCube().addPLiteral(p);
 			}
 		}
 	}

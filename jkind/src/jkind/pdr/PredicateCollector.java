@@ -8,9 +8,9 @@ import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class PredicateCollector {
-	private final Set<Predicate> predicates = new HashSet<>();
+	private final Set<Term> predicates = new HashSet<>();
 
-	public static Set<Predicate> collect(Term term) {
+	public static Set<Term> collect(Term term) {
 		PredicateCollector collector = new PredicateCollector();
 		collector.walk(term);
 		return collector.predicates;
@@ -40,7 +40,7 @@ public class PredicateCollector {
 			return;
 		}
 
-		predicates.add(new Predicate(at));
+		predicates.add(at);
 	}
 
 	private boolean hasVariables(Term term) {

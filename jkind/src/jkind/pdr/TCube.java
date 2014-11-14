@@ -2,7 +2,7 @@ package jkind.pdr;
 
 public class TCube implements Comparable<TCube> {
 	public static final int FRAME_NULL = -1;
-	public static final int FRAME_INF = Integer.MAX_VALUE; // TODO: Algorithm does not really use this?
+	public static final int FRAME_INF = Integer.MAX_VALUE;
 
 	private final Cube cube;
 	private int frame;

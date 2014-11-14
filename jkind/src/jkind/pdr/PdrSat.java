@@ -33,7 +33,7 @@ public class PdrSat extends ScriptUser {
 	private final Term T;
 	private final Term P;
 
-	private final Set<Predicate> predicates = new HashSet<>();
+	private final Set<Term> predicates = new HashSet<>();
 	private Term TAbstract;
 
 	public PdrSat(Node node, List<Frame> F) {
@@ -41,6 +41,7 @@ public class PdrSat extends ScriptUser {
 		this.F = F;
 
 		script.setOption(":produce-interpolants", true);
+		script.setOption(":produce-unsat-cores", true);
 		script.setLogic(Logics.QF_UFLIRA);
 		script.setOption(":verbosity", 3);
 
@@ -100,12 +101,8 @@ public class PdrSat extends ScriptUser {
 		}
 
 		Cube result = new Cube();
-		for (Predicate p : predicates) {
-			if (isTrue(model.evaluate(p.getTerm()))) {
-				result.addPositive(p);
-			} else {
-				result.addNegative(p);
-			}
+		for (Term p : predicates) {
+			result.addPLiteral(isTrue(model.evaluate(p)) ? p : not(p));
 		}
 		return result;
 	}
@@ -121,7 +118,7 @@ public class PdrSat extends ScriptUser {
 	public boolean isInitial(Cube cube) {
 		// Given our Lustre translation, a frame is initial if it does not
 		// contain ~init
-		return !cube.getNegative().contains(new Predicate(I));
+		return !cube.getPLiterals().contains(not(I));
 	}
 
 	public enum Option {
@@ -132,23 +129,78 @@ public class PdrSat extends ScriptUser {
 		int frame = s.getFrame();
 		Cube cube = s.getCube();
 
-		Term query;
-		if (option == Option.NO_IND) {
-			query = and(R(frame - 1), TAbstract, prime(cube));
-		} else {
-			query = and(R(frame - 1), not(cube), TAbstract, prime(cube));
+		script.push(1);
+		// TODO: Assert this all the time...
+		script.assertTerm(TAbstract);
+		
+		if (option != Option.NO_IND) {
+			script.assertTerm(not(cube));
 		}
 
-		// TODO: Make use of DEFAULT vs EXTRACT_MODEL?
-
-		Cube p = extractCube(checkSat(query));
-		if (p == null) {
-			// UNSAT
-			// TODO: Generalize based on unsat cores
-			return s;
-		} else {
-			return new TCube(p, TCube.FRAME_NULL);
+		for (int i = frame - 1; i < F.size(); i++) {
+			script.assertTerm(name(F.get(i).toTerm(script), "F" + i));
 		}
+
+		List<Term> pLiterals = s.getCube().getPLiterals();
+		for (int i = 0; i < pLiterals.size(); i++) {
+			script.assertTerm(name(prime(pLiterals.get(i)), "P" + i));
+		}
+		
+		switch (script.checkSat()) {
+		case UNSAT:
+			Term[] unsatCore = script.getUnsatCore();
+			script.pop(1);
+			int minFrame = getMinimumF(unsatCore);
+			Cube minCube = getMinimalNonInitialCube(pLiterals, unsatCore);
+			
+			if (minFrame == TCube.FRAME_INF) {
+				return new TCube(minCube, minFrame);
+			} else {
+				return new TCube(minCube, minFrame + 1);
+			}
+
+		case SAT:
+			Cube c = null;
+			if (option == Option.EXTRACT_MODEL) {
+				c = extractCube(script.getModel());
+			}
+			script.pop(1);
+			return new TCube(c, TCube.FRAME_NULL);
+
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private int getMinimumF(Term[] unsatCore) {
+		int min = TCube.FRAME_INF;
+		for (Term t : unsatCore) {
+			String name = t.toString();
+			if (name.startsWith("F")) {
+				int frame = Integer.parseInt(name.substring(1));
+				if (frame < min) {
+					min = frame;
+				}
+			}
+		}
+		return min;
+	}
+
+	private Cube getMinimalNonInitialCube(List<Term> pLiterals, Term[] unsatCore) {
+		Cube result = new Cube();
+		for (Term t : unsatCore) {
+			String name = t.toString();
+			if (name.startsWith("P")) {
+				int pIndex = Integer.parseInt(name.substring(1));
+				result.addPLiteral(pLiterals.get(pIndex));
+			}
+		}
+		
+		if (isInitial(result)) {
+			result.addPLiteral(not(I));
+		}
+		
+		return result;
 	}
 
 	public TCube solveRelative(TCube s) {
@@ -217,14 +269,10 @@ public class PdrSat extends ScriptUser {
 			return false;
 		}
 
-		System.out.println();
 		for (int i = 0; i < cubes.size() - 1; i++) {
 			vars = getVariables("$" + (i + 1));
-			Set<Predicate> preds = PredicateCollector.collect(subst(interpolants[i], vars, base));
-			System.out.println("New predicates: " + preds);
-			predicates.addAll(preds);
+			predicates.addAll(PredicateCollector.collect(subst(interpolants[i], vars, base)));
 		}
-		System.out.println();
 		recomputeTAbstract();
 
 		return true;
@@ -254,7 +302,7 @@ public class PdrSat extends ScriptUser {
 			throw new IllegalArgumentException();
 		}
 	}
-	
+
 	private void recomputeTAbstract() {
 		List<Term> bar = getVariables("-");
 		List<Term> barPrime = getVariables("-'");
@@ -272,7 +320,7 @@ public class PdrSat extends ScriptUser {
 	private Term eqP(List<Term> variables1, List<Term> variables2) {
 		Term[] terms = new Term[predicates.size()];
 		int i = 0;
-		for (Predicate p : predicates) {
+		for (Term p : predicates) {
 			terms[i++] = term("=", apply(p, variables1), apply(p, variables2));
 		}
 		return and(terms);
@@ -324,12 +372,12 @@ public class PdrSat extends ScriptUser {
 		return prime(cube.toTerm(script));
 	}
 
-	private Term apply(Predicate p, List<Term> arguments) {
-		return subst(p.getTerm(), base, arguments);
+	private Term apply(Term term, List<Term> arguments) {
+		return subst(term, base, arguments);
 	}
 
 	private Term apply(Cube cube, List<Term> arguments) {
-		return subst(cube.toTerm(script), base, arguments);
+		return apply(cube.toTerm(script), arguments);
 	}
 
 	private Term subst(Term term, List<Term> variables, List<Term> arguments) {
@@ -338,5 +386,9 @@ public class PdrSat extends ScriptUser {
 
 	private Term and(Cube cube, Term... terms) {
 		return and(cube.toTerm(script), and(terms));
+	}
+
+	private Term name(Term term, String name) {
+		return script.annotate(term, new Annotation(":named", name));
 	}
 }

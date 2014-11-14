@@ -20,10 +20,6 @@ public class Frame {
 	}
 
 	public Term toTerm(Script script) {
-		if (term != null && !cubes.isEmpty()) {
-			throw new IllegalArgumentException("Cannot block cube in initial frame");
-		}
-
 		if (term != null) {
 			return term;
 		}
@@ -38,6 +34,9 @@ public class Frame {
 	}
 
 	public void add(Cube c) {
+		if (term != null) {
+			throw new IllegalArgumentException("Cannot block cube in initial frame");
+		}
 		cubes.add(c);
 	}
 
