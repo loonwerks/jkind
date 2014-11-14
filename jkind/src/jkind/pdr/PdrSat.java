@@ -34,7 +34,8 @@ public class PdrSat extends ScriptUser {
 	private final Term P;
 
 	private final Set<Term> predicates = new HashSet<>();
-	private Term TAbstract;
+	private final List<Term> baseAbstract;
+	private final List<Term> primeAbstract;
 
 	public PdrSat(Node node, List<Frame> F) {
 		super(new SMTInterpol());
@@ -55,10 +56,20 @@ public class PdrSat extends ScriptUser {
 		this.T = lustre2Term.getTransition();
 		this.P = lustre2Term.getProperty();
 
-		predicates.addAll(PredicateCollector.collect(I));
-		predicates.addAll(PredicateCollector.collect(P));
+		this.baseAbstract = getVariables("-");
+		this.primeAbstract = getVariables("-'");
+		script.assertTerm(T(baseAbstract, primeAbstract));
 
-		recomputeTAbstract();
+		addPredicates(PredicateCollector.collect(I));
+		addPredicates(PredicateCollector.collect(P));
+	}
+
+	private void addPredicates(Set<Term> newPredicates) {
+		predicates.addAll(newPredicates);
+		for (Term p : newPredicates) {
+			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
+			script.assertTerm(term("=", apply(p, prime), apply(p, primeAbstract)));
+		}
 	}
 
 	public Cube getBadCube() {
@@ -130,9 +141,7 @@ public class PdrSat extends ScriptUser {
 		Cube cube = s.getCube();
 
 		script.push(1);
-		// TODO: Assert this all the time...
-		script.assertTerm(TAbstract);
-		
+
 		if (option != Option.NO_IND) {
 			script.assertTerm(not(cube));
 		}
@@ -145,14 +154,14 @@ public class PdrSat extends ScriptUser {
 		for (int i = 0; i < pLiterals.size(); i++) {
 			script.assertTerm(name(prime(pLiterals.get(i)), "P" + i));
 		}
-		
+
 		switch (script.checkSat()) {
 		case UNSAT:
 			Term[] unsatCore = script.getUnsatCore();
 			script.pop(1);
 			int minFrame = getMinimumF(unsatCore);
 			Cube minCube = getMinimalNonInitialCube(pLiterals, unsatCore);
-			
+
 			if (minFrame == TCube.FRAME_INF) {
 				return new TCube(minCube, minFrame);
 			} else {
@@ -195,11 +204,11 @@ public class PdrSat extends ScriptUser {
 				result.addPLiteral(pLiterals.get(pIndex));
 			}
 		}
-		
+
 		if (isInitial(result)) {
 			result.addPLiteral(not(I));
 		}
-		
+
 		return result;
 	}
 
@@ -235,7 +244,7 @@ public class PdrSat extends ScriptUser {
 
 	private boolean refineByBlocking(List<Cube> cubes) {
 		// Counterexample too short for interpolation
-		// TODO: Double check this
+		// TODO: Double check this. Is there a better way?
 
 		// F = F[0], F[1], F_INF
 		assert (F.size() == 3);
@@ -243,11 +252,15 @@ public class PdrSat extends ScriptUser {
 			throw new IllegalArgumentException();
 		}
 
-		Model m = checkSat(and(cubes.get(0), T, prime(cubes.get(1)), not(prime(P))));
+		List<Term> vars0 = getVariables("$0");
+		List<Term> vars1 = getVariables("$1");
+		Term c0 = apply(cubes.get(0), vars0);
+		Term c1 = apply(cubes.get(1), vars1);
+		Model m = checkSat(and(c0, T(vars0, vars1), c1, not(P(vars1))));
 		if (m != null) {
 			return false;
 		} else {
-			// Block in solver? Notify Pdr?
+			// TODO: Block in solver? Notify Pdr?
 			F.get(1).add(cubes.get(1));
 			return true;
 		}
@@ -271,9 +284,8 @@ public class PdrSat extends ScriptUser {
 
 		for (int i = 0; i < cubes.size() - 1; i++) {
 			vars = getVariables("$" + (i + 1));
-			predicates.addAll(PredicateCollector.collect(subst(interpolants[i], vars, base)));
+			addPredicates(PredicateCollector.collect(subst(interpolants[i], vars, base)));
 		}
-		recomputeTAbstract();
 
 		return true;
 	}
@@ -303,27 +315,12 @@ public class PdrSat extends ScriptUser {
 		}
 	}
 
-	private void recomputeTAbstract() {
-		List<Term> bar = getVariables("-");
-		List<Term> barPrime = getVariables("-'");
-		this.TAbstract = and(eqP(base, bar), T(bar, barPrime), eqP(barPrime, prime));
-	}
-
 	private Term T(List<Term> variables1, List<Term> variables2) {
 		return subst(subst(T, base, variables1), prime, variables2);
 	}
 
 	private Term P(List<Term> variables) {
 		return subst(P, base, variables);
-	}
-
-	private Term eqP(List<Term> variables1, List<Term> variables2) {
-		Term[] terms = new Term[predicates.size()];
-		int i = 0;
-		for (Term p : predicates) {
-			terms[i++] = term("=", apply(p, variables1), apply(p, variables2));
-		}
-		return and(terms);
 	}
 
 	public List<Term> getVariables(String suffix) {
