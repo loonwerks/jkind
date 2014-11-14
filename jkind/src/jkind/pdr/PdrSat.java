@@ -17,6 +17,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
+import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
@@ -64,12 +65,14 @@ public class PdrSat extends ScriptUser {
 		addPredicates(PredicateCollector.collect(P));
 	}
 
-	private void addPredicates(Set<Term> newPredicates) {
-		predicates.addAll(newPredicates);
-		for (Term p : newPredicates) {
+	private void addPredicates(Set<Term> otherPredicates) {
+		otherPredicates.removeAll(predicates);
+		predicates.addAll(otherPredicates);
+		for (Term p : otherPredicates) {
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
-			script.assertTerm(term("=", apply(p, prime), apply(p, primeAbstract)));
+			script.assertTerm(term("=", apply(p,  primeAbstract), apply(p, prime)));
 		}
+		return;
 	}
 
 	public Cube getBadCube() {
@@ -365,10 +368,6 @@ public class PdrSat extends ScriptUser {
 		return subst(term, base, prime);
 	}
 
-	private Term prime(Cube cube) {
-		return prime(cube.toTerm(script));
-	}
-
 	private Term apply(Term term, List<Term> arguments) {
 		return subst(term, base, arguments);
 	}
@@ -387,5 +386,10 @@ public class PdrSat extends ScriptUser {
 
 	private Term name(Term term, String name) {
 		return script.annotate(term, new Annotation(":named", name));
+	}
+
+	private int todo_remove;
+	public Script getScript() {
+		return script;
 	}
 }
