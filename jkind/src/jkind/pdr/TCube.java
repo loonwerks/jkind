@@ -38,4 +38,9 @@ public class TCube implements Comparable<TCube> {
 		
 		return frame - other.frame;
 	}
+	
+	@Override
+	public String toString() {
+		return frame + ": " + cube;
+	}
 }

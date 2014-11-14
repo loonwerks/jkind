@@ -71,7 +71,7 @@ public class Pdr {
 				if (!Z.refine(getCubes(s.getCube()))) {
 					throw new CounterexampleException(s.getCube());
 				} else {
-					continue;
+					return;
 				}
 			}
 

@@ -13,6 +13,7 @@ import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
@@ -60,7 +61,7 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public Cube getBadCube() {
-		return checkSat(and(R(depth()), not(P)));
+		return extractCube(checkSat(and(R(depth()), not(P))));
 	}
 
 	private int depth() {
@@ -79,7 +80,7 @@ public class PdrSat extends ScriptUser {
 		return and(conjuncts);
 	}
 
-	private Cube checkSat(Term assertion) {
+	private Model checkSat(Term assertion) {
 		script.push(1);
 		script.assertTerm(assertion);
 		switch (script.checkSat()) {
@@ -88,17 +89,20 @@ public class PdrSat extends ScriptUser {
 			return null;
 
 		case SAT:
-			Cube cube = extractCube();
+			Model model = script.getModel();
 			script.pop(1);
-			return cube;
+			return model;
 
 		default:
 			throw new IllegalArgumentException();
 		}
 	}
 
-	private Cube extractCube() {
-		Model model = script.getModel();
+	private Cube extractCube(Model model) {
+		if (model == null) {
+			return null;
+		}
+
 		Cube result = new Cube();
 		for (Predicate p : predicates) {
 			if (isTrue(model.evaluate(p.getTerm()))) {
@@ -141,7 +145,7 @@ public class PdrSat extends ScriptUser {
 
 		// TODO: Make use of DEFAULT vs EXTRACT_MODEL?
 
-		Cube p = checkSat(query);
+		Cube p = extractCube(checkSat(query));
 		if (p == null) {
 			// UNSAT
 			// TODO: Generalize based on unsat cores
@@ -158,7 +162,7 @@ public class PdrSat extends ScriptUser {
 	public boolean isBlocked(TCube s) {
 		int frame = s.getFrame();
 		Cube cube = s.getCube();
-		Term query = and(R(frame), cube);
+		Term query = and(cube, R(frame));
 		return checkSat(query) == null;
 	}
 
@@ -172,10 +176,89 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public boolean refine(List<Cube> cubes) {
-		// TODO do refinement
-		return false;
+		assert (cubes.size() >= 2);
+
+		if (cubes.size() == 2) {
+			return refineByBlocking(cubes);
+		} else {
+			return refineByPredicates(cubes);
+		}
 	}
 
+	private boolean refineByBlocking(List<Cube> cubes) {
+		// Counterexample too short for interpolation
+		// TODO: Double check this
+
+		// F = F[0], F[1], F_INF
+		assert (F.size() == 3);
+		if (F.size() != 3) {
+			throw new IllegalArgumentException();
+		}
+
+		Model m = checkSat(and(cubes.get(0), T, prime(cubes.get(1)), not(prime(P))));
+		if (m != null) {
+			return false;
+		} else {
+			// Block in solver? Notify Pdr?
+			F.get(1).add(cubes.get(1));
+			return true;
+		}
+	}
+
+	private boolean refineByPredicates(List<Cube> cubes) {
+		List<Term> pieces = new ArrayList<>();
+
+		List<Term> vars = getVariables("$0");
+		for (int i = 0; i < cubes.size() - 1; i++) {
+			List<Term> nextVars = getVariables("$" + (i + 1));
+			pieces.add(and(apply(cubes.get(i), vars), T(vars, nextVars)));
+			vars = nextVars;
+		}
+		pieces.add(and(apply(cubes.get(cubes.size() - 1), vars), not(P(vars))));
+
+		Term[] interpolants = getInterpolants(pieces);
+		if (interpolants == null) {
+			return false;
+		}
+
+		System.out.println();
+		for (int i = 0; i < cubes.size() - 1; i++) {
+			vars = getVariables("$" + (i + 1));
+			Set<Predicate> preds = PredicateCollector.collect(subst(interpolants[i], vars, base));
+			System.out.println("New predicates: " + preds);
+			predicates.addAll(preds);
+		}
+		System.out.println();
+		recomputeTAbstract();
+
+		return true;
+	}
+
+	public Term[] getInterpolants(List<Term> terms) {
+		script.push(1);
+
+		Term[] names = new Term[terms.size()];
+		for (int i = 0; i < terms.size(); i++) {
+			String name = "%interp" + i;
+			script.assertTerm(script.annotate(terms.get(i), new Annotation(":named", name)));
+			names[i] = script.term(name);
+		}
+
+		switch (script.checkSat()) {
+		case UNSAT:
+			Term[] interps = script.getInterpolants(names);
+			script.pop(1);
+			return interps;
+
+		case SAT:
+			script.pop(1);
+			return null;
+
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+	
 	private void recomputeTAbstract() {
 		List<Term> bar = getVariables("-");
 		List<Term> barPrime = getVariables("-'");
@@ -237,19 +320,27 @@ public class PdrSat extends ScriptUser {
 		return not(cube.toTerm(script));
 	}
 
+	private Term prime(Term term) {
+		return subst(term, base, prime);
+	}
+
 	private Term prime(Cube cube) {
-		return subst(cube.toTerm(script), base, prime);
+		return prime(cube.toTerm(script));
 	}
 
 	private Term apply(Predicate p, List<Term> arguments) {
 		return subst(p.getTerm(), base, arguments);
 	}
 
+	private Term apply(Cube cube, List<Term> arguments) {
+		return subst(cube.toTerm(script), base, arguments);
+	}
+
 	private Term subst(Term term, List<Term> variables, List<Term> arguments) {
 		return Subst.apply(script, term, variables, arguments);
 	}
 
-	private Term and(Term term, Cube cube) {
-		return and(term, cube.toTerm(script));
+	private Term and(Cube cube, Term... terms) {
+		return and(cube.toTerm(script), and(terms));
 	}
 }
