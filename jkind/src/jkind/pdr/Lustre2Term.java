@@ -26,6 +26,7 @@ import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.util.Util;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
@@ -45,9 +46,19 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	public List<VarDecl> getVariables() {
 		List<VarDecl> variables = new ArrayList<>();
-		variables.addAll(jkind.util.Util.getVarDecls(node));
+		for (VarDecl vd : Util.getVarDecls(node)) {
+			variables.add(encode(vd));
+		}
 		variables.add(new VarDecl(INIT, NamedType.BOOL));
 		return variables;
+	}
+	
+	public String encode(String name) {
+		return "$" + name;
+	}
+	
+	public VarDecl encode(VarDecl vd) {
+		return new VarDecl(encode(vd.id), vd.type);
 	}
 
 	public Term getTransition() {
@@ -70,7 +81,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	public Term getProperty() {
 		// TODO: Multi-property?
-		Term prop = term(node.properties.get(0));
+		Term prop = term(encode(node.properties.get(0)));
 		return or(prop, term(INIT));
 	}
 	
@@ -138,7 +149,8 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	@Override
 	public Term visit(IdExpr e) {
-		return pre ? term(e.id) : term(prime(e.id));
+		String id = encode(e.id);
+		return pre ? term(id) : term(prime(id));
 	}
 
 	@Override
