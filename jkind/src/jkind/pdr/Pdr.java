@@ -39,9 +39,19 @@ public class Pdr {
 				recBlockCube(new TCube(c, depth()));
 			} else {
 				addFrame(new Frame());
+				System.out.println("Before propogation: ");
+				for (Frame frame : F) {
+					System.out.println("Frame: " + frame);
+				}
+				System.out.println();
 				if (propogateBlockedCubes()) {
 					return null;
 				}
+				System.out.println("After propogation: ");
+				for (Frame frame : F) {
+					System.out.println("Frame: " + frame);
+				}
+				System.out.println();
 			}
 		}
 	}
@@ -64,7 +74,6 @@ public class Pdr {
 			if (!isBlocked(s)) {
 				assert (!Z.isInitial(s.getCube()));
 				TCube z = Z.solveRelative(s, Option.EXTRACT_MODEL);
-
 				if (z.getFrame() != TCube.FRAME_NULL) {
 					// Cube 's' was blocked by image of predecessor
 					generalize(z);

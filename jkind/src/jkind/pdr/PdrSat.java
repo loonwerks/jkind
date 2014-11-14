@@ -60,7 +60,11 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public Cube getBadCube() {
-		return checkSat(and(R(depth()), not(P)));
+		return checkSat(and(lastFrame(), not(P)));
+	}
+
+	private Term lastFrame() {
+		return R(F.size() - 1);
 	}
 
 	public Term R(int k) {
@@ -71,12 +75,7 @@ public class PdrSat extends ScriptUser {
 		return and(conjuncts);
 	}
 
-	private int depth() {
-		return F.size() - 2;
-	}
-
 	private Cube checkSat(Term assertion) {
-		System.out.println("Checking: " + assertion);
 		script.push(1);
 		script.assertTerm(assertion);
 		switch (script.checkSat()) {

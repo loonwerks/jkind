@@ -23,11 +23,11 @@ public class Frame {
 		if (term != null && !cubes.isEmpty()) {
 			throw new IllegalArgumentException("Cannot block cube in initial frame");
 		}
-		
+
 		if (term != null) {
 			return term;
 		}
-		
+
 		Term[] terms = new Term[cubes.size()];
 		int i = 0;
 		for (Cube c : cubes) {
@@ -47,5 +47,14 @@ public class Frame {
 
 	public boolean isEmpty() {
 		return term == null && cubes.isEmpty();
+	}
+
+	@Override
+	public String toString() {
+		if (term != null) {
+			return term.toString();
+		} else {
+			return cubes.toString();
+		}
 	}
 }
