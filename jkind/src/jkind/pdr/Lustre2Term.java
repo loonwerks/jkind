@@ -31,24 +31,26 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	public static final String INIT = "%init";
+	private final Node node;
 	private boolean pre = false;
 
-	public Lustre2Term(Script script) {
+	public Lustre2Term(Script script, Node node) {
 		super(script);
+		this.node = node;
 	}
 
 	public Term getInit() {
 		return term(INIT);
 	}
 
-	public List<VarDecl> getVariables(Node node) {
+	public List<VarDecl> getVariables() {
 		List<VarDecl> variables = new ArrayList<>();
 		variables.addAll(jkind.util.Util.getVarDecls(node));
 		variables.add(new VarDecl(INIT, NamedType.BOOL));
 		return variables;
 	}
 
-	public Term getTransition(Node node) {
+	public Term getTransition() {
 		List<Term> conjuncts = new ArrayList<>();
 
 		for (Equation eq : node.equations) {
@@ -66,7 +68,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		return and(conjuncts);
 	}
 
-	public Term getProperty(Node node) {
+	public Term getProperty() {
 		// TODO: Multi-property?
 		Term prop = term(node.properties.get(0));
 		return or(prop, term(INIT));

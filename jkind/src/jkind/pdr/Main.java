@@ -26,6 +26,14 @@ public class Main {
 		System.out.println((stop - start) / 1000.0);
 	}
 
+	private static void summary(Cube c) {
+		if (c == null) {
+			System.out.println("VALID");
+		} else {
+			System.out.println("INVALID");
+		}
+	}
+
 	private static void showCex(Cube c) {
 		while (c != null) {
 			System.out.println(c);

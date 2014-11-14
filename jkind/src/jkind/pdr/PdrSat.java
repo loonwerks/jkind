@@ -44,15 +44,15 @@ public class PdrSat extends ScriptUser {
 		script.setLogic(Logics.QF_UFLIRA);
 		script.setOption(":verbosity", 3);
 
-		Lustre2Term lustre2Term = new Lustre2Term(script);
-		varDecls = lustre2Term.getVariables(node);
+		Lustre2Term lustre2Term = new Lustre2Term(script, node);
+		varDecls = lustre2Term.getVariables();
 
 		this.base = getVariables("");
 		this.prime = getVariables("'");
 
 		this.I = lustre2Term.getInit();
-		this.T = lustre2Term.getTransition(node);
-		this.P = lustre2Term.getProperty(node);
+		this.T = lustre2Term.getTransition();
+		this.P = lustre2Term.getProperty();
 
 		predicates.addAll(PredicateCollector.collect(I));
 		predicates.addAll(PredicateCollector.collect(P));
@@ -66,10 +66,6 @@ public class PdrSat extends ScriptUser {
 
 	private int depth() {
 		return F.size() - 2;
-	}
-
-	private Term lastFrame() {
-		return R(F.size() - 1);
 	}
 
 	public Term R(int k) {
