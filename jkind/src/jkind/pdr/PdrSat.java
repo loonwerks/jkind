@@ -14,13 +14,13 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
+import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 
 public class PdrSat extends ScriptUser {
-	private final Node node;
 	private final List<Frame> F;
 
 	private final List<VarDecl> varDecls;
@@ -37,8 +37,11 @@ public class PdrSat extends ScriptUser {
 
 	public PdrSat(Node node, List<Frame> F) {
 		super(new SMTInterpol());
-		this.node = node;
 		this.F = F;
+
+		script.setOption(":produce-interpolants", true);
+		script.setLogic(Logics.QF_UFLIRA);
+		script.setOption(":verbosity", 3);
 
 		Lustre2Term lustre2Term = new Lustre2Term(script);
 		varDecls = lustre2Term.getVariables(node);
@@ -73,6 +76,7 @@ public class PdrSat extends ScriptUser {
 	}
 
 	private Cube checkSat(Term assertion) {
+		System.out.println("Checking: " + assertion);
 		script.push(1);
 		script.assertTerm(assertion);
 		switch (script.checkSat()) {

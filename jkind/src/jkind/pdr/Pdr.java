@@ -54,7 +54,7 @@ public class Pdr {
 			TCube s = Q.poll();
 
 			if (s.getFrame() == 0) {
-				if (Z.refine(getCubes(s.getCube()))) {
+				if (!Z.refine(getCubes(s.getCube()))) {
 					throw new CounterexampleException(s.getCube());
 				} else {
 					continue;
@@ -130,7 +130,7 @@ public class Pdr {
 	}
 
 	private void addFrame(Frame frame) {
-		F.add(F.size() - 2, frame);
+		F.add(F.size() - 1, frame);
 	}
 
 	private boolean propogateBlockedCubes() {
