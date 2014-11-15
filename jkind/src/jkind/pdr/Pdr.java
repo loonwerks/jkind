@@ -12,7 +12,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 /**
  * PDR algorithm based on
  * "Efficient implementation of property directed reachability" by Niklas Een,
- * Alan Mishchenko, and Robert Brayton.
+ * Alan Mishchenko, and Robert Brayton
  * 
  * SMT extension based on
  * "IC3 Modulo Theories via Implicit Predicate Abstraction" by Alessandro
