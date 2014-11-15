@@ -300,7 +300,7 @@ public class PdrSat extends ScriptUser {
 
 		Term[] names = new Term[terms.size()];
 		for (int i = 0; i < terms.size(); i++) {
-			String name = "%interp" + i;
+			String name = "I" + i;
 			script.assertTerm(script.annotate(terms.get(i), new Annotation(":named", name)));
 			names[i] = script.term(name);
 		}
