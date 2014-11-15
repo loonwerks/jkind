@@ -301,7 +301,7 @@ public class PdrSat extends ScriptUser {
 		Term[] names = new Term[terms.size()];
 		for (int i = 0; i < terms.size(); i++) {
 			String name = "I" + i;
-			script.assertTerm(script.annotate(terms.get(i), new Annotation(":named", name)));
+			script.assertTerm(name(terms.get(i), name));
 			names[i] = script.term(name);
 		}
 
@@ -321,12 +321,12 @@ public class PdrSat extends ScriptUser {
 		}
 	}
 
-	private Term T(List<Term> variables1, List<Term> variables2) {
-		return subst(subst(T, base, variables1), prime, variables2);
+	private Term T(List<Term> arguments1, List<Term> arguments2) {
+		return subst(subst(T, base, arguments1), prime, arguments2);
 	}
 
-	private Term P(List<Term> variables) {
-		return subst(P, base, variables);
+	private Term P(List<Term> arguments) {
+		return subst(P, base, arguments);
 	}
 
 	public List<Term> getVariables(String suffix) {
@@ -389,11 +389,5 @@ public class PdrSat extends ScriptUser {
 
 	private Term name(Term term, String name) {
 		return script.annotate(term, new Annotation(":named", name));
-	}
-
-	private int todo_remove;
-
-	public Script getScript() {
-		return script;
 	}
 }
