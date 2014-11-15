@@ -70,7 +70,7 @@ public class PdrSat extends ScriptUser {
 		predicates.addAll(otherPredicates);
 		for (Term p : otherPredicates) {
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
-			script.assertTerm(term("=", apply(p,  primeAbstract), apply(p, prime)));
+			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}
 		return;
 	}
@@ -105,7 +105,8 @@ public class PdrSat extends ScriptUser {
 			return model;
 
 		default:
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("SMT solver returned 'unknown' due to "
+					+ script.getInfo(":reason-unknown"));
 		}
 	}
 
@@ -165,7 +166,7 @@ public class PdrSat extends ScriptUser {
 			script.pop(1);
 			int minFrame = getMinimumF(unsatCore);
 			Cube minCube = getMinimalNonInitialCube(pLiterals, unsatCore);
-			
+
 			if (minFrame == F.size() - 2 || minFrame == TCube.FRAME_INF) {
 				return new TCube(minCube, minFrame);
 			} else {
@@ -315,7 +316,8 @@ public class PdrSat extends ScriptUser {
 			return null;
 
 		default:
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("SMT solver returned 'unknown' due to "
+					+ script.getInfo(":reason-unknown"));
 		}
 	}
 
@@ -390,6 +392,7 @@ public class PdrSat extends ScriptUser {
 	}
 
 	private int todo_remove;
+
 	public Script getScript() {
 		return script;
 	}
