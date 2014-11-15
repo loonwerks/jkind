@@ -34,9 +34,7 @@ public class Frame {
 	}
 
 	public void add(Cube c) {
-		if (term != null) {
-			throw new IllegalArgumentException("Cannot block cube in initial frame");
-		}
+		assert term == null;
 		cubes.add(c);
 	}
 

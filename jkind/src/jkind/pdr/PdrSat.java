@@ -149,9 +149,10 @@ public class PdrSat extends ScriptUser {
 			script.assertTerm(not(cube));
 		}
 
-		for (int i = frame - 1; i < F.size(); i++) {
+		for (int i = frame - 1; i < F.size() - 1; i++) {
 			script.assertTerm(name(F.get(i).toTerm(script), "F" + i));
 		}
+		script.assertTerm(F.get(F.size() - 1).toTerm(script));
 
 		List<Term> pLiterals = s.getCube().getPLiterals();
 		for (int i = 0; i < pLiterals.size(); i++) {
@@ -164,8 +165,8 @@ public class PdrSat extends ScriptUser {
 			script.pop(1);
 			int minFrame = getMinimumF(unsatCore);
 			Cube minCube = getMinimalNonInitialCube(pLiterals, unsatCore);
-
-			if (minFrame == TCube.FRAME_INF) {
+			
+			if (minFrame == F.size() - 2 || minFrame == TCube.FRAME_INF) {
 				return new TCube(minCube, minFrame);
 			} else {
 				return new TCube(minCube, minFrame + 1);

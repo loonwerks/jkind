@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import de.uni_freiburg.informatik.ultimate.logic.Term;
 import jkind.lustre.Node;
 import jkind.pdr.PdrSat.Option;
+import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 /**
  * PDR algorithm based on
