@@ -53,11 +53,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		return variables;
 	}
 	
-	public String encode(String name) {
+	private String encode(String name) {
 		return "$" + name;
 	}
 	
-	public VarDecl encode(VarDecl vd) {
+	private VarDecl encode(VarDecl vd) {
 		return new VarDecl(encode(vd.id), vd.type);
 	}
 
