@@ -31,12 +31,20 @@ public abstract class ScriptUser {
 		return Util.and(script, conjuncts);
 	}
 
+	protected Term or(List<Term> disjuncts) {
+		return Util.or(script, disjuncts.toArray(new Term[disjuncts.size()]));
+	}
+
 	protected Term or(Term... disjuncts) {
 		return Util.or(script, disjuncts);
 	}
 
 	protected Term ite(Term cond, Term thenPart, Term elsePart) {
 		return Util.ite(script, cond, thenPart, elsePart);
+	}
+
+	protected Term implies(Term... terms) {
+		return Util.implies(script, terms);
 	}
 
 	protected Term numeral(BigInteger value) {

@@ -27,35 +27,19 @@ public class Main {
 			single = LustreSlicer.slice(single, depMap);
 			long start = System.currentTimeMillis();
 			System.out.println("Property: " + property);
-			summary(new Pdr(single).pdrMain());
+			summary(new Imc(single).imcMain());
 			long stop = System.currentTimeMillis();
 			System.out.println((stop - start) / 1000.0);
+			System.out.println();
 		}
 	}
 
-	private static void summary(Cube c) {
-		if (c == null) {
+	private static void summary(int k) {
+		System.out.println();
+		if (k < 0) {
 			System.out.println("VALID");
 		} else {
-			System.out.println("INVALID, COUNTEREXAMPLE OF LENGTH: " + length(c));
+			System.out.println("INVALID, COUNTEREXAMPLE OF LENGTH: " + k);
 		}
-	}
-
-	private static int length(Cube c) {
-		for (int i = 0; true; i++) {
-			if (c == null) {
-				return i;
-			}
-			c = c.getNext();
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private static void showCex(Cube c) {
-		while (c != null) {
-			System.out.println(c);
-			c = c.getNext();
-		}
-		System.out.println("Done");
 	}
 }

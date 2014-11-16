@@ -7,6 +7,11 @@ public class UnknownResult extends Result {
 		super();
 		this.model = model;
 	}
+	
+	public UnknownResult() {
+		super();
+		this.model = new SimpleModel();
+	}
 
 	public Model getModel() {
 		return model;
