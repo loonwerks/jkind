@@ -19,9 +19,8 @@ public class Main {
 		StaticAnalyzer.check(program, SolverOption.YICES);
 
 		Node main = Translate.translate(program);
-		main = LustreSlicer.slice(main, new DependencyMap(main, main.properties));
-
 		DependencyMap depMap = new DependencyMap(main, main.properties);
+
 		for (String property : main.properties) {
 			Node single = new NodeBuilder(main).clearProperties().addProperty(property).build();
 			single = LustreSlicer.slice(single, depMap);
