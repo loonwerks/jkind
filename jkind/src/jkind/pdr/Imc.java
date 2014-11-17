@@ -72,25 +72,23 @@ public class Imc extends ScriptUser {
 		}
 
 		List<Term> conjuncts = new ArrayList<>();
-		List<Term> disjuncts = new ArrayList<>();
 		List<Term> vars = getVariables("$1");
-		disjuncts.add(not(P(vars)));
 		for (int i = 1; i < k; i++) {
 			List<Term> nextVars = getVariables("$" + (i + 1));
 			conjuncts.add(T(vars, nextVars));
-			disjuncts.add(not(P(nextVars)));
 			vars = nextVars;
 		}
-		conjuncts.add(or(disjuncts));
+		conjuncts.add(not(P(vars)));
 
 		script.assertTerm(name(and(conjuncts), "B"));
 
+		List<Term> vars0 = getVariables("$0");
+		List<Term> vars1 = getVariables("$1");
+		script.assertTerm(name(T(vars0, vars1), "A2"));
 		Term R = I;
 		while (true) {
-			List<Term> vars0 = getVariables("$0");
-			List<Term> vars1 = getVariables("$1");
 			script.push(1);
-			script.assertTerm(name(and(subst(R, base, vars0), T(vars0, vars1)), "A"));
+			script.assertTerm(name(subst(R, base, vars0), "A1"));
 
 			switch (script.checkSat()) {
 			case SAT:
@@ -124,7 +122,9 @@ public class Imc extends ScriptUser {
 	}
 
 	private Term getInterpolant() {
-		Term[] terms = script.getInterpolants(new Term[] { term("A"), term("B") });
+		Term A = and(term("A1"), term("A2"));
+		Term B = term("B");
+		Term[] terms = script.getInterpolants(new Term[] { A, B });
 		return terms[0];
 	}
 
