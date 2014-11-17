@@ -33,8 +33,10 @@ public class Imc extends ScriptUser {
 		super(new SMTInterpol());
 
 		script.setOption(":produce-interpolants", true);
+		script.setOption(":simplify-interpolants", true);
+		script.setOption(":simplify-repeatedly", true);
 		script.setLogic(Logics.QF_UFLIRA);
-		script.setOption(":verbosity", 3);
+		script.setOption(":verbosity", 2);
 
 		Lustre2Term lustre2Term = new Lustre2Term(script, node);
 		varDecls = lustre2Term.getVariables();
@@ -102,9 +104,13 @@ public class Imc extends ScriptUser {
 			case UNSAT:
 				Term nextR = or(R, subst(getInterpolant(), vars1, base));
 				script.pop(1);
-				// TODO: Handle unknown
-				if (Util.checkSat(script, not(implies(nextR, R))) == LBool.UNSAT) {
+				switch (Util.checkSat(script, not(implies(nextR, R)))) {
+				case UNSAT:
 					return LBool.UNSAT;
+				case UNKNOWN:
+					return LBool.UNKNOWN;
+				default:
+					break;
 				}
 				System.out.print(".");
 				R = nextR;
