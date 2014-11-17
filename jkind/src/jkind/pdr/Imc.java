@@ -11,11 +11,6 @@ import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.solvers.Result;
-import jkind.solvers.SatResult;
-import jkind.solvers.SimpleModel;
-import jkind.solvers.UnknownResult;
-import jkind.solvers.UnsatResult;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Script.LBool;
@@ -56,18 +51,20 @@ public class Imc extends ScriptUser {
 		for (int k = 1; true; k++) {
 			System.out.print(k);
 			script.push(1);
-			Result result = imcLoop(k);
-			if (result instanceof SatResult) {
+			switch (imcLoop(k)) {
+			case SAT:
 				return k;
-			} else if (result instanceof UnsatResult) {
+			case UNSAT:
 				return -1;
+			default:
+				break;
 			}
 			script.pop(1);
 			variableLists.clear(); // TODO: This is a hack
 		}
 	}
 
-	public Result imcLoop(int k) {
+	public LBool imcLoop(int k) {
 		for (int i = 0; i < k; i++) {
 			getVariables("$" + i);
 		}
@@ -95,12 +92,11 @@ public class Imc extends ScriptUser {
 
 			switch (script.checkSat()) {
 			case SAT:
-				// TODO: Cex
 				script.pop(1);
 				if (R.equals(I)) {
-					return new SatResult(new SimpleModel());
+					return LBool.SAT;
 				} else {
-					return new UnknownResult();
+					return LBool.UNKNOWN;
 				}
 
 			case UNSAT:
@@ -108,7 +104,7 @@ public class Imc extends ScriptUser {
 				script.pop(1);
 				// TODO: Handle unknown
 				if (Util.checkSat(script, not(implies(nextR, R))) == LBool.UNSAT) {
-					return new UnsatResult();
+					return LBool.UNSAT;
 				}
 				System.out.print(".");
 				R = nextR;
