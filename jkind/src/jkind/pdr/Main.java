@@ -30,10 +30,12 @@ public class Main {
 			summary(new Pdr(single).pdrMain());
 			long stop = System.currentTimeMillis();
 			System.out.println((stop - start) / 1000.0);
+			System.out.println();
 		}
 	}
 
 	private static void summary(Cube c) {
+		System.out.println();
 		if (c == null) {
 			System.out.println("VALID");
 		} else {
@@ -48,14 +50,5 @@ public class Main {
 			}
 			c = c.getNext();
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private static void showCex(Cube c) {
-		while (c != null) {
-			System.out.println(c);
-			c = c.getNext();
-		}
-		System.out.println("Done");
 	}
 }
