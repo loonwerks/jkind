@@ -39,7 +39,7 @@ public class Main {
 		if (c == null) {
 			System.out.println("VALID");
 		} else {
-			System.out.println("INVALID, COUNTEREXAMPLE OF LENGTH: " + length(c));
+			System.out.println("INVALID, COUNTEREXAMPLE OF LENGTH: " + (length(c) - 1));
 		}
 	}
 
