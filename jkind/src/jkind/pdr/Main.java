@@ -20,9 +20,6 @@ public class Main {
 		Node main = Translate.translate(program);
 		main = LustreSlicer.slice(main, new DependencyMap(main, main.properties));
 
-		long start = System.currentTimeMillis();
-		new Imc(main).imcMain();
-		long stop = System.currentTimeMillis();
-		System.out.println((stop - start) / 1000.0);
+		new Imc(main).imcMain(System.currentTimeMillis());
 	}
 }

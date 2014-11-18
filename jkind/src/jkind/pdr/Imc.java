@@ -30,6 +30,8 @@ public class Imc extends ScriptUser {
 	private final Term I;
 	private final Term T;
 	private final Map<String, Term> P;
+	
+	private long start;
 
 	public Imc(Node node) {
 		super(new SMTInterpol());
@@ -51,13 +53,20 @@ public class Imc extends ScriptUser {
 		this.P = lustre2Term.getProperties();
 	}
 
-	public void imcMain() {
+	public void imcMain(long start) {
+		this.start = start;
 		for (int k = 1; !P.isEmpty(); k++) {
+			System.out.println("  Checking k = " + k + runtime());
 			script.push(1);
 			imcLoop(k);
 			script.pop(1);
 			variableLists.clear(); // TODO: This is a hack
 		}
+	}
+	
+	private String runtime() {
+		long stop = System.currentTimeMillis();
+		return " (" + (stop - start) / 1000.0 + ")";
 	}
 
 	public void imcLoop(int k) {
@@ -99,12 +108,13 @@ public class Imc extends ScriptUser {
 							currP.remove(prop);
 							P.remove(prop);
 							System.out.println("Property " + prop
-									+ " has counterexample of length " + k);
+									+ " has counterexample of length " + k + runtime());
 						}
 					}
 				} else {
 					for (String prop : new ArrayList<>(currP.keySet())) {
 						if (!isTrue(model.evaluate(currP.get(prop)))) {
+							System.out.println("    Temporarily dropping " + prop + runtime());
 							currP.remove(prop);
 						}
 					}
@@ -117,7 +127,7 @@ public class Imc extends ScriptUser {
 				switch (Util.checkSat(script, not(implies(nextR, R)))) {
 				case UNSAT:
 					for (String prop : currP.keySet()) {
-						System.out.println("Property " + prop + " is valid (k = " + k + ")");
+						System.out.println("Property " + prop + " is valid (k = " + k + ")" + runtime());
 						P.remove(prop);
 					}
 					currP.clear();
@@ -131,6 +141,7 @@ public class Imc extends ScriptUser {
 					break;
 				}
 				R = nextR;
+				System.out.println("    Pushing interpolant forward" + runtime());
 				break;
 
 			case UNKNOWN:
