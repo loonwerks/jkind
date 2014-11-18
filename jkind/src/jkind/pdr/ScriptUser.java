@@ -2,7 +2,7 @@ package jkind.pdr;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
+import java.util.Collection;
 
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
@@ -23,7 +23,7 @@ public abstract class ScriptUser {
 		return Util.not(script, term);
 	}
 
-	protected Term and(List<Term> conjuncts) {
+	protected Term and(Collection<Term> conjuncts) {
 		return Util.and(script, conjuncts.toArray(new Term[conjuncts.size()]));
 	}
 
@@ -31,7 +31,7 @@ public abstract class ScriptUser {
 		return Util.and(script, conjuncts);
 	}
 
-	protected Term or(List<Term> disjuncts) {
+	protected Term or(Collection<Term> disjuncts) {
 		return Util.or(script, disjuncts.toArray(new Term[disjuncts.size()]));
 	}
 

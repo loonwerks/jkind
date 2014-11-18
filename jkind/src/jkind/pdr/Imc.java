@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
@@ -12,8 +13,9 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
+import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
-import de.uni_freiburg.informatik.ultimate.logic.Script.LBool;
+import de.uni_freiburg.informatik.ultimate.logic.Model;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
@@ -27,7 +29,7 @@ public class Imc extends ScriptUser {
 
 	private final Term I;
 	private final Term T;
-	private final Term P;
+	private final Map<String, Term> P;
 
 	public Imc(Node node) {
 		super(new SMTInterpol());
@@ -46,27 +48,19 @@ public class Imc extends ScriptUser {
 
 		this.I = lustre2Term.getInit();
 		this.T = lustre2Term.getTransition();
-		this.P = lustre2Term.getProperty();
+		this.P = lustre2Term.getProperties();
 	}
 
-	public int imcMain() {
-		for (int k = 1; true; k++) {
-			System.out.print(k);
+	public void imcMain() {
+		for (int k = 1; !P.isEmpty(); k++) {
 			script.push(1);
-			switch (imcLoop(k)) {
-			case SAT:
-				return k;
-			case UNSAT:
-				return -1;
-			default:
-				break;
-			}
+			imcLoop(k);
 			script.pop(1);
 			variableLists.clear(); // TODO: This is a hack
 		}
 	}
 
-	public LBool imcLoop(int k) {
+	public void imcLoop(int k) {
 		for (int i = 0; i < k; i++) {
 			getVariables("$" + i);
 		}
@@ -78,39 +72,64 @@ public class Imc extends ScriptUser {
 			conjuncts.add(T(vars, nextVars));
 			vars = nextVars;
 		}
-		conjuncts.add(not(P(vars)));
 
-		script.assertTerm(name(and(conjuncts), "B"));
+		HashMap<String, Term> currP = new HashMap<>();
+		for (Entry<String, Term> entry : P.entrySet()) {
+			currP.put(entry.getKey(), subst(entry.getValue(), base, vars));
+		}
+
+		script.assertTerm(name(and(conjuncts), "B1"));
 
 		List<Term> vars0 = getVariables("$0");
 		List<Term> vars1 = getVariables("$1");
 		script.assertTerm(name(T(vars0, vars1), "A2"));
 		Term R = I;
-		while (true) {
+		while (!currP.isEmpty()) {
 			script.push(1);
+			script.assertTerm(name(not(and(currP.values())), "B2"));
 			script.assertTerm(name(subst(R, base, vars0), "A1"));
 
 			switch (script.checkSat()) {
 			case SAT:
+				Model model = script.getModel();
 				script.pop(1);
 				if (R.equals(I)) {
-					return LBool.SAT;
+					for (String prop : new ArrayList<>(currP.keySet())) {
+						if (!isTrue(model.evaluate(currP.get(prop)))) {
+							currP.remove(prop);
+							P.remove(prop);
+							System.out.println("Property " + prop
+									+ " has counterexample of length " + k);
+						}
+					}
 				} else {
-					return LBool.UNKNOWN;
+					for (String prop : new ArrayList<>(currP.keySet())) {
+						if (!isTrue(model.evaluate(currP.get(prop)))) {
+							currP.remove(prop);
+						}
+					}
 				}
+				break;
 
 			case UNSAT:
 				Term nextR = or(R, subst(getInterpolant(), vars1, base));
 				script.pop(1);
 				switch (Util.checkSat(script, not(implies(nextR, R)))) {
 				case UNSAT:
-					return LBool.UNSAT;
+					for (String prop : currP.keySet()) {
+						System.out.println("Property " + prop + " is valid (k = " + k + ")");
+						P.remove(prop);
+					}
+					currP.clear();
+					break;
+
 				case UNKNOWN:
-					return LBool.UNKNOWN;
+					throw new IllegalArgumentException("SMT solver returned 'unknown' due to "
+							+ script.getInfo(":reason-unknown"));
+
 				default:
 					break;
 				}
-				System.out.print(".");
 				R = nextR;
 				break;
 
@@ -121,9 +140,17 @@ public class Imc extends ScriptUser {
 		}
 	}
 
+	private boolean isTrue(Term term) {
+		if (term instanceof ApplicationTerm) {
+			ApplicationTerm at = (ApplicationTerm) term;
+			return at.getFunction().getName().equals("true");
+		}
+		return false;
+	}
+
 	private Term getInterpolant() {
 		Term A = and(term("A1"), term("A2"));
-		Term B = term("B");
+		Term B = and(term("B1"), term("B2"));
 		Term[] terms = script.getInterpolants(new Term[] { A, B });
 		return terms[0];
 	}
@@ -138,10 +165,6 @@ public class Imc extends ScriptUser {
 
 	private Term T(List<Term> arguments1, List<Term> arguments2) {
 		return subst(subst(T, base, arguments1), prime, arguments2);
-	}
-
-	private Term P(List<Term> arguments) {
-		return subst(P, base, arguments);
 	}
 
 	public List<Term> getVariables(String suffix) {

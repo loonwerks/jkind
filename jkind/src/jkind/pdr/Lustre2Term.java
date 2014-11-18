@@ -1,7 +1,9 @@
 package jkind.pdr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -79,10 +81,12 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		return and(conjuncts);
 	}
 
-	public Term getProperty() {
-		// TODO: Multi-property?
-		Term prop = term(encode(node.properties.get(0)));
-		return or(prop, term(INIT));
+	public Map<String, Term> getProperties() {
+		Map<String, Term> result = new HashMap<>();
+		for (String prop : node.properties) {
+			result.put(prop, or(term(encode(prop)), term(INIT)));
+		}
+		return result;
 	}
 	
 	private String prime(String str) {

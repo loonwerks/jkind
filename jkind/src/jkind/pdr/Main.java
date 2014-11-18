@@ -6,7 +6,6 @@ import jkind.SolverOption;
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.Translate;
@@ -19,26 +18,11 @@ public class Main {
 		StaticAnalyzer.check(program, SolverOption.YICES);
 
 		Node main = Translate.translate(program);
-		DependencyMap depMap = new DependencyMap(main, main.properties);
+		main = LustreSlicer.slice(main, new DependencyMap(main, main.properties));
 
-		for (String property : main.properties) {
-			Node single = new NodeBuilder(main).clearProperties().addProperty(property).build();
-			single = LustreSlicer.slice(single, depMap);
-			long start = System.currentTimeMillis();
-			System.out.println("Property: " + property);
-			summary(new Imc(single).imcMain());
-			long stop = System.currentTimeMillis();
-			System.out.println((stop - start) / 1000.0);
-			System.out.println();
-		}
-	}
-
-	private static void summary(int k) {
-		System.out.println();
-		if (k < 0) {
-			System.out.println("VALID");
-		} else {
-			System.out.println("INVALID, COUNTEREXAMPLE OF LENGTH: " + k);
-		}
+		long start = System.currentTimeMillis();
+		new Imc(main).imcMain();
+		long stop = System.currentTimeMillis();
+		System.out.println((stop - start) / 1000.0);
 	}
 }
