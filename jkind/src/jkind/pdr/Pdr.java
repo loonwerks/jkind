@@ -110,7 +110,7 @@ public class Pdr {
 			}
 		}
 
-		// Semantics subsumption thru SAT:
+		// Semantic subsumption thru SAT:
 		return Z.isBlocked(s);
 	}
 
