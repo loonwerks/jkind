@@ -238,40 +238,6 @@ public class PdrSat extends ScriptUser {
 	}
 
 	public boolean refine(List<Cube> cubes) {
-		assert (cubes.size() >= 2);
-
-		if (cubes.size() == 2) {
-			return refineByBlocking(cubes);
-		} else {
-			return refineByPredicates(cubes);
-		}
-	}
-
-	private boolean refineByBlocking(List<Cube> cubes) {
-		// Counterexample too short for interpolation
-		// TODO: Double check this. Is there a better way?
-
-		// F = F[0], F[1], F_INF
-		assert (F.size() == 3);
-		if (F.size() != 3) {
-			throw new IllegalArgumentException();
-		}
-
-		List<Term> vars0 = getVariables("$0");
-		List<Term> vars1 = getVariables("$1");
-		Term c0 = apply(cubes.get(0), vars0);
-		Term c1 = apply(cubes.get(1), vars1);
-		Model m = checkSat(and(c0, T(vars0, vars1), c1, not(P(vars1))));
-		if (m != null) {
-			return false;
-		} else {
-			// TODO: Block in solver? Notify Pdr?
-			F.get(1).add(cubes.get(1));
-			return true;
-		}
-	}
-
-	private boolean refineByPredicates(List<Cube> cubes) {
 		List<Term> pieces = new ArrayList<>();
 
 		List<Term> vars = getVariables("$0");
