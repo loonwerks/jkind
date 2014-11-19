@@ -81,8 +81,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	public Term getProperty() {
 		// TODO: Multi-property?
-		Term prop = term(encode(node.properties.get(0)));
-		return or(prop, term(INIT));
+		List<Term> terms = new ArrayList<>();
+		for (String prop : node.properties) {
+			terms.add(term(encode(prop)));
+		}
+		return or(and(terms), term(INIT));
 	}
 	
 	private String prime(String str) {

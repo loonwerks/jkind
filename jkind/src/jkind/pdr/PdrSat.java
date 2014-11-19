@@ -356,4 +356,11 @@ public class PdrSat extends ScriptUser {
 	private Term name(Term term, String name) {
 		return script.annotate(term, new Annotation(":named", name));
 	}
+
+	public Cube getPropertyCube(String prop) {
+		Cube c = new Cube();
+		c.addPLiteral(not(term("$" + prop)));
+		c.addPLiteral(not(I));
+		return c;
+	}
 }

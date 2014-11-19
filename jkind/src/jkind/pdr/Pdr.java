@@ -22,9 +22,11 @@ public class Pdr {
 	private final Node node;
 	private final List<Frame> F = new ArrayList<>();
 	private PdrSat Z;
+	private final List<String> remainingProperties = new ArrayList<>();
 
 	public Pdr(Node node) {
 		this.node = node;
+		this.remainingProperties.addAll(node.properties);
 	}
 
 	public Cube pdrMain() {
@@ -144,10 +146,32 @@ public class Pdr {
 			}
 
 			if (F.get(k).isEmpty()) {
+				for (String prop : remainingProperties) {
+					System.out.println("Proved " + prop);
+				}
 				return true;
 			}
 		}
+		
+		int k = depth();
+		for (Cube c : new ArrayList<>(F.get(k).getCubes())) {
+			TCube s = Z.solveRelative(new TCube(c, TCube.FRAME_INF));
+			if (s.getFrame() != TCube.FRAME_NULL) {
+				addBlockedCube(s);
+			}
+		}
 
+		Frame last = F.get(F.size() - 1);
+		for (String prop : new ArrayList<>(remainingProperties)) {
+			Cube propCube = Z.getPropertyCube(prop);
+			for (Cube inv : last.getCubes()) {
+				if (inv.subsumes(propCube)) {
+					remainingProperties.remove(prop);
+					System.out.println("Proved " + prop);
+				}
+			}
+		}
+		
 		return false;
 	}
 

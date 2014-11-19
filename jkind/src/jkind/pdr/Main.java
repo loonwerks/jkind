@@ -20,17 +20,13 @@ public class Main {
 
 		Node main = Translate.translate(program);
 		DependencyMap depMap = new DependencyMap(main, main.properties);
-		
-		for (String property : main.properties) {
-			Node single = new NodeBuilder(main).clearProperties().addProperty(property).build();
-			single = LustreSlicer.slice(single, depMap);
-			long start = System.currentTimeMillis();
-			System.out.println("Property: " + property);
-			summary(new Pdr(single).pdrMain());
-			long stop = System.currentTimeMillis();
-			System.out.println((stop - start) / 1000.0);
-			System.out.println();
-		}
+
+		main = LustreSlicer.slice(main, depMap);
+		long start = System.currentTimeMillis();
+		summary(new Pdr(main).pdrMain());
+		long stop = System.currentTimeMillis();
+		System.out.println((stop - start) / 1000.0);
+		System.out.println();
 	}
 
 	private static void summary(Cube c) {
