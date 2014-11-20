@@ -52,11 +52,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		variables.add(new VarDecl(INIT, NamedType.BOOL));
 		return variables;
 	}
-	
+
 	private String encode(String name) {
 		return "$" + name;
 	}
-	
+
 	private VarDecl encode(VarDecl vd) {
 		return new VarDecl(encode(vd.id), vd.type);
 	}
@@ -73,7 +73,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		for (Expr assertion : node.assertions) {
 			conjuncts.add(assertion.accept(this));
 		}
-		
+
 		conjuncts.add(not(term(prime(INIT))));
 
 		return and(conjuncts);
@@ -84,7 +84,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		Term prop = term(encode(node.properties.get(0)));
 		return or(prop, term(INIT));
 	}
-	
+
 	private String prime(String str) {
 		return str + "'";
 	}
@@ -155,8 +155,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	@Override
 	public Term visit(IfThenElseExpr e) {
-		return term("ite", e.cond.accept(this), e.thenExpr.accept(this),
-				e.elseExpr.accept(this));
+		return ite(e.cond.accept(this), e.thenExpr.accept(this), e.elseExpr.accept(this));
 	}
 
 	@Override
@@ -210,8 +209,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		case NEGATIVE:
 			return term("-", e.expr.accept(this));
 
+		case NOT:
+			return not(e.expr.accept(this));
+
 		default:
-			return term(e.op.toString(), e.expr.accept(this));
+			throw new IllegalArgumentException("Unhandled unary operator: " + e.op);
 		}
 	}
 }
