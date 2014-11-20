@@ -44,8 +44,9 @@ public class PdrSat extends ScriptUser {
 
 		script.setOption(":produce-interpolants", true);
 		script.setOption(":produce-unsat-cores", true);
+		script.setOption(":simplify-interpolants", true);
 		script.setLogic(Logics.QF_UFLIRA);
-		script.setOption(":verbosity", 3);
+		script.setOption(":verbosity", 2);
 
 		Lustre2Term lustre2Term = new Lustre2Term(script, node);
 		varDecls = lustre2Term.getVariables();
