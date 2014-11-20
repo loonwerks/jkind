@@ -18,18 +18,24 @@ public class Main {
 		Program program = jkind.Main.parseLustre(args[0]);
 		StaticAnalyzer.check(program, SolverOption.YICES);
 
-		Node main = Translate.translate(program);
-		DependencyMap depMap = new DependencyMap(main, main.properties);
+		final Node main = Translate.translate(program);
+		final DependencyMap depMap = new DependencyMap(main, main.properties);
 		
-		for (String property : main.properties) {
-			Node single = new NodeBuilder(main).clearProperties().addProperty(property).build();
-			single = LustreSlicer.slice(single, depMap);
-			long start = System.currentTimeMillis();
-			System.out.println("Property: " + property);
-			summary(new Pdr(single).pdrMain());
-			long stop = System.currentTimeMillis();
-			System.out.println((stop - start) / 1000.0);
-			System.out.println();
+		for (final String property : main.properties) {
+			new Thread() {
+				@Override
+				public void run() {
+					Node single = new NodeBuilder(main).clearProperties().addProperty(property).build();
+					single = LustreSlicer.slice(single, depMap);
+					long start = System.currentTimeMillis();
+					Cube result = new Pdr(single).pdrMain();
+					System.out.println("Property: " + property);
+					summary(result);
+					long stop = System.currentTimeMillis();
+					System.out.println((stop - start) / 1000.0);
+					System.out.println();
+				}
+			}.start();
 		}
 	}
 

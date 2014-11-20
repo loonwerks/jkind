@@ -41,7 +41,7 @@ public class Pdr {
 					recBlockCube(new TCube(c, depth()));
 				} else {
 					addFrame(new Frame());
-					System.out.print(F.size());
+					//System.out.print(F.size());
 					if (propogateBlockedCubes()) {
 						return null;
 					}
@@ -63,7 +63,7 @@ public class Pdr {
 				if (!Z.refine(getCubes(s.getCube()))) {
 					throw new CounterexampleException(s.getCube());
 				} else {
-					System.out.print("R");
+					//System.out.print("R");
 					return;
 				}
 			}
@@ -166,7 +166,7 @@ public class Pdr {
 
 		// Store clause
 		F.get(k).add(s.getCube());
-		System.out.print(".");
+		//System.out.print(".");
 		Z.blockCubeInSolver(s);
 	}
 
