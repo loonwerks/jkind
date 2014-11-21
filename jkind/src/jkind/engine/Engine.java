@@ -97,6 +97,7 @@ public abstract class Engine extends MessageHandler implements Runnable {
 			if (scratch != null) {
 				scratch.close();
 			}
+			stopReceivingMessages();
 		}
 	}
 

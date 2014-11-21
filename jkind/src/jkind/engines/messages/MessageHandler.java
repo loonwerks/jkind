@@ -7,7 +7,17 @@ import java.util.function.Supplier;
 import jkind.JKindException;
 
 public abstract class MessageHandler {
-	public final BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
+	private BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
+
+	public void receiveMessage(Message message) {
+		if (incoming != null) {
+			incoming.add(message);
+		}
+	}
+
+	protected void stopReceivingMessages() {
+		incoming = null;
+	}
 
 	protected void processMessages() {
 		while (!incoming.isEmpty()) {

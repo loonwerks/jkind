@@ -178,10 +178,10 @@ public class Director extends MessageHandler {
 	}
 
 	public void broadcast(Message message, Engine source) {
-		incoming.add(message);
+		receiveMessage(message);
 		for (Engine engine : engines) {
 			if (engine != source) {
-				engine.incoming.add(message);
+				engine.receiveMessage(message);
 			}
 		}
 	}
