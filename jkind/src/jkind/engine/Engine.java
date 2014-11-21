@@ -51,7 +51,7 @@ public abstract class Engine extends MessageHandler implements Runnable {
 		this.settings = settings;
 		this.director = director;
 		this.properties = new ArrayList<>(spec.node.properties);
-		this.scratch = getScratch(spec.filename, name);
+		this.scratch = getScratch(settings.filename, name);
 	}
 
 	private PrintWriter getScratch(String base, String proc) {

@@ -54,17 +54,18 @@ public class Director extends MessageHandler {
 	public Director(JKindSettings settings, Specification spec) {
 		this.settings = settings;
 		this.spec = spec;
-		this.writer = getWriter(spec);
+		
+		this.writer = getWriter();
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(spec.node.properties);
 	}
 
-	private final Writer getWriter(Specification spec) {
+	private final Writer getWriter() {
 		try {
 			if (settings.excel) {
-				return new ExcelWriter(spec.filename + ".xls", spec.node);
+				return new ExcelWriter(settings.filename + ".xls", spec.node);
 			} else if (settings.xml) {
-				return new XmlWriter(spec.filename + ".xml", spec.typeMap, settings.xmlToStdout);
+				return new XmlWriter(settings.filename + ".xml", spec.typeMap, settings.xmlToStdout);
 			} else {
 				return new ConsoleWriter(new NodeLayout(spec.node));
 			}
