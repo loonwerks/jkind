@@ -1,21 +1,19 @@
-package jkind.processes;
+package jkind.engine;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.analysis.YicesArithOnlyCheck;
+import jkind.engines.messages.MessageHandler;
 import jkind.lustre.EnumType;
 import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.VarDecl;
-import jkind.processes.messages.Message;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -32,14 +30,13 @@ import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 import jkind.util.Util;
 
-public abstract class Process implements Runnable {
+public abstract class Engine extends MessageHandler implements Runnable {
 	protected Specification spec;
 	protected JKindSettings settings;
 	protected Director director;
 	protected List<String> properties;
 
 	protected Solver solver;
-	protected BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
 
 	private String name;
 	private PrintWriter scratch;
@@ -48,7 +45,7 @@ public abstract class Process implements Runnable {
 	// make it volatile
 	private volatile Throwable throwable;
 
-	public Process(String name, Specification spec, JKindSettings settings, Director director) {
+	public Engine(String name, Specification spec, JKindSettings settings, Director director) {
 		this.name = name;
 		this.spec = spec;
 		this.settings = settings;

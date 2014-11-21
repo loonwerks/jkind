@@ -1,17 +1,19 @@
-package jkind.processes;
+package jkind.engine;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.InductiveCounterexampleMessage;
+import jkind.engines.messages.InvalidMessage;
+import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.UnknownMessage;
+import jkind.engines.messages.ValidMessage;
 import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
 import jkind.invariant.Invariant;
-import jkind.processes.messages.InvariantMessage;
-import jkind.processes.messages.Message;
-import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -20,15 +22,9 @@ import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
 
-public class InvariantProcess extends Process {
-	private InductiveProcess inductiveProcess;
-
-	public InvariantProcess(Specification spec, JKindSettings settings) {
-		super("Invariant", spec, settings, null);
-	}
-
-	public void setInductiveProcess(InductiveProcess inductiveProcess) {
-		this.inductiveProcess = inductiveProcess;
+public class InvariantGenerationEngine extends Engine {
+	public InvariantGenerationEngine(Specification spec, JKindSettings settings, Director director) {
+		super("invariant-generation", spec, settings, director);
 	}
 
 	@Override
@@ -62,19 +58,6 @@ public class InvariantProcess extends Process {
 		private static final long serialVersionUID = 1L;
 	};
 
-	private boolean checkForStopMessage() {
-		while (!incoming.isEmpty()) {
-			Message message = incoming.poll();
-			if (message instanceof StopMessage) {
-				throw new StopException();
-			} else {
-				throw new JKindException("Unknown message type in inductive process: "
-						+ message.getClass().getCanonicalName());
-			}
-		}
-		return false;
-	}
-
 	private Graph createGraph() {
 		List<Candidate> candidates = new CandidateGenerator(spec).generate();
 		debug("Proposed " + candidates.size() + " candidates");
@@ -90,7 +73,7 @@ public class InvariantProcess extends Process {
 		}
 
 		do {
-			checkForStopMessage();
+			checkForStop();
 
 			result = solver.query(graph.toInvariant(k));
 
@@ -116,7 +99,7 @@ public class InvariantProcess extends Process {
 		}
 
 		do {
-			checkForStopMessage();
+			checkForStop();
 
 			result = solver.query(getInductiveQuery(k, graph));
 
@@ -129,6 +112,13 @@ public class InvariantProcess extends Process {
 
 		solver.pop();
 		return graph;
+	}
+
+	private void checkForStop() {
+		processMessages();
+		if (properties.isEmpty()) {
+			throw new StopException();
+		}
 	}
 
 	private Sexp getInductiveQuery(int k, Graph graph) {
@@ -147,6 +137,34 @@ public class InvariantProcess extends Process {
 		for (Invariant invariant : invs) {
 			debug("  " + invariant.toString());
 		}
-		inductiveProcess.incoming.add(new InvariantMessage(invs));
+
+		director.broadcast(new InvariantMessage(EngineType.INVARIANT_GENERATION, invs), this);
+	}
+
+	@Override
+	protected void handleMessage(BaseStepMessage bsm) {
+	}
+
+	@Override
+	protected void handleMessage(InductiveCounterexampleMessage icm) {
+	}
+
+	@Override
+	protected void handleMessage(InvalidMessage im) {
+		properties.removeAll(im.invalid);
+	}
+
+	@Override
+	protected void handleMessage(InvariantMessage im) {
+	}
+
+	@Override
+	protected void handleMessage(UnknownMessage um) {
+		properties.removeAll(um.unknown);
+	}
+
+	@Override
+	protected void handleMessage(ValidMessage vm) {
+		properties.removeAll(vm.valid);
 	}
 }

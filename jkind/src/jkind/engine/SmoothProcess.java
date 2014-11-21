@@ -1,11 +1,14 @@
-package jkind.processes;
+package jkind.engine;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.InductiveCounterexampleMessage;
+import jkind.engines.messages.InvalidMessage;
+import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.UnknownMessage;
+import jkind.engines.messages.ValidMessage;
 import jkind.lustre.VarDecl;
-import jkind.processes.messages.InvalidMessage;
-import jkind.processes.messages.Message;
-import jkind.processes.messages.StopMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Symbol;
 import jkind.slicing.DependencySet;
@@ -15,40 +18,19 @@ import jkind.solvers.SatResult;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
-public class SmoothProcess extends Process {
-	private Process cexProcess;
-
+public class SmoothProcess extends Engine {
 	public SmoothProcess(Specification spec, JKindSettings settings, Director director) {
-		super("Smoothing", spec, settings, director);
+		super("smoothing", spec, settings, director);
 	}
 
 	@Override
 	public void main() {
-		waitForMessage();
+		processMessagesAndWaitUntil(() -> properties.isEmpty());
 	}
 
-	public void setCounterexampleProcess(Process cexProcess) {
-		this.cexProcess = cexProcess;
-	}
-
-	private void waitForMessage() {
-		try {
-			while (true) {
-				Message message = incoming.take();
-				if (message instanceof InvalidMessage) {
-					InvalidMessage im = (InvalidMessage) message;
-					for (String property : im.invalid) {
-						smooth(property, im.k);
-					}
-				} else if (message instanceof StopMessage) {
-					return;
-				} else {
-					throw new JKindException("Unknown message type in reduce invariants process: "
-							+ message.getClass().getCanonicalName());
-				}
-			}
-		} catch (InterruptedException e) {
-			throw new JKindException("Interrupted while waiting for message", e);
+	private void smooth(InvalidMessage im) {
+		for (String property : im.invalid) {
+			smooth(property, im.k);
 		}
 	}
 
@@ -89,12 +71,40 @@ public class SmoothProcess extends Process {
 
 	private void sendCounterexample(String property, int k, Model model) {
 		debug("Sending " + property);
-		InvalidMessage im = new InvalidMessage(property, k, model);
+		director.broadcast(new InvalidMessage(EngineType.SMOOTHING, property, k, model), this);
+	}
 
-		if (cexProcess != null) {
-			cexProcess.incoming.add(im);
-		} else {
-			director.incoming.add(im);
+	@Override
+	protected void handleMessage(BaseStepMessage bsm) {
+	}
+
+	@Override
+	protected void handleMessage(InductiveCounterexampleMessage icm) {
+	}
+
+	@Override
+	protected void handleMessage(InvalidMessage im) {
+		if (shouldHandle(im)) {
+			smooth(im);
+			properties.removeAll(im.invalid);
 		}
+	}
+
+	private boolean shouldHandle(InvalidMessage im) {
+		return director.nextResponsible(im) == EngineType.SMOOTHING;
+	}
+
+	@Override
+	protected void handleMessage(InvariantMessage im) {
+	}
+
+	@Override
+	protected void handleMessage(UnknownMessage um) {
+		properties.removeAll(um.unknown);
+	}
+
+	@Override
+	protected void handleMessage(ValidMessage vm) {
+		properties.removeAll(vm.valid);
 	}
 }

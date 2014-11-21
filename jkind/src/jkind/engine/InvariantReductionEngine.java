@@ -1,8 +1,7 @@
-package jkind.processes;
+package jkind.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,10 +9,13 @@ import java.util.Set;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.InductiveCounterexampleMessage;
+import jkind.engines.messages.InvalidMessage;
+import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.UnknownMessage;
+import jkind.engines.messages.ValidMessage;
 import jkind.invariant.Invariant;
-import jkind.processes.messages.Message;
-import jkind.processes.messages.StopMessage;
-import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Label;
@@ -25,35 +27,19 @@ import jkind.translation.Specification;
 import jkind.util.BiMap;
 import jkind.util.SexpUtil;
 
-public class ReduceProcess extends Process {
-	public ReduceProcess(Specification spec, JKindSettings settings, Director director) {
-		super("Reduction", spec, settings, director);
+public class InvariantReductionEngine extends Engine {
+	public InvariantReductionEngine(Specification spec, JKindSettings settings, Director director) {
+		super("invariant-reduction", spec, settings, director);
 	}
 
 	@Override
 	public void main() {
-		waitForMessage();
+		processMessagesAndWaitUntil(() -> properties.isEmpty());
 	}
 
-	private void waitForMessage() {
-		try {
-			while (true) {
-				Message message = incoming.take();
-				if (message instanceof ValidMessage) {
-					ValidMessage vm = (ValidMessage) message;
-					for (String property : vm.valid) {
-						Invariant propertyInvariant = getInvariantByName(property, vm.invariants);
-						reduce(propertyInvariant, vm.invariants);
-					}
-				} else if (message instanceof StopMessage) {
-					return;
-				} else {
-					throw new JKindException("Unknown message type in reduce invariants process: "
-							+ message.getClass().getCanonicalName());
-				}
-			}
-		} catch (InterruptedException e) {
-			throw new JKindException("Interrupted while waiting for message", e);
+	private void reduce(ValidMessage vm) {
+		for (String property : vm.valid) {
+			reduce(getInvariantByName(property, vm.invariants), vm.invariants);
 		}
 	}
 
@@ -103,12 +89,13 @@ public class ReduceProcess extends Process {
 		}
 
 		solver.pop();
-		
+
 		irreducible.remove(property);
 		sendValid(property.toString(), k, new ArrayList<>(irreducible));
 	}
 
-	private void assertInvariants(int k, List<Invariant> invariants, BiMap<Label, Invariant> labelling) {
+	private void assertInvariants(int k, List<Invariant> invariants,
+			BiMap<Label, Invariant> labelling) {
 		for (Invariant invariant : invariants) {
 			if (labelling.containsValue(invariant)) {
 				solver.retract(labelling.inverse().remove(invariant));
@@ -142,7 +129,7 @@ public class ReduceProcess extends Process {
 				hyps.add(SexpUtil.conjoinInvariants(irreducible, i));
 			}
 		}
-		
+
 		Sexp conc = SexpUtil.conjoinInvariants(irreducible, k);
 		return new Cons("=>", new Cons("and", hyps), conc);
 	}
@@ -157,28 +144,28 @@ public class ReduceProcess extends Process {
 
 	private void minimizeUnsatCore(Sexp query, List<Label> unsatCore, Set<Label> allLabels) {
 		solver.push();
-		
+
 		for (Label label : allLabels) {
 			if (!unsatCore.contains(label)) {
 				solver.retract(label);
 			}
 		}
-		
+
 		Iterator<Label> iterator = unsatCore.iterator();
 		while (iterator.hasNext()) {
 			Label label = iterator.next();
-			
+
 			solver.push();
 			solver.retract(label);
 			Result result = solver.query(query);
 			solver.pop();
-			
+
 			if (result instanceof UnsatResult) {
 				iterator.remove();
 				solver.retract(label);
 			}
 		}
-		
+
 		solver.pop();
 	}
 
@@ -188,7 +175,40 @@ public class ReduceProcess extends Process {
 			debug(invariant.toString());
 		}
 
-		List<String> validList = Collections.singletonList(valid);
-		director.incoming.add(new ValidMessage(validList, k, reduced));
+		ValidMessage vm = new ValidMessage(EngineType.INVARIANT_REDUCTION, valid, k, reduced);
+		director.broadcast(vm, this);
+	}
+
+	@Override
+	protected void handleMessage(BaseStepMessage bsm) {
+	}
+
+	@Override
+	protected void handleMessage(InductiveCounterexampleMessage icm) {
+	}
+
+	@Override
+	protected void handleMessage(InvalidMessage im) {
+		properties.removeAll(im.invalid);
+	}
+
+	@Override
+	protected void handleMessage(InvariantMessage im) {
+	}
+
+	@Override
+	protected void handleMessage(UnknownMessage um) {
+		properties.removeAll(um.unknown);
+	}
+
+	@Override
+	protected void handleMessage(ValidMessage vm) {
+		if (shouldHandle(vm)) {
+			reduce(vm);
+		}
+	}
+
+	private boolean shouldHandle(ValidMessage vm) {
+		return director.nextResponsible(vm) == EngineType.INVARIANT_REDUCTION;
 	}
 }

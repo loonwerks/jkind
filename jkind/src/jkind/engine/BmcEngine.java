@@ -1,18 +1,17 @@
-package jkind.processes;
+package jkind.engine;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.InductiveCounterexampleMessage;
+import jkind.engines.messages.InvalidMessage;
+import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.UnknownMessage;
+import jkind.engines.messages.ValidMessage;
 import jkind.lustre.values.BooleanValue;
-import jkind.processes.messages.BaseStepMessage;
-import jkind.processes.messages.InvalidMessage;
-import jkind.processes.messages.Message;
-import jkind.processes.messages.StopMessage;
-import jkind.processes.messages.UnknownMessage;
-import jkind.processes.messages.ValidMessage;
 import jkind.sexp.Cons;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
@@ -21,21 +20,11 @@ import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
-public class BaseProcess extends Process {
-	private InductiveProcess inductiveProcess;
-	private Process cexProcess;
+public class BmcEngine extends Engine {
 	private List<String> validProperties = new ArrayList<>();
 
-	public BaseProcess(Specification spec, JKindSettings settings, Director director) {
-		super("Base", spec, settings, director);
-	}
-
-	public void setInductiveProcess(InductiveProcess inductiveProcess) {
-		this.inductiveProcess = inductiveProcess;
-	}
-
-	public void setCounterexampleProcess(Process cexProcess) {
-		this.cexProcess = cexProcess;
+	public BmcEngine(Specification spec, JKindSettings settings, Director director) {
+		super("bmc", spec, settings, director);
 	}
 
 	@Override
@@ -51,21 +40,6 @@ public class BaseProcess extends Process {
 			assertBaseTransition(k);
 			checkProperties(k);
 			assertProperties(k);
-		}
-		sendStop();
-	}
-
-	private void processMessages() {
-		while (!incoming.isEmpty()) {
-			Message message = incoming.poll();
-			if (message instanceof ValidMessage) {
-				ValidMessage validMessage = (ValidMessage) message;
-				properties.removeAll(validMessage.valid);
-				validProperties.addAll(validMessage.valid);
-			} else {
-				throw new JKindException("Unknown message type in base process: "
-						+ message.getClass().getCanonicalName());
-			}
 		}
 	}
 
@@ -98,32 +72,15 @@ public class BaseProcess extends Process {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		InvalidMessage im = new InvalidMessage(invalid, k + 1, model);
-		if (cexProcess != null) {
-			cexProcess.incoming.add(im);
-		} else {
-			director.incoming.add(im);
-		}
-
-		if (inductiveProcess != null) {
-			inductiveProcess.incoming.add(im);
-		}
+		director.broadcast(new InvalidMessage(EngineType.BMC, invalid, k + 1, model), this);
 	}
 
 	private void sendBaseStep(int k) {
-		BaseStepMessage bsm = new BaseStepMessage(k + 1);
-		director.incoming.add(bsm);
-		if (inductiveProcess != null) {
-			inductiveProcess.incoming.add(bsm);
-		}
+		director.broadcast(new BaseStepMessage(EngineType.BMC, k + 1), this);
 	}
 
 	private void sendUnknown(List<String> unknown) {
-		UnknownMessage um = new UnknownMessage(unknown);
-		director.incoming.add(um);
-		if (inductiveProcess != null) {
-			inductiveProcess.incoming.add(um);
-		}
+		director.broadcast(new UnknownMessage(EngineType.BMC, unknown), this);
 	}
 
 	private void assertProperties(int k) {
@@ -137,9 +94,30 @@ public class BaseProcess extends Process {
 		}
 	}
 
-	private void sendStop() {
-		if (cexProcess != null) {
-			cexProcess.incoming.add(new StopMessage());
-		}
+	@Override
+	protected void handleMessage(BaseStepMessage bsm) {
+	}
+
+	@Override
+	protected void handleMessage(InductiveCounterexampleMessage icm) {
+	}
+
+	@Override
+	protected void handleMessage(InvalidMessage im) {
+		properties.removeAll(im.invalid);
+	}
+
+	@Override
+	protected void handleMessage(InvariantMessage im) {
+	}
+
+	@Override
+	protected void handleMessage(UnknownMessage um) {
+	}
+
+	@Override
+	protected void handleMessage(ValidMessage vm) {
+		properties.removeAll(vm.valid);
+		validProperties.addAll(vm.valid);
 	}
 }

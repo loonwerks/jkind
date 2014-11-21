@@ -1,9 +1,9 @@
 package jkind;
 
 import jkind.analysis.StaticAnalyzer;
+import jkind.engine.Director;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.processes.Director;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.Specification;
