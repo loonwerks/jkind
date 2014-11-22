@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -35,8 +34,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 public class YicesSolver extends ProcessBasedSolver {
 	private final boolean arithOnly;
 
-	public YicesSolver(JKindSettings settings, String engineName, boolean arithOnly) {
-		super(settings, engineName, new ProcessBuilder(getYices()));
+	public YicesSolver(String scratchBase, boolean arithOnly) {
+		super(scratchBase, new ProcessBuilder(getYices()));
 		this.arithOnly = arithOnly;
 	}
 

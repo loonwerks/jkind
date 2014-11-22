@@ -76,17 +76,25 @@ public abstract class Engine extends MessageHandler implements Runnable {
 	private Solver getSolver() {
 		switch (settings.solver) {
 		case YICES:
-			return new YicesSolver(settings, name, YicesArithOnlyCheck.check(spec.node));
+			return new YicesSolver(getScratchBase(), YicesArithOnlyCheck.check(spec.node));
 		case CVC4:
-			return new Cvc4Solver(settings, name);
+			return new Cvc4Solver(getScratchBase());
 		case Z3:
-			return new Z3Solver(settings, name);
+			return new Z3Solver(getScratchBase());
 		case YICES2:
-			return new Yices2Solver(settings, name);
+			return new Yices2Solver(getScratchBase());
 		case MATHSAT:
-			return new MathSatSolver(settings, name);
+			return new MathSatSolver(getScratchBase());
 		}
 		throw new IllegalArgumentException("Unknown solver: " + settings.solver);
+	}
+
+	private String getScratchBase() {
+		if (settings.scratch) {
+			return settings.filename + "." + name;
+		} else {
+			return null;
+		}
 	}
 
 	public Throwable getThrowable() {

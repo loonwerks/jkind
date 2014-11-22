@@ -26,8 +26,4 @@ public abstract class Solver {
 	protected final Map<String, Type> varTypes = new HashMap<>();
 
 	protected abstract String getSolverExtension();
-	
-	protected String getScratchFilename(String base, String engineName) { 
-		return base + "." + engineName + "." + getSolverExtension();
-	}
 }

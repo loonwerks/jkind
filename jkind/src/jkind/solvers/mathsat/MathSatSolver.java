@@ -3,7 +3,6 @@ package jkind.solvers.mathsat;
 import java.io.File;
 
 import jkind.JKindException;
-import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
@@ -26,8 +25,8 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class MathSatSolver extends SmtLib2Solver {
-	public MathSatSolver(JKindSettings settings, String engineName) {
-		super(settings, engineName, new ProcessBuilder(getMathSat()), "MathSAT");
+	public MathSatSolver(String scratchBase) {
+		super(scratchBase, new ProcessBuilder(getMathSat()), "MathSAT");
 	}
 
 	private static String getMathSat() {
@@ -72,7 +71,7 @@ public class MathSatSolver extends SmtLib2Solver {
 	protected boolean isDone(String line) {
 		return line.equals("(error \"unknown command: echo\")");
 	}
-	
+
 	@Override
 	protected Model parseModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);

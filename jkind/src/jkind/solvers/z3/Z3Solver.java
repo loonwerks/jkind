@@ -2,7 +2,6 @@ package jkind.solvers.z3;
 
 import java.io.File;
 
-import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
@@ -15,8 +14,8 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Z3Solver extends SmtLib2Solver {
-	public Z3Solver(JKindSettings settings, String engineName) {
-		super(settings, engineName, new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
+	public Z3Solver(String scratchBase) {
+		super(scratchBase, new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
 	}
 
 	private static String getZ3() {

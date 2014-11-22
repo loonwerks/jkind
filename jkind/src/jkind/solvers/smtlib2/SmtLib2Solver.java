@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -34,8 +33,8 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	final protected String name;
 
-	public SmtLib2Solver(JKindSettings settings, String engineName, ProcessBuilder pb, String name) {
-		super(settings, engineName, pb);
+	public SmtLib2Solver(String scratchBase, ProcessBuilder pb, String name) {
+		super(scratchBase, pb);
 		this.name = name;
 	}
 

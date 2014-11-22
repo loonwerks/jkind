@@ -10,7 +10,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import jkind.JKindException;
-import jkind.JKindSettings;
 
 public abstract class ProcessBasedSolver extends Solver {
 	protected final static String DONE = "@DONE";
@@ -20,9 +19,8 @@ public abstract class ProcessBasedSolver extends Solver {
 	protected BufferedReader fromSolver;
 	protected PrintWriter scratch;
 
-	protected ProcessBasedSolver(JKindSettings settings, String engineName,
-			ProcessBuilder processBuilder) {
-		this.scratch = getScratch(settings, engineName);
+	protected ProcessBasedSolver(String scratchBase, ProcessBuilder processBuilder) {
+		this.scratch = getScratch(scratchBase);
 
 		processBuilder.redirectErrorStream(true);
 		try {
@@ -35,16 +33,16 @@ public abstract class ProcessBasedSolver extends Solver {
 		fromSolver = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	}
 
-	private PrintWriter getScratch(JKindSettings settings, String engineName) {
-		if (settings.scratch) {
-			String filename = getScratchFilename(settings.filename, engineName);
-			try {
-				return new PrintWriter(new FileOutputStream(filename), true);
-			} catch (FileNotFoundException e) {
-				throw new JKindException("Unable to open scratch file: " + filename, e);
-			}
-		} else {
+	private PrintWriter getScratch(String scratchBase) {
+		if (scratchBase == null) {
 			return null;
+		}
+
+		String filename = scratchBase + "." + getSolverExtension();
+		try {
+			return new PrintWriter(new FileOutputStream(filename), true);
+		} catch (FileNotFoundException e) {
+			throw new JKindException("Unable to open scratch file: " + filename, e);
 		}
 	}
 
