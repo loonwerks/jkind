@@ -58,7 +58,7 @@ public abstract class ProcessBasedSolver extends Solver {
 	@Override
 	public synchronized void stop() {
 		/**
-		 * This must be synchronized since two threads (a Process or a shutdown
+		 * This must be synchronized since two threads (an Engine or a shutdown
 		 * hook) may try to stop the solver at the same time
 		 */
 

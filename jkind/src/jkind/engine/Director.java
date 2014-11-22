@@ -54,7 +54,7 @@ public class Director extends MessageHandler {
 	public Director(JKindSettings settings, Specification spec) {
 		this.settings = settings;
 		this.spec = spec;
-		
+
 		this.writer = getWriter();
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(spec.node.properties);
@@ -77,6 +77,7 @@ public class Director extends MessageHandler {
 	public void run() {
 		printHeader();
 		writer.begin();
+		addShutdownHook();
 		createAndStartEngines();
 
 		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()) {
@@ -85,11 +86,38 @@ public class Director extends MessageHandler {
 		}
 
 		processMessages();
-		writeUnknowns();
+		if (removeShutdownHook()) {
+			postProcessing();
+			reportFailures();
+		}
+	}
 
+	private void postProcessing() {
+		writeUnknowns();
 		writer.end();
 		printSummary();
-		reportFailures();
+	}
+
+	private final Thread shutdownHook = new Thread("shutdown-hook") {
+		@Override
+		public void run() {
+			Director.sleep(100);
+			postProcessing();
+		}
+	};
+
+	private void addShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
+	}
+
+	private boolean removeShutdownHook() {
+		try {
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+			return true;
+		} catch (IllegalStateException e) {
+			// JVM already shutting down
+			return false;
+		}
 	}
 
 	private void createAndStartEngines() {
@@ -126,7 +154,7 @@ public class Director extends MessageHandler {
 		threads.add(new Thread(engine, engine.getName()));
 	}
 
-	private void sleep(int millis) {
+	private static void sleep(int millis) {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
@@ -304,8 +332,6 @@ public class Director extends MessageHandler {
 			}
 		}
 	}
-
-	int todo_move_all_to_separate_class;
 
 	private Map<String, Counterexample> convertInductiveCounterexamples() {
 		Map<String, Counterexample> result = new HashMap<>();
