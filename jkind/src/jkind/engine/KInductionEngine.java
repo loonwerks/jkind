@@ -131,8 +131,11 @@ public class KInductionEngine extends Engine {
 	}
 
 	private void sendInductiveCounterexample(String p, int length, Model model) {
-		Message icm = new InductiveCounterexampleMessage(EngineType.K_INDUCTION, p, length, model);
-		director.broadcast(icm, this);
+		if (settings.inductiveCounterexamples) {
+			Message icm = new InductiveCounterexampleMessage(EngineType.K_INDUCTION, p, length,
+					model);
+			director.broadcast(icm, this);
+		}
 	}
 
 	@Override
