@@ -156,10 +156,10 @@ public abstract class Engine extends MessageHandler implements Runnable {
 			for (VarDecl vd : getOffsetInputVarDecls(k)) {
 				if (vd.type instanceof SubrangeIntType) {
 					SubrangeIntType subrangeType = (SubrangeIntType) vd.type;
-					solver.send(new Cons("assert", SexpUtil.subrangeConstraint(vd.id, subrangeType)));
+					solver.assertSexp(SexpUtil.subrangeConstraint(vd.id, subrangeType));
 				} else if (vd.type instanceof EnumType) {
 					EnumType enumType = (EnumType) vd.type;
-					solver.send(new Cons("assert", SexpUtil.enumConstraint(vd.id, enumType)));
+					solver.assertSexp(SexpUtil.enumConstraint(vd.id, enumType));
 				}
 			}
 		}
@@ -205,7 +205,7 @@ public abstract class Engine extends MessageHandler implements Runnable {
 	}
 
 	protected void assertTransition(int k, Sexp init) {
-		solver.send(new Cons("assert", getTransition(k, init)));
+		solver.assertSexp(getTransition(k, init));
 	}
 
 	protected Sexp getTransition(int k, Sexp init) {

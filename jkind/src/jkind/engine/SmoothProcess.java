@@ -15,14 +15,23 @@ import jkind.slicing.DependencySet;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.yices.YicesSolver;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class SmoothProcess extends Engine {
+	private YicesSolver yicesSolver;
+
 	public SmoothProcess(Specification spec, JKindSettings settings, Director director) {
 		super("smoothing", spec, settings, director);
 	}
 
+	@Override
+	protected void initializeSolver() {
+		super.initializeSolver();
+		yicesSolver = (YicesSolver) solver;
+	}
+	
 	@Override
 	public void main() {
 		processMessagesAndWaitUntil(() -> properties.isEmpty());
@@ -38,7 +47,7 @@ public class SmoothProcess extends Engine {
 		debug("Smoothing: " + property);
 		DependencySet relevant = spec.dependencyMap.get(property);
 
-		solver.push();
+		yicesSolver.push();
 
 		createVariables(-1);
 		for (int i = 0; i < k; i++) {
@@ -49,13 +58,13 @@ public class SmoothProcess extends Engine {
 			}
 		}
 
-		Result result = solver.maxsatQuery(new StreamIndex(property, k - 1).getEncoded());
+		Result result = yicesSolver.maxsatQuery(new StreamIndex(property, k - 1).getEncoded());
 		if (!(result instanceof SatResult)) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
 
 		Model smoothModel = ((SatResult) result).getModel();
-		solver.pop();
+		yicesSolver.pop();
 		sendCounterexample(property, k, smoothModel);
 	}
 
@@ -64,7 +73,7 @@ public class SmoothProcess extends Engine {
 			if (relevant.contains(input.id)) {
 				Symbol prev = new StreamIndex(input.id, k - 1).getEncoded();
 				Symbol curr = new StreamIndex(input.id, k).getEncoded();
-				solver.weightedAssert(new Cons("=", prev, curr), 1);
+				yicesSolver.weightedAssert(new Cons("=", prev, curr), 1);
 			}
 		}
 	}

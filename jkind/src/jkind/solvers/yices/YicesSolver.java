@@ -60,8 +60,8 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
-	public void send(Sexp sexp) {
-		send(sexp.toString());
+	public void assertSexp(Sexp sexp) {
+		send("(assert " + sexp + ")");
 	}
 
 	private void send(String str) {
@@ -83,13 +83,12 @@ public class YicesSolver extends Solver {
 	@Override
 	public void define(VarDecl decl) {
 		varTypes.put(decl.id, decl.type);
-		send(new Cons("define", new Symbol(decl.id), new Symbol("::"), type(decl.type)));
+		send("(define " + decl.id + " :: " + type(decl.type) + ")");
 	}
 
 	@Override
 	public void define(TransitionRelation lambda) {
-		send(new Cons("define", TransitionRelation.T, new Symbol("::"), type(lambda),
-				lambda(lambda)));
+		send("(define " + TransitionRelation.T + " :: " + type(lambda) + " " + lambda(lambda) + ")");
 	}
 
 	private Sexp type(TransitionRelation lambda) {
@@ -113,22 +112,19 @@ public class YicesSolver extends Solver {
 
 	private int labelCount = 1;
 
-	@Override
 	public Label labelledAssert(Sexp sexp) {
 		debug("; id = " + labelCount);
-		send(new Cons("assert+", sexp));
+		send("(assert+ " + sexp + ")");
 		return new Label(labelCount++);
 	}
 
-	@Override
 	public void retract(Label label) {
-		send(new Cons("retract", new Symbol(label.toString())));
+		send("(retract " + label + ")");
 	}
 
-	@Override
 	public Label weightedAssert(Sexp sexp, int weight) {
 		debug("; id = " + labelCount);
-		send(new Cons("assert+", sexp, Sexp.fromInt(weight)));
+		send("(assert+ " + sexp + " " + weight + ")");
 		return new Label(labelCount++);
 	}
 
@@ -159,7 +155,6 @@ public class YicesSolver extends Solver {
 		return result;
 	}
 
-	@Override
 	public Result maxsatQuery(Sexp sexp) {
 		Label label = labelledAssert(new Cons("not", sexp));
 		send("(max-sat)");

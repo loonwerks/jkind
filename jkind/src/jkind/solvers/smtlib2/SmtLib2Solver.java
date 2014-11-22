@@ -12,7 +12,6 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.Label;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -41,7 +40,11 @@ public abstract class SmtLib2Solver extends Solver {
 	}
 
 	@Override
-	public void send(Sexp sexp) {
+	public void assertSexp(Sexp sexp) {
+		send(new Cons("assert", sexp));
+	}
+
+	protected void send(Sexp sexp) {
 		send(Quoting.quoteSexp(sexp).toString());
 	}
 
@@ -85,31 +88,12 @@ public abstract class SmtLib2Solver extends Solver {
 		return new Cons(args);
 	}
 
-	private int labelCount = 1;
-
-	@Override
-	public Label labelledAssert(Sexp sexp) {
-		String name = "a" + labelCount++;
-		send(new Cons("assert", new Cons("!", sexp, new Symbol(":named"), new Symbol(name))));
-		return new Label(name);
-	}
-
-	@Override
-	public void retract(Label label) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Label weightedAssert(Sexp sexp, int weight) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	public Result query(Sexp sexp) {
 		Result result = null;
 		push();
 
-		send(new Cons("assert", new Cons("not", sexp)));
+		assertSexp(new Cons("not", sexp));
 		send("(check-sat)");
 		send("(echo \"" + DONE + "\")");
 		String status = readFromSolver();
@@ -200,11 +184,6 @@ public abstract class SmtLib2Solver extends Solver {
 		}
 
 		return ModelExtractor.getModel(ctx, varTypes);
-	}
-
-	@Override
-	public Result maxsatQuery(Sexp sexp) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

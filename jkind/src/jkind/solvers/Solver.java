@@ -18,16 +18,11 @@ import jkind.translation.TransitionRelation;
 public abstract class Solver {
 	public abstract void initialize();
 
-	public abstract void send(Sexp sexp);
+	public abstract void assertSexp(Sexp sexp);
 	public abstract void define(VarDecl decl);
 	public abstract void define(TransitionRelation lambda);
-	
-	public abstract Label weightedAssert(Sexp sexp, int weight);
-	public abstract Label labelledAssert(Sexp sexp);
-	public abstract void retract(Label label);
-	
+
 	public abstract Result query(Sexp sexp);
-	public abstract Result maxsatQuery(Sexp sexp);
 	
 	public abstract void push();
 	public abstract void pop();

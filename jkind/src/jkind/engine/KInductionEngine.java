@@ -106,7 +106,7 @@ public class KInductionEngine extends Engine {
 
 	private void assertInvariants(List<Invariant> invariants, int i) {
 		for (Invariant invariant : invariants) {
-			solver.send(new Cons("assert", invariant.instantiate(i)));
+			solver.assertSexp(invariant.instantiate(i));
 		}
 	}
 

@@ -12,7 +12,6 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.values.BooleanValue;
-import jkind.sexp.Cons;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -89,8 +88,8 @@ public class BmcEngine extends Engine {
 	}
 
 	private void assertProperties(List<String> properties, int k) {
-		if (!properties.isEmpty()) {
-			solver.send(new Cons("assert", StreamIndex.conjoinEncodings(properties, k)));
+		for (String prop : properties) {
+			solver.assertSexp(new StreamIndex(prop, k).getEncoded());
 		}
 	}
 
