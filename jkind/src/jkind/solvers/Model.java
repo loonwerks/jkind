@@ -1,6 +1,8 @@
 package jkind.solvers;
 
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +19,7 @@ public abstract class Model {
 	protected Map<String, Type> varTypes;
 	
 	public Model(Map<String, Type> varTypes) {
-		this.varTypes = varTypes;
+		this.varTypes = Collections.unmodifiableMap(new HashMap<>(varTypes));
 	}
 	
 	public abstract Value getValue(String name);

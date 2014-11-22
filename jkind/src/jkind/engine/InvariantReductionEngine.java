@@ -29,8 +29,8 @@ import jkind.util.BiMap;
 import jkind.util.SexpUtil;
 
 public class InvariantReductionEngine extends Engine {
-	private YicesSolver yicesSolver; 
-	
+	private YicesSolver yicesSolver;
+
 	public InvariantReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super("invariant-reduction", spec, settings, director);
 	}
@@ -40,7 +40,7 @@ public class InvariantReductionEngine extends Engine {
 		super.initializeSolver();
 		yicesSolver = (YicesSolver) solver;
 	}
-	
+
 	@Override
 	public void main() {
 		processMessagesAndWaitUntil(() -> properties.isEmpty());
@@ -119,7 +119,7 @@ public class InvariantReductionEngine extends Engine {
 		for (int i = 0; i <= k; i++) {
 			conjuncts.add(invariant.instantiate(i));
 		}
-		return new Cons("and", conjuncts);
+		return SexpUtil.conjoin(conjuncts);
 	}
 
 	private Set<Invariant> getInvariants(List<Label> unsatCore, BiMap<Label, Invariant> labelling) {
@@ -140,7 +140,7 @@ public class InvariantReductionEngine extends Engine {
 		}
 
 		Sexp conc = SexpUtil.conjoinInvariants(irreducible, k);
-		return new Cons("=>", new Cons("and", hyps), conc);
+		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
 	protected Sexp getInductiveTransition(int k) {

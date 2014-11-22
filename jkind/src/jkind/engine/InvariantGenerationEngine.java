@@ -21,6 +21,7 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
+import jkind.util.SexpUtil;
 
 public class InvariantGenerationEngine extends Engine {
 	public InvariantGenerationEngine(Specification spec, JKindSettings settings, Director director) {
@@ -128,7 +129,7 @@ public class InvariantGenerationEngine extends Engine {
 		}
 		Sexp conc = graph.toInvariant(k);
 
-		return new Cons("=>", new Cons("and", hyps), conc);
+		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
 	private void sendInvariant(Graph graph) {

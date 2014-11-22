@@ -28,9 +28,11 @@ public class SexpUtil {
 	public static Sexp conjoin(List<? extends Sexp> sexps) {
 		if (sexps.isEmpty()) {
 			return new Symbol("true");
+		} else if (sexps.size() == 1) {
+			return sexps.get(0);
+		} else {
+			return new Cons("and", sexps);
 		}
-
-		return new Cons("and", sexps);
 	}
 
 	public static Sexp conjoinInvariants(Collection<Invariant> invariants, int k) {
@@ -42,6 +44,6 @@ public class SexpUtil {
 		for (Invariant invariant : invariants) {
 			conjuncts.add(invariant.instantiate(k));
 		}
-		return new Cons("and", conjuncts);
+		return SexpUtil.conjoin(conjuncts);
 	}
 }

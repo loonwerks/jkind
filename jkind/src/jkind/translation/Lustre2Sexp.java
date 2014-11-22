@@ -30,6 +30,7 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
 
 public class Lustre2Sexp implements ExprVisitor<Sexp> {
@@ -51,7 +52,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		inputs.addAll(pre(Util.getVarDecls(node)));
 		inputs.addAll(curr(Util.getVarDecls(node)));
 
-		return new TransitionRelation(inputs, new Cons("and", conjuncts));
+		return new TransitionRelation(inputs, SexpUtil.conjoin(conjuncts));
 	}
 
 	public static final Symbol INIT = new Symbol("%init");

@@ -11,13 +11,17 @@ import jkind.util.StreamIndex;
 
 public class SimpleModel extends Model {
 	private final Map<String, Value> values = new HashMap<>();
-	
+
 	public SimpleModel() {
 		super(Collections.<String, Type> emptyMap());
 	}
 
 	public void addValue(StreamIndex si, Value value) {
 		values.put(si.getEncoded().str, value);
+	}
+
+	public void addValue(String encoded, Value value) {
+		values.put(encoded, value);
 	}
 
 	@Override

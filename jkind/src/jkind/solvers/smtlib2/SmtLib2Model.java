@@ -1,7 +1,6 @@
 package jkind.solvers.smtlib2;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +32,6 @@ public class SmtLib2Model extends Model {
 
 	@Override
 	public Set<String> getVariableNames() {
-		return new HashSet<>(values.keySet());
+		return values.keySet();
 	}
 }
