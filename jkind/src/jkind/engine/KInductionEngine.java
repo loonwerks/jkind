@@ -40,7 +40,7 @@ public class KInductionEngine extends Engine {
 	public void main() {
 		createVariables(-1);
 		for (kCurrent = 0; kCurrent <= settings.n; kCurrent++) {
-			debug("K = " + kCurrent);
+			comment("K = " + kCurrent);
 			processMessagesAndWait();
 			createVariables(kCurrent);
 			assertTransitionAndInvariants(kCurrent);

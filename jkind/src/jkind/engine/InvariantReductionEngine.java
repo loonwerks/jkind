@@ -63,7 +63,7 @@ public class InvariantReductionEngine extends Engine {
 	}
 
 	private void reduce(Invariant property, List<Invariant> invariants) {
-		debug("Reducing: " + property);
+		comment("Reducing: " + property);
 		yicesSolver.push();
 
 		Set<Invariant> irreducible = new HashSet<>();
@@ -179,9 +179,9 @@ public class InvariantReductionEngine extends Engine {
 	}
 
 	private void sendValid(String valid, int k, List<Invariant> reduced) {
-		debug("Sending " + valid + " at k = " + k + " with invariants: ");
+		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Invariant invariant : reduced) {
-			debug(invariant.toString());
+			comment(invariant.toString());
 		}
 
 		ValidMessage vm = new ValidMessage(EngineType.INVARIANT_REDUCTION, valid, k, reduced);

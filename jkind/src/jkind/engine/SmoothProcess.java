@@ -44,7 +44,7 @@ public class SmoothProcess extends Engine {
 	}
 
 	private void smooth(String property, int k) {
-		debug("Smoothing: " + property);
+		comment("Smoothing: " + property);
 		DependencySet relevant = spec.dependencyMap.get(property);
 
 		yicesSolver.push();
@@ -79,7 +79,7 @@ public class SmoothProcess extends Engine {
 	}
 
 	private void sendCounterexample(String property, int k, Model model) {
-		debug("Sending " + property);
+		comment("Sending " + property);
 		director.broadcast(new InvalidMessage(EngineType.SMOOTHING, property, k, model), this);
 	}
 

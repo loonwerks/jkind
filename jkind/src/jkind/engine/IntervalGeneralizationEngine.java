@@ -29,13 +29,13 @@ public class IntervalGeneralizationEngine extends Engine {
 
 	private void generalize(InvalidMessage im) {
 		for (String property : im.invalid) {
-			debug("Generalizing: " + property);
+			comment("Generalizing: " + property);
 			try {
 				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model, im.k);
 				Model generalized = generalizer.generalize();
 				sendInvalid(property, im.k, generalized);
 			} catch (AlgebraicLoopException e) {
-				debug("Detected algebraic loop");
+				comment("Detected algebraic loop");
 				sendInvalid(property, im.k, im.model);
 			}
 		}

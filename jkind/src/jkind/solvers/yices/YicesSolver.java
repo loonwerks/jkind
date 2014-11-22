@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -14,8 +15,8 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Label;
+import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
-import jkind.solvers.Solver;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
 import jkind.translation.TransitionRelation;
@@ -31,12 +32,11 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-public class YicesSolver extends Solver {
-	private static final String DONE = "@DONE";
+public class YicesSolver extends ProcessBasedSolver {
 	private final boolean arithOnly;
 
-	public YicesSolver(boolean arithOnly) {
-		super(new ProcessBuilder(getYices()));
+	public YicesSolver(JKindSettings settings, String engineName, boolean arithOnly) {
+		super(settings, engineName, new ProcessBuilder(getYices()));
 		this.arithOnly = arithOnly;
 	}
 
@@ -65,7 +65,7 @@ public class YicesSolver extends Solver {
 	}
 
 	private void send(String str) {
-		debug(str);
+		scratch(str);
 		try {
 			toSolver.append(str);
 			toSolver.newLine();
@@ -113,7 +113,7 @@ public class YicesSolver extends Solver {
 	private int labelCount = 1;
 
 	public Label labelledAssert(Sexp sexp) {
-		debug("; id = " + labelCount);
+		comment("id = " + labelCount);
 		send("(assert+ " + sexp + ")");
 		return new Label(labelCount++);
 	}
@@ -123,7 +123,7 @@ public class YicesSolver extends Solver {
 	}
 
 	public Label weightedAssert(Sexp sexp, int weight) {
-		debug("; id = " + labelCount);
+		comment("id = " + labelCount);
 		send("(assert+ " + sexp + " " + weight + ")");
 		return new Label(labelCount++);
 	}
@@ -175,7 +175,7 @@ public class YicesSolver extends Solver {
 			boolean seenContextError = false;
 			while (true) {
 				line = fromSolver.readLine();
-				debug("; YICES: " + line);
+				comment("YICES: " + line);
 				if (line == null) {
 					throw new JKindException("Yices terminated unexpectedly");
 				} else if (line.contains("Error:")) {
@@ -246,5 +246,10 @@ public class YicesSolver extends Solver {
 	@Override
 	public void pop() {
 		send("(pop)");
+	}
+
+	@Override
+	protected String getSolverExtension() {
+		return "yc";
 	}
 }

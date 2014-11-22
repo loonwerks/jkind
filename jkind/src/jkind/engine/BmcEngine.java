@@ -30,7 +30,7 @@ public class BmcEngine extends Engine {
 	public void main() {
 		createVariables(-1);
 		for (int k = 0; k < settings.n; k++) {
-			debug("K = " + (k + 1));
+			comment("K = " + (k + 1));
 			processMessages();
 			if (properties.isEmpty()) {
 				break;

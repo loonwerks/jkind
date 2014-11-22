@@ -3,6 +3,7 @@ package jkind.solvers.mathsat;
 import java.io.File;
 
 import jkind.JKindException;
+import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
@@ -25,8 +26,8 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class MathSatSolver extends SmtLib2Solver {
-	public MathSatSolver() {
-		super(new ProcessBuilder(getMathSat()), "MathSAT");
+	public MathSatSolver(JKindSettings settings, String engineName) {
+		super(settings, engineName, new ProcessBuilder(getMathSat()), "MathSAT");
 	}
 
 	private static String getMathSat() {

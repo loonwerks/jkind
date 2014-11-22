@@ -1,6 +1,7 @@
 package jkind.solvers.yices2;
 
 import jkind.JKindException;
+import jkind.JKindSettings;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.solvers.Model;
 import jkind.solvers.smtlib2.SmtLib2Solver;
@@ -16,8 +17,8 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Yices2Solver extends SmtLib2Solver {
-	public Yices2Solver() {
-		super(new ProcessBuilder("yices-smt2", "--incremental"), "Yices2");
+	public Yices2Solver(JKindSettings settings, String engineName) {
+		super(settings, engineName, new ProcessBuilder("yices-smt2", "--incremental"), "Yices2");
 	}
 
 	@Override

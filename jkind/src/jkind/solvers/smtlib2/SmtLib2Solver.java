@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.JKindSettings;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -13,9 +14,9 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Model;
+import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
-import jkind.solvers.Solver;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.translation.TransitionRelation;
@@ -30,12 +31,11 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
-public abstract class SmtLib2Solver extends Solver {
-	final protected static String DONE = "@DONE";
+public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	final protected String name;
 
-	public SmtLib2Solver(ProcessBuilder pb, String name) {
-		super(pb);
+	public SmtLib2Solver(JKindSettings settings, String engineName, ProcessBuilder pb, String name) {
+		super(settings, engineName, pb);
 		this.name = name;
 	}
 
@@ -49,7 +49,7 @@ public abstract class SmtLib2Solver extends Solver {
 	}
 
 	protected void send(String str) {
-		debug(str);
+		scratch(str);
 		try {
 			toSolver.append(str);
 			toSolver.newLine();
@@ -125,7 +125,7 @@ public abstract class SmtLib2Solver extends Solver {
 			StringBuilder content = new StringBuilder();
 			while (true) {
 				line = fromSolver.readLine();
-				debug("; " + name + ": " + line);
+				comment(name + ": " + line);
 				if (line == null) {
 					throw new JKindException(name + " terminated unexpectedly");
 				} else if (line.contains("define-fun " + TransitionRelation.T + " ")) {
@@ -135,7 +135,7 @@ public abstract class SmtLib2Solver extends Solver {
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {
-						debug("; " + name + ": " + line);
+						comment(name + ": " + line);
 						if (isDone(line)) {
 							break;
 						}
@@ -194,5 +194,10 @@ public abstract class SmtLib2Solver extends Solver {
 	@Override
 	public void pop() {
 		send("(pop 1)");
+	}
+	
+	@Override
+	public String getSolverExtension() {
+		return "smt2";
 	}
 }

@@ -32,18 +32,18 @@ public class InvariantGenerationEngine extends Engine {
 		try {
 			Graph graph = createGraph();
 			if (graph.isTrivial()) {
-				debug("No invariants proposed");
+				comment("No invariants proposed");
 				return;
 			}
 
 			createVariables(-1);
 			createVariables(0);
 			for (int k = 1; k <= settings.n; k++) {
-				debug("K = " + k);
+				comment("K = " + k);
 
 				refineBaseStep(k - 1, graph);
 				if (graph.isTrivial()) {
-					debug("No invariants remaining after base step");
+					comment("No invariants remaining after base step");
 					return;
 				}
 
@@ -60,7 +60,7 @@ public class InvariantGenerationEngine extends Engine {
 
 	private Graph createGraph() {
 		List<Candidate> candidates = new CandidateGenerator(spec).generate();
-		debug("Proposed " + candidates.size() + " candidates");
+		comment("Proposed " + candidates.size() + " candidates");
 		return new Graph(candidates);
 	}
 
@@ -80,7 +80,7 @@ public class InvariantGenerationEngine extends Engine {
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
 				graph.refine(model, k);
-				debug("Base step refinement, graph size = " + graph.size());
+				comment("Base step refinement, graph size = " + graph.size());
 			} else if (result instanceof UnknownResult) {
 				throw new StopException();
 			}
@@ -106,7 +106,7 @@ public class InvariantGenerationEngine extends Engine {
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
 				graph.refine(model, k);
-				debug("Inductive step refinement, graph size = " + graph.size());
+				comment("Inductive step refinement, graph size = " + graph.size());
 			}
 		} while (!graph.isTrivial() && result instanceof SatResult);
 
@@ -133,9 +133,9 @@ public class InvariantGenerationEngine extends Engine {
 
 	private void sendInvariant(Graph graph) {
 		List<Invariant> invs = graph.toFinalInvariants();
-		debug("Sending invariants:");
+		comment("Sending invariants:");
 		for (Invariant invariant : invs) {
-			debug("  " + invariant.toString());
+			comment("  " + invariant.toString());
 		}
 
 		director.broadcast(new InvariantMessage(EngineType.INVARIANT_GENERATION, invs), this);

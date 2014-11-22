@@ -1,12 +1,8 @@
 package jkind.engine;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.analysis.YicesArithOnlyCheck;
 import jkind.engines.messages.MessageHandler;
@@ -39,7 +35,6 @@ public abstract class Engine extends MessageHandler implements Runnable {
 	protected Solver solver;
 
 	private String name;
-	private PrintWriter scratch;
 
 	// The director process will read this from another thread, so we
 	// make it volatile
@@ -51,33 +46,6 @@ public abstract class Engine extends MessageHandler implements Runnable {
 		this.settings = settings;
 		this.director = director;
 		this.properties = new ArrayList<>(spec.node.properties);
-		this.scratch = getScratch(settings.filename, name);
-	}
-
-	private PrintWriter getScratch(String base, String proc) {
-		String filename = base + "." + proc.toLowerCase() + "." + getSolverExtension();
-		if (settings.scratch) {
-			try {
-				return new PrintWriter(new FileOutputStream(filename), true);
-			} catch (FileNotFoundException e) {
-				throw new JKindException("Unable to open scratch file: " + filename, e);
-			}
-		} else {
-			return null;
-		}
-	}
-
-	private String getSolverExtension() {
-		switch (settings.solver) {
-		case YICES:
-			return "yc";
-		case CVC4:
-		case Z3:
-		case YICES2:
-		case MATHSAT:
-			return "smt2";
-		}
-		throw new IllegalArgumentException("Unknown solver: " + settings.solver);
 	}
 
 	protected abstract void main();
@@ -94,18 +62,12 @@ public abstract class Engine extends MessageHandler implements Runnable {
 				solver.stop();
 				solver = null;
 			}
-			if (scratch != null) {
-				scratch.close();
-			}
 			stopReceivingMessages();
 		}
 	}
 
 	protected void initializeSolver() {
 		solver = getSolver();
-		if (settings.scratch) {
-			solver.setDebug(scratch);
-		}
 		solver.initialize();
 		solver.define(spec.transitionRelation);
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
@@ -114,15 +76,15 @@ public abstract class Engine extends MessageHandler implements Runnable {
 	private Solver getSolver() {
 		switch (settings.solver) {
 		case YICES:
-			return new YicesSolver(YicesArithOnlyCheck.check(spec.node));
+			return new YicesSolver(settings, name, YicesArithOnlyCheck.check(spec.node));
 		case CVC4:
-			return new Cvc4Solver();
+			return new Cvc4Solver(settings, name);
 		case Z3:
-			return new Z3Solver();
+			return new Z3Solver(settings, name);
 		case YICES2:
-			return new Yices2Solver();
+			return new Yices2Solver(settings, name);
 		case MATHSAT:
-			return new MathSatSolver();
+			return new MathSatSolver(settings, name);
 		}
 		throw new IllegalArgumentException("Unknown solver: " + settings.solver);
 	}
@@ -133,11 +95,8 @@ public abstract class Engine extends MessageHandler implements Runnable {
 
 	/** Debug methods */
 
-	protected void debug(String str) {
-		if (scratch != null) {
-			scratch.print("; ");
-			scratch.println(str);
-		}
+	protected void comment(String str) {
+		solver.comment(str);
 	}
 
 	public String getName() {
