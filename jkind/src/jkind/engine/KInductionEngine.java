@@ -27,7 +27,7 @@ import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 
-public class KInductionEngine extends Engine {
+public class KInductionEngine extends SolverBasedEngine {
 	private int kCurrent = 0;
 	private int kLimit = 0;
 	private List<Invariant> invariants = new ArrayList<>();

@@ -19,7 +19,7 @@ import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
-public class BmcEngine extends Engine {
+public class BmcEngine extends SolverBasedEngine {
 	private List<String> validProperties = new ArrayList<>();
 
 	public BmcEngine(Specification spec, JKindSettings settings, Director director) {

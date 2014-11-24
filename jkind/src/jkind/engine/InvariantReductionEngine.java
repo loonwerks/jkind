@@ -28,7 +28,7 @@ import jkind.translation.Specification;
 import jkind.util.BiMap;
 import jkind.util.SexpUtil;
 
-public class InvariantReductionEngine extends Engine {
+public class InvariantReductionEngine extends SolverBasedEngine {
 	private YicesSolver yicesSolver;
 
 	public InvariantReductionEngine(Specification spec, JKindSettings settings, Director director) {

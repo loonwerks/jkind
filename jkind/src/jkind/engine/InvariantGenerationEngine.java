@@ -23,7 +23,7 @@ import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
-public class InvariantGenerationEngine extends Engine {
+public class InvariantGenerationEngine extends SolverBasedEngine {
 	public InvariantGenerationEngine(Specification spec, JKindSettings settings, Director director) {
 		super("invariant-generation", spec, settings, director);
 	}

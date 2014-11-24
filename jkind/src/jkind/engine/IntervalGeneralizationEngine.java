@@ -17,10 +17,6 @@ public class IntervalGeneralizationEngine extends Engine {
 			Director director) {
 		super("interval-generalization", spec, settings, director);
 	}
-
-	@Override
-	protected void initializeSolver() {
-	}
 	
 	@Override
 	protected void main() {
