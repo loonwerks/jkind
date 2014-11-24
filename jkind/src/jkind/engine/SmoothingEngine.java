@@ -19,10 +19,10 @@ import jkind.solvers.yices.YicesSolver;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
-public class SmoothProcess extends SolverBasedEngine {
+public class SmoothingEngine extends SolverBasedEngine {
 	private YicesSolver yicesSolver;
 
-	public SmoothProcess(Specification spec, JKindSettings settings, Director director) {
+	public SmoothingEngine(Specification spec, JKindSettings settings, Director director) {
 		super("smoothing", spec, settings, director);
 	}
 

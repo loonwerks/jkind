@@ -141,7 +141,7 @@ public class Director extends MessageHandler {
 		}
 
 		if (settings.smoothCounterexamples) {
-			addEngine(new SmoothProcess(spec, settings, this));
+			addEngine(new SmoothingEngine(spec, settings, this));
 		}
 
 		if (settings.intervalGeneralization) {
