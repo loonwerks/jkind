@@ -10,6 +10,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -22,7 +23,9 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
+import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
@@ -81,6 +84,20 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 		for (Expr assertion : node.assertions) {
 			conjuncts.add(assertion.accept(this));
+		}
+
+		// Type constraints need to be included during interpolation, so we
+		// include them in the transition relation
+		for (VarDecl vd : Util.getVarDecls(node)) {
+			Term baseConstraint = typeConstraint(encode(vd.id), vd.type);
+			if (baseConstraint != null) {
+				conjuncts.add(baseConstraint);
+			}
+
+			Term primeConstraint = typeConstraint(encode(prime(vd.id)), vd.type);
+			if (primeConstraint != null) {
+				conjuncts.add(primeConstraint);
+			}
 		}
 
 		conjuncts.add(not(term(prime(INIT))));
@@ -223,4 +240,31 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 			throw new IllegalArgumentException("Unhandled unary operator: " + e.op);
 		}
 	}
+
+	private Term typeConstraint(String id, Type type) {
+		if (type instanceof SubrangeIntType) {
+			return subrangeConstraint(id, (SubrangeIntType) type);
+		} else if (type instanceof EnumType) {
+			return enumConstraint(id, (EnumType) type);
+		} else {
+			return null;
+		}
+	}
+
+	private Term subrangeConstraint(String id, SubrangeIntType subrange) {
+		return boundConstraint(id, numeral(subrange.low), numeral(subrange.high));
+	}
+
+	private Term enumConstraint(String id, EnumType et) {
+		return boundConstraint(id, numeral(0), numeral(et.values.size() - 1));
+	}
+
+	private Term boundConstraint(String id, Term low, Term high) {
+		return and(lessEqual(low, term(id)), lessEqual(term(id), high));
+	}
+
+	private Term lessEqual(Term left, Term right) {
+		return term("<=", left, right);
+	}
+
 }

@@ -11,9 +11,7 @@ import java.util.Set;
 import jkind.JKindException;
 import jkind.engines.StopException;
 import jkind.invariant.Invariant;
-import jkind.lustre.EnumType;
 import jkind.lustre.Node;
-import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.Value;
@@ -111,6 +109,7 @@ public class PdrSmt extends ScriptUser {
 		otherPredicates.removeAll(predicates);
 		predicates.addAll(otherPredicates);
 		for (Term p : otherPredicates) {
+			comment("New predicate: " + p);
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
 			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}
@@ -387,40 +386,7 @@ public class PdrSmt extends ScriptUser {
 	private Term declareVar(String name, Type type) {
 		Sort sort = getSort(type);
 		script.declareFun(name, new Sort[0], sort);
-		Term var = script.term(name);
-		
-		Term constraint = typeConstraint(name, type);
-		if (constraint != null) {
-			script.assertTerm(constraint);
-		}
-		
-		return var;
-	}
-
-	private Term typeConstraint(String id, Type type) {
-		if (type instanceof SubrangeIntType) {
-			return subrangeConstraint(id, (SubrangeIntType) type);
-		} else if (type instanceof EnumType) {
-			return enumConstraint(id, (EnumType) type);
-		} else {
-			return null;
-		}
-	}
-
-	private Term subrangeConstraint(String id, SubrangeIntType subrange) {
-		return boundConstraint(id, numeral(subrange.low), numeral(subrange.high));
-	}
-
-	private Term enumConstraint(String id, EnumType et) {
-		return boundConstraint(id, numeral(0), numeral(et.values.size() - 1));
-	}
-
-	private Term boundConstraint(String id, Term low, Term high) {
-		return and(lessEqual(low, term(id)), lessEqual(term(id), high));
-	}
-	
-	private Term lessEqual(Term left, Term right) {
-		return term("<=", left, right);
+		return script.term(name);
 	}
 
 	private Sort getSort(Type type) {
