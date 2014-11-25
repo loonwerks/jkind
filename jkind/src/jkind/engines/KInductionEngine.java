@@ -1,4 +1,4 @@
-package jkind.engine;
+package jkind.engines;
 
 import static java.util.stream.Collectors.toList;
 
@@ -166,5 +166,6 @@ public class KInductionEngine extends SolverBasedEngine {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
+		addPropertiesAsInvariants(kCurrent - 1, vm.valid);
 	}
 }

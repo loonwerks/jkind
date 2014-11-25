@@ -3,7 +3,7 @@ package jkind.engines.messages;
 import java.util.Collections;
 import java.util.List;
 
-import jkind.engine.EngineType;
+import jkind.engines.EngineType;
 import jkind.invariant.Invariant;
 
 public class ValidMessage extends Message {

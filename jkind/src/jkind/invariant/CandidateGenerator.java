@@ -5,23 +5,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.analysis.evaluation.InitialStepEvaluator;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BinaryOp;
+import jkind.lustre.BoolExpr;
 import jkind.lustre.EnumType;
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
+import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.Value;
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
-import jkind.solvers.Lambda;
 import jkind.translation.Specification;
-import jkind.util.SexpUtil;
 
 public class CandidateGenerator {
 	private Specification spec;
 
-	private List<Candidate> candidates;
+	private List<Expr> candidates;
 	private InitialStepEvaluator evaluator;
 
 	public CandidateGenerator(Specification spec) {
@@ -29,11 +32,11 @@ public class CandidateGenerator {
 		this.evaluator = new InitialStepEvaluator(spec.node);
 	}
 
-	public List<Candidate> generate() {
+	public List<Expr> generate() {
 		candidates = new ArrayList<>();
 
-		candidates.add(Candidate.TRUE);
-		candidates.add(Candidate.FALSE);
+		candidates.add(new BoolExpr(true));
+		candidates.add(new BoolExpr(false));
 
 		CombinatorialInfo info = new CombinatorialInfo(spec.node);
 
@@ -58,15 +61,14 @@ public class CandidateGenerator {
 	}
 
 	private void addIntCandidates(String id) {
-		Sexp var = new Symbol(id);
 		BigInteger init = getConstantInitialValue(id);
+		IdExpr idExpr = new IdExpr(id);
 		if (init != null) {
-			addCandidate(id, new Cons(">=", var, Sexp.fromBigInt(init)), "(" + id + " >= " + init
-					+ ")");
-			addCandidate(id, new Cons("<=", var, Sexp.fromBigInt(init)), "(" + id + " <= " + init
-					+ ")");
+			IntExpr initExpr = new IntExpr(init);
+			candidates.add(new BinaryExpr(idExpr, BinaryOp.GREATEREQUAL, initExpr));
+			candidates.add(new BinaryExpr(idExpr, BinaryOp.LESSEQUAL, initExpr));
 		} else {
-			addCandidate(id, new Cons(">=", var, Sexp.fromInt(0)), "(" + id + " >= 0)");
+			candidates.add(new BinaryExpr(idExpr, BinaryOp.GREATEREQUAL, new IntExpr(0)));
 		}
 	}
 
@@ -80,26 +82,15 @@ public class CandidateGenerator {
 	}
 
 	private void addBoolCandidates(String id) {
-		Sexp var = new Symbol(id);
-		addCandidate(id, var, id);
-		addCandidate(id, new Cons("not", var), "not " + id);
+		candidates.add(new IdExpr(id));
+		candidates.add(new UnaryExpr(UnaryOp.NOT, new IdExpr(id)));
 	}
 
 	private void addSubrangeCandidates(String id, SubrangeIntType subrange) {
-		Sexp var = new Symbol(id);
-
-		/*
-		 * This range constraint candidate is not guaranteed to be an invariant
-		 * since pre-initial states are unconstrained and may taint current
-		 * states even though they pass our simple form of subrange type
-		 * checking.
-		 */
-		addCandidate(id, SexpUtil.subrangeConstraint(id, subrange), "(" + subrange.low + " <= "
-				+ id + " and " + id + " <= " + subrange.high + ")");
-
+		IdExpr idExpr = new IdExpr(id);
 		for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r
 				.add(BigInteger.ONE)) {
-			addCandidate(id, new Cons("=", var, Sexp.fromBigInt(r)), "(" + id + " = " + r + ")");
+			candidates.add(new BinaryExpr(idExpr, BinaryOp.EQUAL, new IntExpr(r)));
 		}
 	}
 
@@ -107,9 +98,5 @@ public class CandidateGenerator {
 		BigInteger low = BigInteger.ZERO;
 		BigInteger high = BigInteger.valueOf(et.values.size() - 1);
 		addSubrangeCandidates(id, new SubrangeIntType(low, high));
-	}
-
-	private void addCandidate(String id, Sexp s, String text) {
-		candidates.add(new Candidate(new Lambda(id, s), text));
 	}
 }

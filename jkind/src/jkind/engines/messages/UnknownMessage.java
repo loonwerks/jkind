@@ -2,7 +2,7 @@ package jkind.engines.messages;
 
 import java.util.List;
 
-import jkind.engine.EngineType;
+import jkind.engines.EngineType;
 
 public class UnknownMessage extends Message {
 	final public List<String> unknown;

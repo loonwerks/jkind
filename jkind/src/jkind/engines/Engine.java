@@ -1,4 +1,4 @@
-package jkind.engine;
+package jkind.engines;
 
 import java.util.ArrayList;
 import java.util.List;

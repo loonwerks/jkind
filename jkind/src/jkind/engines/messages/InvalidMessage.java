@@ -3,23 +3,23 @@ package jkind.engines.messages;
 import java.util.Collections;
 import java.util.List;
 
-import jkind.engine.EngineType;
+import jkind.engines.EngineType;
 import jkind.solvers.Model;
 
 public class InvalidMessage extends Message {
 	final public List<String> invalid;
-	final public int k;
+	final public int length;
 	final public Model model;
 
-	public InvalidMessage(EngineType source, List<String> invalid, int k, Model model) {
+	public InvalidMessage(EngineType source, List<String> invalid, int length, Model model) {
 		super(source);
 		this.invalid = safeCopy(invalid);
-		this.k = k;
+		this.length = length;
 		this.model = model;
 	}
 
-	public InvalidMessage(EngineType source, String invalid, int k, Model model) {
-		this(source, Collections.singletonList(invalid), k, model);
+	public InvalidMessage(EngineType source, String invalid, int length, Model model) {
+		this(source, Collections.singletonList(invalid), length, model);
 	}
 
 	@Override

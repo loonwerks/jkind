@@ -1,6 +1,8 @@
 package jkind.invariant;
 
-import jkind.solvers.Lambda;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BinaryOp;
+import jkind.lustre.Expr;
 
 public class Edge {
 	final public Node source;
@@ -12,13 +14,10 @@ public class Edge {
 	}
 
 	public Invariant toInvariant() {
-		Candidate sRep = source.getRepresentative();
-		Candidate dRep = destination.getRepresentative();
-
-		String text = sRep + " => " + dRep;
-		Lambda lambda = Lambda.cons("=>", sRep.getLambda(), dRep.getLambda());
-		
-		return new Invariant(lambda, text);
+		Expr sRep = source.getRepresentative();
+		Expr dRep = destination.getRepresentative();
+		Expr expr = new BinaryExpr(sRep, BinaryOp.IMPLIES, dRep);
+		return new Invariant(expr);
 	}
 	
 	@Override

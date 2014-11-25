@@ -1,6 +1,6 @@
 package jkind.engines.messages;
 
-import jkind.engine.EngineType;
+import jkind.engines.EngineType;
 import jkind.solvers.Model;
 
 public class InductiveCounterexampleMessage extends Message {

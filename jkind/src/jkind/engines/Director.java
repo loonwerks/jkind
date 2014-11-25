@@ -1,4 +1,4 @@
-package jkind.engine;
+package jkind.engines;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import jkind.engines.messages.Message;
 import jkind.engines.messages.MessageHandler;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
+import jkind.engines.pdr.PdrEngine;
 import jkind.invariant.Invariant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Type;
@@ -147,6 +148,10 @@ public class Director extends MessageHandler {
 		if (settings.intervalGeneralization) {
 			addEngine(new IntervalGeneralizationEngine(spec, settings, this));
 		}
+
+		if (settings.pdrMax > 0) {
+			addEngine(new PdrEngine(spec, settings, this));
+		}
 	}
 
 	private void addEngine(Engine engine) {
@@ -259,7 +264,7 @@ public class Director extends MessageHandler {
 		double runtime = getRuntime();
 		for (String invalidProp : im.invalid) {
 			Model slicedModel = ModelSlicer.slice(im.model, spec.dependencyMap.get(invalidProp));
-			Counterexample cex = extractCounterexample(im.k, slicedModel);
+			Counterexample cex = extractCounterexample(im.length, slicedModel);
 			writer.writeInvalid(invalidProp, cex, runtime);
 		}
 	}
@@ -345,8 +350,8 @@ public class Director extends MessageHandler {
 		return result;
 	}
 
-	private Counterexample extractCounterexample(int k, Model model) {
-		Counterexample cex = new Counterexample(k);
+	private Counterexample extractCounterexample(int length, Model model) {
+		Counterexample cex = new Counterexample(length);
 		for (String var : model.getVariableNames()) {
 			StreamIndex si = StreamIndex.decode(var);
 			if (si.getIndex() >= 0 && !isInternal(si.getStream())) {
@@ -367,7 +372,7 @@ public class Director extends MessageHandler {
 		if (type instanceof EnumType) {
 			EnumType et = (EnumType) type;
 			IntegerValue iv = (IntegerValue) value;
-			return new EnumValue(et.getValue(iv.value.intValue(), ""));
+			return new EnumValue(et.getValue(iv.value.intValue()));
 		}
 		return value;
 	}

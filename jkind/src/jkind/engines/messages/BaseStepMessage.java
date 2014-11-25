@@ -1,6 +1,6 @@
 package jkind.engines.messages;
 
-import jkind.engine.EngineType;
+import jkind.engines.EngineType;
 
 public class BaseStepMessage extends Message {
 	public int step;

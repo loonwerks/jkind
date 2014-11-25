@@ -1,4 +1,4 @@
-package jkind.engine;
+package jkind.engines;
 
 import jkind.JKindSettings;
 import jkind.engines.messages.BaseStepMessage;
@@ -30,11 +30,11 @@ public class IntervalGeneralizationEngine extends Engine {
 	private void generalize(InvalidMessage im) {
 		for (String property : im.invalid) {
 			try {
-				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model, im.k);
+				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model, im.length);
 				Model generalized = generalizer.generalize();
-				sendInvalid(property, im.k, generalized);
+				sendInvalid(property, im.length, generalized);
 			} catch (AlgebraicLoopException e) {
-				sendInvalid(property, im.k, im.model);
+				sendInvalid(property, im.length, im.model);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package jkind.engine;
+package jkind.engines;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +10,10 @@ import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.invariant.Candidate;
 import jkind.invariant.CandidateGenerator;
 import jkind.invariant.Graph;
 import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -55,12 +55,8 @@ public class InvariantGenerationEngine extends SolverBasedEngine {
 		}
 	}
 
-	private class StopException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	};
-
 	private Graph createGraph() {
-		List<Candidate> candidates = new CandidateGenerator(spec).generate();
+		List<Expr> candidates = new CandidateGenerator(spec).generate();
 		comment("Proposed " + candidates.size() + " candidates");
 		return new Graph(candidates);
 	}

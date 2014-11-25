@@ -4,21 +4,27 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jkind.solvers.Lambda;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BinaryOp;
+import jkind.lustre.Expr;
+import jkind.lustre.values.BooleanValue;
+import jkind.sexp.Sexp;
+import jkind.solvers.Eval;
 import jkind.solvers.Model;
+import jkind.translation.Lustre2Sexp;
 
 public class Node {
-	private List<Candidate> candidates;
+	private List<Expr> candidates;
 
-	public Node(List<Candidate> candidates) {
+	public Node(List<Expr> candidates) {
 		this.candidates = candidates;
 	}
 
 	public boolean isEmpty() {
 		return candidates.isEmpty();
 	}
-	
-	public Candidate getRepresentative() {
+
+	public Expr getRepresentative() {
 		return candidates.get(0);
 	}
 
@@ -28,27 +34,25 @@ public class Node {
 
 	public List<Invariant> toInvariants() {
 		List<Invariant> invariants = new ArrayList<>();
-		
-		Iterator<Candidate> iterator = candidates.iterator();
-		Candidate first = iterator.next();
-		Lambda firstLambda = first.getLambda();
-		
+
+		Iterator<Expr> iterator = candidates.iterator();
+		Expr first = iterator.next();
+
 		while (iterator.hasNext()) {
-			Candidate other = iterator.next();
-			String text = first + " = " + other;
-			Lambda lambda = Lambda.cons("=", firstLambda, other.getLambda());
-			invariants.add(new Invariant(lambda, text));
+			Expr other = iterator.next();
+			Expr expr = new BinaryExpr(first, BinaryOp.EQUAL, other);
+			invariants.add(new Invariant(expr));
 		}
-		
+
 		return invariants;
 	}
 
 	public List<Node> split(Model model, int offset) {
-		List<Candidate> falses = new ArrayList<>();
-		List<Candidate> trues = new ArrayList<>();
-		
-		for (Candidate candidate : candidates) {
-			if (candidate.isTrue(model, offset)) {
+		List<Expr> falses = new ArrayList<>();
+		List<Expr> trues = new ArrayList<>();
+
+		for (Expr candidate : candidates) {
+			if (isTrue(candidate, offset, model)) {
 				trues.add(candidate);
 			} else {
 				falses.add(candidate);
@@ -59,6 +63,11 @@ public class Node {
 		chain.add(new Node(falses));
 		chain.add(new Node(trues));
 		return chain;
+	}
+
+	private boolean isTrue(Expr expr, int offset, Model model) {
+		Sexp sexp = expr.accept(new Lustre2Sexp(offset));
+		return new Eval(model).eval(sexp) == BooleanValue.TRUE;
 	}
 
 	@Override

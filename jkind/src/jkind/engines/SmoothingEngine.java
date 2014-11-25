@@ -1,4 +1,4 @@
-package jkind.engine;
+package jkind.engines;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
@@ -39,7 +39,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 	private void smooth(InvalidMessage im) {
 		for (String property : im.invalid) {
-			smooth(property, im.k);
+			smooth(property, im.length);
 		}
 	}
 

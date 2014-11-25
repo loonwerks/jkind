@@ -24,11 +24,15 @@ public class StreamIndex {
 	}
 
 	public Symbol getEncoded() {
+		return new Symbol("$" + stream + getSuffix(index));
+	}
+
+	public static String getSuffix(int index) {
 		if (index >= 0) {
-			return new Symbol("$" + stream + "$" + index);
+			return "$" + index;
 		} else {
 			// Using - in symbol names causes parse issues, so we use ~ instead
-			return new Symbol("$" + stream + "$~" + -index);
+			return "$~" + -index;
 		}
 	}
 

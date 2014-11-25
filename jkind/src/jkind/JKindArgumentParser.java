@@ -9,21 +9,22 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
 public class JKindArgumentParser {
-	final private static String BMC = "bmc";
-	final private static String EXCEL = "excel";
-	final private static String INDUCT_CEX = "induct_cex";
-	final private static String INTERVAL = "interval";
-	final private static String N = "n";
-	final private static String NO_INV_GEN = "no_inv_gen";
-	final private static String REDUCE_INV = "reduce_inv";
-	final private static String SCRATCH = "scratch";
-	final private static String SMOOTH = "smooth";
-	final private static String SOLVER = "solver";
-	final private static String TIMEOUT = "timeout";
-	final private static String XML = "xml";
-	final private static String XML_TO_STDOUT = "xml_to_stdout";
-	final private static String VERSION = "version";
-	final private static String HELP = "help";
+	private static final String BMC = "bmc";
+	private static final String EXCEL = "excel";
+	private static final String INDUCT_CEX = "induct_cex";
+	private static final String INTERVAL = "interval";
+	private static final String N = "n";
+	private static final String NO_INV_GEN = "no_inv_gen";
+	private static final String PDR_MAX = "pdr_max";
+	private static final String REDUCE_INV = "reduce_inv";
+	private static final String SCRATCH = "scratch";
+	private static final String SMOOTH = "smooth";
+	private static final String SOLVER = "solver";
+	private static final String TIMEOUT = "timeout";
+	private static final String XML = "xml";
+	private static final String XML_TO_STDOUT = "xml_to_stdout";
+	private static final String VERSION = "version";
+	private static final String HELP = "help";
 
 	private static Options getOptions() {
 		Options options = new Options();
@@ -33,6 +34,7 @@ public class JKindArgumentParser {
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(N, true, "number of iterations (default 200)");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
+		options.addOption(PDR_MAX, true, "maximum number of PDR instances");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
@@ -102,6 +104,14 @@ public class JKindArgumentParser {
 
 		if (line.hasOption(N)) {
 			settings.n = Integer.parseInt(line.getOptionValue(N));
+		}
+		
+		if (line.hasOption(PDR_MAX)) {
+			settings.pdrMax = Integer.parseInt(line.getOptionValue(PDR_MAX));
+		} else {
+			int available = Runtime.getRuntime().availableProcessors();
+			int heuristic = (available - 4) / 2;
+			settings.pdrMax = Math.max(1, heuristic);
 		}
 
 		if (line.hasOption(REDUCE_INV)) {

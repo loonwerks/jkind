@@ -1,13 +1,13 @@
-package jkind.engine;
+package jkind.engines;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindSettings;
 import jkind.analysis.YicesArithOnlyCheck;
-import jkind.lustre.EnumType;
+import jkind.lustre.Expr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
-import jkind.lustre.SubrangeIntType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -22,7 +22,6 @@ import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.translation.TransitionRelation;
-import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 import jkind.util.Util;
 
@@ -84,26 +83,16 @@ public abstract class SolverBasedEngine extends Engine {
 			solver.define(vd);
 		}
 
-		// Constrain input by type
-		if (k >= 0) {
-			for (VarDecl vd : getOffsetInputVarDecls(k)) {
-				if (vd.type instanceof SubrangeIntType) {
-					SubrangeIntType subrangeType = (SubrangeIntType) vd.type;
-					solver.assertSexp(SexpUtil.subrangeConstraint(vd.id, subrangeType));
-				} else if (vd.type instanceof EnumType) {
-					EnumType enumType = (EnumType) vd.type;
-					solver.assertSexp(SexpUtil.enumConstraint(vd.id, enumType));
-				}
+		for (VarDecl vd : Util.getVarDecls(spec.node)) {
+			Expr constraint = LustreUtil.typeConstraint(vd.id, vd.type);
+			if (constraint != null) {
+				solver.assertSexp(constraint.accept(new Lustre2Sexp(k)));
 			}
 		}
 	}
 
 	protected List<VarDecl> getOffsetVarDecls(int k) {
 		return getOffsetVarDecls(k, Util.getVarDecls(spec.node));
-	}
-
-	protected List<VarDecl> getOffsetInputVarDecls(int k) {
-		return getOffsetVarDecls(k, spec.node.inputs);
 	}
 
 	protected List<VarDecl> getOffsetVarDecls(int k, List<VarDecl> varDecls) {

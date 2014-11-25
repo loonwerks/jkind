@@ -1,29 +1,27 @@
 package jkind.invariant;
 
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
-import jkind.solvers.Lambda;
+import jkind.translation.Lustre2Sexp;
 
 public class Invariant {
-	final private Lambda lambda;
-	final private String text;
+	private final Expr expr;
 
-	public Invariant(Lambda lambda, String text) {
-		this.lambda = lambda;
-		this.text = text;
+	public Invariant(Expr expr) {
+		this.expr = expr;
 	}
 
 	public Invariant(String prop) {
-		this.lambda = new Lambda(prop, new Symbol(prop));
-		this.text = prop;
+		this(new IdExpr(prop));
 	}
 
 	@Override
 	public String toString() {
-		return text;
+		return expr.toString();
 	}
 
 	public Sexp instantiate(int k) {
-		return lambda.instantiate(k);
+		return expr.accept(new Lustre2Sexp(k));
 	}
 }

@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import jkind.lustre.BoolExpr;
+import jkind.lustre.Expr;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
 import jkind.util.SexpUtil;
@@ -18,7 +20,7 @@ public class Graph {
 	private Map<Node, Set<Node>> incoming;
 	private Map<Node, Set<Node>> outgoing;
 
-	public Graph(List<Candidate> candidates) {
+	public Graph(List<Expr> candidates) {
 		this.nodes = new ArrayList<>();
 		nodes.add(new Node(candidates));
 		this.incoming = new HashMap<>();
@@ -85,13 +87,13 @@ public class Graph {
 
 	private void removeTrivialInvariants() {
 		for (Node node : nodes) {
-			if (node.getRepresentative() == Candidate.TRUE) {
+			if (isTrue(node.getRepresentative())) {
 				Set<Node> in = incoming(node);
 				for (Node other : in) {
 					outgoing(other).remove(node);
 				}
 				in.clear();
-			} else if (node.getRepresentative() == Candidate.FALSE) {
+			} else if (isFalse(node.getRepresentative())) {
 				Set<Node> out = outgoing(node);
 				for (Node other : out) {
 					incoming(other).remove(node);
@@ -101,6 +103,22 @@ public class Graph {
 		}
 
 		removeUselessNodes();
+	}
+
+	private boolean isTrue(Expr expr) {
+		return isBoolean(expr, true);
+	}
+
+	private boolean isFalse(Expr expr) {
+		return isBoolean(expr, false);
+	}
+
+	private boolean isBoolean(Expr expr, boolean value) {
+		if (expr instanceof BoolExpr) {
+			BoolExpr be = (BoolExpr) expr;
+			return be.value == value;
+		}
+		return false;
 	}
 
 	private List<Invariant> toInvariants() {
