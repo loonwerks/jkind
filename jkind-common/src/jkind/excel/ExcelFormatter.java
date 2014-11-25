@@ -46,9 +46,10 @@ public class ExcelFormatter implements Closeable {
 			ExcelUtil.autosize(summarySheet, 4);
 			summarySheet.addCell(new Label(0, 0, "Property", boldFormat));
 			summarySheet.addCell(new Label(1, 0, "Result", boldFormat));
-			summarySheet.addCell(new Label(2, 0, "K", boldFormat));
-			summarySheet.addCell(new Label(3, 0, "Runtime", boldFormat));
-			summarySheet.addCell(new Label(4, 0, "True For", boldFormat));
+			summarySheet.addCell(new Label(2, 0, "Source", boldFormat));
+			summarySheet.addCell(new Label(3, 0, "K", boldFormat));
+			summarySheet.addCell(new Label(4, 0, "Runtime", boldFormat));
+			summarySheet.addCell(new Label(5, 0, "True For", boldFormat));
 			summaryRow = 1;
 		} catch (WriteException | IOException e) {
 			throw new JKindException("Error writing to Excel file", e);
@@ -95,6 +96,7 @@ public class ExcelFormatter implements Closeable {
 
 	private void write(ValidProperty property) throws WriteException {
 		String name = property.getName();
+		String source = property.getSource();
 		int k = property.getK();
 		List<String> invariants = property.getInvariants();
 		double runtime = property.getRuntime();
@@ -107,8 +109,10 @@ public class ExcelFormatter implements Closeable {
 			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", invSheet, 0, 0);
 			summarySheet.addHyperlink(link);
 		}
-		summarySheet.addCell(new Number(2, summaryRow, k));
-		summarySheet.addCell(new Number(3, summaryRow, runtime));
+		
+		summarySheet.addCell(new Label(2, summaryRow, source));
+		summarySheet.addCell(new Number(3, summaryRow, k));
+		summarySheet.addCell(new Number(4, summaryRow, runtime));
 		summaryRow++;
 	}
 
@@ -132,6 +136,7 @@ public class ExcelFormatter implements Closeable {
 
 	private void write(InvalidProperty property) throws WriteException {
 		String name = property.getName();
+		String source = property.getSource();
 		Counterexample cex = property.getCounterexample();
 		int length = cex.getLength();
 		double runtime = property.getRuntime();
@@ -139,8 +144,9 @@ public class ExcelFormatter implements Closeable {
 		WritableSheet cexSheet = writeCounterexample(name, cex);
 		summarySheet.addCell(new Label(0, summaryRow, name));
 		summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Invalid", cexSheet, 0, 0));
-		summarySheet.addCell(new Number(2, summaryRow, length));
-		summarySheet.addCell(new Number(3, summaryRow, runtime));
+		summarySheet.addCell(new Label(2, summaryRow, source));
+		summarySheet.addCell(new Number(3, summaryRow, length));
+		summarySheet.addCell(new Number(4, summaryRow, runtime));
 		summaryRow++;
 	}
 
@@ -158,8 +164,8 @@ public class ExcelFormatter implements Closeable {
 			summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Unknown", cexSheet, 0,
 					0));
 		}
-		summarySheet.addCell(new Number(3, summaryRow, runtime));
-		summarySheet.addCell(new Number(4, summaryRow, trueFor));
+		summarySheet.addCell(new Number(4, summaryRow, runtime));
+		summarySheet.addCell(new Number(5, summaryRow, trueFor));
 		summaryRow++;
 	}
 

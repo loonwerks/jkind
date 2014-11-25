@@ -31,7 +31,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 		super.initializeSolver();
 		yicesSolver = (YicesSolver) solver;
 	}
-	
+
 	@Override
 	public void main() {
 		processMessagesAndWaitUntil(() -> properties.isEmpty());
@@ -39,11 +39,11 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 	private void smooth(InvalidMessage im) {
 		for (String property : im.invalid) {
-			smooth(property, im.length);
+			smooth(property, im.length, im.originalSource);
 		}
 	}
 
-	private void smooth(String property, int k) {
+	private void smooth(String property, int k, String originalSource) {
 		comment("Smoothing: " + property);
 		DependencySet relevant = spec.dependencyMap.get(property);
 
@@ -65,7 +65,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 		Model smoothModel = ((SatResult) result).getModel();
 		yicesSolver.pop();
-		sendCounterexample(property, k, smoothModel);
+		sendCounterexample(property, k, smoothModel, originalSource);
 	}
 
 	private void assertDeltaCost(int k, DependencySet relevant) {
@@ -78,9 +78,10 @@ public class SmoothingEngine extends SolverBasedEngine {
 		}
 	}
 
-	private void sendCounterexample(String property, int k, Model model) {
+	private void sendCounterexample(String property, int k, Model model, String originalSource) {
 		comment("Sending " + property);
-		director.broadcast(new InvalidMessage(EngineType.SMOOTHING, property, k, model), this);
+		director.broadcast(new InvalidMessage(EngineType.SMOOTHING, originalSource, property, k,
+				model), this);
 	}
 
 	@Override

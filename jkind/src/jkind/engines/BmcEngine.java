@@ -71,7 +71,8 @@ public class BmcEngine extends SolverBasedEngine {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		director.broadcast(new InvalidMessage(EngineType.BMC, invalid, k + 1, model), this);
+		director.broadcast(new InvalidMessage(EngineType.BMC, getName(), invalid, k + 1, model),
+				this);
 	}
 
 	private void sendBaseStep(int k) {

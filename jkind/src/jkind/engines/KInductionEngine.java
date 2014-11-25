@@ -126,7 +126,7 @@ public class KInductionEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(List<String> valid, int k) {
-		Message vm = new ValidMessage(EngineType.K_INDUCTION, valid, k, invariants);
+		Message vm = new ValidMessage(EngineType.K_INDUCTION, getName(), valid, k, invariants);
 		director.broadcast(vm, this);
 	}
 

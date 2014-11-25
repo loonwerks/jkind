@@ -48,7 +48,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
-			reduce(getInvariantByName(property, vm.invariants), vm.invariants);
+			reduce(getInvariantByName(property, vm.invariants), vm.invariants, vm.originalSource);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		throw new JKindException("Unable to find property " + name + " during reduction");
 	}
 
-	private void reduce(Invariant property, List<Invariant> invariants) {
+	private void reduce(Invariant property, List<Invariant> invariants, String originalSource) {
 		comment("Reducing: " + property);
 		yicesSolver.push();
 
@@ -100,7 +100,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		yicesSolver.pop();
 
 		irreducible.remove(property);
-		sendValid(property.toString(), k, new ArrayList<>(irreducible));
+		sendValid(property.toString(), k, new ArrayList<>(irreducible), originalSource);
 	}
 
 	private void assertInvariants(int k, List<Invariant> invariants,
@@ -178,13 +178,14 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		yicesSolver.pop();
 	}
 
-	private void sendValid(String valid, int k, List<Invariant> reduced) {
+	private void sendValid(String valid, int k, List<Invariant> reduced, String originalSource) {
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Invariant invariant : reduced) {
 			comment(invariant.toString());
 		}
 
-		ValidMessage vm = new ValidMessage(EngineType.INVARIANT_REDUCTION, valid, k, reduced);
+		ValidMessage vm = new ValidMessage(EngineType.INVARIANT_REDUCTION, originalSource, valid,
+				k, reduced);
 		director.broadcast(vm, this);
 	}
 

@@ -1,5 +1,7 @@
 package jkind.writers;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,20 +40,17 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, double runtime, List<Invariant> invariants) {
-		List<String> invariantsText = new ArrayList<>();
-		for (Invariant invariant : invariants) {
-			invariantsText.add(invariant.toString());
-		}
-
+	public void writeValid(List<String> props, String source, int k, double runtime,
+			List<Invariant> invariants) {
+		List<String> invText = invariants.stream().map(Invariant::toString).collect(toList());
 		for (String prop : props) {
-			properties.add(new ValidProperty(prop, k, runtime, invariantsText));
+			properties.add(new ValidProperty(prop, source, k, runtime, invText));
 		}
 	}
 
 	@Override
-	public void writeInvalid(String prop, Counterexample cex, double runtime) {
-		properties.add(new InvalidProperty(prop, cex, runtime));
+	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
+		properties.add(new InvalidProperty(prop, source, cex, runtime));
 	}
 
 	@Override

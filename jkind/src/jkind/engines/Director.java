@@ -232,7 +232,7 @@ public class Director extends MessageHandler {
 
 		List<Invariant> invariants = settings.reduceInvariants ? vm.invariants : Collections
 				.emptyList();
-		writer.writeValid(vm.valid, vm.k, getRuntime(), invariants);
+		writer.writeValid(vm.valid, vm.originalSource, vm.k, getRuntime(), invariants);
 	}
 
 	// General flow of valid messages:
@@ -265,7 +265,7 @@ public class Director extends MessageHandler {
 		for (String invalidProp : im.invalid) {
 			Model slicedModel = ModelSlicer.slice(im.model, spec.dependencyMap.get(invalidProp));
 			Counterexample cex = extractCounterexample(im.length, slicedModel);
-			writer.writeInvalid(invalidProp, cex, runtime);
+			writer.writeInvalid(invalidProp, im.originalSource, cex, runtime);
 		}
 	}
 

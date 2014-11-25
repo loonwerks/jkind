@@ -42,16 +42,16 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Invariant> invariants) {
 		for (String prop : props) {
-			writeValid(prop, k, runtime, invariants);
+			writeValid(prop, source, k, runtime, invariants);
 		}
 	}
 
-	public void writeValid(String prop, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(String prop, String source, int k, double runtime, List<Invariant> invariants) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
-		out.println("    <Answer>valid</Answer>");
+		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
 		for (Invariant invariant : invariants) {
 			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
@@ -64,10 +64,10 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, Counterexample cex, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
-		out.println("    <Answer>falsifiable</Answer>");
+		out.println("    <Answer source=\"" + source + "\">falsifiable</Answer>");
 		out.println("    <K>" + cex.getLength() + "</K>");
 		writeCounterexample(cex);
 		out.println("  </Property>");

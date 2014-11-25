@@ -17,7 +17,7 @@ public class IntervalGeneralizationEngine extends Engine {
 			Director director) {
 		super("interval-generalization", spec, settings, director);
 	}
-	
+
 	@Override
 	protected void main() {
 		processMessagesAndWaitUntil(() -> properties.isEmpty());
@@ -30,17 +30,19 @@ public class IntervalGeneralizationEngine extends Engine {
 	private void generalize(InvalidMessage im) {
 		for (String property : im.invalid) {
 			try {
-				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model, im.length);
+				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model,
+						im.length);
 				Model generalized = generalizer.generalize();
-				sendInvalid(property, im.length, generalized);
+				sendInvalid(property, im.length, generalized, im.originalSource);
 			} catch (AlgebraicLoopException e) {
-				sendInvalid(property, im.length, im.model);
+				sendInvalid(property, im.length, im.model, im.originalSource);
 			}
 		}
 	}
 
-	private void sendInvalid(String property, int k, Model model) {
-		director.broadcast(new InvalidMessage(EngineType.INTERVAL_GENERALIZATION, property, k, model), this);
+	private void sendInvalid(String property, int k, Model model, String originalSource) {
+		director.broadcast(new InvalidMessage(EngineType.INTERVAL_GENERALIZATION, originalSource,
+				property, k, model), this);
 	}
 
 	@Override

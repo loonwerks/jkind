@@ -98,7 +98,7 @@ public class XmlParseThread extends Thread {
 			throw new JKindException("Error parsing: " + xml, e);
 		}
 	}
-	
+
 	private void parseProgressXml(String progressXml) {
 		Element progressElement = parseXml(progressXml);
 		String source = progressElement.getAttribute("source");
@@ -126,15 +126,16 @@ public class XmlParseThread extends Thread {
 		int trueFor = getTrueFor(getElement(propertyElement, "TrueFor"));
 		int k = getK(getElement(propertyElement, "K"));
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
+		String source = getSource(getElement(propertyElement, "Answer"));
 		List<String> invariants = getInvariants(getElements(propertyElement, "Invariant"));
 		Counterexample cex = getCounterexample(getElement(propertyElement, "Counterexample"), k);
 
 		switch (answer) {
 		case "valid":
-			return new ValidProperty(name, k, runtime, invariants);
+			return new ValidProperty(name, source, k, runtime, invariants);
 
 		case "falsifiable":
-			return new InvalidProperty(name, cex, runtime);
+			return new InvalidProperty(name, source, cex, runtime);
 
 		case "unknown":
 			return new UnknownProperty(name, trueFor, cex, runtime);
@@ -167,6 +168,10 @@ public class XmlParseThread extends Thread {
 
 	private String getAnswer(Node answerNode) {
 		return answerNode.getTextContent();
+	}
+
+	private String getSource(Element answerNode) {
+		return answerNode.getAttribute("source");
 	}
 
 	private List<String> getInvariants(List<Element> invariantElements) {

@@ -54,12 +54,13 @@ public class PdrEngine extends Engine {
 	}
 
 	public void reportValid(String valid, List<Invariant> invariants) {
-		director.broadcast(new ValidMessage(EngineType.PDR, valid, 1, invariants), this);
+		director.broadcast(new ValidMessage(EngineType.PDR, getName(), valid, 1, invariants), this);
 		subengines.remove(valid);
 	}
 
 	public void reportInvalid(String invalid, int length, Model model) {
-		director.broadcast(new InvalidMessage(EngineType.PDR, invalid, length, model), this);
+		director.broadcast(new InvalidMessage(EngineType.PDR, getName(), invalid, length, model),
+				this);
 		subengines.remove(invalid);
 	}
 
@@ -70,7 +71,7 @@ public class PdrEngine extends Engine {
 	public void reportInvariants(List<Invariant> invariants) {
 		director.broadcast(new InvariantMessage(EngineType.PDR, invariants), this);
 	}
-	
+
 	public void reportThrowable(Throwable throwable) {
 		this.throwable = throwable;
 	}
