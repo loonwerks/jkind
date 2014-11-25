@@ -2,6 +2,7 @@ package jkind.engines.messages;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import jkind.JKindException;
@@ -32,7 +33,10 @@ public abstract class MessageHandler {
 	protected void processMessagesAndWaitUntil(Supplier<Boolean> stoppingCondition) {
 		try {
 			while (!incoming.isEmpty() || !stoppingCondition.get()) {
-				handleMessage(incoming.take());
+				Message message = incoming.poll(100, TimeUnit.MILLISECONDS);
+				if (message != null) {
+					handleMessage(message);
+				}
 			}
 		} catch (InterruptedException e) {
 			throw new JKindException("Interrupted while waiting for message", e);
