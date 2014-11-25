@@ -16,17 +16,14 @@ import jkind.solvers.Model;
 import jkind.util.SexpUtil;
 
 public class Graph {
-	private List<Node> nodes;
-	private Map<Node, Set<Node>> incoming;
-	private Map<Node, Set<Node>> outgoing;
+	private List<Node> nodes = new ArrayList<>();
+	private final Map<Node, Set<Node>> incoming = new HashMap<>();
+	private final Map<Node, Set<Node>> outgoing = new HashMap<>();
 
 	public Graph(List<Expr> candidates) {
-		this.nodes = new ArrayList<>();
 		nodes.add(new Node(candidates));
-		this.incoming = new HashMap<>();
-		this.outgoing = new HashMap<>();
 	}
-	
+
 	public int size() {
 		return nodes.size();
 	}
@@ -213,9 +210,7 @@ public class Graph {
 	}
 
 	public Graph(Graph other) {
-		this.nodes = new ArrayList<>(other.nodes);
-		this.incoming = new HashMap<>();
-		this.outgoing = new HashMap<>();
+		nodes.addAll(other.nodes);
 		copy(other.incoming, incoming);
 		copy(other.outgoing, outgoing);
 	}

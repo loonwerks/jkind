@@ -31,10 +31,6 @@ public class SexpUtil {
 	}
 
 	public static Sexp conjoinInvariants(Collection<Invariant> invariants, int k) {
-		if (invariants.isEmpty()) {
-			return new Symbol("true");
-		}
-
 		List<Sexp> conjuncts = new ArrayList<>();
 		for (Invariant invariant : invariants) {
 			conjuncts.add(invariant.instantiate(k));
