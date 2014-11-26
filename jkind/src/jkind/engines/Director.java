@@ -129,13 +129,15 @@ public class Director extends MessageHandler {
 	}
 
 	private void createEngines() {
-		addEngine(new BmcEngine(spec, settings, this));
+		if (settings.boundedModelChecking) {
+			addEngine(new BmcEngine(spec, settings, this));
+		}
 
-		if (settings.useInductiveProcess) {
+		if (settings.kInduction) {
 			addEngine(new KInductionEngine(spec, settings, this));
 		}
 
-		if (settings.useInvariantProcess) {
+		if (settings.invariantGeneration) {
 			addEngine(new InvariantGenerationEngine(spec, settings, this));
 		}
 

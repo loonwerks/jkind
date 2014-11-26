@@ -9,12 +9,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
 public class JKindArgumentParser {
-	private static final String BMC = "bmc";
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
 	private static final String INTERVAL = "interval";
 	private static final String N = "n";
+	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
+	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
 	private static final String REDUCE_INV = "reduce_inv";
 	private static final String SCRATCH = "scratch";
@@ -28,18 +29,21 @@ public class JKindArgumentParser {
 
 	private static Options getOptions() {
 		Options options = new Options();
-		options.addOption(BMC, false, "bounded model checking only (implies -" + NO_INV_GEN + ")");
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
-		options.addOption(N, true, "number of iterations (default 200)");
+		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
+		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
-		options.addOption(PDR_MAX, true, "maximum number of PDR instances");
+		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
+		options.addOption(PDR_MAX, true,
+				"maximum number of PDR parallel instances (0 to disable PDR)");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
-		options.addOption(SOLVER, true, "SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
-		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
+		options.addOption(SOLVER, true,
+				"SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
+		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
 		options.addOption(VERSION, false, "display version information");
@@ -72,8 +76,6 @@ public class JKindArgumentParser {
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, EXCEL, XML_TO_STDOUT);
 		ensureExclusive(line, XML, XML_TO_STDOUT);
-		ensureExclusive(line, BMC, REDUCE_INV);
-		ensureExclusive(line, BMC, INDUCT_CEX);
 
 		if (line.hasOption(VERSION)) {
 			Output.println("JKind " + Main.VERSION);
@@ -85,11 +87,6 @@ public class JKindArgumentParser {
 			System.exit(0);
 		}
 
-		if (line.hasOption(BMC)) {
-			settings.useInductiveProcess = false;
-			settings.useInvariantProcess = false;
-		}
-
 		if (line.hasOption(EXCEL)) {
 			settings.excel = true;
 		}
@@ -98,16 +95,24 @@ public class JKindArgumentParser {
 			settings.inductiveCounterexamples = true;
 		}
 
+		if (line.hasOption(NO_BMC)) {
+			settings.boundedModelChecking = false;
+		}
+
 		if (line.hasOption(NO_INV_GEN)) {
-			settings.useInvariantProcess = false;
+			settings.invariantGeneration = false;
+		}
+
+		if (line.hasOption(NO_K_INDUCTION)) {
+			settings.kInduction = false;
 		}
 
 		if (line.hasOption(N)) {
 			settings.n = Integer.parseInt(line.getOptionValue(N));
 		}
-		
+
 		if (line.hasOption(PDR_MAX)) {
-			settings.pdrMax = Integer.parseInt(line.getOptionValue(PDR_MAX));
+			settings.pdrMax = Math.max(0, Integer.parseInt(line.getOptionValue(PDR_MAX)));
 		} else {
 			int available = Runtime.getRuntime().availableProcessors();
 			int heuristic = (available - 4) / 2;
@@ -192,6 +197,18 @@ public class JKindArgumentParser {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "invariant reduction not supported with "
 						+ settings.solver);
 			}
+		}
+
+		if (!settings.boundedModelChecking && !settings.kInduction && settings.pdrMax == 0) {
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "all primary engines disabled");
+		}
+		
+		if (!settings.boundedModelChecking && settings.kInduction) {
+			Output.warning("k-induction requires bmc");
+		}
+
+		if (!settings.kInduction && settings.invariantGeneration) {
+			Output.warning("no need for invariant generation without k-induction");
 		}
 	}
 }
