@@ -1,4 +1,4 @@
-package jkind.engines;
+package jkind.engines.messages;
 
 public enum EngineType {
 	BMC, K_INDUCTION, INVARIANT_GENERATION, SMOOTHING, INTERVAL_GENERALIZATION, INVARIANT_REDUCTION, PDR;

@@ -8,11 +8,11 @@ import java.util.concurrent.ConcurrentMap;
 import jkind.JKindSettings;
 import jkind.engines.Director;
 import jkind.engines.Engine;
-import jkind.engines.EngineType;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.invariant.Invariant;
@@ -54,22 +54,23 @@ public class PdrEngine extends Engine {
 	}
 
 	public void reportValid(String valid, List<Invariant> invariants) {
-		director.broadcast(new ValidMessage(EngineType.PDR, getName(), valid, 1, invariants), this);
+		Itinerary itinerary = director.getValidMessageItinerary();
+		director.broadcast(new ValidMessage(getName(), valid, 1, invariants, itinerary));
 		subengines.remove(valid);
 	}
 
 	public void reportInvalid(String invalid, int length, Model model) {
-		director.broadcast(new InvalidMessage(EngineType.PDR, getName(), invalid, length, model),
-				this);
+		Itinerary itinerary = director.getInvalidMessageItinerary();
+		director.broadcast(new InvalidMessage(getName(), invalid, length, model, itinerary));
 		subengines.remove(invalid);
 	}
 
 	public void reportInvariant(Invariant invariant) {
-		director.broadcast(new InvariantMessage(EngineType.PDR, invariant), this);
+		director.broadcast(new InvariantMessage(invariant));
 	}
 
 	public void reportInvariants(List<Invariant> invariants) {
-		director.broadcast(new InvariantMessage(EngineType.PDR, invariants), this);
+		director.broadcast(new InvariantMessage(invariants));
 	}
 
 	public void reportThrowable(Throwable throwable) {

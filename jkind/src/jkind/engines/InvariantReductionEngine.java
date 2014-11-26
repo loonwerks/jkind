@@ -10,9 +10,11 @@ import java.util.Set;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.invariant.Invariant;
@@ -48,7 +50,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
-			reduce(getInvariantByName(property, vm.invariants), vm.invariants, vm.originalSource);
+			reduce(getInvariantByName(property, vm.invariants), vm);
 		}
 	}
 
@@ -62,7 +64,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		throw new JKindException("Unable to find property " + name + " during reduction");
 	}
 
-	private void reduce(Invariant property, List<Invariant> invariants, String originalSource) {
+	private void reduce(Invariant property, ValidMessage vm) {
 		comment("Reducing: " + property);
 		yicesSolver.push();
 
@@ -81,7 +83,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 			if (result instanceof SatResult) {
 				k++;
-				assertInvariants(k - 1, invariants, labelling);
+				assertInvariants(k - 1, vm.invariants, labelling);
 				createVariables(k);
 			} else if (result instanceof UnsatResult) {
 				List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
@@ -100,7 +102,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		yicesSolver.pop();
 
 		irreducible.remove(property);
-		sendValid(property.toString(), k, new ArrayList<>(irreducible), originalSource);
+		sendValid(property.toString(), k, new ArrayList<>(irreducible), vm);
 	}
 
 	private void assertInvariants(int k, List<Invariant> invariants,
@@ -178,15 +180,14 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		yicesSolver.pop();
 	}
 
-	private void sendValid(String valid, int k, List<Invariant> reduced, String originalSource) {
+	private void sendValid(String valid, int k, List<Invariant> reduced, ValidMessage vm) {
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Invariant invariant : reduced) {
 			comment(invariant.toString());
 		}
 
-		ValidMessage vm = new ValidMessage(EngineType.INVARIANT_REDUCTION, originalSource, valid,
-				k, reduced);
-		director.broadcast(vm, this);
+		Itinerary itinerary = vm.getNextItinerary();
+		director.broadcast(new ValidMessage(vm.source, valid, k, reduced, itinerary));
 	}
 
 	@Override
@@ -213,12 +214,8 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 	@Override
 	protected void handleMessage(ValidMessage vm) {
-		if (shouldHandle(vm)) {
+		if (vm.getNextDestination() == EngineType.INVARIANT_REDUCTION) {
 			reduce(vm);
 		}
-	}
-
-	private boolean shouldHandle(ValidMessage vm) {
-		return director.nextResponsible(vm) == EngineType.INVARIANT_REDUCTION;
 	}
 }

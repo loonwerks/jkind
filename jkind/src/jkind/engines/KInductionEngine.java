@@ -11,7 +11,7 @@ import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
-import jkind.engines.messages.Message;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.invariant.Invariant;
@@ -126,15 +126,13 @@ public class KInductionEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(List<String> valid, int k) {
-		Message vm = new ValidMessage(EngineType.K_INDUCTION, getName(), valid, k, invariants);
-		director.broadcast(vm, this);
+		Itinerary itinerary = director.getValidMessageItinerary();
+		director.broadcast(new ValidMessage(getName(), valid, k, invariants, itinerary));
 	}
 
 	private void sendInductiveCounterexample(String p, int length, Model model) {
 		if (settings.inductiveCounterexamples) {
-			Message icm = new InductiveCounterexampleMessage(EngineType.K_INDUCTION, p, length,
-					model);
-			director.broadcast(icm, this);
+			director.broadcast(new InductiveCounterexampleMessage(p, length, model));
 		}
 	}
 

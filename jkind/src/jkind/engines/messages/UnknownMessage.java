@@ -2,13 +2,10 @@ package jkind.engines.messages;
 
 import java.util.List;
 
-import jkind.engines.EngineType;
-
 public class UnknownMessage extends Message {
-	final public List<String> unknown;
+	public final List<String> unknown;
 
-	public UnknownMessage(EngineType source, List<String> unknown) {
-		super(source);
+	public UnknownMessage(List<String> unknown) {
 		this.unknown = safeCopy(unknown);
 	}
 

@@ -11,9 +11,11 @@ import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Output;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.Message;
 import jkind.engines.messages.MessageHandler;
 import jkind.engines.messages.UnknownMessage;
@@ -211,18 +213,16 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	public void broadcast(Message message, Engine source) {
+	public void broadcast(Message message) {
 		receiveMessage(message);
 		for (Engine engine : engines) {
-			if (engine != source) {
-				engine.receiveMessage(message);
-			}
+			engine.receiveMessage(message);
 		}
 	}
 
 	@Override
 	protected void handleMessage(ValidMessage vm) {
-		if (nextResponsible(vm) != null) {
+		if (vm.getNextDestination() != null) {
 			return;
 		}
 
@@ -232,28 +232,12 @@ public class Director extends MessageHandler {
 
 		List<Invariant> invariants = settings.reduceInvariants ? vm.invariants : Collections
 				.emptyList();
-		writer.writeValid(vm.valid, vm.originalSource, vm.k, getRuntime(), invariants);
-	}
-
-	// General flow of valid messages:
-	// (k-induction | pdr | ...) -> invariant reduction -> director
-	public EngineType nextResponsible(ValidMessage vm) {
-		switch (vm.getSource()) {
-		case INVARIANT_REDUCTION:
-			return null;
-
-		default:
-			if (settings.reduceInvariants) {
-				return EngineType.INVARIANT_REDUCTION;
-			} else {
-				return null;
-			}
-		}
+		writer.writeValid(vm.valid, vm.source, vm.k, getRuntime(), invariants);
 	}
 
 	@Override
 	protected void handleMessage(InvalidMessage im) {
-		if (nextResponsible(im) != null) {
+		if (im.getNextDestination() != null) {
 			return;
 		}
 
@@ -265,28 +249,7 @@ public class Director extends MessageHandler {
 		for (String invalidProp : im.invalid) {
 			Model slicedModel = ModelSlicer.slice(im.model, spec.dependencyMap.get(invalidProp));
 			Counterexample cex = extractCounterexample(im.length, slicedModel);
-			writer.writeInvalid(invalidProp, im.originalSource, cex, runtime);
-		}
-	}
-
-	// General flow of invalid messages:
-	// (bmc | pdr | ...) -> smoothing -> interval generalization -> director
-	public EngineType nextResponsible(InvalidMessage im) {
-		switch (im.getSource()) {
-		case INTERVAL_GENERALIZATION:
-			return null;
-
-		case SMOOTHING:
-			return settings.intervalGeneralization ? EngineType.INTERVAL_GENERALIZATION : null;
-
-		default:
-			if (settings.smoothCounterexamples) {
-				return EngineType.SMOOTHING;
-			} else if (settings.intervalGeneralization) {
-				return EngineType.INTERVAL_GENERALIZATION;
-			} else {
-				return null;
-			}
+			writer.writeInvalid(invalidProp, im.source, cex, runtime);
 		}
 	}
 
@@ -311,6 +274,25 @@ public class Director extends MessageHandler {
 
 	@Override
 	protected void handleMessage(InvariantMessage im) {
+	}
+
+	public Itinerary getValidMessageItinerary() {
+		List<EngineType> destinations = new ArrayList<>();
+		if (settings.reduceInvariants) {
+			destinations.add(EngineType.INVARIANT_REDUCTION);
+		}
+		return new Itinerary(destinations);
+	}
+
+	public Itinerary getInvalidMessageItinerary() {
+		List<EngineType> destinations = new ArrayList<>();
+		if (settings.smoothCounterexamples) {
+			destinations.add(EngineType.SMOOTHING);
+		}
+		if (settings.intervalGeneralization) {
+			destinations.add(EngineType.INTERVAL_GENERALIZATION);
+		}
+		return new Itinerary(destinations);
 	}
 
 	private double getRuntime() {

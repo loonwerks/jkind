@@ -135,7 +135,7 @@ public class InvariantGenerationEngine extends SolverBasedEngine {
 			comment("  " + invariant.toString());
 		}
 
-		director.broadcast(new InvariantMessage(EngineType.INVARIANT_GENERATION, invs), this);
+		director.broadcast(new InvariantMessage(invs));
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.values.BooleanValue;
@@ -71,16 +72,16 @@ public class BmcEngine extends SolverBasedEngine {
 	}
 
 	private void sendInvalid(List<String> invalid, int k, Model model) {
-		director.broadcast(new InvalidMessage(EngineType.BMC, getName(), invalid, k + 1, model),
-				this);
+		Itinerary itinerary = director.getInvalidMessageItinerary();
+		director.broadcast(new InvalidMessage(getName(), invalid, k + 1, model, itinerary));
 	}
 
 	private void sendBaseStep(int k) {
-		director.broadcast(new BaseStepMessage(EngineType.BMC, k + 1), this);
+		director.broadcast(new BaseStepMessage(k + 1));
 	}
 
 	private void sendUnknown(List<String> unknown) {
-		director.broadcast(new UnknownMessage(EngineType.BMC, unknown), this);
+		director.broadcast(new UnknownMessage(unknown));
 	}
 
 	private void assertProperties(int k) {

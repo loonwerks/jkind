@@ -3,9 +3,11 @@ package jkind.engines;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.VarDecl;
@@ -39,18 +41,18 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 	private void smooth(InvalidMessage im) {
 		for (String property : im.invalid) {
-			smooth(property, im.length, im.originalSource);
+			smooth(property, im);
 		}
 	}
 
-	private void smooth(String property, int k, String originalSource) {
+	private void smooth(String property, InvalidMessage im) {
 		comment("Smoothing: " + property);
 		DependencySet relevant = spec.dependencyMap.get(property);
 
 		yicesSolver.push();
 
 		createVariables(-1);
-		for (int i = 0; i < k; i++) {
+		for (int i = 0; i < im.length; i++) {
 			createVariables(i);
 			assertBaseTransition(i);
 			if (i > 0) {
@@ -58,14 +60,15 @@ public class SmoothingEngine extends SolverBasedEngine {
 			}
 		}
 
-		Result result = yicesSolver.maxsatQuery(new StreamIndex(property, k - 1).getEncoded());
+		Result result = yicesSolver.maxsatQuery(new StreamIndex(property, im.length - 1)
+				.getEncoded());
 		if (!(result instanceof SatResult)) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
 
 		Model smoothModel = ((SatResult) result).getModel();
 		yicesSolver.pop();
-		sendCounterexample(property, k, smoothModel, originalSource);
+		sendCounterexample(property, smoothModel, im);
 	}
 
 	private void assertDeltaCost(int k, DependencySet relevant) {
@@ -78,10 +81,10 @@ public class SmoothingEngine extends SolverBasedEngine {
 		}
 	}
 
-	private void sendCounterexample(String property, int k, Model model, String originalSource) {
+	private void sendCounterexample(String property, Model model, InvalidMessage im) {
 		comment("Sending " + property);
-		director.broadcast(new InvalidMessage(EngineType.SMOOTHING, originalSource, property, k,
-				model), this);
+		Itinerary itinerary = im.getNextItinerary();
+		director.broadcast(new InvalidMessage(im.source, property, im.length, model, itinerary));
 	}
 
 	@Override
@@ -94,14 +97,10 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 	@Override
 	protected void handleMessage(InvalidMessage im) {
-		if (shouldHandle(im)) {
+		if (im.getNextDestination() == EngineType.SMOOTHING) {
 			smooth(im);
 			properties.removeAll(im.invalid);
 		}
-	}
-
-	private boolean shouldHandle(InvalidMessage im) {
-		return director.nextResponsible(im) == EngineType.SMOOTHING;
 	}
 
 	@Override

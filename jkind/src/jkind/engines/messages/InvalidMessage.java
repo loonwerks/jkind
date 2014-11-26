@@ -3,26 +3,35 @@ package jkind.engines.messages;
 import java.util.Collections;
 import java.util.List;
 
-import jkind.engines.EngineType;
 import jkind.solvers.Model;
 
 public class InvalidMessage extends Message {
-	final public String originalSource;
-	final public List<String> invalid;
-	final public int length;
-	final public Model model;
+	public final String source;
+	public final List<String> invalid;
+	public final int length;
+	public final Model model;
+	private final Itinerary itinerary;
 
-	public InvalidMessage(EngineType source, String originalSource, List<String> invalid,
-			int length, Model model) {
-		super(source);
-		this.originalSource = originalSource;
+	public InvalidMessage(String source, List<String> invalid, int length, Model model,
+			Itinerary itinerary) {
+		this.source = source;
 		this.invalid = safeCopy(invalid);
 		this.length = length;
 		this.model = model;
+		this.itinerary = itinerary;
 	}
 
-	public InvalidMessage(EngineType source, String originalSource, String invalid, int length, Model model) {
-		this(source, originalSource, Collections.singletonList(invalid), length, model);
+	public InvalidMessage(String source, String invalid, int length, Model model,
+			Itinerary itinerary) {
+		this(source, Collections.singletonList(invalid), length, model, itinerary);
+	}
+
+	public EngineType getNextDestination() {
+		return itinerary.getNextDestination();
+	}
+
+	public Itinerary getNextItinerary() {
+		return itinerary.getNextItinerary();
 	}
 
 	@Override

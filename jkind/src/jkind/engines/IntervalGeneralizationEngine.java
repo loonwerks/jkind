@@ -2,9 +2,11 @@ package jkind.engines;
 
 import jkind.JKindSettings;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.interval.ModelGeneralizer;
@@ -23,26 +25,22 @@ public class IntervalGeneralizationEngine extends Engine {
 		processMessagesAndWaitUntil(() -> properties.isEmpty());
 	}
 
-	private boolean shouldHandle(InvalidMessage im) {
-		return director.nextResponsible(im) == EngineType.INTERVAL_GENERALIZATION;
-	}
-
 	private void generalize(InvalidMessage im) {
 		for (String property : im.invalid) {
 			try {
 				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model,
 						im.length);
 				Model generalized = generalizer.generalize();
-				sendInvalid(property, im.length, generalized, im.originalSource);
+				sendInvalid(property, generalized, im);
 			} catch (AlgebraicLoopException e) {
-				sendInvalid(property, im.length, im.model, im.originalSource);
+				sendInvalid(property, im.model, im);
 			}
 		}
 	}
 
-	private void sendInvalid(String property, int k, Model model, String originalSource) {
-		director.broadcast(new InvalidMessage(EngineType.INTERVAL_GENERALIZATION, originalSource,
-				property, k, model), this);
+	private void sendInvalid(String property, Model model, InvalidMessage im) {
+		Itinerary itinerary = im.getNextItinerary();
+		director.broadcast(new InvalidMessage(im.source, property, im.length, model, itinerary));
 	}
 
 	@Override
@@ -55,7 +53,7 @@ public class IntervalGeneralizationEngine extends Engine {
 
 	@Override
 	protected void handleMessage(InvalidMessage im) {
-		if (shouldHandle(im)) {
+		if (im.getNextDestination() == EngineType.INTERVAL_GENERALIZATION) {
 			generalize(im);
 			properties.removeAll(im.invalid);
 		}

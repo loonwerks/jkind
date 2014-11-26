@@ -1,15 +1,13 @@
 package jkind.engines.messages;
 
-import jkind.engines.EngineType;
 import jkind.solvers.Model;
 
 public class InductiveCounterexampleMessage extends Message {
-	final public String property;
-	final public int length;
-	final public Model model;
+	public final String property;
+	public final int length;
+	public final Model model;
 
-	public InductiveCounterexampleMessage(EngineType source, String property, int length, Model model) {
-		super(source);
+	public InductiveCounterexampleMessage(String property, int length, Model model) {
 		this.property = property;
 		this.length = length;
 		this.model = model;
