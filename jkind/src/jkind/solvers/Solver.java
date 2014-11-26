@@ -24,6 +24,4 @@ public abstract class Solver {
 	public abstract void stop();
 
 	protected final Map<String, Type> varTypes = new HashMap<>();
-
-	protected abstract String getSolverExtension();
 }

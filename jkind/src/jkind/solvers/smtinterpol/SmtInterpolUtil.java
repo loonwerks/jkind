@@ -1,5 +1,6 @@
 package jkind.solvers.smtinterpol;
 
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 
 import jkind.JKindException;
@@ -16,15 +17,37 @@ import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.util.BigFraction;
 import jkind.util.Util;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.ConstantTerm;
+import de.uni_freiburg.informatik.ultimate.logic.LoggingScript;
 import de.uni_freiburg.informatik.ultimate.logic.Rational;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
+import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 
 public class SmtInterpolUtil {
+	public static Script getScript(String scratchBase) {
+		Logger logger = Logger.getRootLogger();
+		logger.setLevel(Level.OFF);
+
+		Script baseScript = new SMTInterpol(logger);
+		if (scratchBase == null) {
+			return baseScript;
+		}
+
+		String filename = scratchBase + ".smt2";
+		try {
+			return new LoggingScript(baseScript, filename, true);
+		} catch (FileNotFoundException e) {
+			throw new JKindException("Unable to open scratch file: " + filename, e);
+		}
+	}
 
 	public static Sort getSort(Script script, Type type) {
 		if (type instanceof NamedType) {

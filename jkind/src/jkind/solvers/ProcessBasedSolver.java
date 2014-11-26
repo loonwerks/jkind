@@ -46,6 +46,8 @@ public abstract class ProcessBasedSolver extends Solver {
 		}
 	}
 
+	protected abstract String getSolverExtension();
+
 	private void addShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {
 			@Override

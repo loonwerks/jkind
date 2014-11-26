@@ -1,6 +1,5 @@
 package jkind.solvers.smtinterpol;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -18,39 +17,18 @@ import jkind.solvers.Solver;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.TransitionRelation;
-import de.uni_freiburg.informatik.ultimate.logic.LoggingScript;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
-import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
-import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationRequest;
 
 public class SmtInterpolSolver extends Solver {
 	private final Script script;
-	private volatile boolean requestTermination = false;
 
 	public SmtInterpolSolver(String scratchBase) {
-		TerminationRequest cancel = new TerminationRequest() {
-			@Override
-			public boolean isTerminationRequested() {
-				return requestTermination;
-			}
-		};
-
-		Script baseSolver = new SMTInterpol(cancel);
-		if (scratchBase != null) {
-			String scratch = scratchBase + "." + getSolverExtension();
-			try {
-				this.script = new LoggingScript(baseSolver, scratch, true);
-			} catch (FileNotFoundException e) {
-				throw new JKindException("Unable to open scratch file: " + scratch, e);
-			}
-		} else {
-			this.script = baseSolver;
-		}
+		this.script = SmtInterpolUtil.getScript(scratchBase);
 	}
 
 	@Override
@@ -140,12 +118,6 @@ public class SmtInterpolSolver extends Solver {
 
 	@Override
 	public void stop() {
-		requestTermination = true;
-	}
-
-	@Override
-	protected String getSolverExtension() {
-		return "smt2";
 	}
 
 	private Sort getSort(Type type) {

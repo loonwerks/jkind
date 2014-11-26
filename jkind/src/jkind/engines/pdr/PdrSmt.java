@@ -1,6 +1,5 @@
 package jkind.engines.pdr;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.JKindException;
 import jkind.engines.StopException;
 import jkind.invariant.Invariant;
 import jkind.lustre.Node;
@@ -24,15 +22,12 @@ import jkind.translation.TransitionRelation;
 import jkind.util.StreamIndex;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
-import de.uni_freiburg.informatik.ultimate.logic.LoggingScript;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.Model;
 import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
-import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
-import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
 
 public class PdrSmt extends ScriptUser {
 	private final List<Frame> F;
@@ -50,7 +45,7 @@ public class PdrSmt extends ScriptUser {
 	private final Term[] primeAbstract;
 
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
-		super(getSolver(scratchBase));
+		super(SmtInterpolUtil.getScript(scratchBase));
 		this.F = F;
 
 		script.setOption(":produce-interpolants", true);
@@ -75,19 +70,6 @@ public class PdrSmt extends ScriptUser {
 
 		addPredicates(PredicateCollector.collect(I));
 		addPredicates(PredicateCollector.collect(P));
-	}
-
-	private static Script getSolver(String scratchBase) {
-		if (scratchBase == null) {
-			return new SMTInterpol();
-		} else {
-			String file = scratchBase + ".smt2";
-			try {
-				return new LoggingScript(new SMTInterpol(), file, true);
-			} catch (FileNotFoundException e) {
-				throw new JKindException("Unable to open scratch file: " + file, e);
-			}
-		}
 	}
 
 	private void defineTransitionRelation(Term transition) {
