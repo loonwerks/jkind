@@ -38,7 +38,7 @@ public class JKindArgumentParser {
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
-		options.addOption(SOLVER, true, "SMT solver (default: yices, alternatives: cvc4, z3)");
+		options.addOption(SOLVER, true, "SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
