@@ -1,5 +1,7 @@
 package jkind;
 
+import jkind.analysis.Level;
+import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
 import jkind.lustre.Node;
@@ -14,8 +16,14 @@ public class JKind {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			Program program = Main.parseLustre(settings.filename);
-	
+
 			StaticAnalyzer.check(program, settings.solver);
+			if (!LinearChecker.check(program, Level.IGNORE)) {
+				if (settings.pdrMax > 0) {
+					Output.warning("disabling PDR due to non-linearities");
+					settings.pdrMax = 0;
+				}
+			}
 
 			Node main = Translate.translate(program);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
