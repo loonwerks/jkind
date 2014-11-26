@@ -50,7 +50,9 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
-			reduce(getInvariantByName(property, vm.invariants), vm);
+			if (properties.remove(property)) {
+				reduce(getInvariantByName(property, vm.invariants), vm);
+			}
 		}
 	}
 

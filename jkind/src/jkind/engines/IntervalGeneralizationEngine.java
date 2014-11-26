@@ -27,13 +27,15 @@ public class IntervalGeneralizationEngine extends Engine {
 
 	private void generalize(InvalidMessage im) {
 		for (String property : im.invalid) {
-			try {
-				ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model,
-						im.length);
-				Model generalized = generalizer.generalize();
-				sendInvalid(property, generalized, im);
-			} catch (AlgebraicLoopException e) {
-				sendInvalid(property, im.model, im);
+			if (properties.remove(property)) {
+				try {
+					ModelGeneralizer generalizer = new ModelGeneralizer(spec, property, im.model,
+							im.length);
+					Model generalized = generalizer.generalize();
+					sendInvalid(property, generalized, im);
+				} catch (AlgebraicLoopException e) {
+					sendInvalid(property, im.model, im);
+				}
 			}
 		}
 	}

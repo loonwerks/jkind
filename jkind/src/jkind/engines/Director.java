@@ -226,13 +226,25 @@ public class Director extends MessageHandler {
 			return;
 		}
 
-		remainingProperties.removeAll(vm.valid);
-		validProperties.addAll(vm.valid);
-		inductiveCounterexamples.keySet().removeAll(vm.valid);
+		List<String> newValid = intersect(vm.valid, remainingProperties);
+		if (newValid.isEmpty()) {
+			return;
+		}
+
+		remainingProperties.removeAll(newValid);
+		validProperties.addAll(newValid);
+		inductiveCounterexamples.keySet().removeAll(newValid);
 
 		List<Invariant> invariants = settings.reduceInvariants ? vm.invariants : Collections
 				.emptyList();
-		writer.writeValid(vm.valid, vm.source, vm.k, getRuntime(), invariants);
+		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants);
+	}
+
+	private List<String> intersect(List<String> list1, List<String> list2) {
+		List<String> result = new ArrayList<>();
+		result.addAll(list1);
+		result.retainAll(list2);
+		return result;
 	}
 
 	@Override
@@ -241,12 +253,17 @@ public class Director extends MessageHandler {
 			return;
 		}
 
-		remainingProperties.removeAll(im.invalid);
-		invalidProperties.addAll(im.invalid);
-		inductiveCounterexamples.keySet().removeAll(im.invalid);
+		List<String> newInvalid = intersect(im.invalid, remainingProperties);
+		if (newInvalid.isEmpty()) {
+			return;
+		}
+
+		remainingProperties.removeAll(newInvalid);
+		invalidProperties.addAll(newInvalid);
+		inductiveCounterexamples.keySet().removeAll(newInvalid);
 
 		double runtime = getRuntime();
-		for (String invalidProp : im.invalid) {
+		for (String invalidProp : newInvalid) {
 			Model slicedModel = ModelSlicer.slice(im.model, spec.dependencyMap.get(invalidProp));
 			Counterexample cex = extractCounterexample(im.length, slicedModel);
 			writer.writeInvalid(invalidProp, im.source, cex, runtime);

@@ -41,7 +41,9 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 	private void smooth(InvalidMessage im) {
 		for (String property : im.invalid) {
-			smooth(property, im);
+			if (properties.remove(property)) {
+				smooth(property, im);
+			}
 		}
 	}
 
