@@ -1,5 +1,6 @@
 package jkind.engines.messages;
 
+/** Only the engines used for itineraries */
 public enum EngineType {
-	BMC, K_INDUCTION, INVARIANT_GENERATION, SMOOTHING, INTERVAL_GENERALIZATION, INVARIANT_REDUCTION, PDR;
+	SMOOTHING, INTERVAL_GENERALIZATION, INVARIANT_REDUCTION;
 }
