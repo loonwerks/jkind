@@ -4,12 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import jkind.lustre.ArrayType;
+import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecordType;
+import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.LustreLexer;
 import jkind.lustre.parsing.LustreParser;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;
 import jkind.lustre.parsing.StdoutErrorListener;
+import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -75,7 +80,7 @@ public class Main {
 		if (!file.canRead()) {
 			Output.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
 		}
-		
+
 		CharStream stream = new ANTLRFileStream(filename);
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -102,6 +107,40 @@ public class Main {
 			System.exit(ExitCodes.PARSE_ERROR);
 		}
 
-		return new LustreToAstVisitor().program(program);
+		return flattenOrCheck(new LustreToAstVisitor().program(program));
+	}
+
+	/**
+	 * We allow extended ids (with ~ [ ] .) only when the program is a single
+	 * node with simple types. This is useful for working with output from
+	 * JLustre2Kind.
+	 */
+	private static Program flattenOrCheck(Program program) {
+		if (isSimple(program)) {
+			return new FlattenIds().visit(program);
+		} else {
+			if (!ValidIdChecker.check(program)) {
+				System.exit(ExitCodes.PARSE_ERROR);
+			}
+			return program;
+		}
+	}
+
+	private static boolean isSimple(Program program) {
+		if (!program.types.isEmpty()) {
+			return false;
+		} else if (!program.constants.isEmpty()) {
+			return false;
+		} else if (program.nodes.size() != 1) {
+			return false;
+		}
+
+		Node main = program.getMainNode();
+		for (VarDecl vd : Util.getVarDecls(main)) {
+			if (vd.type instanceof ArrayType || vd.type instanceof RecordType) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

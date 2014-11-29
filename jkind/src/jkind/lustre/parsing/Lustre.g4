@@ -17,7 +17,7 @@ node:
 
 varDeclList: varDeclGroup (';' varDeclGroup)*;
 
-varDeclGroup: ID (',' ID)* ':' type;
+varDeclGroup: eID (',' eID)* ':' type;
 
 topLevelType: type                                       # plainType
     | 'struct' '{' (ID ':' type) (';' ID ':' type)* '}'  # recordType
@@ -42,7 +42,7 @@ assertion: 'assert' expr ';';
 
 equation: (lhs | '(' lhs? ')') '=' expr ';';
 
-lhs: ID (',' ID)*;
+lhs: eID (',' eID)*;
 
 expr: ID                                                       # idExpr
     | INT                                                      # intExpr
@@ -71,11 +71,17 @@ expr: ID                                                       # idExpr
     | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 
+// eID used for mainly internal purposes. Users should only use ID.
+eID: ID                                                        # baseEID
+   | eID '[' INT ']'                                           # arrayEID
+   | eID '.' ID                                                # recordEID
+   ;
+
 REAL: INT '.' INT;
 
 BOOL: 'true' | 'false';
 INT: [0-9]+;
-ID: [a-zA-Z_][a-zA-Z_0-9]*;
+ID: [a-zA-Z_][a-zA-Z_0-9~]*;
 
 WS: [ \t\n\r\f]+ -> skip;
 
