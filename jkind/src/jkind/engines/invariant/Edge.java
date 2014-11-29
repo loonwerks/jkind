@@ -1,4 +1,4 @@
-package jkind.invariant;
+package jkind.engines.invariant;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -13,13 +13,12 @@ public class Edge {
 		this.destination = destination;
 	}
 
-	public Invariant toInvariant() {
+	public Expr toInvariant() {
 		Expr sRep = source.getRepresentative();
 		Expr dRep = destination.getRepresentative();
-		Expr expr = new BinaryExpr(sRep, BinaryOp.IMPLIES, dRep);
-		return new Invariant(expr);
+		return new BinaryExpr(sRep, BinaryOp.IMPLIES, dRep);
 	}
-	
+
 	@Override
 	public String toString() {
 		return source + " -> " + destination;

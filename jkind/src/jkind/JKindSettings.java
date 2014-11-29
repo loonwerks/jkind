@@ -1,5 +1,6 @@
 package jkind;
 
+
 public class JKindSettings {
 	public int n = 200;
 	public int timeout = 100;
@@ -19,6 +20,9 @@ public class JKindSettings {
 	
 	public SolverOption solver = SolverOption.YICES;
 	public boolean scratch = false;
+
+	public String writeCertificate = null;
+	public String readCertificate = null;
 
 	public String filename = null;
 }

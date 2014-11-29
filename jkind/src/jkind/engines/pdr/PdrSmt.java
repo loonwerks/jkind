@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.engines.StopException;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -323,7 +323,7 @@ public class PdrSmt extends ScriptUser {
 		script.echo(new QuotedObject(comment));
 	}
 
-	public Invariant getInvariant(Cube cube) {
+	public Expr getInvariant(Cube cube) {
 		List<Term> disjuncts = new ArrayList<>();
 
 		for (Term literal : cube.getPLiterals()) {
@@ -332,7 +332,7 @@ public class PdrSmt extends ScriptUser {
 			}
 		}
 
-		return new Invariant(Term2Expr.disjunction(disjuncts));
+		return Term2Expr.disjunction(disjuncts);
 	}
 
 	private Term T(Term[] variables1, Term[] variables2) {

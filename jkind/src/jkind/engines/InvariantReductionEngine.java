@@ -17,7 +17,7 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Label;
@@ -26,6 +26,7 @@ import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesSolver;
+import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.BiMap;
 import jkind.util.SexpUtil;
@@ -56,8 +57,8 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		}
 	}
 
-	private Invariant getInvariantByName(String name, List<Invariant> invariants) {
-		for (Invariant invariant : invariants) {
+	private Expr getInvariantByName(String name, List<Expr> invariants) {
+		for (Expr invariant : invariants) {
 			if (invariant.toString().equals(name)) {
 				return invariant;
 			}
@@ -66,16 +67,16 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		throw new JKindException("Unable to find property " + name + " during reduction");
 	}
 
-	private void reduce(Invariant property, ValidMessage vm) {
+	private void reduce(Expr property, ValidMessage vm) {
 		comment("Reducing: " + property);
 		yicesSolver.push();
 
-		Set<Invariant> irreducible = new HashSet<>();
+		Set<Expr> irreducible = new HashSet<>();
 		irreducible.add(property);
 
 		int k = 0;
 
-		BiMap<Label, Invariant> labelling = new BiMap<>();
+		BiMap<Label, Expr> labelling = new BiMap<>();
 
 		createVariables(-1);
 		createVariables(0);
@@ -90,7 +91,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 			} else if (result instanceof UnsatResult) {
 				List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
 				minimizeUnsatCore(query, unsatCore, labelling.keySet());
-				Set<Invariant> coreInvariants = getInvariants(unsatCore, labelling);
+				Set<Expr> coreInvariants = getInvariants(unsatCore, labelling);
 				if (irreducible.containsAll(coreInvariants)) {
 					break;
 				} else {
@@ -107,9 +108,9 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		sendValid(property.toString(), k, new ArrayList<>(irreducible), vm);
 	}
 
-	private void assertInvariants(int k, List<Invariant> invariants,
-			BiMap<Label, Invariant> labelling) {
-		for (Invariant invariant : invariants) {
+	private void assertInvariants(int k, List<Expr> invariants,
+			BiMap<Label, Expr> labelling) {
+		for (Expr invariant : invariants) {
 			if (labelling.containsValue(invariant)) {
 				yicesSolver.retract(labelling.inverse().remove(invariant));
 			}
@@ -118,23 +119,23 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		}
 	}
 
-	private Sexp getInvariantAssertion(Invariant invariant, int k) {
+	private Sexp getInvariantAssertion(Expr invariant, int k) {
 		List<Sexp> conjuncts = new ArrayList<>();
 		for (int i = 0; i <= k; i++) {
-			conjuncts.add(invariant.instantiate(i));
+			conjuncts.add(invariant.accept(new Lustre2Sexp(i)));
 		}
 		return SexpUtil.conjoin(conjuncts);
 	}
 
-	private Set<Invariant> getInvariants(List<Label> unsatCore, BiMap<Label, Invariant> labelling) {
-		Set<Invariant> result = new HashSet<>();
+	private Set<Expr> getInvariants(List<Label> unsatCore, BiMap<Label, Expr> labelling) {
+		Set<Expr> result = new HashSet<>();
 		for (Label label : unsatCore) {
 			result.add(labelling.get(label));
 		}
 		return result;
 	}
 
-	private Sexp getUnsatCoreQuery(int k, Collection<Invariant> irreducible) {
+	private Sexp getUnsatCoreQuery(int k, Collection<Expr> irreducible) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i <= k; i++) {
 			hyps.add(getInductiveTransition(i));
@@ -182,9 +183,9 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		yicesSolver.pop();
 	}
 
-	private void sendValid(String valid, int k, List<Invariant> reduced, ValidMessage vm) {
+	private void sendValid(String valid, int k, List<Expr> reduced, ValidMessage vm) {
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
-		for (Invariant invariant : reduced) {
+		for (Expr invariant : reduced) {
 			comment(invariant.toString());
 		}
 

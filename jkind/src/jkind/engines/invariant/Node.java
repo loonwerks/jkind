@@ -1,4 +1,4 @@
-package jkind.invariant;
+package jkind.engines.invariant;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,16 +32,15 @@ public class Node {
 		return candidates.size() <= 1;
 	}
 
-	public List<Invariant> toInvariants() {
-		List<Invariant> invariants = new ArrayList<>();
+	public List<Expr> toInvariants() {
+		List<Expr> invariants = new ArrayList<>();
 
 		Iterator<Expr> iterator = candidates.iterator();
 		Expr first = iterator.next();
 
 		while (iterator.hasNext()) {
 			Expr other = iterator.next();
-			Expr expr = new BinaryExpr(first, BinaryOp.EQUAL, other);
-			invariants.add(new Invariant(expr));
+			invariants.add(new BinaryExpr(first, BinaryOp.EQUAL, other));
 		}
 
 		return invariants;

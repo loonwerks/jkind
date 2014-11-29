@@ -81,7 +81,10 @@ public class Main {
 			Output.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
 		}
 
-		CharStream stream = new ANTLRFileStream(filename);
+		return parseLustre(new ANTLRFileStream(filename));
+	}
+
+	public static Program parseLustre(CharStream stream) throws RecognitionException {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);

@@ -1,18 +1,18 @@
-package jkind.engines;
+package jkind.engines.invariant;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindSettings;
+import jkind.engines.Director;
+import jkind.engines.SolverBasedEngine;
+import jkind.engines.StopException;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.invariant.CandidateGenerator;
-import jkind.invariant.Graph;
-import jkind.invariant.Invariant;
 import jkind.lustre.Expr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -23,16 +23,16 @@ import jkind.solvers.UnknownResult;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
-public class InvariantGenerationEngine extends SolverBasedEngine {
-	public InvariantGenerationEngine(Specification spec, JKindSettings settings, Director director) {
-		super("invariant-generation", spec, settings, director);
+public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
+	public AbstractInvariantGenerationEngine(String name, Specification spec, JKindSettings settings, Director director) {
+		super(name, spec, settings, director);
 	}
 
 	@Override
 	public void main() {
 		try {
-			Graph graph = createGraph();
-			if (graph.isTrivial()) {
+			Invariant invariant = createInitialInvariant();
+			if (invariant.isTrivial()) {
 				comment("No invariants proposed");
 				return;
 			}
@@ -42,26 +42,22 @@ public class InvariantGenerationEngine extends SolverBasedEngine {
 			for (int k = 1; k <= settings.n; k++) {
 				comment("K = " + k);
 
-				refineBaseStep(k - 1, graph);
-				if (graph.isTrivial()) {
+				refineBaseStep(k - 1, invariant);
+				if (invariant.isTrivial()) {
 					comment("No invariants remaining after base step");
 					return;
 				}
 
 				createVariables(k);
-				sendInvariant(refineInductiveStep(k, graph));
+				refineInductiveStep(k, invariant);
 			}
 		} catch (StopException se) {
 		}
 	}
 
-	private Graph createGraph() {
-		List<Expr> candidates = new CandidateGenerator(spec).generate();
-		comment("Proposed " + candidates.size() + " candidates");
-		return new Graph(candidates);
-	}
+	protected abstract Invariant createInitialInvariant();
 
-	private void refineBaseStep(int k, Graph graph) {
+	private void refineBaseStep(int k, Invariant invariant) {
 		solver.push();
 		Result result;
 
@@ -72,23 +68,22 @@ public class InvariantGenerationEngine extends SolverBasedEngine {
 		do {
 			checkForStop();
 
-			result = solver.query(graph.toInvariant(k));
+			result = solver.query(invariant.toSexp(k));
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				graph.refine(model, k);
-				comment("Base step refinement, graph size = " + graph.size());
+				invariant.refine(model, k);
 			} else if (result instanceof UnknownResult) {
 				throw new StopException();
 			}
-		} while (!graph.isTrivial() && result instanceof SatResult);
+		} while (!invariant.isTrivial() && result instanceof SatResult);
 
 		solver.pop();
 	}
 
-	private Graph refineInductiveStep(int k, Graph original) {
+	private void refineInductiveStep(int k, Invariant original) {
 		solver.push();
-		Graph graph = new Graph(original);
+		Invariant invariant = original.copy();
 		Result result;
 
 		for (int i = 0; i <= k; i++) {
@@ -98,17 +93,19 @@ public class InvariantGenerationEngine extends SolverBasedEngine {
 		do {
 			checkForStop();
 
-			result = solver.query(getInductiveQuery(k, graph));
+			result = solver.query(getInductiveQuery(k, invariant));
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				graph.refine(model, k);
-				comment("Inductive step refinement, graph size = " + graph.size());
+				invariant.refine(model, k);
 			}
-		} while (!graph.isTrivial() && result instanceof SatResult);
+		} while (!invariant.isTrivial() && result instanceof SatResult);
 
 		solver.pop();
-		return graph;
+		
+		sendInvariant(invariant);
+		original.reduceProven(invariant);
+		return;
 	}
 
 	private void checkForStop() {
@@ -118,21 +115,21 @@ public class InvariantGenerationEngine extends SolverBasedEngine {
 		}
 	}
 
-	private Sexp getInductiveQuery(int k, Graph graph) {
+	private Sexp getInductiveQuery(int k, Invariant invariant) {
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(graph.toInvariant(i));
+			hyps.add(invariant.toSexp(i));
 		}
-		Sexp conc = graph.toInvariant(k);
+		Sexp conc = invariant.toSexp(k);
 
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
-	private void sendInvariant(Graph graph) {
-		List<Invariant> invs = graph.toFinalInvariants();
+	private void sendInvariant(Invariant invariant) {
+		List<Expr> invs = invariant.toFinalInvariants();
 		comment("Sending invariants:");
-		for (Invariant invariant : invs) {
-			comment("  " + invariant.toString());
+		for (Expr inv : invs) {
+			comment("  " + inv);
 		}
 
 		director.broadcast(new InvariantMessage(invs));

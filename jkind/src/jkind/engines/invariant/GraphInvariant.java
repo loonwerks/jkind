@@ -1,4 +1,4 @@
-package jkind.invariant;
+package jkind.engines.invariant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,19 +15,16 @@ import jkind.sexp.Sexp;
 import jkind.solvers.Model;
 import jkind.util.SexpUtil;
 
-public class Graph {
+public class GraphInvariant implements Invariant {
 	private List<Node> nodes = new ArrayList<>();
 	private final Map<Node, Set<Node>> incoming = new HashMap<>();
 	private final Map<Node, Set<Node>> outgoing = new HashMap<>();
 
-	public Graph(List<Expr> candidates) {
+	public GraphInvariant(List<Expr> candidates) {
 		nodes.add(new Node(candidates));
 	}
 
-	public int size() {
-		return nodes.size();
-	}
-
+	@Override
 	public boolean isTrivial() {
 		return nodes.isEmpty() || (nodes.size() == 1 && nodes.get(0).isSingleton());
 	}
@@ -73,11 +70,13 @@ public class Graph {
 		}
 	}
 
-	public Sexp toInvariant(int k) {
+	@Override
+	public Sexp toSexp(int k) {
 		return SexpUtil.conjoinInvariants(toInvariants(), k);
 	}
 
-	public List<Invariant> toFinalInvariants() {
+	@Override
+	public List<Expr> toFinalInvariants() {
 		removeTrivialInvariants();
 		return toInvariants();
 	}
@@ -118,8 +117,8 @@ public class Graph {
 		return false;
 	}
 
-	private List<Invariant> toInvariants() {
-		List<Invariant> invariants = new ArrayList<>();
+	private List<Expr> toInvariants() {
+		List<Expr> invariants = new ArrayList<>();
 		for (Node node : nodes) {
 			invariants.addAll(node.toInvariants());
 		}
@@ -129,6 +128,7 @@ public class Graph {
 		return invariants;
 	}
 
+	@Override
 	public void refine(Model model, int k) {
 		splitNodes(model, k);
 		removeEmptyNodes();
@@ -209,7 +209,12 @@ public class Graph {
 		}
 	}
 
-	public Graph(Graph other) {
+	@Override
+	public Invariant copy() {
+		return new GraphInvariant(this);
+	}
+
+	private GraphInvariant(GraphInvariant other) {
 		nodes.addAll(other.nodes);
 		copy(other.incoming, incoming);
 		copy(other.outgoing, outgoing);
@@ -219,5 +224,9 @@ public class Graph {
 		for (Entry<Node, Set<Node>> entry : src.entrySet()) {
 			dst.put(entry.getKey(), new HashSet<>(entry.getValue()));
 		}
+	}
+
+	@Override
+	public void reduceProven(Invariant proven) {
 	}
 }

@@ -14,7 +14,8 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -30,7 +31,7 @@ import jkind.util.StreamIndex;
 public class KInductionEngine extends SolverBasedEngine {
 	private int kCurrent = 0;
 	private int kLimit = 0;
-	private List<Invariant> invariants = new ArrayList<>();
+	private List<Expr> invariants = new ArrayList<>();
 
 	public KInductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super("k-induction", spec, settings, director);
@@ -93,21 +94,19 @@ public class KInductionEngine extends SolverBasedEngine {
 	}
 
 	private void addPropertiesAsInvariants(int k, List<String> valid) {
-		List<Invariant> newInvariants = valid.stream().map(Invariant::new).collect(toList());
+		List<Expr> newInvariants = valid.stream().map(IdExpr::new).collect(toList());
 		invariants.addAll(newInvariants);
 		assertNewInvariants(newInvariants, k);
 	}
 
-	private void assertNewInvariants(List<Invariant> invariants, int limit) {
+	private void assertNewInvariants(List<Expr> invariants, int limit) {
 		for (int i = 0; i <= limit; i++) {
 			assertInvariants(invariants, i);
 		}
 	}
 
-	private void assertInvariants(List<Invariant> invariants, int i) {
-		for (Invariant invariant : invariants) {
-			solver.assertSexp(invariant.instantiate(i));
-		}
+	private void assertInvariants(List<Expr> invariants, int i) {
+		solver.assertSexp(SexpUtil.conjoinInvariants(invariants, i));
 	}
 
 	private void assertTransitionAndInvariants(int k) {

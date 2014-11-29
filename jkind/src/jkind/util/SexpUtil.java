@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.translation.Lustre2Sexp;
 
 public class SexpUtil {
 	public static Sexp conjoin(List<? extends Sexp> conjuncts) {
@@ -30,10 +31,10 @@ public class SexpUtil {
 		}
 	}
 
-	public static Sexp conjoinInvariants(Collection<Invariant> invariants, int k) {
+	public static Sexp conjoinInvariants(Collection<Expr> invariants, int k) {
 		List<Sexp> conjuncts = new ArrayList<>();
-		for (Invariant invariant : invariants) {
-			conjuncts.add(invariant.instantiate(k));
+		for (Expr invariant : invariants) {
+			conjuncts.add(invariant.accept(new Lustre2Sexp(k)));
 		}
 		return SexpUtil.conjoin(conjuncts);
 	}

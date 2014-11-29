@@ -8,7 +8,7 @@ import java.util.Map;
 
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
@@ -42,24 +42,24 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants) {
 		for (String prop : props) {
 			writeValid(prop, source, k, runtime, invariants);
 		}
 	}
 
-	public void writeValid(String prop, String source, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
-		for (Invariant invariant : invariants) {
+		for (Expr invariant : invariants) {
 			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 		}
 		out.println("  </Property>");
 	}
 
-	private String escape(Invariant invariant) {
+	private String escape(Expr invariant) {
 		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
 	}
 

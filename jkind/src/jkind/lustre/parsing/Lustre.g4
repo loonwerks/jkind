@@ -71,7 +71,7 @@ expr: ID                                                       # idExpr
     | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 
-// eID used for mainly internal purposes. Users should only use ID.
+// eID used internally. Users should only use ID.
 eID: ID                                                        # baseEID
    | eID '[' INT ']'                                           # arrayEID
    | eID '.' ID                                                # recordEID
@@ -81,7 +81,9 @@ REAL: INT '.' INT;
 
 BOOL: 'true' | 'false';
 INT: [0-9]+;
-ID: [a-zA-Z_][a-zA-Z_0-9~]*;
+
+// ~ is used internally. Users should not use it.
+ID: [a-zA-Z_~][a-zA-Z_0-9~]*;
 
 WS: [ \t\n\r\f]+ -> skip;
 

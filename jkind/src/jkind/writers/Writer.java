@@ -3,7 +3,7 @@ package jkind.writers;
 import java.util.List;
 import java.util.Map;
 
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 
 public abstract class Writer {
@@ -12,7 +12,7 @@ public abstract class Writer {
 	public abstract void end();
 
 	public abstract void writeValid(List<String> props, String source, int k, double runtime,
-			List<Invariant> invariants);
+			List<Expr> invariants);
 
 	public abstract void writeInvalid(String prop, String source, Counterexample cex, double runtime);
 

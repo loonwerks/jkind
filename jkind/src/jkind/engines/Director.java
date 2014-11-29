@@ -10,6 +10,9 @@ import java.util.Map;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Output;
+import jkind.certificate.CertificateInput;
+import jkind.certificate.CertificateOutput;
+import jkind.engines.invariant.GraphInvariantGenerationEngine;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -21,8 +24,8 @@ import jkind.engines.messages.MessageHandler;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
-import jkind.invariant.Invariant;
 import jkind.lustre.EnumType;
+import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
@@ -34,6 +37,7 @@ import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
+import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
 import jkind.writers.Writer;
@@ -54,6 +58,9 @@ public class Director extends MessageHandler {
 	private final List<Engine> engines = new ArrayList<>();
 	private final List<Thread> threads = new ArrayList<>();
 
+	private CertificateInput certificateInput;
+	private CertificateOutput certificateOutput;
+
 	public Director(JKindSettings settings, Specification spec) {
 		this.settings = settings;
 		this.spec = spec;
@@ -61,6 +68,15 @@ public class Director extends MessageHandler {
 		this.writer = getWriter();
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(spec.node.properties);
+
+		if (settings.readCertificate != null) {
+			this.certificateInput = new CertificateInput(settings.readCertificate);
+		}
+
+		if (settings.writeCertificate != null) {
+			this.certificateOutput = new CertificateOutput(settings.writeCertificate);
+			this.certificateOutput.addVarDecls(Util.getVarDecls(spec.node));
+		}
 	}
 
 	private final Writer getWriter() {
@@ -98,6 +114,7 @@ public class Director extends MessageHandler {
 	private void postProcessing() {
 		writeUnknowns();
 		writer.end();
+		writeCertificate();
 		printSummary();
 	}
 
@@ -138,7 +155,7 @@ public class Director extends MessageHandler {
 		}
 
 		if (settings.invariantGeneration) {
-			addEngine(new InvariantGenerationEngine(spec, settings, this));
+			addEngine(new GraphInvariantGenerationEngine(spec, settings, this));
 		}
 
 		if (settings.reduceInvariants) {
@@ -155,6 +172,10 @@ public class Director extends MessageHandler {
 
 		if (settings.pdrMax > 0) {
 			addEngine(new PdrEngine(spec, settings, this));
+		}
+
+		if (settings.readCertificate != null) {
+			addEngine(new CertificateEngine(spec, settings, this, certificateInput));
 		}
 	}
 
@@ -215,6 +236,12 @@ public class Director extends MessageHandler {
 		}
 	}
 
+	private void writeCertificate() {
+		if (certificateOutput != null) {
+			certificateOutput.write();
+		}
+	}
+
 	public void broadcast(Message message) {
 		receiveMessage(message);
 		for (Engine engine : engines) {
@@ -237,8 +264,11 @@ public class Director extends MessageHandler {
 		validProperties.addAll(newValid);
 		inductiveCounterexamples.keySet().removeAll(newValid);
 
-		List<Invariant> invariants = settings.reduceInvariants ? vm.invariants : Collections
-				.emptyList();
+		if (certificateOutput != null) {
+			certificateOutput.addInvariants(vm.invariants);
+		}
+
+		List<Expr> invariants = settings.reduceInvariants ? vm.invariants : Collections.emptyList();
 		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants);
 	}
 

@@ -1,4 +1,4 @@
-package jkind.invariant;
+package jkind.engines.invariant;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

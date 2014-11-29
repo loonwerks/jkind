@@ -17,11 +17,13 @@ public class JKindArgumentParser {
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
+	private static final String READ_CERT = "read_cert";
 	private static final String REDUCE_INV = "reduce_inv";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
 	private static final String TIMEOUT = "timeout";
+	private static final String WRITE_CERT = "write_cert";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
 	private static final String VERSION = "version";
@@ -38,12 +40,14 @@ public class JKindArgumentParser {
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
+		options.addOption(READ_CERT, true, "read certificate from specified file");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
 				"SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
+		options.addOption(WRITE_CERT, true, "write certificate to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
 		options.addOption(VERSION, false, "display version information");
@@ -118,6 +122,10 @@ public class JKindArgumentParser {
 			int heuristic = (available - 4) / 2;
 			settings.pdrMax = Math.max(1, heuristic);
 		}
+		
+		if (line.hasOption(READ_CERT)) {
+			settings.readCertificate = line.getOptionValue(READ_CERT);
+		}
 
 		if (line.hasOption(REDUCE_INV)) {
 			settings.reduceInvariants = true;
@@ -150,6 +158,10 @@ public class JKindArgumentParser {
 				Output.error("unknown solver: " + line.getOptionValue(SOLVER));
 				System.exit(ExitCodes.INVALID_OPTIONS);
 			}
+		}
+
+		if (line.hasOption(WRITE_CERT)) {
+			settings.writeCertificate = line.getOptionValue(WRITE_CERT);
 		}
 
 		if (line.hasOption(XML)) {
@@ -202,7 +214,7 @@ public class JKindArgumentParser {
 		if (!settings.boundedModelChecking && !settings.kInduction && settings.pdrMax == 0) {
 			Output.fatal(ExitCodes.INVALID_OPTIONS, "all primary engines disabled");
 		}
-		
+
 		if (!settings.boundedModelChecking && settings.kInduction) {
 			Output.warning("k-induction requires bmc");
 		}

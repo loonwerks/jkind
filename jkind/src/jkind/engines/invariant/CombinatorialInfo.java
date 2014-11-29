@@ -1,4 +1,4 @@
-package jkind.invariant;
+package jkind.engines.invariant;
 
 import java.util.HashSet;
 import java.util.Set;

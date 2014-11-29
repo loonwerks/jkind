@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.excel.ExcelFormatter;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.results.Counterexample;
 import jkind.results.InvalidProperty;
@@ -41,8 +41,8 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Invariant> invariants) {
-		List<String> invText = invariants.stream().map(Invariant::toString).collect(toList());
+			List<Expr> invariants) {
+		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		for (String prop : props) {
 			properties.add(new ValidProperty(prop, source, k, runtime, invText));
 		}

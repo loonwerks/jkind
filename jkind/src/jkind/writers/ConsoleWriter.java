@@ -3,7 +3,7 @@ package jkind.writers;
 import java.util.List;
 import java.util.Map;
 
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
 
@@ -29,13 +29,13 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Invariant> invariants) {
+			List<Expr> invariants) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
 				+ " || Time = " + runtime);
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
-			for (Invariant invariant : invariants) {
+			for (Expr invariant : invariants) {
 				System.out.println("  " + invariant);
 			}
 		}

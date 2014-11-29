@@ -3,16 +3,16 @@ package jkind.engines.messages;
 import java.util.Collections;
 import java.util.List;
 
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 
 public class ValidMessage extends Message {
 	public final String source;
 	public final List<String> valid;
 	public final int k;
-	public final List<Invariant> invariants;
+	public final List<Expr> invariants;
 	private final Itinerary itinerary;
 
-	public ValidMessage(String source, List<String> valid, int k, List<Invariant> invariants,
+	public ValidMessage(String source, List<String> valid, int k, List<Expr> invariants,
 			Itinerary itinerary) {
 		this.source = source;
 		this.valid = safeCopy(valid);
@@ -21,7 +21,7 @@ public class ValidMessage extends Message {
 		this.itinerary = itinerary;
 	}
 
-	public ValidMessage(String source, String valid, int k, List<Invariant> invariants,
+	public ValidMessage(String source, String valid, int k, List<Expr> invariants,
 			Itinerary itinerary) {
 		this(source, Collections.singletonList(valid), k, invariants, itinerary);
 	}

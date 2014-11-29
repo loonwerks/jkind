@@ -12,7 +12,7 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrSmt.Option;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.LustreSlicer;
@@ -72,7 +72,7 @@ public class PdrSubengine extends Thread {
 				} else {
 					addFrame(new Frame());
 					Z.comment("Number of frames: " + F.size());
-					List<Invariant> invariants = propogateBlockedCubes();
+					List<Expr> invariants = propogateBlockedCubes();
 					if (invariants != null) {
 						sendValidAndInvariants(invariants);
 						return;
@@ -170,7 +170,7 @@ public class PdrSubengine extends Thread {
 		F.add(F.size() - 1, frame);
 	}
 
-	private List<Invariant> propogateBlockedCubes() {
+	private List<Expr> propogateBlockedCubes() {
 		for (int k = 1; k < depth(); k++) {
 			for (Cube c : new ArrayList<>(F.get(k).getCubes())) {
 				checkCancel();
@@ -188,8 +188,8 @@ public class PdrSubengine extends Thread {
 		return null;
 	}
 
-	private List<Invariant> getInvariants(int k) {
-		List<Invariant> invariants = new ArrayList<>();
+	private List<Expr> getInvariants(int k) {
+		List<Expr> invariants = new ArrayList<>();
 		for (int i = k; i < F.size(); i++) {
 			for (Cube c : F.get(i).getCubes()) {
 				invariants.add(Z.getInvariant(c));
@@ -223,7 +223,7 @@ public class PdrSubengine extends Thread {
 
 		// Report if invariant
 		if (s.getFrame() == TCube.FRAME_INF) {
-			Invariant invariant = Z.getInvariant(s.getCube());
+			Expr invariant = Z.getInvariant(s.getCube());
 			sendInvariant(invariant);
 		}
 	}
@@ -238,7 +238,7 @@ public class PdrSubengine extends Thread {
 		return result;
 	}
 
-	private void sendValidAndInvariants(List<Invariant> invariants) {
+	private void sendValidAndInvariants(List<Expr> invariants) {
 		Itinerary itinerary = director.getValidMessageItinerary();
 		director.broadcast(new ValidMessage(parent.getName(), prop, 1, invariants, itinerary));
 		director.broadcast(new InvariantMessage(invariants));
@@ -249,7 +249,7 @@ public class PdrSubengine extends Thread {
 		director.broadcast(new InvalidMessage(getName(), prop, length, model, itinerary));
 	}
 
-	private void sendInvariant(Invariant invariant) {
+	private void sendInvariant(Expr invariant) {
 		director.broadcast(new InvariantMessage(invariant));
 	}
 }
