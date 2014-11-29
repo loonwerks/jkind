@@ -2,9 +2,9 @@ package jkind;
 
 import java.math.BigInteger;
 
+import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
@@ -57,7 +57,7 @@ public class JKindArgumentParser {
 	}
 
 	public static JKindSettings parse(String[] args) {
-		CommandLineParser parser = new GnuParser();
+		CommandLineParser parser = new BasicParser();
 		try {
 			JKindSettings settings = getSettings(parser.parse(getOptions(), args));
 			checkSettings(settings);
@@ -122,7 +122,7 @@ public class JKindArgumentParser {
 			int heuristic = (available - 4) / 2;
 			settings.pdrMax = Math.max(1, heuristic);
 		}
-		
+
 		if (line.hasOption(READ_CERT)) {
 			settings.readCertificate = line.getOptionValue(READ_CERT);
 		}
@@ -211,16 +211,13 @@ public class JKindArgumentParser {
 			}
 		}
 
-		if (!settings.boundedModelChecking && !settings.kInduction && settings.pdrMax == 0) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "all primary engines disabled");
+		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
+				&& settings.pdrMax == 0) {
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
 		}
 
 		if (!settings.boundedModelChecking && settings.kInduction) {
 			Output.warning("k-induction requires bmc");
-		}
-
-		if (!settings.kInduction && settings.invariantGeneration) {
-			Output.warning("no need for invariant generation without k-induction");
 		}
 	}
 }

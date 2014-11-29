@@ -6,7 +6,9 @@ import java.util.List;
 
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
+import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Sexp;
 import jkind.solvers.Eval;
@@ -33,16 +35,33 @@ public class Node {
 	}
 
 	public List<Expr> toInvariants() {
-		List<Expr> invariants = new ArrayList<>();
-
 		Iterator<Expr> iterator = candidates.iterator();
 		Expr first = iterator.next();
 
+		if (first instanceof BoolExpr) {
+			BoolExpr bool = (BoolExpr) first;
+			return optimizeInvariants(bool.value, iterator);
+		}
+
+		List<Expr> invariants = new ArrayList<>();
 		while (iterator.hasNext()) {
 			Expr other = iterator.next();
 			invariants.add(new BinaryExpr(first, BinaryOp.EQUAL, other));
 		}
 
+		return invariants;
+	}
+
+	/**
+	 * By optimizing simple invariants we can prove some properties directly
+	 * from invariant generation
+	 */
+	private List<Expr> optimizeInvariants(boolean value, Iterator<Expr> iterator) {
+		List<Expr> invariants = new ArrayList<>();
+		while (iterator.hasNext()) {
+			Expr expr = iterator.next();
+			invariants.add(value ? expr : LustreUtil.not(expr));
+		}
 		return invariants;
 	}
 

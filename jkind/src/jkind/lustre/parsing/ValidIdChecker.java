@@ -1,5 +1,6 @@
-package jkind;
+package jkind.lustre.parsing;
 
+import jkind.Output;
 import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Location;

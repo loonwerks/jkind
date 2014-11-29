@@ -1,4 +1,4 @@
-package jkind;
+package jkind.lustre.parsing;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.Expr;
