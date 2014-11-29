@@ -3,14 +3,12 @@ package jkind.engines.invariant;
 import java.util.List;
 
 import jkind.lustre.Expr;
-import jkind.sexp.Sexp;
 import jkind.solvers.Model;
-
 
 public interface Invariant {
 	public boolean isTrivial();
 
-	public Sexp toSexp(int k);
+	public List<Expr> toExprs();
 
 	public void refine(Model model, int k);
 

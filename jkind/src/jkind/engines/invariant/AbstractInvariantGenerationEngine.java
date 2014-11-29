@@ -71,7 +71,8 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		do {
 			checkForStop();
 
-			result = solver.query(invariant.toSexp(k));
+			Sexp query = SexpUtil.conjoinInvariants(invariant.toExprs(), k);
+			result = solver.query(query);
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
@@ -121,11 +122,12 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 	}
 
 	private Sexp getInductiveQuery(int k, Invariant invariant) {
+		List<Expr> exprs = invariant.toExprs();
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
-			hyps.add(invariant.toSexp(i));
+			hyps.add(SexpUtil.conjoinInvariants(exprs, i));
 		}
-		Sexp conc = invariant.toSexp(k);
+		Sexp conc = SexpUtil.conjoinInvariants(exprs, k);
 
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}

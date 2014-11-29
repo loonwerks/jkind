@@ -9,9 +9,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
-import jkind.sexp.Sexp;
 import jkind.solvers.Model;
-import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 
 public class ListInvariant implements Invariant {
@@ -27,8 +25,8 @@ public class ListInvariant implements Invariant {
 	}
 
 	@Override
-	public Sexp toSexp(int k) {
-		return SexpUtil.conjoinInvariants(exprs, k);
+	public List<Expr> toExprs() {
+		return exprs;
 	}
 
 	@Override

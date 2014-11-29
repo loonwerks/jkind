@@ -11,9 +11,7 @@ import java.util.Set;
 
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
-import jkind.sexp.Sexp;
 import jkind.solvers.Model;
-import jkind.util.SexpUtil;
 
 public class GraphInvariant implements Invariant {
 	private List<Node> nodes = new ArrayList<>();
@@ -71,14 +69,21 @@ public class GraphInvariant implements Invariant {
 	}
 
 	@Override
-	public Sexp toSexp(int k) {
-		return SexpUtil.conjoinInvariants(toInvariants(), k);
+	public List<Expr> toExprs() {
+		List<Expr> exprs = new ArrayList<>();
+		for (Node node : nodes) {
+			exprs.addAll(node.toInvariants());
+		}
+		for (Edge edge : getEdges()) {
+			exprs.add(edge.toInvariant());
+		}
+		return exprs;
 	}
 
 	@Override
 	public List<Expr> toFinalInvariants() {
 		removeTrivialInvariants();
-		return toInvariants();
+		return toExprs();
 	}
 
 	private void removeTrivialInvariants() {
@@ -115,17 +120,6 @@ public class GraphInvariant implements Invariant {
 			return be.value == value;
 		}
 		return false;
-	}
-
-	private List<Expr> toInvariants() {
-		List<Expr> invariants = new ArrayList<>();
-		for (Node node : nodes) {
-			invariants.addAll(node.toInvariants());
-		}
-		for (Edge edge : getEdges()) {
-			invariants.add(edge.toInvariant());
-		}
-		return invariants;
 	}
 
 	@Override
