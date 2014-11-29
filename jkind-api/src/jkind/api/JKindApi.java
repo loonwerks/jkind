@@ -21,14 +21,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class JKindApi extends KindApi {
 	protected Integer n = null;
-	protected boolean inductiveCounterexamples = false;
+
+	public boolean inductiveCounterexamples = false;
 	protected boolean reduceInvariants = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean intervalGeneralization = false;
+	
 	protected SolverOption solver = null;
 
 	/**
-	 * Set a maximum value for k in k-induction algorithm
+	 * Set a maximum depth for BMC and k-induction
 	 * 
 	 * @param n
 	 *            A non-negative integer
