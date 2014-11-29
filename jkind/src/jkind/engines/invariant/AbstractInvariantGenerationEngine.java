@@ -11,9 +11,11 @@ import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -24,7 +26,8 @@ import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
 public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
-	public AbstractInvariantGenerationEngine(String name, Specification spec, JKindSettings settings, Director director) {
+	public AbstractInvariantGenerationEngine(String name, Specification spec,
+			JKindSettings settings, Director director) {
 		super(name, spec, settings, director);
 	}
 
@@ -73,6 +76,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
 				invariant.refine(model, k);
+				comment("Finished single base step refinement");
 			} else if (result instanceof UnknownResult) {
 				throw new StopException();
 			}
@@ -98,12 +102,13 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
 				invariant.refine(model, k);
+				comment("Finished single inductive step refinement");
 			}
 		} while (!invariant.isTrivial() && result instanceof SatResult);
 
 		solver.pop();
-		
-		sendInvariant(invariant);
+
+		sendValidAndInvariant(invariant, k);
 		original.reduceProven(invariant);
 		return;
 	}
@@ -125,14 +130,32 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
-	private void sendInvariant(Invariant invariant) {
+	private void sendValidAndInvariant(Invariant invariant, int k) {
 		List<Expr> invs = invariant.toFinalInvariants();
 		comment("Sending invariants:");
 		for (Expr inv : invs) {
 			comment("  " + inv);
 		}
 
+		sendValidProperties(invs, k);
 		director.broadcast(new InvariantMessage(invs));
+	}
+
+	private void sendValidProperties(List<Expr> invs, int k) {
+		List<String> valid = new ArrayList<>();
+		for (Expr inv : invs) {
+			if (inv instanceof IdExpr) {
+				IdExpr idExpr = (IdExpr) inv;
+				if (properties.contains(idExpr.id)) {
+					valid.add(idExpr.id);
+				}
+			}
+		}
+
+		if (!valid.isEmpty()) {
+			Itinerary itinerary = director.getValidMessageItinerary();
+			director.broadcast(new ValidMessage(getName(), valid, k, invs, itinerary));
+		}
 	}
 
 	@Override
