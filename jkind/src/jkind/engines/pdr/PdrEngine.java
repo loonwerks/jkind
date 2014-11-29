@@ -12,11 +12,8 @@ import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
-import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.invariant.Invariant;
-import jkind.solvers.Model;
 import jkind.translation.Specification;
 
 public class PdrEngine extends Engine {
@@ -48,29 +45,9 @@ public class PdrEngine extends Engine {
 	private void spawnSubengine() {
 		String prop = properties.remove(0);
 		String scratch = settings.scratch ? getScratchBase() + scratchCounter++ : null;
-		PdrSubengine subengine = new PdrSubengine(prop, spec, scratch, this);
+		PdrSubengine subengine = new PdrSubengine(prop, spec, scratch, this, director);
 		subengines.put(prop, subengine);
 		subengine.start();
-	}
-
-	public void reportValid(String valid, List<Invariant> invariants) {
-		Itinerary itinerary = director.getValidMessageItinerary();
-		director.broadcast(new ValidMessage(getName(), valid, 1, invariants, itinerary));
-		subengines.remove(valid);
-	}
-
-	public void reportInvalid(String invalid, int length, Model model) {
-		Itinerary itinerary = director.getInvalidMessageItinerary();
-		director.broadcast(new InvalidMessage(getName(), invalid, length, model, itinerary));
-		subengines.remove(invalid);
-	}
-
-	public void reportInvariant(Invariant invariant) {
-		director.broadcast(new InvariantMessage(invariant));
-	}
-
-	public void reportInvariants(List<Invariant> invariants) {
-		director.broadcast(new InvariantMessage(invariants));
 	}
 
 	public void reportThrowable(Throwable throwable) {

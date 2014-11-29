@@ -5,11 +5,18 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import jkind.engines.Director;
 import jkind.engines.StopException;
+import jkind.engines.messages.InvalidMessage;
+import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
+import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrSmt.Option;
 import jkind.invariant.Invariant;
 import jkind.lustre.Node;
+import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.LustreSlicer;
+import jkind.solvers.Model;
 import jkind.translation.Specification;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
@@ -26,18 +33,22 @@ public class PdrSubengine extends Thread {
 	private final Node node;
 	private final String prop;
 	private final PdrEngine parent;
-	
+	private final Director director;
+
 	private final List<Frame> F = new ArrayList<>();
 	private final PdrSmt Z;
 
 	private volatile boolean cancel = false;
 
-	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent) {
+	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent,
+			Director director) {
 		super("pdr-" + prop);
 		this.prop = prop;
-		this.node = LustreSlicer.slice(spec.node, spec.dependencyMap);
+		Node single = new NodeBuilder(spec.node).clearProperties().addProperty(prop).build();
+		this.node = LustreSlicer.slice(single, spec.dependencyMap);
 		this.parent = parent;
-		
+		this.director = director;
+
 		this.Z = new PdrSmt(node, F, prop, scratchBase);
 	}
 
@@ -48,7 +59,7 @@ public class PdrSubengine extends Thread {
 	@Override
 	public void run() {
 		Z.comment("Checking property: " + prop);
-		
+
 		// Create F_INF and F[0]
 		F.add(new Frame());
 		addFrame(Z.createInitialFrame());
@@ -63,15 +74,14 @@ public class PdrSubengine extends Thread {
 					Z.comment("Number of frames: " + F.size());
 					List<Invariant> invariants = propogateBlockedCubes();
 					if (invariants != null) {
-						parent.reportValid(prop, invariants);
-						parent.reportInvariants(invariants);
+						sendValidAndInvariants(invariants);
 						return;
 					}
 				}
 			}
 		} catch (CounterexampleException cex) {
 			Z.comment("Found counterexample of length " + cex.getLength());
-			parent.reportInvalid(prop, cex.getLength(), cex.getModel());
+			sendInvalid(cex.getLength(), cex.getModel());
 			return;
 		} catch (StopException se) {
 			return;
@@ -210,11 +220,11 @@ public class PdrSubengine extends Thread {
 		// Store clause
 		F.get(k).add(s.getCube());
 		Z.comment("Blocked [" + k + "] : " + s.getCube());
-		
+
 		// Report if invariant
 		if (s.getFrame() == TCube.FRAME_INF) {
 			Invariant invariant = Z.getInvariant(s.getCube());
-			parent.reportInvariant(invariant);
+			sendInvariant(invariant);
 		}
 	}
 
@@ -226,5 +236,20 @@ public class PdrSubengine extends Thread {
 			curr = curr.getNext();
 		}
 		return result;
+	}
+
+	private void sendValidAndInvariants(List<Invariant> invariants) {
+		Itinerary itinerary = director.getValidMessageItinerary();
+		director.broadcast(new ValidMessage(parent.getName(), prop, 1, invariants, itinerary));
+		director.broadcast(new InvariantMessage(invariants));
+	}
+
+	private void sendInvalid(int length, Model model) {
+		Itinerary itinerary = director.getInvalidMessageItinerary();
+		director.broadcast(new InvalidMessage(getName(), prop, length, model, itinerary));
+	}
+
+	private void sendInvariant(Invariant invariant) {
+		director.broadcast(new InvariantMessage(invariant));
 	}
 }
