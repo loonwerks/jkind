@@ -96,6 +96,7 @@ public class PdrSmt extends ScriptUser {
 		String str = p.toString();
 		if (!predicatesStrings.contains(str)) {
 			predicatesStrings.add(str);
+			predicates.add(p);
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
 			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}

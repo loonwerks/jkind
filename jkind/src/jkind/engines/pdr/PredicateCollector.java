@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.toSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import jkind.lustre.Expr;
 import jkind.solvers.smtinterpol.Term2Expr;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
