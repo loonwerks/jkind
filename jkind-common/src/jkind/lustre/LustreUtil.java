@@ -2,6 +2,7 @@ package jkind.lustre;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 public class LustreUtil {
 	public static Expr typeConstraint(String id, Type type) {
@@ -32,6 +33,18 @@ public class LustreUtil {
 
 	public static Expr or(Expr left, Expr right) {
 		return new BinaryExpr(left, BinaryOp.OR, right);
+	}
+
+	public static Expr or(List<Expr> disjuncts) {
+		if (disjuncts.size() == 0) {
+			return new BoolExpr(false);
+		}
+
+		Expr result = disjuncts.get(0);
+		for (int i = 1; i < disjuncts.size(); i++) {
+			result = or(result, disjuncts.get(i));
+		}
+		return result;
 	}
 
 	public static Expr lessEqual(Expr left, Expr right) {

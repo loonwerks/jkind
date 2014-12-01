@@ -1,8 +1,12 @@
 package jkind.engines.pdr;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.HashSet;
 import java.util.Set;
 
+import jkind.lustre.Expr;
+import jkind.solvers.smtinterpol.Term2Expr;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
@@ -10,10 +14,10 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 public class PredicateCollector {
 	private final Set<Term> predicates = new HashSet<>();
 
-	public static Set<Term> collect(Term term) {
+	public static Set<Expr> collect(Term term) {
 		PredicateCollector collector = new PredicateCollector();
 		collector.walk(term);
-		return collector.predicates;
+		return collector.predicates.stream().map(Term2Expr::expr).collect(toSet());
 	}
 
 	private void walk(Term term) {
@@ -40,7 +44,9 @@ public class PredicateCollector {
 			return;
 		}
 
-		predicates.add(at);
+		if (!at.getFunction().getName().startsWith("%")) {
+			predicates.add(at);
+		}
 	}
 
 	private boolean hasVariables(Term term) {
@@ -54,13 +60,13 @@ public class PredicateCollector {
 		if (isVariable(at)) {
 			return true;
 		}
-		
+
 		for (Term sub : at.getParameters()) {
 			if (hasVariables(sub)) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 

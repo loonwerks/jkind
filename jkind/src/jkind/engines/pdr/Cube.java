@@ -8,18 +8,18 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class Cube {
-	private final List<Term> pLiterals = new ArrayList<>();
+	private final List<PLiteral> pLiterals = new ArrayList<>();
 	private Cube next;
 
-	public void addPLiteral(Term term) {
-		pLiterals.add(term);
+	public void addPLiteral(PLiteral expr) {
+		pLiterals.add(expr);
 	}
 
-	public void removePLiteral(Term term) {
-		pLiterals.remove(term);
+	public void removePLiteral(PLiteral expr) {
+		pLiterals.remove(expr);
 	}
 
-	public List<Term> getPLiterals() {
+	public List<PLiteral> getPLiterals() {
 		return pLiterals;
 	}
 
@@ -36,7 +36,13 @@ public class Cube {
 	}
 
 	public Term toTerm(Script script) {
-		return Util.and(script, pLiterals.toArray(new Term[pLiterals.size()]));
+		Term[] terms = new Term[pLiterals.size()];
+		for (int i = 0; i < pLiterals.size(); i++) {
+			PLiteral p = pLiterals.get(i);
+			terms[i] = p.toTerm(script);
+			terms[i] = p.getExpr().accept(new Lustre2Term(script));
+		}
+		return Util.and(script, terms);
 	}
 
 	@Override

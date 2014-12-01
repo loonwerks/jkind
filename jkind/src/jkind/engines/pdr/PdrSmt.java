@@ -9,6 +9,8 @@ import java.util.Set;
 
 import jkind.engines.StopException;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -17,7 +19,6 @@ import jkind.solvers.SimpleModel;
 import jkind.solvers.smtinterpol.ScriptUser;
 import jkind.solvers.smtinterpol.SmtInterpolUtil;
 import jkind.solvers.smtinterpol.Subst;
-import jkind.solvers.smtinterpol.Term2Expr;
 import jkind.translation.TransitionRelation;
 import jkind.util.StreamIndex;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
@@ -40,9 +41,11 @@ public class PdrSmt extends ScriptUser {
 	private final Term I;
 	private final Term P;
 
-	private final Set<Term> predicates = new HashSet<>();
+	private final Set<Expr> predicates = new HashSet<>();
 	private final Term[] baseAbstract;
 	private final Term[] primeAbstract;
+
+	private PLiteral init;
 
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
@@ -70,6 +73,7 @@ public class PdrSmt extends ScriptUser {
 
 		addPredicates(PredicateCollector.collect(I));
 		addPredicates(PredicateCollector.collect(P));
+		this.init = new PLiteral(true, new IdExpr(Lustre2Term.INIT));
 	}
 
 	private void defineTransitionRelation(Term transition) {
@@ -87,10 +91,10 @@ public class PdrSmt extends ScriptUser {
 		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), body);
 	}
 
-	private void addPredicates(Set<Term> otherPredicates) {
+	private void addPredicates(Set<Expr> otherPredicates) {
 		otherPredicates.removeAll(predicates);
 		predicates.addAll(otherPredicates);
-		for (Term p : otherPredicates) {
+		for (Expr p : otherPredicates) {
 			comment("New predicate: " + p);
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
 			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
@@ -139,8 +143,9 @@ public class PdrSmt extends ScriptUser {
 		}
 
 		Cube result = new Cube();
-		for (Term p : predicates) {
-			result.addPLiteral(isTrue(model.evaluate(p)) ? p : not(p));
+		for (Expr p : predicates) {
+			Term t = p.accept(new Lustre2Term(script));
+			result.addPLiteral(new PLiteral(isTrue(model.evaluate(t)), p));
 		}
 		return result;
 	}
@@ -178,9 +183,9 @@ public class PdrSmt extends ScriptUser {
 		}
 		script.assertTerm(F.get(F.size() - 1).toTerm(script));
 
-		List<Term> pLiterals = s.getCube().getPLiterals();
+		List<PLiteral> pLiterals = s.getCube().getPLiterals();
 		for (int i = 0; i < pLiterals.size(); i++) {
-			script.assertTerm(name(prime(pLiterals.get(i)), "P" + i));
+			script.assertTerm(name(prime(pLiterals.get(i).toTerm(script)), "P" + i));
 		}
 
 		switch (script.checkSat()) {
@@ -228,7 +233,7 @@ public class PdrSmt extends ScriptUser {
 		return min;
 	}
 
-	private Cube getMinimalNonInitialCube(List<Term> pLiterals, Term[] unsatCore) {
+	private Cube getMinimalNonInitialCube(List<PLiteral> pLiterals, Term[] unsatCore) {
 		Cube result = new Cube();
 		for (Term t : unsatCore) {
 			String name = t.toString();
@@ -239,7 +244,7 @@ public class PdrSmt extends ScriptUser {
 		}
 
 		if (isInitial(result)) {
-			result.addPLiteral(not(I));
+			result.addPLiteral(init.negate());
 		}
 
 		return result;
@@ -324,15 +329,15 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	public Expr getInvariant(Cube cube) {
-		List<Term> disjuncts = new ArrayList<>();
+		List<Expr> disjuncts = new ArrayList<>();
 
-		for (Term literal : cube.getPLiterals()) {
-			if (literal != not(I)) {
-				disjuncts.add(not(literal));
+		for (PLiteral literal : cube.getPLiterals()) {
+			if (literal.getExpr() != init.getExpr()) {
+				disjuncts.add(literal.negate().toExpr());
 			}
 		}
 
-		return Term2Expr.disjunction(disjuncts);
+		return LustreUtil.or(disjuncts);
 	}
 
 	private Term T(Term[] variables1, Term[] variables2) {
@@ -389,6 +394,10 @@ public class PdrSmt extends ScriptUser {
 
 	private Term apply(Cube cube, Term[] arguments) {
 		return apply(cube.toTerm(script), arguments);
+	}
+
+	private Term apply(Expr e, Term[] arguments) {
+		return apply(e.accept(new Lustre2Term(script)), arguments);
 	}
 
 	private Term subst(Term term, Term[] variables, Term[] arguments) {

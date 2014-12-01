@@ -44,6 +44,10 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		this.node = node;
 	}
 
+	public Lustre2Term(Script script) {
+		this(script, null);
+	}
+
 	public Term getInit() {
 		return term(INIT);
 	}

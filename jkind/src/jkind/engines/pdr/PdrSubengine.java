@@ -18,7 +18,6 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.LustreSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 /**
  * PDR algorithm based on
@@ -152,9 +151,9 @@ public class PdrSubengine extends Thread {
 	}
 
 	private void generalize(TCube s) {
-		List<Term> pLiterals = new ArrayList<>(s.getCube().getPLiterals());
+		List<PLiteral> pLiterals = new ArrayList<>(s.getCube().getPLiterals());
 
-		for (Term p : pLiterals) {
+		for (PLiteral p : pLiterals) {
 			s.getCube().removePLiteral(p);
 			if (Z.isInitial(s.getCube()) || Z.solveRelative(s).getFrame() == TCube.FRAME_NULL) {
 				s.getCube().addPLiteral(p);
