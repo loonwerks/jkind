@@ -246,7 +246,7 @@ public class PdrSubengine extends Thread {
 
 	private void sendInvalid(int length, Model model) {
 		Itinerary itinerary = director.getInvalidMessageItinerary();
-		director.broadcast(new InvalidMessage(getName(), prop, length, model, itinerary));
+		director.broadcast(new InvalidMessage(parent.getName(), prop, length, model, itinerary));
 	}
 
 	private void sendInvariant(Expr invariant) {
