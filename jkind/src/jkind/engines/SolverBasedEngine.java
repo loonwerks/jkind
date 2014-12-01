@@ -92,12 +92,8 @@ public abstract class SolverBasedEngine extends Engine {
 	}
 
 	protected List<VarDecl> getOffsetVarDecls(int k) {
-		return getOffsetVarDecls(k, Util.getVarDecls(spec.node));
-	}
-
-	protected List<VarDecl> getOffsetVarDecls(int k, List<VarDecl> varDecls) {
 		List<VarDecl> result = new ArrayList<>();
-		for (VarDecl vd : varDecls) {
+		for (VarDecl vd : Util.getVarDecls(spec.node)) {
 			StreamIndex si = new StreamIndex(vd.id, k);
 			result.add(new VarDecl(si.getEncoded().str, vd.type));
 		}
@@ -109,10 +105,6 @@ public abstract class SolverBasedEngine extends Engine {
 	}
 
 	protected static final Symbol INIT = Lustre2Sexp.INIT;
-
-	protected void defineInductiveInit() {
-		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
-	}
 
 	protected void assertInductiveTransition(int k) {
 		if (k == 0) {
@@ -138,7 +130,7 @@ public abstract class SolverBasedEngine extends Engine {
 		return new Cons(TransitionRelation.T, args);
 	}
 
-	protected List<Sexp> getSymbols(List<VarDecl> varDecls) {
+	private List<Sexp> getSymbols(List<VarDecl> varDecls) {
 		List<Sexp> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
 			result.add(new Symbol(vd.id));
