@@ -46,6 +46,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	public Lustre2Term(Script script) {
 		this(script, null);
+		pre = true;
 	}
 
 	public Predicate getInit() {

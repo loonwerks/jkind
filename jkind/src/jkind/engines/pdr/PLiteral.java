@@ -36,6 +36,11 @@ public class PLiteral {
 	public PLiteral negate() {
 		return new PLiteral(!positive, predicate);
 	}
+	
+	@Override
+	public String toString() {
+		return toExpr().toString();
+	}
 
 	@Override
 	public int hashCode() {
