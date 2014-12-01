@@ -1,4 +1,4 @@
-// Generated from Yices2.g4 by ANTLR 4.2
+// Generated from Yices2.g4 by ANTLR 4.4
 package jkind.solvers.yices2;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class Yices2Parser extends Parser {
+	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
+
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -18,8 +20,8 @@ public class Yices2Parser extends Parser {
 		T__11=1, T__10=2, T__9=3, T__8=4, T__7=5, T__6=6, T__5=7, T__4=8, T__3=9, 
 		T__2=10, T__1=11, T__0=12, BOOL=13, INT=14, ID=15, WS=16, ERROR=17;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'->'", "')'", "'function'", "'bool'", "'default'", "'type'", 
-		"'-'", "'('", "'int'", "'/'", "'='", "'real'", "BOOL", "INT", "ID", "WS", 
+		"<INVALID>", "'/'", "'default'", "'type'", "'->'", "'int'", "'function'", 
+		"'('", "')'", "'-'", "'='", "'bool'", "'real'", "BOOL", "INT", "ID", "WS", 
 		"ERROR"
 	};
 	public static final int
@@ -51,12 +53,12 @@ public class Yices2Parser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class ModelContext extends ParserRuleContext {
-		public List<FunctionContext> function() {
-			return getRuleContexts(FunctionContext.class);
+		public List<AliasContext> alias() {
+			return getRuleContexts(AliasContext.class);
 		}
 		public TerminalNode EOF() { return getToken(Yices2Parser.EOF, 0); }
-		public List<VariableContext> variable() {
-			return getRuleContexts(VariableContext.class);
+		public AliasContext alias(int i) {
+			return getRuleContext(AliasContext.class,i);
 		}
 		public FunctionContext function(int i) {
 			return getRuleContext(FunctionContext.class,i);
@@ -64,11 +66,11 @@ public class Yices2Parser extends Parser {
 		public VariableContext variable(int i) {
 			return getRuleContext(VariableContext.class,i);
 		}
-		public AliasContext alias(int i) {
-			return getRuleContext(AliasContext.class,i);
+		public List<VariableContext> variable() {
+			return getRuleContexts(VariableContext.class);
 		}
-		public List<AliasContext> alias() {
-			return getRuleContexts(AliasContext.class);
+		public List<FunctionContext> function() {
+			return getRuleContexts(FunctionContext.class);
 		}
 		public ModelContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -103,13 +105,11 @@ public class Yices2Parser extends Parser {
 					setState(24); alias();
 					}
 					break;
-
 				case 2:
 					{
 					setState(25); variable();
 					}
 					break;
-
 				case 3:
 					{
 					setState(26); function();
@@ -120,7 +120,7 @@ public class Yices2Parser extends Parser {
 				setState(29); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( _la==8 );
+			} while ( _la==T__5 );
 			setState(31); match(EOF);
 			}
 		}
@@ -160,11 +160,11 @@ public class Yices2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(33); match(8);
-			setState(34); match(11);
+			setState(33); match(T__5);
+			setState(34); match(T__2);
 			setState(35); match(ID);
 			setState(36); match(ID);
-			setState(37); match(2);
+			setState(37); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -179,10 +179,10 @@ public class Yices2Parser extends Parser {
 	}
 
 	public static class VariableContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(Yices2Parser.ID, 0); }
 		public ValueContext value() {
 			return getRuleContext(ValueContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(Yices2Parser.ID, 0); }
 		public VariableContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -203,11 +203,11 @@ public class Yices2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(39); match(8);
-			setState(40); match(11);
+			setState(39); match(T__5);
+			setState(40); match(T__2);
 			setState(41); match(ID);
 			setState(42); value();
-			setState(43); match(2);
+			setState(43); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -222,18 +222,18 @@ public class Yices2Parser extends Parser {
 	}
 
 	public static class FunctionContext extends ParserRuleContext {
+		public List<FunctionValueContext> functionValue() {
+			return getRuleContexts(FunctionValueContext.class);
+		}
+		public TerminalNode ID() { return getToken(Yices2Parser.ID, 0); }
 		public DefaultValueContext defaultValue() {
 			return getRuleContext(DefaultValueContext.class,0);
 		}
-		public FunctionValueContext functionValue(int i) {
-			return getRuleContext(FunctionValueContext.class,i);
-		}
-		public TerminalNode ID() { return getToken(Yices2Parser.ID, 0); }
 		public FunctionTypeContext functionType() {
 			return getRuleContext(FunctionTypeContext.class,0);
 		}
-		public List<FunctionValueContext> functionValue() {
-			return getRuleContexts(FunctionValueContext.class);
+		public FunctionValueContext functionValue(int i) {
+			return getRuleContext(FunctionValueContext.class,i);
 		}
 		public FunctionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -257,14 +257,14 @@ public class Yices2Parser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(45); match(8);
-			setState(46); match(3);
+			setState(45); match(T__5);
+			setState(46); match(T__6);
 			setState(47); match(ID);
 			setState(48); functionType();
 			setState(52);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
-			while ( _alt!=2 && _alt!=-1 ) {
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
@@ -278,13 +278,13 @@ public class Yices2Parser extends Parser {
 			}
 			setState(56);
 			_la = _input.LA(1);
-			if (_la==8) {
+			if (_la==T__5) {
 				{
 				setState(55); defaultValue();
 				}
 			}
 
-			setState(58); match(2);
+			setState(58); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -326,14 +326,14 @@ public class Yices2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(60); match(8);
-			setState(61); match(6);
-			setState(62); match(8);
-			setState(63); match(1);
+			setState(60); match(T__5);
+			setState(61); match(T__9);
+			setState(62); match(T__5);
+			setState(63); match(T__8);
 			setState(67);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 4) | (1L << 9) | (1L << 12))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__7) | (1L << T__1) | (1L << T__0))) != 0)) {
 				{
 				{
 				setState(64); type();
@@ -343,8 +343,8 @@ public class Yices2Parser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(70); match(2);
-			setState(71); match(2);
+			setState(70); match(T__4);
+			setState(71); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -382,7 +382,7 @@ public class Yices2Parser extends Parser {
 			{
 			setState(73);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 4) | (1L << 9) | (1L << 12))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__7) | (1L << T__1) | (1L << T__0))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			consume();
@@ -400,13 +400,13 @@ public class Yices2Parser extends Parser {
 	}
 
 	public static class FunctionValueContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(Yices2Parser.ID, 0); }
 		public ValueContext value() {
 			return getRuleContext(ValueContext.class,0);
 		}
 		public IntegerContext integer() {
 			return getRuleContext(IntegerContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(Yices2Parser.ID, 0); }
 		public FunctionValueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -427,14 +427,14 @@ public class Yices2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(75); match(8);
-			setState(76); match(11);
-			setState(77); match(8);
+			setState(75); match(T__5);
+			setState(76); match(T__2);
+			setState(77); match(T__5);
 			setState(78); match(ID);
 			setState(79); integer();
-			setState(80); match(2);
+			setState(80); match(T__4);
 			setState(81); value();
-			setState(82); match(2);
+			setState(82); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -472,10 +472,10 @@ public class Yices2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(84); match(8);
-			setState(85); match(5);
+			setState(84); match(T__5);
+			setState(85); match(T__10);
 			setState(86); value();
-			setState(87); match(2);
+			setState(87); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -490,10 +490,10 @@ public class Yices2Parser extends Parser {
 	}
 
 	public static class ValueContext extends ParserRuleContext {
-		public TerminalNode BOOL() { return getToken(Yices2Parser.BOOL, 0); }
 		public NumericContext numeric() {
 			return getRuleContext(NumericContext.class,0);
 		}
+		public TerminalNode BOOL() { return getToken(Yices2Parser.BOOL, 0); }
 		public ValueContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -520,7 +520,7 @@ public class Yices2Parser extends Parser {
 				setState(89); match(BOOL);
 				}
 				break;
-			case 8:
+			case T__5:
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
@@ -553,18 +553,6 @@ public class Yices2Parser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class PositiveIntegerContext extends IntegerContext {
-		public TerminalNode INT() { return getToken(Yices2Parser.INT, 0); }
-		public PositiveIntegerContext(IntegerContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).enterPositiveInteger(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).exitPositiveInteger(this);
-		}
-	}
 	public static class NegativeIntegerContext extends IntegerContext {
 		public TerminalNode INT() { return getToken(Yices2Parser.INT, 0); }
 		public NegativeIntegerContext(IntegerContext ctx) { copyFrom(ctx); }
@@ -575,6 +563,18 @@ public class Yices2Parser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).exitNegativeInteger(this);
+		}
+	}
+	public static class PositiveIntegerContext extends IntegerContext {
+		public TerminalNode INT() { return getToken(Yices2Parser.INT, 0); }
+		public PositiveIntegerContext(IntegerContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).enterPositiveInteger(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof Yices2Listener ) ((Yices2Listener)listener).exitPositiveInteger(this);
 		}
 	}
 
@@ -591,14 +591,14 @@ public class Yices2Parser extends Parser {
 				setState(93); match(INT);
 				}
 				break;
-			case 8:
+			case T__5:
 				_localctx = new NegativeIntegerContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(94); match(8);
-				setState(95); match(7);
+				setState(94); match(T__5);
+				setState(95); match(T__3);
 				setState(96); match(INT);
-				setState(97); match(2);
+				setState(97); match(T__4);
 				}
 				break;
 			default:
@@ -617,11 +617,11 @@ public class Yices2Parser extends Parser {
 	}
 
 	public static class QuotientContext extends ParserRuleContext {
-		public IntegerContext integer(int i) {
-			return getRuleContext(IntegerContext.class,i);
-		}
 		public List<IntegerContext> integer() {
 			return getRuleContexts(IntegerContext.class);
+		}
+		public IntegerContext integer(int i) {
+			return getRuleContext(IntegerContext.class,i);
 		}
 		public QuotientContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -643,11 +643,11 @@ public class Yices2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100); match(8);
-			setState(101); match(10);
+			setState(100); match(T__5);
+			setState(101); match(T__11);
 			setState(102); integer();
 			setState(103); integer();
-			setState(104); match(2);
+			setState(104); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -714,7 +714,6 @@ public class Yices2Parser extends Parser {
 				setState(106); integer();
 				}
 				break;
-
 			case 2:
 				_localctx = new QuotientNumericContext(_localctx);
 				enterOuterAlt(_localctx, 2);
@@ -744,25 +743,25 @@ public class Yices2Parser extends Parser {
 		"\6G\13\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\t\3"+
 		"\t\3\t\3\t\3\t\3\n\3\n\5\n^\n\n\3\13\3\13\3\13\3\13\3\13\5\13e\n\13\3"+
 		"\f\3\f\3\f\3\f\3\f\3\f\3\r\3\r\5\ro\n\r\3\r\2\2\16\2\4\6\b\n\f\16\20\22"+
-		"\24\26\30\2\3\5\2\6\6\13\13\16\16m\2\35\3\2\2\2\4#\3\2\2\2\6)\3\2\2\2"+
-		"\b/\3\2\2\2\n>\3\2\2\2\fK\3\2\2\2\16M\3\2\2\2\20V\3\2\2\2\22]\3\2\2\2"+
-		"\24d\3\2\2\2\26f\3\2\2\2\30n\3\2\2\2\32\36\5\4\3\2\33\36\5\6\4\2\34\36"+
-		"\5\b\5\2\35\32\3\2\2\2\35\33\3\2\2\2\35\34\3\2\2\2\36\37\3\2\2\2\37\35"+
-		"\3\2\2\2\37 \3\2\2\2 !\3\2\2\2!\"\7\2\2\3\"\3\3\2\2\2#$\7\n\2\2$%\7\r"+
-		"\2\2%&\7\21\2\2&\'\7\21\2\2\'(\7\4\2\2(\5\3\2\2\2)*\7\n\2\2*+\7\r\2\2"+
-		"+,\7\21\2\2,-\5\22\n\2-.\7\4\2\2.\7\3\2\2\2/\60\7\n\2\2\60\61\7\5\2\2"+
-		"\61\62\7\21\2\2\62\66\5\n\6\2\63\65\5\16\b\2\64\63\3\2\2\2\658\3\2\2\2"+
-		"\66\64\3\2\2\2\66\67\3\2\2\2\67:\3\2\2\28\66\3\2\2\29;\5\20\t\2:9\3\2"+
-		"\2\2:;\3\2\2\2;<\3\2\2\2<=\7\4\2\2=\t\3\2\2\2>?\7\n\2\2?@\7\b\2\2@A\7"+
-		"\n\2\2AE\7\3\2\2BD\5\f\7\2CB\3\2\2\2DG\3\2\2\2EC\3\2\2\2EF\3\2\2\2FH\3"+
-		"\2\2\2GE\3\2\2\2HI\7\4\2\2IJ\7\4\2\2J\13\3\2\2\2KL\t\2\2\2L\r\3\2\2\2"+
-		"MN\7\n\2\2NO\7\r\2\2OP\7\n\2\2PQ\7\21\2\2QR\5\24\13\2RS\7\4\2\2ST\5\22"+
-		"\n\2TU\7\4\2\2U\17\3\2\2\2VW\7\n\2\2WX\7\7\2\2XY\5\22\n\2YZ\7\4\2\2Z\21"+
-		"\3\2\2\2[^\7\17\2\2\\^\5\30\r\2][\3\2\2\2]\\\3\2\2\2^\23\3\2\2\2_e\7\20"+
-		"\2\2`a\7\n\2\2ab\7\t\2\2bc\7\20\2\2ce\7\4\2\2d_\3\2\2\2d`\3\2\2\2e\25"+
-		"\3\2\2\2fg\7\n\2\2gh\7\f\2\2hi\5\24\13\2ij\5\24\13\2jk\7\4\2\2k\27\3\2"+
-		"\2\2lo\5\24\13\2mo\5\26\f\2nl\3\2\2\2nm\3\2\2\2o\31\3\2\2\2\n\35\37\66"+
-		":E]dn";
+		"\24\26\30\2\3\4\2\7\7\r\16m\2\35\3\2\2\2\4#\3\2\2\2\6)\3\2\2\2\b/\3\2"+
+		"\2\2\n>\3\2\2\2\fK\3\2\2\2\16M\3\2\2\2\20V\3\2\2\2\22]\3\2\2\2\24d\3\2"+
+		"\2\2\26f\3\2\2\2\30n\3\2\2\2\32\36\5\4\3\2\33\36\5\6\4\2\34\36\5\b\5\2"+
+		"\35\32\3\2\2\2\35\33\3\2\2\2\35\34\3\2\2\2\36\37\3\2\2\2\37\35\3\2\2\2"+
+		"\37 \3\2\2\2 !\3\2\2\2!\"\7\2\2\3\"\3\3\2\2\2#$\7\t\2\2$%\7\f\2\2%&\7"+
+		"\21\2\2&\'\7\21\2\2\'(\7\n\2\2(\5\3\2\2\2)*\7\t\2\2*+\7\f\2\2+,\7\21\2"+
+		"\2,-\5\22\n\2-.\7\n\2\2.\7\3\2\2\2/\60\7\t\2\2\60\61\7\b\2\2\61\62\7\21"+
+		"\2\2\62\66\5\n\6\2\63\65\5\16\b\2\64\63\3\2\2\2\658\3\2\2\2\66\64\3\2"+
+		"\2\2\66\67\3\2\2\2\67:\3\2\2\28\66\3\2\2\29;\5\20\t\2:9\3\2\2\2:;\3\2"+
+		"\2\2;<\3\2\2\2<=\7\n\2\2=\t\3\2\2\2>?\7\t\2\2?@\7\5\2\2@A\7\t\2\2AE\7"+
+		"\6\2\2BD\5\f\7\2CB\3\2\2\2DG\3\2\2\2EC\3\2\2\2EF\3\2\2\2FH\3\2\2\2GE\3"+
+		"\2\2\2HI\7\n\2\2IJ\7\n\2\2J\13\3\2\2\2KL\t\2\2\2L\r\3\2\2\2MN\7\t\2\2"+
+		"NO\7\f\2\2OP\7\t\2\2PQ\7\21\2\2QR\5\24\13\2RS\7\n\2\2ST\5\22\n\2TU\7\n"+
+		"\2\2U\17\3\2\2\2VW\7\t\2\2WX\7\4\2\2XY\5\22\n\2YZ\7\n\2\2Z\21\3\2\2\2"+
+		"[^\7\17\2\2\\^\5\30\r\2][\3\2\2\2]\\\3\2\2\2^\23\3\2\2\2_e\7\20\2\2`a"+
+		"\7\t\2\2ab\7\13\2\2bc\7\20\2\2ce\7\n\2\2d_\3\2\2\2d`\3\2\2\2e\25\3\2\2"+
+		"\2fg\7\t\2\2gh\7\3\2\2hi\5\24\13\2ij\5\24\13\2jk\7\n\2\2k\27\3\2\2\2l"+
+		"o\5\24\13\2mo\5\26\f\2nl\3\2\2\2nm\3\2\2\2o\31\3\2\2\2\n\35\37\66:E]d"+
+		"n";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

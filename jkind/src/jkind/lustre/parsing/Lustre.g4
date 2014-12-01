@@ -63,8 +63,8 @@ expr: ID                                                       # idExpr
     | expr op=('<' | '<=' | '>' | '>=' | '=' | '<>') expr      # binaryExpr
     | expr op='and' expr                                       # binaryExpr
     | expr op=('or' | 'xor') expr                              # binaryExpr
-    | expr op='=>'<assoc=right> expr                           # binaryExpr
-    | expr op='->'<assoc=right> expr                           # binaryExpr
+    | <assoc=right> expr op='=>' expr                          # binaryExpr
+    | <assoc=right> expr op='->' expr                          # binaryExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr

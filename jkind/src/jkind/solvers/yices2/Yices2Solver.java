@@ -7,12 +7,8 @@ import jkind.solvers.smtlib2.SmtLib2Solver;
 import jkind.solvers.yices2.Yices2Parser.ModelContext;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Yices2Solver extends SmtLib2Solver {
@@ -32,20 +28,9 @@ public class Yices2Solver extends SmtLib2Solver {
 		Yices2Lexer lexer = new Yices2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		Yices2Parser parser = new Yices2Parser(tokens);
-		ModelContext ctx;
-
 		parser.removeErrorListeners();
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		parser.setErrorHandler(new BailErrorStrategy());
-		try {
-			ctx = parser.model();
-		} catch (ParseCancellationException e) {
-			tokens.reset();
-			parser.addErrorListener(new StdoutErrorListener());
-			parser.setErrorHandler(new DefaultErrorStrategy());
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			ctx = parser.model();
-		}
+		parser.addErrorListener(new StdoutErrorListener());
+		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			throw new JKindException("Error parsing " + name + " output: " + string);

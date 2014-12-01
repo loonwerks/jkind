@@ -22,13 +22,9 @@ import jkind.translation.TransitionRelation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	final protected String name;
@@ -163,20 +159,9 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		SmtLib2Parser parser = new SmtLib2Parser(tokens);
-		ModelContext ctx;
-
 		parser.removeErrorListeners();
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		parser.setErrorHandler(new BailErrorStrategy());
-		try {
-			ctx = parser.model();
-		} catch (ParseCancellationException e) {
-			tokens.reset();
-			parser.addErrorListener(new StdoutErrorListener());
-			parser.setErrorHandler(new DefaultErrorStrategy());
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			ctx = parser.model();
-		}
+		parser.addErrorListener(new StdoutErrorListener());
+		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			throw new JKindException("Error parsing " + name + " output: " + string);
@@ -194,7 +179,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	public void pop() {
 		send("(pop 1)");
 	}
-	
+
 	@Override
 	public String getSolverExtension() {
 		return "smt2";

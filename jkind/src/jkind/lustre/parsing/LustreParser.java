@@ -1,4 +1,4 @@
-// Generated from Lustre.g4 by ANTLR 4.2
+// Generated from Lustre.g4 by ANTLR 4.4
 package jkind.lustre.parsing;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class LustreParser extends Parser {
+	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
+
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -104,21 +106,21 @@ public class LustreParser extends Parser {
 			setState(37);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 7) | (1L << 14) | (1L << 15))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__45) | (1L << T__38) | (1L << T__37))) != 0)) {
 				{
 				setState(35);
 				switch (_input.LA(1)) {
-				case 15:
+				case T__37:
 					{
 					setState(32); typedef();
 					}
 					break;
-				case 7:
+				case T__45:
 					{
 					setState(33); constant();
 					}
 					break;
-				case 14:
+				case T__38:
 					{
 					setState(34); node();
 					}
@@ -167,11 +169,11 @@ public class LustreParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42); match(15);
+			setState(42); match(T__37);
 			setState(43); match(ID);
-			setState(44); match(2);
+			setState(44); match(T__50);
 			setState(45); topLevelType();
-			setState(46); match(26);
+			setState(46); match(T__26);
 			}
 		}
 		catch (RecognitionException re) {
@@ -211,20 +213,20 @@ public class LustreParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(48); match(7);
+			setState(48); match(T__45);
 			setState(49); match(ID);
 			setState(52);
 			_la = _input.LA(1);
-			if (_la==38) {
+			if (_la==T__14) {
 				{
-				setState(50); match(38);
+				setState(50); match(T__14);
 				setState(51); type(0);
 				}
 			}
 
-			setState(54); match(2);
+			setState(54); match(T__50);
 			setState(55); expr(0);
-			setState(56); match(26);
+			setState(56); match(T__26);
 			}
 		}
 		catch (RecognitionException re) {
@@ -291,9 +293,9 @@ public class LustreParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(58); match(14);
+			setState(58); match(T__38);
 			setState(59); match(ID);
-			setState(60); match(4);
+			setState(60); match(T__48);
 			setState(62);
 			_la = _input.LA(1);
 			if (_la==ID) {
@@ -302,9 +304,9 @@ public class LustreParser extends Parser {
 				}
 			}
 
-			setState(64); match(48);
-			setState(65); match(18);
-			setState(66); match(4);
+			setState(64); match(T__4);
+			setState(65); match(T__34);
+			setState(66); match(T__48);
 			setState(68);
 			_la = _input.LA(1);
 			if (_la==ID) {
@@ -313,43 +315,43 @@ public class LustreParser extends Parser {
 				}
 			}
 
-			setState(70); match(48);
-			setState(71); match(26);
+			setState(70); match(T__4);
+			setState(71); match(T__26);
 			setState(76);
 			_la = _input.LA(1);
-			if (_la==6) {
+			if (_la==T__46) {
 				{
-				setState(72); match(6);
+				setState(72); match(T__46);
 				setState(73); ((NodeContext)_localctx).local = varDeclList();
-				setState(74); match(26);
+				setState(74); match(T__26);
 				}
 			}
 
-			setState(78); match(17);
+			setState(78); match(T__35);
 			setState(85);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 4) | (1L << 12) | (1L << 27) | (1L << 33) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__48) | (1L << T__40) | (1L << T__25) | (1L << T__19) | (1L << ID))) != 0)) {
 				{
 				setState(83);
 				switch (_input.LA(1)) {
-				case 4:
+				case T__48:
 				case ID:
 					{
 					setState(79); equation();
 					}
 					break;
-				case 27:
+				case T__25:
 					{
 					setState(80); property();
 					}
 					break;
-				case 12:
+				case T__40:
 					{
 					setState(81); assertion();
 					}
 					break;
-				case 33:
+				case T__19:
 					{
 					setState(82); main();
 					}
@@ -362,12 +364,12 @@ public class LustreParser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(88); match(19);
+			setState(88); match(T__33);
 			setState(90);
 			_la = _input.LA(1);
-			if (_la==26) {
+			if (_la==T__26) {
 				{
-				setState(89); match(26);
+				setState(89); match(T__26);
 				}
 			}
 
@@ -413,11 +415,11 @@ public class LustreParser extends Parser {
 			setState(97);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
-			while ( _alt!=2 && _alt!=-1 ) {
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(93); match(26);
+					setState(93); match(T__26);
 					setState(94); varDeclGroup();
 					}
 					} 
@@ -471,10 +473,10 @@ public class LustreParser extends Parser {
 			setState(105);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==5) {
+			while (_la==T__47) {
 				{
 				{
-				setState(101); match(5);
+				setState(101); match(T__47);
 				setState(102); eID(0);
 				}
 				}
@@ -482,7 +484,7 @@ public class LustreParser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(108); match(38);
+			setState(108); match(T__14);
 			setState(109); type(0);
 			}
 		}
@@ -557,10 +559,10 @@ public class LustreParser extends Parser {
 		try {
 			setState(140);
 			switch (_input.LA(1)) {
-			case 3:
-			case 41:
-			case 44:
-			case 52:
+			case T__49:
+			case T__11:
+			case T__8:
+			case T__0:
 			case ID:
 				_localctx = new PlainTypeContext(_localctx);
 				enterOuterAlt(_localctx, 1);
@@ -568,26 +570,26 @@ public class LustreParser extends Parser {
 				setState(111); type(0);
 				}
 				break;
-			case 23:
+			case T__29:
 				_localctx = new RecordTypeContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(112); match(23);
-				setState(113); match(1);
+				setState(112); match(T__29);
+				setState(113); match(T__51);
 				{
 				setState(114); match(ID);
-				setState(115); match(38);
+				setState(115); match(T__14);
 				setState(116); type(0);
 				}
 				setState(124);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==26) {
+				while (_la==T__26) {
 					{
 					{
-					setState(118); match(26);
+					setState(118); match(T__26);
 					setState(119); match(ID);
-					setState(120); match(38);
+					setState(120); match(T__14);
 					setState(121); type(0);
 					}
 					}
@@ -595,23 +597,23 @@ public class LustreParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(127); match(28);
+				setState(127); match(T__24);
 				}
 				break;
-			case 31:
+			case T__21:
 				_localctx = new EnumTypeContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(129); match(31);
-				setState(130); match(1);
+				setState(129); match(T__21);
+				setState(130); match(T__51);
 				setState(131); match(ID);
 				setState(136);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==5) {
+				while (_la==T__47) {
 					{
 					{
-					setState(132); match(5);
+					setState(132); match(T__47);
 					setState(133); match(ID);
 					}
 					}
@@ -619,7 +621,7 @@ public class LustreParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(139); match(28);
+				setState(139); match(T__24);
 				}
 				break;
 			default:
@@ -725,44 +727,44 @@ public class LustreParser extends Parser {
 			{
 			setState(156);
 			switch (_input.LA(1)) {
-			case 3:
+			case T__49:
 				{
 				_localctx = new IntTypeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(143); match(3);
+				setState(143); match(T__49);
 				}
 				break;
-			case 44:
+			case T__8:
 				{
 				_localctx = new SubrangeTypeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(144); match(44);
-				setState(145); match(39);
+				setState(144); match(T__8);
+				setState(145); match(T__13);
 				setState(146); bound();
-				setState(147); match(5);
+				setState(147); match(T__47);
 				setState(148); bound();
-				setState(149); match(13);
-				setState(150); match(25);
-				setState(151); match(3);
+				setState(149); match(T__39);
+				setState(150); match(T__27);
+				setState(151); match(T__49);
 				}
 				break;
-			case 41:
+			case T__11:
 				{
 				_localctx = new BoolTypeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(153); match(41);
+				setState(153); match(T__11);
 				}
 				break;
-			case 52:
+			case T__0:
 				{
 				_localctx = new RealTypeContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(154); match(52);
+				setState(154); match(T__0);
 				}
 				break;
 			case ID:
@@ -780,7 +782,7 @@ public class LustreParser extends Parser {
 			setState(164);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
-			while ( _alt!=2 && _alt!=-1 ) {
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
@@ -790,9 +792,9 @@ public class LustreParser extends Parser {
 					pushNewRecursionContext(_localctx, _startState, RULE_type);
 					setState(158);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(159); match(39);
+					setState(159); match(T__13);
 					setState(160); match(INT);
-					setState(161); match(13);
+					setState(161); match(T__39);
 					}
 					} 
 				}
@@ -835,9 +837,9 @@ public class LustreParser extends Parser {
 			{
 			setState(168);
 			_la = _input.LA(1);
-			if (_la==51) {
+			if (_la==T__1) {
 				{
-				setState(167); match(51);
+				setState(167); match(T__1);
 				}
 			}
 
@@ -874,9 +876,9 @@ public class LustreParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(172); match(27);
+			setState(172); match(T__25);
 			setState(173); match(ID);
-			setState(174); match(26);
+			setState(174); match(T__26);
 			}
 		}
 		catch (RecognitionException re) {
@@ -909,12 +911,12 @@ public class LustreParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(176); match(33);
+			setState(176); match(T__19);
 			setState(178);
 			_la = _input.LA(1);
-			if (_la==26) {
+			if (_la==T__26) {
 				{
-				setState(177); match(26);
+				setState(177); match(T__26);
 				}
 			}
 
@@ -952,9 +954,9 @@ public class LustreParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(180); match(12);
+			setState(180); match(T__40);
 			setState(181); expr(0);
-			setState(182); match(26);
+			setState(182); match(T__26);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1000,9 +1002,9 @@ public class LustreParser extends Parser {
 				setState(184); lhs();
 				}
 				break;
-			case 4:
+			case T__48:
 				{
-				setState(185); match(4);
+				setState(185); match(T__48);
 				setState(187);
 				_la = _input.LA(1);
 				if (_la==ID) {
@@ -1011,15 +1013,15 @@ public class LustreParser extends Parser {
 					}
 				}
 
-				setState(189); match(48);
+				setState(189); match(T__4);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(192); match(2);
+			setState(192); match(T__50);
 			setState(193); expr(0);
-			setState(194); match(26);
+			setState(194); match(T__26);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1062,10 +1064,10 @@ public class LustreParser extends Parser {
 			setState(201);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==5) {
+			while (_la==T__47) {
 				{
 				{
-				setState(197); match(5);
+				setState(197); match(T__47);
 				setState(198); eID(0);
 				}
 				}
@@ -1362,31 +1364,28 @@ public class LustreParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(205); match(11);
+				setState(205); match(T__41);
 				setState(206); expr(14);
 				}
 				break;
-
 			case 2:
 				{
 				_localctx = new NotExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(207); match(50);
+				setState(207); match(T__2);
 				setState(208); expr(13);
 				}
 				break;
-
 			case 3:
 				{
 				_localctx = new NegateExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(209); match(51);
+				setState(209); match(T__1);
 				setState(210); expr(12);
 				}
 				break;
-
 			case 4:
 				{
 				_localctx = new IdExprContext(_localctx);
@@ -1395,7 +1394,6 @@ public class LustreParser extends Parser {
 				setState(211); match(ID);
 				}
 				break;
-
 			case 5:
 				{
 				_localctx = new IntExprContext(_localctx);
@@ -1404,7 +1402,6 @@ public class LustreParser extends Parser {
 				setState(212); match(INT);
 				}
 				break;
-
 			case 6:
 				{
 				_localctx = new RealExprContext(_localctx);
@@ -1413,7 +1410,6 @@ public class LustreParser extends Parser {
 				setState(213); match(REAL);
 				}
 				break;
-
 			case 7:
 				{
 				_localctx = new BoolExprContext(_localctx);
@@ -1422,7 +1418,6 @@ public class LustreParser extends Parser {
 				setState(214); match(BOOL);
 				}
 				break;
-
 			case 8:
 				{
 				_localctx = new CastExprContext(_localctx);
@@ -1431,35 +1426,34 @@ public class LustreParser extends Parser {
 				setState(215);
 				((CastExprContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
-				if ( !(_la==20 || _la==52) ) {
+				if ( !(_la==T__32 || _la==T__0) ) {
 					((CastExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 				}
 				consume();
-				setState(216); match(4);
+				setState(216); match(T__48);
 				setState(217); expr(0);
-				setState(218); match(48);
+				setState(218); match(T__4);
 				}
 				break;
-
 			case 9:
 				{
 				_localctx = new NodeCallExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(220); match(ID);
-				setState(221); match(4);
+				setState(221); match(T__48);
 				setState(230);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 4) | (1L << 11) | (1L << 20) | (1L << 29) | (1L << 34) | (1L << 39) | (1L << 50) | (1L << 51) | (1L << 52) | (1L << REAL) | (1L << BOOL) | (1L << INT) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__48) | (1L << T__41) | (1L << T__32) | (1L << T__23) | (1L << T__18) | (1L << T__13) | (1L << T__2) | (1L << T__1) | (1L << T__0) | (1L << REAL) | (1L << BOOL) | (1L << INT) | (1L << ID))) != 0)) {
 					{
 					setState(222); expr(0);
 					setState(227);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					while (_la==5) {
+					while (_la==T__47) {
 						{
 						{
-						setState(223); match(5);
+						setState(223); match(T__47);
 						setState(224); expr(0);
 						}
 						}
@@ -1470,17 +1464,16 @@ public class LustreParser extends Parser {
 					}
 				}
 
-				setState(232); match(48);
+				setState(232); match(T__4);
 				}
 				break;
-
 			case 10:
 				{
 				_localctx = new CondactExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(233); match(34);
-				setState(234); match(4);
+				setState(233); match(T__18);
+				setState(234); match(T__48);
 				setState(235); expr(0);
 				setState(238); 
 				_errHandler.sync(this);
@@ -1488,51 +1481,49 @@ public class LustreParser extends Parser {
 				do {
 					{
 					{
-					setState(236); match(5);
+					setState(236); match(T__47);
 					setState(237); expr(0);
 					}
 					}
 					setState(240); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( _la==5 );
-				setState(242); match(48);
+				} while ( _la==T__47 );
+				setState(242); match(T__4);
 				}
 				break;
-
 			case 11:
 				{
 				_localctx = new IfThenElseExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(244); match(29);
+				setState(244); match(T__23);
 				setState(245); expr(0);
-				setState(246); match(21);
+				setState(246); match(T__31);
 				setState(247); expr(0);
-				setState(248); match(47);
+				setState(248); match(T__5);
 				setState(249); expr(0);
 				}
 				break;
-
 			case 12:
 				{
 				_localctx = new RecordExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(251); match(ID);
-				setState(252); match(1);
+				setState(252); match(T__51);
 				setState(253); match(ID);
-				setState(254); match(2);
+				setState(254); match(T__50);
 				setState(255); expr(0);
 				setState(262);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==26) {
+				while (_la==T__26) {
 					{
 					{
-					setState(256); match(26);
+					setState(256); match(T__26);
 					setState(257); match(ID);
-					setState(258); match(2);
+					setState(258); match(T__50);
 					setState(259); expr(0);
 					}
 					}
@@ -1540,24 +1531,23 @@ public class LustreParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(265); match(28);
+				setState(265); match(T__24);
 				}
 				break;
-
 			case 13:
 				{
 				_localctx = new ArrayExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(267); match(39);
+				setState(267); match(T__13);
 				setState(268); expr(0);
 				setState(273);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==5) {
+				while (_la==T__47) {
 					{
 					{
-					setState(269); match(5);
+					setState(269); match(T__47);
 					setState(270); expr(0);
 					}
 					}
@@ -1565,24 +1555,23 @@ public class LustreParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(276); match(13);
+				setState(276); match(T__39);
 				}
 				break;
-
 			case 14:
 				{
 				_localctx = new TupleExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(278); match(4);
+				setState(278); match(T__48);
 				setState(279); expr(0);
 				setState(284);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==5) {
+				while (_la==T__47) {
 					{
 					{
-					setState(280); match(5);
+					setState(280); match(T__47);
 					setState(281); expr(0);
 					}
 					}
@@ -1590,7 +1579,7 @@ public class LustreParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(287); match(48);
+				setState(287); match(T__4);
 				}
 				break;
 			}
@@ -1598,7 +1587,7 @@ public class LustreParser extends Parser {
 			setState(336);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
-			while ( _alt!=2 && _alt!=-1 ) {
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
@@ -1614,14 +1603,13 @@ public class LustreParser extends Parser {
 						setState(292);
 						((BinaryExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 8) | (1L << 24) | (1L << 35) | (1L << 46))) != 0)) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__44) | (1L << T__28) | (1L << T__17) | (1L << T__6))) != 0)) ) {
 							((BinaryExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						consume();
 						setState(293); expr(12);
 						}
 						break;
-
 					case 2:
 						{
 						_localctx = new BinaryExprContext(new ExprContext(_parentctx, _parentState));
@@ -1631,14 +1619,13 @@ public class LustreParser extends Parser {
 						setState(295);
 						((BinaryExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==22 || _la==51) ) {
+						if ( !(_la==T__30 || _la==T__1) ) {
 							((BinaryExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						consume();
 						setState(296); expr(11);
 						}
 						break;
-
 					case 3:
 						{
 						_localctx = new BinaryExprContext(new ExprContext(_parentctx, _parentState));
@@ -1648,25 +1635,23 @@ public class LustreParser extends Parser {
 						setState(298);
 						((BinaryExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 2) | (1L << 9) | (1L << 10) | (1L << 16) | (1L << 32) | (1L << 40))) != 0)) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__50) | (1L << T__43) | (1L << T__42) | (1L << T__36) | (1L << T__20) | (1L << T__12))) != 0)) ) {
 							((BinaryExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						consume();
 						setState(299); expr(10);
 						}
 						break;
-
 					case 4:
 						{
 						_localctx = new BinaryExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(300);
 						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
-						setState(301); ((BinaryExprContext)_localctx).op = match(49);
+						setState(301); ((BinaryExprContext)_localctx).op = match(T__3);
 						setState(302); expr(9);
 						}
 						break;
-
 					case 5:
 						{
 						_localctx = new BinaryExprContext(new ExprContext(_parentctx, _parentState));
@@ -1676,84 +1661,78 @@ public class LustreParser extends Parser {
 						setState(304);
 						((BinaryExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(_la==42 || _la==43) ) {
+						if ( !(_la==T__10 || _la==T__9) ) {
 							((BinaryExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						consume();
 						setState(305); expr(8);
 						}
 						break;
-
 					case 6:
 						{
 						_localctx = new BinaryExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(306);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(307); ((BinaryExprContext)_localctx).op = match(45);
-						setState(308); expr(7);
+						setState(307); ((BinaryExprContext)_localctx).op = match(T__7);
+						setState(308); expr(6);
 						}
 						break;
-
 					case 7:
 						{
 						_localctx = new BinaryExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(309);
 						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(310); ((BinaryExprContext)_localctx).op = match(37);
-						setState(311); expr(6);
+						setState(310); ((BinaryExprContext)_localctx).op = match(T__15);
+						setState(311); expr(5);
 						}
 						break;
-
 					case 8:
 						{
 						_localctx = new RecordAccessExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(312);
 						if (!(precpred(_ctx, 18))) throw new FailedPredicateException(this, "precpred(_ctx, 18)");
-						setState(313); match(36);
+						setState(313); match(T__16);
 						setState(314); match(ID);
 						}
 						break;
-
 					case 9:
 						{
 						_localctx = new RecordUpdateExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(315);
 						if (!(precpred(_ctx, 17))) throw new FailedPredicateException(this, "precpred(_ctx, 17)");
-						setState(316); match(1);
+						setState(316); match(T__51);
 						setState(317); match(ID);
-						setState(318); match(30);
+						setState(318); match(T__22);
 						setState(319); expr(0);
-						setState(320); match(28);
+						setState(320); match(T__24);
 						}
 						break;
-
 					case 10:
 						{
 						_localctx = new ArrayAccessExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(322);
 						if (!(precpred(_ctx, 16))) throw new FailedPredicateException(this, "precpred(_ctx, 16)");
-						setState(323); match(39);
+						setState(323); match(T__13);
 						setState(324); expr(0);
-						setState(325); match(13);
+						setState(325); match(T__39);
 						}
 						break;
-
 					case 11:
 						{
 						_localctx = new ArrayUpdateExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(327);
 						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
-						setState(328); match(39);
+						setState(328); match(T__13);
 						setState(329); expr(0);
-						setState(330); match(30);
+						setState(330); match(T__22);
 						setState(331); expr(0);
-						setState(332); match(13);
+						setState(332); match(T__39);
 						}
 						break;
 					}
@@ -1847,7 +1826,7 @@ public class LustreParser extends Parser {
 			setState(351);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,31,_ctx);
-			while ( _alt!=2 && _alt!=-1 ) {
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
@@ -1860,19 +1839,18 @@ public class LustreParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_eID);
 						setState(342);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(343); match(39);
+						setState(343); match(T__13);
 						setState(344); match(INT);
-						setState(345); match(13);
+						setState(345); match(T__39);
 						}
 						break;
-
 					case 2:
 						{
 						_localctx = new RecordEIDContext(new EIDContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_eID);
 						setState(346);
 						if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-						setState(347); match(36);
+						setState(347); match(T__16);
 						setState(348); match(ID);
 						}
 						break;
@@ -1899,9 +1877,7 @@ public class LustreParser extends Parser {
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
 		case 7: return type_sempred((TypeContext)_localctx, predIndex);
-
 		case 14: return expr_sempred((ExprContext)_localctx, predIndex);
-
 		case 15: return eID_sempred((EIDContext)_localctx, predIndex);
 		}
 		return true;
@@ -1909,7 +1885,6 @@ public class LustreParser extends Parser {
 	private boolean eID_sempred(EIDContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 12: return precpred(_ctx, 2);
-
 		case 13: return precpred(_ctx, 1);
 		}
 		return true;
@@ -1917,25 +1892,15 @@ public class LustreParser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 1: return precpred(_ctx, 11);
-
 		case 2: return precpred(_ctx, 10);
-
 		case 3: return precpred(_ctx, 9);
-
 		case 4: return precpred(_ctx, 8);
-
 		case 5: return precpred(_ctx, 7);
-
 		case 6: return precpred(_ctx, 6);
-
 		case 7: return precpred(_ctx, 5);
-
 		case 8: return precpred(_ctx, 18);
-
 		case 9: return precpred(_ctx, 17);
-
 		case 10: return precpred(_ctx, 16);
-
 		case 11: return precpred(_ctx, 15);
 		}
 		return true;
@@ -2058,8 +2023,8 @@ public class LustreParser extends Parser {
 		"\u0151\5\36\20\r\u012b\u012c\f\13\2\2\u012c\u012d\t\5\2\2\u012d\u0151"+
 		"\5\36\20\f\u012e\u012f\f\n\2\2\u012f\u0130\7\63\2\2\u0130\u0151\5\36\20"+
 		"\13\u0131\u0132\f\t\2\2\u0132\u0133\t\6\2\2\u0133\u0151\5\36\20\n\u0134"+
-		"\u0135\f\b\2\2\u0135\u0136\7/\2\2\u0136\u0151\5\36\20\t\u0137\u0138\f"+
-		"\7\2\2\u0138\u0139\7\'\2\2\u0139\u0151\5\36\20\b\u013a\u013b\f\24\2\2"+
+		"\u0135\f\b\2\2\u0135\u0136\7/\2\2\u0136\u0151\5\36\20\b\u0137\u0138\f"+
+		"\7\2\2\u0138\u0139\7\'\2\2\u0139\u0151\5\36\20\7\u013a\u013b\f\24\2\2"+
 		"\u013b\u013c\7&\2\2\u013c\u0151\7:\2\2\u013d\u013e\f\23\2\2\u013e\u013f"+
 		"\7\3\2\2\u013f\u0140\7:\2\2\u0140\u0141\7 \2\2\u0141\u0142\5\36\20\2\u0142"+
 		"\u0143\7\36\2\2\u0143\u0151\3\2\2\2\u0144\u0145\f\22\2\2\u0145\u0146\7"+

@@ -1,4 +1,4 @@
-// Generated from MathSat.g4 by ANTLR 4.2
+// Generated from MathSat.g4 by ANTLR 4.4
 package jkind.solvers.mathsat;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -11,6 +11,8 @@ import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class MathSatLexer extends Lexer {
+	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
+
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -21,8 +23,8 @@ public class MathSatLexer extends Lexer {
 	};
 
 	public static final String[] tokenNames = {
-		"<INVALID>",
-		"')'", "'-'", "'('", "'/'", "'|'", "BOOL", "INT", "ID", "WS", "ERROR"
+		"'\\u0000'", "'\\u0001'", "'\\u0002'", "'\\u0003'", "'\\u0004'", "'\\u0005'", 
+		"'\\u0006'", "'\\u0007'", "'\b'", "'\t'", "'\n'"
 	};
 	public static final String[] ruleNames = {
 		"T__4", "T__3", "T__2", "T__1", "T__0", "BOOL", "DIGIT", "SYMBOL", "INT", 
@@ -65,8 +67,8 @@ public class MathSatLexer extends Lexer {
 		"\2\2\r\3\2\2\2\2\23\3\2\2\2\2\25\3\2\2\2\2\27\3\2\2\2\2\31\3\2\2\2\3\33"+
 		"\3\2\2\2\5\35\3\2\2\2\7\37\3\2\2\2\t!\3\2\2\2\13#\3\2\2\2\r.\3\2\2\2\17"+
 		"\60\3\2\2\2\21\62\3\2\2\2\23\65\3\2\2\2\259\3\2\2\2\27B\3\2\2\2\31H\3"+
-		"\2\2\2\33\34\7+\2\2\34\4\3\2\2\2\35\36\7/\2\2\36\6\3\2\2\2\37 \7*\2\2"+
-		" \b\3\2\2\2!\"\7\61\2\2\"\n\3\2\2\2#$\7~\2\2$\f\3\2\2\2%&\7v\2\2&\'\7"+
+		"\2\2\2\33\34\7\61\2\2\34\4\3\2\2\2\35\36\7*\2\2\36\6\3\2\2\2\37 \7+\2"+
+		"\2 \b\3\2\2\2!\"\7~\2\2\"\n\3\2\2\2#$\7/\2\2$\f\3\2\2\2%&\7v\2\2&\'\7"+
 		"t\2\2\'(\7w\2\2(/\7g\2\2)*\7h\2\2*+\7c\2\2+,\7n\2\2,-\7u\2\2-/\7g\2\2"+
 		".%\3\2\2\2.)\3\2\2\2/\16\3\2\2\2\60\61\t\2\2\2\61\20\3\2\2\2\62\63\t\3"+
 		"\2\2\63\22\3\2\2\2\64\66\5\17\b\2\65\64\3\2\2\2\66\67\3\2\2\2\67\65\3"+

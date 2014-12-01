@@ -22,13 +22,9 @@ import jkind.translation.TransitionRelation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends ProcessBasedSolver {
@@ -212,20 +208,9 @@ public class YicesSolver extends ProcessBasedSolver {
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
-		ResultContext ctx;
-
 		parser.removeErrorListeners();
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		parser.setErrorHandler(new BailErrorStrategy());
-		try {
-			ctx = parser.result();
-		} catch (ParseCancellationException e) {
-			tokens.reset();
-			parser.addErrorListener(new StdoutErrorListener());
-			parser.setErrorHandler(new DefaultErrorStrategy());
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			ctx = parser.result();
-		}
+		parser.addErrorListener(new StdoutErrorListener());
+		ResultContext ctx = parser.result();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			throw new JKindException("Error parsing Yices output: " + string);
