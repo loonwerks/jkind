@@ -106,7 +106,7 @@ public class PdrSmt extends ScriptUser {
 		return F.size() - 2;
 	}
 
-	public Term R(int k) {
+	private Term R(int k) {
 		List<Term> conjuncts = new ArrayList<>();
 		for (int i = k; i < F.size(); i++) {
 			conjuncts.add(F.get(i).toTerm(script));
@@ -279,7 +279,7 @@ public class PdrSmt extends ScriptUser {
 		}
 	}
 
-	public Term[] getInterpolants(List<Term> terms) {
+	private Term[] getInterpolants(List<Term> terms) {
 		script.push(1);
 
 		Term[] names = new Term[terms.size()];
