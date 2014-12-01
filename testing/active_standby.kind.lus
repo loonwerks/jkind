@@ -1,0 +1,2149 @@
+-- This is a a public model from Rockwell Collins. There are 12
+-- properies, all of which are valid.
+
+node ActiveStandby(Side1FullyAvail: bool; 
+      Side2FullyAvail: bool; 
+      Side1Failed: bool; 
+      Side2Failed: bool; 
+      ManualSelection: bool; 
+      Side1_Jitter: int; 
+      Side2_Jitter: int)
+   returns (Side1ActiveSide: int; 
+      Side2ActiveSide: int);
+
+var
+   rlt_condact_ActiveStandby_System_Side2_rlt_init_step: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_01: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_01: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_01: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_11: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_21: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_complete_11: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rltCheckEntryStateConsistency_01: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root3: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_3_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_4_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_02: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root2: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_02: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_2: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_2: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_5_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_3: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_3: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_7_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_8_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_8_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_complete_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_6_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_6_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_complete_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_6_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_6_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_2: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_complete_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rltCheckEntryStateConsistency_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_2: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_complete_1: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_enter_rltCheckEntryStateConsistency_0: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_main_rlt_evtInitStep: bool; 
+   chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide: int; 
+   chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_outports_ActiveSide: int; 
+   ActiveStandby_System_Side2_Side1BecomesActive_Logical_Operator1: bool; 
+   ActiveStandby_System_Side2_Side1BecomesActive_Logical_Operator2: bool; 
+   ActiveStandby_System_Side2_Side1BecomesActive_Unit_Delay: bool; 
+   ActiveStandby_System_Side2_ManualSelectionOccurs_Logical_Operator1: bool; 
+   ActiveStandby_System_Side2_ManualSelectionOccurs_Logical_Operator2: bool; 
+   ActiveStandby_System_Side2_ManualSelectionOccurs_Unit_Delay: bool; 
+   ActiveStandby_System_Side2_IsSide2__EqState1: bool; 
+   ActiveStandby_System_Side2_IsSide1Failed__EqState2: bool; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1ActiveSide: int; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side1FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side2FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_ManualSelection: bool; 
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed: bool; 
+   rlt_condact_ActiveStandby_System_Side2_Side2ActiveSide: int; 
+   rlt_condact_ActiveStandby_System_Side2_Mon2Side1FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side2_Mon2Side2FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_init_step: bool; 
+   ActiveStandby_System_Side1_Side2BecomesActive_Logical_Operator1: bool; 
+   ActiveStandby_System_Side1_Side2BecomesActive_Logical_Operator2: bool; 
+   ActiveStandby_System_Side1_Side2BecomesActive_Unit_Delay: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_01: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_01: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_01: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_11: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_21: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_complete_11: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rltCheckEntryStateConsistency_01: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root3: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_3_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_4_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_02: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_02: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root2: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide2: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root1: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide1: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_2: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_2: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_5_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_3: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_3: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_7_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_8_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_8_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_complete_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_6_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_6_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_complete_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_6_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_6_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_2: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_complete_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rltCheckEntryStateConsistency_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_2: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_complete_1: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_enter_rltCheckEntryStateConsistency_0: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_main_rlt_evtInitStep: bool; 
+   chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide: int; 
+   chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_states___root: subrange [0, 7] of int; 
+   chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_outports_ActiveSide: int; 
+   ActiveStandby_System_Side1_ManualSelectionOccurs_Logical_Operator1: bool; 
+   ActiveStandby_System_Side1_ManualSelectionOccurs_Logical_Operator2: bool; 
+   ActiveStandby_System_Side1_ManualSelectionOccurs_Unit_Delay: bool; 
+   ActiveStandby_System_Side1_IsSide2Failed__EqState2: bool; 
+   ActiveStandby_System_Side1_IsSide2__EqState2: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2ActiveSide: int; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side1FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side2FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_ManualSelection: bool; 
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed: bool; 
+   rlt_condact_ActiveStandby_System_Side1_Side1ActiveSide: int; 
+   rlt_condact_ActiveStandby_System_Side1_Mon1Side1FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Side1_Mon1Side2FullyAvail: bool; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_init_step: bool; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In1: int; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In2: bool; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In3: bool; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_Out1: int; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_Out2: bool; 
+   rlt_condact_ActiveStandby_System_Channel21_Channel_Out3: bool; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_init_step: bool; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In1: int; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In2: bool; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In3: bool; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_Out1: int; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_Out2: bool; 
+   rlt_condact_ActiveStandby_System_Channel12_Channel_Out3: bool; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Switch: int; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay: bool; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay1: int; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Prev_Jitter: int; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator: bool; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Sum: int; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Sum1: int; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Switch: int; 
+   ActiveStandby_System_Calendar_Side2_Calendar_Switch1: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Switch: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Unit_Delay1: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Prev_Jitter: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator: bool; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Sum: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Sum1: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Switch: int; 
+   ActiveStandby_System_Calendar_Side1_Calendar_Switch1: int; 
+   ActiveStandby_System_Calendar_Channel_21_Calendar_HoldAtZero: int; 
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator: bool; 
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Sum: int; 
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Switch1: int; 
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Unit_Delay: int; 
+   ActiveStandby_System_Calendar_Channel_12_Calendar_HoldAtZero: int; 
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator: bool; 
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Sum: int; 
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Switch1: int; 
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Unit_Delay: int; 
+   ActiveStandby_System_Channel21_In1Delay: int; 
+   ActiveStandby_System_Channel21_In2Delay: bool; 
+   ActiveStandby_System_Channel21_In3Delay: bool; 
+   ActiveStandby_System_Channel12_Unit_DelayIn1: int; 
+   ActiveStandby_System_Channel12_Unit_DelayIn2: bool; 
+   ActiveStandby_System_Channel12_Unit_DelayIn3: bool; 
+   rltCheckEntryStateConsistency_011: bool; 
+   rltCheckEntryStateConsistency_010: bool; 
+   rltCheckEntryStateConsistency_09: bool; 
+   rltCheckEntryStateConsistency_08: bool; 
+   rltCheckEntryStateConsistency_07: bool; 
+   rltCheckEntryStateConsistency_06: bool; 
+   rltCheckEntryStateConsistency_05: bool; 
+   rltCheckEntryStateConsistency_04: bool; 
+   rltCheckEntryStateConsistency_03: bool; 
+   rltCheckEntryStateConsistency_02: bool; 
+   rltCheckEntryStateConsistency_01: bool; 
+   rltCheckEntryStateConsistency_0: bool;
+
+
+let --%MAIN
+   Side2ActiveSide = rlt_condact_ActiveStandby_System_Side2_Side2ActiveSide;
+
+   Side1ActiveSide = rlt_condact_ActiveStandby_System_Side1_Side1ActiveSide;
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Prev_Jitter = (0 -> ( pre ActiveStandby_System_Calendar_Side2_Calendar_Switch1));
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay1 = (0 -> ( pre ActiveStandby_System_Calendar_Side2_Calendar_Switch));
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Prev_Jitter = (0 -> ( pre ActiveStandby_System_Calendar_Side1_Calendar_Switch1));
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Unit_Delay1 = (0 -> ( pre ActiveStandby_System_Calendar_Side1_Calendar_Switch));
+
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Unit_Delay = (0 -> ( pre ActiveStandby_System_Calendar_Channel_21_Calendar_Switch1));
+
+   ActiveStandby_System_Calendar_Channel_21_Calendar_HoldAtZero = 
+      (if (ActiveStandby_System_Calendar_Channel_21_Calendar_Sum >= 0)
+         then ActiveStandby_System_Calendar_Channel_21_Calendar_Sum
+         else 0);
+
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Unit_Delay = (0 -> ( pre ActiveStandby_System_Calendar_Channel_12_Calendar_Switch1));
+
+   ActiveStandby_System_Calendar_Channel_12_Calendar_HoldAtZero = 
+      (if (ActiveStandby_System_Calendar_Channel_12_Calendar_Sum >= 0)
+         then ActiveStandby_System_Calendar_Channel_12_Calendar_Sum
+         else 0);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator = (ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Switch <= 1);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay = (false -> true);
+
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator = (ActiveStandby_System_Calendar_Channel_12_Calendar_Unit_Delay = 1);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Sum = (ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Switch - 1);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Sum1 = ((Side2_Jitter - ActiveStandby_System_Calendar_Side2_Calendar_Prev_Jitter) + 3);
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator = (ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Switch <= 1);
+
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Switch1 = 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then 2
+         else ActiveStandby_System_Calendar_Channel_21_Calendar_HoldAtZero);
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Switch = 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then ActiveStandby_System_Calendar_Side1_Calendar_Sum1
+         else ActiveStandby_System_Calendar_Side1_Calendar_Sum);
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Sum1 = ((Side1_Jitter - ActiveStandby_System_Calendar_Side1_Calendar_Prev_Jitter) + 3);
+
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Sum = (ActiveStandby_System_Calendar_Channel_21_Calendar_Unit_Delay - 1);
+
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Switch1 = 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then 2
+         else ActiveStandby_System_Calendar_Channel_12_Calendar_HoldAtZero);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Switch = 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay
+         then ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay1
+         else 1);
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Sum = (ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Switch - 1);
+
+   ActiveStandby_System_Calendar_Channel_12_Calendar_Sum = (ActiveStandby_System_Calendar_Channel_12_Calendar_Unit_Delay - 1);
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Switch1 = 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then Side1_Jitter
+         else ActiveStandby_System_Calendar_Side1_Calendar_Prev_Jitter);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Switch = 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then ActiveStandby_System_Calendar_Side2_Calendar_Sum1
+         else ActiveStandby_System_Calendar_Side2_Calendar_Sum);
+
+   ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Switch = 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Time_Left_Unit_Delay
+         then ActiveStandby_System_Calendar_Side1_Calendar_Time_Left_Unit_Delay1
+         else 0);
+
+   ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator = (ActiveStandby_System_Calendar_Channel_21_Calendar_Unit_Delay = 1);
+
+   ActiveStandby_System_Calendar_Side2_Calendar_Switch1 = 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then Side2_Jitter
+         else ActiveStandby_System_Calendar_Side2_Calendar_Prev_Jitter);
+
+   rlt_condact_ActiveStandby_System_Side2_Mon2Side2FullyAvail = (( not (rlt_condact_ActiveStandby_System_Side2_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2FullyAvail);
+
+   rlt_condact_ActiveStandby_System_Side2_Mon2Side1FullyAvail = (( not (rlt_condact_ActiveStandby_System_Side2_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1FullyAvail);
+
+   rlt_condact_ActiveStandby_System_Side2_Side2ActiveSide = 
+      (if (rlt_condact_ActiveStandby_System_Side2_rlt_init_step and 
+         ( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator))
+         then 0
+         else chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_main_rlt_evtInitStep
+         then chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_6_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_main_rlt_evtInitStep
+         then chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_6_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root = (0 -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then 
+               (if rlt_condact_ActiveStandby_System_Side2_rlt_init_step
+                  then 0
+                  else ( pre chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_states___root))
+         else ( pre chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root)));
+
+   chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide = (0 -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then 
+               (if rlt_condact_ActiveStandby_System_Side2_rlt_init_step
+                  then 0
+                  else ( pre chart_System_Side2_Side2ActiveSideLogic_main_rlt_state_1_outports_ActiveSide))
+         else ( pre chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide)));
+
+   chart_System_Side2_Side2ActiveSideLogic_main_rlt_evtInitStep = (true -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Side2_rlt_init_step
+         else ( pre chart_System_Side2_Side2ActiveSideLogic_main_rlt_evtInitStep)));
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_6_states___root = 
+      (if (( not chart_System_Side2_Side2ActiveSideLogic_eval_rlt_complete_1) and 
+         ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_6_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_6_outports_ActiveSide = 
+      (if (( not chart_System_Side2_Side2ActiveSideLogic_eval_rlt_complete_1) and 
+         ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_6_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_3_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_3_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_complete_1 = (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_1 or 
+      chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_1 = (((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root <= 7)) and 
+      (rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0)));
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Failed_exit_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_eval_rlt_fired_0 = ((chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root = 1) and 
+      ( not rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root = 1)
+         then 0
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rltCheckEntryStateConsistency_01 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root1 = 3) or 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root1 >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root1 <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root1 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_21
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_outports_ActiveSide1 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_21
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_complete_11 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_21 or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_11);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_21 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_01 and 
+      (((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1 >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1 <= 7)) and 
+      (ActiveStandby_System_Side2_IsSide1Failed__EqState2 and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_11))));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_11
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_11
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_11 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_01 and 
+      (((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 <= 7)) and 
+      ( not ActiveStandby_System_Side2_IsSide1Failed__EqState2)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_01 = (( not ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root <= 7))) and 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 = 
+      (if ( not ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root <= 7)))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_01 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root1 = 5) or 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root1 = 6) or 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root1 = 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root1 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_01
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_01
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_01 = (( not ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 <= 7))) and 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1 >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1 <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1 = 
+      (if ( not ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1 <= 7)))
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1 = 7))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1 = 7))
+         then 7
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1 = 3))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1 = 3))
+         then 3
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_3_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root <= 7))
+         then 0
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_2_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_4_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_exit_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root = 3)
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_4_states___root1 = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root <= 7))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_3_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_3_states___root1 = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root1 = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root1 = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root3
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root3 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root = 5)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root2 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root1 = 6)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root2 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root1 = 7)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_3_states___root = 1))
+         then 0
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_3_states___root = 1))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_6_states___root = 
+      (if (( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_complete_1) and 
+         ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_8_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_6_outports_ActiveSide = 
+      (if (( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_complete_1) and 
+         ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_8_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_exit_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_complete_1 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_1 or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_1 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_states___root = 3) and 
+      (( not ActiveStandby_System_Side2_IsSide1Failed__EqState2) and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_1_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_4_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_fired_0 = (((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7)) and 
+      ActiveStandby_System_Side2_IsSide1Failed__EqState2);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_4_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_3_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root = 
+      (if ((chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root <= 7))
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root2
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root2 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root = 5)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root = 6)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root = 7)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_exit_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_1_states___root = 3))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root2 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_1_states___root = 3))
+         then 3
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_states___root = 3)
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_02 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root2 = 5) or 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root2 = 6) or 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root2 = 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root2 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_02
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_02
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_02 = (( not ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root <= 7))) and 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2 >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2 <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2 = 
+      (if ( not ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root <= 7)))
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2 = 7))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root2 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2 = 7))
+         then 7
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root2);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_8_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_3
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_7_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_8_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_3
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_7_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_3
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_3 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_3 or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_2);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_3 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_states___root = 5) and 
+      (ActiveStandby_System_Side2_ManualSelectionOccurs_Logical_Operator1 and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_2)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_5_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_5_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_2 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_2 or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_2 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_states___root = 6) and 
+      (ActiveStandby_System_Side2_Side1BecomesActive_Logical_Operator1 and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_1)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_3_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_complete_1 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_1 or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_1 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_states___root = 5) and 
+      (((rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side2FullyAvail and 
+      rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2FullyAvail) and 
+      (( not rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side1FullyAvail) or 
+      ( not rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1FullyAvail))) and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_1_states___root1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_1_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_fired_0 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root = 7);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root = 7)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_1_states___root = 5))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_1_states___root = 5))
+         then 5
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_states___root = 5)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_3_states___root = 6))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_3_states___root = 6))
+         then 6
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_states___root = 6)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_5_states___root = 5))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_5_states___root = 5))
+         then 5
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_5_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side1Active_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_states___root = 5)
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_7_states___root = 6))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_6_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Active_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_7_states___root = 6))
+         then 6
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_eval_rlt_state_7_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rltCheckEntryStateConsistency_0 = ((chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_states___root = 1) or 
+      ((chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_states___root <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_complete_1 = (chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_2 or 
+      chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_1);
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_2 = (rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_1));
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_enter_rlt_fired_1 = ( not rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rltCheckEntryStateConsistency_0 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root = 3) or 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_3_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_2
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_complete_1 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_2 or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_1);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_2 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_0 and 
+      (((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root <= 7)) and 
+      (ActiveStandby_System_Side2_IsSide1Failed__EqState2 and 
+      ( not chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_1))));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_1
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_1 = (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_0 and 
+      (((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root <= 7)) and 
+      ( not ActiveStandby_System_Side2_IsSide1Failed__EqState2)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_fired_0 = (( not ((chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root <= 7))) and 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root >= 2) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root = 
+      (if ( not ((chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root >= 2) and 
+         (chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root <= 7)))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_0 = ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root = 5) or 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root = 6) or 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root = 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_states___root = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_0
+         then chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_fired_0 = (( not ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root <= 7))) and 
+      ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root >= 4) and 
+      (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root <= 7)));
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root = 
+      (if ( not ((chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root <= 7)))
+         then 4
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root = 7))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_Side2Wait_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root = 7))
+         then 7
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root = 3))
+         then 2
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Failed_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root = 3))
+         then 3
+         else chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rlt_state_2_states___root);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_states___root = 1))
+         then 0
+         else chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide);
+
+   chart_System_Side2_Side2ActiveSideLogic_Side2Failed_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_states___root = 1))
+         then 1
+         else chart_System_Side2_Side2ActiveSideLogic_enter_rlt_state_1_states___root);
+
+   ActiveStandby_System_Side2_Side1BecomesActive_Unit_Delay = (true -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then (rlt_condact_ActiveStandby_System_Side2_rlt_init_step or 
+               ( pre ActiveStandby_System_Side2_IsSide2__EqState1))
+         else ( pre ActiveStandby_System_Side2_Side1BecomesActive_Unit_Delay)));
+
+   ActiveStandby_System_Side2_Side1BecomesActive_Logical_Operator2 = ( not ActiveStandby_System_Side2_Side1BecomesActive_Unit_Delay);
+
+   ActiveStandby_System_Side2_Side1BecomesActive_Logical_Operator1 = (ActiveStandby_System_Side2_Side1BecomesActive_Logical_Operator2 and 
+      ActiveStandby_System_Side2_IsSide2__EqState1);
+
+   ActiveStandby_System_Side2_ManualSelectionOccurs_Unit_Delay = (true -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then (rlt_condact_ActiveStandby_System_Side2_rlt_init_step or 
+               ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_ManualSelection))
+         else ( pre ActiveStandby_System_Side2_ManualSelectionOccurs_Unit_Delay)));
+
+   ActiveStandby_System_Side2_ManualSelectionOccurs_Logical_Operator2 = ( not ActiveStandby_System_Side2_ManualSelectionOccurs_Unit_Delay);
+
+   ActiveStandby_System_Side2_ManualSelectionOccurs_Logical_Operator1 = (ActiveStandby_System_Side2_ManualSelectionOccurs_Logical_Operator2 and 
+      rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_ManualSelection);
+
+   ActiveStandby_System_Side2_IsSide2__EqState1 = (rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1ActiveSide = 1);
+
+   ActiveStandby_System_Side2_IsSide1Failed__EqState2 = (rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1ActiveSide = 0);
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1FullyAvail = (Side1FullyAvail -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then Side1FullyAvail
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2FullyAvail = (Side2FullyAvail -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then Side2FullyAvail
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1ActiveSide = (rlt_condact_ActiveStandby_System_Channel12_Channel_Out1 -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Channel12_Channel_Out1
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side1ActiveSide)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side1FullyAvail = (rlt_condact_ActiveStandby_System_Channel12_Channel_Out2 -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Channel12_Channel_Out2
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side1FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side2FullyAvail = (rlt_condact_ActiveStandby_System_Channel12_Channel_Out3 -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Channel12_Channel_Out3
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Mon1Side2FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_ManualSelection = (ManualSelection -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then ManualSelection
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_ManualSelection)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed = (Side2Failed -> 
+      (if ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator
+         then Side2Failed
+         else ( pre rlt_condact_ActiveStandby_System_Side2_rlt_clocked_inp_Side2Failed)));
+
+   rlt_condact_ActiveStandby_System_Side2_rlt_init_step = (true -> (( not ( pre ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator)) and 
+      ( pre rlt_condact_ActiveStandby_System_Side2_rlt_init_step)));
+
+   rlt_condact_ActiveStandby_System_Side1_Mon1Side2FullyAvail = (( not (rlt_condact_ActiveStandby_System_Side1_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2FullyAvail);
+
+   rlt_condact_ActiveStandby_System_Side1_Mon1Side1FullyAvail = (( not (rlt_condact_ActiveStandby_System_Side1_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1FullyAvail);
+
+   rlt_condact_ActiveStandby_System_Side1_Side1ActiveSide = 
+      (if (rlt_condact_ActiveStandby_System_Side1_rlt_init_step and 
+         ( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator))
+         then 0
+         else chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_outports_ActiveSide);
+
+   ActiveStandby_System_Side1_Side2BecomesActive_Unit_Delay = (true -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then (rlt_condact_ActiveStandby_System_Side1_rlt_init_step or 
+               ( pre ActiveStandby_System_Side1_IsSide2__EqState2))
+         else ( pre ActiveStandby_System_Side1_Side2BecomesActive_Unit_Delay)));
+
+   ActiveStandby_System_Side1_Side2BecomesActive_Logical_Operator2 = ( not ActiveStandby_System_Side1_Side2BecomesActive_Unit_Delay);
+
+   ActiveStandby_System_Side1_Side2BecomesActive_Logical_Operator1 = (ActiveStandby_System_Side1_Side2BecomesActive_Logical_Operator2 and 
+      ActiveStandby_System_Side1_IsSide2__EqState2);
+
+   chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_main_rlt_evtInitStep
+         then chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_6_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_main_rlt_evtInitStep
+         then chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_6_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root = (0 -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then 
+               (if rlt_condact_ActiveStandby_System_Side1_rlt_init_step
+                  then 0
+                  else ( pre chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_states___root))
+         else ( pre chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root)));
+
+   chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide = (0 -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then 
+               (if rlt_condact_ActiveStandby_System_Side1_rlt_init_step
+                  then 0
+                  else ( pre chart_System_Side1_Side1ActiveSideLogic_main_rlt_state_1_outports_ActiveSide))
+         else ( pre chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide)));
+
+   chart_System_Side1_Side1ActiveSideLogic_main_rlt_evtInitStep = (true -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Side1_rlt_init_step
+         else ( pre chart_System_Side1_Side1ActiveSideLogic_main_rlt_evtInitStep)));
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_6_states___root = 
+      (if (( not chart_System_Side1_Side1ActiveSideLogic_eval_rlt_complete_1) and 
+         ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_6_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_6_outports_ActiveSide = 
+      (if (( not chart_System_Side1_Side1ActiveSideLogic_eval_rlt_complete_1) and 
+         ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_6_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_3_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_3_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_complete_1 = (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_1 or 
+      chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_1 = (((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root <= 7)) and 
+      (rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0)));
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_outports_ActiveSide1
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Failed_exit_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_eval_rlt_fired_0 = ((chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root = 1) and 
+      ( not rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root = 1)
+         then 0
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rltCheckEntryStateConsistency_01 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root1 = 3) or 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root1 >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root1 <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root1 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_21
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_outports_ActiveSide1 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_21
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_complete_11 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_21 or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_11);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_21 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_01 and 
+      (((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1 >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1 <= 7)) and 
+      (ActiveStandby_System_Side1_IsSide2Failed__EqState2 and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_11))));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_11
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_11
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_11 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_01 and 
+      (((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 <= 7)) and 
+      ( not ActiveStandby_System_Side1_IsSide2Failed__EqState2)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_01 = (( not ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root <= 7))) and 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 = 
+      (if ( not ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root <= 7)))
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_01 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root1 = 5) or 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root1 = 6) or 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root1 = 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root1 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_01
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_01
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_01 = (( not ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 <= 7))) and 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1 >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1 <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1 = 
+      (if ( not ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1 <= 7)))
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1 = 7))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1 = 7))
+         then 7
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1 = 3))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1 = 3))
+         then 3
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_3_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root <= 7))
+         then 0
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_2_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_4_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_exit_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root = 3)
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_4_states___root1 = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root <= 7))
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_3_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_3_states___root1 = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root1 = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root3
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root1 = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root2 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root = 5)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root3 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root1 = 6)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root2 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root1 = 7)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_3_states___root = 1))
+         then 0
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_3_states___root = 1))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_6_states___root = 
+      (if (( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_complete_1) and 
+         ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_8_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_6_outports_ActiveSide = 
+      (if (( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_complete_1) and 
+         ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root <= 7)))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_8_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_3_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_4_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_complete_1 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_1 or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_1 = (((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root <= 7)) and 
+      (ActiveStandby_System_Side1_IsSide2Failed__EqState2 and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_exit_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_fired_0 = ((chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root = 3) and 
+      ( not ActiveStandby_System_Side1_IsSide2Failed__EqState2));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root = 3)
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_02 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root2 = 5) or 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root2 = 6) or 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root2 = 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root2 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_02
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_02
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_02 = (( not ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root <= 7))) and 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2 >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2 <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2 = 
+      (if ( not ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root <= 7)))
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2 = 7))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root2 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2 = 7))
+         then 7
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root2);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_4_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root <= 7))
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_3_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root = 
+      (if ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root <= 7))
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root = 5)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root2 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root = 6)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root = 7)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_exit_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_3_states___root = 3))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root2 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_3_states___root = 3))
+         then 3
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_8_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_3
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_7_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_8_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_3
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_7_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_3
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_3 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_3 or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_2);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_3 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_states___root = 6) and 
+      (ActiveStandby_System_Side1_ManualSelectionOccurs_Logical_Operator1 and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_2)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_enter_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_5_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_5_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_2 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_2 or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_2 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_states___root = 5) and 
+      (ActiveStandby_System_Side1_Side2BecomesActive_Logical_Operator1 and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_1)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_3_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_complete_1 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_1 or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_1 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_states___root = 6) and 
+      (((rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1FullyAvail and 
+      rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side1FullyAvail) and 
+      (( not rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2FullyAvail) or 
+      ( not rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side2FullyAvail))) and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_1_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_fired_0 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root = 7);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root = 7)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide2 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_1_states___root = 5))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root2 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_1_states___root = 5))
+         then 5
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root1 = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_states___root = 6)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_3_states___root = 5))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root1 = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_3_states___root = 5))
+         then 5
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_3_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_states___root = 5)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_5_states___root = 6))
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_4_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_5_states___root = 6))
+         then 6
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_5_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side2Active_exit_rlt_state_1_states___root = 
+      (if (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_states___root = 6)
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_7_states___root = 5))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_6_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Active_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_7_states___root = 5))
+         then 5
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_eval_rlt_state_7_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rltCheckEntryStateConsistency_0 = ((chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_states___root = 1) or 
+      ((chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_states___root <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_complete_1 = (chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_2 or 
+      chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_1);
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_2 = (rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_1));
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_enter_rlt_fired_1 = ( not rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rltCheckEntryStateConsistency_0 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root = 3) or 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_3_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_2
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_complete_1 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_2 or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_1);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_2 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_0 and 
+      (((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root <= 7)) and 
+      (ActiveStandby_System_Side1_IsSide2Failed__EqState2 and 
+      ( not chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_1))));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_1
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_1 = (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_0 and 
+      (((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root <= 7)) and 
+      ( not ActiveStandby_System_Side1_IsSide2Failed__EqState2)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_fired_0 = (( not ((chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root <= 7))) and 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root >= 2) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root = 
+      (if ( not ((chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root >= 2) and 
+         (chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root <= 7)))
+         then 2
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_0 = ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root = 5) or 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root = 6) or 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root = 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_states___root = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_2_outports_ActiveSide = 
+      (if chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_0
+         then chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_fired_0 = (( not ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root <= 7))) and 
+      ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root >= 4) and 
+      (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root <= 7)));
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root = 
+      (if ( not ((chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root >= 4) and 
+         (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root <= 7)))
+         then 4
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root = 7))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_main_begin_state_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_Side1Wait_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root = 7))
+         then 7
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rlt_state_1_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root = 3))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Failed_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root = 3))
+         then 3
+         else chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rlt_state_2_states___root);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_2_outports_ActiveSide = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_states___root = 1))
+         then 0
+         else chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_outports_ActiveSide);
+
+   chart_System_Side1_Side1ActiveSideLogic_Side1Failed_enter_rlt_state_1_states___root = 
+      (if (not (chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_states___root = 1))
+         then 1
+         else chart_System_Side1_Side1ActiveSideLogic_enter_rlt_state_1_states___root);
+
+   ActiveStandby_System_Side1_ManualSelectionOccurs_Unit_Delay = (true -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then (rlt_condact_ActiveStandby_System_Side1_rlt_init_step or 
+               ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_ManualSelection))
+         else ( pre ActiveStandby_System_Side1_ManualSelectionOccurs_Unit_Delay)));
+
+   ActiveStandby_System_Side1_ManualSelectionOccurs_Logical_Operator2 = ( not ActiveStandby_System_Side1_ManualSelectionOccurs_Unit_Delay);
+
+   ActiveStandby_System_Side1_ManualSelectionOccurs_Logical_Operator1 = (ActiveStandby_System_Side1_ManualSelectionOccurs_Logical_Operator2 and 
+      rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_ManualSelection);
+
+   ActiveStandby_System_Side1_IsSide2Failed__EqState2 = (rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2ActiveSide = 0);
+
+   ActiveStandby_System_Side1_IsSide2__EqState2 = (rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2ActiveSide = 2);
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1FullyAvail = (Side1FullyAvail -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then Side1FullyAvail
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2FullyAvail = (Side2FullyAvail -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then Side2FullyAvail
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2ActiveSide = (rlt_condact_ActiveStandby_System_Channel21_Channel_Out1 -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Channel21_Channel_Out1
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side2ActiveSide)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side1FullyAvail = (rlt_condact_ActiveStandby_System_Channel21_Channel_Out2 -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Channel21_Channel_Out2
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side1FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side2FullyAvail = (rlt_condact_ActiveStandby_System_Channel21_Channel_Out3 -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then rlt_condact_ActiveStandby_System_Channel21_Channel_Out3
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Mon2Side2FullyAvail)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_ManualSelection = (ManualSelection -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then ManualSelection
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_ManualSelection)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed = (Side1Failed -> 
+      (if ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator
+         then Side1Failed
+         else ( pre rlt_condact_ActiveStandby_System_Side1_rlt_clocked_inp_Side1Failed)));
+
+   rlt_condact_ActiveStandby_System_Side1_rlt_init_step = (true -> (( not ( pre ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator)) and 
+      ( pre rlt_condact_ActiveStandby_System_Side1_rlt_init_step)));
+
+   ActiveStandby_System_Channel21_In3Delay = (false -> ( pre rlt_condact_ActiveStandby_System_Side2_Mon2Side2FullyAvail));
+
+   ActiveStandby_System_Channel21_In2Delay = (false -> ( pre rlt_condact_ActiveStandby_System_Side2_Mon2Side1FullyAvail));
+
+   ActiveStandby_System_Channel21_In1Delay = (0 -> ( pre rlt_condact_ActiveStandby_System_Side2_Side2ActiveSide));
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_Out3 = (( not (rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In3);
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_Out2 = (( not (rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In2);
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_Out1 = 
+      (if (rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_init_step and 
+         ( not ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator))
+         then 0
+         else rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In1);
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In1 = (ActiveStandby_System_Channel21_In1Delay -> 
+      (if ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator
+         then ActiveStandby_System_Channel21_In1Delay
+         else ( pre rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In1)));
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In2 = (ActiveStandby_System_Channel21_In2Delay -> 
+      (if ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator
+         then ActiveStandby_System_Channel21_In2Delay
+         else ( pre rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In2)));
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In3 = (ActiveStandby_System_Channel21_In3Delay -> 
+      (if ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator
+         then ActiveStandby_System_Channel21_In3Delay
+         else ( pre rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_clocked_inp_In3)));
+
+   rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_init_step = (true -> (( not ( pre ActiveStandby_System_Calendar_Channel_21_Calendar_Relational_Operator)) and 
+      ( pre rlt_condact_ActiveStandby_System_Channel21_Channel_rlt_init_step)));
+
+   ActiveStandby_System_Channel12_Unit_DelayIn3 = (false -> ( pre rlt_condact_ActiveStandby_System_Side1_Mon1Side2FullyAvail));
+
+   ActiveStandby_System_Channel12_Unit_DelayIn2 = (false -> ( pre rlt_condact_ActiveStandby_System_Side1_Mon1Side1FullyAvail));
+
+   ActiveStandby_System_Channel12_Unit_DelayIn1 = (0 -> ( pre rlt_condact_ActiveStandby_System_Side1_Side1ActiveSide));
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_Out3 = (( not (rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In3);
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_Out2 = (( not (rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_init_step and 
+      ( not ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator))) and 
+      rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In2);
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_Out1 = 
+      (if (rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_init_step and 
+         ( not ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator))
+         then 0
+         else rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In1);
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In1 = (ActiveStandby_System_Channel12_Unit_DelayIn1 -> 
+      (if ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator
+         then ActiveStandby_System_Channel12_Unit_DelayIn1
+         else ( pre rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In1)));
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In2 = (ActiveStandby_System_Channel12_Unit_DelayIn2 -> 
+      (if ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator
+         then ActiveStandby_System_Channel12_Unit_DelayIn2
+         else ( pre rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In2)));
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In3 = (ActiveStandby_System_Channel12_Unit_DelayIn3 -> 
+      (if ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator
+         then ActiveStandby_System_Channel12_Unit_DelayIn3
+         else ( pre rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_clocked_inp_In3)));
+
+   rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_init_step = (true -> (( not ( pre ActiveStandby_System_Calendar_Channel_12_Calendar_Relational_Operator)) and 
+      ( pre rlt_condact_ActiveStandby_System_Channel12_Channel_rlt_init_step)));
+
+   rltCheckEntryStateConsistency_011 = (( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator) or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_01);
+
+   rltCheckEntryStateConsistency_010 = (( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator) or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rltCheckEntryStateConsistency_01);
+
+   rltCheckEntryStateConsistency_09 = (( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator) or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_02);
+
+   rltCheckEntryStateConsistency_08 = (( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator) or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_Side1Running_enter_rltCheckEntryStateConsistency_0);
+
+   rltCheckEntryStateConsistency_07 = (( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator) or 
+      chart_System_Side2_Side2ActiveSideLogic_Side2Running_enter_rltCheckEntryStateConsistency_0);
+
+   rltCheckEntryStateConsistency_06 = (( not ActiveStandby_System_Calendar_Side2_Calendar_Relational_Operator) or 
+      chart_System_Side2_Side2ActiveSideLogic_enter_rltCheckEntryStateConsistency_0);
+
+   rltCheckEntryStateConsistency_05 = (( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator) or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_01);
+
+   rltCheckEntryStateConsistency_04 = (( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator) or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rltCheckEntryStateConsistency_01);
+
+   rltCheckEntryStateConsistency_03 = (( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator) or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_02);
+
+   rltCheckEntryStateConsistency_02 = (( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator) or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_Side2Running_enter_rltCheckEntryStateConsistency_0);
+
+   rltCheckEntryStateConsistency_01 = (( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator) or 
+      chart_System_Side1_Side1ActiveSideLogic_Side1Running_enter_rltCheckEntryStateConsistency_0);
+
+   rltCheckEntryStateConsistency_0 = (( not ActiveStandby_System_Calendar_Side1_Calendar_Relational_Operator) or 
+      chart_System_Side1_Side1ActiveSideLogic_enter_rltCheckEntryStateConsistency_0);
+
+   --Line 1848
+--%PROPERTY rltCheckEntryStateConsistency_011; 
+
+   --Line 1507
+--%PROPERTY rltCheckEntryStateConsistency_010; 
+
+   --Line 1848
+--%PROPERTY rltCheckEntryStateConsistency_09; 
+
+   --Line 1848
+--%PROPERTY rltCheckEntryStateConsistency_08; 
+
+   --Line 1507
+--%PROPERTY rltCheckEntryStateConsistency_07; 
+
+   --Line 1126
+--%PROPERTY rltCheckEntryStateConsistency_06; 
+
+   --Line 3327
+--%PROPERTY rltCheckEntryStateConsistency_05; 
+
+   --Line 2986
+--%PROPERTY rltCheckEntryStateConsistency_04; 
+
+   --Line 3327
+--%PROPERTY rltCheckEntryStateConsistency_03; 
+
+   --Line 3327
+--%PROPERTY rltCheckEntryStateConsistency_02; 
+
+   --Line 2986
+--%PROPERTY rltCheckEntryStateConsistency_01; 
+
+   --Line 2605
+--%PROPERTY rltCheckEntryStateConsistency_0;
+
+tel;
+
+
