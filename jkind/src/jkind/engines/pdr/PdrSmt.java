@@ -9,7 +9,6 @@ import java.util.Set;
 
 import jkind.engines.StopException;
 import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
@@ -38,14 +37,13 @@ public class PdrSmt extends ScriptUser {
 	private final Term[] base;
 	private final Term[] prime;
 
-	private final Term I;
+	private final Predicate I;
 	private final Term P;
 
-	private final Set<Expr> predicates = new HashSet<>();
+	private final Set<Predicate> predicates = new HashSet<>();
+	private final Set<String> predicatesStrings = new HashSet<>();
 	private final Term[] baseAbstract;
 	private final Term[] primeAbstract;
-
-	private PLiteral init;
 
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
@@ -71,9 +69,8 @@ public class PdrSmt extends ScriptUser {
 		this.primeAbstract = getVariables("-'");
 		script.assertTerm(T(baseAbstract, primeAbstract));
 
-		addPredicates(PredicateCollector.collect(I));
+		addPredicate(I);
 		addPredicates(PredicateCollector.collect(P));
-		this.init = new PLiteral(true, new IdExpr(Lustre2Term.INIT));
 	}
 
 	private void defineTransitionRelation(Term transition) {
@@ -91,15 +88,17 @@ public class PdrSmt extends ScriptUser {
 		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), body);
 	}
 
-	private void addPredicates(Set<Expr> otherPredicates) {
-		otherPredicates.removeAll(predicates);
-		predicates.addAll(otherPredicates);
-		for (Expr p : otherPredicates) {
-			comment("New predicate: " + p);
+	private void addPredicates(Set<Predicate> otherPredicates) {
+		otherPredicates.forEach(this::addPredicate);
+	}
+
+	private void addPredicate(Predicate p) {
+		String str = p.toString();
+		if (!predicatesStrings.contains(str)) {
+			predicatesStrings.add(str);
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
 			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}
-		return;
 	}
 
 	public Cube getBadCube() {
@@ -143,8 +142,8 @@ public class PdrSmt extends ScriptUser {
 		}
 
 		Cube result = new Cube();
-		for (Expr p : predicates) {
-			Term t = p.accept(new Lustre2Term(script));
+		for (Predicate p : predicates) {
+			Term t = p.toTerm(script);
 			result.addPLiteral(new PLiteral(isTrue(model.evaluate(t)), p));
 		}
 		return result;
@@ -244,7 +243,7 @@ public class PdrSmt extends ScriptUser {
 		}
 
 		if (isInitial(result)) {
-			result.addPLiteral(init.negate());
+			result.addPLiteral(not(I));
 		}
 
 		return result;
@@ -262,7 +261,7 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	public Frame createInitialFrame() {
-		return new Frame(I);
+		return new Frame(I.toTerm(script));
 	}
 
 	public void refine(List<Cube> cubes) {
@@ -332,7 +331,7 @@ public class PdrSmt extends ScriptUser {
 		List<Expr> disjuncts = new ArrayList<>();
 
 		for (PLiteral literal : cube.getPLiterals()) {
-			if (literal.getExpr() != init.getExpr()) {
+			if (!literal.equals(not(I))) {
 				disjuncts.add(literal.negate().toExpr());
 			}
 		}
@@ -396,8 +395,8 @@ public class PdrSmt extends ScriptUser {
 		return apply(cube.toTerm(script), arguments);
 	}
 
-	private Term apply(Expr e, Term[] arguments) {
-		return apply(e.accept(new Lustre2Term(script)), arguments);
+	private Term apply(Predicate p, Term[] arguments) {
+		return apply(p.toTerm(script), arguments);
 	}
 
 	private Term subst(Term term, Term[] variables, Term[] arguments) {
@@ -410,5 +409,9 @@ public class PdrSmt extends ScriptUser {
 
 	private Term name(Term term, String name) {
 		return script.annotate(term, new Annotation(":named", name));
+	}
+
+	private PLiteral not(Predicate p) {
+		return new PLiteral(false, p);
 	}
 }

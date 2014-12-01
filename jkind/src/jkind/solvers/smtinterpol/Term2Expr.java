@@ -70,7 +70,11 @@ public class Term2Expr {
 			case "false":
 				return new BoolExpr(false);
 			default:
-				return new IdExpr(Lustre2Term.decode(name));
+				if (name.startsWith("%")) {
+					return new IdExpr(name);
+				} else {
+					return new IdExpr(Lustre2Term.decode(name));
+				}
 			}
 		}
 
@@ -148,5 +152,4 @@ public class Term2Expr {
 		}
 		return expr;
 	}
-
 }

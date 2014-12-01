@@ -14,16 +14,17 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 public class PredicateCollector {
 	private final Set<Term> predicates = new HashSet<>();
 
-	public static Set<Expr> collect(Term term) {
+	public static Set<Predicate> collect(Term term) {
 		PredicateCollector collector = new PredicateCollector();
 		collector.walk(term);
-		return collector.predicates.stream().map(Term2Expr::expr).collect(toSet());
+		int todo;
+		return collector.predicates.stream().map(t -> new Predicate(Term2Expr.expr(t)))
+				.collect(toSet());
 	}
 
 	private void walk(Term term) {
 		if (term instanceof ApplicationTerm) {
-			ApplicationTerm at = (ApplicationTerm) term;
-			walk(at);
+			walk((ApplicationTerm) term);
 		} else {
 			throw new IllegalArgumentException("Unhandled: " + term.getClass().getSimpleName());
 		}

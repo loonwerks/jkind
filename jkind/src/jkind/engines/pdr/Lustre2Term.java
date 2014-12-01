@@ -48,8 +48,8 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		this(script, null);
 	}
 
-	public Term getInit() {
-		return term(INIT);
+	public Predicate getInit() {
+		return new Predicate(new IdExpr(INIT));
 	}
 
 	public List<VarDecl> getVariables() {
@@ -62,7 +62,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	}
 
 	public static String encode(String name) {
-		return "$" + name;
+		if (name.equals(INIT)) {
+			return name;
+		} else {
+			return "$" + name;
+		}
 	}
 
 	private VarDecl encode(VarDecl vd) {

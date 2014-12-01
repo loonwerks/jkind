@@ -40,7 +40,6 @@ public class Cube {
 		for (int i = 0; i < pLiterals.size(); i++) {
 			PLiteral p = pLiterals.get(i);
 			terms[i] = p.toTerm(script);
-			terms[i] = p.getExpr().accept(new Lustre2Term(script));
 		}
 		return Util.and(script, terms);
 	}

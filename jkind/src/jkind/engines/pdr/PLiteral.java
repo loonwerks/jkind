@@ -8,40 +8,41 @@ import de.uni_freiburg.informatik.ultimate.logic.Util;
 
 public class PLiteral {
 	private final boolean positive;
-	private final Expr expr;
+	private final Predicate predicate;
 
-	public PLiteral(boolean positive, Expr expr) {
+	public PLiteral(boolean positive, Predicate predicate) {
 		this.positive = positive;
-		this.expr = expr;
+		this.predicate = predicate;
 	}
 
 	public boolean isPositive() {
 		return positive;
 	}
 
-	public Expr getExpr() {
-		return expr;
+	public Predicate getPredicate() {
+		return predicate;
 	}
 
 	public Expr toExpr() {
+		Expr expr = predicate.getExpr();
 		return positive ? expr : LustreUtil.not(expr);
 	}
 
 	public Term toTerm(Script script) {
-		Term pAtom = expr.accept(new Lustre2Term(script));
+		Term pAtom = predicate.toTerm(script);
 		return positive ? pAtom : Util.not(script, pAtom);
 	}
 
 	public PLiteral negate() {
-		return new PLiteral(!positive, expr);
+		return new PLiteral(!positive, predicate);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((expr == null) ? 0 : expr.hashCode());
 		result = prime * result + (positive ? 1231 : 1237);
+		result = prime * result + ((predicate == null) ? 0 : predicate.hashCode());
 		return result;
 	}
 
@@ -57,14 +58,14 @@ public class PLiteral {
 			return false;
 		}
 		PLiteral other = (PLiteral) obj;
-		if (expr == null) {
-			if (other.expr != null) {
-				return false;
-			}
-		} else if (!expr.equals(other.expr)) {
+		if (positive != other.positive) {
 			return false;
 		}
-		if (positive != other.positive) {
+		if (predicate == null) {
+			if (other.predicate != null) {
+				return false;
+			}
+		} else if (!predicate.equals(other.predicate)) {
 			return false;
 		}
 		return true;
