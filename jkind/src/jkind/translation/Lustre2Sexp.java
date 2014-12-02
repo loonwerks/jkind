@@ -37,7 +37,7 @@ import jkind.util.StreamIndex;
 import jkind.util.Util;
 
 public class Lustre2Sexp implements ExprVisitor<Sexp> {
-	public static final Symbol INIT = new Symbol("%init");
+	public static final String INIT = "%init";
 	private boolean pre = false;
 	private final int index;
 
@@ -58,11 +58,15 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		for (Expr assertion : node.assertions) {
 			conjuncts.add(assertion.accept(visitor));
 		}
+		
+		conjuncts.add(new Cons("not", visitor.curr(INIT)));
 
+		List<VarDecl> varDecls = Util.getVarDecls(node);
+		varDecls.add(0, new VarDecl(INIT, NamedType.BOOL));
+		
 		List<VarDecl> inputs = new ArrayList<>();
-		inputs.add(new VarDecl(INIT.str, NamedType.BOOL));
-		inputs.addAll(visitor.pre(Util.getVarDecls(node)));
-		inputs.addAll(visitor.curr(Util.getVarDecls(node)));
+		inputs.addAll(visitor.pre(varDecls));
+		inputs.addAll(visitor.curr(varDecls));
 
 		return new TransitionRelation(inputs, SexpUtil.and(conjuncts));
 	}
@@ -121,7 +125,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 				throw new IllegalArgumentException(
 						"Arrows cannot be nested under pre during translation to sexp");
 			}
-			return new Cons("ite", INIT, left, right);
+			return new Cons("ite", pre(INIT), left, right);
 
 		default:
 			return new Cons(e.op.toString(), left, right);

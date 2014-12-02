@@ -67,6 +67,7 @@ public class PdrSubengine extends Thread {
 		try {
 			while (true) {
 				Cube c = Z.getBadCube();
+				Z.comment("Bad cube: " + c);
 				if (c != null) {
 					blockCube(new TCube(c, depth()));
 				} else {
@@ -106,13 +107,17 @@ public class PdrSubengine extends Thread {
 			}
 
 			if (!isBlocked(s)) {
-				assert (!Z.isInitial(s.getCube()));
+				Z.comment("Trying to block " + s);
+				if (Z.isInitial(s.getCube())) {
+					throw new IllegalArgumentException("Constraint violated");
+				}
+				
 				TCube z = Z.solveRelative(s, Option.EXTRACT_MODEL);
 				if (z.getFrame() != TCube.FRAME_NULL) {
-					// Cube 's' was blocked by image of predecessor
+					Z.comment("Cube was blocked by image of predecessor");
 					generalize(z);
 
-					// Push z as far forward as possible
+					Z.comment("Pushing generalized cube as far foward as possible");
 					while (z.getFrame() < depth() - 1) {
 						TCube nz = Z.solveRelative(z.next());
 						if (nz.getFrame() != TCube.FRAME_NULL) {
@@ -127,7 +132,7 @@ public class PdrSubengine extends Thread {
 						Q.add(s.next());
 					}
 				} else {
-					// Cube 's' was not blocked by image of predecessor
+					Z.comment("Cube is not blocked by image of predecessor");
 					z.setFrame(s.getFrame() - 1);
 					z.getCube().setNext(s.getCube());
 					Q.add(z);

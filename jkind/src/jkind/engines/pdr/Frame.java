@@ -35,7 +35,9 @@ public class Frame {
 	}
 
 	public void add(Cube c) {
-		assert expr == null;
+		if (expr != null) {
+			throw new IllegalArgumentException("Cannot add cubes to initial frame");
+		}
 		cubes.add(c);
 	}
 

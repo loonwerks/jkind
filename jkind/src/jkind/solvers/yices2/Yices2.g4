@@ -31,7 +31,7 @@ numeric: integer             # integerNumeric
        ;
 
 fragment DIGIT: [0-9];
-fragment SYMBOL: [a-zA-Z_@$#%!.^~\[\]'\-];
+fragment SYMBOL: [a-zA-Z_@$#%!.^~\[\]];
 
 INT: DIGIT+;
 ID: SYMBOL (SYMBOL | DIGIT)*;

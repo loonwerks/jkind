@@ -104,7 +104,7 @@ public abstract class SolverBasedEngine extends Engine {
 		assertTransition(k, k == 0);
 	}
 
-	protected static final Symbol INIT = Lustre2Sexp.INIT;
+	protected static final Symbol INIT = new Symbol(Lustre2Sexp.INIT);
 
 	protected void assertInductiveTransition(int k) {
 		if (k == 0) {
@@ -126,6 +126,7 @@ public abstract class SolverBasedEngine extends Engine {
 		List<Sexp> args = new ArrayList<>();
 		args.add(init);
 		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
+		args.add(new Symbol("false"));
 		args.addAll(getSymbols(getOffsetVarDecls(k)));
 		return new Cons(TransitionRelation.T, args);
 	}

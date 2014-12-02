@@ -42,14 +42,14 @@ public class PdrSmt {
 	private final List<Frame> F;
 
 	private final Predicate I;
-	private final Predicate P;
+	private final Expr P;
 	private final Set<Predicate> predicates = new HashSet<>();
 
 	private final PdrPredicateRefiner refiner;
 
 	private final List<VarDecl> varDecls;
 
-	private static final String INIT = Lustre2Sexp.INIT.str;
+	private static final String INIT = Lustre2Sexp.INIT;
 	private static final int BASE = 0;
 	private static final int BASE_ABSTRACT = 1;
 	private static final int PRIME_ABSTRACT = 2;
@@ -61,18 +61,18 @@ public class PdrSmt {
 		this.F = F;
 
 		varDecls = Util.getVarDecls(node);
+		varDecls.add(0, new VarDecl(INIT, NamedType.BOOL));
 		defineVariables(varDecls, BASE);
 		defineVariables(varDecls, BASE_ABSTRACT);
 		defineVariables(varDecls, PRIME);
 		defineVariables(varDecls, PRIME_ABSTRACT);
 
-		this.I = new Predicate(INIT);
-		this.P = new Predicate(property);
-
 		solver.assertSexp(T(BASE_ABSTRACT, PRIME_ABSTRACT));
 
+		this.I = new Predicate(INIT);
+		this.P = or(INIT, property);
 		addPredicate(I);
-		addPredicate(P);
+		addPredicate(new Predicate(property));
 
 		String refineScratchBase = scratchBase == null ? null : scratchBase + "-refine";
 		this.refiner = new PdrPredicateRefiner(node, property, refineScratchBase);
@@ -82,7 +82,6 @@ public class PdrSmt {
 		Solver solver = getSolver(settings, node, scratchBase);
 		solver.initialize();
 		solver.define(Lustre2Sexp.constructTransitionRelation(node));
-		solver.define(new VarDecl(INIT, NamedType.BOOL));
 		return solver;
 	}
 
@@ -112,13 +111,15 @@ public class PdrSmt {
 
 	private void addPredicate(Predicate p) {
 		if (predicates.add(p)) {
+			solver.comment("Adding predicate: " + p);
 			solver.assertSexp(new Cons("=", base(p), baseAbstract(p)));
 			solver.assertSexp(new Cons("=", primeAbstract(p), prime(p)));
 		}
 	}
 
 	public Cube getBadCube() {
-		return extractCube(checkSat(and(R(depth()), not(P))));
+		comment("Getting bad cube");
+		return extractCube(checkSat(and(R(depth()), not(base(P)))));
 	}
 
 	private int depth() {
@@ -293,7 +294,6 @@ public class PdrSmt {
 
 	private Sexp T(int index1, int index2) {
 		List<Sexp> args = new ArrayList<>();
-		args.add(new Symbol(INIT));
 		args.addAll(getSymbols(index1));
 		args.addAll(getSymbols(index2));
 		return new Cons(TransitionRelation.T, args);
@@ -334,10 +334,6 @@ public class PdrSmt {
 		return p.toSexp(PRIME_ABSTRACT);
 	}
 
-	private Sexp and(Sexp sexp, PLiteral plit) {
-		return SexpUtil.and(sexp, plit.toSexp(BASE));
-	}
-
 	private Sexp and(Sexp sexp1, Sexp sexp2) {
 		return SexpUtil.and(sexp1, sexp2);
 	}
@@ -354,7 +350,15 @@ public class PdrSmt {
 		return frame.toSexp(BASE);
 	}
 
+	private Sexp base(Expr expr) {
+		return expr.accept(new Lustre2Sexp(BASE));
+	}
+
 	private Sexp prime(PLiteral pLiteral) {
 		return pLiteral.toSexp(PRIME);
+	}
+
+	private Expr or(String id1, String id2) {
+		return LustreUtil.or(new IdExpr(id1), new IdExpr(id2));
 	}
 }
