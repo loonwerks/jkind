@@ -45,7 +45,7 @@ public class PdrEngine extends Engine {
 	private void spawnSubengine() {
 		String prop = properties.remove(0);
 		String scratch = settings.scratch ? getScratchBase() + scratchCounter++ : null;
-		PdrSubengine subengine = new PdrSubengine(prop, spec, scratch, this, director);
+		PdrSubengine subengine = new PdrSubengine(prop, spec, settings, scratch, this, director);
 		subengines.put(prop, subengine);
 		subengine.start();
 	}

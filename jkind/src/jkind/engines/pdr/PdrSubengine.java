@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import jkind.JKindSettings;
 import jkind.engines.Director;
 import jkind.engines.StopException;
 import jkind.engines.messages.InvalidMessage;
@@ -39,8 +40,8 @@ public class PdrSubengine extends Thread {
 
 	private volatile boolean cancel = false;
 
-	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent,
-			Director director) {
+	public PdrSubengine(String prop, Specification spec, JKindSettings settings,
+			String scratchBase, PdrEngine parent, Director director) {
 		super("pdr-" + prop);
 		this.prop = prop;
 		Node single = new NodeBuilder(spec.node).clearProperties().addProperty(prop).build();
@@ -48,7 +49,7 @@ public class PdrSubengine extends Thread {
 		this.parent = parent;
 		this.director = director;
 
-		this.Z = new PdrSmt(node, F, prop, scratchBase);
+		this.Z = new PdrSmt(settings, node, F, prop, scratchBase);
 	}
 
 	public void cancel() {

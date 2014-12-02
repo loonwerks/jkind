@@ -1,6 +1,7 @@
 package jkind.engines.pdr;
 
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.solvers.smtinterpol.Term2Expr;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
@@ -16,6 +17,10 @@ public class Predicate {
 
 	public Predicate(Term term) {
 		this(Term2Expr.expr(term));
+	}
+
+	public Predicate(String id) {
+		this(new IdExpr(id));
 	}
 
 	public Expr getExpr() {

@@ -1,92 +1,110 @@
 package jkind.engines.pdr;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import jkind.JKindSettings;
+import jkind.analysis.YicesArithOnlyCheck;
 import jkind.engines.StopException;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.LustreUtil;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import jkind.sexp.Cons;
+import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
+import jkind.solvers.Solver;
+import jkind.solvers.cvc4.Cvc4Solver;
+import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.ScriptUser;
+import jkind.solvers.smtinterpol.SmtInterpolSolver;
 import jkind.solvers.smtinterpol.SmtInterpolUtil;
 import jkind.solvers.smtinterpol.Subst;
+import jkind.solvers.yices.YicesSolver;
+import jkind.solvers.yices2.Yices2Solver;
+import jkind.solvers.z3.Z3Solver;
+import jkind.translation.Lustre2Sexp;
 import jkind.translation.TransitionRelation;
-import de.uni_freiburg.informatik.ultimate.logic.Annotation;
-import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
-import de.uni_freiburg.informatik.ultimate.logic.Logics;
-import de.uni_freiburg.informatik.ultimate.logic.Model;
-import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
-import de.uni_freiburg.informatik.ultimate.logic.Sort;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
-import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
+import jkind.util.StreamIndex;
+import jkind.util.Util;
 
-public class PdrSmt extends ScriptUser {
+public class PdrSmt {
+	private final Solver solver;
 	private final List<Frame> F;
 
-	private final List<VarDecl> varDecls;
-	private final Map<String, Term[]> variableLists = new HashMap<>();
-	private final Term[] base;
-	private final Term[] prime;
+	private static final String INIT = Lustre2Sexp.INIT.str;
+
+	private final List<Symbol> base;
+	private final List<Symbol> prime;
 
 	private final Predicate I;
-	private final Term P;
+	private final Predicate P;
 
 	private final Set<Predicate> predicates = new HashSet<>();
-	private final Term[] baseAbstract;
-	private final Term[] primeAbstract;
+	private final List<Symbol> baseAbstract;
+	private final List<Symbol> primeAbstract;
 
 	private final PdrPredicateRefiner refiner;
 
-	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
-		super(SmtInterpolUtil.getScript(scratchBase));
+	public PdrSmt(JKindSettings settings, Node node, List<Frame> F, String property,
+			String scratchBase) {
+		this.solver = initializeSolver(settings, node, scratchBase);
 		this.F = F;
 
-		script.setOption(":produce-interpolants", true);
-		script.setOption(":produce-unsat-cores", true);
-		script.setOption(":simplify-interpolants", true);
-		script.setLogic(Logics.QF_UFLIRA);
-		script.setOption(":verbosity", 2);
+		List<VarDecl> varDecls = Util.getVarDecls(node);
+		this.base = defineVariables(varDecls, "");
+		this.prime = defineVariables(varDecls, "'");
+		this.baseAbstract = defineVariables(varDecls, "-");
+		this.primeAbstract = defineVariables(varDecls, "-'");
 
-		Lustre2Term lustre2Term = new Lustre2Term(script, node);
-		this.varDecls = lustre2Term.getVariables();
-
-		this.base = getVariables("");
-		this.prime = getVariables("'");
-
-		this.I = lustre2Term.getInit();
-		defineTransitionRelation(lustre2Term.getTransition());
-		this.P = lustre2Term.encodeProperty(property);
-
-		this.baseAbstract = getVariables("-");
-		this.primeAbstract = getVariables("-'");
-		script.assertTerm(T(baseAbstract, primeAbstract));
+		this.I = new Predicate(INIT);
+		this.P = new Predicate(StreamIndex.getPrefix(property));
+		
+		solver.assertSexp(T(baseAbstract, primeAbstract));
 
 		addPredicate(I);
-		addPredicates(PredicateCollector.collect(P));
+		addPredicate(P);
 
 		String refineScratchBase = scratchBase == null ? null : scratchBase + "-refine";
 		this.refiner = new PdrPredicateRefiner(node, property, refineScratchBase);
 	}
 
-	private void defineTransitionRelation(Term transition) {
-		TermVariable[] params = new TermVariable[base.length + prime.length];
-		for (int i = 0; i < base.length; i++) {
-			Term v = base[i];
-			params[i] = script.variable(v.toString(), v.getSort());
-		}
-		for (int i = 0; i < prime.length; i++) {
-			Term v = prime[i];
-			params[i + base.length] = script.variable(v.toString(), v.getSort());
-		}
+	private static Solver initializeSolver(JKindSettings settings, Node node, String scratchBase) {
+		Solver solver = getSolver(settings, node, scratchBase);
+		solver.initialize();
+		solver.define(Lustre2Sexp.constructTransitionRelation(node));
+		solver.define(new VarDecl(INIT, NamedType.BOOL));
+		return solver;
+	}
 
-		Term body = subst(transition, concat(base, prime), params);
-		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), body);
+	// TODO (stop solver at end - catch exceptions?)
+	// TODO (duplication)
+	private static Solver getSolver(JKindSettings settings, Node node, String scratchBase) {
+		switch (settings.solver) {
+		case YICES:
+			return new YicesSolver(scratchBase, YicesArithOnlyCheck.check(node));
+		case CVC4:
+			return new Cvc4Solver(scratchBase);
+		case Z3:
+			return new Z3Solver(scratchBase);
+		case YICES2:
+			return new Yices2Solver(scratchBase);
+		case MATHSAT:
+			return new MathSatSolver(scratchBase);
+		case SMTINTERPOL:
+			return new SmtInterpolSolver(scratchBase);
+		}
+		throw new IllegalArgumentException("Unknown solver: " + settings.solver);
 	}
 
 	private void addPredicates(Set<Predicate> otherPredicates) {
@@ -95,8 +113,8 @@ public class PdrSmt extends ScriptUser {
 
 	private void addPredicate(Predicate p) {
 		if (predicates.add(p)) {
-			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
-			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
+			solver.assertSexp(new Cons("=", apply(p, base), apply(p, baseAbstract)));
+			solver.assertSexp(new Cons("=", apply(p, primeAbstract), apply(p, prime)));
 		}
 	}
 
@@ -283,29 +301,25 @@ public class PdrSmt extends ScriptUser {
 		return LustreUtil.or(disjuncts);
 	}
 
-	private Term T(Term[] variables1, Term[] variables2) {
-		return script.term(TransitionRelation.T.str, concat(variables1, variables2));
+	private static Sexp T(List<Symbol> variables1, List<Symbol> variables2) {
+		return new Cons(TransitionRelation.T, concat(variables1, variables2));
 	}
 
-	private Term[] concat(Term[] terms1, Term[] terms2) {
-		Term[] result = new Term[terms1.length + terms2.length];
-		System.arraycopy(terms1, 0, result, 0, terms1.length);
-		System.arraycopy(terms2, 0, result, terms1.length, terms2.length);
-		return result;
+	private static List<Symbol> toSymbols(List<String> strings) {
+		return strings.stream().map(Symbol::new).collect(toList());
 	}
 
-	public Term[] getVariables(String suffix) {
-		if (variableLists.containsKey(suffix)) {
-			return variableLists.get(suffix);
-		}
+	private static <T> List<T> concat(List<T> terms1, List<T> terms2) {
+		return Stream.concat(terms1.stream(), terms2.stream()).collect(toList());
+	}
 
-		Term[] result = new Term[varDecls.size()];
-		for (int i = 0; i < varDecls.size(); i++) {
-			VarDecl vd = varDecls.get(i);
-			String name = vd.id + suffix;
-			result[i] = declareVar(name, vd.type);
+	private List<Symbol> defineVariables(List<VarDecl> varDecls, String suffix) {
+		List<Symbol> result = new ArrayList<>();
+		for (VarDecl vd : varDecls) {
+			String id = vd.id + suffix;
+			solver.define(new VarDecl(id, vd.type));
+			result.add(new Symbol(id));
 		}
-		variableLists.put(suffix, result);
 		return result;
 	}
 
@@ -331,7 +345,7 @@ public class PdrSmt extends ScriptUser {
 		return subst(term, base, arguments);
 	}
 
-	private Term apply(Predicate p, Term[] arguments) {
+	private Sexp apply(Predicate p, List<String> arguments) {
 		return apply(p.toTerm(script), arguments);
 	}
 
@@ -349,5 +363,9 @@ public class PdrSmt extends ScriptUser {
 
 	private PLiteral not(Predicate p) {
 		return new PLiteral(false, p);
+	}
+
+	private List<String> append(List<String> ids, String suffix) {
+		return ids.stream().map(s -> s + suffix).collect(toList());
 	}
 }

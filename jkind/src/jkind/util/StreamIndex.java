@@ -24,7 +24,11 @@ public class StreamIndex {
 	}
 
 	public Symbol getEncoded() {
-		return new Symbol("$" + stream + getSuffix(index));
+		return new Symbol(getPrefix(stream) + getSuffix(index));
+	}
+	
+	public static String getPrefix(String stream) {
+		return "$" + stream;
 	}
 
 	public static String getSuffix(int index) {
