@@ -40,8 +40,8 @@ public class PdrSmt extends ScriptUser {
 	private final Set<Predicate> predicates = new HashSet<>();
 	private final Term[] baseAbstract;
 	private final Term[] primeAbstract;
-	
-	private final PdrInterpolatingSolver interp;
+
+	private final PdrPredicateRefiner refiner;
 
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
@@ -69,8 +69,9 @@ public class PdrSmt extends ScriptUser {
 
 		addPredicate(I);
 		addPredicates(PredicateCollector.collect(P));
-		
-		this.interp = new PdrInterpolatingSolver(node, property, scratchBase == null ? null : scratchBase + "-interpolate");
+
+		String refineScratchBase = scratchBase == null ? null : scratchBase + "-refine";
+		this.refiner = new PdrPredicateRefiner(node, property, refineScratchBase);
 	}
 
 	private void defineTransitionRelation(Term transition) {
@@ -263,7 +264,7 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	public void refine(List<Cube> cubes) {
-		addPredicates(interp.refine(cubes));
+		addPredicates(refiner.refine(cubes));
 	}
 
 	public void comment(String comment) {

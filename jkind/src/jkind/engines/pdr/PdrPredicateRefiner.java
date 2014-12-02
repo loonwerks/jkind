@@ -26,7 +26,7 @@ import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
 
-public class PdrInterpolatingSolver extends ScriptUser {
+public class PdrPredicateRefiner extends ScriptUser {
 	private final List<VarDecl> varDecls;
 	private final Map<String, Term[]> variableLists = new HashMap<>();
 	private final Term[] base;
@@ -34,7 +34,7 @@ public class PdrInterpolatingSolver extends ScriptUser {
 
 	private final Term P;
 
-	public PdrInterpolatingSolver(Node node, String property, String scratchBase) {
+	public PdrPredicateRefiner(Node node, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
 
 		script.setOption(":produce-interpolants", true);
