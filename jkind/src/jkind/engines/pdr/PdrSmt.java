@@ -38,7 +38,7 @@ import jkind.util.StreamIndex;
 import jkind.util.Util;
 
 public class PdrSmt {
-	private final Solver solver;
+	private final Z3Solver solver;
 	private final List<Frame> F;
 
 	private final Predicate I;
@@ -78,8 +78,8 @@ public class PdrSmt {
 		this.refiner = new PdrPredicateRefiner(node, property, refineScratchBase);
 	}
 
-	private static Solver initializeSolver(JKindSettings settings, Node node, String scratchBase) {
-		Solver solver = getSolver(settings, node, scratchBase);
+	private static Z3Solver initializeSolver(JKindSettings settings, Node node, String scratchBase) {
+		Z3Solver solver = new Z3Solver(scratchBase);
 		solver.initialize();
 		solver.define(Lustre2Sexp.constructTransitionRelation(node));
 		return solver;
@@ -168,7 +168,7 @@ public class PdrSmt {
 	}
 
 	public boolean isInitial(Cube cube) {
-		// TODO: Given our Lustre translation, a frame is initial if it does not
+		// Given our Lustre translation, a frame is initial if it does not
 		// contain ~init
 		return !cube.getPLiterals().contains(not(I));
 	}
@@ -187,17 +187,20 @@ public class PdrSmt {
 			solver.assertSexp(not(base(cube)));
 		}
 
+		List<String> assums = new ArrayList<>();
 		for (int i = frame - 1; i < F.size() - 1; i++) {
 			solver.assertSexp(base(F.get(i)), "F" + i);
+			assums.add("F" + i);
 		}
 		solver.assertSexp(base(F.get(F.size() - 1)));
 
 		List<PLiteral> pLiterals = s.getCube().getPLiterals();
 		for (int i = 0; i < pLiterals.size(); i++) {
 			solver.assertSexp(prime(pLiterals.get(i)), "P" + i);
+			assums.add("P" + i);
 		}
 
-		Result result = checkSat();
+		Result result = solver.checkSat(assums, option == Option.EXTRACT_MODEL);
 		solver.pop();
 
 		if (result instanceof UnsatResult) {
@@ -222,10 +225,6 @@ public class PdrSmt {
 			comment("Solver returned unknown result");
 			throw new StopException();
 		}
-	}
-
-	private Result checkSat() {
-		return solver.query(new Symbol("false"));
 	}
 
 	private int getMinimumF(List<String> unsatCore) {
@@ -311,7 +310,7 @@ public class PdrSmt {
 		for (VarDecl vd : varDecls) {
 			StreamIndex si = new StreamIndex(vd.id, index);
 			solver.define(new VarDecl(si.getEncoded().str, vd.type));
-			
+
 			Expr constraint = LustreUtil.typeConstraint(vd.id, vd.type);
 			if (constraint != null) {
 				solver.assertSexp(constraint.accept(new Lustre2Sexp(index)));

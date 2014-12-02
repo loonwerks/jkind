@@ -113,18 +113,18 @@ public class PdrSubengine extends Thread {
 				
 				TCube z = Z.solveRelative(s, Option.EXTRACT_MODEL);
 				if (z.getFrame() != TCube.FRAME_NULL) {
-					Z.comment("Cube was blocked by image of predecessor");
-					generalize(z);
-
-					Z.comment("Pushing generalized cube as far foward as possible");
-					while (z.getFrame() < depth() - 1) {
-						TCube nz = Z.solveRelative(z.next());
-						if (nz.getFrame() != TCube.FRAME_NULL) {
-							z = nz;
-						} else {
-							break;
-						}
-					}
+//					Z.comment("Cube was blocked by image of predecessor");
+//					generalize(z);
+//
+//					Z.comment("Pushing generalized cube as far foward as possible");
+//					while (z.getFrame() < depth() - 1) {
+//						TCube nz = Z.solveRelative(z.next());
+//						if (nz.getFrame() != TCube.FRAME_NULL) {
+//							z = nz;
+//						} else {
+//							break;
+//						}
+//					}
 
 					addBlockedCube(z);
 					if (s.getFrame() < depth() && z.getFrame() != TCube.FRAME_INF) {

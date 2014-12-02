@@ -1,6 +1,9 @@
 package jkind.solvers.z3;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,6 +40,56 @@ public class Z3Solver extends SmtLib2Solver {
 
 	private int assumCount = 1;
 
+	public Result checkSat(List<String> names) {
+		Result result = checkSat(names, true);
+		if (result instanceof SatResult) {
+			return result;
+		} else if (result instanceof UnsatResult) {
+			UnsatResult unsat = (UnsatResult) result;
+			names.retainAll(unsat.getUnsatCore());
+		}
+
+		List<String> reduced = new ArrayList<>(names);
+		for (String name : names) {
+			if (reduced.remove(name)) {
+				result = checkSat(reduced, false);
+				if (result instanceof SatResult) {
+					reduced.add(name);
+				} else if (result instanceof UnsatResult) {
+					UnsatResult unsat = (UnsatResult) result;
+					reduced.retainAll(unsat.getUnsatCore());
+				}
+			}
+		}
+		return new UnsatResult(reduced);
+	}
+
+	public Result checkSat(List<String> assums, boolean extract) {
+		Result result;
+
+		List<Symbol> symbols = assums.stream().map(Symbol::new).collect(toList());
+		send(new Cons("check-sat", symbols));
+		send("(echo \"" + DONE + "\")");
+		String status = readFromSolver();
+		if (isSat(status)) {
+			if (extract) {
+				send("(get-model)");
+				send("(echo \"" + DONE + "\")");
+				result = new SatResult(parseModel(readFromSolver()));
+			} else {
+				result = new SatResult(null);
+			}
+		} else if (isUnsat(status)) {
+			send("(get-unsat-core)");
+			send("(echo \"" + DONE + "\")");
+			result = new UnsatResult(parseUnsatCore(readFromSolver()));
+		} else {
+			result = new UnknownResult(null);
+		}
+
+		return result;
+	}
+
 	@Override
 	public Result query(Sexp sexp) {
 		Result result;
@@ -71,5 +124,4 @@ public class Z3Solver extends SmtLib2Solver {
 		String[] pieces = text.substring(start + 1, stop).split("\\s+");
 		return Arrays.asList(pieces);
 	}
-
 }
