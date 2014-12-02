@@ -13,13 +13,10 @@ import jkind.lustre.LustreUtil;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.values.Value;
-import jkind.solvers.SimpleModel;
 import jkind.solvers.smtinterpol.ScriptUser;
 import jkind.solvers.smtinterpol.SmtInterpolUtil;
 import jkind.solvers.smtinterpol.Subst;
 import jkind.translation.TransitionRelation;
-import jkind.util.StreamIndex;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
@@ -43,6 +40,8 @@ public class PdrSmt extends ScriptUser {
 	private final Set<Predicate> predicates = new HashSet<>();
 	private final Term[] baseAbstract;
 	private final Term[] primeAbstract;
+	
+	private final PdrInterpolatingSolver interp;
 
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
@@ -70,6 +69,8 @@ public class PdrSmt extends ScriptUser {
 
 		addPredicate(I);
 		addPredicates(PredicateCollector.collect(P));
+		
+		this.interp = new PdrInterpolatingSolver(node, property, scratchBase == null ? null : scratchBase + "-interpolate");
 	}
 
 	private void defineTransitionRelation(Term transition) {
@@ -262,62 +263,7 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	public void refine(List<Cube> cubes) {
-		List<Term> pieces = new ArrayList<>();
-
-		Term[] vars = getVariables(StreamIndex.getSuffix(-1));
-		for (int i = 0; i < cubes.size() - 1; i++) {
-			Term[] nextVars = getVariables(StreamIndex.getSuffix(i));
-			pieces.add(and(apply(cubes.get(i), vars), T(vars, nextVars)));
-			vars = nextVars;
-		}
-		pieces.add(and(apply(cubes.get(cubes.size() - 1), vars), not(P(vars))));
-
-		Term[] interpolants = getInterpolants(pieces);
-
-		for (int i = 0; i < cubes.size() - 1; i++) {
-			vars = getVariables(StreamIndex.getSuffix(i));
-			addPredicates(PredicateCollector.collect(subst(interpolants[i], vars, base)));
-		}
-	}
-
-	private Term[] getInterpolants(List<Term> terms) {
-		script.push(1);
-
-		Term[] names = new Term[terms.size()];
-		for (int i = 0; i < terms.size(); i++) {
-			String name = "I" + i;
-			script.assertTerm(name(terms.get(i), name));
-			names[i] = script.term(name);
-		}
-
-		switch (script.checkSat()) {
-		case UNSAT:
-			Term[] interps = script.getInterpolants(names);
-			script.pop(1);
-			return interps;
-
-		case SAT:
-			int length = terms.size() - 1;
-			SimpleModel extractedModel = extractModel(script.getModel(), length);
-			throw new CounterexampleException(length, extractedModel);
-
-		default:
-			commentUnknownReason();
-			throw new StopException();
-		}
-	}
-
-	private SimpleModel extractModel(Model model, int length) {
-		SimpleModel result = new SimpleModel();
-		for (int i = -1; i < length; i++) {
-			for (VarDecl vd : varDecls) {
-				String name = vd.id + StreamIndex.getSuffix(i);
-				Term evaluated = model.evaluate(script.term(name));
-				Value value = SmtInterpolUtil.getValue(evaluated, vd.type);
-				result.addValue(name, value);
-			}
-		}
-		return result;
+		addPredicates(interp.refine(cubes));
 	}
 
 	public void comment(String comment) {
@@ -345,10 +291,6 @@ public class PdrSmt extends ScriptUser {
 		System.arraycopy(terms1, 0, result, 0, terms1.length);
 		System.arraycopy(terms2, 0, result, terms1.length, terms2.length);
 		return result;
-	}
-
-	private Term P(Term[] vars) {
-		return subst(P, base, vars);
 	}
 
 	public Term[] getVariables(String suffix) {
@@ -386,10 +328,6 @@ public class PdrSmt extends ScriptUser {
 
 	private Term apply(Term term, Term[] arguments) {
 		return subst(term, base, arguments);
-	}
-
-	private Term apply(Cube cube, Term[] arguments) {
-		return apply(cube.toTerm(script), arguments);
 	}
 
 	private Term apply(Predicate p, Term[] arguments) {
