@@ -17,6 +17,7 @@ import jkind.solvers.Solver;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.TransitionRelation;
+import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
@@ -44,7 +45,7 @@ public class SmtInterpolSolver extends Solver {
 
 	@Override
 	public void assertSexp(Sexp sexp, String name) {
-		script.assertTerm(convert(sexp));
+		script.assertTerm(script.annotate(convert(sexp), new Annotation(":named", name)));
 	}
 
 	@Override

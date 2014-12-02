@@ -13,12 +13,12 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.Label;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
 import jkind.translation.TransitionRelation;
+import jkind.util.BiMap;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -106,21 +106,24 @@ public class YicesSolver extends ProcessBasedSolver {
 	}
 
 	private int labelCount = 1;
-
-	public Label labelledAssert(Sexp sexp) {
+	private final BiMap<String, Integer> namedLabels = new BiMap<>();
+	
+	@Override
+	public void assertSexp(Sexp sexp, String name) {
 		comment("id = " + labelCount);
 		send("(assert+ " + sexp + ")");
-		return new Label(labelCount++);
+		namedLabels.put(name, labelCount);
+		labelCount++;
 	}
 
-	public void retract(Label label) {
-		send("(retract " + label + ")");
+	public void retract(String name) {
+		send("(retract " + namedLabels.get(name) + ")");
 	}
 
-	public Label weightedAssert(Sexp sexp, int weight) {
+	public void weightedAssert(Sexp sexp, int weight) {
 		comment("id = " + labelCount);
 		send("(assert+ " + sexp + " " + weight + ")");
-		return new Label(labelCount++);
+		labelCount++;
 	}
 
 	@Override
@@ -130,31 +133,29 @@ public class YicesSolver extends ProcessBasedSolver {
 		 * and pop for some reason.
 		 */
 
-		Label label = labelledAssert(new Cons("not", sexp));
+		String query = "query";
+		assertSexp(new Cons("not", sexp), query);
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
-		retract(label);
+		retract(query);
 
 		Result result = readResult();
 		if (result == null) {
 			throw new JKindException("Unknown result from yices");
 		}
 		if (result instanceof UnsatResult) {
-			List<Label> core = ((UnsatResult) result).getUnsatCore();
-			if (core.contains(label)) {
-				core.remove(label);
-			} else {
-				throw new JKindException("Unsat result did not depend on query");
-			}
+			List<String> core = ((UnsatResult) result).getUnsatCore();
+			core.remove(query);
 		}
 		return result;
 	}
 
 	public Result maxsatQuery(Sexp sexp) {
-		Label label = labelledAssert(new Cons("not", sexp));
+		String query = "query";
+		assertSexp(new Cons("not", sexp), query);
 		send("(max-sat)");
 		send("(echo \"" + DONE + "\\n\")");
-		retract(label);
+		retract(query);
 
 		Result result = readResult();
 		if (result == null) {
@@ -217,7 +218,7 @@ public class YicesSolver extends ProcessBasedSolver {
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ResultExtractorListener extractor = new ResultExtractorListener(varTypes);
+		ResultExtractorListener extractor = new ResultExtractorListener(varTypes, namedLabels.inverse());
 		walker.walk(extractor, ctx);
 		return extractor.getResult();
 	}

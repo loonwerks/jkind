@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.Type;
-import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
@@ -13,6 +12,7 @@ import jkind.solvers.yices.YicesParser.SatResultContext;
 import jkind.solvers.yices.YicesParser.UnsatCoreContext;
 import jkind.solvers.yices.YicesParser.UnsatResultContext;
 import jkind.solvers.yices.YicesParser.VariableContext;
+import jkind.util.BiMap;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -21,9 +21,11 @@ public class ResultExtractorListener extends YicesBaseListener {
 	private Result result;
 	private YicesModel model;
 	private final Map<String, Type> varTypes;
+	private final BiMap<Integer, String> assertionNames;
 
-	public ResultExtractorListener(Map<String, Type> varTypes) {
+	public ResultExtractorListener(Map<String, Type> varTypes, BiMap<Integer, String> assertionNames) {
 		this.varTypes = varTypes;
+		this.assertionNames = assertionNames;
 	}
 
 	public Result getResult() {
@@ -43,9 +45,9 @@ public class ResultExtractorListener extends YicesBaseListener {
 
 	@Override
 	public void enterUnsatCore(UnsatCoreContext ctx) {
-		List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
+		List<String> unsatCore = ((UnsatResult) result).getUnsatCore();
 		for (TerminalNode node : ctx.INT()) {
-			unsatCore.add(new Label(node.getText()));
+			unsatCore.add(assertionNames.get(Integer.parseInt(node.getText())));
 		}
 	}
 

@@ -1,5 +1,7 @@
 package jkind.engines;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,7 +22,6 @@ import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.solvers.Label;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
@@ -33,6 +34,7 @@ import jkind.util.SexpUtil;
 
 public class InvariantReductionEngine extends SolverBasedEngine {
 	private YicesSolver yicesSolver;
+	private int nameCounter = 1;
 
 	public InvariantReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super("invariant-reduction", spec, settings, director);
@@ -76,7 +78,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 		int k = 0;
 
-		BiMap<Label, Expr> labelling = new BiMap<>();
+		BiMap<String, Expr> labelling = new BiMap<>();
 
 		createVariables(-1);
 		createVariables(0);
@@ -89,7 +91,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 				assertInvariants(k - 1, vm.invariants, labelling);
 				createVariables(k);
 			} else if (result instanceof UnsatResult) {
-				List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
+				List<String> unsatCore = ((UnsatResult) result).getUnsatCore();
 				minimizeUnsatCore(query, unsatCore, labelling.keySet());
 				Set<Expr> coreInvariants = getInvariants(unsatCore, labelling);
 				if (irreducible.containsAll(coreInvariants)) {
@@ -107,14 +109,19 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		irreducible.remove(property);
 		sendValid(property.toString(), k, new ArrayList<>(irreducible), vm);
 	}
+	
+	private String getFreshLabel() {
+		return "fresh" + nameCounter++;
+	}
 
 	private void assertInvariants(int k, List<Expr> invariants,
-			BiMap<Label, Expr> labelling) {
+			BiMap<String, Expr> labelling) {
 		for (Expr invariant : invariants) {
 			if (labelling.containsValue(invariant)) {
 				yicesSolver.retract(labelling.inverse().remove(invariant));
 			}
-			Label label = yicesSolver.labelledAssert(getInvariantAssertion(invariant, k));
+			String label = getFreshLabel();
+			yicesSolver.assertSexp(getInvariantAssertion(invariant, k), label);
 			labelling.put(label, invariant);
 		}
 	}
@@ -127,12 +134,8 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		return SexpUtil.conjoin(conjuncts);
 	}
 
-	private Set<Expr> getInvariants(List<Label> unsatCore, BiMap<Label, Expr> labelling) {
-		Set<Expr> result = new HashSet<>();
-		for (Label label : unsatCore) {
-			result.add(labelling.get(label));
-		}
-		return result;
+	private Set<Expr> getInvariants(List<String> unsatCore, BiMap<String, Expr> labelling) {
+		return unsatCore.stream().map(labelling::get).collect(toSet());
 	}
 
 	private Sexp getUnsatCoreQuery(int k, Collection<Expr> irreducible) {
@@ -156,18 +159,18 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		}
 	}
 
-	private void minimizeUnsatCore(Sexp query, List<Label> unsatCore, Set<Label> allLabels) {
+	private void minimizeUnsatCore(Sexp query, List<String> unsatCore, Set<String> allLabels) {
 		yicesSolver.push();
 
-		for (Label label : allLabels) {
+		for (String label : allLabels) {
 			if (!unsatCore.contains(label)) {
 				yicesSolver.retract(label);
 			}
 		}
 
-		Iterator<Label> iterator = unsatCore.iterator();
+		Iterator<String> iterator = unsatCore.iterator();
 		while (iterator.hasNext()) {
-			Label label = iterator.next();
+			String label = iterator.next();
 
 			yicesSolver.push();
 			yicesSolver.retract(label);
