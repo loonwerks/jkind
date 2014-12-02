@@ -311,6 +311,11 @@ public class PdrSmt {
 		for (VarDecl vd : varDecls) {
 			StreamIndex si = new StreamIndex(vd.id, index);
 			solver.define(new VarDecl(si.getEncoded().str, vd.type));
+			
+			Expr constraint = LustreUtil.typeConstraint(vd.id, vd.type);
+			if (constraint != null) {
+				solver.assertSexp(constraint.accept(new Lustre2Sexp(index)));
+			}
 		}
 	}
 
