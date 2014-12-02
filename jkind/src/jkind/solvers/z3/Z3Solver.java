@@ -1,6 +1,8 @@
 package jkind.solvers.z3;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
@@ -29,6 +31,8 @@ public class Z3Solver extends SmtLib2Solver {
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
+		send("(set-option :produce-unsat-cores true)");
+		send("(set-option :global-decls false)");
 	}
 
 	private int assumCount = 1;
@@ -48,7 +52,9 @@ public class Z3Solver extends SmtLib2Solver {
 			send("(echo \"" + DONE + "\")");
 			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
-			result = new UnsatResult();
+			send("(get-unsat-core)");
+			send("(echo \"" + DONE + "\")");
+			result = new UnsatResult(parseUnsatCore(readFromSolver()));
 		} else {
 			// Even for unknown we can get a partial model
 			send("(get-model)");
@@ -58,4 +64,12 @@ public class Z3Solver extends SmtLib2Solver {
 
 		return result;
 	}
+
+	private List<String> parseUnsatCore(String text) {
+		int start = text.indexOf("(");
+		int stop = text.indexOf(")");
+		String[] pieces = text.substring(start + 1, stop).split("\\s+");
+		return Arrays.asList(pieces);
+	}
+
 }
