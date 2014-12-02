@@ -1,24 +1,19 @@
 package jkind.engines.pdr;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.HashSet;
 import java.util.Set;
 
-import jkind.solvers.smtinterpol.Term2Expr;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class PredicateCollector {
-	private final Set<Term> predicates = new HashSet<>();
+	private final Set<Predicate> predicates = new HashSet<>();
 
 	public static Set<Predicate> collect(Term term) {
 		PredicateCollector collector = new PredicateCollector();
 		collector.walk(term);
-		int todo;
-		return collector.predicates.stream().map(t -> new Predicate(Term2Expr.expr(t)))
-				.collect(toSet());
+		return collector.predicates;
 	}
 
 	private void walk(Term term) {
@@ -45,7 +40,7 @@ public class PredicateCollector {
 		}
 
 		if (!at.getFunction().getName().startsWith("%")) {
-			predicates.add(at);
+			predicates.add(new Predicate(at));
 		}
 	}
 

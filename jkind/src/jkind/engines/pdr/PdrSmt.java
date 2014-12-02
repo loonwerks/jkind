@@ -41,7 +41,6 @@ public class PdrSmt extends ScriptUser {
 	private final Term P;
 
 	private final Set<Predicate> predicates = new HashSet<>();
-	private final Set<String> predicatesStrings = new HashSet<>();
 	private final Term[] baseAbstract;
 	private final Term[] primeAbstract;
 
@@ -93,10 +92,7 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	private void addPredicate(Predicate p) {
-		String str = p.toString();
-		if (!predicatesStrings.contains(str)) {
-			predicatesStrings.add(str);
-			predicates.add(p);
+		if (predicates.add(p)) {
 			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
 			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}

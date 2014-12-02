@@ -1,14 +1,21 @@
 package jkind.engines.pdr;
 
+import jkind.lustre.Expr;
+import jkind.solvers.smtinterpol.Term2Expr;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
-import jkind.lustre.Expr;
 
 public class Predicate {
 	private final Expr expr;
+	private final String string;
 
 	public Predicate(Expr expr) {
 		this.expr = expr;
+		this.string = expr.toString();
+	}
+
+	public Predicate(Term term) {
+		this(Term2Expr.expr(term));
 	}
 
 	public Expr getExpr() {
@@ -21,15 +28,12 @@ public class Predicate {
 
 	@Override
 	public String toString() {
-		return expr.toString();
+		return string;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((expr == null) ? 0 : expr.hashCode());
-		return result;
+		return string.hashCode();
 	}
 
 	@Override
@@ -44,13 +48,6 @@ public class Predicate {
 			return false;
 		}
 		Predicate other = (Predicate) obj;
-		if (expr == null) {
-			if (other.expr != null) {
-				return false;
-			}
-		} else if (!expr.equals(other.expr)) {
-			return false;
-		}
-		return true;
+		return string.equals(other.string);
 	}
 }
