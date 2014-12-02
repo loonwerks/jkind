@@ -39,6 +39,11 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		send(new Cons("assert", sexp));
 	}
 
+	@Override
+	public void assertSexp(Sexp sexp, String name) {
+		assertSexp(new Cons("!", sexp, new Symbol(":named"), new Symbol(name)));
+	}
+
 	protected void send(Sexp sexp) {
 		send(Quoting.quoteSexp(sexp).toString());
 	}

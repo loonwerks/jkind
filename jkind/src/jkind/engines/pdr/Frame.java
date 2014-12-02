@@ -1,40 +1,41 @@
 package jkind.engines.pdr;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import de.uni_freiburg.informatik.ultimate.logic.Script;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
-import de.uni_freiburg.informatik.ultimate.logic.Util;
+import jkind.lustre.Expr;
+import jkind.sexp.Sexp;
+import jkind.translation.Lustre2Sexp;
+import jkind.util.SexpUtil;
 
 public class Frame {
-	private final Term term;
+	private final Expr expr;
 	private final Set<Cube> cubes = new HashSet<>();
 
-	public Frame(Term term) {
-		this.term = term;
+	public Frame(Expr expr) {
+		this.expr = expr;
 	}
 
 	public Frame() {
-		this.term = null;
+		this.expr = null;
 	}
 
-	public Term toTerm(Script script) {
-		if (term != null) {
-			return term;
+	public Sexp toSexp(int index) {
+		if (expr != null) {
+			return expr.accept(new Lustre2Sexp(index));
 		}
 
-		Term[] terms = new Term[cubes.size()];
-		int i = 0;
+		List<Sexp> terms = new ArrayList<>();
 		for (Cube c : cubes) {
-			terms[i] = Util.not(script, c.toTerm(script));
-			i++;
+			terms.add(SexpUtil.not(c.toSexp(index)));
 		}
-		return Util.and(script, terms);
+		return SexpUtil.conjoin(terms);
 	}
 
 	public void add(Cube c) {
-		assert term == null;
+		assert expr == null;
 		cubes.add(c);
 	}
 
@@ -43,13 +44,13 @@ public class Frame {
 	}
 
 	public boolean isEmpty() {
-		return term == null && cubes.isEmpty();
+		return expr == null && cubes.isEmpty();
 	}
 
 	@Override
 	public String toString() {
-		if (term != null) {
-			return term.toString();
+		if (expr != null) {
+			return expr.toString();
 		} else {
 			return cubes.toString();
 		}

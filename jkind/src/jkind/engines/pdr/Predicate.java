@@ -2,7 +2,9 @@ package jkind.engines.pdr;
 
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
+import jkind.sexp.Sexp;
 import jkind.solvers.smtinterpol.Term2Expr;
+import jkind.translation.Lustre2Sexp;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
@@ -29,6 +31,10 @@ public class Predicate {
 
 	public Term toTerm(Script script) {
 		return expr.accept(new Lustre2Term(script));
+	}
+
+	public Sexp toSexp(int index) {
+		return expr.accept(new Lustre2Sexp(index));
 	}
 
 	@Override

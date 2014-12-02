@@ -6,17 +6,19 @@ import java.util.List;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
+import jkind.sexp.Sexp;
+import jkind.util.SexpUtil;
 
 public class Cube {
 	private final List<PLiteral> pLiterals = new ArrayList<>();
 	private Cube next;
 
-	public void addPLiteral(PLiteral expr) {
-		pLiterals.add(expr);
+	public void addPLiteral(PLiteral plit) {
+		pLiterals.add(plit);
 	}
 
-	public void removePLiteral(PLiteral expr) {
-		pLiterals.remove(expr);
+	public void removePLiteral(PLiteral plit) {
+		pLiterals.remove(plit);
 	}
 
 	public List<PLiteral> getPLiterals() {
@@ -33,6 +35,14 @@ public class Cube {
 
 	public Cube getNext() {
 		return next;
+	}
+
+	public Sexp toSexp(int index) {
+		List<Sexp> terms = new ArrayList<>();
+		for (PLiteral plit : pLiterals) {
+			terms.add(plit.toSexp(index));
+		}
+		return SexpUtil.conjoin(terms);
 	}
 
 	public Term toTerm(Script script) {

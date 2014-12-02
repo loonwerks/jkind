@@ -12,6 +12,7 @@ public abstract class Solver {
 	public abstract void initialize();
 
 	public abstract void assertSexp(Sexp sexp);
+	public abstract void assertSexp(Sexp base, String name);
 	public abstract void define(VarDecl decl);
 	public abstract void define(TransitionRelation lambda);
 

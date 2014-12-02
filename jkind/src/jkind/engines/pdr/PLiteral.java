@@ -2,6 +2,8 @@ package jkind.engines.pdr;
 
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
+import jkind.sexp.Sexp;
+import jkind.util.SexpUtil;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.Util;
@@ -31,6 +33,11 @@ public class PLiteral {
 	public Term toTerm(Script script) {
 		Term pAtom = predicate.toTerm(script);
 		return positive ? pAtom : Util.not(script, pAtom);
+	}
+
+	public Sexp toSexp(int index) {
+		Sexp pAtom = predicate.toSexp(index);
+		return positive ? pAtom : SexpUtil.not(pAtom);
 	}
 
 	public PLiteral negate() {

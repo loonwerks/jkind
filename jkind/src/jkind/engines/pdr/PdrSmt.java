@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import jkind.JKindSettings;
 import jkind.analysis.YicesArithOnlyCheck;
+import jkind.analysis.evaluation.Evaluator;
 import jkind.engines.StopException;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -20,10 +21,16 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.Value;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Model;
+import jkind.solvers.Result;
+import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
+import jkind.solvers.UnsatResult;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.ScriptUser;
@@ -35,6 +42,7 @@ import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.TransitionRelation;
+import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 import jkind.util.Util;
 
@@ -42,35 +50,35 @@ public class PdrSmt {
 	private final Solver solver;
 	private final List<Frame> F;
 
-	private static final String INIT = Lustre2Sexp.INIT.str;
-
-	private final List<Symbol> base;
-	private final List<Symbol> prime;
-
 	private final Predicate I;
 	private final Predicate P;
-
 	private final Set<Predicate> predicates = new HashSet<>();
-	private final List<Symbol> baseAbstract;
-	private final List<Symbol> primeAbstract;
 
 	private final PdrPredicateRefiner refiner;
+
+	private final List<VarDecl> varDecls;
+
+	private static final String INIT = Lustre2Sexp.INIT.str;
+	private static final int BASE = 0;
+	private static final int BASE_ABSTRACT = 1;
+	private static final int PRIME = 2;
+	private static final int PRIME_ABSTRACT = 3;
 
 	public PdrSmt(JKindSettings settings, Node node, List<Frame> F, String property,
 			String scratchBase) {
 		this.solver = initializeSolver(settings, node, scratchBase);
 		this.F = F;
 
-		List<VarDecl> varDecls = Util.getVarDecls(node);
-		this.base = defineVariables(varDecls, "");
-		this.prime = defineVariables(varDecls, "'");
-		this.baseAbstract = defineVariables(varDecls, "-");
-		this.primeAbstract = defineVariables(varDecls, "-'");
+		varDecls = Util.getVarDecls(node);
+		defineVariables(varDecls, BASE);
+		defineVariables(varDecls, BASE_ABSTRACT);
+		defineVariables(varDecls, PRIME);
+		defineVariables(varDecls, PRIME_ABSTRACT);
 
 		this.I = new Predicate(INIT);
-		this.P = new Predicate(StreamIndex.getPrefix(property));
-		
-		solver.assertSexp(T(baseAbstract, primeAbstract));
+		this.P = new Predicate(property);
+
+		solver.assertSexp(T(BASE_ABSTRACT, PRIME_ABSTRACT));
 
 		addPredicate(I);
 		addPredicate(P);
@@ -113,8 +121,8 @@ public class PdrSmt {
 
 	private void addPredicate(Predicate p) {
 		if (predicates.add(p)) {
-			solver.assertSexp(new Cons("=", apply(p, base), apply(p, baseAbstract)));
-			solver.assertSexp(new Cons("=", apply(p, primeAbstract), apply(p, prime)));
+			solver.assertSexp(new Cons("=", base(p), baseAbstract(p)));
+			solver.assertSexp(new Cons("=", primeAbstract(p), prime(p)));
 		}
 	}
 
@@ -126,29 +134,23 @@ public class PdrSmt {
 		return F.size() - 2;
 	}
 
-	private Term R(int k) {
-		List<Term> conjuncts = new ArrayList<>();
+	private Sexp R(int k) {
+		List<Sexp> conjuncts = new ArrayList<>();
 		for (int i = k; i < F.size(); i++) {
-			conjuncts.add(F.get(i).toTerm(script));
+			conjuncts.add(F.get(i).toSexp(BASE));
 		}
-		return and(conjuncts);
+		return SexpUtil.conjoin(conjuncts);
 	}
 
-	private Model checkSat(Term assertion) {
-		script.push(1);
-		script.assertTerm(assertion);
-		switch (script.checkSat()) {
-		case UNSAT:
-			script.pop(1);
+	private Model checkSat(Sexp assertion) {
+		Result result = solver.query(not(assertion));
+		if (result instanceof SatResult) {
+			SatResult sat = (SatResult) result;
+			return sat.getModel();
+		} else if (result instanceof UnsatResult) {
 			return null;
-
-		case SAT:
-			Model model = script.getModel();
-			script.pop(1);
-			return model;
-
-		default:
-			commentUnknownReason();
+		} else {
+			comment("Solver returned unknown result");
 			throw new StopException();
 		}
 	}
@@ -158,24 +160,23 @@ public class PdrSmt {
 			return null;
 		}
 
+		Evaluator eval = new Evaluator() {
+			@Override
+			public Value visit(IdExpr e) {
+				return model.getValue(new StreamIndex(e.id, BASE));
+			}
+		};
+
 		Cube result = new Cube();
 		for (Predicate p : predicates) {
-			Term t = p.toTerm(script);
-			result.addPLiteral(new PLiteral(isTrue(model.evaluate(t)), p));
+			Value value = p.getExpr().accept(eval);
+			result.addPLiteral(new PLiteral(value == BooleanValue.TRUE, p));
 		}
 		return result;
 	}
 
-	private boolean isTrue(Term term) {
-		if (term instanceof ApplicationTerm) {
-			ApplicationTerm at = (ApplicationTerm) term;
-			return at.getFunction().getName().equals("true");
-		}
-		return false;
-	}
-
 	public boolean isInitial(Cube cube) {
-		// Given our Lustre translation, a frame is initial if it does not
+		// TODO: Given our Lustre translation, a frame is initial if it does not
 		// contain ~init
 		return !cube.getPLiterals().contains(not(I));
 	}
@@ -188,14 +189,14 @@ public class PdrSmt {
 		int frame = s.getFrame();
 		Cube cube = s.getCube();
 
-		script.push(1);
+		solver.push();
 
 		if (option != Option.NO_IND) {
-			script.assertTerm(not(cube));
+			solver.assertSexp(not(base(cube)));
 		}
 
 		for (int i = frame - 1; i < F.size() - 1; i++) {
-			script.assertTerm(name(F.get(i).toTerm(script), "F" + i));
+			solver.assertSexp(base(F.get(i)), "F" + i);
 		}
 		script.assertTerm(F.get(F.size() - 1).toTerm(script));
 
@@ -229,10 +230,6 @@ public class PdrSmt {
 			commentUnknownReason();
 			throw new StopException();
 		}
-	}
-
-	private void commentUnknownReason() {
-		comment("SMT solver returned 'unknown' due to " + script.getInfo(":reason-unknown"));
 	}
 
 	private int getMinimumF(Term[] unsatCore) {
@@ -301,71 +298,63 @@ public class PdrSmt {
 		return LustreUtil.or(disjuncts);
 	}
 
-	private static Sexp T(List<Symbol> variables1, List<Symbol> variables2) {
-		return new Cons(TransitionRelation.T, concat(variables1, variables2));
-	}
-
-	private static List<Symbol> toSymbols(List<String> strings) {
-		return strings.stream().map(Symbol::new).collect(toList());
+	private Sexp T(int index1, int index2) {
+		return new Cons(TransitionRelation.T, concat(getSymbols(index1), getSymbols(index2)));
 	}
 
 	private static <T> List<T> concat(List<T> terms1, List<T> terms2) {
 		return Stream.concat(terms1.stream(), terms2.stream()).collect(toList());
 	}
 
-	private List<Symbol> defineVariables(List<VarDecl> varDecls, String suffix) {
+	private List<Symbol> getSymbols(int index) {
 		List<Symbol> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
-			String id = vd.id + suffix;
-			solver.define(new VarDecl(id, vd.type));
-			result.add(new Symbol(id));
+			result.add(new StreamIndex(vd.id, index).getEncoded());
 		}
 		return result;
 	}
 
-	private Term declareVar(String name, Type type) {
-		Sort sort = getSort(type);
-		script.declareFun(name, new Sort[0], sort);
-		return script.term(name);
-	}
-
-	private Sort getSort(Type type) {
-		return SmtInterpolUtil.getSort(script, type);
-	}
-
-	private Term not(Cube cube) {
-		return not(cube.toTerm(script));
-	}
-
-	private Term prime(Term term) {
-		return subst(term, base, prime);
-	}
-
-	private Term apply(Term term, Term[] arguments) {
-		return subst(term, base, arguments);
-	}
-
-	private Sexp apply(Predicate p, List<String> arguments) {
-		return apply(p.toTerm(script), arguments);
-	}
-
-	private Term subst(Term term, Term[] variables, Term[] arguments) {
-		return Subst.apply(script, term, variables, arguments);
-	}
-
-	private Term and(Cube cube, Term... terms) {
-		return and(cube.toTerm(script), and(terms));
-	}
-
-	private Term name(Term term, String name) {
-		return script.annotate(term, new Annotation(":named", name));
+	private void defineVariables(List<VarDecl> varDecls, int index) {
+		for (VarDecl vd : varDecls) {
+			StreamIndex si = new StreamIndex(vd.id, index);
+			solver.define(new VarDecl(si.getEncoded().str, vd.type));
+		}
 	}
 
 	private PLiteral not(Predicate p) {
 		return new PLiteral(false, p);
 	}
 
-	private List<String> append(List<String> ids, String suffix) {
-		return ids.stream().map(s -> s + suffix).collect(toList());
+	private Sexp base(Predicate p) {
+		return p.toSexp(BASE);
 	}
+
+	private Sexp baseAbstract(Predicate p) {
+		return p.toSexp(BASE_ABSTRACT);
+	}
+
+	private Sexp prime(Predicate p) {
+		return p.toSexp(PRIME);
+	}
+
+	private Sexp primeAbstract(Predicate p) {
+		return p.toSexp(PRIME_ABSTRACT);
+	}
+
+	private Sexp and(Sexp sexp, PLiteral plit) {
+		return new Cons("and", sexp, plit.toSexp(BASE));
+	}
+
+	private Sexp not(Sexp sexp) {
+		return SexpUtil.not(sexp);
+	}
+
+	private Sexp base(Cube cube) {
+		return cube.toSexp(BASE);
+	}
+
+	private Sexp base(Frame frame) {
+		return frame.toSexp(BASE);
+	}
+
 }

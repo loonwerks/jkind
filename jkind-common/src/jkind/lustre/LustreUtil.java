@@ -47,6 +47,18 @@ public class LustreUtil {
 		return result;
 	}
 
+	public static Expr and(List<Expr> conjuncts) {
+		if (conjuncts.size() == 0) {
+			return new BoolExpr(true);
+		}
+
+		Expr result = conjuncts.get(0);
+		for (int i = 1; i < conjuncts.size(); i++) {
+			result = and(result, conjuncts.get(i));
+		}
+		return result;
+	}
+
 	public static Expr lessEqual(Expr left, Expr right) {
 		return new BinaryExpr(left, BinaryOp.LESSEQUAL, right);
 	}

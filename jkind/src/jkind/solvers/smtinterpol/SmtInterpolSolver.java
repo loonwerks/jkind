@@ -43,6 +43,11 @@ public class SmtInterpolSolver extends Solver {
 	}
 
 	@Override
+	public void assertSexp(Sexp sexp, String name) {
+		script.assertTerm(convert(sexp));
+	}
+
+	@Override
 	public void define(VarDecl decl) {
 		varTypes.put(decl.id, decl.type);
 		script.declareFun(decl.id, new Sort[0], getSort(decl.type));

@@ -38,4 +38,8 @@ public class SexpUtil {
 		}
 		return SexpUtil.conjoin(conjuncts);
 	}
+
+	public static Sexp not(Sexp sexp) {
+		return new Cons("not", sexp);
+	}
 }
