@@ -67,7 +67,6 @@ public class PdrSubengine extends Thread {
 		try {
 			while (true) {
 				Cube c = Z.getBadCube();
-				Z.comment("Bad cube: " + c);
 				if (c != null) {
 					blockCube(new TCube(c, depth()));
 				} else {
