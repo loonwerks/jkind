@@ -11,7 +11,7 @@ import jkind.sexp.Symbol;
 import jkind.translation.Lustre2Sexp;
 
 public class SexpUtil {
-	public static Sexp conjoin(List<? extends Sexp> conjuncts) {
+	public static Sexp and(List<? extends Sexp> conjuncts) {
 		if (conjuncts.isEmpty()) {
 			return new Symbol("true");
 		} else if (conjuncts.size() == 1) {
@@ -21,7 +21,7 @@ public class SexpUtil {
 		}
 	}
 
-	public static Sexp disjoin(List<Sexp> disjuncts) {
+	public static Sexp or(List<Sexp> disjuncts) {
 		if (disjuncts.isEmpty()) {
 			return new Symbol("false");
 		} else if (disjuncts.size() == 1) {
@@ -36,10 +36,14 @@ public class SexpUtil {
 		for (Expr invariant : invariants) {
 			conjuncts.add(invariant.accept(new Lustre2Sexp(k)));
 		}
-		return SexpUtil.conjoin(conjuncts);
+		return SexpUtil.and(conjuncts);
 	}
 
 	public static Sexp not(Sexp sexp) {
 		return new Cons("not", sexp);
+	}
+
+	public static Sexp and(Sexp sexp1, Sexp sexp2) {
+		return new Cons("and", sexp1, sexp2);
 	}
 }

@@ -31,7 +31,7 @@ public class Frame {
 		for (Cube c : cubes) {
 			terms.add(SexpUtil.not(c.toSexp(index)));
 		}
-		return SexpUtil.conjoin(terms);
+		return SexpUtil.and(terms);
 	}
 
 	public void add(Cube c) {

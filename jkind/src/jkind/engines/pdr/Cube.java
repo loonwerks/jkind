@@ -42,7 +42,7 @@ public class Cube {
 		for (PLiteral plit : pLiterals) {
 			terms.add(plit.toSexp(index));
 		}
-		return SexpUtil.conjoin(terms);
+		return SexpUtil.and(terms);
 	}
 
 	public Term toTerm(Script script) {

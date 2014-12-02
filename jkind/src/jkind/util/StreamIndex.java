@@ -72,7 +72,7 @@ public class StreamIndex {
 	}
 
 	public static Sexp conjoinEncodings(List<String> streams, int index) {
-		return SexpUtil.conjoin(getEncoded(fromList(streams, index)));
+		return SexpUtil.and(getEncoded(fromList(streams, index)));
 	}
 
 	private static boolean isEncodedStreamIndex(String var) {

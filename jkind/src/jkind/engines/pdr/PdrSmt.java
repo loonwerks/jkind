@@ -1,14 +1,9 @@
 package jkind.engines.pdr;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import jkind.JKindSettings;
 import jkind.analysis.YicesArithOnlyCheck;
@@ -19,7 +14,6 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
@@ -30,14 +24,10 @@ import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
-import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
-import jkind.solvers.smtinterpol.ScriptUser;
 import jkind.solvers.smtinterpol.SmtInterpolSolver;
-import jkind.solvers.smtinterpol.SmtInterpolUtil;
-import jkind.solvers.smtinterpol.Subst;
 import jkind.solvers.yices.YicesSolver;
 import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
@@ -138,9 +128,9 @@ public class PdrSmt {
 	private Sexp R(int k) {
 		List<Sexp> conjuncts = new ArrayList<>();
 		for (int i = k; i < F.size(); i++) {
-			conjuncts.add(F.get(i).toSexp(BASE));
+			conjuncts.add(base(F.get(i)));
 		}
-		return SexpUtil.conjoin(conjuncts);
+		return SexpUtil.and(conjuncts);
 	}
 
 	private Model checkSat(Sexp assertion) {
@@ -208,7 +198,7 @@ public class PdrSmt {
 
 		Result result = checkSat();
 		solver.pop();
-		
+
 		if (result instanceof UnsatResult) {
 			UnsatResult unsat = (UnsatResult) result;
 			List<String> unsatCore = unsat.getUnsatCore();
@@ -273,12 +263,12 @@ public class PdrSmt {
 	public boolean isBlocked(TCube s) {
 		int frame = s.getFrame();
 		Cube cube = s.getCube();
-		Term query = and(cube, R(frame));
+		Sexp query = and(base(cube), R(frame));
 		return checkSat(query) == null;
 	}
 
 	public Frame createInitialFrame() {
-		return new Frame(I.toTerm(script));
+		return new Frame(I.getExpr());
 	}
 
 	public void refine(List<Cube> cubes) {
@@ -286,7 +276,7 @@ public class PdrSmt {
 	}
 
 	public void comment(String comment) {
-		script.echo(new QuotedObject(comment));
+		solver.comment(comment);
 	}
 
 	public Expr getInvariant(Cube cube) {
@@ -302,11 +292,11 @@ public class PdrSmt {
 	}
 
 	private Sexp T(int index1, int index2) {
-		return new Cons(TransitionRelation.T, concat(getSymbols(index1), getSymbols(index2)));
-	}
-
-	private static <T> List<T> concat(List<T> terms1, List<T> terms2) {
-		return Stream.concat(terms1.stream(), terms2.stream()).collect(toList());
+		List<Sexp> args = new ArrayList<>();
+		args.add(new Symbol(INIT));
+		args.addAll(getSymbols(index1));
+		args.addAll(getSymbols(index2));
+		return new Cons(TransitionRelation.T, args);
 	}
 
 	private List<Symbol> getSymbols(int index) {
@@ -345,7 +335,11 @@ public class PdrSmt {
 	}
 
 	private Sexp and(Sexp sexp, PLiteral plit) {
-		return new Cons("and", sexp, plit.toSexp(BASE));
+		return SexpUtil.and(sexp, plit.toSexp(BASE));
+	}
+
+	private Sexp and(Sexp sexp1, Sexp sexp2) {
+		return SexpUtil.and(sexp1, sexp2);
 	}
 
 	private Sexp not(Sexp sexp) {

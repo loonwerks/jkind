@@ -131,7 +131,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		for (int i = 0; i <= k; i++) {
 			conjuncts.add(invariant.accept(new Lustre2Sexp(i)));
 		}
-		return SexpUtil.conjoin(conjuncts);
+		return SexpUtil.and(conjuncts);
 	}
 
 	private Set<Expr> getInvariants(List<String> unsatCore, BiMap<String, Expr> labelling) {
@@ -148,7 +148,7 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 		}
 
 		Sexp conc = SexpUtil.conjoinInvariants(irreducible, k);
-		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
+		return new Cons("=>", SexpUtil.and(hyps), conc);
 	}
 
 	protected Sexp getInductiveTransition(int k) {

@@ -121,7 +121,7 @@ public class KInductionEngine extends SolverBasedEngine {
 		}
 		Sexp conc = StreamIndex.conjoinEncodings(possiblyValid, k);
 
-		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
+		return new Cons("=>", SexpUtil.and(hyps), conc);
 	}
 
 	private void sendValid(List<String> valid, int k) {

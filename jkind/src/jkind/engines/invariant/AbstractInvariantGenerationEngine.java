@@ -129,7 +129,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		}
 		Sexp conc = SexpUtil.conjoinInvariants(exprs, k);
 
-		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
+		return new Cons("=>", SexpUtil.and(hyps), conc);
 	}
 
 	private void sendValidAndInvariant(Invariant invariant, int k) {

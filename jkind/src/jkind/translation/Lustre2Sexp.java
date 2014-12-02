@@ -64,7 +64,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		inputs.addAll(visitor.pre(Util.getVarDecls(node)));
 		inputs.addAll(visitor.curr(Util.getVarDecls(node)));
 
-		return new TransitionRelation(inputs, SexpUtil.conjoin(conjuncts));
+		return new TransitionRelation(inputs, SexpUtil.and(conjuncts));
 	}
 
 	protected Symbol curr(String id) {
