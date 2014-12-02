@@ -30,6 +30,7 @@ import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
@@ -61,8 +62,8 @@ public class PdrSmt {
 	private static final String INIT = Lustre2Sexp.INIT.str;
 	private static final int BASE = 0;
 	private static final int BASE_ABSTRACT = 1;
-	private static final int PRIME = 2;
-	private static final int PRIME_ABSTRACT = 3;
+	private static final int PRIME_ABSTRACT = 2;
+	private static final int PRIME = 3;
 
 	public PdrSmt(JKindSettings settings, Node node, List<Frame> F, String property,
 			String scratchBase) {
@@ -198,17 +199,19 @@ public class PdrSmt {
 		for (int i = frame - 1; i < F.size() - 1; i++) {
 			solver.assertSexp(base(F.get(i)), "F" + i);
 		}
-		script.assertTerm(F.get(F.size() - 1).toTerm(script));
+		solver.assertSexp(base(F.get(F.size() - 1)));
 
 		List<PLiteral> pLiterals = s.getCube().getPLiterals();
 		for (int i = 0; i < pLiterals.size(); i++) {
-			script.assertTerm(name(prime(pLiterals.get(i).toTerm(script)), "P" + i));
+			solver.assertSexp(prime(pLiterals.get(i)), "P" + i);
 		}
 
-		switch (script.checkSat()) {
-		case UNSAT:
-			Term[] unsatCore = script.getUnsatCore();
-			script.pop(1);
+		Result result = checkSat();
+		solver.pop();
+		
+		if (result instanceof UnsatResult) {
+			UnsatResult unsat = (UnsatResult) result;
+			List<String> unsatCore = unsat.getUnsatCore();
 			int minFrame = getMinimumF(unsatCore);
 			Cube minCube = getMinimalNonInitialCube(pLiterals, unsatCore);
 
@@ -217,25 +220,26 @@ public class PdrSmt {
 			} else {
 				return new TCube(minCube, minFrame + 1);
 			}
-
-		case SAT:
+		} else if (result instanceof SatResult) {
+			SatResult sat = (SatResult) result;
 			Cube c = null;
 			if (option == Option.EXTRACT_MODEL) {
-				c = extractCube(script.getModel());
+				c = extractCube(sat.getModel());
 			}
-			script.pop(1);
 			return new TCube(c, TCube.FRAME_NULL);
-
-		default:
-			commentUnknownReason();
+		} else {
+			comment("Solver returned unknown result");
 			throw new StopException();
 		}
 	}
 
-	private int getMinimumF(Term[] unsatCore) {
+	private Result checkSat() {
+		return solver.query(new Symbol("false"));
+	}
+
+	private int getMinimumF(List<String> unsatCore) {
 		int min = TCube.FRAME_INF;
-		for (Term t : unsatCore) {
-			String name = t.toString();
+		for (String name : unsatCore) {
 			if (name.startsWith("F")) {
 				int frame = Integer.parseInt(name.substring(1));
 				if (frame < min) {
@@ -246,10 +250,9 @@ public class PdrSmt {
 		return min;
 	}
 
-	private Cube getMinimalNonInitialCube(List<PLiteral> pLiterals, Term[] unsatCore) {
+	private Cube getMinimalNonInitialCube(List<PLiteral> pLiterals, List<String> unsatCore) {
 		Cube result = new Cube();
-		for (Term t : unsatCore) {
-			String name = t.toString();
+		for (String name : unsatCore) {
 			if (name.startsWith("P")) {
 				int pIndex = Integer.parseInt(name.substring(1));
 				result.addPLiteral(pLiterals.get(pIndex));
@@ -357,4 +360,7 @@ public class PdrSmt {
 		return frame.toSexp(BASE);
 	}
 
+	private Sexp prime(PLiteral pLiteral) {
+		return pLiteral.toSexp(PRIME);
+	}
 }
