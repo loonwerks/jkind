@@ -2,7 +2,6 @@ package jkind.lustre;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Iterator;
 import java.util.List;
 
 public class LustreUtil {
@@ -65,15 +64,6 @@ public class LustreUtil {
 	}
 	
 	public static Expr and(List<Expr> conjuncts) {
-		if (conjuncts.isEmpty()) {
-			return new BoolExpr(true);
-		}
-		
-		Iterator<Expr> iterator = conjuncts.iterator();
-		Expr result = iterator.next();
-		while (iterator.hasNext()) {
-			result = new BinaryExpr(result, BinaryOp.AND, iterator.next());
-		}
-		return result;
+		return conjuncts.stream().reduce((acc, e) -> and(acc, e)).orElse(new BoolExpr(true));
 	}
 }
