@@ -266,5 +266,4 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	private Term lessEqual(Term left, Term right) {
 		return term("<=", left, right);
 	}
-
 }

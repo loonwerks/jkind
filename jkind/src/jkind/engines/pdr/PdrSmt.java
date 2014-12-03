@@ -35,14 +35,14 @@ public class PdrSmt extends ScriptUser {
 	private final List<VarDecl> varDecls;
 	private final Map<String, Term[]> variableLists = new HashMap<>();
 	private final Term[] base;
+	private final Term[] baseAbstract;
+	private final Term[] primeAbstract;
 	private final Term[] prime;
 
 	private final Term I;
 	private final Term P;
 
 	private final Set<Term> predicates = new HashSet<>();
-	private final Term[] baseAbstract;
-	private final Term[] primeAbstract;
 
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
@@ -58,14 +58,14 @@ public class PdrSmt extends ScriptUser {
 		this.varDecls = lustre2Term.getVariables();
 
 		this.base = getVariables("");
+		this.baseAbstract = getVariables("-");
+		this.primeAbstract = getVariables("-'");
 		this.prime = getVariables("'");
-
+		
 		this.I = lustre2Term.getInit();
 		defineTransitionRelation(lustre2Term.getTransition());
 		this.P = lustre2Term.encodeProperty(property);
 
-		this.baseAbstract = getVariables("-");
-		this.primeAbstract = getVariables("-'");
 		script.assertTerm(T(baseAbstract, primeAbstract));
 
 		addPredicates(PredicateCollector.collect(I));
