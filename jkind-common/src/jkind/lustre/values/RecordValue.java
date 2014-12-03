@@ -2,10 +2,9 @@ package jkind.lustre.values;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 import jkind.lustre.BinaryOp;
@@ -39,19 +38,8 @@ public class RecordValue extends Value {
 
 	@Override
 	public String toString() {
-		StringBuilder text = new StringBuilder();
-		text.append("{");
-		Iterator<Entry<String, Value>> iterator = fields.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, Value> entry = iterator.next();
-			text.append(entry.getKey());
-			text.append(" = ");
-			text.append(entry.getValue());
-			if (iterator.hasNext()) {
-				text.append("; ");
-			}
-		}
-		text.append("}");
+		StringJoiner text = new StringJoiner("; ", "{", "}");
+		fields.forEach((field, value) -> text.add(field + " = " + value));
 		return text.toString();
 	}
 

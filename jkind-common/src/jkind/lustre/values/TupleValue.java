@@ -1,8 +1,8 @@
 package jkind.lustre.values;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
@@ -29,15 +29,8 @@ public class TupleValue extends Value {
 
 	@Override
 	public String toString() {
-		StringBuilder text = new StringBuilder();
-		text.append("(");
-		Iterator<Value> iterator = elements.iterator();
-		text.append(iterator.next());
-		while (iterator.hasNext()) {
-			text.append(", ");
-			text.append(iterator.next());
-		}
-		text.append(")");
+		StringJoiner text = new StringJoiner(", ", "(", ")");
+		elements.forEach(v -> text.add(v.toString()));
 		return text.toString();
 	}
 

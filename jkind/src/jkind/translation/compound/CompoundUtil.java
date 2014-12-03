@@ -2,7 +2,6 @@ package jkind.translation.compound;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +10,6 @@ import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
-import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordType;
@@ -42,19 +40,6 @@ public class CompoundUtil {
 		List<ExprType> result = new ArrayList<>();
 		for (Entry<String, Type> entry : fields.entrySet()) {
 			result.addAll(flattenExpr(new RecordAccessExpr(expr, entry.getKey()), entry.getValue()));
-		}
-		return result;
-	}
-
-	public static Expr conjoin(List<Expr> exprs) {
-		if (exprs.isEmpty()) {
-			return new BoolExpr(true);
-		}
-		
-		Iterator<Expr> iterator = exprs.iterator();
-		Expr result = iterator.next();
-		while (iterator.hasNext()) {
-			result = new BinaryExpr(result, BinaryOp.AND, iterator.next());
 		}
 		return result;
 	}

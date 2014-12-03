@@ -2,7 +2,6 @@ package jkind.engines;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import jkind.JKindSettings;
@@ -34,25 +33,19 @@ public class CertificateEngine extends AbstractInvariantGenerationEngine {
 
 	private void scrubVarDecls() {
 		Map<String, Type> map = Util.getTypeMap(spec.node);
-		ListIterator<VarDecl> iterator = usableVarDecls.listIterator();
-		while (iterator.hasNext()) {
-			VarDecl vd = iterator.next();
-			Type type = map.get(vd.id);
-			if (type == null || !Util.getName(type).equals(Util.getName(vd.type))) {
-				iterator.remove();
-			}
+		usableVarDecls.removeIf(vd -> !baseTypesMatch(map.get(vd.id), vd.type));
+	}
+	
+	private boolean baseTypesMatch(Type type1, Type type2) {
+		if (type1 == null || type2 == null) {
+			return false;
 		}
+		return Util.getName(type1).equals(Util.getName(type2));
 	}
 
 	private void scrubInvariants() {
-		ListIterator<Expr> iterator = potentialInvariants.listIterator();
 		VariableUsageChecker checker = new VariableUsageChecker(usableVarDecls);
-		while (iterator.hasNext()) {
-			Expr inv = iterator.next();
-			if (!checker.check(inv)) {
-				iterator.remove();
-			}
-		}
+		potentialInvariants.removeIf(inv -> !checker.check(inv));
 	}
 
 	@Override

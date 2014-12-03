@@ -6,6 +6,7 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.Node;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
@@ -35,7 +36,7 @@ public class FlattenCompoundComparisons extends TypeAwareAstMapVisitor {
 				List<Expr> rightExprs = CompoundUtil.mapExprs(rightExprTypes);
 
 				List<Expr> exprs = CompoundUtil.mapBinary(BinaryOp.EQUAL, leftExprs, rightExprs);
-				Expr equal = CompoundUtil.conjoin(exprs);
+				Expr equal = LustreUtil.and(exprs);
 				if (e.op == BinaryOp.EQUAL) {
 					return equal;
 				} else {

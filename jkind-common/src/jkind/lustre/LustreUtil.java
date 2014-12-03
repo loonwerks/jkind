@@ -2,6 +2,8 @@ package jkind.lustre;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Iterator;
+import java.util.List;
 
 public class LustreUtil {
 	public static Expr typeConstraint(String id, Type type) {
@@ -60,5 +62,18 @@ public class LustreUtil {
 
 	public static RealExpr real(BigInteger bi) {
 		return new RealExpr(new BigDecimal(bi));
+	}
+	
+	public static Expr and(List<Expr> conjuncts) {
+		if (conjuncts.isEmpty()) {
+			return new BoolExpr(true);
+		}
+		
+		Iterator<Expr> iterator = conjuncts.iterator();
+		Expr result = iterator.next();
+		while (iterator.hasNext()) {
+			result = new BinaryExpr(result, BinaryOp.AND, iterator.next());
+		}
+		return result;
 	}
 }
