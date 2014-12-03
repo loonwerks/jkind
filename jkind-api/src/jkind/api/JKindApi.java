@@ -22,15 +22,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public class JKindApi extends KindApi {
 	protected Integer n = null;
 
-	public boolean inductiveCounterexamples = false;
+	protected boolean boundedModelChecking = true;
+	protected boolean kInduction = true;
+	protected boolean invariantGeneration = true;
+	protected Integer pdrMax = null;
+	protected boolean inductiveCounterexamples = false;
 	protected boolean reduceInvariants = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean intervalGeneralization = false;
-	
+
 	protected SolverOption solver = null;
 
 	/**
-	 * Set a maximum depth for BMC and k-induction
+	 * Set the maximum depth for BMC and k-induction
 	 * 
 	 * @param n
 	 *            A non-negative integer
@@ -42,6 +46,31 @@ public class JKindApi extends KindApi {
 		this.n = n;
 	}
 
+	public void disableBoundedModelChecking() {
+		boundedModelChecking = false;
+	}
+
+	public void disableKInduction() {
+		kInduction = false;
+	}
+
+	public void disableInvariantGeneration() {
+		invariantGeneration = false;
+	}
+
+	/**
+	 * Set the maximum number of PDR instances to run
+	 * 
+	 * @param pdrMax
+	 *            A non-negative integer
+	 */
+	public void setPdrMax(int pdrMax) {
+		if (pdrMax < 0) {
+			throw new JKindException("pdrMax must be positive");
+		}
+		this.pdrMax = pdrMax;
+	}
+
 	/**
 	 * Produce inductive counterexamples for 'unknown' properties
 	 */
@@ -50,7 +79,7 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
-	 * Set the solver to use (Yices, Z3, CVC4)
+	 * Set the solver to use (Yices, Z3, CVC4, ...)
 	 */
 	public void setSolver(SolverOption solver) {
 		this.solver = solver;
@@ -77,7 +106,7 @@ public class JKindApi extends KindApi {
 	public void setIntervalGeneralization() {
 		intervalGeneralization = true;
 	}
-
+	
 	/**
 	 * Run JKind on a Lustre program
 	 * 
@@ -193,12 +222,21 @@ public class JKindApi extends KindApi {
 			args.add("-n");
 			args.add(n.toString());
 		}
+		if (!boundedModelChecking) {
+			args.add("-no_bmc");
+		}
+		if (!kInduction) {
+			args.add("-no_k_induction");
+		}
+		if (!invariantGeneration) {
+			args.add("-no_inv_gen");
+		}
+		if (pdrMax != null) {
+			args.add("-pdr_max");
+			args.add(pdrMax.toString());
+		}
 		if (inductiveCounterexamples) {
 			args.add("-induct_cex");
-		}
-		if (solver != null) {
-			args.add("-solver");
-			args.add(solver.toString());
 		}
 		if (reduceInvariants) {
 			args.add("-reduce_inv");
@@ -209,7 +247,11 @@ public class JKindApi extends KindApi {
 		if (intervalGeneralization) {
 			args.add("-interval");
 		}
-
+		if (solver != null) {
+			args.add("-solver");
+			args.add(solver.toString());
+		}
+		
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
