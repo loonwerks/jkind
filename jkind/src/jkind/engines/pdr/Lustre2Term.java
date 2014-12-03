@@ -35,7 +35,8 @@ import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
-	public static final String INIT = "%init";
+	private static final String INIT = "%init";
+	
 	private final Node node;
 	private boolean pre = false;
 
