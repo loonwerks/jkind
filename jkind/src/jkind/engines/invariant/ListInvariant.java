@@ -2,15 +2,12 @@ package jkind.engines.invariant;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
 import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.Value;
 import jkind.solvers.Model;
-import jkind.util.StreamIndex;
+import jkind.solvers.ModelEvaluator;
 
 public class ListInvariant implements Invariant {
 	private final List<Expr> exprs = new ArrayList<>();
@@ -31,20 +28,8 @@ public class ListInvariant implements Invariant {
 
 	@Override
 	public void refine(Model model, int k) {
-		Evaluator eval = new Evaluator() {
-			@Override
-			public Value visit(IdExpr e) {
-				return model.getValue(new StreamIndex(e.id, k));
-			}
-		};
-		
-		ListIterator<Expr> iterator = exprs.listIterator();
-		while (iterator.hasNext()) {
-			Expr expr = iterator.next();
-			if (expr.accept(eval) == BooleanValue.FALSE) {
-				iterator.remove();
-			}
-		}
+		Evaluator evaluator = new ModelEvaluator(model, k);
+		exprs.removeIf(e -> evaluator.eval(e) == BooleanValue.FALSE);
 	}
 
 	@Override

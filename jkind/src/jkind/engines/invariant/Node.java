@@ -10,10 +10,8 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.values.BooleanValue;
-import jkind.sexp.Sexp;
-import jkind.solvers.Eval;
 import jkind.solvers.Model;
-import jkind.translation.Lustre2Sexp;
+import jkind.solvers.ModelEvaluator;
 
 public class Node {
 	private List<Expr> candidates;
@@ -84,8 +82,8 @@ public class Node {
 	}
 
 	private boolean isTrue(Expr expr, int offset, Model model) {
-		Sexp sexp = expr.accept(new Lustre2Sexp(offset));
-		return new Eval(model).eval(sexp) == BooleanValue.TRUE;
+		ModelEvaluator evaluator = new ModelEvaluator(model, offset);
+		return evaluator.eval(expr) == BooleanValue.TRUE;
 	}
 
 	@Override

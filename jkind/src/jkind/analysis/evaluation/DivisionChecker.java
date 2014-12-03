@@ -86,7 +86,7 @@ public class DivisionChecker extends AstIterVisitor {
 		e.right.accept(this);
 
 		if (e.op == BinaryOp.DIVIDE || e.op == BinaryOp.INT_DIVIDE || e.op == BinaryOp.MODULUS) {
-			int rightSignum = signum(e.right.accept(constantEvaluator));
+			int rightSignum = signum(constantEvaluator.eval(e.right));
 
 			if (rightSignum == 0) {
 				Output.error(e.location, "division by zero");

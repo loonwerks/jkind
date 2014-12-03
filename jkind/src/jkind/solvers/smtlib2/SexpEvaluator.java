@@ -1,4 +1,4 @@
-package jkind.solvers;
+package jkind.solvers.smtlib2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +12,14 @@ import jkind.lustre.values.Value;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Model;
 import jkind.util.BigFraction;
 import jkind.util.Util;
 
-public class Eval {
+public class SexpEvaluator {
 	private Model model;
 
-	public Eval(Model model) {
+	public SexpEvaluator(Model model) {
 		this.model = model;
 	}
 

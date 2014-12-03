@@ -35,6 +35,14 @@ import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public abstract class Evaluator implements ExprVisitor<Value> {
+	public Value eval(Expr e) {
+		return e.accept(this);
+	}
+
+	public IntegerValue evalInt(Expr e) {
+		return (IntegerValue) e.accept(this);
+	}
+
 	@Override
 	public Value visit(ArrayAccessExpr e) {
 		ArrayValue array = (ArrayValue) e.array.accept(this);

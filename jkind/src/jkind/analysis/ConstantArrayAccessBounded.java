@@ -12,7 +12,6 @@ import jkind.lustre.Expr;
 import jkind.lustre.Location;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.lustre.values.IntegerValue;
 import jkind.lustre.visitors.ExprIterVisitor;
 import jkind.lustre.visitors.TypeReconstructor;
 
@@ -84,7 +83,6 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 	}
 
 	private BigInteger evalIndex(Expr e) {
-		IntegerValue iv = (IntegerValue) e.accept(constantEvaluator);
-		return iv.value;
+		return constantEvaluator.evalInt(e).value;
 	}
 }

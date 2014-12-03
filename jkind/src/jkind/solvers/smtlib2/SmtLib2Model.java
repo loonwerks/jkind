@@ -7,7 +7,6 @@ import java.util.Set;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.sexp.Sexp;
-import jkind.solvers.Eval;
 import jkind.solvers.Model;
 
 public class SmtLib2Model extends Model {
@@ -27,7 +26,7 @@ public class SmtLib2Model extends Model {
 		if (sexp == null) {
 			return getDefaultValue(varTypes.get(name));
 		}
-		return new Eval(this).eval(sexp);
+		return new SexpEvaluator(this).eval(sexp);
 	}
 
 	@Override

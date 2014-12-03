@@ -36,7 +36,7 @@ public class RemoveNonConstantArrayIndices extends TypeAwareAstMapVisitor {
 	}
 
 	private IntExpr evalIndex(Expr e) {
-		IntegerValue value = (IntegerValue) e.accept(new ConstantEvaluator());
+		IntegerValue value = new ConstantEvaluator().evalInt(e);
 		return new IntExpr(value.value);
 	}
 
