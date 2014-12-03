@@ -142,7 +142,7 @@ public class Director extends MessageHandler {
 
 	private void createAndStartEngines() {
 		createEngines();
-		threads.stream().forEach(Thread::start);
+		threads.forEach(Thread::start);
 	}
 
 	private void createEngines() {
