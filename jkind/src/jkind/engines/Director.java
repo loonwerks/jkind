@@ -10,8 +10,9 @@ import java.util.Map;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Output;
-import jkind.certificate.CertificateInput;
-import jkind.certificate.CertificateOutput;
+import jkind.advice.Advice;
+import jkind.advice.AdviceReader;
+import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
@@ -58,8 +59,8 @@ public class Director extends MessageHandler {
 	private final List<Engine> engines = new ArrayList<>();
 	private final List<Thread> threads = new ArrayList<>();
 
-	private CertificateInput certificateInput;
-	private CertificateOutput certificateOutput;
+	private Advice inputAdvice;
+	private AdviceWriter adviceWriter;
 
 	public Director(JKindSettings settings, Specification spec) {
 		this.settings = settings;
@@ -69,13 +70,13 @@ public class Director extends MessageHandler {
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(spec.node.properties);
 
-		if (settings.readCertificate != null) {
-			this.certificateInput = new CertificateInput(settings.readCertificate);
+		if (settings.readAdvice != null) {
+			this.inputAdvice = AdviceReader.read(settings.readAdvice);
 		}
 
-		if (settings.writeCertificate != null) {
-			this.certificateOutput = new CertificateOutput(settings.writeCertificate);
-			this.certificateOutput.addVarDecls(Util.getVarDecls(spec.node));
+		if (settings.writeAdvice != null) {
+			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
+			this.adviceWriter.addVarDecls(Util.getVarDecls(spec.node));
 		}
 	}
 
@@ -114,7 +115,7 @@ public class Director extends MessageHandler {
 	private void postProcessing() {
 		writeUnknowns();
 		writer.end();
-		writeCertificate();
+		writeAdvice();
 		printSummary();
 	}
 
@@ -174,8 +175,8 @@ public class Director extends MessageHandler {
 			addEngine(new PdrEngine(spec, settings, this));
 		}
 
-		if (settings.readCertificate != null) {
-			addEngine(new CertificateEngine(spec, settings, this, certificateInput));
+		if (settings.readAdvice != null) {
+			addEngine(new AdviceEngine(spec, settings, this, inputAdvice));
 		}
 	}
 
@@ -236,9 +237,9 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	private void writeCertificate() {
-		if (certificateOutput != null) {
-			certificateOutput.write();
+	private void writeAdvice() {
+		if (adviceWriter != null) {
+			adviceWriter.write();
 		}
 	}
 
@@ -264,8 +265,8 @@ public class Director extends MessageHandler {
 		validProperties.addAll(newValid);
 		inductiveCounterexamples.keySet().removeAll(newValid);
 
-		if (certificateOutput != null) {
-			certificateOutput.addInvariants(vm.invariants);
+		if (adviceWriter != null) {
+			adviceWriter.addInvariants(vm.invariants);
 		}
 
 		List<Expr> invariants = settings.reduceInvariants ? vm.invariants : Collections.emptyList();

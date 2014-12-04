@@ -21,8 +21,8 @@ public class JKindSettings {
 	public SolverOption solver = SolverOption.YICES;
 	public boolean scratch = false;
 
-	public String writeCertificate = null;
-	public String readCertificate = null;
+	public String writeAdvice = null;
+	public String readAdvice = null;
 
 	public String filename = null;
 }
