@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.util.StreamIndex;
 
@@ -13,7 +12,7 @@ public class SimpleModel extends Model {
 	private final Map<String, Value> values = new HashMap<>();
 
 	public SimpleModel() {
-		super(Collections.<String, Type> emptyMap());
+		super(Collections.emptyMap());
 	}
 
 	public void addValue(StreamIndex si, Value value) {
