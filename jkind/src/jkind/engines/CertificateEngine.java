@@ -8,7 +8,7 @@ import jkind.JKindSettings;
 import jkind.certificate.CertificateInput;
 import jkind.certificate.VariableUsageChecker;
 import jkind.engines.invariant.AbstractInvariantGenerationEngine;
-import jkind.engines.invariant.Invariant;
+import jkind.engines.invariant.StructuredInvariant;
 import jkind.engines.invariant.ListInvariant;
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
@@ -49,7 +49,7 @@ public class CertificateEngine extends AbstractInvariantGenerationEngine {
 	}
 
 	@Override
-	protected Invariant createInitialInvariant() {
+	protected StructuredInvariant createInitialInvariant() {
 		return new ListInvariant(potentialInvariants);
 	}
 }

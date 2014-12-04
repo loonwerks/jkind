@@ -19,6 +19,7 @@ import jkind.lustre.IdExpr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
+import jkind.solvers.ModelEvaluator;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
@@ -34,7 +35,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 	@Override
 	public void main() {
 		try {
-			Invariant invariant = createInitialInvariant();
+			StructuredInvariant invariant = createInitialInvariant();
 			if (invariant.isTrivial()) {
 				comment("No invariants proposed");
 				return;
@@ -58,9 +59,9 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		}
 	}
 
-	protected abstract Invariant createInitialInvariant();
+	protected abstract StructuredInvariant createInitialInvariant();
 
-	private void refineBaseStep(int k, Invariant invariant) {
+	private void refineBaseStep(int k, StructuredInvariant invariant) {
 		solver.push();
 		Result result;
 
@@ -76,7 +77,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				invariant.refine(model, k);
+				invariant.refine(new ModelEvaluator(model, k));
 				comment("Finished single base step refinement");
 			} else if (result instanceof UnknownResult) {
 				throw new StopException();
@@ -86,9 +87,9 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		solver.pop();
 	}
 
-	private void refineInductiveStep(int k, Invariant original) {
+	private void refineInductiveStep(int k, StructuredInvariant original) {
 		solver.push();
-		Invariant invariant = original.copy();
+		StructuredInvariant invariant = original.copy();
 		Result result;
 
 		for (int i = 0; i <= k; i++) {
@@ -102,7 +103,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 
 			if (result instanceof SatResult) {
 				Model model = ((SatResult) result).getModel();
-				invariant.refine(model, k);
+				invariant.refine(new ModelEvaluator(model, k));
 				comment("Finished single inductive step refinement");
 			}
 		} while (!invariant.isTrivial() && result instanceof SatResult);
@@ -121,7 +122,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		}
 	}
 
-	private Sexp getInductiveQuery(int k, Invariant invariant) {
+	private Sexp getInductiveQuery(int k, StructuredInvariant invariant) {
 		List<Expr> exprs = invariant.toExprs();
 		List<Sexp> hyps = new ArrayList<>();
 		for (int i = 0; i < k; i++) {
@@ -132,7 +133,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
-	private void sendValidAndInvariant(Invariant invariant, int k) {
+	private void sendValidAndInvariant(StructuredInvariant invariant, int k) {
 		List<Expr> invs = invariant.toFinalInvariants();
 		comment("Sending invariants:");
 		for (Expr inv : invs) {

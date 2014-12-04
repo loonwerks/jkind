@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.values.BooleanValue;
-import jkind.solvers.Model;
-import jkind.solvers.ModelEvaluator;
 
 public class Node {
 	private List<Expr> candidates;
@@ -63,12 +62,12 @@ public class Node {
 		return invariants;
 	}
 
-	public List<Node> split(Model model, int offset) {
+	public List<Node> split(Evaluator eval) {
 		List<Expr> falses = new ArrayList<>();
 		List<Expr> trues = new ArrayList<>();
 
 		for (Expr candidate : candidates) {
-			if (isTrue(candidate, offset, model)) {
+			if (eval.eval(candidate) == BooleanValue.TRUE) {
 				trues.add(candidate);
 			} else {
 				falses.add(candidate);
@@ -79,11 +78,6 @@ public class Node {
 		chain.add(new Node(falses));
 		chain.add(new Node(trues));
 		return chain;
-	}
-
-	private boolean isTrue(Expr expr, int offset, Model model) {
-		ModelEvaluator evaluator = new ModelEvaluator(model, offset);
-		return evaluator.eval(expr) == BooleanValue.TRUE;
 	}
 
 	@Override

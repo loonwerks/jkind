@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
-import jkind.solvers.Model;
 
-public class GraphInvariant implements Invariant {
+public class GraphInvariant implements StructuredInvariant {
 	private List<Node> nodes = new ArrayList<>();
 	private final Map<Node, Set<Node>> incoming = new HashMap<>();
 	private final Map<Node, Set<Node>> outgoing = new HashMap<>();
@@ -123,20 +123,20 @@ public class GraphInvariant implements Invariant {
 	}
 
 	@Override
-	public void refine(Model model, int k) {
-		splitNodes(model, k);
+	public void refine(Evaluator eval) {
+		splitNodes(eval);
 		removeEmptyNodes();
 		removeUselessNodes();
 	}
 
-	private void splitNodes(Model model, int k) {
+	private void splitNodes(Evaluator eval) {
 		List<Node> newNodes = new ArrayList<>();
 		List<Edge> newEdges = new ArrayList<>();
 		Map<Node, List<Node>> chains = new HashMap<>();
 
 		// Split nodes into chains
 		for (Node curr : nodes) {
-			List<Node> chain = curr.split(model, k);
+			List<Node> chain = curr.split(eval);
 			chains.put(curr, chain);
 			newNodes.addAll(chain);
 			if (!chain.get(0).isEmpty() && !chain.get(1).isEmpty()) {
@@ -204,7 +204,7 @@ public class GraphInvariant implements Invariant {
 	}
 
 	@Override
-	public Invariant copy() {
+	public StructuredInvariant copy() {
 		return new GraphInvariant(this);
 	}
 
@@ -221,6 +221,6 @@ public class GraphInvariant implements Invariant {
 	}
 
 	@Override
-	public void reduceProven(Invariant proven) {
+	public void reduceProven(StructuredInvariant proven) {
 	}
 }

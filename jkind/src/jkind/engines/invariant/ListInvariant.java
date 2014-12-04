@@ -6,10 +6,8 @@ import java.util.List;
 import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.Expr;
 import jkind.lustre.values.BooleanValue;
-import jkind.solvers.Model;
-import jkind.solvers.ModelEvaluator;
 
-public class ListInvariant implements Invariant {
+public class ListInvariant implements StructuredInvariant {
 	private final List<Expr> exprs = new ArrayList<>();
 	
 	public ListInvariant(List<Expr> exprs) {
@@ -27,9 +25,8 @@ public class ListInvariant implements Invariant {
 	}
 
 	@Override
-	public void refine(Model model, int k) {
-		Evaluator evaluator = new ModelEvaluator(model, k);
-		exprs.removeIf(e -> evaluator.eval(e) == BooleanValue.FALSE);
+	public void refine(Evaluator eval) {
+		exprs.removeIf(e -> eval.eval(e) == BooleanValue.FALSE);
 	}
 
 	@Override
@@ -38,7 +35,7 @@ public class ListInvariant implements Invariant {
 	}
 
 	@Override
-	public void reduceProven(Invariant proven) {
+	public void reduceProven(StructuredInvariant proven) {
 		if (proven instanceof ListInvariant) {
 			ListInvariant listProven = (ListInvariant) proven;
 			exprs.removeAll(listProven.exprs);
