@@ -12,41 +12,39 @@ import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.Label;
 import jkind.solvers.Model;
+import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
-import jkind.solvers.Solver;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.translation.TransitionRelation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 
-public abstract class SmtLib2Solver extends Solver {
-	final protected static String DONE = "@DONE";
+public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	final protected String name;
 
-	public SmtLib2Solver(ProcessBuilder pb, String name) {
-		super(pb);
+	public SmtLib2Solver(String scratchBase, ProcessBuilder pb, String name) {
+		super(scratchBase, pb);
 		this.name = name;
 	}
 
 	@Override
-	public void send(Sexp sexp) {
+	public void assertSexp(Sexp sexp) {
+		send(new Cons("assert", sexp));
+	}
+
+	protected void send(Sexp sexp) {
 		send(Quoting.quoteSexp(sexp).toString());
 	}
 
 	protected void send(String str) {
-		debug(str);
+		scratch(str);
 		try {
 			toSolver.append(str);
 			toSolver.newLine();
@@ -85,39 +83,23 @@ public abstract class SmtLib2Solver extends Solver {
 		return new Cons(args);
 	}
 
-	private int labelCount = 1;
-
-	@Override
-	public Label labelledAssert(Sexp sexp) {
-		String name = "a" + labelCount++;
-		send(new Cons("assert", new Cons("!", sexp, new Symbol(":named"), new Symbol(name))));
-		return new Label(name);
-	}
-
-	@Override
-	public void retract(Label label) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Label weightedAssert(Sexp sexp, int weight) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Override
 	public Result query(Sexp sexp) {
-		Result result;
+		Result result = null;
 		push();
 
-		send(new Cons("assert", new Cons("not", sexp)));
+		assertSexp(new Cons("not", sexp));
 		send("(check-sat)");
 		send("(echo \"" + DONE + "\")");
-		if (isSat(readFromSolver())) {
+		String status = readFromSolver();
+		if (isSat(status)) {
 			send("(get-model)");
 			send("(echo \"" + DONE + "\")");
 			result = new SatResult(parseModel(readFromSolver()));
-		} else {
+		} else if (isUnsat(status)) {
 			result = new UnsatResult();
+		} else {
+			throw new IllegalArgumentException("Unknown result: " + result);
 		}
 
 		pop();
@@ -138,22 +120,22 @@ public abstract class SmtLib2Solver extends Solver {
 			StringBuilder content = new StringBuilder();
 			while (true) {
 				line = fromSolver.readLine();
-				debug("; " + name + ": " + line);
+				comment(name + ": " + line);
 				if (line == null) {
 					throw new JKindException(name + " terminated unexpectedly");
 				} else if (line.contains("define-fun " + TransitionRelation.T + " ")) {
 					// No need to parse the transition relation
+				} else if (isDone(line)) {
+					break;
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {
-						debug("; " + name + ": " + line);
-						if (line.contains(DONE)) {
+						comment(name + ": " + line);
+						if (isDone(line)) {
 							break;
 						}
 					}
 					throw new JKindException(name + " error (see scratch file for details)");
-				} else if (line.contains(DONE)) {
-					break;
 				} else {
 					content.append(line);
 					content.append("\n");
@@ -168,36 +150,24 @@ public abstract class SmtLib2Solver extends Solver {
 		}
 	}
 
+	protected boolean isDone(String line) {
+		return line.contains(DONE);
+	}
+
 	protected Model parseModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		SmtLib2Parser parser = new SmtLib2Parser(tokens);
-		ModelContext ctx;
-
 		parser.removeErrorListeners();
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		parser.setErrorHandler(new BailErrorStrategy());
-		try {
-			ctx = parser.model();
-		} catch (ParseCancellationException e) {
-			tokens.reset();
-			parser.addErrorListener(new StdoutErrorListener());
-			parser.setErrorHandler(new DefaultErrorStrategy());
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			ctx = parser.model();
-		}
+		parser.addErrorListener(new StdoutErrorListener());
+		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			throw new JKindException("Error parsing " + name + " output: " + string);
 		}
 
 		return ModelExtractor.getModel(ctx, varTypes);
-	}
-
-	@Override
-	public Result maxsatQuery(Sexp sexp) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -208,5 +178,10 @@ public abstract class SmtLib2Solver extends Solver {
 	@Override
 	public void pop() {
 		send("(pop 1)");
+	}
+
+	@Override
+	public String getSolverExtension() {
+		return "smt2";
 	}
 }

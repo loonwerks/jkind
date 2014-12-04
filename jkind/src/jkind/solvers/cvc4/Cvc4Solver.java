@@ -5,8 +5,8 @@ import java.io.File;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Cvc4Solver extends SmtLib2Solver {
-	public Cvc4Solver() {
-		super(new ProcessBuilder(getCVC4(), "--lang", "smt"), "CVC4");
+	public Cvc4Solver(String scratchBase) {
+		super(scratchBase, new ProcessBuilder(getCVC4(), "--lang", "smt"), "CVC4");
 	}
 
 	private static String getCVC4() {

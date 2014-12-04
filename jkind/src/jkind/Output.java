@@ -31,11 +31,15 @@ public class Output {
 	}
 
 	public static void output(Level level, String text) {
-		println(level + " " + text);
+		if (level != Level.IGNORE) {
+			println(level + " " + text);
+		}
 	}
 
 	public static void output(Level level, Location loc, String text) {
-		println(level + " at line " + loc + " " + text);
+		if (level != Level.IGNORE) {
+			println(level + " at line " + loc + " " + text);
+		}
 	}
 
 	public static void println(String text) {

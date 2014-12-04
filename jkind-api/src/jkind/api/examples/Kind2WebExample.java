@@ -33,6 +33,7 @@ public class Kind2WebExample {
 		args.add("-xml");
 		args.add("--timeout_wall");
 		args.add("100");
+		args.add("-v");
 		return args;
 	}
 

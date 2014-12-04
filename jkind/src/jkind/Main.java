@@ -4,21 +4,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import jkind.lustre.ArrayType;
+import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecordType;
+import jkind.lustre.VarDecl;
+import jkind.lustre.parsing.FlattenIds;
 import jkind.lustre.parsing.LustreLexer;
 import jkind.lustre.parsing.LustreParser;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;
 import jkind.lustre.parsing.StdoutErrorListener;
+import jkind.lustre.parsing.ValidIdChecker;
+import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 /**
  * This class serves as a single entry point for all JKind-based command line
@@ -30,7 +33,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
  * runnable JARs allow only a single entry point.
  */
 public class Main {
-	final public static String VERSION = "1.6";
+	final public static String VERSION = "1.6.1";
 
 	public static void main(String[] args) {
 		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -benchmark";
@@ -75,33 +78,56 @@ public class Main {
 		if (!file.canRead()) {
 			Output.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
 		}
-		
-		CharStream stream = new ANTLRFileStream(filename);
+
+		return parseLustre(new ANTLRFileStream(filename));
+	}
+
+	public static Program parseLustre(CharStream stream) throws RecognitionException {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
-
-		ProgramContext program;
-
-		// Due to performance issues in the Antlr 4.0 release, we use a 2-stage
-		// parsing approach. https://github.com/antlr/antlr4/issues/192
 		parser.removeErrorListeners();
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		parser.setErrorHandler(new BailErrorStrategy());
-		try {
-			program = parser.program();
-		} catch (ParseCancellationException e) {
-			tokens.reset();
-			parser.addErrorListener(new StdoutErrorListener());
-			parser.setErrorHandler(new DefaultErrorStrategy());
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			program = parser.program();
-		}
+		parser.addErrorListener(new StdoutErrorListener());
+		ProgramContext program = parser.program();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			System.exit(ExitCodes.PARSE_ERROR);
 		}
 
-		return new LustreToAstVisitor().program(program);
+		return flattenOrCheck(new LustreToAstVisitor().program(program));
+	}
+
+	/**
+	 * We allow extended ids (with ~ [ ] .) only when the program is a single
+	 * node with simple types. This is useful for working with output from
+	 * JLustre2Kind.
+	 */
+	private static Program flattenOrCheck(Program program) {
+		if (isSimple(program)) {
+			return new FlattenIds().visit(program);
+		} else {
+			if (!ValidIdChecker.check(program)) {
+				System.exit(ExitCodes.PARSE_ERROR);
+			}
+			return program;
+		}
+	}
+
+	private static boolean isSimple(Program program) {
+		if (!program.types.isEmpty()) {
+			return false;
+		} else if (!program.constants.isEmpty()) {
+			return false;
+		} else if (program.nodes.size() != 1) {
+			return false;
+		}
+
+		Node main = program.getMainNode();
+		for (VarDecl vd : Util.getVarDecls(main)) {
+			if (vd.type instanceof ArrayType || vd.type instanceof RecordType) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

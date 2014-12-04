@@ -8,7 +8,7 @@ import java.util.Map;
 
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
@@ -42,32 +42,32 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants) {
 		for (String prop : props) {
-			writeValid(prop, k, runtime, invariants);
+			writeValid(prop, source, k, runtime, invariants);
 		}
 	}
 
-	public void writeValid(String prop, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
-		out.println("    <Answer>valid</Answer>");
+		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
-		for (Invariant invariant : invariants) {
+		for (Expr invariant : invariants) {
 			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 		}
 		out.println("  </Property>");
 	}
 
-	private String escape(Invariant invariant) {
+	private String escape(Expr invariant) {
 		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	@Override
-	public void writeInvalid(String prop, Counterexample cex, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
-		out.println("    <Answer>falsifiable</Answer>");
+		out.println("    <Answer source=\"" + source + "\">falsifiable</Answer>");
 		out.println("    <K>" + cex.getLength() + "</K>");
 		writeCounterexample(cex);
 		out.println("  </Property>");
@@ -133,5 +133,10 @@ public class XmlWriter extends Writer {
 			writeCounterexample(icm);
 		}
 		out.println("  </Property>");
+	}
+
+	@Override
+	public void writeBaseStep(List<String> props, int k) {
+		out.println("  <Progress source=\"bmc\">" + k + "</Progress>");
 	}
 }

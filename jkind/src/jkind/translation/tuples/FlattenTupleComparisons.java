@@ -3,12 +3,12 @@ package jkind.translation.tuples;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
+import jkind.lustre.LustreUtil;
 import jkind.lustre.Node;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.AstMapVisitor;
-import jkind.translation.compound.CompoundUtil;
 
 /**
  * Expand equalities and inequalities on tuples
@@ -26,7 +26,7 @@ public class FlattenTupleComparisons extends AstMapVisitor {
 			TupleExpr left = (TupleExpr) e.left.accept(this);
 			TupleExpr right = (TupleExpr) e.right.accept(this);
 			TupleExpr tuple = TupleUtil.mapBinary(BinaryOp.EQUAL, left, right);
-			Expr equal = CompoundUtil.conjoin(tuple.elements);
+			Expr equal = LustreUtil.and(tuple.elements);
 			if (e.op == BinaryOp.EQUAL) {
 				return equal;
 			} else {

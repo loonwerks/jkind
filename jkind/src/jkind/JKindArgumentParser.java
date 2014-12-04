@@ -2,42 +2,52 @@ package jkind;
 
 import java.math.BigInteger;
 
+import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
 public class JKindArgumentParser {
-	final private static String BMC = "bmc";
-	final private static String EXCEL = "excel";
-	final private static String INDUCT_CEX = "induct_cex";
-	final private static String INTERVAL = "interval";
-	final private static String N = "n";
-	final private static String NO_INV_GEN = "no_inv_gen";
-	final private static String REDUCE_INV = "reduce_inv";
-	final private static String SCRATCH = "scratch";
-	final private static String SMOOTH = "smooth";
-	final private static String SOLVER = "solver";
-	final private static String TIMEOUT = "timeout";
-	final private static String XML = "xml";
-	final private static String XML_TO_STDOUT = "xml_to_stdout";
-	final private static String VERSION = "version";
-	final private static String HELP = "help";
+	private static final String EXCEL = "excel";
+	private static final String INDUCT_CEX = "induct_cex";
+	private static final String INTERVAL = "interval";
+	private static final String N = "n";
+	private static final String NO_BMC = "no_bmc";
+	private static final String NO_INV_GEN = "no_inv_gen";
+	private static final String NO_K_INDUCTION = "no_k_induction";
+	private static final String PDR_MAX = "pdr_max";
+	private static final String READ_CERT = "read_cert";
+	private static final String REDUCE_INV = "reduce_inv";
+	private static final String SCRATCH = "scratch";
+	private static final String SMOOTH = "smooth";
+	private static final String SOLVER = "solver";
+	private static final String TIMEOUT = "timeout";
+	private static final String WRITE_CERT = "write_cert";
+	private static final String XML = "xml";
+	private static final String XML_TO_STDOUT = "xml_to_stdout";
+	private static final String VERSION = "version";
+	private static final String HELP = "help";
 
 	private static Options getOptions() {
 		Options options = new Options();
-		options.addOption(BMC, false, "bounded model checking only (implies -" + NO_INV_GEN + ")");
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
-		options.addOption(N, true, "number of iterations (default 200)");
+		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
+		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
+		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
+		options.addOption(PDR_MAX, true,
+				"maximum number of PDR parallel instances (0 to disable PDR)");
+		options.addOption(READ_CERT, true, "read certificate from specified file");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
-		options.addOption(SOLVER, true, "SMT solver (default: yices, alternatives: cvc4, z3)");
-		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default 100)");
+		options.addOption(SOLVER, true,
+				"SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
+		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
+		options.addOption(WRITE_CERT, true, "write certificate to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
 		options.addOption(VERSION, false, "display version information");
@@ -47,7 +57,7 @@ public class JKindArgumentParser {
 	}
 
 	public static JKindSettings parse(String[] args) {
-		CommandLineParser parser = new GnuParser();
+		CommandLineParser parser = new BasicParser();
 		try {
 			JKindSettings settings = getSettings(parser.parse(getOptions(), args));
 			checkSettings(settings);
@@ -70,8 +80,6 @@ public class JKindArgumentParser {
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, EXCEL, XML_TO_STDOUT);
 		ensureExclusive(line, XML, XML_TO_STDOUT);
-		ensureExclusive(line, BMC, REDUCE_INV);
-		ensureExclusive(line, BMC, INDUCT_CEX);
 
 		if (line.hasOption(VERSION)) {
 			Output.println("JKind " + Main.VERSION);
@@ -83,11 +91,6 @@ public class JKindArgumentParser {
 			System.exit(0);
 		}
 
-		if (line.hasOption(BMC)) {
-			settings.useInductiveProcess = false;
-			settings.useInvariantProcess = false;
-		}
-
 		if (line.hasOption(EXCEL)) {
 			settings.excel = true;
 		}
@@ -96,12 +99,32 @@ public class JKindArgumentParser {
 			settings.inductiveCounterexamples = true;
 		}
 
+		if (line.hasOption(NO_BMC)) {
+			settings.boundedModelChecking = false;
+		}
+
 		if (line.hasOption(NO_INV_GEN)) {
-			settings.useInvariantProcess = false;
+			settings.invariantGeneration = false;
+		}
+
+		if (line.hasOption(NO_K_INDUCTION)) {
+			settings.kInduction = false;
 		}
 
 		if (line.hasOption(N)) {
 			settings.n = Integer.parseInt(line.getOptionValue(N));
+		}
+
+		if (line.hasOption(PDR_MAX)) {
+			settings.pdrMax = Math.max(0, Integer.parseInt(line.getOptionValue(PDR_MAX)));
+		} else {
+			int available = Runtime.getRuntime().availableProcessors();
+			int heuristic = (available - 4) / 2;
+			settings.pdrMax = Math.max(1, heuristic);
+		}
+
+		if (line.hasOption(READ_CERT)) {
+			settings.readCertificate = line.getOptionValue(READ_CERT);
 		}
 
 		if (line.hasOption(REDUCE_INV)) {
@@ -130,19 +153,15 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(SOLVER)) {
-			String solver = line.getOptionValue(SOLVER);
-			if (solver.equals("yices")) {
-				settings.solver = SolverOption.YICES;
-			} else if (solver.equals("cvc4")) {
-				settings.solver = SolverOption.CVC4;
-			} else if (solver.equals("z3")) {
-				settings.solver = SolverOption.Z3;
-			} else if (solver.equals("yices2")) {
-				settings.solver = SolverOption.YICES2;
-			} else {
-				Output.error("unknown solver: " + solver);
+			settings.solver = getSolverOption(line.getOptionValue(SOLVER));
+			if (settings.solver == null) {
+				Output.error("unknown solver: " + line.getOptionValue(SOLVER));
 				System.exit(ExitCodes.INVALID_OPTIONS);
 			}
+		}
+
+		if (line.hasOption(WRITE_CERT)) {
+			settings.writeCertificate = line.getOptionValue(WRITE_CERT);
 		}
 
 		if (line.hasOption(XML)) {
@@ -164,6 +183,15 @@ public class JKindArgumentParser {
 		return settings;
 	}
 
+	private static SolverOption getSolverOption(String solver) {
+		for (SolverOption option : SolverOption.values()) {
+			if (solver.equals(option.toString())) {
+				return option;
+			}
+		}
+		return null;
+	}
+
 	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
 		if (line.hasOption(opt1) && line.hasOption(opt2)) {
 			Output.fatal(ExitCodes.INVALID_OPTIONS, "cannot use option -" + opt1 + " with option -"
@@ -181,6 +209,15 @@ public class JKindArgumentParser {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "invariant reduction not supported with "
 						+ settings.solver);
 			}
+		}
+
+		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
+				&& settings.pdrMax == 0) {
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
+		}
+
+		if (!settings.boundedModelChecking && settings.kInduction) {
+			Output.warning("k-induction requires bmc");
 		}
 	}
 }

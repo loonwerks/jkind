@@ -51,7 +51,7 @@ public class StaticAnalyzer {
 		valid = valid && propertiesUnique(program);
 		valid = valid && propertiesExist(program);
 		valid = valid && propertiesBoolean(program);
-		if (solver == SolverOption.Z3) {
+		if (solver != SolverOption.Z3) {
 			valid = valid && LinearChecker.check(program, Level.ERROR);
 		}
 		
@@ -63,6 +63,10 @@ public class StaticAnalyzer {
 	private static void checkSolverLimitations(Program program, SolverOption solver) {
 		if (solver == SolverOption.YICES2) {
 			if (!Yices2FeatureChecker.check(program)) {
+				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
+			}
+		} else if (solver == SolverOption.MATHSAT) {
+			if (!MathSatFeatureChecker.check(program)) {
 				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
 			}
 		}

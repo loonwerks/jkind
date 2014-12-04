@@ -1,9 +1,7 @@
 package jkind.api.results;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.StringJoiner;
 
 public class MultiStatus {
 	final private EnumMap<Status, Integer> map = new EnumMap<>(Status.class);
@@ -58,20 +56,11 @@ public class MultiStatus {
 
 	@Override
 	public String toString() {
-		List<String> components = new ArrayList<>();
+		StringJoiner text = new StringJoiner(", ");
 		for (Status status : PRECEDENCE) {
 			int count = getCount(status);
 			if (count > 0) {
-				components.add(count + " " + status);
-			}
-		}
-
-		StringBuilder text = new StringBuilder();
-		Iterator<String> iterator = components.iterator();
-		while (iterator.hasNext()) {
-			text.append(iterator.next());
-			if (iterator.hasNext()) {
-				text.append(", ");
+				text.add(count + " " + status);
 			}
 		}
 

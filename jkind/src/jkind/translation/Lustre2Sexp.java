@@ -30,49 +30,58 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 import jkind.util.Util;
 
 public class Lustre2Sexp implements ExprVisitor<Sexp> {
-	public static TransitionRelation constructTransitionRelation(Node node) {
-		List<Sexp> conjuncts = new ArrayList<>();
+	public static final Symbol INIT = new Symbol("%init");
+	private final int index;
+	private boolean pre = false;
 
+	public Lustre2Sexp(int index) {
+		this.index = index;
+	}
+
+	public static TransitionRelation constructTransitionRelation(Node node) {
+		Lustre2Sexp visitor = new Lustre2Sexp(1);
+		List<Sexp> conjuncts = new ArrayList<>();
+		
 		for (Equation eq : node.equations) {
-			Sexp body = eq.expr.accept(new Lustre2Sexp());
-			Sexp head = eq.lhs.get(0).accept(new Lustre2Sexp());
+			Sexp body = eq.expr.accept(visitor);
+			Sexp head = eq.lhs.get(0).accept(visitor);
 			conjuncts.add(new Cons("=", head, body));
 		}
 
 		for (Expr assertion : node.assertions) {
-			conjuncts.add(assertion.accept(new Lustre2Sexp()));
+			conjuncts.add(assertion.accept(visitor));
 		}
 
 		List<VarDecl> inputs = new ArrayList<>();
 		inputs.add(new VarDecl(INIT.str, NamedType.BOOL));
-		inputs.addAll(pre(Util.getVarDecls(node)));
-		inputs.addAll(curr(Util.getVarDecls(node)));
+		inputs.addAll(visitor.pre(Util.getVarDecls(node)));
+		inputs.addAll(visitor.curr(Util.getVarDecls(node)));
 
-		return new TransitionRelation(inputs, new Cons("and", conjuncts));
+		return new TransitionRelation(inputs, SexpUtil.conjoin(conjuncts));
 	}
 
-	private static Symbol INIT = new Symbol("%init");
-
-	private static Symbol curr(String id) {
-		return new Symbol("$" + id);
+	private Symbol curr(String id) {
+		return new StreamIndex(id, index).getEncoded();
 	}
 
-	private static Symbol pre(String id) {
-		return new Symbol("$" + id + "%pre");
+	private Symbol pre(String id) {
+		return new StreamIndex(id, index - 1).getEncoded();
 	}
 
-	private static VarDecl curr(VarDecl vd) {
+	private VarDecl curr(VarDecl vd) {
 		return new VarDecl(curr(vd.id).str, vd.type);
 	}
 
-	private static VarDecl pre(VarDecl vd) {
+	private VarDecl pre(VarDecl vd) {
 		return new VarDecl(pre(vd.id).str, vd.type);
 	}
 
-	private static List<VarDecl> curr(List<VarDecl> varDecls) {
+	private List<VarDecl> curr(List<VarDecl> varDecls) {
 		List<VarDecl> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
 			result.add(curr(vd));
@@ -80,15 +89,13 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		return result;
 	}
 
-	private static List<VarDecl> pre(List<VarDecl> varDecls) {
+	private List<VarDecl> pre(List<VarDecl> varDecls) {
 		List<VarDecl> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
 			result.add(pre(vd));
 		}
 		return result;
 	}
-
-	private boolean pre = false;
 
 	@Override
 	public Sexp visit(ArrayAccessExpr e) {

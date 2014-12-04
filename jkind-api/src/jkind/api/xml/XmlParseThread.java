@@ -69,7 +69,9 @@ public class XmlParseThread extends Thread {
 			while ((line = lines.readLine()) != null) {
 				boolean beginProperty = line.contains("<Property");
 				boolean endProperty = line.contains("</Property>");
-				if (beginProperty && endProperty) {
+				if (line.contains("<Progress") && line.contains("</Progress>")) {
+					parseProgressXml(line);
+				} else if (beginProperty && endProperty) {
 					parsePropetyXml(line);
 				} else if (beginProperty) {
 					buffer = new StringBuilder();
@@ -87,16 +89,27 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	public void parsePropetyXml(String propertyXml) {
-		Property prop;
+	private Element parseXml(String xml) {
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(new InputSource(new StringReader(propertyXml)));
-			prop = getProperty(doc.getDocumentElement());
+			Document doc = builder.parse(new InputSource(new StringReader(xml)));
+			return doc.getDocumentElement();
 		} catch (Exception e) {
-			throw new JKindException("Error parsing: " + propertyXml, e);
+			throw new JKindException("Error parsing: " + xml, e);
 		}
+	}
 
+	private void parseProgressXml(String progressXml) {
+		Element progressElement = parseXml(progressXml);
+		String source = progressElement.getAttribute("source");
+		if ("bmc".equals(source)) {
+			int k = Integer.parseInt(progressElement.getTextContent());
+			result.setBaseProgress(k);
+		}
+	}
+
+	public void parsePropetyXml(String propertyXml) {
+		Property prop = getProperty(parseXml(propertyXml));
 		PropertyResult pr = result.getPropertyResult(prop.getName());
 		if (pr == null) {
 			pr = result.addProperty(prop.getName());
@@ -113,15 +126,16 @@ public class XmlParseThread extends Thread {
 		int trueFor = getTrueFor(getElement(propertyElement, "TrueFor"));
 		int k = getK(getElement(propertyElement, "K"));
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
+		String source = getSource(getElement(propertyElement, "Answer"));
 		List<String> invariants = getInvariants(getElements(propertyElement, "Invariant"));
 		Counterexample cex = getCounterexample(getElement(propertyElement, "Counterexample"), k);
 
 		switch (answer) {
 		case "valid":
-			return new ValidProperty(name, k, runtime, invariants);
+			return new ValidProperty(name, source, k, runtime, invariants);
 
 		case "falsifiable":
-			return new InvalidProperty(name, cex, runtime);
+			return new InvalidProperty(name, source, cex, runtime);
 
 		case "unknown":
 			return new UnknownProperty(name, trueFor, cex, runtime);
@@ -154,6 +168,10 @@ public class XmlParseThread extends Thread {
 
 	private String getAnswer(Node answerNode) {
 		return answerNode.getTextContent();
+	}
+
+	private String getSource(Element answerNode) {
+		return answerNode.getAttribute("source");
 	}
 
 	private List<String> getInvariants(List<Element> invariantElements) {

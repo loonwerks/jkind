@@ -43,16 +43,19 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.LustreParser.ArrayAccessExprContext;
+import jkind.lustre.parsing.LustreParser.ArrayEIDContext;
 import jkind.lustre.parsing.LustreParser.ArrayExprContext;
 import jkind.lustre.parsing.LustreParser.ArrayTypeContext;
 import jkind.lustre.parsing.LustreParser.ArrayUpdateExprContext;
 import jkind.lustre.parsing.LustreParser.AssertionContext;
+import jkind.lustre.parsing.LustreParser.BaseEIDContext;
 import jkind.lustre.parsing.LustreParser.BinaryExprContext;
 import jkind.lustre.parsing.LustreParser.BoolExprContext;
 import jkind.lustre.parsing.LustreParser.BoolTypeContext;
 import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
+import jkind.lustre.parsing.LustreParser.EIDContext;
 import jkind.lustre.parsing.LustreParser.EnumTypeContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
@@ -72,6 +75,7 @@ import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
+import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
@@ -149,8 +153,8 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 		for (VarDeclGroupContext groupCtx : listCtx.varDeclGroup()) {
 			Type type = type(groupCtx.type());
-			for (TerminalNode id : groupCtx.ID()) {
-				decls.add(new VarDecl(loc(id), id.getText(), type));
+			for (EIDContext id : groupCtx.eID()) {
+				decls.add(new VarDecl(loc(id), eid(id), type));
 			}
 		}
 		return decls;
@@ -169,11 +173,15 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private List<IdExpr> lhs(LhsContext ctx) {
 		List<IdExpr> lhs = new ArrayList<>();
 		if (ctx != null) {
-			for (TerminalNode node : ctx.ID()) {
-				lhs.add(new IdExpr(loc(node), node.getText()));
+			for (EIDContext id : ctx.eID()) {
+				lhs.add(new IdExpr(loc(id), eid(id)));
 			}
 		}
 		return lhs;
+	}
+
+	private String eid(EIDContext id) {
+		return (String) visit(id);
 	}
 
 	private List<String> properties(List<PropertyContext> ctxs) {
@@ -247,7 +255,16 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Type visitArrayType(ArrayTypeContext ctx) {
-		return new ArrayType(loc(ctx), type(ctx.type()), Integer.parseInt(ctx.INT().getText()));
+		try {
+			int index = Integer.parseInt(ctx.INT().getText());
+			if (index == 0) {
+				fatal(ctx, "array size must be non-zero");
+			}
+			return new ArrayType(loc(ctx), type(ctx.type()), index);
+		} catch (NumberFormatException nfe) {
+			fatal(ctx, "array size too large: " + ctx.INT().getText());
+			return null;
+		}
 	}
 
 	@Override
@@ -408,13 +425,24 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new TupleExpr(loc(ctx), elements);
 	}
+	
+	@Override
+	public String visitBaseEID(BaseEIDContext ctx) {
+		return ctx.ID().getText();
+	}
+	
+	@Override
+	public String visitArrayEID(ArrayEIDContext ctx) {
+		return visit(ctx.eID()) + "[" + ctx.INT().getText() + "]";
+	}
+	
+	@Override
+	public String visitRecordEID(RecordEIDContext ctx) {
+		return visit(ctx.eID()) + "." + ctx.ID().getText();
+	}
 
 	private static Location loc(ParserRuleContext ctx) {
 		return loc(ctx.getStart());
-	}
-
-	private static Location loc(TerminalNode node) {
-		return loc(node.getSymbol());
 	}
 
 	private static Location loc(Token token) {

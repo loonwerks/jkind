@@ -228,6 +228,12 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 		}
 	}
 
+	public void setBaseProgress(int k) {
+		for (PropertyResult pr : propertyResults) {
+			pr.setBaseProgress(k);
+		}
+	}
+
 	/**
 	 * Convert results to an Excel spreadsheet
 	 * 

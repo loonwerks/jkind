@@ -21,12 +21,8 @@ public class EnumType extends Type {
 		this(Location.NULL, id, values);
 	}
 	
-	public String getValue(int i, String dflt) {
-		if (0 <= i && i < values.size()) {
-			return values.get(i);
-		} else {
-			return dflt;
-		}
+	public String getValue(int i) {
+		return values.get(i);
 	}
 
 	@Override

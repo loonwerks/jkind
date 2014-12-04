@@ -114,6 +114,7 @@ public class Kind2Api extends KindApi {
 	protected List<String> getArgs() {
 		List<String> args = new ArrayList<>();
 		args.add("-xml");
+		args.add("-v");
 		if (timeout != null) {
 			args.add("--timeout_wall");
 			args.add(timeout.toString());

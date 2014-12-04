@@ -8,7 +8,6 @@ import jkind.api.results.PropertyResult;
 import jkind.api.results.ResultsUtil;
 import jkind.api.results.Status;
 import jkind.api.ui.results.AnalysisResultColumnViewer.Column;
-import jkind.results.UnknownProperty;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -39,7 +38,8 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 				case WAITING:
 					return pr.getStatus().toString();
 				case WORKING:
-					return pr.getStatus().toString() + "... (" + pr.getElapsed() + "s)";
+					return pr.getStatus().toString() + "..." + getProgress(pr) + " ("
+							+ pr.getElapsed() + "s)";
 				default:
 					return getFinalStatus(pr) + " (" + pr.getElapsed() + "s)";
 				}
@@ -57,10 +57,17 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return "";
 	}
 
+	private String getProgress(PropertyResult pr) {
+		if (pr.getBaseProgress() == 0) {
+			return "";
+		}
+
+		return " [true for " + pr.getBaseProgress() + " steps]";
+	}
+
 	private String getFinalStatus(PropertyResult pr) {
-		if (pr.getProperty() instanceof UnknownProperty) {
-			UnknownProperty up = (UnknownProperty) pr.getProperty();
-			return pr.getStatus().toString() + " [true for " + up.getTrueFor() + " steps]";
+		if (pr.getStatus() == Status.UNKNOWN || pr.getStatus() == Status.CANCELED) {
+			return pr.getStatus().toString() + getProgress(pr);
 		} else {
 			return pr.getStatus().toString();
 		}

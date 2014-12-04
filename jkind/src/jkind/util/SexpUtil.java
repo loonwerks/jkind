@@ -4,44 +4,38 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jkind.invariant.Invariant;
-import jkind.lustre.EnumType;
-import jkind.lustre.SubrangeIntType;
+import jkind.lustre.Expr;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.translation.Lustre2Sexp;
 
 public class SexpUtil {
-	public static Sexp subrangeConstraint(String id, SubrangeIntType subrange) {
-		return boundConstraint(id, Sexp.fromBigInt(subrange.low), Sexp.fromBigInt(subrange.high));
-	}
-
-	public static Sexp enumConstraint(String id, EnumType et) {
-		return boundConstraint(id, Sexp.fromInt(0), Sexp.fromInt(et.values.size() - 1));
-	}
-
-	private static Sexp boundConstraint(String id, Sexp low, Sexp high) {
-		Symbol var = new Symbol(id);
-		return new Cons("and", new Cons("<=", low, var), new Cons("<=", var, high));
-	}
-
-	public static Sexp conjoin(List<? extends Sexp> sexps) {
-		if (sexps.isEmpty()) {
+	public static Sexp conjoin(List<? extends Sexp> conjuncts) {
+		if (conjuncts.isEmpty()) {
 			return new Symbol("true");
+		} else if (conjuncts.size() == 1) {
+			return conjuncts.get(0);
+		} else {
+			return new Cons("and", conjuncts);
 		}
-
-		return new Cons("and", sexps);
 	}
 
-	public static Sexp conjoinInvariants(Collection<Invariant> invariants, int k) {
-		if (invariants.isEmpty()) {
-			return new Symbol("true");
+	public static Sexp disjoin(List<Sexp> disjuncts) {
+		if (disjuncts.isEmpty()) {
+			return new Symbol("false");
+		} else if (disjuncts.size() == 1) {
+			return disjuncts.get(0);
+		} else {
+			return new Cons("or", disjuncts);
 		}
+	}
 
+	public static Sexp conjoinInvariants(Collection<Expr> invariants, int k) {
 		List<Sexp> conjuncts = new ArrayList<>();
-		for (Invariant invariant : invariants) {
-			conjuncts.add(invariant.instantiate(k));
+		for (Expr invariant : invariants) {
+			conjuncts.add(invariant.accept(new Lustre2Sexp(k)));
 		}
-		return new Cons("and", conjuncts);
+		return SexpUtil.conjoin(conjuncts);
 	}
 }

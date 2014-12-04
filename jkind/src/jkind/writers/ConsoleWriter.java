@@ -3,7 +3,7 @@ package jkind.writers;
 import java.util.List;
 import java.util.Map;
 
-import jkind.invariant.Invariant;
+import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
 
@@ -24,16 +24,18 @@ public class ConsoleWriter extends Writer {
 	}
 
 	private void writeLine() {
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 
 	@Override
-	public void writeValid(List<String> props, int k, double runtime, List<Invariant> invariants) {
+	public void writeValid(List<String> props, String source, int k, double runtime,
+			List<Expr> invariants) {
 		writeLine();
-		System.out.println("VALID PROPERTIES: " + props + " || K = " + k + " || Time = " + runtime);
+		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
+				+ " || Time = " + runtime);
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
-			for (Invariant invariant : invariants) {
+			for (Expr invariant : invariants) {
 				System.out.println("  " + invariant);
 			}
 		}
@@ -42,10 +44,10 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, Counterexample cex, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
 		writeLine();
-		System.out.println("INVALID PROPERTY: " + prop + " || K = " + cex.getLength()
-				+ " || Time = " + runtime);
+		System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "
+				+ cex.getLength() + " || Time = " + runtime);
 		System.out.println(cex.toString(layout));
 		writeLine();
 		System.out.println();
@@ -70,5 +72,9 @@ public class ConsoleWriter extends Writer {
 				System.out.println();
 			}
 		}
+	}
+
+	@Override
+	public void writeBaseStep(List<String> props, int k) {
 	}
 }

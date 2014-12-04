@@ -16,14 +16,12 @@ import jkind.lustre.NamedType;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
-import jkind.results.Counterexample;
-import jkind.results.Signal;
 import jkind.slicing.Dependency;
 import jkind.solvers.Model;
+import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
@@ -60,7 +58,7 @@ public class ModelGeneralizer {
 		realIntervalGeneralizer = new RealIntervalGeneralizer(this);
 	}
 
-	public Counterexample generalize() {
+	public Model generalize() {
 		// This fills the initial toGeneralize queue as a side-effect
 		if (!modelConsistent()) {
 			throw new IllegalStateException("Internal JKind error during interval generalization");
@@ -74,7 +72,7 @@ public class ModelGeneralizer {
 			generalized.put(si, interval);
 		}
 
-		return extractCounterexample();
+		return extractModel();
 	}
 
 	private Interval generalizeInterval(StreamIndex si) {
@@ -112,42 +110,22 @@ public class ModelGeneralizer {
 		}
 	}
 
-	private Counterexample extractCounterexample() {
+	private Model extractModel() {
 		// This fills the cache as a side-effect
 		if (!modelConsistent()) {
 			throw new IllegalStateException("Internal JKind error during interval generalization");
 		}
 
-		Counterexample cex = new Counterexample(k);
+		SimpleModel model = new SimpleModel();
 		for (Entry<StreamIndex, Interval> entry : cache.entrySet()) {
 			StreamIndex si = entry.getKey();
 			Interval value = entry.getValue();
 
-			if (!value.isArbitrary() && si.getIndex() >= 0) {
-				Signal<Value> signal = cex.getOrCreateSignal(si.getStream());
-				Type type = spec.typeMap.get(si.getStream());
-				signal.putValue(si.getIndex(), convert(type, value));
+			if (!value.isArbitrary()) {
+				model.addValue(si, value);
 			}
 		}
-		return cex;
-	}
-
-	private Value convert(Type type, Interval value) {
-		if (type instanceof EnumType) {
-			EnumType et = (EnumType) type;
-			return new EnumValue(et.getValue(getExactInt(value), ""));
-		} else {
-			return value;
-		}
-	}
-
-	private int getExactInt(Interval value) {
-		NumericInterval ni = (NumericInterval) value;
-		if (!ni.isExact()) {
-			throw new IllegalStateException();
-		}
-		IntEndpoint ie = (IntEndpoint) ni.getLow();
-		return ie.getValue().intValue();
+		return model;
 	}
 
 	private Interval originalInterval(StreamIndex si) {

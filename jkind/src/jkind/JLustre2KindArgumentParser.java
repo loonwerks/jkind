@@ -1,8 +1,8 @@
 package jkind;
 
+import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
@@ -22,7 +22,7 @@ public class JLustre2KindArgumentParser {
 	}
 
 	public static JLustre2KindSettings parse(String[] args) {
-		CommandLineParser parser = new GnuParser();
+		CommandLineParser parser = new BasicParser();
 		try {
 			return getSettings(parser.parse(getOptions(), args));
 		} catch (Throwable t) {

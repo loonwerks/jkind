@@ -1,7 +1,7 @@
 package jkind.lustre;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
 
 import jkind.lustre.visitors.TypeVisitor;
 import jkind.util.Util;
@@ -26,21 +26,9 @@ public class TupleType extends Type {
 	
 	@Override
 	public String toString() {
-		if (types.isEmpty()) {
-			return "()";
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		Iterator<Type> iterator = types.iterator();
-		sb.append("(");
-		sb.append(iterator.next());
-		while (iterator.hasNext()) {
-			sb.append(", ");
-			sb.append(iterator.next());
-		}
-		sb.append(")");
-		return sb.toString();
+		StringJoiner text = new StringJoiner(", ", "(", ")");
+		types.forEach(t -> text.add(t.toString()));
+		return text.toString();
 	}
 
 	@Override

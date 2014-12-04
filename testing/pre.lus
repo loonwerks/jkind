@@ -5,7 +5,7 @@
 node main(x : int; s : subrange [0, 1] of int) returns ();
 var
     y, z1, z2, w : int;
-    ok1, cex1, cex2, cex3, cex4 : bool;
+    ok1, ok2, ok3, ok4, cex1 : bool;
     pre_s : int;
     r : subrange [0, 1] of int;
 let
@@ -21,15 +21,14 @@ let
     cex1 = w < 6;
     --%PROPERTY cex1;
 
-    -- These should be fail since pre-initial values are not constrained
-    cex2 = 0 <= pre(s) and pre(s) <= 1;
-    --%PROPERTY cex2;
+    ok2 = 0 <= pre(s) and pre(s) <= 1;
+    --%PROPERTY ok2;
 
     pre_s = pre(s);
-    cex3 = 0 <= pre_s and pre_s <= 1;
-    --%PROPERTY cex3;
+    ok3 = 0 <= pre_s and pre_s <= 1;
+    --%PROPERTY ok3;
 
     r = pre(r);
-    cex4 = 0 <= r and r <= 1;
-    --%PROPERTY cex4;
+    ok4 = 0 <= r and r <= 1;
+    --%PROPERTY ok4;
 tel;

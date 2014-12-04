@@ -36,6 +36,6 @@ public enum BinaryOp {
 				return op;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Unknown binary operator: " + string);
 	}
 }

@@ -63,8 +63,8 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new ValidProperty(name, property.getK(), property.getRuntime(),
-				property.getInvariants());
+		return new ValidProperty(name, property.getSource(), property.getK(),
+				property.getRuntime(), property.getInvariants());
 	}
 
 	/**
@@ -81,8 +81,8 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new InvalidProperty(name, rename(property.getCounterexample()),
-				property.getRuntime());
+		return new InvalidProperty(name, property.getSource(),
+				rename(property.getCounterexample()), property.getRuntime());
 	}
 
 	/**

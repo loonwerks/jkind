@@ -14,8 +14,8 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Z3Solver extends SmtLib2Solver {
-	public Z3Solver() {
-		super(new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
+	public Z3Solver(String scratchBase) {
+		super(scratchBase, new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
 	}
 
 	private static String getZ3() {
@@ -50,7 +50,10 @@ public class Z3Solver extends SmtLib2Solver {
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
-			result = new UnknownResult();
+			// Even for unknown we can get a partial model
+			send("(get-model)");
+			send("(echo \"" + DONE + "\")");
+			result = new UnknownResult(parseModel(readFromSolver()));
 		}
 
 		return result;

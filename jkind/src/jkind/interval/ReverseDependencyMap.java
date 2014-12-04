@@ -64,6 +64,6 @@ public class ReverseDependencyMap {
 	}
 
 	public DependencySet get(String id) {
-		return map.get(id);
+		return map.get(new Dependency(id));
 	}
 }

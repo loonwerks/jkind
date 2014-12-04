@@ -14,29 +14,24 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.Label;
+import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
-import jkind.solvers.Solver;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
 import jkind.translation.TransitionRelation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.atn.PredictionMode;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-public class YicesSolver extends Solver {
-	private static final String DONE = "@DONE";
+public class YicesSolver extends ProcessBasedSolver {
 	private final boolean arithOnly;
 
-	public YicesSolver(boolean arithOnly) {
-		super(new ProcessBuilder(getYices()));
+	public YicesSolver(String scratchBase, boolean arithOnly) {
+		super(scratchBase, new ProcessBuilder(getYices()));
 		this.arithOnly = arithOnly;
 	}
 
@@ -60,12 +55,12 @@ public class YicesSolver extends Solver {
 	}
 
 	@Override
-	public void send(Sexp sexp) {
-		send(sexp.toString());
+	public void assertSexp(Sexp sexp) {
+		send("(assert " + sexp + ")");
 	}
 
 	private void send(String str) {
-		debug(str);
+		scratch(str);
 		try {
 			toSolver.append(str);
 			toSolver.newLine();
@@ -83,13 +78,12 @@ public class YicesSolver extends Solver {
 	@Override
 	public void define(VarDecl decl) {
 		varTypes.put(decl.id, decl.type);
-		send(new Cons("define", new Symbol(decl.id), new Symbol("::"), type(decl.type)));
+		send("(define " + decl.id + " :: " + type(decl.type) + ")");
 	}
 
 	@Override
 	public void define(TransitionRelation lambda) {
-		send(new Cons("define", TransitionRelation.T, new Symbol("::"), type(lambda),
-				lambda(lambda)));
+		send("(define " + TransitionRelation.T + " :: " + type(lambda) + " " + lambda(lambda) + ")");
 	}
 
 	private Sexp type(TransitionRelation lambda) {
@@ -113,22 +107,19 @@ public class YicesSolver extends Solver {
 
 	private int labelCount = 1;
 
-	@Override
 	public Label labelledAssert(Sexp sexp) {
-		debug("; id = " + labelCount);
-		send(new Cons("assert+", sexp));
+		comment("id = " + labelCount);
+		send("(assert+ " + sexp + ")");
 		return new Label(labelCount++);
 	}
 
-	@Override
 	public void retract(Label label) {
-		send(new Cons("retract", new Symbol(label.toString())));
+		send("(retract " + label + ")");
 	}
 
-	@Override
 	public Label weightedAssert(Sexp sexp, int weight) {
-		debug("; id = " + labelCount);
-		send(new Cons("assert+", sexp, Sexp.fromInt(weight)));
+		comment("id = " + labelCount);
+		send("(assert+ " + sexp + " " + weight + ")");
 		return new Label(labelCount++);
 	}
 
@@ -159,7 +150,6 @@ public class YicesSolver extends Solver {
 		return result;
 	}
 
-	@Override
 	public Result maxsatQuery(Sexp sexp) {
 		Label label = labelledAssert(new Cons("not", sexp));
 		send("(max-sat)");
@@ -180,7 +170,7 @@ public class YicesSolver extends Solver {
 			boolean seenContextError = false;
 			while (true) {
 				line = fromSolver.readLine();
-				debug("; YICES: " + line);
+				comment("YICES: " + line);
 				if (line == null) {
 					throw new JKindException("Yices terminated unexpectedly");
 				} else if (line.contains("Error:")) {
@@ -218,20 +208,9 @@ public class YicesSolver extends Solver {
 		YicesLexer lexer = new YicesLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
-		ResultContext ctx;
-
 		parser.removeErrorListeners();
-		parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-		parser.setErrorHandler(new BailErrorStrategy());
-		try {
-			ctx = parser.result();
-		} catch (ParseCancellationException e) {
-			tokens.reset();
-			parser.addErrorListener(new StdoutErrorListener());
-			parser.setErrorHandler(new DefaultErrorStrategy());
-			parser.getInterpreter().setPredictionMode(PredictionMode.LL);
-			ctx = parser.result();
-		}
+		parser.addErrorListener(new StdoutErrorListener());
+		ResultContext ctx = parser.result();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			throw new JKindException("Error parsing Yices output: " + string);
@@ -251,5 +230,10 @@ public class YicesSolver extends Solver {
 	@Override
 	public void pop() {
 		send("(pop)");
+	}
+
+	@Override
+	protected String getSolverExtension() {
+		return "yc";
 	}
 }

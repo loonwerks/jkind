@@ -1,7 +1,7 @@
 package jkind.analysis;
 
 public enum Level {
-	ERROR, WARNING;
+	ERROR, WARNING, IGNORE;
 
 	@Override
 	public String toString() {

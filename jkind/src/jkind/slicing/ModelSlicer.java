@@ -1,6 +1,7 @@
 package jkind.slicing;
 
 import jkind.solvers.Model;
+import jkind.solvers.SimpleModel;
 import jkind.util.StreamIndex;
 
 public class ModelSlicer {
