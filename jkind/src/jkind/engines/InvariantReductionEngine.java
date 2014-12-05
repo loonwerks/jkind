@@ -104,7 +104,6 @@ public class InvariantReductionEngine extends SolverBasedEngine {
 
 		yicesSolver.pop();
 
-		irreducible.remove(property);
 		sendValid(property.toString(), k, new ArrayList<>(irreducible), vm);
 	}
 
