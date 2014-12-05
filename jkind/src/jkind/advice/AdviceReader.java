@@ -13,7 +13,7 @@ public class AdviceReader {
 			return AdviceEncoder.decode(in);
 		} catch (Exception e) {
 			Output.fatal(ExitCodes.INVALID_OPTIONS,
-					"Unable to parse advice file: " + e.getMessage());
+					"unable to parse advice file: " + e.getMessage());
 			throw new IllegalStateException();
 		}
 	}
