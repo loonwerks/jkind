@@ -212,7 +212,7 @@ public class JKindArgumentParser {
 		}
 
 		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
-				&& settings.pdrMax == 0) {
+				&& settings.pdrMax == 0 && settings.readAdvice == null) {
 			Output.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
 		}
 
