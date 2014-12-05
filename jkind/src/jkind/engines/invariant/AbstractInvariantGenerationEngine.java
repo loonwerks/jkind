@@ -27,6 +27,8 @@ import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
 public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
+	private final List<Expr> provenInvariants = new ArrayList<>();
+	
 	public AbstractInvariantGenerationEngine(String name, Specification spec,
 			JKindSettings settings, Director director) {
 		super(name, spec, settings, director);
@@ -93,6 +95,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		Result result;
 
 		for (int i = 0; i <= k; i++) {
+			assertInvariants(provenInvariants, i);
 			assertInductiveTransition(i);
 		}
 
@@ -110,9 +113,17 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 
 		solver.pop();
 
-		sendValidAndInvariant(invariant, k);
+		List<Expr> newInvariants = invariant.toFinalInvariants();
+		provenInvariants.addAll(newInvariants);
+		sendValidProperties(newInvariants, k);
+		sendInvariants(newInvariants);
+		
 		original.reduceProven(invariant);
 		return;
+	}
+
+	private void assertInvariants(List<Expr> invariants, int i) {
+		solver.assertSexp(SexpUtil.conjoinInvariants(invariants, i));
 	}
 
 	private void checkForStop() {
@@ -133,17 +144,6 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
-	private void sendValidAndInvariant(StructuredInvariant invariant, int k) {
-		List<Expr> invs = invariant.toFinalInvariants();
-		comment("Sending invariants:");
-		for (Expr inv : invs) {
-			comment("  " + inv);
-		}
-
-		sendValidProperties(invs, k);
-		director.broadcast(new InvariantMessage(invs));
-	}
-
 	private void sendValidProperties(List<Expr> invs, int k) {
 		List<String> valid = new ArrayList<>();
 		for (Expr inv : invs) {
@@ -161,6 +161,15 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		}
 	}
 
+	private void sendInvariants(List<Expr> newInvariants) {
+		comment("Sending invariants:");
+		for (Expr inv : newInvariants) {
+			comment("  " + inv);
+		}
+
+		director.broadcast(new InvariantMessage(newInvariants));
+	}
+	
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 	}
