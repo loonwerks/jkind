@@ -7,11 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindSettings;
+import jkind.engines.invariant.InvariantSet;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
+import jkind.engines.messages.Message;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
@@ -31,7 +33,7 @@ import jkind.util.StreamIndex;
 public class KInductionEngine extends SolverBasedEngine {
 	private int kCurrent = 0;
 	private int kLimit = 0;
-	private List<Expr> invariants = new ArrayList<>();
+	private InvariantSet invariants = new InvariantSet();
 
 	public KInductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super("k-induction", spec, settings, director);
@@ -111,7 +113,7 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void assertTransitionAndInvariants(int k) {
 		assertInductiveTransition(k);
-		assertInvariants(invariants, k);
+		assertInvariants(invariants.getInvariants(), k);
 	}
 
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
@@ -126,7 +128,8 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void sendValid(List<String> valid, int k) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		director.broadcast(new ValidMessage(getName(), valid, k, invariants, itinerary));
+		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), itinerary);
+		director.broadcast(vm);
 	}
 
 	private void sendInductiveCounterexample(String p, int length, Model model) {

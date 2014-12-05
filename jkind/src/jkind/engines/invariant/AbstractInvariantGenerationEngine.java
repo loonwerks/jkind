@@ -27,7 +27,7 @@ import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
 public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
-	private final List<Expr> provenInvariants = new ArrayList<>();
+	private final InvariantSet provenInvariants = new InvariantSet();
 	
 	public AbstractInvariantGenerationEngine(String name, Specification spec,
 			JKindSettings settings, Director director) {
@@ -122,8 +122,8 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		return;
 	}
 
-	private void assertInvariants(List<Expr> invariants, int i) {
-		solver.assertSexp(SexpUtil.conjoinInvariants(invariants, i));
+	private void assertInvariants(InvariantSet set, int i) {
+		solver.assertSexp(SexpUtil.conjoinInvariants(set.getInvariants(), i));
 	}
 
 	private void checkForStop() {
@@ -156,8 +156,12 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		}
 
 		if (!valid.isEmpty()) {
+			List<Expr> allInvariants = new ArrayList<>();
+			allInvariants.addAll(provenInvariants.getInvariants());
+			allInvariants.addAll(invs);
+			
 			Itinerary itinerary = director.getValidMessageItinerary();
-			director.broadcast(new ValidMessage(getName(), valid, k, invs, itinerary));
+			director.broadcast(new ValidMessage(getName(), valid, k, allInvariants, itinerary));
 		}
 	}
 

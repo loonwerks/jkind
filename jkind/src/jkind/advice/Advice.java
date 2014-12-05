@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import jkind.engines.invariant.InvariantSet;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
@@ -13,7 +14,7 @@ import jkind.util.Util;
 
 public class Advice {
 	private final List<VarDecl> varDecls = new ArrayList<>();
-	private final List<Expr> invariants = new ArrayList<>();
+	private final InvariantSet invariants = new InvariantSet();
 
 	public void addVarDecls(List<VarDecl> newVarDecls) {
 		varDecls.addAll(newVarDecls);
@@ -32,7 +33,7 @@ public class Advice {
 	}
 
 	public List<Expr> getInvariants() {
-		return invariants;
+		return invariants.getInvariants();
 	}
 
 	public void prune(Node node) {

@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import jkind.ExitCodes;
@@ -20,7 +18,6 @@ import jkind.lustre.VarDecl;
 public class AdviceWriter {
 	private Writer out;
 	private final Advice advice = new Advice();
-	private final Set<String> seenInvariants = new HashSet<>();
 
 	public AdviceWriter(String outputFilename) {
 		try {
@@ -37,11 +34,7 @@ public class AdviceWriter {
 	}
 
 	public void addInvariants(List<Expr> invariants) {
-		for (Expr inv : invariants) {
-			if (seenInvariants.add(inv.toString())) {
-				advice.addInvariant(inv);
-			}
-		}
+		advice.addInvariants(invariants);
 	}
 
 	public void write() {
