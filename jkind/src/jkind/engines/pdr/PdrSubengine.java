@@ -83,7 +83,8 @@ public class PdrSubengine extends Thread {
 			Z.comment("Found counterexample of length " + cex.getLength());
 			sendInvalid(cex.getLength(), cex.getModel());
 			return;
-		} catch (StopException se) {
+		} catch (StopException | OutOfMemoryError e) {
+			parent.reportUnknown(prop);
 			return;
 		} catch (Throwable t) {
 			parent.reportThrowable(t);

@@ -50,6 +50,10 @@ public class PdrEngine extends Engine {
 		subengine.start();
 	}
 
+	public void reportUnknown(String prop) {
+		subengines.remove(prop);
+	}
+
 	public void reportThrowable(Throwable throwable) {
 		this.throwable = throwable;
 	}
