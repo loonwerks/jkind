@@ -1,6 +1,8 @@
 package jkind;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -112,11 +114,11 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(N)) {
-			settings.n = Integer.parseInt(line.getOptionValue(N));
+			settings.n = parseNonnegativeInt(line.getOptionValue(N));
 		}
 
 		if (line.hasOption(PDR_MAX)) {
-			settings.pdrMax = Math.max(0, Integer.parseInt(line.getOptionValue(PDR_MAX)));
+			settings.pdrMax = parseNonnegativeInt(line.getOptionValue(PDR_MAX));
 		} else {
 			int available = Runtime.getRuntime().availableProcessors();
 			int heuristic = (available - 4) / 2;
@@ -132,12 +134,7 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(TIMEOUT)) {
-			BigInteger timeout = new BigInteger(line.getOptionValue(TIMEOUT));
-			if (timeout.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
-				settings.timeout = Integer.MAX_VALUE;
-			} else {
-				settings.timeout = timeout.intValue();
-			}
+			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
 		}
 
 		if (line.hasOption(SCRATCH)) {
@@ -154,10 +151,6 @@ public class JKindArgumentParser {
 
 		if (line.hasOption(SOLVER)) {
 			settings.solver = getSolverOption(line.getOptionValue(SOLVER));
-			if (settings.solver == null) {
-				Output.error("unknown solver: " + line.getOptionValue(SOLVER));
-				System.exit(ExitCodes.INVALID_OPTIONS);
-			}
 		}
 
 		if (line.hasOption(WRITE_ADVICE)) {
@@ -182,13 +175,29 @@ public class JKindArgumentParser {
 
 		return settings;
 	}
+	
+	private static int parseNonnegativeInt(String text) {
+		BigInteger bi = new BigInteger(text);
+		if (bi.compareTo(BigInteger.ZERO) < 0) {
+			return 0;
+		} else if (bi.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+			return Integer.MAX_VALUE;
+		} else {
+			return bi.intValue();
+		}
+	}
 
 	private static SolverOption getSolverOption(String solver) {
-		for (SolverOption option : SolverOption.values()) {
+		List<SolverOption> options = Arrays.asList(SolverOption.values());
+		for (SolverOption option : options) {
 			if (solver.equals(option.toString())) {
 				return option;
 			}
 		}
+
+		Output.error("unknown solver: " + solver);
+		Output.println("Valid options: " + options);
+		System.exit(ExitCodes.INVALID_OPTIONS);
 		return null;
 	}
 
