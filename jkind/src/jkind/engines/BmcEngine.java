@@ -77,7 +77,7 @@ public class BmcEngine extends SolverBasedEngine {
 	}
 
 	private void sendBaseStep(int k) {
-		director.broadcast(new BaseStepMessage(k + 1));
+		director.broadcast(new BaseStepMessage(k + 1, properties));
 	}
 
 	private void sendUnknown(List<String> unknown) {

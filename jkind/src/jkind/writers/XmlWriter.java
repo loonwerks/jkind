@@ -42,7 +42,8 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants) {
+	public void writeValid(List<String> props, String source, int k, double runtime,
+			List<Expr> invariants) {
 		for (String prop : props) {
 			writeValid(prop, source, k, runtime, invariants);
 		}
@@ -137,6 +138,10 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeBaseStep(List<String> props, int k) {
-		out.println("  <Progress source=\"bmc\">" + k + "</Progress>");
+		out.println("  <Progress source=\"bmc\" trueFor=\"" + k + "\">");
+		for (String prop : props) {
+			out.println("    <PropertyProgress name=\"" + prop + "\"/>");
+		}
+		out.println("  </Progress>");
 	}
 }

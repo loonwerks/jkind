@@ -317,8 +317,8 @@ public class Director extends MessageHandler {
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 		baseStep = bsm.step;
-		if (!remainingProperties.isEmpty()) {
-			writer.writeBaseStep(remainingProperties, baseStep);
+		if (!bsm.properties.isEmpty()) {
+			writer.writeBaseStep(bsm.properties, baseStep);
 		}
 	}
 

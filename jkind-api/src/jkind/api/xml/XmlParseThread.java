@@ -52,12 +52,12 @@ public class XmlParseThread extends Thread {
 	@Override
 	public void run() {
 		/*
-		 * The SAX parser buffers its input which conflicts with the way we are
+		 * XML parsers buffer their input which conflicts with the way we are
 		 * streaming data from the XML file as it is written. This results in
 		 * data in the XML not being acted upon until more content is written to
 		 * the XML file which causes the buffer to fill. Instead, we read the
-		 * XML file ourselves and give relevant pieces of it to the SAX parser
-		 * as they are ready.
+		 * XML file ourselves and give relevant pieces of it to the parser as
+		 * they are ready.
 		 * 
 		 * The downside is we assume the <Property ...> and </Property> tags are
 		 * on their own lines.
@@ -67,18 +67,24 @@ public class XmlParseThread extends Thread {
 			StringBuilder buffer = null;
 			String line;
 			while ((line = lines.readLine()) != null) {
-				boolean beginProperty = line.contains("<Property");
+				boolean beginProperty = line.contains("<Property ");
 				boolean endProperty = line.contains("</Property>");
-				if (line.contains("<Progress") && line.contains("</Progress>")) {
-					parseProgressXml(line);
-				} else if (beginProperty && endProperty) {
-					parsePropetyXml(line);
-				} else if (beginProperty) {
+				boolean beginProgress = line.contains("<Progress ");
+				boolean endProgress = line.contains("</Progress>");
+
+				if (beginProgress && endProgress) {
+					// Kind 2 progress format uses a single line
+					parseKind2ProgressXml(line);
+				} else if (beginProgress || beginProperty) {
 					buffer = new StringBuilder();
 					buffer.append(line);
 				} else if (endProperty) {
 					buffer.append(line);
 					parsePropetyXml(buffer.toString());
+					buffer = null;
+				} else if (endProgress) {
+					buffer.append(line);
+					parseJKindProgressXml(buffer.toString());
 					buffer = null;
 				} else if (buffer != null) {
 					buffer.append(line);
@@ -99,12 +105,27 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	private void parseProgressXml(String progressXml) {
+	private void parseKind2ProgressXml(String progressXml) {
 		Element progressElement = parseXml(progressXml);
 		String source = progressElement.getAttribute("source");
 		if ("bmc".equals(source)) {
 			int k = Integer.parseInt(progressElement.getTextContent());
 			result.setBaseProgress(k);
+		}
+	}
+
+	private void parseJKindProgressXml(String progressXml) {
+		Element progressElement = parseXml(progressXml);
+		String source = progressElement.getAttribute("source");
+		if ("bmc".equals(source)) {
+			int trueFor = Integer.parseInt(progressElement.getAttribute("trueFor"));
+			for (Element propertyElement : getElements(progressElement, "PropertyProgress")) {
+				String prop = propertyElement.getAttribute("name");
+				PropertyResult pr = result.getPropertyResult(prop);
+				if (pr != null) {
+					pr.setBaseProgress(trueFor);
+				}
+			}
 		}
 	}
 
