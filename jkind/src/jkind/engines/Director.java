@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.Main;
 import jkind.Output;
 import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
@@ -228,7 +229,7 @@ public class Director extends MessageHandler {
 	private void printHeader() {
 		if (!settings.xmlToStdout) {
 			Output.println("==========================================");
-			Output.println("  JAVA KIND");
+			Output.println("  JKind " + Main.VERSION);
 			Output.println("==========================================");
 			Output.println();
 			Output.println("There are " + remainingProperties.size() + " properties to be checked.");
