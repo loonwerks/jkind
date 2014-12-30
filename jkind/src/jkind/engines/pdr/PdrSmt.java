@@ -1,5 +1,7 @@
 package jkind.engines.pdr;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +46,8 @@ public class PdrSmt extends ScriptUser {
 
 	private final Set<Term> predicates = new HashSet<>();
 
+	private final NameGenerator abstractAssertions = new NameGenerator("abstract");
+
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
 		this.F = F;
@@ -61,15 +65,19 @@ public class PdrSmt extends ScriptUser {
 		this.baseAbstract = getVariables("-");
 		this.primeAbstract = getVariables("-'");
 		this.prime = getVariables("'");
-		
+
 		this.I = lustre2Term.getInit();
 		defineTransitionRelation(lustre2Term.getTransition());
 		this.P = lustre2Term.encodeProperty(property);
 
-		script.assertTerm(T(baseAbstract, primeAbstract));
+		assertAbstract(T(baseAbstract, primeAbstract));
 
 		addPredicates(PredicateCollector.collect(I));
 		addPredicates(PredicateCollector.collect(P));
+	}
+
+	private void assertAbstract(Term t) {
+		script.assertTerm(name(t, abstractAssertions.getNextName()));
 	}
 
 	private void defineTransitionRelation(Term transition) {
@@ -105,8 +113,8 @@ public class PdrSmt extends ScriptUser {
 		predicates.addAll(otherPredicates);
 		for (Term p : otherPredicates) {
 			comment("New predicate: " + p);
-			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
-			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
+			assertAbstract(term("=", apply(p, base), apply(p, baseAbstract)));
+			assertAbstract(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}
 		return;
 	}
@@ -295,12 +303,14 @@ public class PdrSmt extends ScriptUser {
 	private Term[] getInterpolants(List<Term> terms) {
 		script.push(1);
 
-		Term[] names = new Term[terms.size()];
+		Term[] names = new Term[terms.size() + 1];
 		for (int i = 0; i < terms.size(); i++) {
 			String name = "I" + i;
 			script.assertTerm(name(terms.get(i), name));
-			names[i] = script.term(name);
+			names[i] = term(name);
 		}
+		// Ignore all variables related to abstract transition relation
+		names[terms.size()] = and(term(abstractAssertions.getAllNames()));
 
 		switch (script.checkSat()) {
 		case UNSAT:
@@ -414,5 +424,9 @@ public class PdrSmt extends ScriptUser {
 
 	private Term name(Term term, String name) {
 		return script.annotate(term, new Annotation(":named", name));
+	}
+
+	private List<Term> term(List<String> variables) {
+		return variables.stream().map(this::term).collect(toList());
 	}
 }
