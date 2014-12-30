@@ -75,16 +75,29 @@ public class PdrSmt extends ScriptUser {
 	private void defineTransitionRelation(Term transition) {
 		TermVariable[] params = new TermVariable[base.length + prime.length];
 		for (int i = 0; i < base.length; i++) {
-			Term v = base[i];
-			params[i] = script.variable(v.toString(), v.getSort());
+			params[i] = variable(base[i]);
 		}
 		for (int i = 0; i < prime.length; i++) {
-			Term v = prime[i];
-			params[i + base.length] = script.variable(v.toString(), v.getSort());
+			params[i + base.length] = variable(prime[i]);
 		}
 
 		Term body = subst(transition, concat(base, prime), params);
 		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), body);
+	}
+
+	private TermVariable variable(Term v) {
+		String name = variableName(v);
+		return script.variable(name, v.getSort());
+	}
+
+	private String variableName(Term v) {
+		if (v instanceof ApplicationTerm) {
+			ApplicationTerm at = (ApplicationTerm) v;
+			return at.getFunction().getName();
+		} else {
+			throw new IllegalArgumentException("Unexpected variable type: "
+					+ v.getClass().getSimpleName());
+		}
 	}
 
 	private void addPredicates(Set<Term> otherPredicates) {
