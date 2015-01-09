@@ -106,7 +106,7 @@ public class JKindApi extends KindApi {
 	public void setIntervalGeneralization() {
 		intervalGeneralization = true;
 	}
-	
+
 	/**
 	 * Run JKind on a Lustre program
 	 * 
@@ -251,7 +251,7 @@ public class JKindApi extends KindApi {
 			args.add("-solver");
 			args.add(solver.toString());
 		}
-		
+
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
@@ -308,6 +308,27 @@ public class JKindApi extends KindApi {
 
 	@Override
 	public void checkAvailable() throws Exception {
-		new ProcessBuilder(getJKindCommand()).start().waitFor();
+		List<String> args = new ArrayList<>();
+		args.addAll(Arrays.asList(getJKindCommand()));
+		args.add("-version");
+
+		ProcessBuilder builder = new ProcessBuilder(args);
+		builder.redirectErrorStream(true);
+		Process process = builder.start();
+
+		String output = readAll(process.getInputStream());
+		if (process.exitValue() != 0) {
+			throw new JKindException("Error running JKind: " + output);
+		}
+	}
+
+	private String readAll(InputStream inputStream) throws IOException {
+		StringBuilder result = new StringBuilder();
+		BufferedInputStream buffered = new BufferedInputStream(inputStream);
+		int i;
+		while ((i = buffered.read()) != -1) {
+			result.append((char) i);
+		}
+		return result.toString();
 	}
 }
