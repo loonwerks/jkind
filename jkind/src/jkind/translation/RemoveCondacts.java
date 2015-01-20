@@ -170,7 +170,7 @@ public class RemoveCondacts {
 					preLocals.add(new VarDecl(state, type));
 					// state = if clock then expr else pre state
 					preEquations.add(new Equation(new IdExpr(state), new IfThenElseExpr(clock,
-							e.expr, new UnaryExpr(UnaryOp.PRE, new IdExpr(state)))));
+							e.expr.accept(this), new UnaryExpr(UnaryOp.PRE, new IdExpr(state)))));
 					return new UnaryExpr(UnaryOp.PRE, new IdExpr(state));
 				} else {
 					return super.visit(e);
