@@ -1,4 +1,20 @@
-scripts/jkind text eol=lf
-scripts/jlustre2kind text eol=lf
-scripts/jlustre2excel text eol=lf
+*.java text
+*.md text
+*.lus text
+*.g4 text
+*.tokens text
+.project text
+.classpath text
+*.userlibraries text
+.settings/* text
+*.jardesc text
+*.launch text
+LICENSE text
 
+*.png binary
+*.gif binary
+*.jar binary
+
+# Scripts are platform specific
+scripts/* text eol=lf
+scripts/*.bat text eol=crlf
