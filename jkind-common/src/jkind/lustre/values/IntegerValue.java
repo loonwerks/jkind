@@ -10,7 +10,7 @@ import jkind.util.Util;
  * An integer signal value
  */
 public class IntegerValue extends Value {
-	final public BigInteger value;
+	public final BigInteger value;
 
 	public IntegerValue(BigInteger value) {
 		if (value == null) {

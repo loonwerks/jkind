@@ -27,7 +27,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 
 public abstract class SmtLib2Solver extends ProcessBasedSolver {
-	final protected String name;
+	protected final String name;
 
 	public SmtLib2Solver(String scratchBase, ProcessBuilder pb, String name) {
 		super(scratchBase, pb);

@@ -4,7 +4,7 @@ import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
 
 public class NamedType extends Type {
-	final public String name;
+	public final String name;
 
 	public NamedType(Location location, String name) {
 		super(location);
@@ -32,9 +32,9 @@ public class NamedType extends Type {
 		return name;
 	}
 
-	final public static NamedType BOOL = new NamedType("bool", null);
-	final public static NamedType INT = new NamedType("int", null);
-	final public static NamedType REAL = new NamedType("real", null);
+	public static final NamedType BOOL = new NamedType("bool", null);
+	public static final NamedType INT = new NamedType("int", null);
+	public static final NamedType REAL = new NamedType("real", null);
 
 	public boolean isBuiltin() {
 		return this == REAL || this == BOOL || this == INT;

@@ -33,7 +33,7 @@ public abstract class SolverBasedEngine extends Engine {
 	}
 
 	@Override
-	final public void run() {
+	public final void run() {
 		try {
 			initializeSolver();
 			super.run();

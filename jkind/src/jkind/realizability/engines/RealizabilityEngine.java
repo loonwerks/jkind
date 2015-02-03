@@ -43,7 +43,7 @@ public abstract class RealizabilityEngine implements Runnable {
 	protected abstract void main();
 
 	@Override
-	final public void run() {
+	public final void run() {
 		try {
 			initializeSolver();
 			main();

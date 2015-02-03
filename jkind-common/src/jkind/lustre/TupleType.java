@@ -7,7 +7,7 @@ import jkind.lustre.visitors.TypeVisitor;
 import jkind.util.Util;
 
 public class TupleType extends Type {
-	final public List<Type> types;
+	public final List<Type> types;
 
 	public TupleType(List<? extends Type> types) {
 		super(Location.NULL);

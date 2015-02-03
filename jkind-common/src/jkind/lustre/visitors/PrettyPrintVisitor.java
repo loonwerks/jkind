@@ -49,7 +49,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		sb.append(o);
 	}
 
-	private final static String seperator = System.getProperty("line.separator");
+	private static final String seperator = System.getProperty("line.separator");
 
 	private void newline() {
 		write(seperator);

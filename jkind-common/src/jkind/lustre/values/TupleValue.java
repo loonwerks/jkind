@@ -11,7 +11,7 @@ import jkind.lustre.UnaryOp;
  * A tuple signal value (only used during static analysis)
  */
 public class TupleValue extends Value {
-	final public List<Value> elements;
+	public final List<Value> elements;
 
 	public TupleValue(List<Value> elements) {
 		this.elements = Collections.unmodifiableList(elements);
