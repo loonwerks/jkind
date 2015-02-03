@@ -5,9 +5,9 @@ import jkind.lustre.visitors.ExprVisitor;
 
 
 public class IfThenElseExpr extends Expr {
-	final public Expr cond;
-	final public Expr thenExpr;
-	final public Expr elseExpr;
+	public final Expr cond;
+	public final Expr thenExpr;
+	public final Expr elseExpr;
 	
 	public IfThenElseExpr(Location location, Expr cond, Expr thenExpr, Expr elseExpr) {
 		super(location);

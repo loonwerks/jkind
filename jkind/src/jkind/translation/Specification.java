@@ -11,7 +11,7 @@ public class Specification {
 	final public Node node;
 	final public DependencyMap dependencyMap;
 	final public Map<String, Type> typeMap;
-	final public TransitionRelation transitionRelation;
+	final public Relation transitionRelation;
 
 	public Specification(Node node, DependencyMap dependencyMap) {
 		this.node = node;

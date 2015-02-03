@@ -18,7 +18,7 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
-import jkind.translation.TransitionRelation;
+import jkind.translation.Relation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -55,7 +55,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		}
 	}
 
-	private Symbol type(Type type) {
+	public Symbol type(Type type) {
 		return new Symbol(capitalize(Util.getName(type)));
 	}
 
@@ -70,9 +70,9 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	}
 
 	@Override
-	public void define(TransitionRelation lambda) {
-		send(new Cons("define-fun", TransitionRelation.T, inputs(lambda.getInputs()),
-				type(NamedType.BOOL), lambda.getBody()));
+	public void define(Relation relation) {
+		send(new Cons("define-fun", new Symbol(relation.getName()), inputs(relation.getInputs()),
+				type(NamedType.BOOL), relation.getBody()));
 	}
 
 	private Sexp inputs(List<VarDecl> inputs) {
@@ -123,7 +123,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 				comment(name + ": " + line);
 				if (line == null) {
 					throw new JKindException(name + " terminated unexpectedly");
-				} else if (line.contains("define-fun " + TransitionRelation.T + " ")) {
+				} else if (line.contains("define-fun " + Relation.T + " ")) {
 					// No need to parse the transition relation
 				} else if (isDone(line)) {
 					break;

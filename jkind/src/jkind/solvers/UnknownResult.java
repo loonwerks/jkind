@@ -8,6 +8,10 @@ public class UnknownResult extends Result {
 		this.model = model;
 	}
 
+	public UnknownResult() {
+		this(null);
+	}
+
 	public Model getModel() {
 		return model;
 	}

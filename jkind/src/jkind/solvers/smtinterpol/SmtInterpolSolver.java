@@ -16,7 +16,7 @@ import jkind.solvers.SimpleModel;
 import jkind.solvers.Solver;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.translation.TransitionRelation;
+import jkind.translation.Relation;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
@@ -49,10 +49,10 @@ public class SmtInterpolSolver extends Solver {
 	}
 
 	@Override
-	public void define(TransitionRelation lambda) {
-		TermVariable[] params = createTermVariables(lambda.getInputs());
-		Term definition = convert(params, lambda.getBody());
-		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), definition);
+	public void define(Relation relation) {
+		TermVariable[] params = createTermVariables(relation.getInputs());
+		Term definition = convert(params, relation.getBody());
+		script.defineFun(relation.getName(), params, script.sort("Bool"), definition);
 	}
 
 	private TermVariable[] createTermVariables(List<VarDecl> inputs) {

@@ -21,7 +21,6 @@ import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
-import jkind.translation.TransitionRelation;
 import jkind.util.StreamIndex;
 import jkind.util.Util;
 
@@ -127,7 +126,7 @@ public abstract class SolverBasedEngine extends Engine {
 		args.add(init);
 		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
 		args.addAll(getSymbols(getOffsetVarDecls(k)));
-		return new Cons(TransitionRelation.T, args);
+		return new Cons(spec.transitionRelation.getName(), args);
 	}
 
 	private List<Sexp> getSymbols(List<VarDecl> varDecls) {

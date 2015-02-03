@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import jkind.api.results.AnalysisResult;
+import jkind.api.results.JRealizabilityResult;
 import jkind.api.results.PropertyResult;
 import jkind.api.results.ResultsUtil;
 import jkind.api.results.Status;
 import jkind.api.ui.results.AnalysisResultColumnViewer.Column;
+import jkind.util.Util;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -32,7 +34,11 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 			PropertyResult pr = (PropertyResult) element;
 			switch (column) {
 			case PROPERTY:
-				return pr.getName();
+				if (pr.getName().equals(Util.REALIZABLE)) {
+					return pr.getParent().getName();
+				} else {
+					return pr.getName();
+				}
 			case RESULT:
 				switch (pr.getStatus()) {
 				case WAITING:
@@ -44,6 +50,9 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 					return getFinalStatus(pr) + " (" + pr.getElapsed() + "s)";
 				}
 			}
+		} else if (element instanceof JRealizabilityResult) {
+			JRealizabilityResult result = (JRealizabilityResult) element;
+			return getText(result.getPropertyResult());
 		} else if (element instanceof AnalysisResult) {
 			AnalysisResult result = (AnalysisResult) element;
 			switch (column) {

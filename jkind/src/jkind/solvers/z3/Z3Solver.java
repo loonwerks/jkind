@@ -41,21 +41,45 @@ public class Z3Solver extends SmtLib2Solver {
 		define(new VarDecl(assum.str, NamedType.BOOL));
 		send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
 		send(new Cons("check-sat", assum));
-		send("(echo \"" + DONE + "\")");
+		markDone();
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			send("(echo \"" + DONE + "\")");
+			markDone();
 			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
 			// Even for unknown we can get a partial model
 			send("(get-model)");
-			send("(echo \"" + DONE + "\")");
+			markDone();
 			result = new UnknownResult(parseModel(readFromSolver()));
 		}
 
 		return result;
+	}
+
+	private void markDone() {
+		send("(echo \"" + DONE + "\")");
+	}
+
+	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
+		push();
+		assertSexp(new Cons("forall", outputs, new Cons("not", new Cons("and", transition, properties))));
+		send(new Cons("check-sat"));
+		markDone();
+		String status = readFromSolver();
+		if (isSat(status)) {
+			send("(get-model)");
+			markDone();
+			pop();
+			return new SatResult(parseModel(readFromSolver()));
+		} else if (isUnsat(status)) {
+			pop();
+			return new UnsatResult();
+		} else {
+			pop();
+			return new UnknownResult();
+		}
 	}
 }

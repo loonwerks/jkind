@@ -18,7 +18,7 @@ import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
-import jkind.translation.TransitionRelation;
+import jkind.translation.Relation;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -82,27 +82,27 @@ public class YicesSolver extends ProcessBasedSolver {
 	}
 
 	@Override
-	public void define(TransitionRelation lambda) {
-		send("(define " + TransitionRelation.T + " :: " + type(lambda) + " " + lambda(lambda) + ")");
+	public void define(Relation relation) {
+		send("(define " + relation.getName() + " :: " + type(relation) + " " + lambda(relation) + ")");
 	}
 
-	private Sexp type(TransitionRelation lambda) {
+	private Sexp type(Relation relation) {
 		List<Sexp> args = new ArrayList<>();
-		for (VarDecl vd : lambda.getInputs()) {
+		for (VarDecl vd : relation.getInputs()) {
 			args.add(type(vd.type));
 		}
 		args.add(type(NamedType.BOOL));
 		return new Cons("->", args);
 	}
 
-	private Sexp lambda(TransitionRelation lambda) {
+	private Sexp lambda(Relation relation) {
 		List<Sexp> args = new ArrayList<>();
-		for (VarDecl vd : lambda.getInputs()) {
+		for (VarDecl vd : relation.getInputs()) {
 			args.add(new Symbol(vd.id));
 			args.add(new Symbol("::"));
 			args.add(type(vd.type));
 		}
-		return new Cons("lambda", new Cons(args), lambda.getBody());
+		return new Cons("lambda", new Cons(args), relation.getBody());
 	}
 
 	private int labelCount = 1;

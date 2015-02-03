@@ -6,7 +6,7 @@
 .project text
 .classpath text
 *.userlibraries text
-.settings/* text
+*/.settings/* text
 *.jardesc text
 *.launch text
 LICENSE text

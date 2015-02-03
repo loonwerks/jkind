@@ -1,16 +1,12 @@
 package jkind;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
-public class JKindArgumentParser {
+public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
 	private static final String INTERVAL = "interval";
@@ -28,11 +24,21 @@ public class JKindArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
-	private static final String VERSION = "version";
-	private static final String HELP = "help";
+	
+	private final JKindSettings settings;
 
-	private static Options getOptions() {
-		Options options = new Options();
+	private JKindArgumentParser() {
+		this("JKind", new JKindSettings());
+	}
+
+	private JKindArgumentParser(String name, JKindSettings settings) {
+		super(name, settings);
+		this.settings = settings;
+	}
+
+	@Override
+	protected Options getOptions() {
+		Options options = super.getOptions();
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
@@ -52,46 +58,23 @@ public class JKindArgumentParser {
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
-		options.addOption(VERSION, false, "display version information");
-		options.addOption(HELP, false, "print this message");
-
 		return options;
 	}
-
+	
 	public static JKindSettings parse(String[] args) {
-		CommandLineParser parser = new BasicParser();
-		try {
-			JKindSettings settings = getSettings(parser.parse(getOptions(), args));
-			checkSettings(settings);
-			return settings;
-		} catch (Throwable t) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS,
-					"reading command line arguments: " + t.getMessage());
-			return null;
-		}
+		JKindArgumentParser parser = new JKindArgumentParser();
+		parser.parseArguments(args);
+		parser.checkSettings();
+		return parser.settings;
 	}
 
-	private static void printHelp() {
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("jkind [options] <input>", getOptions());
-	}
-
-	private static JKindSettings getSettings(CommandLine line) {
-		JKindSettings settings = new JKindSettings();
+	@Override
+	protected void parseCommandLine(CommandLine line) {
+		super.parseCommandLine(line);
 
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, EXCEL, XML_TO_STDOUT);
 		ensureExclusive(line, XML, XML_TO_STDOUT);
-
-		if (line.hasOption(VERSION)) {
-			Output.println("JKind " + Main.VERSION);
-			System.exit(0);
-		}
-
-		if (line.hasOption(HELP)) {
-			printHelp();
-			System.exit(0);
-		}
 
 		if (line.hasOption(EXCEL)) {
 			settings.excel = true;
@@ -165,26 +148,6 @@ public class JKindArgumentParser {
 			settings.xmlToStdout = true;
 			settings.xml = true;
 		}
-
-		String[] input = line.getArgs();
-		if (input.length != 1) {
-			printHelp();
-			System.exit(ExitCodes.INVALID_OPTIONS);
-		}
-		settings.filename = input[0];
-
-		return settings;
-	}
-	
-	private static int parseNonnegativeInt(String text) {
-		BigInteger bi = new BigInteger(text);
-		if (bi.compareTo(BigInteger.ZERO) < 0) {
-			return 0;
-		} else if (bi.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
-			return Integer.MAX_VALUE;
-		} else {
-			return bi.intValue();
-		}
 	}
 
 	private static SolverOption getSolverOption(String solver) {
@@ -201,14 +164,7 @@ public class JKindArgumentParser {
 		return null;
 	}
 
-	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
-		if (line.hasOption(opt1) && line.hasOption(opt2)) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "cannot use option -" + opt1 + " with option -"
-					+ opt2);
-		}
-	}
-
-	private static void checkSettings(JKindSettings settings) {
+	private void checkSettings() {
 		if (settings.solver != SolverOption.YICES) {
 			if (settings.smoothCounterexamples) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "

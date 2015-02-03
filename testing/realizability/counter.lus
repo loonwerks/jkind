@@ -1,0 +1,13 @@
+-- Unrealizable
+
+node main(x, y, z : int) returns (ok : bool);
+var
+  counter : int;
+let
+  counter = 0 -> 1 + pre counter;
+  assert counter < 5 => x < y - 1;
+  
+  ok = x < z and z < y;
+  --%PROPERTY ok;
+  --%REALIZABLE x, y;
+tel;

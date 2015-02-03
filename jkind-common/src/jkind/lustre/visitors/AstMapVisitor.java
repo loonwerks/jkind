@@ -32,7 +32,7 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<Equation> equations = visitEquations(e.equations);
 		List<Expr> assertions = visitAssertions(e.assertions);
 		return new Node(e.location, e.id, inputs, outputs, locals, equations, e.properties,
-				assertions);
+				assertions, e.realizabilityInputs);
 	}
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
@@ -50,7 +50,7 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		}
 		return result;
 	}
-	
+
 	protected List<Expr> visitAssertions(List<Expr> es) {
 		return visitExprs(es);
 	}
@@ -62,7 +62,7 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<Node> nodes = visitNodes(e.nodes);
 		return new Program(e.location, types, constants, nodes, e.main);
 	}
-	
+
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
 		List<TypeDef> result = new ArrayList<>();
 		for (TypeDef e : es) {
@@ -86,7 +86,7 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		}
 		return result;
 	}
-	
+
 	@Override
 	public TypeDef visit(TypeDef e) {
 		return e;

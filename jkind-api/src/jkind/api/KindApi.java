@@ -1,12 +1,10 @@
 package jkind.api;
 
 import java.io.File;
-import java.io.IOException;
 
 import jkind.JKindException;
 import jkind.api.results.JKindResult;
 import jkind.lustre.Program;
-import jkind.util.Util;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -55,10 +53,10 @@ public abstract class KindApi {
 	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
 		File lustreFile = null;
 		try {
-			lustreFile = writeLustreFile(program);
+			lustreFile = ApiUtil.writeLustreFile(program);
 			execute(lustreFile, result, monitor);
 		} finally {
-			safeDelete(lustreFile);
+			ApiUtil.safeDelete(lustreFile);
 		}
 	}
 
@@ -81,22 +79,4 @@ public abstract class KindApi {
 	 * @throws java.lang.Exception
 	 */
 	public abstract void checkAvailable() throws Exception;
-	
-	protected static File writeLustreFile(String program) {
-		File file = null;
-		try {
-			file = File.createTempFile("jkind-api", ".lus");
-			Util.writeToFile(program, file);
-			return file;
-		} catch (IOException e) {
-			safeDelete(file);
-			throw new JKindException("Cannot write to file: " + file, e);
-		}
-	}
-
-	protected static void safeDelete(File file) {
-		if (file != null && file.exists()) {
-			file.delete();
-		}
-	}
 }

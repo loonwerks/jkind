@@ -6,14 +6,14 @@ import java.util.Map;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
-import jkind.translation.TransitionRelation;
+import jkind.translation.Relation;
 
 public abstract class Solver {
 	public abstract void initialize();
 
 	public abstract void assertSexp(Sexp sexp);
 	public abstract void define(VarDecl decl);
-	public abstract void define(TransitionRelation lambda);
+	public abstract void define(Relation relation);
 
 	public abstract Result query(Sexp sexp);
 	

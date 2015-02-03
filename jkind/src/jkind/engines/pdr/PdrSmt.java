@@ -20,7 +20,7 @@ import jkind.solvers.smtinterpol.ScriptUser;
 import jkind.solvers.smtinterpol.SmtInterpolUtil;
 import jkind.solvers.smtinterpol.Subst;
 import jkind.solvers.smtinterpol.Term2Expr;
-import jkind.translation.TransitionRelation;
+import jkind.translation.Relation;
 import jkind.util.StreamIndex;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
@@ -90,7 +90,7 @@ public class PdrSmt extends ScriptUser {
 		}
 
 		Term body = subst(transition, concat(base, prime), params);
-		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), body);
+		script.defineFun(Relation.T, params, script.sort("Bool"), body);
 	}
 
 	private TermVariable variable(Term v) {
@@ -359,7 +359,7 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	private Term T(Term[] variables1, Term[] variables2) {
-		return script.term(TransitionRelation.T.str, concat(variables1, variables2));
+		return script.term(Relation.T, concat(variables1, variables2));
 	}
 
 	private Term[] concat(Term[] terms1, Term[] terms2) {

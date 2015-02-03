@@ -6,7 +6,7 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class IntExpr extends Expr {
-	final public BigInteger value;
+	public final BigInteger value;
 
 	public IntExpr(Location location, BigInteger value) {
 		super(location);

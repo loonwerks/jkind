@@ -5,7 +5,7 @@ import jkind.lustre.visitors.ExprVisitor;
 
 
 public class IdExpr extends Expr {
-	final public String id;
+	public final String id;
 	
 	public IdExpr(Location location, String id) {
 		super(location);

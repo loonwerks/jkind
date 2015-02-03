@@ -1,0 +1,16 @@
+-- Unrealizable
+-- Requires proper flattening of complex types
+
+type point = struct { x : int; y : int };
+
+node main(p : point; z : int) returns (ok : bool);
+var
+  counter : int;
+let
+  counter = 0 -> 1 + pre counter;
+  assert counter < 5 => p.x < p.y - 1;
+  
+  ok = p.x < z and z < p.y;
+  --%PROPERTY ok;
+  --%REALIZABLE p;
+tel;

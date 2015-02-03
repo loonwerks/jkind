@@ -1,7 +1,7 @@
 package jkind;
 
 
-public class JKindSettings {
+public class JKindSettings extends Settings {
 	public int n = 200;
 	public int timeout = 100;
 	
@@ -23,6 +23,4 @@ public class JKindSettings {
 
 	public String writeAdvice = null;
 	public String readAdvice = null;
-
-	public String filename = null;
 }

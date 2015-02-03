@@ -240,6 +240,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNode(@NotNull LustreParser.NodeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#realizabilityInputs}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRealizabilityInputs(@NotNull LustreParser.RealizabilityInputsContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code notExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
 	 * @param ctx the parse tree

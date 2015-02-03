@@ -17,17 +17,17 @@ import jkind.results.Signal;
 import jkind.util.Util;
 
 public class XmlWriter extends Writer {
-	private PrintWriter out;
-	private Map<String, Type> types;
+	private final PrintWriter out;
+	private final Map<String, Type> types;
 
 	public XmlWriter(String filename, Map<String, Type> types, boolean useStdout)
 			throws FileNotFoundException {
-		this.types = types;
 		if (useStdout) {
 			this.out = new PrintWriter(System.out, true);
 		} else {
 			this.out = new PrintWriter(new FileOutputStream(filename), true);
 		}
+		this.types = types;
 	}
 
 	@Override
@@ -71,6 +71,18 @@ public class XmlWriter extends Writer {
 		out.println("    <Answer source=\"" + source + "\">falsifiable</Answer>");
 		out.println("    <K>" + cex.getLength() + "</K>");
 		writeCounterexample(cex);
+		out.println("  </Property>");
+	}
+
+	private void writeUnknown(String prop, int trueFor, Counterexample cex, double runtime) {
+		out.println("  <Property name=\"" + prop + "\">");
+		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
+		out.println("    <Answer>unknown</Answer>");
+		out.println("    <TrueFor>" + trueFor + "</TrueFor>");
+		if (cex != null) {
+			out.println("    <K>" + cex.getLength() + "</K>");
+			writeCounterexample(cex);
+		}
 		out.println("  </Property>");
 	}
 
@@ -122,18 +134,6 @@ public class XmlWriter extends Writer {
 		for (String prop : props) {
 			writeUnknown(prop, trueFor, inductiveCounterexamples.get(prop), runtime);
 		}
-	}
-
-	private void writeUnknown(String prop, int trueFor, Counterexample icm, double runtime) {
-		out.println("  <Property name=\"" + prop + "\">");
-		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
-		out.println("    <Answer>unknown</Answer>");
-		out.println("    <TrueFor>" + trueFor + "</TrueFor>");
-		if (icm != null) {
-			out.println("    <K>" + icm.getLength() + "</K>");
-			writeCounterexample(icm);
-		}
-		out.println("  </Property>");
 	}
 
 	@Override

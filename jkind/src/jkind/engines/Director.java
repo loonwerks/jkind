@@ -26,19 +26,13 @@ import jkind.engines.messages.MessageHandler;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
-import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
-import jkind.lustre.Type;
-import jkind.lustre.values.EnumValue;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
-import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import jkind.util.StreamIndex;
+import jkind.util.CounterexampleExtractor;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -383,30 +377,7 @@ public class Director extends MessageHandler {
 		return result;
 	}
 
-	private Counterexample extractCounterexample(int length, Model model) {
-		Counterexample cex = new Counterexample(length);
-		for (String var : model.getVariableNames()) {
-			StreamIndex si = StreamIndex.decode(var);
-			if (si.getIndex() >= 0 && !isInternal(si.getStream())) {
-				Signal<Value> signal = cex.getOrCreateSignal(si.getStream());
-				Value value = convert(si.getStream(), model.getValue(var));
-				signal.putValue(si.getIndex(), value);
-			}
-		}
-		return cex;
-	}
-
-	private boolean isInternal(String stream) {
-		return stream.startsWith("%");
-	}
-
-	private Value convert(String base, Value value) {
-		Type type = spec.typeMap.get(base);
-		if (type instanceof EnumType) {
-			EnumType et = (EnumType) type;
-			IntegerValue iv = (IntegerValue) value;
-			return new EnumValue(et.getValue(iv.value.intValue()));
-		}
-		return value;
+	private Counterexample extractCounterexample(int k, Model model) {
+		return new CounterexampleExtractor(spec.typeMap).extractCounterexample(k, model);
 	}
 }

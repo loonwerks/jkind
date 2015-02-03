@@ -1,7 +1,8 @@
 package jkind.results.layout;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,10 +64,6 @@ public class NodeLayout implements Layout {
 	}
 
 	private Set<String> getPrefix(List<String> signals) {
-		Set<String> prefixes = new HashSet<>();
-		for (String signal : signals) {
-			prefixes.add(getPrefix(signal));
-		}
-		return prefixes;
+		return signals.stream().map(this::getPrefix).collect(toSet());
 	}
 }
