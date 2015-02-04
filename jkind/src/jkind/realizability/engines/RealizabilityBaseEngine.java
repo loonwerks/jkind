@@ -1,5 +1,9 @@
 package jkind.realizability.engines;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import jkind.JKindException;
 import jkind.JRealizabilitySettings;
 import jkind.engines.StopException;
@@ -8,6 +12,7 @@ import jkind.realizability.engines.messages.Message;
 import jkind.realizability.engines.messages.RealizableMessage;
 import jkind.realizability.engines.messages.UnknownMessage;
 import jkind.realizability.engines.messages.UnrealizableMessage;
+import jkind.sexp.Sexp;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -19,7 +24,8 @@ import jkind.util.StreamIndex;
 public class RealizabilityBaseEngine extends RealizabilityEngine {
 	private RealizabilityExtendEngine extendEngine;
 
-	public RealizabilityBaseEngine(Specification spec, JRealizabilitySettings settings, RealizabilityDirector director) {
+	public RealizabilityBaseEngine(Specification spec, JRealizabilitySettings settings,
+			RealizabilityDirector director) {
 		super("base", spec, settings, director);
 	}
 
@@ -73,11 +79,35 @@ public class RealizabilityBaseEngine extends RealizabilityEngine {
 
 		if (result instanceof SatResult) {
 			Model model = ((SatResult) result).getModel();
-			sendUnrealizable(k, model);
+			if (settings.reduce) {
+				reduceAndSendUnrealizable(k, model);
+			} else {
+				sendUnrealizable(k, model);
+			}
 		} else if (result instanceof UnknownResult) {
 			sendUnknown();
 		}
 		throw new StopException();
+	}
+
+	private void reduceAndSendUnrealizable(int k, Model model) {
+		Sexp realizabilityOutputs = getRealizabilityOutputs(k);
+		Sexp transition = getTransition(k, k == 0);
+		List<String> properties = new ArrayList<>(spec.node.properties);
+
+		for (String curr : spec.node.properties) {
+			properties.remove(curr);
+			Result result = solver.realizabilityQuery(realizabilityOutputs, transition,
+					StreamIndex.conjoinEncodings(properties, k));
+			
+			if (result instanceof SatResult) {
+				model = ((SatResult) result).getModel();
+			} else {
+				properties.add(curr);
+			}
+		}
+
+		sendUnrealizable(k, model, properties);
 	}
 
 	private void sendBaseStep(int k) {
@@ -87,7 +117,11 @@ public class RealizabilityBaseEngine extends RealizabilityEngine {
 	}
 
 	private void sendUnrealizable(int k, Model model) {
-		UnrealizableMessage im = new UnrealizableMessage(k + 1, model);
+		sendUnrealizable(k, model, Collections.emptyList());
+	}
+
+	private void sendUnrealizable(int k, Model model, List<String> properties) {
+		UnrealizableMessage im = new UnrealizableMessage(k + 1, model, properties);
 		director.incoming.add(im);
 		extendEngine.incoming.add(im);
 	}

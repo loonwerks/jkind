@@ -1,5 +1,7 @@
 package jkind.realizability.writers;
 
+import java.util.List;
+
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
 
@@ -32,9 +34,11 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnrealizable(Counterexample cex, double runtime) {
+	public void writeUnrealizable(Counterexample cex, List<String> properties, double runtime) {
 		writeLine();
-		System.out.println("UNREALIZABLE || K = " + cex.getLength() + " || Time = " + runtime);
+		String details = properties.isEmpty() ? "" : ": " + properties;
+		System.out.println("UNREALIZABLE" + details + " || K = " + cex.getLength() + " || Time = "
+				+ runtime);
 		if (layout != null) {
 			System.out.println(cex.toString(layout));
 		}
@@ -58,6 +62,7 @@ public class ConsoleWriter extends Writer {
 	}
 
 	private void writeLine() {
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out
+				.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 }

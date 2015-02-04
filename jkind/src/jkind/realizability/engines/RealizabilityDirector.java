@@ -154,7 +154,7 @@ public class RealizabilityDirector {
 				UnrealizableMessage um = (UnrealizableMessage) message;
 				done = true;
 				Counterexample cex = extractCounterexample(um.k, um.model);
-				writer.writeUnrealizable(cex, runtime);
+				writer.writeUnrealizable(cex, um.properties, runtime);
 			} else if (message instanceof ExtendCounterexampleMessage) {
 				extendCounterexample = (ExtendCounterexampleMessage) message;
 			} else if (message instanceof UnknownMessage) {

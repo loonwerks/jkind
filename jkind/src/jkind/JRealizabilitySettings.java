@@ -6,5 +6,6 @@ public class JRealizabilitySettings extends Settings {
 	public boolean excel = false;
 	public boolean xml = false;
 	public boolean extendCounterexample = false;
+	public boolean reduce = false;
 	public boolean scratch = false;
 }

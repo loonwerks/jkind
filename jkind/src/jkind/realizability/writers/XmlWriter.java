@@ -40,9 +40,9 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnrealizable(Counterexample cex, double runtime) {
+	public void writeUnrealizable(Counterexample cex, List<String> properties, double runtime) {
 		internal.writeInvalid(Util.REALIZABLE, "base", cex, runtime);
-		summaryWriter.writeUnrealizable(cex, runtime);
+		summaryWriter.writeUnrealizable(cex, properties, runtime);
 	}
 
 	@Override

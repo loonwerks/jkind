@@ -1,0 +1,19 @@
+-- Unrealizable (can be reduced to just ok1, ok3)
+
+node main(x, y, z, w : int) returns (ok1, ok2, ok3, ok4 : bool);
+var
+  counter : int;
+let
+  counter = 0 -> 1 + pre counter;
+  assert counter < 5 => x < y - 1;
+
+  ok1 = x < z;
+  ok2 = w < 10;
+  ok3 = z < y;
+  ok4 = w < 20;
+  --%PROPERTY ok1;
+  --%PROPERTY ok2;
+  --%PROPERTY ok3;
+  --%PROPERTY ok4;
+  --%REALIZABLE x, y;
+tel;
