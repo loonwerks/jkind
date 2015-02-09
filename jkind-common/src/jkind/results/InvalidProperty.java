@@ -1,15 +1,22 @@
 package jkind.results;
 
+import java.util.List;
+
+import jkind.util.Util;
+
 /**
  * An invalid property
  */
 public final class InvalidProperty extends Property {
 	private final String source;
 	private final Counterexample cex;
+	private final List<String> conflicts;
 
-	public InvalidProperty(String name, String source, Counterexample cex, double runtime) {
+	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts,
+			double runtime) {
 		super(name, runtime);
 		this.source = source;
+		this.conflicts = Util.safeCopy(conflicts);
 		this.cex = cex;
 	}
 
@@ -25,5 +32,12 @@ public final class InvalidProperty extends Property {
 	 */
 	public Counterexample getCounterexample() {
 		return cex;
+	}
+	
+	/**
+	 * Conflicts (used in realizability analysis)
+	 */
+	public List<String> getConflicts() {
+		return conflicts;
 	}
 }

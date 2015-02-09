@@ -65,13 +65,26 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">falsifiable</Answer>");
 		out.println("    <K>" + cex.getLength() + "</K>");
 		writeCounterexample(cex);
+		writeConflicts(conflicts);
 		out.println("  </Property>");
+	}
+
+	private void writeConflicts(List<String> conflicts) {
+		if (conflicts.isEmpty()) {
+			return;
+		}
+
+		out.println("    <Conflicts>");
+		for (String conflict : conflicts) {
+			out.println("      <Conflict>" + conflict + "</Conflict>");
+		}
+		out.println("    </Conflicts>");
 	}
 
 	private void writeUnknown(String prop, int trueFor, Counterexample cex, double runtime) {

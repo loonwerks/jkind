@@ -40,9 +40,9 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnrealizable(Counterexample cex, List<String> properties, double runtime) {
-		internal.writeInvalid(Util.REALIZABLE, "base", cex, runtime);
-		summaryWriter.writeUnrealizable(cex, properties, runtime);
+	public void writeUnrealizable(Counterexample cex, List<String> conflicts, double runtime) {
+		internal.writeInvalid(Util.REALIZABLE, "base", cex, conflicts, runtime);
+		summaryWriter.writeUnrealizable(cex, conflicts, runtime);
 	}
 
 	@Override

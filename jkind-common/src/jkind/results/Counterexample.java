@@ -168,7 +168,7 @@ public final class Counterexample {
 	 */
 	public void toExcel(File file, Layout layout) {
 		try (ExcelCounterexampleFormatter formatter = new ExcelCounterexampleFormatter(file, layout)) {
-			formatter.writeCounterexample("Counterexample", this);
+			formatter.writeCounterexample("Counterexample", this, Collections.emptyList());
 		}
 	}
 

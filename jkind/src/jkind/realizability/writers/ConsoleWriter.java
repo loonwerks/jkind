@@ -34,9 +34,9 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnrealizable(Counterexample cex, List<String> properties, double runtime) {
+	public void writeUnrealizable(Counterexample cex, List<String> conflicts, double runtime) {
 		writeLine();
-		String details = properties.isEmpty() ? "" : ": " + properties;
+		String details = conflicts.isEmpty() ? "" : ": " + conflicts;
 		System.out.println("UNREALIZABLE" + details + " || K = " + cex.getLength() + " || Time = "
 				+ runtime);
 		if (layout != null) {

@@ -93,21 +93,21 @@ public class RealizabilityBaseEngine extends RealizabilityEngine {
 	private void reduceAndSendUnrealizable(int k, Model model) {
 		Sexp realizabilityOutputs = getRealizabilityOutputs(k);
 		Sexp transition = getTransition(k, k == 0);
-		List<String> properties = new ArrayList<>(spec.node.properties);
+		List<String> conflicts = new ArrayList<>(spec.node.properties);
 
 		for (String curr : spec.node.properties) {
-			properties.remove(curr);
+			conflicts.remove(curr);
 			Result result = solver.realizabilityQuery(realizabilityOutputs, transition,
-					StreamIndex.conjoinEncodings(properties, k));
+					StreamIndex.conjoinEncodings(conflicts, k));
 			
 			if (result instanceof SatResult) {
 				model = ((SatResult) result).getModel();
 			} else {
-				properties.add(curr);
+				conflicts.add(curr);
 			}
 		}
 
-		sendUnrealizable(k, model, properties);
+		sendUnrealizable(k, model, conflicts);
 	}
 
 	private void sendBaseStep(int k) {
@@ -120,8 +120,8 @@ public class RealizabilityBaseEngine extends RealizabilityEngine {
 		sendUnrealizable(k, model, Collections.emptyList());
 	}
 
-	private void sendUnrealizable(int k, Model model, List<String> properties) {
-		UnrealizableMessage im = new UnrealizableMessage(k + 1, model, properties);
+	private void sendUnrealizable(int k, Model model, List<String> conflicts) {
+		UnrealizableMessage im = new UnrealizableMessage(k + 1, model, conflicts);
 		director.incoming.add(im);
 		extendEngine.incoming.add(im);
 	}

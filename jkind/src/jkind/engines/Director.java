@@ -294,7 +294,7 @@ public class Director extends MessageHandler {
 		for (String invalidProp : newInvalid) {
 			Model slicedModel = ModelSlicer.slice(im.model, spec.dependencyMap.get(invalidProp));
 			Counterexample cex = extractCounterexample(im.length, slicedModel);
-			writer.writeInvalid(invalidProp, im.source, cex, runtime);
+			writer.writeInvalid(invalidProp, im.source, cex, Collections.emptyList(), runtime);
 		}
 	}
 

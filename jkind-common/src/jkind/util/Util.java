@@ -216,6 +216,10 @@ public class Util {
 		}
 	}
 	
+	public static <T> List<T> safeCopy(List<T> list) {
+		return Collections.unmodifiableList(new ArrayList<>(list));
+	}
+	
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";
 }

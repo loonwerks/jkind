@@ -34,6 +34,16 @@ public class ExcelUtil {
 		return fadedFormat;
 	}
 
+	public static CellFormat getHighlightFormat() {
+		WritableCellFormat highlightFormat = new WritableCellFormat();
+		try {
+			highlightFormat.setBackground(Colour.ROSE);
+		} catch (WriteException e) {
+			throw new JKindException("Error creating highlighting for Excel", e);
+		}
+		return highlightFormat;
+	}
+
 	public static void autosize(WritableSheet sheet, int max) {
 		for (int col = 0; col < max; col++) {
 			CellView cell = sheet.getColumnView(col);

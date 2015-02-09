@@ -3,6 +3,7 @@ package jkind.api.xml;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -149,6 +150,7 @@ public class XmlParseThread extends Thread {
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
 		String source = getSource(getElement(propertyElement, "Answer"));
 		List<String> invariants = getInvariants(getElements(propertyElement, "Invariant"));
+		List<String> conflicts = getConflicts(getElement(propertyElement, "Conflicts"));
 		Counterexample cex = getCounterexample(getElement(propertyElement, "Counterexample"), k);
 
 		switch (answer) {
@@ -156,7 +158,7 @@ public class XmlParseThread extends Thread {
 			return new ValidProperty(name, source, k, runtime, invariants);
 
 		case "falsifiable":
-			return new InvalidProperty(name, source, cex, runtime);
+			return new InvalidProperty(name, source, cex, conflicts, runtime);
 
 		case "unknown":
 			return new UnknownProperty(name, trueFor, cex, runtime);
@@ -201,6 +203,18 @@ public class XmlParseThread extends Thread {
 			invariants.add(invariantElement.getTextContent());
 		}
 		return invariants;
+	}
+
+	private List<String> getConflicts(Element conflictsElement) {
+		if (conflictsElement == null) {
+			return Collections.emptyList();
+		}
+		
+		List<String> conflicts = new ArrayList<>();
+		for (Element conflictElement : getElements(conflictsElement, "Conflict")) {
+			conflicts.add(conflictElement.getTextContent());
+		}
+		return conflicts;
 	}
 
 	private Counterexample getCounterexample(Element cexElement, int k) {

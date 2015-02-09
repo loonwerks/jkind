@@ -18,6 +18,7 @@ public class JRealizabilityApi {
 	private Integer timeout = null;
 	private Integer n = null;
 	private boolean extendCounterexample = false;
+	private boolean reduce = false;
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -48,8 +49,15 @@ public class JRealizabilityApi {
 	/**
 	 * Produce extend counterexample if realizability is 'unknown'
 	 */
-	public void setInductiveCounterexamples() {
+	public void setExtendCounterexamples() {
 		extendCounterexample = true;
+	}
+
+	/**
+	 * Reduce conflicting properties in the case of 'unrealizable'
+	 */
+	public void setReduce() {
+		reduce = true;
 	}
 
 	/**
@@ -117,6 +125,9 @@ public class JRealizabilityApi {
 		}
 		if (extendCounterexample) {
 			args.add("-extend_cex");
+		}
+		if (reduce) {
+			args.add("-reduce");
 		}
 
 		args.add(lustreFile.toString());

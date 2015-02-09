@@ -55,8 +55,9 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
-		properties.add(new InvalidProperty(prop, source, cex, runtime));
+	public void writeInvalid(String prop, String source, Counterexample cex,
+			List<String> conflicts, double runtime) {
+		properties.add(new InvalidProperty(prop, source, cex, conflicts, runtime));
 	}
 
 	@Override
