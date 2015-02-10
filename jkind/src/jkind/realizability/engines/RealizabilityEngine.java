@@ -124,7 +124,12 @@ public abstract class RealizabilityEngine implements Runnable {
 	}
 
 	protected Sexp getRealizabilityOutputs(int k) {
-		return varDeclsToQuantifierArguments(getRealizabilityOutputVarDecls(), k);
+		List<VarDecl> realizabilityOutputVarDecls = getRealizabilityOutputVarDecls();
+		if (realizabilityOutputVarDecls.isEmpty()) {
+			return null;
+		} else {
+			return varDeclsToQuantifierArguments(realizabilityOutputVarDecls, k);
+		}
 	}
 
 	protected Sexp getInductiveTransition(int k) {

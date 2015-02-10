@@ -65,7 +65,11 @@ public class Z3Solver extends SmtLib2Solver {
 
 	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
 		push();
-		assertSexp(new Cons("forall", outputs, new Cons("not", new Cons("and", transition, properties))));
+		Sexp query = new Cons("not", new Cons("and", transition, properties));
+		if (outputs != null) {
+			query = new Cons("forall", outputs, query);
+		}
+		assertSexp(query);
 		send(new Cons("check-sat"));
 		markDone();
 		String status = readFromSolver();
