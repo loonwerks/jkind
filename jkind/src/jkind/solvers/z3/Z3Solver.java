@@ -63,8 +63,11 @@ public class Z3Solver extends SmtLib2Solver {
 		send("(echo \"" + DONE + "\")");
 	}
 
-	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
+	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties, int timeoutMs) {
 		push();
+		if (timeoutMs > 0) {
+			send(new Cons("set-option", new Symbol(":soft_timeout"), Sexp.fromInt(timeoutMs)));
+		}
 		Sexp query = new Cons("not", new Cons("and", transition, properties));
 		if (outputs != null) {
 			query = new Cons("forall", outputs, query);
@@ -85,5 +88,9 @@ public class Z3Solver extends SmtLib2Solver {
 			pop();
 			return new UnknownResult();
 		}
+	}
+
+	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
+		return realizabilityQuery(outputs, transition, properties, 0);
 	}
 }

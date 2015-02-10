@@ -23,6 +23,7 @@ import jkind.util.StreamIndex;
 
 public class RealizabilityBaseEngine extends RealizabilityEngine {
 	private RealizabilityExtendEngine extendEngine;
+	private static final int REDUCE_TIMEOUT_MS = 200;
 
 	public RealizabilityBaseEngine(Specification spec, JRealizabilitySettings settings,
 			RealizabilityDirector director) {
@@ -98,8 +99,8 @@ public class RealizabilityBaseEngine extends RealizabilityEngine {
 		for (String curr : spec.node.properties) {
 			conflicts.remove(curr);
 			Result result = solver.realizabilityQuery(realizabilityOutputs, transition,
-					StreamIndex.conjoinEncodings(conflicts, k));
-			
+					StreamIndex.conjoinEncodings(conflicts, k), REDUCE_TIMEOUT_MS);
+
 			if (result instanceof SatResult) {
 				model = ((SatResult) result).getModel();
 			} else {
