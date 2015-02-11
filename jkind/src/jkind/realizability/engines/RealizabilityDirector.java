@@ -22,7 +22,6 @@ import jkind.realizability.writers.Writer;
 import jkind.realizability.writers.XmlWriter;
 import jkind.results.Counterexample;
 import jkind.results.layout.RealizabilityNodeLayout;
-import jkind.slicing.DependencySet;
 import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
@@ -182,13 +181,7 @@ public class RealizabilityDirector {
 		if (properties.isEmpty()) {
 			return model;
 		}
-		
-		DependencySet keep = new DependencySet();
-		for (String property : properties) {
-			keep.addAll(spec.dependencyMap.get(property));
-		}
-		
-		return ModelSlicer.slice(model, keep);
+		return ModelSlicer.slice(model, spec.dependencyMap.get(properties));
 	}
 
 	private Counterexample convertExtendCounterexample() {
