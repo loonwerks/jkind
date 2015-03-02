@@ -298,7 +298,7 @@ public class StaticAnalyzer {
 				}
 			}
 
-			List<String> covered = new ArrayList<>();
+			Set<String> covered = new HashSet<>();
 			for (Equation eq : node.equations) {
 				List<String> stack = new ArrayList<>();
 				for (IdExpr idExpr : eq.lhs) {
@@ -309,7 +309,7 @@ public class StaticAnalyzer {
 	}
 
 	private static boolean checkAlgebraicLoops(String node, String id, List<String> stack,
-			List<String> covered, Map<String, Set<String>> directDepends) {
+			Set<String> covered, Map<String, Set<String>> directDepends) {
 		if (stack.contains(id)) {
 			StringBuilder text = new StringBuilder();
 			text.append("in node '" + node + "' possible algebraic loop: ");
