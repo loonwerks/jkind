@@ -191,7 +191,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private List<String> properties(List<PropertyContext> ctxs) {
 		List<String> props = new ArrayList<>();
 		for (PropertyContext ctx : ctxs) {
-			props.add(ctx.ID().getText());
+			props.add(eid(ctx.eID()));
 		}
 		return props;
 	}

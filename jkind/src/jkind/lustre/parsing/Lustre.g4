@@ -34,7 +34,7 @@ type: 'int'                                              # intType
 
 bound: '-'? INT;
 
-property: '--%PROPERTY' ID ';';
+property: '--%PROPERTY' eID ';';
 
 realizabilityInputs: '--%REALIZABLE' (ID (',' ID)*)? ';';
 

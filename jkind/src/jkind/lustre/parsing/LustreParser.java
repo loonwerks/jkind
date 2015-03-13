@@ -871,7 +871,9 @@ public class LustreParser extends Parser {
 	}
 
 	public static class PropertyContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(LustreParser.ID, 0); }
+		public EIDContext eID() {
+			return getRuleContext(EIDContext.class,0);
+		}
 		public PropertyContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -890,7 +892,7 @@ public class LustreParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(175); match(T__25);
-			setState(176); match(ID);
+			setState(176); eID(0);
 			setState(177); match(T__26);
 			}
 		}
@@ -2053,8 +2055,8 @@ public class LustreParser extends Parser {
 		"\2\2\u00a8\u00ab\3\2\2\2\u00a9\u00a7\3\2\2\2\u00a9\u00aa\3\2\2\2\u00aa"+
 		"\21\3\2\2\2\u00ab\u00a9\3\2\2\2\u00ac\u00ae\7\66\2\2\u00ad\u00ac\3\2\2"+
 		"\2\u00ad\u00ae\3\2\2\2\u00ae\u00af\3\2\2\2\u00af\u00b0\7:\2\2\u00b0\23"+
-		"\3\2\2\2\u00b1\u00b2\7\36\2\2\u00b2\u00b3\7;\2\2\u00b3\u00b4\7\35\2\2"+
-		"\u00b4\25\3\2\2\2\u00b5\u00be\7\34\2\2\u00b6\u00bb\7;\2\2\u00b7\u00b8"+
+		"\3\2\2\2\u00b1\u00b2\7\36\2\2\u00b2\u00b3\5\"\22\2\u00b3\u00b4\7\35\2"+
+		"\2\u00b4\25\3\2\2\2\u00b5\u00be\7\34\2\2\u00b6\u00bb\7;\2\2\u00b7\u00b8"+
 		"\7\7\2\2\u00b8\u00ba\7;\2\2\u00b9\u00b7\3\2\2\2\u00ba\u00bd\3\2\2\2\u00bb"+
 		"\u00b9\3\2\2\2\u00bb\u00bc\3\2\2\2\u00bc\u00bf\3\2\2\2\u00bd\u00bb\3\2"+
 		"\2\2\u00be\u00b6\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf\u00c0\3\2\2\2\u00c0"+
