@@ -46,6 +46,7 @@ public class RemoveCondacts {
 	private final Map<String, Node> nodeTable;
 	private final List<Node> resultNodes = new ArrayList<>();
 	private final TypeReconstructor typeReconstructor;
+	private final VarDecl INIT = new VarDecl("~init", NamedType.BOOL);
 
 	private RemoveCondacts(Program program) {
 		this.program = program;
@@ -103,11 +104,12 @@ public class RemoveCondacts {
 		Node node = nodeTable.get(id);
 		typeReconstructor.setNodeContext(node);
 		IdExpr clock = new IdExpr("~clock");
-		node = addClock(node, clock);
 		node = clockArrowsAndPres(node, clock);
+		node = clockInputs(node, clock);
+		node = addClock(node, clock);
 		node = clockOutputs(node, clock);
 		node = clockNodeCalls(node, clock);
-		node = clockProperties(node, clock);
+		node = clockProperties(node);
 		node = renameNode(node, condactId);
 
 		nodeTable.put(node.id, node);
@@ -120,6 +122,24 @@ public class RemoveCondacts {
 		builder.clearInputs();
 		builder.addInput(new VarDecl(clock.id, NamedType.BOOL));
 		builder.addInputs(node.inputs);
+		return builder.build();
+	}
+
+	private Node clockInputs(Node node, IdExpr clock) {
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.clearInputs();
+		builder.addLocals(node.inputs);
+
+		for (VarDecl input : node.inputs) {
+			VarDecl clocked = new VarDecl(input.id + "~clocked", input.type);
+			builder.addInput(clocked);
+
+			// input = if clock then clocked else pre input
+			Equation eq = new Equation(new IdExpr(input.id), new IfThenElseExpr(clock, new IdExpr(
+					clocked.id), new UnaryExpr(UnaryOp.PRE, new IdExpr(input.id))));
+			builder.addEquation(eq);
+		}
+
 		return builder.build();
 	}
 
@@ -146,7 +166,6 @@ public class RemoveCondacts {
 	}
 
 	private Node clockArrowsAndPres(Node node, final IdExpr clock) {
-		final VarDecl init = new VarDecl("~init", NamedType.BOOL);
 		final List<Equation> preEquations = new ArrayList<>();
 		final List<VarDecl> preLocals = new ArrayList<>();
 		node = (Node) node.accept(new AstMapVisitor() {
@@ -155,7 +174,7 @@ public class RemoveCondacts {
 			@Override
 			public Expr visit(BinaryExpr e) {
 				if (e.op == BinaryOp.ARROW) {
-					return new IfThenElseExpr(new IdExpr(init.id), e.left.accept(this), e.right
+					return new IfThenElseExpr(new IdExpr(INIT.id), e.left.accept(this), e.right
 							.accept(this));
 				} else {
 					return super.visit(e);
@@ -180,12 +199,12 @@ public class RemoveCondacts {
 
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.addLocals(preLocals);
-		builder.addLocal(init);
 		builder.addEquations(preEquations);
 		// init = true -> if pre clock then false else pre init
-		builder.addEquation(new Equation(new IdExpr(init.id), new BinaryExpr(new BoolExpr(true),
+		builder.addLocal(INIT);
+		builder.addEquation(new Equation(new IdExpr(INIT.id), new BinaryExpr(new BoolExpr(true),
 				BinaryOp.ARROW, new IfThenElseExpr(new UnaryExpr(UnaryOp.PRE, clock), new BoolExpr(
-						false), new UnaryExpr(UnaryOp.PRE, new IdExpr(init.id))))));
+						false), new UnaryExpr(UnaryOp.PRE, new IdExpr(INIT.id))))));
 		return builder.build();
 	}
 
@@ -231,7 +250,7 @@ public class RemoveCondacts {
 		// clock the outputs. The outer condact will ignore outputs when the
 		// clock is false.
 		node = clockNodeCalls(node, clock);
-		node = clockProperties(node, clock);
+		node = clockProperties(node);
 		node = renameNode(node, condactId);
 
 		nodeTable.put(node.id, node);
@@ -239,16 +258,16 @@ public class RemoveCondacts {
 		return node;
 	}
 
-	private Node clockProperties(Node node, final IdExpr clock) {
+	private Node clockProperties(Node node) {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearProperties();
 
 		for (String property : node.properties) {
 			VarDecl clocked = new VarDecl(property + "~clocked_property", NamedType.BOOL);
 			builder.addLocal(clocked);
-			// clocked_property = clock => property
-			builder.addEquation(new Equation(new IdExpr(clocked.id), new BinaryExpr(clock,
-					BinaryOp.IMPLIES, new IdExpr(property))));
+			// clocked_property = init or property
+			builder.addEquation(new Equation(new IdExpr(clocked.id), new BinaryExpr(new IdExpr(
+					INIT.id), BinaryOp.OR, new IdExpr(property))));
 			builder.addProperty(clocked.id);
 		}
 
