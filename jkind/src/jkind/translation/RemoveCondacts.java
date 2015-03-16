@@ -256,6 +256,7 @@ public class RemoveCondacts {
 
 			IdExpr clock = new IdExpr("~clock");
 			node = clockArrowsAndPres(node, clock);
+			node = defineBuiltins(node, clock);
 			node = addClockInput(node, clock);
 			/*
 			 * This is a node called within a condact so we do not need to clock
