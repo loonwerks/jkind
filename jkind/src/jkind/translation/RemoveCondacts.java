@@ -1,12 +1,12 @@
 package jkind.translation;
 
-import static jkind.lustre.LustreUtil.FALSE;
 import static jkind.lustre.LustreUtil.TRUE;
 import static jkind.lustre.LustreUtil.and;
 import static jkind.lustre.LustreUtil.arrow;
 import static jkind.lustre.LustreUtil.eq;
 import static jkind.lustre.LustreUtil.id;
 import static jkind.lustre.LustreUtil.ite;
+import static jkind.lustre.LustreUtil.not;
 import static jkind.lustre.LustreUtil.or;
 import static jkind.lustre.LustreUtil.pre;
 
@@ -55,6 +55,8 @@ public class RemoveCondacts {
 	private final Map<String, Node> nodeTable;
 	private final List<Node> resultNodes = new ArrayList<>();
 	private final TypeReconstructor typeReconstructor;
+	
+	private final VarDecl PREINIT = new VarDecl("~preinit", NamedType.BOOL);
 	private final VarDecl INIT = new VarDecl("~init", NamedType.BOOL);
 
 	private RemoveCondacts(Program program) {
@@ -111,6 +113,7 @@ public class RemoveCondacts {
 
 			IdExpr clock = new IdExpr("~clock");
 			node = clockArrowsAndPres(node, clock);
+			node = defineBuiltins(node, clock);
 			node = clockInputs(node, clock);
 			node = addClockInput(node, clock);
 			node = clockOutputs(node, clock);
@@ -132,17 +135,31 @@ public class RemoveCondacts {
 		return builder.build();
 	}
 
+	private Node defineBuiltins(Node node, IdExpr clock) {
+		NodeBuilder builder = new NodeBuilder(node);
+
+		// preinit = (not clock) and (true -> pre preinit)
+		builder.addLocal(PREINIT);
+		builder.addEquation(eq(id(PREINIT), and(not(clock), arrow(TRUE, pre(id(PREINIT))))));
+		
+		// init = clock -> if clock then pre preinit else pre init
+		builder.addLocal(INIT);
+		builder.addEquation(eq(id(INIT), arrow(clock, ite(clock, pre(id(PREINIT)), pre(id(INIT))))));
+		
+		return builder.build();
+	}
+
 	private Node clockInputs(Node node, IdExpr clock) {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearInputs();
 		builder.addLocals(node.inputs);
 
 		for (VarDecl input : node.inputs) {
-			VarDecl clocked = new VarDecl(input.id + "~clocked", input.type);
-			builder.addInput(clocked);
+			VarDecl ext = new VarDecl(input.id + "~external", input.type);
+			builder.addInput(ext);
 
-			// input = if clock then clocked else pre input
-			Equation eq = eq(id(input), ite(clock, id(clocked), pre(id(input))));
+			// input = if clock then ext else pre input
+			Equation eq = eq(id(input), ite(clock, id(ext), pre(id(input))));
 			builder.addEquation(eq);
 		}
 
@@ -158,11 +175,11 @@ public class RemoveCondacts {
 			VarDecl dflt = new VarDecl(output.id + "~default", output.type);
 			builder.addInput(dflt);
 
-			VarDecl clocked = new VarDecl(output.id + "~clocked", output.type);
-			builder.addOutput(clocked);
+			VarDecl ext = new VarDecl(output.id + "~external", output.type);
+			builder.addOutput(ext);
 
-			// clocked = if clock then output else (default -> pre clocked)
-			Equation eq = eq(id(clocked), ite(clock, id(output), arrow(id(dflt), pre(id(clocked)))));
+			// ext = if clock then output else (default -> pre ext)
+			Equation eq = eq(id(ext), ite(clock, id(output), arrow(id(dflt), pre(id(ext)))));
 			builder.addEquation(eq);
 		}
 
@@ -190,9 +207,9 @@ public class RemoveCondacts {
 					String state = "~state" + counter++;
 					Type type = e.expr.accept(typeReconstructor);
 					preLocals.add(new VarDecl(state, type));
-					// state = if clock then expr else pre state
-					preEquations.add(eq(id(state), ite(clock, e.expr.accept(this), pre(id(state)))));
-					return pre(id(state));
+					// state = if clock then pre expr else pre state
+					preEquations.add(eq(id(state), ite(clock, pre(e.expr.accept(this)), pre(id(state)))));
+					return id(state);
 				} else {
 					return super.visit(e);
 				}
@@ -202,9 +219,6 @@ public class RemoveCondacts {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.addLocals(preLocals);
 		builder.addEquations(preEquations);
-		// init = true -> if pre clock then false else pre init
-		builder.addLocal(INIT);
-		builder.addEquation(eq(id(INIT), arrow(TRUE, ite(pre(clock), FALSE, pre(id(INIT))))));
 		return builder.build();
 	}
 
@@ -265,8 +279,8 @@ public class RemoveCondacts {
 		for (String property : node.properties) {
 			VarDecl clocked = new VarDecl(property + "~clocked_property", NamedType.BOOL);
 			builder.addLocal(clocked);
-			// clocked_property = init or property
-			builder.addEquation(eq(id(clocked), or(id(INIT.id), id(property))));
+			// clocked_property = preinit or property
+			builder.addEquation(eq(id(clocked), or(id(PREINIT.id), id(property))));
 			builder.addProperty(clocked.id);
 		}
 
