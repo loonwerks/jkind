@@ -11,6 +11,7 @@ import static jkind.lustre.LustreUtil.or;
 import static jkind.lustre.LustreUtil.pre;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class RemoveCondacts {
 	private final Map<String, Node> nodeTable;
 	private final List<Node> resultNodes = new ArrayList<>();
 	private final TypeReconstructor typeReconstructor;
-	
+
 	private final VarDecl PREINIT = new VarDecl("~preinit", NamedType.BOOL);
 	private final VarDecl INIT = new VarDecl("~init", NamedType.BOOL);
 
@@ -141,11 +142,11 @@ public class RemoveCondacts {
 		// preinit = (not clock) and (true -> pre preinit)
 		builder.addLocal(PREINIT);
 		builder.addEquation(eq(id(PREINIT), and(not(clock), arrow(TRUE, pre(id(PREINIT))))));
-		
+
 		// init = clock -> if clock then pre preinit else pre init
 		builder.addLocal(INIT);
 		builder.addEquation(eq(id(INIT), arrow(clock, ite(clock, pre(id(PREINIT)), pre(id(INIT))))));
-		
+
 		return builder.build();
 	}
 
@@ -187,8 +188,10 @@ public class RemoveCondacts {
 	}
 
 	private Node clockArrowsAndPres(Node node, final IdExpr clock) {
-		final List<Equation> preEquations = new ArrayList<>();
-		final List<VarDecl> preLocals = new ArrayList<>();
+		List<Equation> preEquations = new ArrayList<>();
+		List<VarDecl> preLocals = new ArrayList<>();
+		Map<String, Expr> cache = new HashMap<>();
+
 		node = (Node) node.accept(new AstMapVisitor() {
 			private int counter = 0;
 
@@ -204,12 +207,17 @@ public class RemoveCondacts {
 			@Override
 			public Expr visit(UnaryExpr e) {
 				if (e.op == UnaryOp.PRE) {
-					String state = "~state" + counter++;
-					Type type = e.expr.accept(typeReconstructor);
-					preLocals.add(new VarDecl(state, type));
-					// state = if clock then pre expr else pre state
-					preEquations.add(eq(id(state), ite(clock, pre(e.expr.accept(this)), pre(id(state)))));
-					return id(state);
+					return cache.computeIfAbsent(
+							e.expr.toString(),
+							ignore -> {
+								String state = "~state" + counter++;
+								Type type = e.expr.accept(typeReconstructor);
+								preLocals.add(new VarDecl(state, type));
+								// state = if clock then pre expr else pre state
+								preEquations.add(eq(id(state),
+										ite(clock, pre(e.expr.accept(this)), pre(id(state)))));
+								return id(state);
+							});
 				} else {
 					return super.visit(e);
 				}
