@@ -7,7 +7,7 @@ import java.util.List;
 public class LustreUtil {
 	public static Expr TRUE = new BoolExpr(true);
 	public static Expr FALSE = new BoolExpr(false);
-	
+
 	public static Expr typeConstraint(String id, Type type) {
 		if (type instanceof SubrangeIntType) {
 			return subrangeConstraint(id, (SubrangeIntType) type);
@@ -84,6 +84,10 @@ public class LustreUtil {
 
 	public static Expr arrow(Expr left, Expr right) {
 		return new BinaryExpr(left, BinaryOp.ARROW, right);
+	}
+
+	public static Expr implies(Expr left, Expr right) {
+		return new BinaryExpr(left, BinaryOp.IMPLIES, right);
 	}
 
 	public static Equation eq(IdExpr id, Expr expr) {
