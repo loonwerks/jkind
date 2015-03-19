@@ -58,6 +58,14 @@ public class LustreUtil {
 		return new UnaryExpr(UnaryOp.NOT, expr);
 	}
 
+	public static Expr castReal(Expr expr) {
+		return new CastExpr(NamedType.REAL, expr);
+	}
+
+	public static Expr castInt(Expr expr) {
+		return new CastExpr(NamedType.INT, expr);
+	}
+
 	public static IdExpr id(String id) {
 		return new IdExpr(id);
 	}

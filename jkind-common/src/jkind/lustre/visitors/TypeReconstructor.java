@@ -92,9 +92,11 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 
 	public void setNodeContext(Node node) {
 		variableTable.clear();
-		for (VarDecl v : Util.getVarDecls(node)) {
-			variableTable.put(v.id, resolveType(v.type));
-		}
+		Util.getVarDecls(node).forEach(this::addVariable);
+	}
+	
+	public void addVariable(VarDecl varDecl) {
+		variableTable.put(varDecl.id, resolveType(varDecl.type));
 	}
 
 	@Override

@@ -3,9 +3,13 @@ package jkind.solvers.mathsat;
 import java.io.File;
 
 import jkind.JKindException;
+import jkind.lustre.BinaryExpr;
+import jkind.lustre.BinaryOp;
+import jkind.lustre.Expr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
+import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -83,5 +87,15 @@ public class MathSatSolver extends SmtLib2Solver {
 		}
 
 		return ModelExtractor.getModel(ctx, varTypes);
+	}
+
+	@Override
+	public boolean supports(Expr expr) {
+		return expr.accept(new ExprConjunctiveVisitor() {
+			@Override
+			public Boolean visit(BinaryExpr e) {
+				return e.op != BinaryOp.INT_DIVIDE && e.op != BinaryOp.MODULUS && super.visit(e);
+			}
+		});
 	}
 }

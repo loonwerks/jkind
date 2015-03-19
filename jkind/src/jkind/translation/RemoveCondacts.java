@@ -57,7 +57,8 @@ public class RemoveCondacts {
 	private final List<Node> resultNodes = new ArrayList<>();
 	private final TypeReconstructor typeReconstructor;
 
-	private final VarDecl INIT = new VarDecl("~init", NamedType.BOOL);
+	private final IdExpr INIT = id("~init");
+	private final IdExpr CLOCK = id("~clock");
 
 	private RemoveCondacts(Program program) {
 		this.program = program;
@@ -107,41 +108,54 @@ public class RemoveCondacts {
 	}
 
 	private Node createCondactNode(String id) {
-		return nodeTable.computeIfAbsent(id + "~condact", condactId -> {
-			Node node = nodeTable.get(id);
-			typeReconstructor.setNodeContext(node);
-
-			IdExpr clock = new IdExpr("~clock");
-			node = clockArrowsAndPres(node, clock);
-			node = defineInit(node, clock);
-			node = addClockInput(node, clock);
-			node = clockOutputs(node, clock);
-			node = clockNodeCalls(node, clock);
-			node = clockProperties(node, clock);
-			node = renameNode(node, condactId);
-
-			nodeTable.put(node.id, node);
-			resultNodes.add(node);
-			return node;
-		});
+		return nodeTable.computeIfAbsent(id + "~condact",
+				condactId -> createTimedNode(id, condactId, true));
 	}
 
-	private Node clockArrowsAndPres(Node node, final IdExpr clock) {
-		List<Equation> stateEquations = new ArrayList<>();
-		List<VarDecl> stateLocals = new ArrayList<>();
-		Map<String, Expr> cache = new HashMap<>();
+	private Node createTimedNode(String id, String condactId, boolean clockOutputs) {
+		Node node = nodeTable.get(id);
 
-		node = (Node) node.accept(new AstMapVisitor() {
-			private int counter = 0;
+		typeReconstructor.setNodeContext(node);
+		typeReconstructor.addVariable(new VarDecl(INIT.id, NamedType.BOOL));
+		typeReconstructor.addVariable(new VarDecl(CLOCK.id, NamedType.BOOL));
 
+		node = clockArrows(node);
+		node = clockPres(node);
+		node = defineInit(node);
+		node = addClockInput(node);
+		if (clockOutputs) {
+			node = clockOutputs(node);
+		}
+		node = clockNodeCalls(node);
+		node = clockProperties(node);
+		node = renameNode(node, condactId);
+
+		nodeTable.put(node.id, node);
+		resultNodes.add(node);
+		return node;
+	}
+
+	private Node clockArrows(Node node) {
+		return (Node) node.accept(new AstMapVisitor() {
 			@Override
 			public Expr visit(BinaryExpr e) {
 				if (e.op == BinaryOp.ARROW) {
-					return ite(id(INIT), e.left.accept(this), e.right.accept(this));
+					return ite(INIT, e.left.accept(this), e.right.accept(this));
 				} else {
 					return super.visit(e);
 				}
 			}
+		});
+	}
+
+	private Node clockPres(Node node) {
+		List<Equation> stateEquations = new ArrayList<>();
+		List<VarDecl> stateLocals = new ArrayList<>();
+		Map<String, Expr> cache = new HashMap<>();
+
+		node = DistributePre.node(node);
+		node = (Node) node.accept(new AstMapVisitor() {
+			private int counter = 0;
 
 			@Override
 			public Expr visit(UnaryExpr e) {
@@ -154,7 +168,7 @@ public class RemoveCondacts {
 								stateLocals.add(new VarDecl(state, type));
 								// state = if clock then expr else pre state
 								stateEquations.add(eq(id(state),
-										ite(clock, e.expr.accept(this), pre(id(state)))));
+										ite(CLOCK, e.expr.accept(this), pre(id(state)))));
 								return pre(id(state));
 							});
 				} else {
@@ -169,23 +183,23 @@ public class RemoveCondacts {
 		return builder.build();
 	}
 
-	private Node defineInit(Node node, IdExpr clock) {
+	private Node defineInit(Node node) {
 		NodeBuilder builder = new NodeBuilder(node);
 		// init = true -> if pre clock then false else pre init
-		builder.addLocal(INIT);
-		builder.addEquation(eq(id(INIT), arrow(TRUE, ite(pre(clock), FALSE, pre(id(INIT))))));
+		builder.addLocal(new VarDecl(INIT.id, NamedType.BOOL));
+		builder.addEquation(eq(INIT, arrow(TRUE, ite(pre(CLOCK), FALSE, pre(INIT)))));
 		return builder.build();
 	}
 
-	private Node addClockInput(Node node, IdExpr clock) {
+	private Node addClockInput(Node node) {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearInputs();
-		builder.addInput(new VarDecl(clock.id, NamedType.BOOL));
+		builder.addInput(new VarDecl(CLOCK.id, NamedType.BOOL));
 		builder.addInputs(node.inputs);
 		return builder.build();
 	}
 
-	private Node clockOutputs(Node node, IdExpr clock) {
+	private Node clockOutputs(Node node) {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearOutputs();
 		builder.addLocals(node.outputs);
@@ -198,19 +212,19 @@ public class RemoveCondacts {
 			builder.addOutput(clocked);
 
 			// clocked = if clock then output else (default -> pre clocked)
-			Equation eq = eq(id(clocked), ite(clock, id(output), arrow(id(dflt), pre(id(clocked)))));
+			Equation eq = eq(id(clocked), ite(CLOCK, id(output), arrow(id(dflt), pre(id(clocked)))));
 			builder.addEquation(eq);
 		}
 
 		return builder.build();
 	}
 
-	private Node clockNodeCalls(Node node, final IdExpr clock) {
+	private Node clockNodeCalls(Node node) {
 		return (Node) node.accept(new AstMapVisitor() {
 			@Override
 			public Expr visit(NodeCallExpr e) {
 				List<Expr> args = new ArrayList<>();
-				args.add(clock);
+				args.add(CLOCK);
 				args.addAll(visitExprs(e.args));
 
 				Node clocked = createClockedNode(e.node);
@@ -222,7 +236,7 @@ public class RemoveCondacts {
 				NodeCallExpr call = (NodeCallExpr) super.visit(e.call);
 
 				List<Expr> args = new ArrayList<>();
-				args.add(and(e.clock.accept(this), clock));
+				args.add(and(e.clock.accept(this), CLOCK));
 				args.addAll(e.call.args);
 				args.addAll(visitExprs(e.args));
 
@@ -233,30 +247,11 @@ public class RemoveCondacts {
 	}
 
 	private Node createClockedNode(String id) {
-		return nodeTable.computeIfAbsent(id + "~clocked", clockedId -> {
-			Node node = nodeTable.get(id);
-			typeReconstructor.setNodeContext(node);
-
-			IdExpr clock = new IdExpr("~clock");
-			node = clockArrowsAndPres(node, clock);
-			node = defineInit(node, clock);
-			node = addClockInput(node, clock);
-			/*
-			 * This is a node called within a condact so we do not need to clock
-			 * the inputs or outputs since the outer condact will handle all of
-			 * that.
-			 */
-			node = clockNodeCalls(node, clock);
-			node = clockProperties(node, clock);
-			node = renameNode(node, clockedId);
-
-			nodeTable.put(node.id, node);
-			resultNodes.add(node);
-			return node;
-		});
+		return nodeTable.computeIfAbsent(id + "~clocked",
+				clockedId -> createTimedNode(id, clockedId, false));
 	}
 
-	private Node clockProperties(Node node, IdExpr clock) {
+	private Node clockProperties(Node node) {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearProperties();
 
@@ -264,7 +259,7 @@ public class RemoveCondacts {
 			VarDecl clocked = new VarDecl(property + "~clocked_property", NamedType.BOOL);
 			builder.addLocal(clocked);
 			// clocked_property = clock => property
-			builder.addEquation(eq(id(clocked), implies(clock, id(property))));
+			builder.addEquation(eq(id(clocked), implies(CLOCK, id(property))));
 			builder.addProperty(clocked.id);
 		}
 

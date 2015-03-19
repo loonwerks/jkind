@@ -154,8 +154,9 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	@Override
 	protected void handleMessage(InvariantMessage im) {
-		invariants.addAll(im.invariants);
-		assertNewInvariants(im.invariants, kCurrent - 1);
+		List<Expr> supported = im.invariants.stream().filter(solver::supports).collect(toList());
+		invariants.addAll(supported);
+		assertNewInvariants(supported, kCurrent - 1);
 	}
 
 	@Override

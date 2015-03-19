@@ -3,6 +3,7 @@ package jkind.solvers;
 import java.util.HashMap;
 import java.util.Map;
 
+import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
@@ -22,6 +23,16 @@ public abstract class Solver {
 
 	public abstract void comment(String str);
 	public abstract void stop();
-
+	
 	protected final Map<String, Type> varTypes = new HashMap<>();
+
+	/**
+	 * Check if the solver supports all of the operators in the expression.
+	 * Useful since PDR may generate invariants using operators not supported by
+	 * the solver.
+	 * @param expr
+	 */
+	public boolean supports(Expr expr) {
+		return true;
+	}
 }

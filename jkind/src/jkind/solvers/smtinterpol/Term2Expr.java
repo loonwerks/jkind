@@ -1,5 +1,7 @@
 package jkind.solvers.smtinterpol;
 
+import static jkind.lustre.LustreUtil.castInt;
+import static jkind.lustre.LustreUtil.castReal;
 import static jkind.lustre.LustreUtil.divide;
 import static jkind.lustre.LustreUtil.negative;
 import static jkind.lustre.LustreUtil.not;
@@ -80,6 +82,10 @@ public class Term2Expr {
 				return negative(expr(params[0]));
 			case "not":
 				return not(expr(params[0]));
+			case "to_real":
+				return castReal(expr(params[0]));
+			case "to_int":
+				return castInt(expr(params[0]));
 			default:
 				throw new IllegalArgumentException("Unknown unary operator: " + name);
 			}
