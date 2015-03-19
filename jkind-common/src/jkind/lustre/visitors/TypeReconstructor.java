@@ -174,7 +174,7 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		} else if (enumValueTable.containsKey(e.id)) {
 			return NamedType.INT;
 		} else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Unknown variable: " + e.id);
 		}
 	}
 
