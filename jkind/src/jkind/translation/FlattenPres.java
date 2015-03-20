@@ -31,7 +31,7 @@ public class FlattenPres extends TypeAwareAstMapVisitor {
 	}
 
 	private IdExpr getFreshId() {
-		return new IdExpr("%flatten" + counter++);
+		return new IdExpr("~flatten" + counter++);
 	}
 
 	@Override
