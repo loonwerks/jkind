@@ -22,9 +22,17 @@ public class LinearChecker extends ExprIterVisitor {
 		return new LinearChecker(level).visitProgram(program);
 	}
 
+	public static boolean isLinear(Program program) {
+		return new LinearChecker(Level.IGNORE).visitProgram(program);
+	}
+
+	public static boolean isLinear(Node node) {
+		return new LinearChecker(Level.IGNORE).visitNode(node);
+	}
+
 	public boolean visitProgram(Program program) {
 		constantAnalyzer = new ConstantAnalyzer(program);
-		
+
 		for (Node node : program.nodes) {
 			visitNode(node);
 		}
@@ -32,13 +40,14 @@ public class LinearChecker extends ExprIterVisitor {
 		return passed;
 	}
 
-	public void visitNode(Node node) {
+	public boolean visitNode(Node node) {
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
 		}
 		for (Expr e : node.assertions) {
 			e.accept(this);
 		}
+		return passed;
 	}
 
 	@Override

@@ -14,8 +14,11 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Z3Solver extends SmtLib2Solver {
-	public Z3Solver(String scratchBase) {
+	private final boolean linear;
+
+	public Z3Solver(String scratchBase, boolean linear) {
 		super(scratchBase, new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
+		this.linear = linear;
 	}
 
 	private static String getZ3() {
@@ -37,10 +40,17 @@ public class Z3Solver extends SmtLib2Solver {
 	public Result query(Sexp sexp) {
 		Result result;
 
-		Symbol assum = new Symbol("assum" + assumCount++);
-		define(new VarDecl(assum.str, NamedType.BOOL));
-		send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
-		send(new Cons("check-sat", assum));
+		if (linear) {
+			Symbol assum = new Symbol("assum" + assumCount++);
+			define(new VarDecl(assum.str, NamedType.BOOL));
+			send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
+			send(new Cons("check-sat", assum));
+		} else {
+			push();
+			send(new Cons("assert", new Cons("not", sexp)));
+			send(new Cons("check-sat"));
+		}
+		
 		markDone();
 		String status = readFromSolver();
 		if (isSat(status)) {
@@ -54,6 +64,10 @@ public class Z3Solver extends SmtLib2Solver {
 			send("(get-model)");
 			markDone();
 			result = new UnknownResult(parseModel(readFromSolver()));
+		}
+		
+		if (!linear) {
+			pop();
 		}
 
 		return result;

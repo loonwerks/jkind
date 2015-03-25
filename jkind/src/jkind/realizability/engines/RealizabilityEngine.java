@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JRealizabilitySettings;
+import jkind.analysis.LinearChecker;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.VarDecl;
@@ -58,7 +59,7 @@ public abstract class RealizabilityEngine implements Runnable {
 	}
 
 	protected void initializeSolver() {
-		solver = new Z3Solver(getScratchBase());
+		solver = new Z3Solver(getScratchBase(), LinearChecker.isLinear(spec.node));
 		solver.initialize();
 		solver.define(spec.transitionRelation);
 	}

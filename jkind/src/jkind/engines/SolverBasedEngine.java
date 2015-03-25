@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindSettings;
+import jkind.analysis.LinearChecker;
 import jkind.analysis.YicesArithOnlyCheck;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
@@ -65,7 +66,7 @@ public abstract class SolverBasedEngine extends Engine {
 		case CVC4:
 			return new Cvc4Solver(scratchBase);
 		case Z3:
-			return new Z3Solver(scratchBase);
+			return new Z3Solver(scratchBase, LinearChecker.isLinear(spec.node));
 		case YICES2:
 			return new Yices2Solver(scratchBase);
 		case MATHSAT:
