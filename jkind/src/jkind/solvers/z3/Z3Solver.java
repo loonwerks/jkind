@@ -66,7 +66,7 @@ public class Z3Solver extends SmtLib2Solver {
 	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties, int timeoutMs) {
 		push();
 		if (timeoutMs > 0) {
-			send(new Cons("set-option", new Symbol(":soft_timeout"), Sexp.fromInt(timeoutMs)));
+			send(new Cons("set-option", new Symbol(":timeout"), Sexp.fromInt(timeoutMs)));
 		}
 		Sexp query = new Cons("not", new Cons("and", transition, properties));
 		if (outputs != null) {
