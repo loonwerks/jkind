@@ -48,6 +48,12 @@ public class BmcEngine extends SolverBasedEngine {
 
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				Model model = getModel(result);
+				if (model == null) {
+					sendUnknown(properties);
+					properties.clear();
+					break;
+				}
+				
 				List<String> bad = getFalseProperties(properties, k, model);
 				properties.removeAll(bad);
 				

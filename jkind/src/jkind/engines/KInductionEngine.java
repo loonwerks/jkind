@@ -64,6 +64,10 @@ public class KInductionEngine extends SolverBasedEngine {
 
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				Model model = getModel(result);
+				if (model == null) {
+					break;
+				}
+				
 				List<String> bad = getFalseProperties(possiblyValid, k, model);
 				possiblyValid.removeAll(bad);
 				sendInductiveCounterexamples(bad, k + 1, model);

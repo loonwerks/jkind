@@ -27,7 +27,7 @@ public class LinearChecker extends ExprIterVisitor {
 	}
 
 	public static boolean isLinear(Node node) {
-		return new LinearChecker(Level.IGNORE).visitNode(node);
+		return isLinear(new Program(node));
 	}
 
 	public boolean visitProgram(Program program) {
@@ -40,14 +40,13 @@ public class LinearChecker extends ExprIterVisitor {
 		return passed;
 	}
 
-	public boolean visitNode(Node node) {
+	public void visitNode(Node node) {
 		for (Equation eq : node.equations) {
 			eq.expr.accept(this);
 		}
 		for (Expr e : node.assertions) {
 			e.accept(this);
 		}
-		return passed;
 	}
 
 	@Override

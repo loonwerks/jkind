@@ -50,7 +50,7 @@ public class Z3Solver extends SmtLib2Solver {
 			send(new Cons("assert", new Cons("not", sexp)));
 			send(new Cons("check-sat"));
 		}
-		
+
 		markDone();
 		String status = readFromSolver();
 		if (isSat(status)) {
@@ -60,12 +60,18 @@ public class Z3Solver extends SmtLib2Solver {
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
-			// Even for unknown we can get a partial model
+			// Even for unknown we can sometimes get a partial model
 			send("(get-model)");
 			markDone();
-			result = new UnknownResult(parseModel(readFromSolver()));
+			
+			String content = readFromSolver();
+			if (content == null) {
+				return new UnknownResult();
+			} else {
+				result = new UnknownResult(parseModel(content));
+			}
 		}
-		
+
 		if (!linear) {
 			pop();
 		}

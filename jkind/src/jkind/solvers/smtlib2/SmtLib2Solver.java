@@ -127,6 +127,8 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 					// No need to parse the transition relation
 				} else if (isDone(line)) {
 					break;
+				} else if (line.contains("model is not available")) {
+					return null;
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {
