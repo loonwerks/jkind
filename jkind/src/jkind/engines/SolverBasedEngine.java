@@ -12,7 +12,11 @@ import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Model;
+import jkind.solvers.Result;
+import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.SmtInterpolSolver;
@@ -135,5 +139,15 @@ public abstract class SolverBasedEngine extends Engine {
 			result.add(new Symbol(vd.id));
 		}
 		return result;
+	}
+	
+	protected Model getModel(Result result) {
+		if (result instanceof SatResult) {
+			return ((SatResult) result).getModel();
+		} else if (result instanceof UnknownResult) {
+			return ((UnknownResult) result).getModel();
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 }

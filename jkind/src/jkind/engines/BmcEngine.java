@@ -48,23 +48,25 @@ public class BmcEngine extends SolverBasedEngine {
 		do {
 			result = solver.query(StreamIndex.conjoinEncodings(properties, k));
 
-			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
-				List<String> invalid = new ArrayList<>();
+			if (result instanceof SatResult || result instanceof UnknownResult) {
+				Model model = getModel(result);
+				List<String> bad = new ArrayList<>();
 				Iterator<String> iterator = properties.iterator();
 				while (iterator.hasNext()) {
 					String p = iterator.next();
 					StreamIndex si = new StreamIndex(p, k);
 					BooleanValue v = (BooleanValue) model.getValue(si);
 					if (!v.value) {
-						invalid.add(p);
+						bad.add(p);
 						iterator.remove();
 					}
 				}
-				sendInvalid(invalid, k, model);
-			} else if (result instanceof UnknownResult) {
-				sendUnknown(properties);
-				properties.clear();
+				
+				if (result instanceof SatResult) {
+					sendInvalid(bad, k, model);
+				} else {
+					sendUnknown(bad);
+				}
 			}
 		} while (!properties.isEmpty() && result instanceof SatResult);
 

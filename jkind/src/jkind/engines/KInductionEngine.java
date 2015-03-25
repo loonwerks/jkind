@@ -85,16 +85,6 @@ public class KInductionEngine extends SolverBasedEngine {
 		}
 	}
 
-	private Model getModel(Result result) {
-		if (result instanceof SatResult) {
-			return ((SatResult) result).getModel();
-		} else if (result instanceof UnknownResult) {
-			return ((UnknownResult) result).getModel();
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
-
 	private void addPropertiesAsInvariants(int k, List<String> valid) {
 		List<Expr> newInvariants = valid.stream().map(IdExpr::new).collect(toList());
 		invariants.addAll(newInvariants);
