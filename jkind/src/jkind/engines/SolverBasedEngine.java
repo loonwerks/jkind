@@ -9,6 +9,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
+import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -140,7 +141,7 @@ public abstract class SolverBasedEngine extends Engine {
 		}
 		return result;
 	}
-	
+
 	protected Model getModel(Result result) {
 		if (result instanceof SatResult) {
 			return ((SatResult) result).getModel();
@@ -149,5 +150,17 @@ public abstract class SolverBasedEngine extends Engine {
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	protected List<String> getFalseProperties(List<String> properties, int k, Model model) {
+		List<String> falses = new ArrayList<>();
+		for (String p : properties) {
+			StreamIndex si = new StreamIndex(p, k);
+			BooleanValue v = (BooleanValue) model.getValue(si);
+			if (!v.value) {
+				falses.add(p);
+			}
+		}
+		return falses;
 	}
 }

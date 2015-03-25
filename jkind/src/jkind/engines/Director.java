@@ -300,7 +300,9 @@ public class Director extends MessageHandler {
 
 	@Override
 	protected void handleMessage(InductiveCounterexampleMessage icm) {
-		inductiveCounterexamples.put(icm.property, icm);
+		for (String property : icm.properties) {
+			inductiveCounterexamples.put(property, icm);
+		}
 	}
 
 	@Override
@@ -370,7 +372,7 @@ public class Director extends MessageHandler {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			Model slicedModel = ModelSlicer.slice(icm.model, spec.dependencyMap.get(icm.property));
+			Model slicedModel = ModelSlicer.slice(icm.model, spec.dependencyMap.get(prop));
 			result.put(prop, extractCounterexample(icm.length, slicedModel));
 		}
 

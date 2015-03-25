@@ -1,7 +1,6 @@
 package jkind.engines;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindSettings;
@@ -12,7 +11,6 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.lustre.values.BooleanValue;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -50,17 +48,8 @@ public class BmcEngine extends SolverBasedEngine {
 
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				Model model = getModel(result);
-				List<String> bad = new ArrayList<>();
-				Iterator<String> iterator = properties.iterator();
-				while (iterator.hasNext()) {
-					String p = iterator.next();
-					StreamIndex si = new StreamIndex(p, k);
-					BooleanValue v = (BooleanValue) model.getValue(si);
-					if (!v.value) {
-						bad.add(p);
-						iterator.remove();
-					}
-				}
+				List<String> bad = getFalseProperties(properties, k, model);
+				properties.removeAll(bad);
 				
 				if (result instanceof SatResult) {
 					sendInvalid(bad, k, model);

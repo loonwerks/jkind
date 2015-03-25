@@ -3,7 +3,6 @@ package jkind.engines;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindSettings;
@@ -18,7 +17,6 @@ import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -66,16 +64,9 @@ public class KInductionEngine extends SolverBasedEngine {
 
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				Model model = getModel(result);
-				Iterator<String> iterator = possiblyValid.iterator();
-				while (iterator.hasNext()) {
-					String p = iterator.next();
-					StreamIndex si = new StreamIndex(p, k);
-					BooleanValue v = (BooleanValue) model.getValue(si);
-					if (!v.value) {
-						sendInductiveCounterexample(p, k + 1, model);
-						iterator.remove();
-					}
-				}
+				List<String> bad = getFalseProperties(possiblyValid, k, model);
+				possiblyValid.removeAll(bad);
+				sendInductiveCounterexamples(bad, k + 1, model);
 			} else if (result instanceof UnsatResult) {
 				properties.removeAll(possiblyValid);
 				addPropertiesAsInvariants(k, possiblyValid);
@@ -122,9 +113,9 @@ public class KInductionEngine extends SolverBasedEngine {
 		director.broadcast(vm);
 	}
 
-	private void sendInductiveCounterexample(String p, int length, Model model) {
-		if (settings.inductiveCounterexamples) {
-			director.broadcast(new InductiveCounterexampleMessage(p, length, model));
+	private void sendInductiveCounterexamples(List<String> properties, int length, Model model) {
+		if (settings.inductiveCounterexamples && properties.size() > 0) {
+			director.broadcast(new InductiveCounterexampleMessage(properties, length, model));
 		}
 	}
 
