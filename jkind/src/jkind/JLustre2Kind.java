@@ -30,15 +30,15 @@ public class JLustre2Kind {
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 
-			String result = main.toString();
+			String result;
 			if (settings.encode) {
-				result = result.replaceAll("\\.", "~dot~");
-				// We want to escape array brackets, but not subrange brackets
-				result = result.replaceAll("\\[", "~lbrack~");
-				result = result.replaceAll("\\]", "~rbrack~");
-				result = result.replaceAll("subrange ~lbrack~(-?[0-9]+, -?[0-9]+)~rbrack~", "subrange [$1]");
+				KindPrettyPrintVisitor pp = new KindPrettyPrintVisitor();
+				main.accept(pp);
+				result = pp.toString();
+			} else {
+				result = main.toString();
 			}
-			
+
 			if (settings.stdout) {
 				System.out.println(result);
 			} else {

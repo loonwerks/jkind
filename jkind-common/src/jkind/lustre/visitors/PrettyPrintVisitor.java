@@ -245,7 +245,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		newline();
 	}
 
-	private void property(String s) {
+	protected void property(String s) {
 		write("  --%PROPERTY ");
 		write(s);
 		write(";");
