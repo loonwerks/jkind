@@ -30,7 +30,8 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<VarDecl> locals = visitVarDecls(e.locals);
 		List<Equation> equations = visitEquations(e.equations);
 		List<Expr> assertions = visitAssertions(e.assertions);
-		return new Node(e.location, e.id, inputs, outputs, locals, equations, e.properties,
+		List<String> properties = visitProperties(e.properties);
+		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties,
 				assertions, e.realizabilityInputs);
 	}
 
@@ -44,6 +45,14 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 
 	protected List<Expr> visitAssertions(List<Expr> es) {
 		return visitExprs(es);
+	}
+
+	protected List<String> visitProperties(List<String> es) {
+		return map(this::visitProperty, es);
+	}
+
+	protected String visitProperty(String e) {
+		return e;
 	}
 
 	@Override

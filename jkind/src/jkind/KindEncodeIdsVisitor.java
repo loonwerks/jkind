@@ -21,6 +21,11 @@ public class KindEncodeIdsVisitor extends AstMapVisitor {
 		return new IdExpr(e.location, encode(e.id));
 	}
 
+	@Override
+	protected String visitProperty(String e) {
+		return encode(e);
+	}
+
 	private String encode(String str) {
 		str = str.replaceAll("\\.", "~dot~");
 		str = str.replaceAll("\\[", "~lbrack~");
