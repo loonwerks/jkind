@@ -1,6 +1,5 @@
 package jkind.lustre.visitors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jkind.lustre.Ast;
@@ -36,19 +35,11 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
-		List<VarDecl> result = new ArrayList<>();
-		for (VarDecl e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Equation> visitEquations(List<Equation> es) {
-		List<Equation> result = new ArrayList<>();
-		for (Equation e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Expr> visitAssertions(List<Expr> es) {
@@ -64,27 +55,15 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
-		List<TypeDef> result = new ArrayList<>();
-		for (TypeDef e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Constant> visitConstants(List<Constant> es) {
-		List<Constant> result = new ArrayList<>();
-		for (Constant e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Node> visitNodes(List<Node> es) {
-		List<Node> result = new ArrayList<>();
-		for (Node e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	@Override

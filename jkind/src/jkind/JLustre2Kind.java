@@ -30,19 +30,13 @@ public class JLustre2Kind {
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 
-			String result;
 			if (settings.encode) {
-				KindPrettyPrintVisitor pp = new KindPrettyPrintVisitor();
-				main.accept(pp);
-				result = pp.toString();
-			} else {
-				result = main.toString();
+				main = new KindEncodeIdsVisitor().visit(main);
 			}
-
 			if (settings.stdout) {
-				System.out.println(result);
+				System.out.println(main.toString());
 			} else {
-				Util.writeToFile(result, new File(outFilename));
+				Util.writeToFile(main.toString(), new File(outFilename));
 				Output.println("Wrote " + outFilename);
 			}
 		} catch (Throwable t) {
