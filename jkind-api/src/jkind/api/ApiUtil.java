@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import jkind.JKindException;
 import jkind.api.results.JKindResult;
+import jkind.api.results.Status;
 import jkind.api.xml.JKindXmlFileInputStream;
 import jkind.api.xml.XmlParseThread;
 import jkind.util.Util;
@@ -68,7 +69,7 @@ public class ApiUtil {
 				result.start();
 				process = builder.start();
 				parseThread.start();
-				result.setText(ApiUtil.readOutput(process, monitor));
+				result.setText(ApiUtil.readOutput(process, result, monitor));
 			} finally {
 				int code = 0;
 				if (process != null) {
@@ -86,24 +87,29 @@ public class ApiUtil {
 				}
 				monitor.done();
 
-				if (code != 0 && !monitor.isCanceled()) {
-					throw new JKindException("Abnormal termination, exit code " + code);
+				Status status = result.getMultiStatus().getOverallStatus();
+
+				if (code != 0 && !monitor.isCanceled() && status != Status.CANCELED) {
+				    throw new JKindException("Abnormal termination, exit code " + code);
 				}
 			}
 
 			if (parseThread.getThrowable() != null) {
-				throw new JKindException("Error parsing XML", parseThread.getThrowable());
+			    throw new JKindException("Error parsing XML", parseThread.getThrowable());
 			}
 		}
 	}
 
-	public static String readOutput(Process process, IProgressMonitor monitor) throws IOException {
+	public static String readOutput(Process process, JKindResult result, IProgressMonitor monitor) throws IOException {
 		InputStream stream = new BufferedInputStream(process.getInputStream());
 		StringBuilder text = new StringBuilder();
 
 		while (true) {
+		    Status status = result.getMultiStatus().getOverallStatus();
 			if (monitor.isCanceled()) {
 				return text.toString();
+			}else if(status != null && status == Status.CANCELED){
+			    return text.toString();
 			} else if (stream.available() > 0) {
 				int c = stream.read();
 				if (c == -1) {
