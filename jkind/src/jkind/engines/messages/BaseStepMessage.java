@@ -2,6 +2,7 @@ package jkind.engines.messages;
 
 import java.util.List;
 
+import jkind.util.Util;
 
 public class BaseStepMessage extends Message {
 	public final int step;
@@ -9,7 +10,7 @@ public class BaseStepMessage extends Message {
 
 	public BaseStepMessage(int step, List<String> properties) {
 		this.step = step;
-		this.properties = properties;
+		this.properties = Util.safeCopy(properties);
 	}
 
 	@Override
