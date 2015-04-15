@@ -29,12 +29,13 @@ import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 
 public class KInductionEngine extends SolverBasedEngine {
+	public static final String NAME = "k-induction";
 	private int kCurrent = 0;
 	private int kLimit = 0;
 	private InvariantSet invariants = new InvariantSet();
 
 	public KInductionEngine(Specification spec, JKindSettings settings, Director director) {
-		super("k-induction", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override
@@ -65,11 +66,16 @@ public class KInductionEngine extends SolverBasedEngine {
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				Model model = getModel(result);
 				if (model == null) {
+					sendUnknown(properties);
+					properties.clear();
 					break;
 				}
-				
+
 				List<String> bad = getFalseProperties(possiblyValid, k, model);
 				possiblyValid.removeAll(bad);
+				if (result instanceof UnknownResult) {
+					sendUnknown(bad);
+				}
 				sendInductiveCounterexamples(bad, k + 1, model);
 			} else if (result instanceof UnsatResult) {
 				properties.removeAll(possiblyValid);
@@ -123,9 +129,24 @@ public class KInductionEngine extends SolverBasedEngine {
 		}
 	}
 
+	private void sendUnknown(List<String> unknown) {
+		director.receiveMessage(new UnknownMessage(getName(), unknown));
+	}
+
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 		kLimit = bsm.step;
+		
+		List<String> unknown = difference(properties, bsm.properties);
+		if (!unknown.isEmpty()) {
+			sendUnknown(unknown);
+		}
+	}
+
+	private List<String> difference(List<String> list1, List<String> list2) {
+		List<String> result = new ArrayList<>(list1);
+		result.removeAll(list2);
+		return result;
 	}
 
 	@Override

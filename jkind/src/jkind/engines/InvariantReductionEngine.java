@@ -32,10 +32,11 @@ import jkind.util.BiMap;
 import jkind.util.SexpUtil;
 
 public class InvariantReductionEngine extends SolverBasedEngine {
+	public static final String NAME = "invariant-reduction";
 	private YicesSolver yicesSolver;
 
 	public InvariantReductionEngine(Specification spec, JKindSettings settings, Director director) {
-		super("invariant-reduction", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override

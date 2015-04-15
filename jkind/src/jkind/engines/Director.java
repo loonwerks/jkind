@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
@@ -40,6 +44,8 @@ import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
 public class Director extends MessageHandler {
+	public static final String NAME = "director";
+
 	private final JKindSettings settings;
 	private final Specification spec;
 	private final Writer writer;
@@ -73,6 +79,8 @@ public class Director extends MessageHandler {
 			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
 			this.adviceWriter.addVarDecls(Util.getVarDecls(spec.node));
 		}
+
+		initializeUnknowns(settings, spec.node.properties);
 	}
 
 	private final Writer getWriter() {
@@ -305,10 +313,71 @@ public class Director extends MessageHandler {
 		}
 	}
 
+	private final Map<String, Integer> bmcUnknowns = new HashMap<>();
+	private final Set<String> kInductionUnknowns = new HashSet<>();
+	private final Set<String> pdrUnknowns = new HashSet<>();
+
+	private void initializeUnknowns(JKindSettings settings, List<String> properties) {
+		if (!settings.boundedModelChecking) {
+			for (String prop : properties) {
+				bmcUnknowns.put(prop, 0);
+			}
+		}
+
+		if (!settings.kInduction) {
+			kInductionUnknowns.addAll(properties);
+		}
+
+		if (settings.pdrMax <= 0) {
+			pdrUnknowns.addAll(properties);
+		}
+	}
+
 	@Override
 	protected void handleMessage(UnknownMessage um) {
-		remainingProperties.removeAll(um.unknown);
-		writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(), getRuntime());
+		if (um.source.equals(NAME)) {
+			return;
+		}
+		
+		markUnknowns(um);
+		
+		Map<Integer, List<String>> completed = getCompletelyUnknownByBaseStep(um);
+		for (Entry<Integer, List<String>> entry : completed.entrySet()) {
+			int baseStep = entry.getKey();
+			List<String> unknowns = entry.getValue();
+			remainingProperties.removeAll(unknowns);
+			writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(),
+					getRuntime());
+			broadcast(new UnknownMessage(NAME, unknowns));
+		}
+	}
+
+	private Map<Integer, List<String>> getCompletelyUnknownByBaseStep(UnknownMessage um) {
+		return um.unknown.stream().filter(this::isCompletelyUnknown)
+				.collect(Collectors.groupingBy(bmcUnknowns::get));
+	}
+
+	private void markUnknowns(UnknownMessage um) {
+		switch (um.source) {
+		case BmcEngine.NAME:
+			for (String prop : um.unknown) {
+				bmcUnknowns.put(prop, baseStep);
+			}
+			break;
+
+		case KInductionEngine.NAME:
+			kInductionUnknowns.addAll(um.unknown);
+			break;
+
+		case PdrEngine.NAME:
+			pdrUnknowns.addAll(um.unknown);
+			break;
+		}
+	}
+
+	public boolean isCompletelyUnknown(String prop) {
+		return bmcUnknowns.containsKey(prop) && kInductionUnknowns.contains(prop)
+				&& pdrUnknowns.contains(prop);
 	}
 
 	@Override
@@ -360,8 +429,12 @@ public class Director extends MessageHandler {
 				Output.println("INVALID PROPERTIES: " + invalidProperties);
 				Output.println();
 			}
-			if (!remainingProperties.isEmpty()) {
-				Output.println("UNKNOWN PROPERTIES: " + remainingProperties);
+			
+			List<String> unknownProperties = new ArrayList<>(spec.node.properties);
+			unknownProperties.removeAll(validProperties);
+			unknownProperties.removeAll(invalidProperties);
+			if (!unknownProperties.isEmpty()) {
+				Output.println("UNKNOWN PROPERTIES: " + unknownProperties);
 				Output.println();
 			}
 		}

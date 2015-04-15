@@ -11,10 +11,11 @@ import jkind.lustre.Expr;
 import jkind.translation.Specification;
 
 public class AdviceEngine extends AbstractInvariantGenerationEngine {
+	public static final String NAME = "advice";
 	private final List<Expr> potentialInvariants;
 
 	public AdviceEngine(Specification spec, JKindSettings settings, Director director, Advice advice) {
-		super("advice", spec, settings, director);
+		super(NAME, spec, settings, director);
 		
 		advice.prune(spec.node);
 		this.potentialInvariants = advice.getInvariants();

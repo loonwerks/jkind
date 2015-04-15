@@ -22,10 +22,11 @@ import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class SmoothingEngine extends SolverBasedEngine {
+	public static final String NAME = "smoothing";
 	private YicesSolver yicesSolver;
 
 	public SmoothingEngine(Specification spec, JKindSettings settings, Director director) {
-		super("smoothing", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override

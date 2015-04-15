@@ -19,10 +19,11 @@ import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class BmcEngine extends SolverBasedEngine {
+	public static final String NAME = "bmc";
 	private List<String> validProperties = new ArrayList<>();
 
 	public BmcEngine(Specification spec, JKindSettings settings, Director director) {
-		super("bmc", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class BmcEngine extends SolverBasedEngine {
 	}
 
 	private void sendUnknown(List<String> unknown) {
-		director.broadcast(new UnknownMessage(unknown));
+		director.receiveMessage(new UnknownMessage(getName(), unknown));
 	}
 
 	private void assertProperties(int k) {
