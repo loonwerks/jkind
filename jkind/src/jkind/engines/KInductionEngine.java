@@ -3,7 +3,9 @@ package jkind.engines;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindSettings;
 import jkind.engines.invariant.InvariantSet;
@@ -33,6 +35,7 @@ public class KInductionEngine extends SolverBasedEngine {
 	private int kCurrent = 0;
 	private int kLimit = 0;
 	private InvariantSet invariants = new InvariantSet();
+	private Map<Integer, List<String>> baseStepValid = new HashMap<>();
 
 	public KInductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -44,6 +47,7 @@ public class KInductionEngine extends SolverBasedEngine {
 		for (kCurrent = 0; kCurrent <= settings.n; kCurrent++) {
 			comment("K = " + kCurrent);
 			processMessagesAndWait();
+			pruneUnknownProperties(kCurrent);
 			createVariables(kCurrent);
 			assertTransitionAndInvariants(kCurrent);
 			checkProperties(kCurrent);
@@ -58,6 +62,25 @@ public class KInductionEngine extends SolverBasedEngine {
 		processMessagesAndWaitUntil(() -> kCurrent <= kLimit);
 	}
 
+	private void pruneUnknownProperties(int kCurrent) {
+		List<String> bmcValid = baseStepValid.remove(kCurrent);
+		if (bmcValid == null) {
+			return;
+		}
+
+		List<String> unknown = difference(properties, bmcValid);
+		properties.removeAll(unknown);
+		if (!unknown.isEmpty()) {
+			sendUnknown(unknown);
+		}
+	}
+
+	private List<String> difference(List<String> list1, List<String> list2) {
+		List<String> result = new ArrayList<>(list1);
+		result.removeAll(list2);
+		return result;
+	}
+	
 	private void checkProperties(int k) {
 		List<String> possiblyValid = new ArrayList<>(properties);
 
@@ -137,17 +160,7 @@ public class KInductionEngine extends SolverBasedEngine {
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 		kLimit = bsm.step;
-		
-		List<String> unknown = difference(properties, bsm.properties);
-		if (!unknown.isEmpty()) {
-			sendUnknown(unknown);
-		}
-	}
-
-	private List<String> difference(List<String> list1, List<String> list2) {
-		List<String> result = new ArrayList<>(list1);
-		result.removeAll(list2);
-		return result;
+		baseStepValid.put(bsm.step, bsm.properties);
 	}
 
 	@Override
