@@ -48,9 +48,10 @@ public class KInductionEngine extends SolverBasedEngine {
 			assertTransitionAndInvariants(kCurrent);
 			checkProperties(kCurrent);
 			if (properties.isEmpty()) {
-				break;
+				return;
 			}
 		}
+		sendUnknown(properties);
 	}
 
 	private void processMessagesAndWait() {

@@ -33,13 +33,14 @@ public class BmcEngine extends SolverBasedEngine {
 			comment("K = " + (k + 1));
 			processMessages();
 			if (properties.isEmpty()) {
-				break;
+				return;
 			}
 			createVariables(k);
 			assertBaseTransition(k);
 			checkProperties(k);
 			assertProperties(k);
 		}
+		sendUnknown(properties);
 	}
 
 	private void checkProperties(int k) {
