@@ -32,7 +32,7 @@ public class JRealizability {
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.exit(-1);
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 

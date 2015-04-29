@@ -87,7 +87,7 @@ public class ApiUtil {
 				monitor.done();
 
 				if (code != 0 && !monitor.isCanceled()) {
-					throw new JKindException("Abnormal termination, exit code " + code);
+					throw new JKindException("Abnormal termination, exit code " + code + System.lineSeparator() + result.getText());
 				}
 			}
 
