@@ -72,7 +72,11 @@ public class ApiUtil {
 			} finally {
 				int code = 0;
 				if (process != null) {
-					process.destroy();
+					if (monitor.isCanceled() && process.isAlive()) {
+						// Only destroy the process if we have to since it can
+						// change the exit code on Windows
+						process.destroy();
+					}
 					code = process.waitFor();
 				}
 
@@ -87,7 +91,8 @@ public class ApiUtil {
 				monitor.done();
 
 				if (code != 0 && !monitor.isCanceled()) {
-					throw new JKindException("Abnormal termination, exit code " + code + System.lineSeparator() + result.getText());
+					throw new JKindException("Abnormal termination, exit code " + code
+							+ System.lineSeparator() + result.getText());
 				}
 			}
 
@@ -110,7 +115,7 @@ public class ApiUtil {
 					return text.toString();
 				}
 				text.append((char) c);
-			} else if (isTerminated(process)) {
+			} else if (!process.isAlive()) {
 				return text.toString();
 			} else {
 				try {
@@ -118,15 +123,6 @@ public class ApiUtil {
 				} catch (InterruptedException e) {
 				}
 			}
-		}
-	}
-
-	public static boolean isTerminated(Process process) {
-		try {
-			process.exitValue();
-			return true;
-		} catch (IllegalThreadStateException e) {
-			return false;
 		}
 	}
 
