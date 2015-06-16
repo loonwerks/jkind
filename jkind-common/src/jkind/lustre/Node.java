@@ -16,10 +16,11 @@ public class Node extends Ast {
 	public final List<String> properties;
 	public final List<Expr> assertions;
 	public final Optional<List<String>> realizabilityInputs;
+	public final Optional<List<Contract>> contracts;
 
 	public Node(Location location, String id, List<VarDecl> inputs, List<VarDecl> outputs,
 			List<VarDecl> locals, List<Equation> equations, List<String> properties,
-			List<Expr> assertions, Optional<List<String>> realizabilityInputs) {
+			List<Expr> assertions, Optional<List<String>> realizabilityInputs, Optional<List<Contract>> contracts) {
 		super(location);
 		Assert.isNotNull(id);
 		this.id = id;
@@ -30,28 +31,36 @@ public class Node extends Ast {
 		this.properties = Util.safeList(properties);
 		this.assertions = Util.safeList(assertions);
 		this.realizabilityInputs = Util.safeOptionalList(realizabilityInputs);
+		this.contracts = Util.safeOptionalList(contracts);
 	}
 
 	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
 			List<Equation> equations, List<String> properties, List<Expr> assertions,
+			Optional<List<String>> realizabilityInputs, Optional<List<Contract>> contracts) {
+		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions,
+				realizabilityInputs, contracts);
+	}
+	
+	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
+			List<Equation> equations, List<String> properties, List<Expr> assertions,
 			Optional<List<String>> realizabilityInputs) {
 		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs);
+				realizabilityInputs, null);
 	}
 
 	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
 			List<Equation> equations, List<String> properties, List<Expr> assertions) {
-		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions, null);
+		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions, null, null);
 	}
 
 	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
 			List<Equation> equations, List<String> properties) {
-		this(Location.NULL, id, inputs, outputs, locals, equations, properties, null, null);
+		this(Location.NULL, id, inputs, outputs, locals, equations, properties, null, null, null);
 	}
 
 	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
 			List<Equation> equations) {
-		this(Location.NULL, id, inputs, outputs, locals, equations, null, null, null);
+		this(Location.NULL, id, inputs, outputs, locals, equations, null, null, null, null);
 	}
 
 	@Override

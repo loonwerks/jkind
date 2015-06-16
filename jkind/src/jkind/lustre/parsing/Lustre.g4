@@ -11,7 +11,7 @@ node:
   'returns' '(' output=varDeclList? ')' ';'
   ('var' local=varDeclList ';')?
   'let'
-    (equation | property | assertion | main | realizabilityInputs)*
+    (contract | equation | property | assertion | main | realizabilityInputs)*
   'tel' ';'?
 ;
 
@@ -35,6 +35,12 @@ type: 'int'                                              # intType
 bound: '-'? INT;
 
 property: '--%PROPERTY' eID ';';
+
+contract: contract_id (require | ensure)*;
+
+contract_id: '--@contract' ':' ID ';';
+ensure: '--@ensure' expr ';';
+require: '--@require' expr ';'; 
 
 realizabilityInputs: '--%REALIZABLE' (ID (',' ID)*)? ';';
 

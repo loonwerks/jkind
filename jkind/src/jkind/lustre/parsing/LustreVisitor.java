@@ -39,6 +39,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCastExpr(@NotNull LustreParser.CastExprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#contract_id}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContract_id(@NotNull LustreParser.Contract_idContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code realExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
 	 * @param ctx the parse tree
@@ -160,6 +166,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayType(@NotNull LustreParser.ArrayTypeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#ensure}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnsure(@NotNull LustreParser.EnsureContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code intExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
 	 * @param ctx the parse tree
@@ -194,6 +206,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBound(@NotNull LustreParser.BoundContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#contract}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContract(@NotNull LustreParser.ContractContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#equation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -213,6 +231,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPlainType(@NotNull LustreParser.PlainTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LustreParser#require}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRequire(@NotNull LustreParser.RequireContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LustreParser#typedef}.
 	 * @param ctx the parse tree

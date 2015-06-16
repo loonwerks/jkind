@@ -20,6 +20,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.Contract;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -56,7 +57,9 @@ import jkind.lustre.parsing.LustreParser.BoolTypeContext;
 import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
+import jkind.lustre.parsing.LustreParser.ContractContext;
 import jkind.lustre.parsing.LustreParser.EIDContext;
+import jkind.lustre.parsing.LustreParser.EnsureContext;
 import jkind.lustre.parsing.LustreParser.EnumTypeContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
@@ -81,6 +84,7 @@ import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
+import jkind.lustre.parsing.LustreParser.RequireContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
 import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
 import jkind.lustre.parsing.LustreParser.TupleExprContext;
@@ -142,11 +146,12 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
 		Optional<List<String>> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
+		Optional<List<Contract>> contracts = contracts(ctx.contract());
 		if (!ctx.main().isEmpty()) {
 			main = id;
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs);
+				realizabilityInputs, contracts);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
@@ -195,6 +200,36 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return props;
 	}
+	
+	private Optional<List<Contract>> contracts(List<ContractContext> ctxs) {
+		List<Contract> contracts = new ArrayList<>();
+		for (ContractContext ctx : ctxs) {
+			String name = ctx.contract_id().ID().getText();
+			Contract contract = new Contract(name, requires(ctx.require()), ensures(ctx.ensure()));
+			contracts.add(contract);
+		}
+		
+		if(contracts.isEmpty()){
+			return Optional.empty();
+		}
+		return Optional.of(contracts);
+	}
+	
+	private List<Expr> requires(List<RequireContext> ctxs){
+		List<Expr> requires = new ArrayList<>();
+		for(RequireContext ctx : ctxs){
+			requires.add(expr(ctx.expr()));
+		}
+		return requires;
+	}
+	
+	private List<Expr> ensures(List<EnsureContext> ctxs){
+		List<Expr> ensures = new ArrayList<>();
+		for(EnsureContext ctx : ctxs){
+			ensures.add(expr(ctx.expr()));
+		}
+		return ensures;
+	}
 
 	private List<Expr> assertions(List<AssertionContext> ctxs) {
 		List<Expr> assertions = new ArrayList<>();
@@ -204,6 +239,8 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return assertions;
 	}
 
+
+	
 	private Optional<List<String>> realizabilityInputs(List<RealizabilityInputsContext> ctxs) {
 		if (ctxs.size() > 1) {
 			fatal(ctxs.get(1), "at most one realizability statement allowed");
