@@ -3,20 +3,22 @@ package jkind.engines;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindSettings;
+import jkind.engines.invariant.InvariantSet;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
+import jkind.engines.messages.Message;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
-import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -29,12 +31,14 @@ import jkind.util.SexpUtil;
 import jkind.util.StreamIndex;
 
 public class KInductionEngine extends SolverBasedEngine {
+	public static final String NAME = "k-induction";
 	private int kCurrent = 0;
 	private int kLimit = 0;
-	private List<Expr> invariants = new ArrayList<>();
+	private InvariantSet invariants = new InvariantSet();
+	private Map<Integer, List<String>> baseStepValid = new HashMap<>();
 
 	public KInductionEngine(Specification spec, JKindSettings settings, Director director) {
-		super("k-induction", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override
@@ -43,19 +47,40 @@ public class KInductionEngine extends SolverBasedEngine {
 		for (kCurrent = 0; kCurrent <= settings.n; kCurrent++) {
 			comment("K = " + kCurrent);
 			processMessagesAndWait();
+			pruneUnknownProperties(kCurrent);
 			createVariables(kCurrent);
 			assertTransitionAndInvariants(kCurrent);
 			checkProperties(kCurrent);
 			if (properties.isEmpty()) {
-				break;
+				return;
 			}
 		}
+		sendUnknown(properties);
 	}
 
 	private void processMessagesAndWait() {
 		processMessagesAndWaitUntil(() -> kCurrent <= kLimit);
 	}
 
+	private void pruneUnknownProperties(int kCurrent) {
+		List<String> bmcValid = baseStepValid.remove(kCurrent);
+		if (bmcValid == null) {
+			return;
+		}
+
+		List<String> unknown = difference(properties, bmcValid);
+		properties.removeAll(unknown);
+		if (!unknown.isEmpty()) {
+			sendUnknown(unknown);
+		}
+	}
+
+	private List<String> difference(List<String> list1, List<String> list2) {
+		List<String> result = new ArrayList<>(list1);
+		result.removeAll(list2);
+		return result;
+	}
+	
 	private void checkProperties(int k) {
 		List<String> possiblyValid = new ArrayList<>(properties);
 
@@ -64,32 +89,24 @@ public class KInductionEngine extends SolverBasedEngine {
 
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				Model model = getModel(result);
-				Iterator<String> iterator = possiblyValid.iterator();
-				while (iterator.hasNext()) {
-					String p = iterator.next();
-					StreamIndex si = new StreamIndex(p, k);
-					BooleanValue v = (BooleanValue) model.getValue(si);
-					if (!v.value) {
-						sendInductiveCounterexample(p, k + 1, model);
-						iterator.remove();
-					}
+				if (model == null) {
+					sendUnknown(properties);
+					properties.clear();
+					break;
 				}
+
+				List<String> bad = getFalseProperties(possiblyValid, k, model);
+				possiblyValid.removeAll(bad);
+				if (result instanceof UnknownResult) {
+					sendUnknown(bad);
+				}
+				sendInductiveCounterexamples(bad, k + 1, model);
 			} else if (result instanceof UnsatResult) {
 				properties.removeAll(possiblyValid);
 				addPropertiesAsInvariants(k, possiblyValid);
 				sendValid(possiblyValid, k);
 				return;
 			}
-		}
-	}
-
-	private Model getModel(Result result) {
-		if (result instanceof SatResult) {
-			return ((SatResult) result).getModel();
-		} else if (result instanceof UnknownResult) {
-			return ((UnknownResult) result).getModel();
-		} else {
-			throw new IllegalArgumentException();
 		}
 	}
 
@@ -111,7 +128,7 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void assertTransitionAndInvariants(int k) {
 		assertInductiveTransition(k);
-		assertInvariants(invariants, k);
+		assertInvariants(invariants.getInvariants(), k);
 	}
 
 	private Sexp getInductiveQuery(int k, List<String> possiblyValid) {
@@ -126,18 +143,24 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void sendValid(List<String> valid, int k) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		director.broadcast(new ValidMessage(getName(), valid, k, invariants, itinerary));
+		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), itinerary);
+		director.broadcast(vm);
 	}
 
-	private void sendInductiveCounterexample(String p, int length, Model model) {
-		if (settings.inductiveCounterexamples) {
-			director.broadcast(new InductiveCounterexampleMessage(p, length, model));
+	private void sendInductiveCounterexamples(List<String> properties, int length, Model model) {
+		if (settings.inductiveCounterexamples && properties.size() > 0) {
+			director.broadcast(new InductiveCounterexampleMessage(properties, length, model));
 		}
+	}
+
+	private void sendUnknown(List<String> unknown) {
+		director.receiveMessage(new UnknownMessage(getName(), unknown));
 	}
 
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 		kLimit = bsm.step;
+		baseStepValid.put(bsm.step, bsm.properties);
 	}
 
 	@Override
@@ -151,8 +174,9 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	@Override
 	protected void handleMessage(InvariantMessage im) {
-		invariants.addAll(im.invariants);
-		assertNewInvariants(im.invariants, kCurrent - 1);
+		List<Expr> supported = im.invariants.stream().filter(solver::supports).collect(toList());
+		invariants.addAll(supported);
+		assertNewInvariants(supported, kCurrent - 1);
 	}
 
 	@Override

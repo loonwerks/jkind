@@ -1,0 +1,11 @@
+-- Unrealizable
+
+node main(max, min, init_max : int) returns (ok : bool);
+let
+  assert init_max > 20;
+  ok = max = (init_max -> 1 + pre max) and
+       min = (0 -> 2 + pre min) and
+       max > min;
+  --%PROPERTY ok;
+  --%REALIZABLE init_max;
+tel;

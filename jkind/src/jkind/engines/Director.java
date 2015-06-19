@@ -4,14 +4,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.Main;
 import jkind.Output;
-import jkind.certificate.CertificateInput;
-import jkind.certificate.CertificateOutput;
+import jkind.advice.Advice;
+import jkind.advice.AdviceReader;
+import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
@@ -24,19 +30,13 @@ import jkind.engines.messages.MessageHandler;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
-import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
-import jkind.lustre.Type;
-import jkind.lustre.values.EnumValue;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
-import jkind.results.Signal;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
-import jkind.util.StreamIndex;
+import jkind.util.CounterexampleExtractor;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -44,6 +44,8 @@ import jkind.writers.Writer;
 import jkind.writers.XmlWriter;
 
 public class Director extends MessageHandler {
+	public static final String NAME = "director";
+
 	private final JKindSettings settings;
 	private final Specification spec;
 	private final Writer writer;
@@ -58,8 +60,8 @@ public class Director extends MessageHandler {
 	private final List<Engine> engines = new ArrayList<>();
 	private final List<Thread> threads = new ArrayList<>();
 
-	private CertificateInput certificateInput;
-	private CertificateOutput certificateOutput;
+	private Advice inputAdvice;
+	private AdviceWriter adviceWriter;
 
 	public Director(JKindSettings settings, Specification spec) {
 		this.settings = settings;
@@ -69,14 +71,16 @@ public class Director extends MessageHandler {
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(spec.node.properties);
 
-		if (settings.readCertificate != null) {
-			this.certificateInput = new CertificateInput(settings.readCertificate);
+		if (settings.readAdvice != null) {
+			this.inputAdvice = AdviceReader.read(settings.readAdvice);
 		}
 
-		if (settings.writeCertificate != null) {
-			this.certificateOutput = new CertificateOutput(settings.writeCertificate);
-			this.certificateOutput.addVarDecls(Util.getVarDecls(spec.node));
+		if (settings.writeAdvice != null) {
+			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
+			this.adviceWriter.addVarDecls(Util.getVarDecls(spec.node));
 		}
+
+		initializeUnknowns(settings, spec.node.properties);
 	}
 
 	private final Writer getWriter() {
@@ -114,7 +118,7 @@ public class Director extends MessageHandler {
 	private void postProcessing() {
 		writeUnknowns();
 		writer.end();
-		writeCertificate();
+		writeAdvice();
 		printSummary();
 	}
 
@@ -174,8 +178,8 @@ public class Director extends MessageHandler {
 			addEngine(new PdrEngine(spec, settings, this));
 		}
 
-		if (settings.readCertificate != null) {
-			addEngine(new CertificateEngine(spec, settings, this, certificateInput));
+		if (settings.readAdvice != null) {
+			addEngine(new AdviceEngine(spec, settings, this, inputAdvice));
 		}
 	}
 
@@ -227,7 +231,7 @@ public class Director extends MessageHandler {
 	private void printHeader() {
 		if (!settings.xmlToStdout) {
 			Output.println("==========================================");
-			Output.println("  JAVA KIND");
+			Output.println("  JKind " + Main.VERSION);
 			Output.println("==========================================");
 			Output.println();
 			Output.println("There are " + remainingProperties.size() + " properties to be checked.");
@@ -236,9 +240,9 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	private void writeCertificate() {
-		if (certificateOutput != null) {
-			certificateOutput.write();
+	private void writeAdvice() {
+		if (adviceWriter != null) {
+			adviceWriter.write();
 		}
 	}
 
@@ -264,8 +268,8 @@ public class Director extends MessageHandler {
 		validProperties.addAll(newValid);
 		inductiveCounterexamples.keySet().removeAll(newValid);
 
-		if (certificateOutput != null) {
-			certificateOutput.addInvariants(vm.invariants);
+		if (adviceWriter != null) {
+			adviceWriter.addInvariants(vm.invariants);
 		}
 
 		List<Expr> invariants = settings.reduceInvariants ? vm.invariants : Collections.emptyList();
@@ -298,26 +302,89 @@ public class Director extends MessageHandler {
 		for (String invalidProp : newInvalid) {
 			Model slicedModel = ModelSlicer.slice(im.model, spec.dependencyMap.get(invalidProp));
 			Counterexample cex = extractCounterexample(im.length, slicedModel);
-			writer.writeInvalid(invalidProp, im.source, cex, runtime);
+			writer.writeInvalid(invalidProp, im.source, cex, Collections.emptyList(), runtime);
 		}
 	}
 
 	@Override
 	protected void handleMessage(InductiveCounterexampleMessage icm) {
-		inductiveCounterexamples.put(icm.property, icm);
+		for (String property : icm.properties) {
+			inductiveCounterexamples.put(property, icm);
+		}
+	}
+
+	private final Map<String, Integer> bmcUnknowns = new HashMap<>();
+	private final Set<String> kInductionUnknowns = new HashSet<>();
+	private final Set<String> pdrUnknowns = new HashSet<>();
+
+	private void initializeUnknowns(JKindSettings settings, List<String> properties) {
+		if (!settings.boundedModelChecking) {
+			for (String prop : properties) {
+				bmcUnknowns.put(prop, 0);
+			}
+		}
+
+		if (!settings.kInduction) {
+			kInductionUnknowns.addAll(properties);
+		}
+
+		if (settings.pdrMax <= 0) {
+			pdrUnknowns.addAll(properties);
+		}
 	}
 
 	@Override
 	protected void handleMessage(UnknownMessage um) {
-		remainingProperties.removeAll(um.unknown);
-		writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(), getRuntime());
+		if (um.source.equals(NAME)) {
+			return;
+		}
+		
+		markUnknowns(um);
+		
+		Map<Integer, List<String>> completed = getCompletelyUnknownByBaseStep(um);
+		for (Entry<Integer, List<String>> entry : completed.entrySet()) {
+			int baseStep = entry.getKey();
+			List<String> unknowns = entry.getValue();
+			remainingProperties.removeAll(unknowns);
+			writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(),
+					getRuntime());
+			broadcast(new UnknownMessage(NAME, unknowns));
+		}
+	}
+
+	private Map<Integer, List<String>> getCompletelyUnknownByBaseStep(UnknownMessage um) {
+		return um.unknown.stream().filter(this::isCompletelyUnknown)
+				.collect(Collectors.groupingBy(bmcUnknowns::get));
+	}
+
+	private void markUnknowns(UnknownMessage um) {
+		switch (um.source) {
+		case BmcEngine.NAME:
+			for (String prop : um.unknown) {
+				bmcUnknowns.put(prop, baseStep);
+			}
+			break;
+
+		case KInductionEngine.NAME:
+			kInductionUnknowns.addAll(um.unknown);
+			break;
+
+		case PdrEngine.NAME:
+			pdrUnknowns.addAll(um.unknown);
+			break;
+		}
+	}
+
+	public boolean isCompletelyUnknown(String prop) {
+		return bmcUnknowns.containsKey(prop) && kInductionUnknowns.contains(prop)
+				&& pdrUnknowns.contains(prop);
 	}
 
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 		baseStep = bsm.step;
-		if (!remainingProperties.isEmpty()) {
-			writer.writeBaseStep(remainingProperties, baseStep);
+		if (!bsm.properties.isEmpty()) {
+			writer.writeBaseStep(bsm.properties, baseStep);
 		}
 	}
 
@@ -362,8 +429,12 @@ public class Director extends MessageHandler {
 				Output.println("INVALID PROPERTIES: " + invalidProperties);
 				Output.println();
 			}
-			if (!remainingProperties.isEmpty()) {
-				Output.println("UNKNOWN PROPERTIES: " + remainingProperties);
+			
+			List<String> unknownProperties = new ArrayList<>(spec.node.properties);
+			unknownProperties.removeAll(validProperties);
+			unknownProperties.removeAll(invalidProperties);
+			if (!unknownProperties.isEmpty()) {
+				Output.println("UNKNOWN PROPERTIES: " + unknownProperties);
 				Output.println();
 			}
 		}
@@ -374,37 +445,14 @@ public class Director extends MessageHandler {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			Model slicedModel = ModelSlicer.slice(icm.model, spec.dependencyMap.get(icm.property));
+			Model slicedModel = ModelSlicer.slice(icm.model, spec.dependencyMap.get(prop));
 			result.put(prop, extractCounterexample(icm.length, slicedModel));
 		}
 
 		return result;
 	}
 
-	private Counterexample extractCounterexample(int length, Model model) {
-		Counterexample cex = new Counterexample(length);
-		for (String var : model.getVariableNames()) {
-			StreamIndex si = StreamIndex.decode(var);
-			if (si.getIndex() >= 0 && !isInternal(si.getStream())) {
-				Signal<Value> signal = cex.getOrCreateSignal(si.getStream());
-				Value value = convert(si.getStream(), model.getValue(var));
-				signal.putValue(si.getIndex(), value);
-			}
-		}
-		return cex;
-	}
-
-	private boolean isInternal(String stream) {
-		return stream.startsWith("%");
-	}
-
-	private Value convert(String base, Value value) {
-		Type type = spec.typeMap.get(base);
-		if (type instanceof EnumType) {
-			EnumType et = (EnumType) type;
-			IntegerValue iv = (IntegerValue) value;
-			return new EnumValue(et.getValue(iv.value.intValue()));
-		}
-		return value;
+	private Counterexample extractCounterexample(int k, Model model) {
+		return new CounterexampleExtractor(spec.typeMap).extractCounterexample(k, model);
 	}
 }

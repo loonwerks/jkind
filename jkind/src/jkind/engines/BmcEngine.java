@@ -1,7 +1,6 @@
 package jkind.engines;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindSettings;
@@ -12,7 +11,6 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
-import jkind.lustre.values.BooleanValue;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -21,10 +19,11 @@ import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class BmcEngine extends SolverBasedEngine {
+	public static final String NAME = "bmc";
 	private List<String> validProperties = new ArrayList<>();
 
 	public BmcEngine(Specification spec, JKindSettings settings, Director director) {
-		super("bmc", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override
@@ -34,13 +33,14 @@ public class BmcEngine extends SolverBasedEngine {
 			comment("K = " + (k + 1));
 			processMessages();
 			if (properties.isEmpty()) {
-				break;
+				return;
 			}
 			createVariables(k);
 			assertBaseTransition(k);
 			checkProperties(k);
 			assertProperties(k);
 		}
+		sendUnknown(properties);
 	}
 
 	private void checkProperties(int k) {
@@ -48,23 +48,22 @@ public class BmcEngine extends SolverBasedEngine {
 		do {
 			result = solver.query(StreamIndex.conjoinEncodings(properties, k));
 
-			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
-				List<String> invalid = new ArrayList<>();
-				Iterator<String> iterator = properties.iterator();
-				while (iterator.hasNext()) {
-					String p = iterator.next();
-					StreamIndex si = new StreamIndex(p, k);
-					BooleanValue v = (BooleanValue) model.getValue(si);
-					if (!v.value) {
-						invalid.add(p);
-						iterator.remove();
-					}
+			if (result instanceof SatResult || result instanceof UnknownResult) {
+				Model model = getModel(result);
+				if (model == null) {
+					sendUnknown(properties);
+					properties.clear();
+					break;
 				}
-				sendInvalid(invalid, k, model);
-			} else if (result instanceof UnknownResult) {
-				sendUnknown(properties);
-				properties.clear();
+				
+				List<String> bad = getFalseProperties(properties, k, model);
+				properties.removeAll(bad);
+				
+				if (result instanceof SatResult) {
+					sendInvalid(bad, k, model);
+				} else {
+					sendUnknown(bad);
+				}
 			}
 		} while (!properties.isEmpty() && result instanceof SatResult);
 
@@ -77,11 +76,11 @@ public class BmcEngine extends SolverBasedEngine {
 	}
 
 	private void sendBaseStep(int k) {
-		director.broadcast(new BaseStepMessage(k + 1));
+		director.broadcast(new BaseStepMessage(k + 1, properties));
 	}
 
 	private void sendUnknown(List<String> unknown) {
-		director.broadcast(new UnknownMessage(unknown));
+		director.receiveMessage(new UnknownMessage(getName(), unknown));
 	}
 
 	private void assertProperties(int k) {

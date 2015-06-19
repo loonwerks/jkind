@@ -7,10 +7,10 @@ import jkind.lustre.visitors.AstVisitor;
 import jkind.util.Util;
 
 public class Program extends Ast {
-	final public List<TypeDef> types;
-	final public List<Constant> constants;
-	final public List<Node> nodes;
-	final public String main;
+	public final List<TypeDef> types;
+	public final List<Constant> constants;
+	public final List<Node> nodes;
+	public final String main;
 
 	public Program(Location location, List<TypeDef> types, List<Constant> constants,
 			List<Node> nodes, String main) {

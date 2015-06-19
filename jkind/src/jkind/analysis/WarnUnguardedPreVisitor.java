@@ -23,9 +23,9 @@ public class WarnUnguardedPreVisitor extends ExprIterVisitor {
 			}
 		}
 	}
-	
-	final public static WarnUnguardedPreVisitor GUARDED = new WarnUnguardedPreVisitor();
-	final public static WarnUnguardedPreVisitor UNGUARDED = new WarnUnguardedPreVisitor();
+
+	public static final WarnUnguardedPreVisitor GUARDED = new WarnUnguardedPreVisitor();
+	public static final WarnUnguardedPreVisitor UNGUARDED = new WarnUnguardedPreVisitor();
 
 	@Override
 	public Void visit(UnaryExpr e) {
@@ -38,10 +38,10 @@ public class WarnUnguardedPreVisitor extends ExprIterVisitor {
 		} else {
 			super.visit(e);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
@@ -50,10 +50,10 @@ public class WarnUnguardedPreVisitor extends ExprIterVisitor {
 		} else {
 			super.visit(e);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(NodeCallExpr e) {
 		UNGUARDED.visitExprs(e.args);

@@ -15,9 +15,11 @@ import jkind.solvers.Model;
 import jkind.translation.Specification;
 
 public class IntervalGeneralizationEngine extends Engine {
+	public static final String NAME = "interval-generalization";
+	
 	public IntervalGeneralizationEngine(Specification spec, JKindSettings settings,
 			Director director) {
-		super("interval-generalization", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override

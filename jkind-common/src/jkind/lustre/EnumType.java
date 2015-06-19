@@ -7,8 +7,8 @@ import jkind.lustre.visitors.TypeVisitor;
 import jkind.util.Util;
 
 public class EnumType extends Type {
-	final public String id;
-	final public List<String> values;
+	public final String id;
+	public final List<String> values;
 
 	public EnumType(Location location, String id, List<String> values) {
 		super(location);

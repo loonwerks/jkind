@@ -1,14 +1,17 @@
 package jkind.engines.messages;
 
+import java.util.List;
+
 import jkind.solvers.Model;
+import jkind.util.Util;
 
 public class InductiveCounterexampleMessage extends Message {
-	public final String property;
+	public final List<String> properties;
 	public final int length;
 	public final Model model;
 
-	public InductiveCounterexampleMessage(String property, int length, Model model) {
-		this.property = property;
+	public InductiveCounterexampleMessage(List<String> properties, int length, Model model) {
+		this.properties = Util.safeCopy(properties);
 		this.length = length;
 		this.model = model;
 	}

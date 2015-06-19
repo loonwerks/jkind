@@ -15,22 +15,28 @@ import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
+import jkind.results.layout.Layout;
 import jkind.results.layout.NodeLayout;
 
 public class ExcelWriter extends Writer {
-	final private File file;
-	final private Node node;
-	final private List<Property> properties = new ArrayList<>();
+	private final File file;
+	private final Layout layout;
+	private final List<Property> properties = new ArrayList<>();
 	private ExcelFormatter formatter;
 
 	public ExcelWriter(String filename, Node node) {
 		this.file = new File(filename);
-		this.node = node;
+		this.layout = new NodeLayout(node);
+	}
+
+	public ExcelWriter(String filename, Layout layout) {
+		this.file = new File(filename);
+		this.layout = layout;
 	}
 
 	@Override
 	public void begin() {
-		formatter = new ExcelFormatter(file, new NodeLayout(node));
+		formatter = new ExcelFormatter(file, layout);
 	}
 
 	@Override
@@ -49,8 +55,9 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
-		properties.add(new InvalidProperty(prop, source, cex, runtime));
+	public void writeInvalid(String prop, String source, Counterexample cex,
+			List<String> conflicts, double runtime) {
+		properties.add(new InvalidProperty(prop, source, cex, conflicts, runtime));
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import jkind.results.layout.SingletonLayout;
  * @see PropertyResult
  */
 public class JKindResult extends AnalysisResult implements PropertyChangeListener {
-	private final StringBuilder text = new StringBuilder();
+	private String text;
 	private final List<PropertyResult> propertyResults = new ArrayList<>();
 	private final MultiStatus multiStatus = new MultiStatus();
 	private Ticker ticker;
@@ -61,7 +61,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 * @param properties
 	 *            Property names to track (pre-renaming)
 	 * @param renaming
-	 *            Renaming to apply to apply properties
+	 *            Renaming to apply to properties
 	 */
 	public JKindResult(String name, List<String> properties, Renaming renaming) {
 		super(name);
@@ -80,7 +80,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 *            True if the status of the property of the same index in
 	 *            properties should be inverted
 	 * @param renaming
-	 *            Renaming to apply to apply properties
+	 *            Renaming to apply to properties
 	 */
 	public JKindResult(String name, List<String> properties, List<Boolean> invertStatus,
 			Renaming renaming) {
@@ -180,16 +180,12 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 		return null;
 	}
 
-	public void addText(char c) {
-		text.append(c);
-	}
-
-	public void addText(String string) {
-		text.append(string);
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	public String getText() {
-		return text.toString();
+		return text;
 	}
 
 	public MultiStatus getMultiStatus() {

@@ -4,15 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindSettings;
+import jkind.analysis.LinearChecker;
 import jkind.analysis.YicesArithOnlyCheck;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
+import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Model;
+import jkind.solvers.Result;
+import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.SmtInterpolSolver;
@@ -21,7 +27,6 @@ import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
-import jkind.translation.TransitionRelation;
 import jkind.util.StreamIndex;
 import jkind.util.Util;
 
@@ -34,7 +39,7 @@ public abstract class SolverBasedEngine extends Engine {
 	}
 
 	@Override
-	final public void run() {
+	public final void run() {
 		try {
 			initializeSolver();
 			super.run();
@@ -61,7 +66,7 @@ public abstract class SolverBasedEngine extends Engine {
 		case CVC4:
 			return new Cvc4Solver(scratchBase);
 		case Z3:
-			return new Z3Solver(scratchBase);
+			return new Z3Solver(scratchBase, LinearChecker.isLinear(spec.node));
 		case YICES2:
 			return new Yices2Solver(scratchBase);
 		case MATHSAT:
@@ -127,7 +132,7 @@ public abstract class SolverBasedEngine extends Engine {
 		args.add(init);
 		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
 		args.addAll(getSymbols(getOffsetVarDecls(k)));
-		return new Cons(TransitionRelation.T, args);
+		return new Cons(spec.transitionRelation.getName(), args);
 	}
 
 	private List<Sexp> getSymbols(List<VarDecl> varDecls) {
@@ -136,5 +141,27 @@ public abstract class SolverBasedEngine extends Engine {
 			result.add(new Symbol(vd.id));
 		}
 		return result;
+	}
+
+	protected Model getModel(Result result) {
+		if (result instanceof SatResult) {
+			return ((SatResult) result).getModel();
+		} else if (result instanceof UnknownResult) {
+			return ((UnknownResult) result).getModel();
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	protected List<String> getFalseProperties(List<String> properties, int k, Model model) {
+		List<String> falses = new ArrayList<>();
+		for (String p : properties) {
+			StreamIndex si = new StreamIndex(p, k);
+			BooleanValue v = (BooleanValue) model.getValue(si);
+			if (!v.value) {
+				falses.add(p);
+			}
+		}
+		return falses;
 	}
 }

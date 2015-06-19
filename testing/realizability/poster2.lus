@@ -1,0 +1,10 @@
+-- Unrealizable for ints
+-- Unknown for reals (but should be realizable)
+
+node main(in1, in2, out : int) returns (ok : bool);
+let
+  assert in1 < in2;
+  ok = (in1 < out and out < in2);
+  --%PROPERTY ok;
+  --%REALIZABLE in1, in2;
+tel;

@@ -2,7 +2,7 @@ package jkind.slicing;
 
 
 public class Dependency {
-	final public String name;
+	public final String name;
 
 	public Dependency(String name) {
 		this.name = name;

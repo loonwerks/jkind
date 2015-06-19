@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import jkind.ExitCodes;
 import jkind.Output;
@@ -74,6 +75,7 @@ import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
+import jkind.lustre.parsing.LustreParser.RealizabilityInputsContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
@@ -139,10 +141,12 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
+		Optional<List<String>> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
 		if (!ctx.main().isEmpty()) {
 			main = id;
 		}
-		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions);
+		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
+				realizabilityInputs);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
@@ -187,7 +191,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private List<String> properties(List<PropertyContext> ctxs) {
 		List<String> props = new ArrayList<>();
 		for (PropertyContext ctx : ctxs) {
-			props.add(ctx.ID().getText());
+			props.add(eid(ctx.eID()));
 		}
 		return props;
 	}
@@ -198,6 +202,22 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			assertions.add(expr(ctx.expr()));
 		}
 		return assertions;
+	}
+
+	private Optional<List<String>> realizabilityInputs(List<RealizabilityInputsContext> ctxs) {
+		if (ctxs.size() > 1) {
+			fatal(ctxs.get(1), "at most one realizability statement allowed");
+		}
+
+		for (RealizabilityInputsContext ctx : ctxs) {
+			List<String> ids = new ArrayList<>();
+			for (TerminalNode ictx : ctx.ID()) {
+				ids.add(ictx.getText());
+			}
+			return Optional.of(ids);
+		}
+
+		return Optional.empty();
 	}
 
 	private Type topLevelType(String id, TopLevelTypeContext ctx) {
@@ -425,17 +445,17 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new TupleExpr(loc(ctx), elements);
 	}
-	
+
 	@Override
 	public String visitBaseEID(BaseEIDContext ctx) {
 		return ctx.ID().getText();
 	}
-	
+
 	@Override
 	public String visitArrayEID(ArrayEIDContext ctx) {
 		return visit(ctx.eID()) + "[" + ctx.INT().getText() + "]";
 	}
-	
+
 	@Override
 	public String visitRecordEID(RecordEIDContext ctx) {
 		return visit(ctx.eID()) + "." + ctx.ID().getText();

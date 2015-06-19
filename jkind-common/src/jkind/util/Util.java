@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -177,6 +178,14 @@ public class Util {
 		}
 	}
 
+	public static <T> Optional<List<T>> safeOptionalList(Optional<List<T>> original) {
+		if (original == null || !original.isPresent()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(safeList(original.get()));
+		}
+	}
+
 	public static <T> SortedMap<String, T> safeStringSortedMap(Map<String, T> original) {
 		TreeMap<String, T> map = new TreeMap<>(new StringNaturalOrdering());
 		if (original != null) {
@@ -206,4 +215,11 @@ public class Util {
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	public static <T> List<T> safeCopy(List<T> list) {
+		return Collections.unmodifiableList(new ArrayList<>(list));
+	}
+	
+	/** Default name for realizability query property in XML file */
+	public static final String REALIZABLE = "%REALIZABLE";
 }

@@ -4,7 +4,7 @@ import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
 
 public abstract class Type {
-	final public Location location;
+	public final Location location;
 	
 	protected Type(Location location) {
 		Assert.isNotNull(location);

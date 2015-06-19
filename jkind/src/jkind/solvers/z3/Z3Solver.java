@@ -14,8 +14,11 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Z3Solver extends SmtLib2Solver {
-	public Z3Solver(String scratchBase) {
+	private final boolean linear;
+
+	public Z3Solver(String scratchBase, boolean linear) {
 		super(scratchBase, new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
+		this.linear = linear;
 	}
 
 	private static String getZ3() {
@@ -37,25 +40,77 @@ public class Z3Solver extends SmtLib2Solver {
 	public Result query(Sexp sexp) {
 		Result result;
 
-		Symbol assum = new Symbol("assum" + assumCount++);
-		define(new VarDecl(assum.str, NamedType.BOOL));
-		send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
-		send(new Cons("check-sat", assum));
-		send("(echo \"" + DONE + "\")");
+		if (linear) {
+			Symbol assum = new Symbol("assum" + assumCount++);
+			define(new VarDecl(assum.str, NamedType.BOOL));
+			send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
+			send(new Cons("check-sat", assum));
+		} else {
+			push();
+			send(new Cons("assert", new Cons("not", sexp)));
+			send(new Cons("check-sat"));
+		}
+
+		markDone();
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			send("(echo \"" + DONE + "\")");
+			markDone();
 			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
-			// Even for unknown we can get a partial model
+			// Even for unknown we can sometimes get a partial model
 			send("(get-model)");
-			send("(echo \"" + DONE + "\")");
-			result = new UnknownResult(parseModel(readFromSolver()));
+			markDone();
+			
+			String content = readFromSolver();
+			if (content == null) {
+				return new UnknownResult();
+			} else {
+				result = new UnknownResult(parseModel(content));
+			}
+		}
+
+		if (!linear) {
+			pop();
 		}
 
 		return result;
+	}
+
+	private void markDone() {
+		send("(echo \"" + DONE + "\")");
+	}
+
+	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties, int timeoutMs) {
+		push();
+		if (timeoutMs > 0) {
+			send(new Cons("set-option", new Symbol(":timeout"), Sexp.fromInt(timeoutMs)));
+		}
+		Sexp query = new Cons("not", new Cons("and", transition, properties));
+		if (outputs != null) {
+			query = new Cons("forall", outputs, query);
+		}
+		assertSexp(query);
+		send(new Cons("check-sat"));
+		markDone();
+		String status = readFromSolver();
+		if (isSat(status)) {
+			send("(get-model)");
+			markDone();
+			pop();
+			return new SatResult(parseModel(readFromSolver()));
+		} else if (isUnsat(status)) {
+			pop();
+			return new UnsatResult();
+		} else {
+			pop();
+			return new UnknownResult();
+		}
+	}
+
+	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
+		return realizabilityQuery(outputs, transition, properties, 0);
 	}
 }

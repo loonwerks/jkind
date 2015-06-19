@@ -7,7 +7,7 @@ import jkind.lustre.UnaryOp;
  * An enumerated value (only used during counter-example output)
  */
 public class EnumValue extends Value {
-	final public String value;
+	public final String value;
 
 	public EnumValue(String value) {
 		this.value = value;

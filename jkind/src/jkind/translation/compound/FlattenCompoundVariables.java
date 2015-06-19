@@ -18,6 +18,7 @@ import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
+import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.visitors.AstMapVisitor;
 import jkind.translation.SubstitutionVisitor;
 import jkind.util.Util;
@@ -42,15 +43,17 @@ public class FlattenCompoundVariables extends AstMapVisitor {
 		addOriginalTypes(node.outputs);
 		addOriginalTypes(node.locals);
 
-		List<VarDecl> inputs = flattenVarDecls(node.inputs);
-		List<VarDecl> outputs = flattenVarDecls(node.outputs);
-		List<VarDecl> locals = flattenVarDecls(node.locals);
-		List<Equation> equations = flattenLeftHandSide(node.equations);
-		Node flattened = new Node(node.id, inputs, outputs, locals, equations, node.properties,
-				node.assertions);
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.clearInputs().addInputs(flattenVarDecls(node.inputs));
+		builder.clearOutputs().addOutputs(flattenVarDecls(node.outputs));
+		builder.clearLocals().addLocals(flattenVarDecls(node.locals));
+		builder.clearEquations().addEquations(flattenLeftHandSide(node.equations));
+		if (node.realizabilityInputs.isPresent()) {
+			builder.setRealizabilityInputs(flattenNames(node.realizabilityInputs.get()));
+		}
 
 		Map<String, Expr> map = createExpandedVariables(Util.getVarDecls(node));
-		return new SubstitutionVisitor(map).visit(flattened);
+		return new SubstitutionVisitor(map).visit(builder.build());
 	}
 
 	private void addOriginalTypes(List<VarDecl> varDecls) {
@@ -65,6 +68,17 @@ public class FlattenCompoundVariables extends AstMapVisitor {
 			IdExpr id = new IdExpr(varDecl.id);
 			for (ExprType et : CompoundUtil.flattenExpr(id, varDecl.type)) {
 				result.add(new VarDecl(et.expr.toString(), et.type));
+			}
+		}
+		return result;
+	}
+
+	private List<String> flattenNames(List<String> names) {
+		List<String> result = new ArrayList<>();
+		for (String name : names) {
+			IdExpr id = new IdExpr(name);
+			for (ExprType et : CompoundUtil.flattenExpr(id, originalTypes.get(name))) {
+				result.add(et.expr.toString());
 			}
 		}
 		return result;

@@ -44,6 +44,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 	private final CellFormat boldFormat = ExcelUtil.getBoldFormat();
 	private final CellFormat fadedFormat = ExcelUtil.getFadedFormat();
 	private final CellFormat defaultFormat = new WritableCellFormat();
+	private final CellFormat highlightFormat = ExcelUtil.getHighlightFormat();
 
 	public ExcelCounterexampleFormatter(File file, Layout layout) {
 		this.layout = layout;
@@ -73,7 +74,8 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		}
 	}
 
-	public WritableSheet writeCounterexample(String property, Counterexample cex) {
+	public WritableSheet writeCounterexample(String property, Counterexample cex,
+			List<String> conflicts) {
 		try {
 			sheet = workbook
 					.createSheet(ExcelUtil.trimName(property), workbook.getNumberOfSheets());
@@ -84,7 +86,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			writeStepsHeader(length);
 			for (String category : layout.getCategories()) {
 				List<Signal<Value>> signals = cex.getCategorySignals(layout, category);
-				writeSection(category, signals, length);
+				writeSection(category, signals, length, conflicts);
 			}
 			return sheet;
 		} catch (WriteException e) {
@@ -100,21 +102,23 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		row++;
 	}
 
-	private void writeSection(String category, List<Signal<Value>> signals, int k)
-			throws WriteException {
+	private void writeSection(String category, List<Signal<Value>> signals, int k,
+			List<String> conflicts) throws WriteException {
 		if (!signals.isEmpty()) {
 			row++;
 			sheet.addCell(new Label(0, row, category, boldFormat));
 			row++;
 			for (Signal<Value> signal : signals) {
-				writeSignal(signal, k);
+				writeSignal(signal, k, conflicts);
 				row++;
 			}
 		}
 	}
 
-	private void writeSignal(Signal<Value> signal, int k) throws WriteException {
-		sheet.addCell(new Label(0, row, signal.getName()));
+	private void writeSignal(Signal<Value> signal, int k, List<String> conflicts)
+			throws WriteException {
+		sheet.addCell(new Label(0, row, signal.getName(),
+				conflicts.contains(signal.getName()) ? highlightFormat : defaultFormat));
 		Value prev = null;
 		for (int i = 0; i < k; i++) {
 			Value curr = signal.getValue(i);

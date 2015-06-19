@@ -7,14 +7,14 @@ import jkind.lustre.UnaryOp;
  * A boolean signal value
  */
 public class BooleanValue extends Value {
-	final public boolean value;
+	public final boolean value;
 
 	private BooleanValue(boolean value) {
 		this.value = value;
 	}
 
-	final public static BooleanValue TRUE = new BooleanValue(true);
-	final public static BooleanValue FALSE = new BooleanValue(false);
+	public static final BooleanValue TRUE = new BooleanValue(true);
+	public static final BooleanValue FALSE = new BooleanValue(false);
 
 	public static BooleanValue fromBoolean(boolean value) {
 		return value ? TRUE : FALSE;

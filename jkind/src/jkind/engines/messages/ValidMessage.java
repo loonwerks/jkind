@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.Expr;
+import jkind.util.Util;
 
 public class ValidMessage extends Message {
 	public final String source;
@@ -15,9 +16,9 @@ public class ValidMessage extends Message {
 	public ValidMessage(String source, List<String> valid, int k, List<Expr> invariants,
 			Itinerary itinerary) {
 		this.source = source;
-		this.valid = safeCopy(valid);
+		this.valid = Util.safeCopy(valid);
 		this.k = k;
-		this.invariants = safeCopy(invariants);
+		this.invariants = Util.safeCopy(invariants);
 		this.itinerary = itinerary;
 	}
 

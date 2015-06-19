@@ -1,14 +1,12 @@
 package jkind;
 
-import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
-public class JKindArgumentParser {
+public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
 	private static final String INTERVAL = "interval";
@@ -17,20 +15,30 @@ public class JKindArgumentParser {
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
-	private static final String READ_CERT = "read_cert";
+	private static final String READ_ADVICE = "read_advice";
 	private static final String REDUCE_INV = "reduce_inv";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
 	private static final String TIMEOUT = "timeout";
-	private static final String WRITE_CERT = "write_cert";
+	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
-	private static final String VERSION = "version";
-	private static final String HELP = "help";
+	
+	private final JKindSettings settings;
 
-	private static Options getOptions() {
-		Options options = new Options();
+	private JKindArgumentParser() {
+		this("JKind", new JKindSettings());
+	}
+
+	private JKindArgumentParser(String name, JKindSettings settings) {
+		super(name, settings);
+		this.settings = settings;
+	}
+
+	@Override
+	protected Options getOptions() {
+		Options options = super.getOptions();
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
@@ -40,56 +48,33 @@ public class JKindArgumentParser {
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
-		options.addOption(READ_CERT, true, "read certificate from specified file");
+		options.addOption(READ_ADVICE, true, "read advice from specified file");
 		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
 				"SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
-		options.addOption(WRITE_CERT, true, "write certificate to specified file");
+		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
-		options.addOption(VERSION, false, "display version information");
-		options.addOption(HELP, false, "print this message");
-
 		return options;
 	}
-
+	
 	public static JKindSettings parse(String[] args) {
-		CommandLineParser parser = new BasicParser();
-		try {
-			JKindSettings settings = getSettings(parser.parse(getOptions(), args));
-			checkSettings(settings);
-			return settings;
-		} catch (Throwable t) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS,
-					"reading command line arguments: " + t.getMessage());
-			return null;
-		}
+		JKindArgumentParser parser = new JKindArgumentParser();
+		parser.parseArguments(args);
+		parser.checkSettings();
+		return parser.settings;
 	}
 
-	private static void printHelp() {
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("jkind [options] <input>", getOptions());
-	}
-
-	private static JKindSettings getSettings(CommandLine line) {
-		JKindSettings settings = new JKindSettings();
+	@Override
+	protected void parseCommandLine(CommandLine line) {
+		super.parseCommandLine(line);
 
 		ensureExclusive(line, EXCEL, XML);
 		ensureExclusive(line, EXCEL, XML_TO_STDOUT);
 		ensureExclusive(line, XML, XML_TO_STDOUT);
-
-		if (line.hasOption(VERSION)) {
-			Output.println("JKind " + Main.VERSION);
-			System.exit(0);
-		}
-
-		if (line.hasOption(HELP)) {
-			printHelp();
-			System.exit(0);
-		}
 
 		if (line.hasOption(EXCEL)) {
 			settings.excel = true;
@@ -112,19 +97,19 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(N)) {
-			settings.n = Integer.parseInt(line.getOptionValue(N));
+			settings.n = parseNonnegativeInt(line.getOptionValue(N));
 		}
 
 		if (line.hasOption(PDR_MAX)) {
-			settings.pdrMax = Math.max(0, Integer.parseInt(line.getOptionValue(PDR_MAX)));
+			settings.pdrMax = parseNonnegativeInt(line.getOptionValue(PDR_MAX));
 		} else {
 			int available = Runtime.getRuntime().availableProcessors();
 			int heuristic = (available - 4) / 2;
 			settings.pdrMax = Math.max(1, heuristic);
 		}
 
-		if (line.hasOption(READ_CERT)) {
-			settings.readCertificate = line.getOptionValue(READ_CERT);
+		if (line.hasOption(READ_ADVICE)) {
+			settings.readAdvice = line.getOptionValue(READ_ADVICE);
 		}
 
 		if (line.hasOption(REDUCE_INV)) {
@@ -132,12 +117,7 @@ public class JKindArgumentParser {
 		}
 
 		if (line.hasOption(TIMEOUT)) {
-			BigInteger timeout = new BigInteger(line.getOptionValue(TIMEOUT));
-			if (timeout.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
-				settings.timeout = Integer.MAX_VALUE;
-			} else {
-				settings.timeout = timeout.intValue();
-			}
+			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
 		}
 
 		if (line.hasOption(SCRATCH)) {
@@ -154,14 +134,10 @@ public class JKindArgumentParser {
 
 		if (line.hasOption(SOLVER)) {
 			settings.solver = getSolverOption(line.getOptionValue(SOLVER));
-			if (settings.solver == null) {
-				Output.error("unknown solver: " + line.getOptionValue(SOLVER));
-				System.exit(ExitCodes.INVALID_OPTIONS);
-			}
 		}
 
-		if (line.hasOption(WRITE_CERT)) {
-			settings.writeCertificate = line.getOptionValue(WRITE_CERT);
+		if (line.hasOption(WRITE_ADVICE)) {
+			settings.writeAdvice = line.getOptionValue(WRITE_ADVICE);
 		}
 
 		if (line.hasOption(XML)) {
@@ -172,34 +148,23 @@ public class JKindArgumentParser {
 			settings.xmlToStdout = true;
 			settings.xml = true;
 		}
-
-		String[] input = line.getArgs();
-		if (input.length != 1) {
-			printHelp();
-			System.exit(ExitCodes.INVALID_OPTIONS);
-		}
-		settings.filename = input[0];
-
-		return settings;
 	}
 
 	private static SolverOption getSolverOption(String solver) {
-		for (SolverOption option : SolverOption.values()) {
+		List<SolverOption> options = Arrays.asList(SolverOption.values());
+		for (SolverOption option : options) {
 			if (solver.equals(option.toString())) {
 				return option;
 			}
 		}
+
+		Output.error("unknown solver: " + solver);
+		Output.println("Valid options: " + options);
+		System.exit(ExitCodes.INVALID_OPTIONS);
 		return null;
 	}
 
-	private static void ensureExclusive(CommandLine line, String opt1, String opt2) {
-		if (line.hasOption(opt1) && line.hasOption(opt2)) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "cannot use option -" + opt1 + " with option -"
-					+ opt2);
-		}
-	}
-
-	private static void checkSettings(JKindSettings settings) {
+	private void checkSettings() {
 		if (settings.solver != SolverOption.YICES) {
 			if (settings.smoothCounterexamples) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
@@ -212,7 +177,7 @@ public class JKindArgumentParser {
 		}
 
 		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
-				&& settings.pdrMax == 0) {
+				&& settings.pdrMax == 0 && settings.readAdvice == null) {
 			Output.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
 		}
 

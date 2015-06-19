@@ -43,7 +43,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		this.index = index;
 	}
 
-	public static TransitionRelation constructTransitionRelation(Node node) {
+	public static Relation constructTransitionRelation(Node node) {
 		Lustre2Sexp visitor = new Lustre2Sexp(1);
 		List<Sexp> conjuncts = new ArrayList<>();
 		
@@ -62,7 +62,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		inputs.addAll(visitor.pre(Util.getVarDecls(node)));
 		inputs.addAll(visitor.curr(Util.getVarDecls(node)));
 
-		return new TransitionRelation(inputs, SexpUtil.conjoin(conjuncts));
+		return new Relation(Relation.T, inputs, SexpUtil.conjoin(conjuncts));
 	}
 
 	private Symbol curr(String id) {

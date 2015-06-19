@@ -14,7 +14,7 @@ import jkind.lustre.UnaryOp;
  * A record signal value (only used during static analysis)
  */
 public class RecordValue extends Value {
-	final public SortedMap<String, Value> fields;
+	public final SortedMap<String, Value> fields;
 
 	public RecordValue(Map<String, Value> fields) {
 		this.fields = Collections.unmodifiableSortedMap(new TreeMap<>(fields));

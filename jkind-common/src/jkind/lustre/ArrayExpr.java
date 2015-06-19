@@ -6,7 +6,7 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
 public class ArrayExpr extends Expr {
-	final public List<Expr> elements;
+	public final List<Expr> elements;
 
 	public ArrayExpr(Location loc, List<Expr> elements) {
 		super(loc);

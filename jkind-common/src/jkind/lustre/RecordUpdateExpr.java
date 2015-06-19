@@ -4,9 +4,9 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class RecordUpdateExpr extends Expr {
-	final public Expr record;
-	final public String field;
-	final public Expr value;
+	public final Expr record;
+	public final String field;
+	public final Expr value;
 	
 	public RecordUpdateExpr(Location location, Expr record, String field, Expr value) {
 		super(location);

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.solvers.Model;
+import jkind.util.Util;
 
 public class InvalidMessage extends Message {
 	public final String source;
@@ -15,7 +16,7 @@ public class InvalidMessage extends Message {
 	public InvalidMessage(String source, List<String> invalid, int length, Model model,
 			Itinerary itinerary) {
 		this.source = source;
-		this.invalid = safeCopy(invalid);
+		this.invalid = Util.safeCopy(invalid);
 		this.length = length;
 		this.model = model;
 		this.itinerary = itinerary;

@@ -1,10 +1,12 @@
 package jkind.lustre.visitors;
 
-import java.util.ArrayList;
+import static java.util.stream.Collectors.toList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -133,11 +135,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 		return new UnaryExpr(e.location, e.op, expr);
 	}
 
-	public List<Expr> visitExprs(List<? extends Expr> es) {
-		List<Expr> result = new ArrayList<>();
-		for (Expr e : es) {
-			result.add(e.accept(this));
-		}
-		return result;
+	protected List<Expr> visitExprs(List<? extends Expr> es) {
+		return map(e -> e.accept(this), es);
+	}
+
+	protected <A, B> List<B> map(Function<? super A, ? extends B> f, List<A> xs) {
+		return xs.stream().map(f).collect(toList());
 	}
 }

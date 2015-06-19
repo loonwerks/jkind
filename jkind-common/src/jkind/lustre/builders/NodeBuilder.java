@@ -3,6 +3,7 @@ package jkind.lustre.builders;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -18,6 +19,7 @@ public class NodeBuilder {
 	private List<Equation> equations = new ArrayList<>();
 	private List<String> properties = new ArrayList<>();
 	private List<Expr> assertions = new ArrayList<>();
+	private Optional<List<String>> realizabilityInputs = Optional.empty();
 
 	public NodeBuilder(String id) {
 		this.id = id;
@@ -31,8 +33,17 @@ public class NodeBuilder {
 		this.equations = new ArrayList<>(node.equations);
 		this.properties = new ArrayList<>(node.properties);
 		this.assertions = new ArrayList<>(node.assertions);
+		this.realizabilityInputs = copy(node.realizabilityInputs);
 	}
 	
+	private Optional<List<String>> copy(Optional<List<String>> original) {
+		if (original.isPresent()) {
+			return Optional.of(new ArrayList<>(original.get()));
+		} else {
+			return Optional.empty();
+		}
+	}
+
 	public NodeBuilder setId(String id) {
 		this.id = id;
 		return this;
@@ -122,6 +133,11 @@ public class NodeBuilder {
 		this.assertions.addAll(assertions);
 		return this;
 	}
+	
+	public NodeBuilder setRealizabilityInputs(List<String> realizabilityInputs) {
+		this.realizabilityInputs = Optional.of(new ArrayList<>(realizabilityInputs));
+		return this;
+	}
 
 	public NodeBuilder clearAssertions() {
 		this.assertions.clear();
@@ -130,6 +146,6 @@ public class NodeBuilder {
 
 	public Node build() {
 		return new Node(Location.NULL, id, inputs, outputs, locals, equations, properties,
-				assertions);
+				assertions, realizabilityInputs);
 	}
 }

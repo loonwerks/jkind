@@ -93,11 +93,9 @@ public class StaticAnalyzer {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 		for (TypeDef def : program.types) {
-			if (seen.contains(def.id)) {
+			if (!seen.add(def.id)) {
 				Output.error(def.location, "type " + def.id + " already defined");
 				unique = false;
-			} else {
-				seen.add(def.id);
 			}
 		}
 		return unique;
@@ -109,21 +107,17 @@ public class StaticAnalyzer {
 
 		for (EnumType et : Util.getEnumTypes(program.types)) {
 			for (String value : et.values) {
-				if (seen.contains(value)) {
+				if (!seen.add(value)) {
 					Output.error(et.location, value + " defined multiple times");
 					unique = false;
-				} else {
-					seen.add(value);
 				}
 			}
 		}
 
 		for (Constant c : program.constants) {
-			if (seen.contains(c.id)) {
+			if (!seen.add(c.id)) {
 				Output.error(c.location, c.id + " defined multiple times");
 				unique = false;
-			} else {
-				seen.add(c.id);
 			}
 		}
 
@@ -143,11 +137,9 @@ public class StaticAnalyzer {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 		for (Node node : program.nodes) {
-			if (seen.contains(node.id)) {
+			if (!seen.add(node.id)) {
 				Output.error(node.location, "node " + node.id + " already defined");
 				unique = false;
-			} else {
-				seen.add(node.id);
 			}
 		}
 		return unique;
@@ -165,11 +157,9 @@ public class StaticAnalyzer {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
-			if (seen.contains(decl.id)) {
+			if (!seen.add(decl.id)) {
 				Output.error(decl.location, "variable " + decl.id + " already declared");
 				unique = false;
-			} else {
-				seen.add(decl.id);
 			}
 		}
 		return unique;
@@ -232,12 +222,10 @@ public class StaticAnalyzer {
 		for (Node node : program.nodes) {
 			Set<String> seen = new HashSet<>();
 			for (String prop : node.properties) {
-				if (seen.contains(prop)) {
+				if (!seen.add(prop)) {
 					Output.error("in node '" + node.id + "' property '" + prop
 							+ "' declared multiple times");
 					unique = false;
-				} else {
-					seen.add(prop);
 				}
 			}
 		}
@@ -310,7 +298,7 @@ public class StaticAnalyzer {
 				}
 			}
 
-			List<String> covered = new ArrayList<>();
+			Set<String> covered = new HashSet<>();
 			for (Equation eq : node.equations) {
 				List<String> stack = new ArrayList<>();
 				for (IdExpr idExpr : eq.lhs) {
@@ -321,7 +309,7 @@ public class StaticAnalyzer {
 	}
 
 	private static boolean checkAlgebraicLoops(String node, String id, List<String> stack,
-			List<String> covered, Map<String, Set<String>> directDepends) {
+			Set<String> covered, Map<String, Set<String>> directDepends) {
 		if (stack.contains(id)) {
 			StringBuilder text = new StringBuilder();
 			text.append("in node '" + node + "' possible algebraic loop: ");
@@ -333,10 +321,8 @@ public class StaticAnalyzer {
 			return true;
 		}
 
-		if (covered.contains(id)) {
+		if (!covered.add(id)) {
 			return false;
-		} else {
-			covered.add(id);
 		}
 
 		if (directDepends.containsKey(id)) {

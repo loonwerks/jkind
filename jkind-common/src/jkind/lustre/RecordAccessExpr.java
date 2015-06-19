@@ -4,8 +4,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class RecordAccessExpr extends Expr {
-	final public Expr record;
-	final public String field;
+	public final Expr record;
+	public final String field;
 	
 	public RecordAccessExpr(Location location, Expr record, String field) {
 		super(location);

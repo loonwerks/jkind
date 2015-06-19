@@ -8,10 +8,10 @@ import jkind.slicing.DependencyMap;
 import jkind.util.Util;
 
 public class Specification {
-	final public Node node;
-	final public DependencyMap dependencyMap;
-	final public Map<String, Type> typeMap;
-	final public TransitionRelation transitionRelation;
+	public final Node node;
+	public final DependencyMap dependencyMap;
+	public final Map<String, Type> typeMap;
+	public final Relation transitionRelation;
 
 	public Specification(Node node, DependencyMap dependencyMap) {
 		this.node = node;

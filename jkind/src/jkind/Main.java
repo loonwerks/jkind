@@ -33,10 +33,10 @@ import org.antlr.v4.runtime.RecognitionException;
  * runnable JARs allow only a single entry point.
  */
 public class Main {
-	final public static String VERSION = "1.6.1";
+	public static final String VERSION = "2.1.1";
 
 	public static void main(String[] args) {
-		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -benchmark";
+		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -jrealizability, -benchmark";
 		if (args.length == 0) {
 			Output.println("JKind Suite " + VERSION);
 			Output.println(availableEntryPoints);
@@ -57,6 +57,10 @@ public class Main {
 
 		case "-jlustre2excel":
 			JLustre2Excel.main(subArgs);
+			break;
+
+		case "-jrealizability":
+			JRealizability.main(subArgs);
 			break;
 
 		case "-benchmark":

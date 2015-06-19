@@ -107,4 +107,12 @@ public class DependencyMap {
 	public DependencySet get(String var) {
 		return get(new Dependency(var));
 	}
+	
+	public DependencySet get(List<String> vars) {
+		DependencySet result = new DependencySet();
+		for (String var : vars) {
+			result.addAll(get(var));
+		}
+		return result;
+	}
 }

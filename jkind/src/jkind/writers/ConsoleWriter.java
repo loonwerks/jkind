@@ -44,7 +44,8 @@ public class ConsoleWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex,
+			List<String> conflicts, double runtime) {
 		writeLine();
 		System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "
 				+ cex.getLength() + " || Time = " + runtime);
@@ -67,7 +68,7 @@ public class ConsoleWriter extends Writer {
 				writeLine();
 				System.out.println("INDUCTIVE COUNTEREXAMPLE: " + prop + " || K = "
 						+ cex.getLength());
-				System.out.println(cex);
+				System.out.println(cex.toString(layout));
 				writeLine();
 				System.out.println();
 			}

@@ -4,9 +4,9 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class ArrayUpdateExpr extends Expr {
-	final public Expr array;
-	final public Expr index;
-	final public Expr value;
+	public final Expr array;
+	public final Expr index;
+	public final Expr value;
 	
 	public ArrayUpdateExpr(Location location, Expr array, Expr index, Expr value) {
 		super(location);

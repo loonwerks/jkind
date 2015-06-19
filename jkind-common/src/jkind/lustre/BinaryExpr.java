@@ -4,9 +4,9 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class BinaryExpr extends Expr {
-	final public Expr left;
-	final public BinaryOp op;
-	final public Expr right;
+	public final Expr left;
+	public final BinaryOp op;
+	public final Expr right;
 	
 	public BinaryExpr(Location location, Expr left, BinaryOp op, Expr right) {
 		super(location);

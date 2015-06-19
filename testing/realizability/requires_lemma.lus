@@ -1,0 +1,17 @@
+-- Realizable with lemma
+-- Unknown without lemma
+
+node main(x, y, z : int) returns (ok, lemma : bool);
+var
+  counter : int;
+let
+  counter = 0 -> 1 + pre counter;
+  assert counter >= 0 => x < y - 1;
+  
+  ok = x < z and z < y;
+  --%PROPERTY ok;
+
+  lemma = counter >= 0;
+  --%PROPERTY lemma;
+  --%REALIZABLE x, y;
+tel;

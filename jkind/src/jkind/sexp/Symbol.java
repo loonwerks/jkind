@@ -2,7 +2,7 @@ package jkind.sexp;
 
 
 public class Symbol extends Sexp {
-	final public String str;
+	public final String str;
 
 	public Symbol(String sym) {
 		this.str = sym;

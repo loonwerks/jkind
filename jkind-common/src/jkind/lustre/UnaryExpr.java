@@ -4,8 +4,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class UnaryExpr extends Expr {
-	final public UnaryOp op;
-	final public Expr expr;
+	public final UnaryOp op;
+	public final Expr expr;
 
 	public UnaryExpr(Location location, UnaryOp op, Expr expr) {
 		super(location);

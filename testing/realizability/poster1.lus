@@ -1,0 +1,10 @@
+-- Unrealizable without assert
+-- Realizable with assert
+
+node main(in, out : int) returns (ok : bool);
+let
+  -- assert in >= 0;
+  ok = (out = 2 * in) and (out >= 0);
+  --%PROPERTY ok;
+  --%REALIZABLE in;
+tel;

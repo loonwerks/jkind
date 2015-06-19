@@ -8,8 +8,8 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
 public class NodeCallExpr extends Expr {
-	final public String node;
-	final public List<Expr> args;
+	public final String node;
+	public final List<Expr> args;
 
 	public NodeCallExpr(Location loc, String node, List<Expr> args) {
 		super(loc);

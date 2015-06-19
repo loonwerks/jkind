@@ -81,7 +81,9 @@ public class Kind2Api extends KindApi {
 				code = process.waitFor();
 			}
 
-			parseThread.join();
+			if (parseThread != null) {
+				parseThread.join();
+			}
 
 			if (monitor.isCanceled()) {
 				result.cancel();

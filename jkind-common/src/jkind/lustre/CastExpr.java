@@ -4,8 +4,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class CastExpr extends Expr {
-	final public Type type;
-	final public Expr expr;
+	public final Type type;
+	public final Expr expr;
 
 	public CastExpr(Location location, Type type, Expr expr) {
 		super(location);

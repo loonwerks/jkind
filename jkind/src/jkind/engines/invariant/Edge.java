@@ -5,8 +5,8 @@ import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 
 public class Edge {
-	final public Node source;
-	final public Node destination;
+	public final Node source;
+	public final Node destination;
 
 	public Edge(Node source, Node destination) {
 		this.source = source;

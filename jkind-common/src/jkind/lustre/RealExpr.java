@@ -6,7 +6,7 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class RealExpr extends Expr {
-	final public BigDecimal value;
+	public final BigDecimal value;
 
 	public RealExpr(Location location, BigDecimal value) {
 		super(location);

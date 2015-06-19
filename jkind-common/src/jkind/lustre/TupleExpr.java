@@ -6,7 +6,7 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
 public class TupleExpr extends Expr {
-	final public List<Expr> elements;
+	public final List<Expr> elements;
 
 	public TupleExpr(Location loc, List<? extends Expr> elements) {
 		super(loc);

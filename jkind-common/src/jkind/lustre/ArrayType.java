@@ -4,8 +4,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
 
 public class ArrayType extends Type {
-	final public Type base;
-	final public int size;
+	public final Type base;
+	public final int size;
 
 	public ArrayType(Location location, Type base, int size) {
 		super(location);

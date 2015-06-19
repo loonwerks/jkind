@@ -8,9 +8,9 @@ import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
 public class CondactExpr extends Expr {
-	final public Expr clock;
-	final public NodeCallExpr call;
-	final public List<Expr> args;
+	public final Expr clock;
+	public final NodeCallExpr call;
+	public final List<Expr> args;
 
 	public CondactExpr(Location loc, Expr clock, NodeCallExpr call, List<Expr> args) {
 		super(loc);

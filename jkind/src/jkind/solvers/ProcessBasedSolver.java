@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import jkind.JKindException;
 
 public abstract class ProcessBasedSolver extends Solver {
-	protected final static String DONE = "@DONE";
+	protected static final String DONE = "@DONE";
 
 	protected Process process;
 	protected BufferedWriter toSolver;

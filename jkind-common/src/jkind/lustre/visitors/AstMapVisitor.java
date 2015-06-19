@@ -1,6 +1,5 @@
 package jkind.lustre.visitors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jkind.lustre.Ast;
@@ -31,28 +30,29 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<VarDecl> locals = visitVarDecls(e.locals);
 		List<Equation> equations = visitEquations(e.equations);
 		List<Expr> assertions = visitAssertions(e.assertions);
-		return new Node(e.location, e.id, inputs, outputs, locals, equations, e.properties,
-				assertions);
+		List<String> properties = visitProperties(e.properties);
+		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties,
+				assertions, e.realizabilityInputs);
 	}
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
-		List<VarDecl> result = new ArrayList<>();
-		for (VarDecl e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Equation> visitEquations(List<Equation> es) {
-		List<Equation> result = new ArrayList<>();
-		for (Equation e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
-	
+
 	protected List<Expr> visitAssertions(List<Expr> es) {
 		return visitExprs(es);
+	}
+
+	protected List<String> visitProperties(List<String> es) {
+		return map(this::visitProperty, es);
+	}
+
+	protected String visitProperty(String e) {
+		return e;
 	}
 
 	@Override
@@ -62,31 +62,19 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<Node> nodes = visitNodes(e.nodes);
 		return new Program(e.location, types, constants, nodes, e.main);
 	}
-	
+
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
-		List<TypeDef> result = new ArrayList<>();
-		for (TypeDef e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Constant> visitConstants(List<Constant> es) {
-		List<Constant> result = new ArrayList<>();
-		for (Constant e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
 
 	protected List<Node> visitNodes(List<Node> es) {
-		List<Node> result = new ArrayList<>();
-		for (Node e : es) {
-			result.add(visit(e));
-		}
-		return result;
+		return map(this::visit, es);
 	}
-	
+
 	@Override
 	public TypeDef visit(TypeDef e) {
 		return e;

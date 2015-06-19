@@ -4,8 +4,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class ArrayAccessExpr extends Expr {
-	final public Expr array;
-	final public Expr index;
+	public final Expr array;
+	public final Expr index;
 	
 	public ArrayAccessExpr(Location location, Expr array, Expr index) {
 		super(location);

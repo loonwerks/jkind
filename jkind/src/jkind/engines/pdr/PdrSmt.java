@@ -1,5 +1,7 @@
 package jkind.engines.pdr;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +20,7 @@ import jkind.solvers.smtinterpol.ScriptUser;
 import jkind.solvers.smtinterpol.SmtInterpolUtil;
 import jkind.solvers.smtinterpol.Subst;
 import jkind.solvers.smtinterpol.Term2Expr;
-import jkind.translation.TransitionRelation;
+import jkind.translation.Relation;
 import jkind.util.StreamIndex;
 import de.uni_freiburg.informatik.ultimate.logic.Annotation;
 import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
@@ -44,6 +46,8 @@ public class PdrSmt extends ScriptUser {
 
 	private final Set<Term> predicates = new HashSet<>();
 
+	private final NameGenerator abstractAssertions = new NameGenerator("abstract");
+
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
 		this.F = F;
@@ -61,30 +65,47 @@ public class PdrSmt extends ScriptUser {
 		this.baseAbstract = getVariables("-");
 		this.primeAbstract = getVariables("-'");
 		this.prime = getVariables("'");
-		
+
 		this.I = lustre2Term.getInit();
 		defineTransitionRelation(lustre2Term.getTransition());
 		this.P = lustre2Term.encodeProperty(property);
 
-		script.assertTerm(T(baseAbstract, primeAbstract));
+		assertAbstract(T(baseAbstract, primeAbstract));
 
 		addPredicates(PredicateCollector.collect(I));
 		addPredicates(PredicateCollector.collect(P));
 	}
 
+	private void assertAbstract(Term t) {
+		script.assertTerm(name(t, abstractAssertions.getNextName()));
+	}
+
 	private void defineTransitionRelation(Term transition) {
 		TermVariable[] params = new TermVariable[base.length + prime.length];
 		for (int i = 0; i < base.length; i++) {
-			Term v = base[i];
-			params[i] = script.variable(v.toString(), v.getSort());
+			params[i] = variable(base[i]);
 		}
 		for (int i = 0; i < prime.length; i++) {
-			Term v = prime[i];
-			params[i + base.length] = script.variable(v.toString(), v.getSort());
+			params[i + base.length] = variable(prime[i]);
 		}
 
 		Term body = subst(transition, concat(base, prime), params);
-		script.defineFun(TransitionRelation.T.str, params, script.sort("Bool"), body);
+		script.defineFun(Relation.T, params, script.sort("Bool"), body);
+	}
+
+	private TermVariable variable(Term v) {
+		String name = variableName(v);
+		return script.variable(name, v.getSort());
+	}
+
+	private String variableName(Term v) {
+		if (v instanceof ApplicationTerm) {
+			ApplicationTerm at = (ApplicationTerm) v;
+			return at.getFunction().getName();
+		} else {
+			throw new IllegalArgumentException("Unexpected variable type: "
+					+ v.getClass().getSimpleName());
+		}
 	}
 
 	private void addPredicates(Set<Term> otherPredicates) {
@@ -92,8 +113,8 @@ public class PdrSmt extends ScriptUser {
 		predicates.addAll(otherPredicates);
 		for (Term p : otherPredicates) {
 			comment("New predicate: " + p);
-			script.assertTerm(term("=", apply(p, base), apply(p, baseAbstract)));
-			script.assertTerm(term("=", apply(p, primeAbstract), apply(p, prime)));
+			assertAbstract(term("=", apply(p, base), apply(p, baseAbstract)));
+			assertAbstract(term("=", apply(p, primeAbstract), apply(p, prime)));
 		}
 		return;
 	}
@@ -282,12 +303,14 @@ public class PdrSmt extends ScriptUser {
 	private Term[] getInterpolants(List<Term> terms) {
 		script.push(1);
 
-		Term[] names = new Term[terms.size()];
+		Term[] names = new Term[terms.size() + 1];
 		for (int i = 0; i < terms.size(); i++) {
 			String name = "I" + i;
 			script.assertTerm(name(terms.get(i), name));
-			names[i] = script.term(name);
+			names[i] = term(name);
 		}
+		// Ignore all variables related to abstract transition relation
+		names[terms.size()] = and(term(abstractAssertions.getAllNames()));
 
 		switch (script.checkSat()) {
 		case UNSAT:
@@ -336,7 +359,7 @@ public class PdrSmt extends ScriptUser {
 	}
 
 	private Term T(Term[] variables1, Term[] variables2) {
-		return script.term(TransitionRelation.T.str, concat(variables1, variables2));
+		return script.term(Relation.T, concat(variables1, variables2));
 	}
 
 	private Term[] concat(Term[] terms1, Term[] terms2) {
@@ -401,5 +424,9 @@ public class PdrSmt extends ScriptUser {
 
 	private Term name(Term term, String name) {
 		return script.annotate(term, new Annotation(":named", name));
+	}
+
+	private List<Term> term(List<String> variables) {
+		return variables.stream().map(this::term).collect(toList());
 	}
 }

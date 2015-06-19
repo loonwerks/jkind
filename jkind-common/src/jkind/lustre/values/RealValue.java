@@ -8,7 +8,7 @@ import jkind.util.BigFraction;
  * A real signal value
  */
 public class RealValue extends Value implements Comparable<RealValue> {
-	final public BigFraction value;
+	public final BigFraction value;
 	
 	public RealValue(BigFraction value) {
 		this.value = value;

@@ -8,8 +8,8 @@ import jkind.lustre.visitors.TypeVisitor;
 import jkind.util.Util;
 
 public class RecordType extends Type {
-	final public String id;
-	final public SortedMap<String, Type> fields;
+	public final String id;
+	public final SortedMap<String, Type> fields;
 
 	public RecordType(Location location, String id, Map<String, Type> fields) {
 		super(location);

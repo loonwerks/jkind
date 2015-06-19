@@ -17,11 +17,12 @@ import jkind.engines.messages.ValidMessage;
 import jkind.translation.Specification;
 
 public class PdrEngine extends Engine {
+	public static final String NAME = "pdr";
 	private final ConcurrentMap<String, PdrSubengine> subengines = new ConcurrentHashMap<>();
 	private int scratchCounter = 1;
 
 	public PdrEngine(Specification spec, JKindSettings settings, Director director) {
-		super("pdr", spec, settings, director);
+		super(NAME, spec, settings, director);
 	}
 
 	@Override
@@ -48,6 +49,11 @@ public class PdrEngine extends Engine {
 		PdrSubengine subengine = new PdrSubengine(prop, spec, scratch, this, director);
 		subengines.put(prop, subengine);
 		subengine.start();
+	}
+
+	public void reportUnknown(String prop) {
+		subengines.remove(prop);
+		director.receiveMessage(new UnknownMessage(getName(), prop));
 	}
 
 	public void reportThrowable(Throwable throwable) {

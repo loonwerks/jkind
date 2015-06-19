@@ -4,8 +4,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.AstVisitor;
 
 public class TypeDef extends Ast {
-	final public String id;
-	final public Type type;
+	public final String id;
+	public final Type type;
 
 	public TypeDef(Location location, String id, Type type) {
 		super(location);

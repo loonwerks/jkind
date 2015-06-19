@@ -6,8 +6,8 @@ import jkind.Assert;
 import jkind.lustre.visitors.TypeVisitor;
 
 public class SubrangeIntType extends Type {
-	final public BigInteger low;
-	final public BigInteger high;
+	public final BigInteger low;
+	public final BigInteger high;
 
 	public SubrangeIntType(Location location, BigInteger low, BigInteger high) {
 		super(location);

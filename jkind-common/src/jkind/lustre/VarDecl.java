@@ -5,8 +5,8 @@ import jkind.lustre.visitors.AstVisitor;
 
 
 public class VarDecl extends Ast {
-	final public String id;
-	final public Type type;
+	public final String id;
+	public final Type type;
 
 	public VarDecl(Location location, String id, Type type) {
 		super(location);

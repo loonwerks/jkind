@@ -3,6 +3,7 @@ package jkind.excel;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import jkind.JKindException;
@@ -109,7 +110,7 @@ public class ExcelFormatter implements Closeable {
 			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", invSheet, 0, 0);
 			summarySheet.addHyperlink(link);
 		}
-		
+
 		summarySheet.addCell(new Label(2, summaryRow, source));
 		summarySheet.addCell(new Number(3, summaryRow, k));
 		summarySheet.addCell(new Number(4, summaryRow, runtime));
@@ -140,8 +141,9 @@ public class ExcelFormatter implements Closeable {
 		Counterexample cex = property.getCounterexample();
 		int length = cex.getLength();
 		double runtime = property.getRuntime();
+		List<String> conflicts = property.getConflicts();
 
-		WritableSheet cexSheet = writeCounterexample(name, cex);
+		WritableSheet cexSheet = writeCounterexample(name, cex, conflicts);
 		summarySheet.addCell(new Label(0, summaryRow, name));
 		summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Invalid", cexSheet, 0, 0));
 		summarySheet.addCell(new Label(2, summaryRow, source));
@@ -160,7 +162,7 @@ public class ExcelFormatter implements Closeable {
 		if (cex == null) {
 			summarySheet.addCell(new Label(1, summaryRow, "Unknown"));
 		} else {
-			WritableSheet cexSheet = writeCounterexample(name, cex);
+			WritableSheet cexSheet = writeCounterexample(name, cex, Collections.emptyList());
 			summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Unknown", cexSheet, 0,
 					0));
 		}
@@ -169,7 +171,8 @@ public class ExcelFormatter implements Closeable {
 		summaryRow++;
 	}
 
-	private WritableSheet writeCounterexample(String name, Counterexample cex) {
-		return cexFormatter.writeCounterexample(name, cex);
+	private WritableSheet writeCounterexample(String name, Counterexample cex,
+			List<String> conflicts) {
+		return cexFormatter.writeCounterexample(name, cex, conflicts);
 	}
 }

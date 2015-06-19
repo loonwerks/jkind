@@ -1,5 +1,7 @@
 package jkind.api.results;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import jkind.lustre.values.Value;
@@ -82,7 +84,8 @@ public abstract class Renaming {
 		}
 
 		return new InvalidProperty(name, property.getSource(),
-				rename(property.getCounterexample()), property.getRuntime());
+				rename(property.getCounterexample()), rename(property.getConflicts()),
+				property.getRuntime());
 	}
 
 	/**
@@ -146,5 +149,23 @@ public abstract class Renaming {
 			newSignal.putValue(entry.getKey(), entry.getValue());
 		}
 		return newSignal;
+	}
+
+	/**
+	 * Rename conflicts, possibly omitting some
+	 * 
+	 * @param conflicts
+	 *            Conflicts to be renamed
+	 * @return Renamed version of the conflicts
+	 */
+	private List<String> rename(List<String> conflicts) {
+		List<String> result = new ArrayList<>();
+		for (String conflict : conflicts) {
+			String newConflict = rename(conflict);
+			if (newConflict != null) {
+				result.add(newConflict);
+			}
+		}
+		return result;
 	}
 }

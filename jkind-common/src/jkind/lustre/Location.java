@@ -1,8 +1,8 @@
 package jkind.lustre;
 
 public class Location {
-	final public int line;
-	final public int charPositionInLine;
+	public final int line;
+	public final int charPositionInLine;
 
 	public Location(int line, int charPositionInLine) {
 		this.line = line;
@@ -14,5 +14,5 @@ public class Location {
 		return line + ":" + charPositionInLine;
 	}
 	
-	final public static Location NULL = new Location(0, 0);
+	public static final Location NULL = new Location(0, 0);
 }

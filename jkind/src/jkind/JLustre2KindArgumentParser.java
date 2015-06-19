@@ -1,53 +1,41 @@
 package jkind;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
-public class JLustre2KindArgumentParser {
-	final private static String ENCODE = "encode";
-	final private static String STDOUT = "stdout";
-	final private static String VERSION = "version";
-	final private static String HELP = "help";
+public class JLustre2KindArgumentParser extends ArgumentParser {
+	private static final String ENCODE = "encode";
+	private static final String STDOUT = "stdout";
 
-	private static Options getOptions() {
-		Options options = new Options();
+	private final JLustre2KindSettings settings;
+
+	private JLustre2KindArgumentParser() {
+		this("JLustre2Kind", new JLustre2KindSettings());
+	}
+
+	private JLustre2KindArgumentParser(String name, JLustre2KindSettings settings) {
+		super(name, settings);
+		this.settings = settings;
+	}
+
+	@Override
+	protected Options getOptions() {
+		Options options = super.getOptions();
 		options.addOption(STDOUT, false, "write result to standard out");
-		options.addOption(ENCODE, false, "Encode identifiers to avoid reserved symbols");
-		options.addOption(VERSION, false, "display version information");
-		options.addOption(HELP, false, "print this message");
+		options.addOption(ENCODE, false, "encode identifiers to avoid reserved symbols");
 		return options;
 	}
 
 	public static JLustre2KindSettings parse(String[] args) {
-		CommandLineParser parser = new BasicParser();
-		try {
-			return getSettings(parser.parse(getOptions(), args));
-		} catch (Throwable t) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "reading command line arguments: " + t.getMessage());
-			return null;
-		}
+		JLustre2KindArgumentParser parser = new JLustre2KindArgumentParser();
+		parser.parseArguments(args);
+		return parser.settings;
 	}
 
-	private static void printHelp() {
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("jlustre2kind [options] <input>", getOptions());
-	}
-
-	private static JLustre2KindSettings getSettings(CommandLine line) {
-		JLustre2KindSettings settings = new JLustre2KindSettings();
-		if (line.hasOption(VERSION)) {
-			Output.println("JLustre2Kind " + Main.VERSION);
-			System.exit(0);
-		}
-
-		if (line.hasOption(HELP)) {
-			printHelp();
-			System.exit(0);
-		}
-
+	@Override
+	protected void parseCommandLine(CommandLine line) {
+		super.parseCommandLine(line);
+		
 		if (line.hasOption(ENCODE)) {
 			settings.encode = true;
 		}
@@ -55,14 +43,5 @@ public class JLustre2KindArgumentParser {
 		if (line.hasOption(STDOUT)) {
 			settings.stdout = true;
 		}
-
-		String[] input = line.getArgs();
-		if (input.length != 1) {
-			printHelp();
-			System.exit(ExitCodes.INVALID_OPTIONS);
-		}
-		settings.filename = input[0];
-		
-		return settings;
 	}
 }

@@ -8,8 +8,8 @@ import jkind.lustre.visitors.AstVisitor;
 import jkind.util.Util;
 
 public class Equation extends Ast {
-	final public List<IdExpr> lhs;
-	final public Expr expr;
+	public final List<IdExpr> lhs;
+	public final Expr expr;
 
 	public Equation(Location location, List<IdExpr> lhs, Expr expr) {
 		super(location);

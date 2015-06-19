@@ -1,5 +1,7 @@
 package jkind.lustre.visitors;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -47,7 +49,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		sb.append(o);
 	}
 
-	private final static String seperator = System.getProperty("line.separator");
+	private static final String seperator = System.getProperty("line.separator");
 
 	private void newline() {
 		write(seperator);
@@ -183,6 +185,14 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			}
 			newline();
 		}
+		
+		if (node.realizabilityInputs.isPresent()) {
+			write("  --%REALIZABLE ");
+			write(node.realizabilityInputs.get().stream().collect(joining(", ")));
+			write(";");
+			newline();
+			newline();
+		}
 
 		write("tel;");
 		return null;
@@ -235,7 +245,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		newline();
 	}
 
-	private void property(String s) {
+	protected void property(String s) {
 		write("  --%PROPERTY ");
 		write(s);
 		write(";");

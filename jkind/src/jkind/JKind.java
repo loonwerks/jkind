@@ -1,6 +1,5 @@
 package jkind;
 
-import jkind.analysis.Level;
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
@@ -18,7 +17,7 @@ public class JKind {
 			Program program = Main.parseLustre(settings.filename);
 
 			StaticAnalyzer.check(program, settings.solver);
-			if (!LinearChecker.check(program, Level.IGNORE)) {
+			if (!LinearChecker.isLinear(program)) {
 				if (settings.pdrMax > 0) {
 					Output.warning("disabling PDR due to non-linearities");
 					settings.pdrMax = 0;

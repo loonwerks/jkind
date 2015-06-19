@@ -5,6 +5,9 @@ import java.math.BigInteger;
 import java.util.List;
 
 public class LustreUtil {
+	public static Expr TRUE = new BoolExpr(true);
+	public static Expr FALSE = new BoolExpr(false);
+
 	public static Expr typeConstraint(String id, Type type) {
 		if (type instanceof SubrangeIntType) {
 			return subrangeConstraint(id, (SubrangeIntType) type);
@@ -55,15 +58,47 @@ public class LustreUtil {
 		return new UnaryExpr(UnaryOp.NOT, expr);
 	}
 
+	public static Expr castReal(Expr expr) {
+		return new CastExpr(NamedType.REAL, expr);
+	}
+
+	public static Expr castInt(Expr expr) {
+		return new CastExpr(NamedType.INT, expr);
+	}
+
 	public static IdExpr id(String id) {
 		return new IdExpr(id);
+	}
+
+	public static IdExpr id(VarDecl vd) {
+		return new IdExpr(vd.id);
 	}
 
 	public static RealExpr real(BigInteger bi) {
 		return new RealExpr(new BigDecimal(bi));
 	}
-	
+
 	public static Expr and(List<Expr> conjuncts) {
 		return conjuncts.stream().reduce((acc, e) -> and(acc, e)).orElse(new BoolExpr(true));
+	}
+
+	public static Expr ite(Expr cond, Expr thenExpr, Expr elseExpr) {
+		return new IfThenElseExpr(cond, thenExpr, elseExpr);
+	}
+
+	public static Expr pre(Expr expr) {
+		return new UnaryExpr(UnaryOp.PRE, expr);
+	}
+
+	public static Expr arrow(Expr left, Expr right) {
+		return new BinaryExpr(left, BinaryOp.ARROW, right);
+	}
+
+	public static Expr implies(Expr left, Expr right) {
+		return new BinaryExpr(left, BinaryOp.IMPLIES, right);
+	}
+
+	public static Equation eq(IdExpr id, Expr expr) {
+		return new Equation(id, expr);
 	}
 }

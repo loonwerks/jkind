@@ -13,7 +13,7 @@ import jkind.lustre.UnaryOp;
  * An array signal value (only used during static analysis)
  */
 public class ArrayValue extends Value {
-	final public List<Value> elements;
+	public final List<Value> elements;
 
 	public ArrayValue(List<Value> elements) {
 		this.elements = Collections.unmodifiableList(elements);

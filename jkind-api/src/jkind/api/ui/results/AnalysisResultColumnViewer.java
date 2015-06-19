@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public abstract class AnalysisResultColumnViewer {
-	final protected Composite composite;
-	final protected ColumnViewer viewer;
+	protected final Composite composite;
+	protected final ColumnViewer viewer;
 
 	public AnalysisResultColumnViewer(Composite parent) {
 		this.composite = new Composite(parent, SWT.None);

@@ -10,8 +10,8 @@ import java.math.BigInteger;
  * fraction is in reduced form and <code>denominator</code> is always positive
  */
 public class BigFraction implements Comparable<BigFraction> {
-	final public static BigFraction ZERO = new BigFraction(BigInteger.ZERO);
-	final public static BigFraction ONE = new BigFraction(BigInteger.ONE);
+	public static final BigFraction ZERO = new BigFraction(BigInteger.ZERO);
+	public static final BigFraction ONE = new BigFraction(BigInteger.ONE);
 	
 	// The numerator and denominator are always stored in reduced form with the
 	// denominator always positive

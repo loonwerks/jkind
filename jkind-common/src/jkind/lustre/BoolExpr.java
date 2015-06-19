@@ -4,7 +4,7 @@ import jkind.Assert;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class BoolExpr extends Expr {
-	final public boolean value;
+	public final boolean value;
 
 	public BoolExpr(Location location, boolean value) {
 		super(location);

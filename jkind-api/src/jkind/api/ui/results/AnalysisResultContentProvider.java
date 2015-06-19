@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import jkind.api.results.AnalysisResult;
 import jkind.api.results.CompositeAnalysisResult;
 import jkind.api.results.JKindResult;
+import jkind.api.results.JRealizabilityResult;
 import jkind.api.results.PropertyResult;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -68,12 +69,19 @@ public class AnalysisResultContentProvider implements ITreeContentProvider, Prop
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		return getChildren(inputElement);
+		if (inputElement instanceof JRealizabilityResult) {
+			JRealizabilityResult result = (JRealizabilityResult) inputElement;
+			return result.getPropertyResults().toArray();
+		} else {
+			return getChildren(inputElement);
+		}
 	}
 
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement instanceof JKindResult) {
+		if (parentElement instanceof JRealizabilityResult) {
+			return new Object[0];
+		} else if (parentElement instanceof JKindResult) {
 			JKindResult result = (JKindResult) parentElement;
 			return result.getPropertyResults().toArray();
 		} else if (parentElement instanceof CompositeAnalysisResult) {
