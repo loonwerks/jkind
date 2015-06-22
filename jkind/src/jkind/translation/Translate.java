@@ -15,6 +15,9 @@ public class Translate {
 		main = FlattenTuples.node(main);
 		main = FlattenCompoundTypes.node(main);
 		main = InlineSimpleEquations.node(main);
+		main = InlineEquations.node(main);
+//		System.out.println(main);
+//		System.exit(0);
 		main = FlattenPres.node(main);
 		return main;
 	}

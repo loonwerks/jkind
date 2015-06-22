@@ -9,17 +9,24 @@ import java.util.Set;
 
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
+import jkind.lustre.visitors.ExprMapVisitor;
 
 public class ResolvingSubstitutionMap implements Map<String, Expr> {
 	private final Map<String, Expr> map = new HashMap<>();
 	private final Deque<String> stack = new ArrayDeque<>();
 
 	public Expr resolve(Expr e) {
-		if (e instanceof IdExpr) {
-			IdExpr eid = (IdExpr) e;
-			return resolve(eid.id);
+		if (e == null) {
+			return null;
 		}
-		return e;
+
+		return e.accept(new ExprMapVisitor() {
+			@Override
+			public Expr visit(IdExpr e) {
+				Expr eResolved = resolve(e.id);
+				return eResolved != null ? eResolved : e;
+			}
+		});
 	}
 
 	public Expr resolve(String id) {
