@@ -3,6 +3,7 @@ package jkind.translation;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.translation.compound.FlattenCompoundTypes;
+import jkind.translation.inline.InlineEquations;
 import jkind.translation.tuples.FlattenTuples;
 
 public class Translate {
@@ -14,10 +15,10 @@ public class Translate {
 		Node main = InlineNodeCalls.program(program);
 		main = FlattenTuples.node(main);
 		main = FlattenCompoundTypes.node(main);
-		main = InlineSimpleEquations.node(main);
+		//main = InlineSimpleEquations.node(main);
 		main = InlineEquations.node(main);
-//		System.out.println(main);
-//		System.exit(0);
+		//System.out.println(main);
+		//System.exit(0);
 		main = FlattenPres.node(main);
 		return main;
 	}

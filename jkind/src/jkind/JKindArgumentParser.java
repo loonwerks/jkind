@@ -3,6 +3,8 @@ package jkind;
 import java.util.Arrays;
 import java.util.List;
 
+import jkind.translation.inline.InlineEquations;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -97,7 +99,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 
 		if (line.hasOption(N)) {
-			settings.n = parseNonnegativeInt(line.getOptionValue(N));
+			InlineEquations.MAX_COST = parseNonnegativeInt(line.getOptionValue(N));
+			//settings.n = parseNonnegativeInt(line.getOptionValue(N));
 		}
 
 		if (line.hasOption(PDR_MAX)) {
