@@ -128,13 +128,18 @@ public class Kind2WebInputStream extends InputStream {
 	}
 
 	private String getJobId(InputStream is) throws IOException {
-		Pattern pattern = Pattern.compile(".*jobid=\"(.*?)\".*");
+		Pattern jobIdPattern = Pattern.compile(".*jobid=\"(.*?)\".*");
+		Pattern abortPattern = Pattern.compile(".*msg=\"aborted\">(.*?)</.*");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line;
 		while ((line = reader.readLine()) != null) {
-			Matcher match = pattern.matcher(line);
+			Matcher match = jobIdPattern.matcher(line);
 			if (match.matches()) {
 				return match.group(1);
+			}
+			match = abortPattern.matcher(line);
+			if (match.matches()) {
+				throw new JKindException("Kind2 server aborted job: " + match.group(1));
 			}
 		}
 		throw new JKindException("Failed to receive job id from " + baseUri);
