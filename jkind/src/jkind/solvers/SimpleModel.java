@@ -15,11 +15,11 @@ public class SimpleModel extends Model {
 		super(Collections.emptyMap());
 	}
 
-	public void addValue(StreamIndex si, Value value) {
+	public void putValue(StreamIndex si, Value value) {
 		values.put(si.getEncoded().str, value);
 	}
 
-	public void addValue(String encoded, Value value) {
+	public void putValue(String encoded, Value value) {
 		values.put(encoded, value);
 	}
 

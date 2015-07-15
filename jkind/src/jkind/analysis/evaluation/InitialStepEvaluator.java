@@ -29,7 +29,7 @@ public class InitialStepEvaluator extends Evaluator {
 		for (VarDecl input : node.inputs) {
 			values.put(input.id, null);
 		}
-		
+
 		for (Equation eq : node.equations) {
 			equations.put(eq.lhs.get(0).id, eq.expr);
 		}
@@ -41,15 +41,15 @@ public class InitialStepEvaluator extends Evaluator {
 		} else if (evalStack.contains(id)) {
 			return null;
 		}
-		
+
 		evalStack.push(id);
 		Value value = equations.get(id).accept(this);
 		values.put(id, value);
 		evalStack.pop();
-		
+
 		return value;
 	}
-	
+
 	@Override
 	public Value visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {

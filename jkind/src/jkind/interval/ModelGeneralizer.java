@@ -122,7 +122,7 @@ public class ModelGeneralizer {
 			Interval value = entry.getValue();
 
 			if (!value.isArbitrary()) {
-				model.addValue(si, value);
+				model.putValue(si, value);
 			}
 		}
 		return model;

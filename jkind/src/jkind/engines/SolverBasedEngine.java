@@ -54,7 +54,7 @@ public abstract class SolverBasedEngine extends Engine {
 	protected void initializeSolver() {
 		solver = getSolver();
 		solver.initialize();
-		solver.define(spec.transitionRelation);
+		solver.define(spec.getTransitionRelation());
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}
 
@@ -132,7 +132,7 @@ public abstract class SolverBasedEngine extends Engine {
 		args.add(init);
 		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
 		args.addAll(getSymbols(getOffsetVarDecls(k)));
-		return new Cons(spec.transitionRelation.getName(), args);
+		return new Cons(spec.getTransitionRelation().getName(), args);
 	}
 
 	private List<Sexp> getSymbols(List<VarDecl> varDecls) {

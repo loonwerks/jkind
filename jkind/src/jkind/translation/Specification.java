@@ -5,18 +5,25 @@ import java.util.Map;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.slicing.DependencyMap;
+import jkind.slicing.LustreSlicer;
 import jkind.util.Util;
 
 public class Specification {
 	public final Node node;
 	public final DependencyMap dependencyMap;
 	public final Map<String, Type> typeMap;
-	public final Relation transitionRelation;
+	private Relation transitionRelation;
 
-	public Specification(Node node, DependencyMap dependencyMap) {
-		this.node = node;
-		this.dependencyMap = dependencyMap;
+	public Specification(Node raw) {
+		this.dependencyMap = new DependencyMap(raw, raw.properties);
+		this.node = LustreSlicer.slice(raw, dependencyMap);
 		this.typeMap = Util.getTypeMap(node);
-		this.transitionRelation = Lustre2Sexp.constructTransitionRelation(node);
+	}
+
+	public Relation getTransitionRelation() {
+		if (transitionRelation == null) {
+			transitionRelation = Lustre2Sexp.constructTransitionRelation(node);
+		}
+		return transitionRelation;
 	}
 }

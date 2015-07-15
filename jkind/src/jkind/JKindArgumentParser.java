@@ -130,6 +130,9 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(INTERVAL)) {
 			settings.intervalGeneralization = true;
+			
+			/** Reconstruction of inlined values does not yet support interval generalization */
+			settings.inline = false;
 		}
 
 		if (line.hasOption(SOLVER)) {

@@ -96,7 +96,7 @@ public class SmtInterpolSolver extends Solver {
 			Type type = entry.getValue();
 			Term evaluated = model.evaluate(script.term(name));
 			Value value = SmtInterpolUtil.getValue(evaluated, type);
-			result.addValue(name, value);
+			result.putValue(name, value);
 		}
 		return result;
 	}

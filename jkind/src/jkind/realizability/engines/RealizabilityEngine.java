@@ -33,8 +33,8 @@ public abstract class RealizabilityEngine implements Runnable {
 	// make it volatile
 	protected volatile Throwable throwable;
 
-	public RealizabilityEngine(String name, Specification spec, JRealizabilitySettings settings,
-			RealizabilityDirector director) {
+	public RealizabilityEngine(String name, Specification spec,
+			JRealizabilitySettings settings, RealizabilityDirector director) {
 		this.name = name;
 		this.spec = spec;
 		this.settings = settings;
@@ -61,7 +61,7 @@ public abstract class RealizabilityEngine implements Runnable {
 	protected void initializeSolver() {
 		solver = new Z3Solver(getScratchBase(), LinearChecker.isLinear(spec.node));
 		solver.initialize();
-		solver.define(spec.transitionRelation);
+		solver.define(spec.getTransitionRelation());
 	}
 
 	protected String getScratchBase() {
@@ -117,7 +117,7 @@ public abstract class RealizabilityEngine implements Runnable {
 		args.add(init);
 		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
 		args.addAll(getSymbols(getOffsetVarDecls(k)));
-		return new Cons(spec.transitionRelation.getName(), args);
+		return new Cons(spec.getTransitionRelation().getName(), args);
 	}
 
 	protected Sexp getTransition(int k, boolean init) {

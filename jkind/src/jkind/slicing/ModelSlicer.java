@@ -10,7 +10,7 @@ public class ModelSlicer {
 		for (String var : original.getVariableNames()) {
 			StreamIndex si = StreamIndex.decode(var);
 			if (si != null && keep.contains(si.getStream())) {
-				sliced.addValue(si, original.getValue(var));
+				sliced.putValue(si, original.getValue(var));
 			}
 		}
 		return sliced;

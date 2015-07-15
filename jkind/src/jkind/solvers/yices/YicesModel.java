@@ -8,6 +8,7 @@ import java.util.Set;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
+import jkind.util.Util;
 
 public class YicesModel extends Model {
 	private final Map<String, String> aliases = new HashMap<>();
@@ -37,7 +38,7 @@ public class YicesModel extends Model {
 	public Value getValue(String name) {
 		Value value = values.get(getAlias(name));
 		if (value == null) {
-			return getDefaultValue(varTypes.get(name));
+			return Util.getDefaultValue(varTypes.get(name));
 		} else {
 			return value;
 		}

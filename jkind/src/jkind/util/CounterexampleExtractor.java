@@ -1,7 +1,5 @@
 package jkind.util;
 
-import java.util.Map;
-
 import jkind.lustre.EnumType;
 import jkind.lustre.Type;
 import jkind.lustre.values.EnumValue;
@@ -10,15 +8,20 @@ import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.solvers.Model;
+import jkind.translation.Specification;
 
 public class CounterexampleExtractor {
-	private final Map<String, Type> typeMap;
-
-	public CounterexampleExtractor(Map<String, Type> typeMap) {
-		this.typeMap = typeMap;
+	public static Counterexample extract(Specification spec, int k, Model model) {
+		return new CounterexampleExtractor(spec).extractCounterexample(k, model);
 	}
 	
-	public Counterexample extractCounterexample(int k, Model model) {
+	private final Specification spec;
+
+	private CounterexampleExtractor(Specification spec) {
+		this.spec = spec;
+	}
+
+	private Counterexample extractCounterexample(int k, Model model) {
 		Counterexample cex = new Counterexample(k);
 		for (String var : model.getVariableNames()) {
 			StreamIndex si = StreamIndex.decode(var);
@@ -30,14 +33,14 @@ public class CounterexampleExtractor {
 		}
 		return cex;
 	}
-
+	
 	private boolean isInternal(String stream) {
 		return stream.startsWith("%");
 	}
-
+	
 	private Value convert(String base, Value value) {
-		Type type = typeMap.get(base);
-		if (type instanceof EnumType) {
+		Type type = spec.typeMap.get(base);
+		if (type instanceof EnumType && value != null) {
 			EnumType et = (EnumType) type;
 			IntegerValue iv = (IntegerValue) value;
 			return new EnumValue(et.values.get(iv.value.intValue()));

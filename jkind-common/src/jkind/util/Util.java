@@ -204,6 +204,10 @@ public class Util {
 		return enums;
 	}
 
+	public static Value getDefaultValue(Type type) {
+		return type.accept(new DefaultValueVisitor());
+	}
+
 	public static Value cast(Type type, Value value) {
 		if (type == NamedType.REAL && value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;

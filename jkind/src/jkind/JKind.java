@@ -5,8 +5,7 @@ import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
-import jkind.slicing.DependencyMap;
-import jkind.slicing.LustreSlicer;
+import jkind.translation.InlineSimpleEquations;
 import jkind.translation.Specification;
 import jkind.translation.Translate;
 
@@ -25,14 +24,23 @@ public class JKind {
 			}
 
 			Node main = Translate.translate(program);
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
-			main = LustreSlicer.slice(main, dependencyMap);
-			Specification spec = new Specification(main, dependencyMap);
-			new Director(settings, spec).run();
+			Specification userSpec = new Specification(main);
+			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
+
+			new Director(settings, userSpec, analysisSpec).run();
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		}
+	}
+
+	private static Specification getAnalysisSpec(Specification userSpec, JKindSettings settings) {
+		if (settings.inline) {
+			Node inlined = InlineSimpleEquations.node(userSpec.node);
+			return new Specification(inlined);
+		} else {
+			return userSpec;
 		}
 	}
 }

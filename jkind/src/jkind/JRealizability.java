@@ -8,8 +8,6 @@ import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.realizability.engines.RealizabilityDirector;
-import jkind.slicing.DependencyMap;
-import jkind.slicing.LustreSlicer;
 import jkind.translation.Specification;
 import jkind.translation.Translate;
 import jkind.util.Util;
@@ -25,9 +23,7 @@ public class JRealizability {
 			checkRealizablitityQuery(program);
 
 			Node main = Translate.translate(program);
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
-			main = LustreSlicer.slice(main, dependencyMap);
-			Specification spec = new Specification(main, dependencyMap);
+			Specification spec = new Specification(main);
 			new RealizabilityDirector(settings, spec).run();
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
