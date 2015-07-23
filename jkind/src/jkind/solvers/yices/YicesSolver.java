@@ -1,6 +1,5 @@
 package jkind.solvers.yices;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +35,13 @@ public class YicesSolver extends ProcessBasedSolver {
 	private final boolean arithOnly;
 
 	public YicesSolver(String scratchBase, boolean arithOnly) {
-		super(scratchBase, new ProcessBuilder(getYices()));
+		super(scratchBase);
 		this.arithOnly = arithOnly;
 	}
 
-	private static String getYices() {
-		String home = System.getenv("YICES_HOME");
-		if (home != null) {
-			return new File(new File(home, "bin"), "yices").toString();
-		}
-		return "yices";
+	@Override
+	protected String getSolverName() {
+		return "Yices";
 	}
 
 	@Override

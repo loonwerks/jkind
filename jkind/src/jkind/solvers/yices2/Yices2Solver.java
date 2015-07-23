@@ -13,7 +13,22 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Yices2Solver extends SmtLib2Solver {
 	public Yices2Solver(String scratchBase) {
-		super(scratchBase, new ProcessBuilder("yices-smt2", "--incremental"), "Yices2");
+		super(scratchBase);
+	}
+
+	@Override
+	protected String getSolverName() {
+		return "Yices2";
+	}
+
+	@Override
+	protected String getSolverExecutable() {
+		return "yices-smt2";
+	}
+
+	@Override
+	protected String[] getSolverOptions() {
+		return new String[] { "--incremental" };
 	}
 
 	@Override
@@ -33,7 +48,7 @@ public class Yices2Solver extends SmtLib2Solver {
 		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			throw new JKindException("Error parsing " + name + " output: " + string);
+			throw new JKindException("Error parsing " + getSolverName() + " output: " + string);
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
