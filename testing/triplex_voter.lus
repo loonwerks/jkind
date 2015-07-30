@@ -1,0 +1,107 @@
+-- Triplex voter example
+-- Translated by Lucas Wagner
+-- All properties are valid
+
+const DT : real = 0.2;
+const MAX_ERROR : real = 0.15;
+const LIMIT_EQUALIZATION = 0.5;
+const LIMIT_CENTERING = 0.25;
+
+node middleValue(a, b, c : real) returns (out : real);
+let
+  out = if a < b then
+          if b < c then b
+          else if c < a then a
+          else c
+        else
+          if a < c then a
+          else if c < b then b
+          else c;
+tel;
+
+node saturation(lower_limit, upper_limit, signal : real) returns (out : real);
+let
+  out = if signal < lower_limit then lower_limit
+        else if signal > upper_limit then upper_limit
+        else signal;
+tel;
+
+node abs(a : real) returns (out : real);
+let
+  out = if a >= 0.0 then a else -a;
+tel;
+
+node equalization(centering_value, equalized_value, output_value : real) returns (equalization_value : real);
+var
+  sum1, sum2 : real;
+  sat1, sat2 : real;
+let
+  sum1 = equalized_value - output_value;
+  sat1 = saturation(-LIMIT_EQUALIZATION, LIMIT_EQUALIZATION, sum1);
+  sat2 = saturation(-LIMIT_CENTERING, LIMIT_CENTERING, centering_value);
+  sum2 = sat1 - sat2;
+  equalization_value = sum2 * DT + (0.0 -> pre equalization_value);
+tel;
+
+node equalized(signal, equalization : real) returns (equalized_value : real);
+let
+  equalized_value = signal - equalization;
+tel;
+
+node voter(signal : real; errorA : real; errorB : real; errorC : real) returns (output : real; difference : real);
+var
+  sensedA, sensedB, sensedC : real;
+  equalizedA, equalizedB, equalizedC : real;
+  equalizationA, equalizationB, equalizationC : real;
+  pre_output : real;
+  centering : real;
+  pre_equalizedA, pre_equalizedB, pre_equalizedC : real;
+
+  lemmaA, lemmaB, lemmaC : bool;
+  ok1, ok2, ok3, ok4, ok5 : bool;
+let
+  sensedA = signal + errorA;
+  sensedB = signal + errorB;
+  sensedC = signal + errorC;
+
+  centering = 0.0 -> pre middleValue(equalizationA, equalizationB, equalizationC);
+  pre_output = 0.0 -> pre output;
+   
+  pre_equalizedA = 0.0 -> pre equalizedA;
+  pre_equalizedB = 0.0 -> pre equalizedB;
+  pre_equalizedC = 0.0 -> pre equalizedC;
+   
+  equalizationA = equalization(centering, pre_equalizedA, pre_output);
+  equalizationB = equalization(centering, pre_equalizedB, pre_output);
+  equalizationC = equalization(centering, pre_equalizedC, pre_output);
+   
+  equalizedA = sensedA - equalizationA;
+  equalizedB = sensedB - equalizationB;
+  equalizedC = sensedC - equalizationC;
+   
+  output = middleValue(equalizedA, equalizedB, equalizedC);
+  difference = output - signal;
+   
+  assert abs(errorA) <= MAX_ERROR;
+  assert abs(errorB) <= MAX_ERROR;
+  assert abs(errorC) <= MAX_ERROR;
+   
+  lemmaA = abs(equalizedA - sensedA) < 2.0 * MAX_ERROR;
+  lemmaB = abs(equalizedB - sensedB) < 2.0 * MAX_ERROR;
+  lemmaC = abs(equalizedC - sensedC) < 2.0 * MAX_ERROR;
+  --%PROPERTY lemmaA;
+  --%PROPERTY lemmaB;
+  --%PROPERTY lemmaC;
+
+  ok1 = abs(difference) < abs(MAX_ERROR * 3.0);
+  --%PROPERTY ok1;
+  ok2 = abs(difference) < abs(MAX_ERROR * 2.6);
+  --%PROPERTY ok2;
+  ok3 = abs(difference) < abs(MAX_ERROR * 2.45);
+  --%PROPERTY ok3;
+  ok4 = abs(difference) < abs(MAX_ERROR * 2.35);
+  --%PROPERTY ok4;
+  ok5 = abs(difference) < abs(MAX_ERROR * 2.3);
+  --%PROPERTY ok5;
+tel;
+
