@@ -21,12 +21,15 @@ import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 
 public class ModelReconstructionEvaluator extends Evaluator {
-	public static Model reconstruct(Specification spec, Model model, String property, int k) {
-		return new ModelReconstructionEvaluator(spec, model).reconstructValues(property, k);
+	public static Model reconstruct(Specification spec, Model model, String property, int k,
+			boolean concrete) {
+		return new ModelReconstructionEvaluator(spec, model, concrete).reconstructValues(property,
+				k);
 	}
 
 	private final Specification spec;
 	private final Model original;
+	private final boolean concrete;
 	private final SimpleModel full;
 
 	private final Map<String, Expr> equations = new HashMap<>();
@@ -34,9 +37,10 @@ public class ModelReconstructionEvaluator extends Evaluator {
 
 	private int step;
 
-	private ModelReconstructionEvaluator(Specification spec, Model original) {
+	private ModelReconstructionEvaluator(Specification spec, Model original, boolean concrete) {
 		this.spec = spec;
 		this.original = original;
+		this.concrete = concrete;
 		this.full = new SimpleModel();
 
 		for (Equation eq : spec.node.equations) {
@@ -79,7 +83,8 @@ public class ModelReconstructionEvaluator extends Evaluator {
 			}
 
 			if (prev != null && value != null && !prev.equals(value)) {
-				throw new IllegalStateException("Internal JKind error: evaluation did not match model");
+				throw new IllegalStateException(
+						"Internal JKind error: evaluation did not match model");
 			}
 		}
 		full.putValue(si, value);
@@ -100,6 +105,11 @@ public class ModelReconstructionEvaluator extends Evaluator {
 	@Override
 	public Value visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
+			if (!concrete) {
+				// Inductive counterexamples never reach the true initial step
+				return e.right.accept(this);
+			}
+
 			if (step == 0) {
 				return e.left.accept(this);
 			} else {

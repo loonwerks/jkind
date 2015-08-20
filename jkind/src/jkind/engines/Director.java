@@ -306,7 +306,7 @@ public class Director extends MessageHandler {
 		for (String invalidProp : newInvalid) {
 			Model slicedModel = ModelSlicer.slice(im.model,
 					analysisSpec.dependencyMap.get(invalidProp));
-			Counterexample cex = extractCounterexample(invalidProp, im.length, slicedModel);
+			Counterexample cex = extractCounterexample(invalidProp, im.length, slicedModel, true);
 			writer.writeInvalid(invalidProp, im.source, cex, Collections.emptyList(), runtime);
 		}
 	}
@@ -451,15 +451,16 @@ public class Director extends MessageHandler {
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
 			Model slicedModel = ModelSlicer.slice(icm.model, analysisSpec.dependencyMap.get(prop));
-			result.put(prop, extractCounterexample(prop, icm.length, slicedModel));
+			result.put(prop, extractCounterexample(prop, icm.length, slicedModel, false));
 		}
 
 		return result;
 	}
 
-	private Counterexample extractCounterexample(String property, int k, Model model) {
+	private Counterexample extractCounterexample(String property, int k, Model model,
+			boolean concrete) {
 		if (settings.inline) {
-			model = ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k);
+			model = ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
 		}
 		return CounterexampleExtractor.extract(userSpec, k, model);
 	}
