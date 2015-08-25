@@ -83,7 +83,8 @@ public class Kind2WebInputStream extends InputStream {
 			// kind param
 			writer.append("--" + boundary).append(CRLF);
 			writer.append("Content-Disposition: form-data; name=\"kind\"").append(CRLF);
-			writer.append(CRLF).append("kind2").append(CRLF).flush();
+//			writer.append(CRLF).append("kind2").append(CRLF).flush();
+			writer.append(CRLF).append("kind2-contracts").append(CRLF).flush();
 
 			// arg param
 			for (String arg : args) {

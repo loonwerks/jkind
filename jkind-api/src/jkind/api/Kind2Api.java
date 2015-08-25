@@ -35,6 +35,7 @@ public class Kind2Api extends KindApi {
 	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
 		program = WorkaroundKind2RecordAccess.program(program);
 		program = WorkaroundKind2ForwardReference.program(program);
+		//System.out.println(program.toString());
 		execute(program.toString(), result, monitor);
 	}
 	
@@ -104,7 +105,8 @@ public class Kind2Api extends KindApi {
 
 	private ProcessBuilder getKind2ProcessBuilder(File lustreFile) {
 		List<String> args = new ArrayList<>();
-		args.add("kind2");
+		args.add("kind2-contracts");
+//		args.add("kind2");
 		args.addAll(getArgs());
 		args.add(lustreFile.toString());
 
