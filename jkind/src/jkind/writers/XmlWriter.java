@@ -25,7 +25,7 @@ public class XmlWriter extends Writer {
 		if (useStdout) {
 			this.out = new PrintWriter(System.out, true);
 		} else {
-			this.out = new PrintWriter(new FileOutputStream(filename), true);
+			this.out = new PrintWriter(new FileOutputStream(filename));
 		}
 		this.types = types;
 	}
@@ -39,6 +39,7 @@ public class XmlWriter extends Writer {
 	@Override
 	public void end() {
 		out.println("</Results>");
+		out.close();
 	}
 
 	@Override
@@ -58,6 +59,7 @@ public class XmlWriter extends Writer {
 			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 		}
 		out.println("  </Property>");
+		out.flush();
 	}
 
 	private String escape(Expr invariant) {
@@ -73,6 +75,7 @@ public class XmlWriter extends Writer {
 		writeCounterexample(cex);
 		writeConflicts(conflicts);
 		out.println("  </Property>");
+		out.flush();
 	}
 
 	private void writeConflicts(List<String> conflicts) {
@@ -97,6 +100,7 @@ public class XmlWriter extends Writer {
 			writeCounterexample(cex);
 		}
 		out.println("  </Property>");
+		out.flush();
 	}
 
 	private void writeCounterexample(Counterexample cex) {
@@ -156,5 +160,6 @@ public class XmlWriter extends Writer {
 			out.println("    <PropertyProgress name=\"" + prop + "\"/>");
 		}
 		out.println("  </Progress>");
+		out.flush();
 	}
 }
