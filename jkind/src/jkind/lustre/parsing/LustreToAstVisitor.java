@@ -26,6 +26,9 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
+import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NamedType;
@@ -40,6 +43,7 @@ import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -65,6 +69,9 @@ import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
 import jkind.lustre.parsing.LustreParser.IdExprContext;
 import jkind.lustre.parsing.LustreParser.IfThenElseExprContext;
+import jkind.lustre.parsing.LustreParser.InductDataExprContext;
+import jkind.lustre.parsing.LustreParser.InductTermContext;
+import jkind.lustre.parsing.LustreParser.InductTypeContext;
 import jkind.lustre.parsing.LustreParser.IntExprContext;
 import jkind.lustre.parsing.LustreParser.IntTypeContext;
 import jkind.lustre.parsing.LustreParser.LhsContext;
@@ -279,6 +286,36 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 				values.add(node.getText());
 			}
 			return new EnumType(loc(ctx), id, values);
+		} else if (ctx instanceof InductTypeContext){
+			InductTypeContext ictx = (InductTypeContext) ctx;
+			List<TypeConstructor> typeConstructors = new ArrayList<>();
+			for (InductTermContext term : ictx.inductTerm()){
+				String constrName = term.ID(0).getText();
+				List<InductTypeElement> elements = new ArrayList<>();
+				for(int i = 1; i < term.ID().size(); i++){
+					String elName = term.ID(i).getText();
+					String elTypeName = term.type(i-1).getText();
+					Type elType;
+					
+					switch(elTypeName){
+					case "int":
+						elType = NamedType.INT;
+						break;
+					case "real":
+						elType = NamedType.REAL;
+						break;
+					case "bool":
+						elType = NamedType.BOOL;
+						break;
+					default:
+						elType = new NamedType(elTypeName);
+					}
+					
+					elements.add(new InductTypeElement(elName, elType));
+				}
+				typeConstructors.add(new TypeConstructor(constrName, elements));
+			}
+			return new InductType(id, typeConstructors);
 		} else {
 			throw new IllegalArgumentException(ctx.getClass().getSimpleName());
 		}
@@ -496,6 +533,15 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	@Override
 	public String visitRecordEID(RecordEIDContext ctx) {
 		return visit(ctx.eID()) + "." + ctx.ID().getText();
+	}
+	
+	@Override
+	public Expr visitInductDataExpr(InductDataExprContext ctx){
+		List<Expr> args = new ArrayList<>();
+		for(ExprContext expCtx : ctx.expr()){
+			args.add(expr(expCtx));
+		}
+		return new InductDataExpr(ctx.ID().getText(), args);
 	}
 
 	private static Location loc(ParserRuleContext ctx) {

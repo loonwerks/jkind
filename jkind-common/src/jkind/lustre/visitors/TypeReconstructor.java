@@ -18,6 +18,9 @@ import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
+import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
@@ -32,6 +35,7 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.TupleType;
 import jkind.lustre.Type;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
@@ -44,17 +48,35 @@ import jkind.util.Util;
  */
 public class TypeReconstructor implements ExprVisitor<Type> {
 	private final Map<String, Type> typeTable = new HashMap<>();
+	private final Map<String, Type> inductDataTable = new HashMap<>();
 	private final Map<String, Type> constantTable = new HashMap<>();
 	private final Map<String, Expr> constantDefinitionTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable = new HashMap<>();
+	private final String CONSTRUCTOR_PREDICATE_PREFIX = "is_";
 
 	public TypeReconstructor(Program program) {
 		populateTypeTable(program.types);
+		populateInductDataTable(program.types);
 		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
 		nodeTable.putAll(Util.getNodeTable(program.nodes));
+	}
+
+	private void populateInductDataTable(List<TypeDef> typeDefs) {
+		for(TypeDef typeDef : typeDefs){
+			if(typeDef.type instanceof InductType){
+				InductType inductType = (InductType)typeDef.type;
+				for(TypeConstructor constructor : inductType.constructors){
+					inductDataTable.put(constructor.name, inductType);
+					inductDataTable.put(CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, NamedType.BOOL);
+					for(InductTypeElement element : constructor.elements){
+						inductDataTable.put(element.name, element.type);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -277,5 +299,10 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 				}
 			}
 		});
+	}
+
+	@Override
+	public Type visit(InductDataExpr e) {
+		return inductDataTable.get(e.name);
 	}
 }

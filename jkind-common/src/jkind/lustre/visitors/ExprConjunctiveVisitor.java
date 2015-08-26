@@ -12,6 +12,7 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
@@ -107,6 +108,11 @@ public class ExprConjunctiveVisitor implements ExprVisitor<Boolean> {
 		return e.expr.accept(this);
 	}
 
+	@Override
+	public Boolean visit(InductDataExpr e) {
+		return visitExprs(e.args);
+	}
+	
 	private Boolean visitExprs(Collection<Expr> list) {
 		for (Expr e : list) {
 			if (!e.accept(this)) {

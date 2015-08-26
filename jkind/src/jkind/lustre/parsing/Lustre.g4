@@ -22,6 +22,11 @@ varDeclGroup: eID (',' eID)* ':' type;
 topLevelType: type                                       # plainType
     | 'struct' '{' (ID ':' type) (';' ID ':' type)* '}'  # recordType
     | 'enum' '{' ID (',' ID)* '}'                        # enumType
+    | 'induct' '{' inductTerm ('|' inductTerm)* '}' #inductType 
+    ;
+
+inductTerm: 
+  ID ('(' ID type ')')*
     ;
 
 type: 'int'                                              # intType
@@ -76,6 +81,7 @@ expr: ID                                                       # idExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
+    | '(' ID expr (expr)* ')'                                  # inductDataExpr
     | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 

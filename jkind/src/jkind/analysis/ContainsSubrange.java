@@ -2,6 +2,7 @@ package jkind.analysis;
 
 import jkind.lustre.ArrayType;
 import jkind.lustre.EnumType;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
@@ -48,5 +49,11 @@ public class ContainsSubrange implements TypeVisitor<Boolean> {
 	@Override
 	public Boolean visit(SubrangeIntType e) {
 		return true;
+	}
+
+	@Override
+	public Boolean visit(InductType inductType) {
+		// TODO I do not think think we will ever allow subranges in inductive types
+		return false;
 	}
 }

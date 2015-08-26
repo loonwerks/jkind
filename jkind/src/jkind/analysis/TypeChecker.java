@@ -426,6 +426,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private List<Type> visitNodeCallExpr(NodeCallExpr e) {
 		Node node = nodeTable.get(e.node);
 		if (node == null) {
+			
 			error(e, "unknown node " + e.node);
 			return null;
 		}

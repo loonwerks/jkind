@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jkind.JKindException;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
+import jkind.lustre.InductType;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.RealExpr;
@@ -74,5 +76,10 @@ public class DefaultValueVisitor implements TypeVisitor<Expr> {
 	@Override
 	public Expr visit(SubrangeIntType e) {
 		return new IntExpr(e.low);
+	}
+
+	@Override
+	public Expr visit(InductType inductType) {
+		throw new JKindException("We need to implement default values for inductive types");
 	}
 }

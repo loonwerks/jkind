@@ -2,6 +2,7 @@ package jkind.lustre.visitors;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
@@ -121,6 +123,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 		return new UnaryExpr(e.location, e.op, e.expr.accept(this));
 	}
 
+	@Override
+	public Expr visit(InductDataExpr e) {
+		return new InductDataExpr(e.location, e.name, visitExprs(e.args));
+	}
+	
 	protected List<Expr> visitExprs(List<? extends Expr> es) {
 		return map(e -> e.accept(this), es);
 	}
@@ -128,4 +135,5 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	protected <A, B> List<B> map(Function<? super A, ? extends B> f, List<A> xs) {
 		return xs.stream().map(f).collect(toList());
 	}
+
 }

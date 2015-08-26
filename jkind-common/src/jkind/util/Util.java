@@ -9,19 +9,24 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.EnumType;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
@@ -61,6 +66,20 @@ public class Util {
 			nodeTable.put(node.id, node);
 		}
 		return nodeTable;
+	}
+	
+	public static Set<String> getTypeNodeTable(List<TypeDef> typeDefs) {
+		Set<String> nodeCalls = new HashSet<>();
+		for(TypeDef type : typeDefs){
+			if(type.type instanceof InductType){
+				InductType inductType = (InductType)type.type;
+				for(TypeConstructor constructor : inductType.constructors){
+					
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	/*

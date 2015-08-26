@@ -2,6 +2,7 @@ package jkind.lustre.visitors;
 
 import jkind.lustre.ArrayType;
 import jkind.lustre.EnumType;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -61,5 +62,11 @@ public class TypeIterVisitor implements TypeVisitor<Void> {
 				decl.type.accept(this);
 			}
 		}
+	}
+
+	@Override
+	public Void visit(InductType inductType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

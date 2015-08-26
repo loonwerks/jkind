@@ -2,6 +2,7 @@ package jkind.lustre.visitors;
 
 import jkind.lustre.ArrayType;
 import jkind.lustre.EnumType;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.RecordType;
 import jkind.lustre.SubrangeIntType;
@@ -14,4 +15,5 @@ public interface TypeVisitor<T> {
 	public T visit(RecordType e);
 	public T visit(TupleType e);
 	public T visit(SubrangeIntType e);
+	public T visit(InductType inductType);
 }

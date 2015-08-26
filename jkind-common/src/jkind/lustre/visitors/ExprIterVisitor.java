@@ -12,6 +12,7 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
@@ -129,10 +130,17 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 		return null;
 	}
 
+	@Override
+	public Void visit(InductDataExpr e) {
+		visitExprs(e.args);
+		return null;
+	}
+	
 	protected Void visitExprs(Collection<Expr> list) {
 		for (Expr e : list) {
 			e.accept(this);
 		}
 		return null;
 	}
+
 }

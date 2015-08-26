@@ -2,6 +2,7 @@ package jkind.lustre.visitors;
 
 import static java.util.stream.Collectors.joining;
 
+import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -20,6 +21,9 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
+import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
@@ -32,6 +36,7 @@ import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -122,6 +127,18 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 				if (iterator.hasNext()) {
 					write(", ");
 				}
+			}
+			write("}");
+		} else if (type instanceof InductType){
+			InductType inductType = (InductType) type;
+			write("induct {");
+			String constructDelim = "";
+			for(TypeConstructor constructor : inductType.constructors){
+				write(constructDelim + constructor.name);
+				for(InductTypeElement element : constructor.elements){
+					write(" ("+element.name+" "+element.type+")");
+				}
+				constructDelim = " | ";
 			}
 			write("}");
 		} else {
@@ -481,5 +498,16 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			newline();
 		}
 		return null;
+	}
+
+	@Override
+	public Void visit(InductDataExpr e) {
+		write("("+e.name);
+		for(Expr arg : e.args){
+			write(" ");
+			expr(arg);
+		}
+		write(")");
+        return null;
 	}
 }

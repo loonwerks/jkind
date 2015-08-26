@@ -15,6 +15,7 @@ import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
@@ -179,6 +180,11 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 			return null;
 		}
 		return value.applyUnaryOp(e.op);
+	}
+	
+	@Override
+	public Value visit(InductDataExpr e) {
+		return null;
 	}
 
 	private List<Value> visitExprs(List<Expr> es) {
