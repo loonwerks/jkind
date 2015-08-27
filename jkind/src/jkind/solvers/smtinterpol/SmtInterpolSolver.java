@@ -17,6 +17,7 @@ import jkind.solvers.Solver;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.Relation;
+import jkind.translation.Specification;
 import de.uni_freiburg.informatik.ultimate.logic.Logics;
 import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
@@ -32,7 +33,7 @@ public class SmtInterpolSolver extends Solver {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(Specification spec) {
 		script.setLogic(Logics.QF_UFLIRA);
 		script.setOption(":verbosity", 2);
 	}

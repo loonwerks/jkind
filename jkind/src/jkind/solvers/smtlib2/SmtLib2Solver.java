@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
@@ -74,7 +77,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		send(new Cons("define-fun", new Symbol(relation.getName()), inputs(relation.getInputs()),
 				type(NamedType.BOOL), relation.getBody()));
 	}
-
+	
 	private Sexp inputs(List<VarDecl> inputs) {
 		List<Sexp> args = new ArrayList<>();
 		for (VarDecl vd : inputs) {

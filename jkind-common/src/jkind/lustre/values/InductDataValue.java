@@ -11,9 +11,9 @@ import jkind.lustre.UnaryOp;
 public class InductDataValue extends Value{
 
 	public final List<Value> argValues;
-	public final TypeConstructor constructor;
-	public InductDataValue(TypeConstructor constructor, List<Value> argValues){
-		this.constructor = constructor;
+	public final String name;
+	public InductDataValue(String name, List<Value> argValues){
+		this.name = name;
 		this.argValues = Collections.unmodifiableList(argValues);
 	}
 	
@@ -33,7 +33,7 @@ public class InductDataValue extends Value{
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		str.append("(");
-		str.append(constructor.name);
+		str.append(name);
 		for(Value argVal : argValues){
 			str.append(" ");
 			str.append(argVal);
@@ -51,7 +51,7 @@ public class InductDataValue extends Value{
 	public boolean equals(Object obj) {
 		if (obj instanceof InductDataValue) {
 			InductDataValue other = (InductDataValue) obj;
-			if(!this.constructor.name.equals(other.constructor.name)){
+			if(!this.name.equals(other.name)){
 				return false;
 			}
 			return argValues.equals(other.argValues);

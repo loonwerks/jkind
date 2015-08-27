@@ -3,12 +3,15 @@ package jkind.engines;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.analysis.LinearChecker;
 import jkind.analysis.YicesArithOnlyCheck;
 import jkind.lustre.Expr;
+import jkind.lustre.InductType;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
+import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.sexp.Cons;
@@ -53,7 +56,12 @@ public abstract class SolverBasedEngine extends Engine {
 
 	protected void initializeSolver() {
 		solver = getSolver();
-		solver.initialize();
+		
+		if(spec.containsInductiveDataTypes() && !(solver instanceof Cvc4Solver)){
+			throw new JKindException("The model contains inductive datatypes. CVC4 must be used"); 
+		}
+		
+		solver.initialize(spec);
 		solver.define(spec.transitionRelation);
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}

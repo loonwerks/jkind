@@ -15,6 +15,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
@@ -222,5 +223,15 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		default:
 			return new Cons(e.op.toString(), e.expr.accept(this));
 		}
+	}
+
+	@Override
+	public Sexp visit(InductDataExpr e) {
+		// TODO Auto-generated method stub
+		List<Sexp> args = new ArrayList<>();
+		for(Expr expr : e.args){
+			args.add(expr.accept(this));
+		}
+		return new Cons(e.name, args);
 	}
 }

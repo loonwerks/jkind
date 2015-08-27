@@ -26,6 +26,7 @@ import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.InductDataValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
@@ -184,7 +185,8 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 	
 	@Override
 	public Value visit(InductDataExpr e) {
-		return null;
+		List<Value> elements = visitExprs(e.args);
+		return new InductDataValue(e.name, elements);
 	}
 
 	private List<Value> visitExprs(List<Expr> es) {

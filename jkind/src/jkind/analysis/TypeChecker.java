@@ -24,6 +24,9 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
+import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NamedType;
@@ -39,6 +42,7 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.TupleType;
 import jkind.lustre.Type;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
@@ -48,16 +52,20 @@ import jkind.util.Util;
 public class TypeChecker implements ExprVisitor<Type> {
 	private final Map<String, Type> typeTable = new HashMap<>();
 	private final Map<String, Type> constantTable = new HashMap<>();
+	private final Map<String, Type> inductDataTableReturn = new HashMap<>();
+	private final Map<String, List<Type>> inductDataTableInput = new HashMap<>();
 	private final Map<String, Constant> constantDefinitionTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable;
+
 	private boolean passed;
 
 	private TypeChecker(Program program) {
 		this.nodeTable = Util.getNodeTable(program.nodes);
 		this.passed = true;
 
+		populateInductDataTable(program.types);
 		populateTypeTable(program.types);
 		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
@@ -74,6 +82,25 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return passed;
 	}
 
+	private void populateInductDataTable(List<TypeDef> typeDefs) {
+		for(TypeDef typeDef : typeDefs){
+			if(typeDef.type instanceof InductType){
+				InductType inductType = (InductType)typeDef.type;
+				for(TypeConstructor constructor : inductType.constructors){
+					List<Type> constructorElementTypes = new ArrayList<>();
+					inductDataTableReturn.put(constructor.name, inductType);
+					inductDataTableReturn.put(InductDataExpr.CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, NamedType.BOOL);
+					inductDataTableInput.put(InductDataExpr.CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, Collections.singletonList(inductType));
+					for(InductTypeElement element : constructor.elements){
+						inductDataTableReturn.put(element.name, element.type);
+						constructorElementTypes.add(element.type);
+						inductDataTableInput.put(element.name, Collections.singletonList(inductType));
+					}
+					inductDataTableInput.put(constructor.name, constructorElementTypes);
+				}
+			}
+		}
+	}
 	private void populateTypeTable(List<TypeDef> typeDefs) {
 		typeTable.putAll(Util.createResolvedTypeTable(typeDefs));
 	}
@@ -582,6 +609,37 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return null;
 	}
 
+	@Override
+	public Type visit(InductDataExpr e) {
+		List<Type> argTypes = new ArrayList<Type>();
+		for(Expr argExpr : e.args){
+			argTypes.add(argExpr.accept(this));
+		}
+		List<Type> inputTypes = inductDataTableInput.get(e.name);
+		Type returnType = inductDataTableReturn.get(e.name);
+		if(returnType == null){
+			error(e, "unown data constructor, predicate, or function '"+e.name+"'");
+			return null;
+		}
+		
+		if(inputTypes != null){
+			if(inputTypes.size() != argTypes.size()){
+				error(e, "data constructor '"+e.name+"' has incorrect number of members");
+				return returnType;
+			}
+		}
+		for(int index = 0; index < argTypes.size(); index++){
+			Type argType = argTypes.get(index);
+			Type inputType = inputTypes.get(index);
+			
+			if(!argType.equals(inputType)){
+				error(e, "argument "+index+" of data constructor, predicate, or function '"+e.name+"' "+
+			      "is of type '"+argType+"'. The expected type is '"+inputType+"'");
+			}
+		}
+		return returnType;
+	}
+	
 	private void compareTypeAssignment(Ast ast, Type expected, Type actual) {
 		if (expected == null || actual == null) {
 			return;
@@ -696,4 +754,5 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private void error(Ast ast, String message) {
 		error(ast.location, message);
 	}
+
 }

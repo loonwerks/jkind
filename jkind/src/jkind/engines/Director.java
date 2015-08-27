@@ -31,6 +31,8 @@ import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
 import jkind.lustre.Expr;
+import jkind.lustre.InductType;
+import jkind.lustre.Type;
 import jkind.results.Counterexample;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
@@ -150,6 +152,33 @@ public class Director extends MessageHandler {
 	}
 
 	private void createEngines() {
+		
+		//if the specification contains inductive datatypes we are
+		//very limited about what engines we can run
+		boolean noInductDataTypes = !spec.containsInductiveDataTypes();
+		
+		if(!noInductDataTypes){
+			if(settings.smoothCounterexamples){
+				Output.println("Warning!: model contains inductive datatypes. "
+						+ "Smooth counterexamples have been disabled");
+			}
+			
+			if(settings.intervalGeneralization){
+				Output.println("Warning!: model contains inductive datatypes. "
+						+ "Interval Generalization has been disabled");
+			}
+			
+			if(settings.pdrMax > 0){
+				Output.println("Warning!: model contains inductive datatypes. "
+						+ "PDR has been disabled");
+			}
+			
+			if(settings.readAdvice != null){
+				Output.println("Warning!: model contains inductive datatypes. "
+						+ "Advice file will not be used");
+			}
+		}
+		
 		if (settings.boundedModelChecking) {
 			addEngine(new BmcEngine(spec, settings, this));
 		}
@@ -166,19 +195,19 @@ public class Director extends MessageHandler {
 			addEngine(new InvariantReductionEngine(spec, settings, this));
 		}
 
-		if (settings.smoothCounterexamples) {
+		if (settings.smoothCounterexamples && noInductDataTypes) {
 			addEngine(new SmoothingEngine(spec, settings, this));
 		}
 
-		if (settings.intervalGeneralization) {
+		if (settings.intervalGeneralization && noInductDataTypes) {
 			addEngine(new IntervalGeneralizationEngine(spec, settings, this));
 		}
 
-		if (settings.pdrMax > 0) {
+		if (settings.pdrMax > 0 && noInductDataTypes) {
 			addEngine(new PdrEngine(spec, settings, this));
 		}
 
-		if (settings.readAdvice != null) {
+		if (settings.readAdvice != null && noInductDataTypes) {
 			addEngine(new AdviceEngine(spec, settings, this, inputAdvice));
 		}
 	}

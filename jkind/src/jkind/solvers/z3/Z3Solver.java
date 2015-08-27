@@ -12,6 +12,7 @@ import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.translation.Specification;
 
 public class Z3Solver extends SmtLib2Solver {
 	private final boolean linear;
@@ -30,7 +31,7 @@ public class Z3Solver extends SmtLib2Solver {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(Specification spec) {
 		send("(set-option :produce-models true)");
 	}
 

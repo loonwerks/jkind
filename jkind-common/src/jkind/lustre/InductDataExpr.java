@@ -8,6 +8,7 @@ import jkind.util.Util;
 public class InductDataExpr extends Expr {
 	public final String name;
 	public final List<Expr> args;
+	public static final String CONSTRUCTOR_PREDICATE_PREFIX = "is_";
 
 	public InductDataExpr(Location location, String name, List<Expr> args) {
 		super(location);
@@ -21,8 +22,7 @@ public class InductDataExpr extends Expr {
 	
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
-		// TODO Auto-generated method stub
-		return null;
+		return visitor.visit(this);
 	}
 
 }

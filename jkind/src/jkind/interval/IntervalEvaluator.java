@@ -10,6 +10,7 @@ import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
@@ -142,6 +143,11 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	public Interval visit(TupleExpr e) {
 		throw new IllegalArgumentException();
 	}
+
+	@Override
+	public Interval visit(InductDataExpr e) {
+		throw new IllegalArgumentException();
+	}
 	
 	@Override
 	public Interval visit(UnaryExpr e) {
@@ -154,4 +160,5 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 			return e.expr.accept(this).applyUnaryOp(e.op);
 		}
 	}
+
 }

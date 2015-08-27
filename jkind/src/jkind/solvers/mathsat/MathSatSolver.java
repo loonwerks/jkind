@@ -19,6 +19,7 @@ import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.mathsat.MathSatParser.ModelContext;
 import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.translation.Specification;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -38,7 +39,7 @@ public class MathSatSolver extends SmtLib2Solver {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(Specification spec) {
 		send("(set-option :produce-models true)");
 	}
 

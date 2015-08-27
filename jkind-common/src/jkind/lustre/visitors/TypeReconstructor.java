@@ -54,7 +54,6 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable = new HashMap<>();
-	private final String CONSTRUCTOR_PREDICATE_PREFIX = "is_";
 
 	public TypeReconstructor(Program program) {
 		populateTypeTable(program.types);
@@ -70,7 +69,7 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 				InductType inductType = (InductType)typeDef.type;
 				for(TypeConstructor constructor : inductType.constructors){
 					inductDataTable.put(constructor.name, inductType);
-					inductDataTable.put(CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, NamedType.BOOL);
+					inductDataTable.put(InductDataExpr.CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, NamedType.BOOL);
 					for(InductTypeElement element : constructor.elements){
 						inductDataTable.put(element.name, element.type);
 					}

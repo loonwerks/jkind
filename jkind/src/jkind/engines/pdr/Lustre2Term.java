@@ -15,6 +15,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
@@ -217,6 +218,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	public Term visit(TupleExpr e) {
 		throw new IllegalArgumentException("Tuples must be flattened before translation to Term");
 	}
+	
+	@Override
+	public Term visit(InductDataExpr e) {
+		throw new IllegalArgumentException("PDR does not support reasoning of inductive datatypes");
+	}
 
 	@Override
 	public Term visit(UnaryExpr e) {
@@ -267,4 +273,5 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	private Term lessEqual(Term left, Term right) {
 		return term("<=", left, right);
 	}
+
 }

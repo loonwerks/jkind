@@ -19,6 +19,24 @@ public class InductType extends Type {
 	}
 
 	@Override
+	public int hashCode() {
+		return name.hashCode();
+	};
+	
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof InductType)){
+			return false;
+		}
+		return ((InductType)obj).name.equals(name);
+	}
+	
+	@Override
+	public String toString(){
+		return name;
+	}
+	
+	@Override
 	public <T> T accept(TypeVisitor<T> visitor) {
 		return visitor.visit(this);
 	}

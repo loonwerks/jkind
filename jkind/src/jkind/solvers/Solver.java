@@ -8,9 +8,10 @@ import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
 import jkind.translation.Relation;
+import jkind.translation.Specification;
 
 public abstract class Solver {
-	public abstract void initialize();
+	public abstract void initialize(Specification spec);
 
 	public abstract void assertSexp(Sexp sexp);
 	public abstract void define(VarDecl decl);

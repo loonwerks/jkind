@@ -2,6 +2,7 @@ package jkind.translation;
 
 import java.util.Map;
 
+import jkind.lustre.InductType;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.slicing.DependencyMap;
@@ -19,4 +20,14 @@ public class Specification {
 		this.typeMap = Util.getTypeMap(node);
 		this.transitionRelation = Lustre2Sexp.constructTransitionRelation(node);
 	}
+	
+	public boolean containsInductiveDataTypes(){
+		for(Type type : typeMap.values()){
+			if(type instanceof InductType){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

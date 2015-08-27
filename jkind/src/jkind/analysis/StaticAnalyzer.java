@@ -16,9 +16,12 @@ import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
+import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 import jkind.util.Util;
@@ -99,6 +102,30 @@ public class StaticAnalyzer {
 			}
 		}
 		return unique;
+	}
+	
+	private static boolean constructorsUnique(Program program){
+		boolean unique = true;
+		Set<String> seen = new HashSet<>();
+		for (TypeDef def : program.types){
+			if(def.type instanceof InductType){
+				InductType inductType = (InductType)def.type;
+				for(TypeConstructor constructor : inductType.constructors){
+					if(!seen.add(constructor.name)){
+						Output.error(inductType.location, "id '"+constructor.name+
+								"' has already been defined as a constructor or datatype element");
+					}
+					for(InductTypeElement element : constructor.elements){
+						if(!seen.add(element.name)){
+							Output.error(inductType.location, "id '"+element.name+
+									"' has already been defined as a constructor or datatype element");
+						}
+					}
+					
+				}
+			}
+		}
+		return false;
 	}
 
 	private static boolean enumsAndConstantsUnique(Program program) {

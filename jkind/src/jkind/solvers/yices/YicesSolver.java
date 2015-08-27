@@ -24,6 +24,7 @@ import jkind.solvers.Result;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
 import jkind.translation.Relation;
+import jkind.translation.Specification;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -49,7 +50,7 @@ public class YicesSolver extends ProcessBasedSolver {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(Specification spec) {
 		send("(set-evidence! true)");
 		if (arithOnly) {
 			send("(set-arith-only! true)");

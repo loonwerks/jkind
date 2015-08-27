@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import jkind.JKindException;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
@@ -13,6 +14,7 @@ import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
@@ -304,5 +306,10 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 		default:
 			throw new IllegalArgumentException("Unknown unary operator");
 		}
+	}
+	
+	@Override
+	public Void visit(InductDataExpr e) {
+		throw new JKindException("We do not have support for inductive datatypes for excel generation");
 	}
 }
