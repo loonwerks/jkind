@@ -2,7 +2,16 @@ grammar SmtLib2;
 
 model: '(' 'model' define* ')' EOF;
 
-define: '(' 'define-fun' id '(' arg? ')' type body ')';
+define: 
+  '(' 'define-fun' id '(' arg? ')' (type | id) body ')'                       #definefun                   
+| '(' 'declare-datatypes' '(' arg? ')' '(' '('id typeConstructor+ ')' ')' ')' #declareDataTypes
+;   
+  
+typeConstructor:
+  '(' ID typeMember* ')';
+  
+typeMember:
+  '(' ID (type | ID) ')';
 
 arg: '(' id type ')';
 
@@ -12,7 +21,7 @@ body: symbol                               # symbolBody
     | '(' fn body* ')'                     # consBody
     ;
 
-fn: '=' | '-' | '/' | 'and' | 'ite' | 'not' | '>=' | '<=' | '<' | '>';
+fn: '=' | '-' | '/' | 'and' | 'ite' | 'not' | '>=' | '<=' | '<' | '>' | id;
 
 symbol: id | BOOL | INT | REAL;
 

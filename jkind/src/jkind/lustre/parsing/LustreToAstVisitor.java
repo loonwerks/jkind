@@ -295,7 +295,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 				for(int i = 1; i < term.ID().size(); i++){
 					String elName = term.ID(i).getText();
 					String elTypeName = term.type(i-1).getText();
-					Type elType;
+					NamedType elType;
 					
 					switch(elTypeName){
 					case "int":

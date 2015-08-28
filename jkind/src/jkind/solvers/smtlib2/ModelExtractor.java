@@ -6,34 +6,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jkind.JKindException;
 import jkind.lustre.Type;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.smtlib2.SmtLib2Parser.BodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ConsBodyContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.DeclareDataTypesContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DefineContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.DefinefunContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.IdContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.SymbolBodyContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.TypeConstructorContext;
 
 public class ModelExtractor {
 	public static SmtLib2Model getModel(ModelContext ctx, Map<String, Type> varTypes) {
 		SmtLib2Model model = new SmtLib2Model(varTypes);
 		for (DefineContext defineCtx : ctx.define()) {
-			walkDefine(defineCtx, model);
+		    if(defineCtx instanceof DefinefunContext){
+		        walkDefine((DefinefunContext) defineCtx, model);
+		    }else if(defineCtx instanceof DeclareDataTypesContext){
+		        walkDeclare((DeclareDataTypesContext) defineCtx, model);
+		    }else{
+		        throw new JKindException("Unhandled model parser type");
+		    }
+			
 		}
 		return model;
 	}
 
-	public static void walkDefine(DefineContext ctx, SmtLib2Model model) {
+	public static void walkDeclare(DeclareDataTypesContext ctx, SmtLib2Model model){
+	    //we need to add the type constructors to the model
+	    for(TypeConstructorContext constructor : ctx.typeConstructor()){
+	        model.addTypeConstructor(constructor.ID().getText());   
+	    }
+	}
+	
+	public static void walkDefine(DefinefunContext ctx, SmtLib2Model model) {
 		String var = getId(ctx.id());
 		Sexp body = sexp(ctx.body());
 		model.addValue(var, body);
 	}
 
-	private static String getId(IdContext id) {
-		return Quoting.unquote(id.getText());
+	private static String getId(List<IdContext> list) {
+		return Quoting.unquote(list.get(0).getText());
 	}
 
 	private static Sexp sexp(BodyContext ctx) {

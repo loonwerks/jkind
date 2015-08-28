@@ -91,6 +91,8 @@ public class Util {
 			return namedType.name;
 		} else if (type instanceof SubrangeIntType || type instanceof EnumType) {
 			return "int";
+		}else if (type instanceof InductType){
+			return ((InductType) type).name;
 		} else {
 			throw new IllegalArgumentException("Cannot find name for type " + type);
 		}

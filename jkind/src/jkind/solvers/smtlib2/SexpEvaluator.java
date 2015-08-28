@@ -1,11 +1,13 @@
 package jkind.solvers.smtlib2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.values.InductDataValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
@@ -38,6 +40,8 @@ public class SexpEvaluator {
 			return BooleanValue.TRUE;
 		} else if (sym.equals("false")) {
 			return BooleanValue.FALSE;
+		} else if (model.isTypeConstructor(sym)){
+		    return new InductDataValue(sym, Collections.EMPTY_LIST);
 		} else if (!Character.isDigit(sym.charAt(0))) {
 			return model.getValue(sym);
 		} else if (sym.contains("/")) {
@@ -58,6 +62,8 @@ public class SexpEvaluator {
 				}
 			}
 			return BooleanValue.TRUE;
+		}else if(model.isTypeConstructor(fn)){
+		    return getInductDataTypeValue(sexp);
 		}
 
 		List<Value> args = new ArrayList<>();
@@ -65,6 +71,18 @@ public class SexpEvaluator {
 			args.add(eval(arg));
 		}
 		return evalFunction(fn, args);
+	}
+	
+	private Value getInductDataTypeValue(Cons sexp){
+	    List<Value> argVals = new ArrayList<>();
+	    for(Sexp arg : sexp.args){
+	       if(arg instanceof Cons){
+	          argVals.add(evalCons((Cons) arg));
+	       }else if (arg instanceof Symbol){
+	          argVals.add(evalSymbol(((Symbol) arg).str));
+	       }
+	    }
+	    return new InductDataValue(sexp.head.toString(), argVals);
 	}
 
 	private boolean isTrue(Value v) {

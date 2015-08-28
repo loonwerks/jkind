@@ -1,6 +1,7 @@
 package jkind.solvers.smtlib2;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import jkind.util.BigFraction;
 
 public class SmtLib2Model extends Model {
 	private final Map<String, Sexp> values = new HashMap<>();
-
+	
 	public SmtLib2Model(Map<String, Type> varTypes) {
 		super(varTypes);
 	}
@@ -23,17 +24,17 @@ public class SmtLib2Model extends Model {
 	public void addValue(String id, Sexp sexp) {
 		values.put(id, sexp);
 	}
-
+	
 	@Override
 	public Value getValue(String name) {
 		Sexp sexp = values.get(name);
-		Type type = varTypes.get(name);
-		if (sexp == null) {
-			return getDefaultValue(type);
-		}
-		Value value = new SexpEvaluator(this).eval(sexp);
-		return promoteIfNeeded(value, type);
-	}
+        Type type = varTypes.get(name);
+        if (sexp == null) {
+            return getDefaultValue(type);
+        }
+        Value value = new SexpEvaluator(this).eval(sexp);
+        return promoteIfNeeded(value, type);
+    }
 
 	private Value promoteIfNeeded(Value value, Type type) {
 		if (value instanceof IntegerValue && type == NamedType.REAL) {

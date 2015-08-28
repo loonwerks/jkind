@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.Output;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
@@ -22,7 +23,9 @@ public class TypeDependencyChecker {
 	protected boolean check(List<TypeDef> types) {
 		Map<String, Set<String>> dependencies = new HashMap<>();
 		for (TypeDef def : types) {
-			dependencies.put(def.id, getTypeDependencies(def.type));
+		    if(!(def.type instanceof InductType)){
+		        dependencies.put(def.id, getTypeDependencies(def.type));
+		    }
 		}
 
 		List<String> cycle = CycleFinder.findCycle(dependencies);
