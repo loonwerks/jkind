@@ -172,7 +172,7 @@ public class JKindApi extends KindApi {
 	}
 
 	@Override
-	public void checkAvailable() throws Exception {
+	public String checkAvailable() throws Exception {
 		List<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(getJKindCommand()));
 		args.add("-version");
@@ -185,5 +185,6 @@ public class JKindApi extends KindApi {
 		if (process.exitValue() != 0) {
 			throw new JKindException("Error running JKind: " + output);
 		}
+		return output;
 	}
 }

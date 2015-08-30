@@ -72,11 +72,13 @@ public abstract class KindApi {
 	 * @throws jkind.JKindException
 	 */
 	public abstract void execute(File lustreFile, JKindResult result, IProgressMonitor monitor);
-	
+
 	/**
 	 * Check if the KindApi is available for running and throw exception if not
 	 * 
+	 * @return Availability information when Kind is available
 	 * @throws java.lang.Exception
+	 *             When Kind is not available
 	 */
-	public abstract void checkAvailable() throws Exception;
+	public abstract String checkAvailable() throws Exception;
 }

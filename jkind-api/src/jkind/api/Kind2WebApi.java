@@ -96,11 +96,12 @@ public class Kind2WebApi extends Kind2Api {
 	}
 
 	@Override
-	public void checkAvailable() throws IOException {
+	public String checkAvailable() throws IOException {
 		String program = "node main() returns (); let tel;";
 		List<String> args = Collections.emptyList();
 		try (Kind2WebInputStream stream = new Kind2WebInputStream(uri, args, program)) {
 			stream.read();
 		}
+		return "Kind 2 web interface available";
 	}
 }
