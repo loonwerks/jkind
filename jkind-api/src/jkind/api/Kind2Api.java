@@ -51,6 +51,7 @@ public class Kind2Api extends KindApi {
 	 */
 	@Override
 	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
+		debug.println("Lustre file", lustreFile);
 		try {
 			callKind2(lustreFile, result, monitor);
 		} catch (JKindException e) {

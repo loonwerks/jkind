@@ -172,7 +172,7 @@ public class BasicUiExample {
 			Counterexample cex = ip.getCounterexample();
 
 			try {
-				File file = File.createTempFile("cex", ".xls");
+				File file = File.createTempFile("cex-", ".xls");
 				cex.toExcel(file);
 				Program.launch(file.toString());
 			} catch (Throwable t) {

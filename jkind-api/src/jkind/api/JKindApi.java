@@ -115,7 +115,8 @@ public class JKindApi extends KindApi {
 	 */
 	@Override
 	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
-		ApiUtil.execute(this::getJKindProcessBuilder, lustreFile, result, monitor);
+		debug.println("Lustre file", lustreFile);
+		ApiUtil.execute(this::getJKindProcessBuilder, lustreFile, result, monitor, debug);
 	}
 
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) {

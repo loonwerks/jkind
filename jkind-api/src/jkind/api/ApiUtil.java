@@ -18,37 +18,38 @@ public class ApiUtil {
 	public static File writeLustreFile(String program) {
 		File file = null;
 		try {
-			file = File.createTempFile("jkind-api", ".lus");
+			file = File.createTempFile("jkind-api-", ".lus");
 			Util.writeToFile(program, file);
 			return file;
 		} catch (IOException e) {
-			safeDelete(file);
 			throw new JKindException("Cannot write to file: " + file, e);
 		}
 	}
 
-	public static void safeDelete(File file) {
-		if (file != null && file.exists()) {
-			file.delete();
-		}
-	}
-
 	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile,
-			JKindResult result, IProgressMonitor monitor) {
+			JKindResult result, IProgressMonitor monitor, DebugLogger debug) {
 		File xmlFile = null;
 		try {
 			xmlFile = getXmlFile(lustreFile);
-			ApiUtil.safeDelete(xmlFile);
-			if (xmlFile.exists()) {
-				throw new JKindException("Existing XML file cannot be removed: " + xmlFile);
-			}
-			callJKind(runCommand, lustreFile, xmlFile, result, monitor);
+			debug.println("XML results file", xmlFile);
+			ensureDeleted(xmlFile);
+			callJKind(runCommand, lustreFile, xmlFile, result, monitor, debug);
 		} catch (JKindException e) {
 			throw e;
 		} catch (Throwable t) {
 			throw new JKindException(result.getText(), t);
 		} finally {
-			ApiUtil.safeDelete(xmlFile);
+			debug.deleteIfUnneeded(xmlFile);
+			debug.println();
+		}
+	}
+
+	private static void ensureDeleted(File file) {
+		if (file != null && file.exists()) {
+			file.delete();
+			if (file.exists()) {
+				throw new JKindException("Unable to delete file: " + file);
+			}
 		}
 	}
 
@@ -57,8 +58,8 @@ public class ApiUtil {
 	}
 
 	private static void callJKind(Function<File, ProcessBuilder> runCommand, File lustreFile,
-			File xmlFile, JKindResult result, IProgressMonitor monitor) throws IOException,
-			InterruptedException {
+			File xmlFile, JKindResult result, IProgressMonitor monitor, DebugLogger debug)
+			throws IOException, InterruptedException {
 		ProcessBuilder builder = runCommand.apply(lustreFile);
 		Process process = null;
 		try (JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile)) {
@@ -68,7 +69,9 @@ public class ApiUtil {
 				result.start();
 				process = builder.start();
 				parseThread.start();
-				result.setText(ApiUtil.readOutput(process, monitor));
+				String output = ApiUtil.readOutput(process, monitor);
+				result.setText(output);
+				debug.println("JKind output", debug.saveFile("jkind-output-", ".txt", output));
 			} finally {
 				int code = 0;
 				if (process != null) {
