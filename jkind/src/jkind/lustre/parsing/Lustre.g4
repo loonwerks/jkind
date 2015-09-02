@@ -1,6 +1,6 @@
 grammar Lustre;
 
-program: (typedef | constant | node)* EOF;
+program: (typedef | constant | node | recursive)* EOF;
 
 typedef: 'type' ID '=' topLevelType ';';
 
@@ -12,6 +12,15 @@ node:
   ('var' local=varDeclList ';')?
   'let'
     (contract | equation | property | assertion | main | realizabilityInputs)*
+  'tel' ';'?
+;
+
+recursive:
+  'recursive' ID '(' input=varDeclList? ')'
+  'returns' '(' output=varDeclList? ')' ';'
+  ('var' local=varDeclList ';')?
+  'let'
+    (equation)+
   'tel' ';'?
 ;
 

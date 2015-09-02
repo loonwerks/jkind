@@ -132,6 +132,11 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 					break;
 				} else if (line.contains("model is not available")) {
 					return null;
+				} else if (line.contains(" is not well-founded")){
+				    int endIndex = line.indexOf(" is not well-founded");
+				    //TODO: this will break if the error message changes
+				    String typeName = line.substring(21, endIndex);
+				    throw new JKindException("Type '"+typeName+"' is not well-founded");
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {

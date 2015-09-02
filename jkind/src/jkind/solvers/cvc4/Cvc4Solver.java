@@ -1,19 +1,26 @@
 package jkind.solvers.cvc4;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.antlr.v4.runtime.RecognitionException;
+
+import jkind.JKindException;
 import jkind.lustre.InductType;
 import jkind.lustre.InductTypeElement;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.Type;
 import jkind.lustre.TypeConstructor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.translation.RecursiveFunctionSpecification;
+import jkind.translation.Relation;
 import jkind.translation.Specification;
 
 public class Cvc4Solver extends SmtLib2Solver {
@@ -48,9 +55,27 @@ public class Cvc4Solver extends SmtLib2Solver {
             Sexp cons = new Cons(type.name, constructorExprs);
             cons = new Cons("declare-datatypes", new Symbol("()"), new Symbol("(" + cons.toString() + ")"));
             send(cons);
+            isWellFounded(); //checks for well-foundedness
         }
 	}
 
+    protected boolean isWellFounded() {
+        try {
+            if (fromSolver.ready()) {
+                String line = fromSolver.readLine();
+                if (line.contains(" is not well-founded")) {
+                    int endIndex = line.indexOf(" is not well-founded");
+                    // TODO: this will break if the error message changes
+                    String typeName = line.substring(21, endIndex);
+                    throw new JKindException("Type '" + typeName + "' is not well-founded");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+    
 	@Override
 	public void initialize(Specification spec) {
 		send("(set-option :produce-models true)");
@@ -63,6 +88,12 @@ public class Cvc4Solver extends SmtLib2Solver {
 			if(type instanceof InductType){
 				define((InductType) type);
 			}
+		}
+		
+		if(spec instanceof RecursiveFunctionSpecification){
+		    for(Sexp sexp : ((RecursiveFunctionSpecification) spec).functions){
+		        send(sexp);
+		    }
 		}
 
 	}

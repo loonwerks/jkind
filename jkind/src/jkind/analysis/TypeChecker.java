@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jkind.JKindException;
 import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -38,6 +40,7 @@ import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.TupleType;
@@ -57,12 +60,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private final Map<String, Constant> constantDefinitionTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
+	private final Map<String, RecursiveFunction> recFunTable;
 	private final Map<String, Node> nodeTable;
 
 	private boolean passed;
 
 	private TypeChecker(Program program) {
 		this.nodeTable = Util.getNodeTable(program.nodes);
+		this.recFunTable = Util.getRecFunTable(program.recFuns);
 		this.passed = true;
 
 		populateInductDataTable(program.types);
@@ -76,13 +81,59 @@ public class TypeChecker implements ExprVisitor<Type> {
 	}
 
 	private boolean visitProgram(Program program) {
+	    
+	    for(RecursiveFunction recFun : program.recFuns){
+	        visitRecFun(recFun);
+	    }
+	    
 		for (Node node : program.nodes) {
 			visitNode(node);
 		}
 		return passed;
 	}
 
-	private void populateInductDataTable(List<TypeDef> typeDefs) {
+	private void visitRecFun(RecursiveFunction recFun) {
+	    List<Type> resolvedTypes = new ArrayList<>();
+	    List<VarDecl> vars = new ArrayList<>();
+	    
+	    repopulateVariableTable(recFun);
+	    
+        for(VarDecl input : recFun.inputs){
+            Type inputType = resolveType(input.type);
+            resolvedTypes.add(inputType);
+            vars.add(input);
+        }
+        for(VarDecl local : recFun.locals){
+            Type localType = resolveType(local.type);
+            resolvedTypes.add(localType);
+            vars.add(local);
+        }
+        Type outputType = resolveType(recFun.output.type);
+        resolvedTypes.add(outputType);
+        vars.add(recFun.output);
+        
+        if(vars.size() != resolvedTypes.size()){
+            throw new JKindException("Something went terribly wrong type checking variables for recursive functions");
+        }
+        
+        for(int i = 0; i < vars.size(); i++){
+            Type resType = resolvedTypes.get(i);
+            VarDecl var = vars.get(i);
+            
+            if(!(resType instanceof NamedType)){
+                error(var.location, "variable '"+var.id+"' in recursive function '"+recFun.id+
+                        "' must be a real, int, bool, or inductive data type");
+                passed = false;
+            }
+        }
+        
+        for(Equation eq : recFun.equations){
+            checkEquation(eq);
+        }
+        
+    }
+
+    private void populateInductDataTable(List<TypeDef> typeDefs) {
 		for(TypeDef typeDef : typeDefs){
 			if(typeDef.type instanceof InductType){
 				InductType inductType = (InductType)typeDef.type;
@@ -162,6 +213,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 			variableTable.put(v.id, resolveType(v.type));
 		}
 	}
+	
+	private void repopulateVariableTable(RecursiveFunction recFun) {
+        variableTable.clear();
+        for (VarDecl v : recFun.inputs) {
+            variableTable.put(v.id, resolveType(v.type));
+        }
+        for (VarDecl v : recFun.locals) {
+            variableTable.put(v.id, resolveType(v.type));
+        }
+        variableTable.put(recFun.output.id, resolveType(recFun.output.type));
+        
+    }
 
 	private Type resolveType(Type type) {
 		return Util.resolveType(type, typeTable);
@@ -617,14 +680,26 @@ public class TypeChecker implements ExprVisitor<Type> {
 		}
 		List<Type> inputTypes = inductDataTableInput.get(e.name);
 		Type returnType = inductDataTableReturn.get(e.name);
-		if(returnType == null){
-			error(e, "unown data constructor, predicate, or function '"+e.name+"'");
+		RecursiveFunction recFun = recFunTable.get(e.name);
+		
+		if(returnType == null && recFun == null){
+			error(e, "unknown data constructor, predicate, or function '"+e.name+"'");
 			return null;
+		}
+		
+		if(recFun != null){
+		    if(inputTypes != null){
+		        throw new JKindException("Somehow there is a function and datatype constructor with the same name...");
+		    }
+		    inputTypes = new ArrayList<>();
+		    for(VarDecl input : recFun.inputs){
+		        inputTypes.add(input.type);
+		    }
 		}
 		
 		if(inputTypes != null){
 			if(inputTypes.size() != argTypes.size()){
-				error(e, "data constructor '"+e.name+"' has incorrect number of members");
+				error(e, "data constructor or function '"+e.name+"' has incorrect number of members / arguments");
 				return returnType;
 			}
 		}

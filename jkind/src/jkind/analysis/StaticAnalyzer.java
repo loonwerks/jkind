@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import jkind.ExitCodes;
+import jkind.JKindException;
 import jkind.Output;
 import jkind.SolverOption;
 import jkind.analysis.evaluation.DivisionChecker;
@@ -21,6 +23,7 @@ import jkind.lustre.InductTypeElement;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
@@ -37,13 +40,17 @@ public class StaticAnalyzer {
 		boolean valid = true;
 		valid = valid && hasMainNode(program);
 		valid = valid && typesUnique(program);
+		valid = valid && inductTypesCapitalized(program);
 		valid = valid && TypesDefined.check(program);
 		valid = valid && TypeDependencyChecker.check(program);
 		valid = valid && enumsAndConstantsUnique(program);
+		valid = valid && constructorsFunctionsElementsUnique(program);
 		valid = valid && ConstantDependencyChecker.check(program);
 		valid = valid && nodesUnique(program);
 		valid = valid && variablesUnique(program);
 		valid = valid && TypeChecker.check(program);
+		valid = valid && RecursiveExprChecker.check(program);
+		valid = valid && RecursiveLocalsAcyclic(program);
 		valid = valid && SubrangesNonempty.check(program);
 		valid = valid && ArraysNonempty.check(program);
 		valid = valid && constantsConstant(program);
@@ -63,7 +70,48 @@ public class StaticAnalyzer {
 		}
 	}
 
-	private static void checkSolverLimitations(Program program, SolverOption solver) {
+	private static boolean RecursiveLocalsAcyclic(Program program) {
+        
+	    boolean ok = true;
+	    for(RecursiveFunction recFun : program.recFuns){
+	        ok = ok && RecursiveLocalsAcyclic(recFun);
+	    }
+	    
+        return ok;
+    }
+	
+	private static boolean RecursiveLocalsAcyclic(RecursiveFunction recFun){
+
+	    boolean ok = true;
+	    Map<String, Set<String>> directReferences = new HashMap<>();
+	    for(Equation eq : recFun.equations){
+	        if(eq.lhs.size() != 1){
+	            throw new JKindException("the expected size of an equation's lhs in a recursive function is 1");
+	        }
+	        String varId = eq.lhs.get(0).id;
+	        directReferences.put(varId, eq.expr.accept(new IdGatherer()));
+	    }
+
+        for (Entry<String, Set<String>> entry : directReferences.entrySet()) {
+            Set<String> closure = new HashSet<>();
+            Set<String> prevClosure = new HashSet<>();
+            closure.addAll(entry.getValue());
+            do {
+                prevClosure.addAll(closure);
+                for(String id : prevClosure){
+                    closure.addAll(directReferences.get(id));
+                }
+            } while (!closure.equals(prevClosure));
+            if (closure.contains(entry.getKey())) {
+                Output.error(recFun.location,
+                        "local variables in recursive function contain a cyclic reference");
+                ok = false;
+            }
+        }
+        return ok;
+	}
+
+    private static void checkSolverLimitations(Program program, SolverOption solver) {
 		if (solver == SolverOption.YICES2) {
 			if (!Yices2FeatureChecker.check(program)) {
 				System.exit(ExitCodes.UNSUPPORTED_FEATURE);
@@ -104,28 +152,51 @@ public class StaticAnalyzer {
 		return unique;
 	}
 	
-	private static boolean constructorsUnique(Program program){
+	private static boolean inductTypesCapitalized(Program program){
+	    boolean ok = true;
+	    for(TypeDef def : program.types){
+	        if(def.type instanceof InductType){
+	            String typeName = ((InductType)def.type).name;
+	            if(Character.isLowerCase(typeName.charAt(0))){
+	                Output.error(def.type.location, "inductive type '"+typeName+"' must be capitalized");
+	                ok = false;
+	            }
+	        }
+	    }
+	    return ok;
+	}
+
+	private static boolean constructorsFunctionsElementsUnique(Program program){
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
-		for (TypeDef def : program.types){
-			if(def.type instanceof InductType){
-				InductType inductType = (InductType)def.type;
-				for(TypeConstructor constructor : inductType.constructors){
-					if(!seen.add(constructor.name)){
-						Output.error(inductType.location, "id '"+constructor.name+
-								"' has already been defined as a constructor or datatype element");
-					}
-					for(InductTypeElement element : constructor.elements){
-						if(!seen.add(element.name)){
-							Output.error(inductType.location, "id '"+element.name+
-									"' has already been defined as a constructor or datatype element");
-						}
+        for (RecursiveFunction recFun : program.recFuns) {
+            if (!seen.add(recFun.id)) {
+                Output.error(recFun.location, "id '" + recFun.id
+                        + "' has already been defined as a constructor, recursive function, or datatype element");
+                unique = false;
+            }
+        }
+        for (TypeDef def : program.types) {
+            if (def.type instanceof InductType) {
+                InductType inductType = (InductType) def.type;
+                for (TypeConstructor constructor : inductType.constructors) {
+                    if (!seen.add(constructor.name)) {
+                        Output.error(inductType.location, "id '" + constructor.name
+                                + "' has already been defined as a constructor, recursive function, or datatype element");
+                        unique = false;
+                    }
+                    for (InductTypeElement element : constructor.elements) {
+                        if (!seen.add(element.name)) {
+                            Output.error(inductType.location, "id '" + element.name
+                                    + "' has already been defined as a constructor, recursive function,  or datatype element");
+                            unique = false;
+                        }
 					}
 					
 				}
 			}
 		}
-		return false;
+		return unique;
 	}
 
 	private static boolean enumsAndConstantsUnique(Program program) {
@@ -171,7 +242,7 @@ public class StaticAnalyzer {
 		}
 		return unique;
 	}
-
+	
 	private static boolean variablesUnique(Program program) {
 		boolean unique = true;
 		for (Node node : program.nodes) {

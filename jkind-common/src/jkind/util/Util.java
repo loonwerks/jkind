@@ -24,6 +24,7 @@ import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeConstructor;
@@ -243,4 +244,12 @@ public class Util {
 	
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";
+
+    public static Map<String, RecursiveFunction> getRecFunTable(List<RecursiveFunction> recFuns) {
+        Map<String, RecursiveFunction> map = new HashMap<>();
+        for(RecursiveFunction recFun : recFuns){
+            map.put(recFun.id, recFun);
+        }
+        return map;
+    }
 }

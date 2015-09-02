@@ -224,6 +224,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDeclList(@NotNull LustreParser.VarDeclListContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#recursive}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRecursive(@NotNull LustreParser.RecursiveContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code boolType}
 	 * labeled alternative in {@link LustreParser#type}.
 	 * @param ctx the parse tree

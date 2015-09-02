@@ -40,6 +40,7 @@ import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
@@ -91,6 +92,7 @@ import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
+import jkind.lustre.parsing.LustreParser.RecursiveContext;
 import jkind.lustre.parsing.LustreParser.RequireContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
 import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
@@ -112,7 +114,8 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<TypeDef> types = types(ctx.typedef());
 		List<Constant> constants = constants(ctx.constant());
 		List<Node> nodes = nodes(ctx.node());
-		return new Program(loc(ctx), types, constants, nodes, main);
+		List<RecursiveFunction> recFuns = recursives(ctx.recursive()); 
+		return new Program(loc(ctx), types, constants, nodes, main, recFuns);
 	}
 
 	private List<TypeDef> types(List<TypedefContext> ctxs) {
@@ -159,7 +162,27 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
 				realizabilityInputs, contracts);
-	}
+    }
+
+    private List<RecursiveFunction> recursives(List<RecursiveContext> ctxs) {
+        List<RecursiveFunction> recFuns = new ArrayList<>();
+        for (RecursiveContext ctx : ctxs) {
+            recFuns.add(recursive(ctx));
+        }
+        return recFuns;
+    }
+
+    private RecursiveFunction recursive(RecursiveContext ctx) {
+        String id = ctx.ID().getText();
+        List<VarDecl> inputs = varDecls(ctx.input);
+        List<VarDecl> outputs = varDecls(ctx.output);
+        List<VarDecl> locals = varDecls(ctx.local);
+        List<Equation> equations = equations(ctx.equation());
+        if (outputs.size() != 1) {
+            fatal(ctx.output, "Recursive functions must have a single output");
+        }
+        return new RecursiveFunction(loc(ctx), id, inputs, locals, outputs.get(0), equations);
+    }
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
 		List<VarDecl> decls = new ArrayList<>();
@@ -315,7 +338,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 				}
 				typeConstructors.add(new TypeConstructor(constrName, elements));
 			}
-			return new InductType(id, typeConstructors);
+			return new InductType(loc(ctx), id, typeConstructors);
 		} else {
 			throw new IllegalArgumentException(ctx.getClass().getSimpleName());
 		}

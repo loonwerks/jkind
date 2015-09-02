@@ -8,7 +8,8 @@ import jkind.util.Util;
 public class InductType extends Type {
     public final String name;
     public final List<TypeConstructor> constructors;
-	protected InductType(Location location, String name, List<TypeConstructor> constructors) {
+    
+	public InductType(Location location, String name, List<TypeConstructor> constructors) {
 		super(location);
 		this.name = name;
 		this.constructors = Util.safeList(constructors);

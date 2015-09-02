@@ -1,0 +1,16 @@
+type Lst = induct {cons (head int) (tail Lst) | nil };
+
+recursive test(input : Lst) returns (output : Lst);
+let
+  output = input;
+tel;
+
+node main(input1 : Lst; input2 : Lst) returns();
+var
+  prop : bool;
+  count : int;
+let
+  count = 0 -> pre(count) + 1;
+  prop = ((head input1) + (head input2)) <> 5;
+  --%PROPERTY prop;
+tel;
