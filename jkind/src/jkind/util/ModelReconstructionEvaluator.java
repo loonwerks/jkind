@@ -1,7 +1,5 @@
 package jkind.util;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,89 +14,66 @@ import jkind.lustre.UnaryOp;
 import jkind.lustre.values.Value;
 import jkind.slicing.Dependency;
 import jkind.slicing.DependencySet;
-import jkind.solvers.Model;
 import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 
 public class ModelReconstructionEvaluator extends Evaluator {
-	public static Model reconstruct(Specification spec, Model model, String property, int k,
+	public static void reconstruct(Specification spec, SimpleModel model, String property, int k,
 			boolean concrete) {
-		return new ModelReconstructionEvaluator(spec, model, concrete).reconstructValues(property,
-				k);
+		new ModelReconstructionEvaluator(spec, model, concrete).reconstructValues(property, k);
 	}
 
 	private final Specification spec;
-	private final Model original;
+	private final SimpleModel model;
 	private final boolean concrete;
-	private final SimpleModel full;
 
 	private final Map<String, Expr> equations = new HashMap<>();
-	private final Deque<StreamIndex> stack = new ArrayDeque<>();
 
 	private int step;
 
-	private ModelReconstructionEvaluator(Specification spec, Model original, boolean concrete) {
+	private ModelReconstructionEvaluator(Specification spec, SimpleModel model, boolean concrete) {
 		this.spec = spec;
-		this.original = original;
+		this.model = model;
 		this.concrete = concrete;
-		this.full = new SimpleModel();
 
 		for (Equation eq : spec.node.equations) {
 			equations.put(eq.lhs.get(0).id, eq.expr);
 		}
 	}
 
-	private Model reconstructValues(String property, int k) {
+	private void reconstructValues(String property, int k) {
 		DependencySet dependencies = spec.dependencyMap.get(property);
 		for (step = 0; step < k; step++) {
 			for (Dependency dependency : dependencies) {
 				eval(new IdExpr(dependency.name));
 			}
 		}
-		return full;
 	}
 
 	@Override
 	public Value visit(IdExpr e) {
 		StreamIndex si = new StreamIndex(e.id, step);
 
-		Value value = full.getValue(si);
+		Value value = model.getValue(si);
 		if (value != null) {
 			return value;
 		}
 
-		if (stack.contains(si) || step < 0) {
-			return original.getValue(si);
+		if (step < 0) {
+			return getDefaultValue(si);
 		}
-		stack.push(si);
 
 		Expr expr = equations.get(e.id);
 		if (expr == null) {
-			value = getOrComputeOriginalValue(si);
-		} else {
-			Value prev = original.getValue(si);
-			value = eval(expr);
-			if (value == null) {
-				value = prev;
-			}
-
-			if (prev != null && value != null && !prev.equals(value)) {
-				throw new IllegalStateException(
-						"Internal JKind error: evaluation did not match model");
-			}
+			return getDefaultValue(si);
 		}
-		full.putValue(si, value);
 
-		stack.pop();
+		value = eval(expr);
+		model.putValue(si, value);
 		return value;
 	}
 
-	private Value getOrComputeOriginalValue(StreamIndex si) {
-		Value value = original.getValue(si);
-		if (value != null) {
-			return value;
-		}
-
+	private Value getDefaultValue(StreamIndex si) {
 		return Util.getDefaultValue(spec.typeMap.get(si.getStream()));
 	}
 
