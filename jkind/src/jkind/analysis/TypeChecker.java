@@ -58,6 +58,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private final Map<String, Type> inductDataTableReturn = new HashMap<>();
 	private final Map<String, List<Type>> inductDataTableInput = new HashMap<>();
 	private final Map<String, Constant> constantDefinitionTable = new HashMap<>();
+	private final Map<String, TypeConstructor> typeConstructorTable = new HashMap<>();
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, RecursiveFunction> recFunTable;
@@ -120,7 +121,7 @@ public class TypeChecker implements ExprVisitor<Type> {
             Type resType = resolvedTypes.get(i);
             VarDecl var = vars.get(i);
             
-            if(!(resType instanceof NamedType)){
+            if(!(resType instanceof NamedType || resType instanceof InductType)){
                 error(var.location, "variable '"+var.id+"' in recursive function '"+recFun.id+
                         "' must be a real, int, bool, or inductive data type");
                 passed = false;
@@ -139,6 +140,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 				InductType inductType = (InductType)typeDef.type;
 				for(TypeConstructor constructor : inductType.constructors){
 					List<Type> constructorElementTypes = new ArrayList<>();
+					typeConstructorTable.put(constructor.name, constructor);
 					inductDataTableReturn.put(constructor.name, inductType);
 					inductDataTableReturn.put(InductDataExpr.CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, NamedType.BOOL);
 					inductDataTableInput.put(InductDataExpr.CONSTRUCTOR_PREDICATE_PREFIX+constructor.name, Collections.singletonList(inductType));
@@ -487,6 +489,13 @@ public class TypeChecker implements ExprVisitor<Type> {
 			return addConstant(constantDefinitionTable.get(e.id));
 		} else if (enumValueTable.containsKey(e.id)) {
 			return enumValueTable.get(e.id);
+		}else if (typeConstructorTable.containsKey(e.id)){
+		    TypeConstructor constructor = typeConstructorTable.get(e.id);
+		    if(constructor.elements.size() != 0){
+		        error(e, "unknown variable " + e.id);
+	            return null;
+		    }
+		    return inductDataTableReturn.get(e.id);
 		} else {
 			error(e, "unknown variable " + e.id);
 			return null;
@@ -695,6 +704,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		    for(VarDecl input : recFun.inputs){
 		        inputTypes.add(input.type);
 		    }
+		    returnType = recFun.output.type;
 		}
 		
 		if(inputTypes != null){
@@ -707,7 +717,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			Type argType = argTypes.get(index);
 			Type inputType = inputTypes.get(index);
 			
-			if(!argType.equals(inputType)){
+			if(!argType.toString().equals(inputType.toString())){
 				error(e, "argument "+index+" of data constructor, predicate, or function '"+e.name+"' "+
 			      "is of type '"+argType+"'. The expected type is '"+inputType+"'");
 			}

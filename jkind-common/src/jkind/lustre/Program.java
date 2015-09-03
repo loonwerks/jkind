@@ -39,6 +39,11 @@ public class Program extends Ast {
 	public Program(List<TypeDef> types, List<Constant> constants, List<Node> nodes, String main) {
 		this(Location.NULL, types, constants, nodes, main, null);
 	}
+	
+	public Program(List<TypeDef> types, List<Constant> constants, List<Node> nodes, 
+	        String main, List<RecursiveFunction> recFuns) {
+        this(Location.NULL, types, constants, nodes, main, recFuns);
+    }
 
 	public Program(List<Node> nodes) {
 		this(Location.NULL, null, null, nodes, null, null);

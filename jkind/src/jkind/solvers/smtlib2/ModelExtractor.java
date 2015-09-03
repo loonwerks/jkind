@@ -14,6 +14,7 @@ import jkind.sexp.Symbol;
 import jkind.solvers.smtlib2.SmtLib2Parser.BodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.ConsBodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DeclareDataTypesContext;
+import jkind.solvers.smtlib2.SmtLib2Parser.DeclareSortContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DefineContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.DefinefunContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.IdContext;
@@ -29,6 +30,8 @@ public class ModelExtractor {
 		        walkDefine((DefinefunContext) defineCtx, model);
 		    }else if(defineCtx instanceof DeclareDataTypesContext){
 		        walkDeclare((DeclareDataTypesContext) defineCtx, model);
+		    }else if (defineCtx instanceof DeclareSortContext){
+		        //not sure if we need to do anything with sorts
 		    }else{
 		        throw new JKindException("Unhandled model parser type");
 		    }
@@ -45,13 +48,9 @@ public class ModelExtractor {
 	}
 	
 	public static void walkDefine(DefinefunContext ctx, SmtLib2Model model) {
-		String var = getId(ctx.id());
+		String var = Quoting.unquote(ctx.id().getText());
 		Sexp body = sexp(ctx.body());
 		model.addValue(var, body);
-	}
-
-	private static String getId(List<IdContext> list) {
-		return Quoting.unquote(list.get(0).getText());
 	}
 
 	private static Sexp sexp(BodyContext ctx) {

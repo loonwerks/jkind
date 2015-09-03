@@ -1,10 +1,14 @@
 grammar SmtLib2;
 
-model: '(' 'model' define* ')' EOF;
+model: '(' 'model' (define | comment)* ')' EOF;
+
+comment:
+  ';' .*?;
 
 define: 
-  '(' 'define-fun' id '(' arg? ')' (type | id) body ')'                       #definefun                   
+  '(' 'define-fun' id '(' arg* ')' (type) body ')'                       #definefun                   
 | '(' 'declare-datatypes' '(' arg? ')' '(' '('id typeConstructor+ ')' ')' ')' #declareDataTypes
+| '(' 'declare-sort' id INT ')' #declareSort
 ;   
   
 typeConstructor:
@@ -15,7 +19,7 @@ typeMember:
 
 arg: '(' id type ')';
 
-type: 'Bool' | 'Int' | 'Real';
+type: 'Bool' | 'Int' | 'Real' | id;
 
 body: symbol                               # symbolBody
     | '(' fn body* ')'                     # consBody

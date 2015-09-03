@@ -28,7 +28,7 @@ public class Cvc4Solver extends SmtLib2Solver {
     private final Set<String> definedTypes = new HashSet<>();
     
 	public Cvc4Solver(String scratchBase) {
-		super(scratchBase, new ProcessBuilder(getCVC4(), "--lang", "smt"), "CVC4");
+		super(scratchBase, new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun"), "CVC4");
 	}
 
 	private static String getCVC4() {

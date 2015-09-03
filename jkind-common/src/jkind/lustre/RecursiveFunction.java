@@ -30,8 +30,7 @@ public class RecursiveFunction extends Ast {
 
     @Override
     public <T, S extends T> T accept(AstVisitor<T, S> visitor) {
-        // TODO Auto-generated method stub
-        return null;
+        return visitor.visit(this);
     }
     
     @Override

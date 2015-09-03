@@ -7,12 +7,14 @@ import java.util.List;
 import jkind.lustre.Constant;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.TypeDef;
 
 public class ProgramBuilder {
 	private List<TypeDef> types = new ArrayList<>();
 	private List<Constant> constants = new ArrayList<>();
 	private List<Node> nodes = new ArrayList<>();
+	private List<RecursiveFunction> recFuns = new ArrayList<>();
 	private String main;
 
 	public ProgramBuilder() {
@@ -23,6 +25,7 @@ public class ProgramBuilder {
 		this.constants = new ArrayList<>(program.constants);
 		this.nodes = new ArrayList<>(program.nodes);
 		this.main = program.main;
+		this.recFuns = program.recFuns;
 	}
 
 	public ProgramBuilder addType(TypeDef type) {
@@ -69,6 +72,11 @@ public class ProgramBuilder {
 		this.nodes.clear();
 		return this;
 	}
+	
+	public ProgramBuilder clearRecFuns() {
+	    this.recFuns.clear();
+	    return this;
+	}
 
 	public ProgramBuilder setMain(String main) {
 		this.main = main;
@@ -76,6 +84,6 @@ public class ProgramBuilder {
 	}
 
 	public Program build() {
-		return new Program(types, constants, nodes, main);
+		return new Program(types, constants, nodes, main, recFuns);
 	}
 }

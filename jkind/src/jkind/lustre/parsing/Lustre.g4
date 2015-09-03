@@ -90,7 +90,7 @@ expr: ID                                                       # idExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
-    | '(' ID expr (expr)* ')'                                  # inductDataExpr
+    | '(' ID (expr)* ')'                                       # inductDataExpr
     | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 

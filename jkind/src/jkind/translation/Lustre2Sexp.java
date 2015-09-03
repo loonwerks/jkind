@@ -232,6 +232,9 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		for(Expr expr : e.args){
 			args.add(expr.accept(this));
 		}
-		return new Cons(e.name, args);
+        if (args.size() > 0) {
+            return new Cons(e.name, args);
+        }
+        return new Symbol(e.name);
 	}
 }

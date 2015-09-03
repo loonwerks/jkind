@@ -564,7 +564,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		for(ExprContext expCtx : ctx.expr()){
 			args.add(expr(expCtx));
 		}
-		return new InductDataExpr(ctx.ID().getText(), args);
+		return new InductDataExpr(loc(ctx), ctx.ID().getText(), args);
 	}
 
 	private static Location loc(ParserRuleContext ctx) {

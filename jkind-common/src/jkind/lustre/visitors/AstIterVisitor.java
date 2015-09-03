@@ -8,6 +8,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 
@@ -92,4 +93,13 @@ public class AstIterVisitor extends ExprIterVisitor implements AstVisitor<Void, 
 		visitExprs(contract.ensures);
 		return null;
 	}
+
+    @Override
+    public Void visit(RecursiveFunction e) {
+        visitVarDecls(e.inputs);
+        visit(e.output);
+        visitVarDecls(e.locals);
+        visitEquations(e.equations);
+        return null;
+    }
 }

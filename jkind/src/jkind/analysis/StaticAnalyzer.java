@@ -84,12 +84,19 @@ public class StaticAnalyzer {
 
 	    boolean ok = true;
 	    Map<String, Set<String>> directReferences = new HashMap<>();
+//	    Set<String> inputsAndOutput = new HashSet<>();
+//	    for(VarDecl input : recFun.inputs){
+//	        inputsAndOutput.add(input.id);
+//	    }
+//	    inputsAndOutput.add(recFun.output.id);
 	    for(Equation eq : recFun.equations){
 	        if(eq.lhs.size() != 1){
 	            throw new JKindException("the expected size of an equation's lhs in a recursive function is 1");
 	        }
 	        String varId = eq.lhs.get(0).id;
-	        directReferences.put(varId, eq.expr.accept(new IdGatherer()));
+	        Set<String> ids = eq.expr.accept(new IdGatherer());
+//	        ids.removeAll(inputsAndOutput);
+            directReferences.put(varId, ids);
 	    }
 
         for (Entry<String, Set<String>> entry : directReferences.entrySet()) {
@@ -99,7 +106,10 @@ public class StaticAnalyzer {
             do {
                 prevClosure.addAll(closure);
                 for(String id : prevClosure){
-                    closure.addAll(directReferences.get(id));
+                    Set<String> references = directReferences.get(id);
+                    if (references != null) {
+                        closure.addAll(references);
+                    }
                 }
             } while (!closure.equals(prevClosure));
             if (closure.contains(entry.getKey())) {
@@ -245,19 +255,36 @@ public class StaticAnalyzer {
 	
 	private static boolean variablesUnique(Program program) {
 		boolean unique = true;
+		
+		Set<String> singleTypeConstructors = new HashSet<>();
+		for(TypeDef def : program.types){
+		    if(def.type instanceof InductType){
+		       for(TypeConstructor constructor : ((InductType)def.type).constructors){
+		           if(constructor.elements.size() == 0){
+		               singleTypeConstructors.add(constructor.name);
+		           }
+		       }
+		    }
+		}
+		
 		for (Node node : program.nodes) {
-			unique = variablesUnique(node) && unique;
+			unique = variablesUnique(node, singleTypeConstructors) && unique;
 		}
 		return unique;
 	}
 
-	private static boolean variablesUnique(Node node) {
+	private static boolean variablesUnique(Node node, Set<String> singleTypeConstructors) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			if (!seen.add(decl.id)) {
 				Output.error(decl.location, "variable " + decl.id + " already declared");
 				unique = false;
+			}
+			if(singleTypeConstructors.contains(decl.id)){
+			    Output.error(decl.location, "variable " + decl.id + 
+			            " has the same name as an inductive datatype constructor");
+			    unique = false;
 			}
 		}
 		return unique;

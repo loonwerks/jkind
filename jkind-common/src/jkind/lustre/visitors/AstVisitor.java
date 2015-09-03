@@ -5,6 +5,7 @@ import jkind.lustre.Contract;
 import jkind.lustre.Equation;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
 
@@ -16,4 +17,5 @@ public interface AstVisitor<T, S extends T> extends ExprVisitor<S> {
 	public T visit(TypeDef typeDef);
 	public T visit(VarDecl varDecl);
 	public T visit(Contract contract);
+	public T visit(RecursiveFunction recFun);
 }

@@ -25,7 +25,9 @@ public class JKind {
 				}
 			}
 
-			Node main = Translate.translate(program);
+//			Node main = Translate.translate(program);
+			program = Translate.translateProgram(program);
+			Node main = program.getMainNode();
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
 			main = LustreSlicer.slice(main, dependencyMap);
 			//kind of hacky, but we need a way for the specification to contain

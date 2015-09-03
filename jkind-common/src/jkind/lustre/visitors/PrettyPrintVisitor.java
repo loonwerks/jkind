@@ -3,6 +3,7 @@ package jkind.lustre.visitors;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -34,6 +35,7 @@ import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.RecordUpdateExpr;
+import jkind.lustre.RecursiveFunction;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
 import jkind.lustre.TypeConstructor;
@@ -223,6 +225,43 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		return null;
 	}
 
+	
+	 @Override
+	    public Void visit(RecursiveFunction recFun) {
+	        write("recursive ");
+	        write(recFun.id);
+	        write("(");
+	        newline();
+	        varDecls(recFun.inputs);
+	        newline();
+	        write(") returns (");
+	        newline();
+	        varDecls(Collections.singletonList(recFun.output));
+	        newline();
+	        write(");");
+	        newline();
+	        
+	        if (!recFun.locals.isEmpty()) {
+	            write("var");
+	            newline();
+	            varDecls(recFun.locals);
+	            write(";");
+	            newline();
+	        }
+	        write("let");
+	        newline();
+
+	        for (Equation equation : recFun.equations) {
+	            write("  ");
+	            equation.accept(this);
+	            newline();
+	            newline();
+	        }
+
+	        write("tel;");
+	        return null;
+	    }
+	
 	private void varDecls(List<VarDecl> varDecls) {
 		Iterator<VarDecl> iterator = varDecls.iterator();
 		while (iterator.hasNext()) {
@@ -510,4 +549,6 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		write(")");
         return null;
 	}
+
+   
 }

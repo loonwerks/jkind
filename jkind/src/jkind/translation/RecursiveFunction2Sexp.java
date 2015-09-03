@@ -25,12 +25,14 @@ import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.RecursiveFunction;
 import jkind.lustre.TupleExpr;
+import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.Util;
 
 public class RecursiveFunction2Sexp implements ExprVisitor<Sexp>{
 
@@ -47,25 +49,28 @@ public class RecursiveFunction2Sexp implements ExprVisitor<Sexp>{
     
     private static Sexp constructRecursiveFunction(RecursiveFunction recFun){
         
+        if(recFun.equations.size() != 1){
+            throw new JKindException("Recursive function equations should be flattened by now");
+        }
         
-        String prefix = "define-fun-rec";
         List<Sexp> args = new ArrayList<>();
         for(VarDecl var : recFun.inputs){
             args.add(new Cons(var.id, new Symbol(var.type.toString())));
         }
+        Sexp argCons = new Cons(args);
         
-        if(recFun.equations.size() != 1){
-            throw new JKindException("Recursive function equations should be flattened by now");
-        }
+        args = new ArrayList<>(); //I would do a "clear()" but this is messing up the debugger...
+        args.add(new Symbol("define-fun-rec"));
+        args.add(new Symbol(recFun.id));
+        args.add(argCons);
+        
         Equation eq = recFun.equations.get(0);
-        args.add(new Symbol(recFun.output.type.toString()));
+        args.add(type(recFun.output.type));
         args.add(eq.expr.accept(new RecursiveFunction2Sexp()));
         
         Sexp cons = new Cons(args);
         
-        cons = new Cons(prefix, new Symbol("()"), cons);
-        
-        return null;
+        return cons;
     }
     
     @Override
@@ -185,6 +190,14 @@ public class RecursiveFunction2Sexp implements ExprVisitor<Sexp>{
             args.add(expr.accept(this));
         }
         return new Cons(e.name, args);
+    }
+    
+    private static Symbol type(Type type) {
+        return new Symbol(capitalize(Util.getName(type)));
+    }
+
+    private static String capitalize(String name) {
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
 }
