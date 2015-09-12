@@ -29,7 +29,7 @@ public class XmlWriter extends Writer {
 		if (useStdout) {
 			this.out = new PrintWriter(System.out, true);
 		} else {
-			this.out = new PrintWriter(new FileOutputStream(filename), true);
+			this.out = new PrintWriter(new FileOutputStream(filename));
 		}
 	}
 
@@ -42,6 +42,7 @@ public class XmlWriter extends Writer {
 	@Override
 	public void end() {
 		out.println("</Results>");
+		out.close();
 	}
 
 	@Override
@@ -60,6 +61,7 @@ public class XmlWriter extends Writer {
 			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 		}
 		out.println("  </Property>");
+		out.flush();
 	}
 
 	private String escape(Invariant invariant) {
@@ -74,6 +76,7 @@ public class XmlWriter extends Writer {
 		out.println("    <K>" + cex.getLength() + "</K>");
 		writeCounterexample(cex);
 		out.println("  </Property>");
+		out.flush();
 	}
 
 	private void writeCounterexample(Counterexample cex) {
@@ -168,5 +171,6 @@ public class XmlWriter extends Writer {
 			writeCounterexample(icm);
 		}
 		out.println("  </Property>");
+		out.flush();
 	}
 }
