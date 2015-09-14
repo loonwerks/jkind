@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import jkind.JKindException;
+import jkind.lustre.InductType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.Value;
@@ -132,4 +133,9 @@ public class SmtInterpolSolver extends Solver {
 	private Term convert(Sexp sexp) {
 		return SmtInterpolUtil.convert(script, sexp);
 	}
+
+    @Override
+    public void define(InductType type) {
+        throw new JKindException("SMTInterpol does not support inductive datatypes");
+    }
 }

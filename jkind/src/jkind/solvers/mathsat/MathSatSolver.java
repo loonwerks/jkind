@@ -6,6 +6,7 @@ import jkind.JKindException;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
@@ -99,4 +100,9 @@ public class MathSatSolver extends SmtLib2Solver {
 			}
 		});
 	}
+
+    @Override
+    public void define(InductType type) {
+        throw new JKindException("MathSat does not support inductive datatypes");
+    }
 }

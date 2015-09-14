@@ -253,4 +253,17 @@ public class Util {
         }
         return map;
     }
+
+    public static boolean containsInductDataTypes(Program program) {
+        if(program.recFuns.size() != 0){
+            return true;
+        }
+        
+        for(TypeDef def : program.types){
+            if(def.type instanceof InductType){
+                return true;
+            }
+        }
+        return false;
+    }
 }

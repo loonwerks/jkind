@@ -1,6 +1,7 @@
 package jkind.solvers.yices2;
 
 import jkind.JKindException;
+import jkind.lustre.InductType;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.solvers.Model;
 import jkind.solvers.smtlib2.SmtLib2Solver;
@@ -42,4 +43,9 @@ public class Yices2Solver extends SmtLib2Solver {
 		walker.walk(extractor, ctx);
 		return extractor.getModel();
 	}
+
+    @Override
+    public void define(InductType type) {
+        throw new JKindException("Yices2 does not support inductive datatypes");
+    }
 }

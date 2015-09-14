@@ -7,9 +7,10 @@ import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
-import jkind.translation.RecursiveFunctionSpecification;
+import jkind.translation.InductiveDataTypeSpecification;
 import jkind.translation.Specification;
 import jkind.translation.Translate;
+import jkind.util.Util;
 
 public class JKind {
 	public static void main(String[] args) {
@@ -33,8 +34,8 @@ public class JKind {
 			//kind of hacky, but we need a way for the specification to contain
 			//recursive functions if they are defined
 			Specification spec;
-            if (program.recFuns.size() != 0) {
-                spec = new RecursiveFunctionSpecification(main, dependencyMap, program.recFuns);
+            if (Util.containsInductDataTypes(program)) {
+                spec = new InductiveDataTypeSpecification(main, dependencyMap, program);
             } else {
                 spec = new Specification(main, dependencyMap);
             }

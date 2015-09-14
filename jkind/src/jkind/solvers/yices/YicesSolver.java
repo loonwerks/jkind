@@ -10,6 +10,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.CastExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.InductType;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -262,4 +263,9 @@ public class YicesSolver extends ProcessBasedSolver {
 			}
 		});
 	}
+
+    @Override
+    public void define(InductType type) {
+        throw new JKindException("Yices does not support inductive datatypes");
+    }
 }

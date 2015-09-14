@@ -1,13 +1,5 @@
 type Lst = induct {cons (head int) (tail Lst) | nil };
 
-recursive app (l1 : Lst; l2 : Lst) returns (l : Lst);
-let
-  l = if (is_nil l1) then 
-        l2
-      else
-        (cons (head l1) (app (tail l1) l2));
-tel;
-
 recursive positive (l : Lst) returns (res : bool);
 let
   res = if (is_nil l) then true else (head l) >= 0 and (positive (tail l));
@@ -18,10 +10,15 @@ let
   res = if (is_nil l) then 0 else (head l) + (sum (tail l));
 tel;
 
-node main(input : Lst) returns();
+node main(input : int) returns();
 var
-  prop : bool;
+  prop1 : bool;
+  prop2 : bool;
+  acc : Lst;
 let
-  prop = (positive input) => (sum input) >= 0;
-  --%PROPERTY prop;
+  acc = if (input > 0) then (cons input (nil -> (pre acc))) else (nil -> pre acc);
+  prop1 = (positive acc);
+  prop2 = (sum acc) >= 0;
+  --%PROPERTY prop1;
+  --%PROPERTY prop2;
 tel;

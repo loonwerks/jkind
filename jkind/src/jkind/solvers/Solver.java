@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jkind.lustre.Expr;
+import jkind.lustre.InductType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Sexp;
@@ -16,6 +17,7 @@ public abstract class Solver {
 	public abstract void assertSexp(Sexp sexp);
 	public abstract void define(VarDecl decl);
 	public abstract void define(Relation relation);
+	public abstract void define(InductType type);
 
 	public abstract Result query(Sexp sexp);
 	

@@ -19,13 +19,17 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.solvers.smtlib2.SmtLib2Solver;
-import jkind.translation.RecursiveFunctionSpecification;
+import jkind.translation.InductiveDataTypeSpecification;
 import jkind.translation.Relation;
 import jkind.translation.Specification;
 
 public class Cvc4Solver extends SmtLib2Solver {
     
     private final Set<String> definedTypes = new HashSet<>();
+    
+    public Cvc4Solver(String scratchBase, ProcessBuilder processBuilder) {
+        super(scratchBase, processBuilder, "CVC4");
+    }
     
 	public Cvc4Solver(String scratchBase) {
 		super(scratchBase, new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun"), "CVC4");
@@ -84,17 +88,14 @@ public class Cvc4Solver extends SmtLib2Solver {
 //		send("(set-logic AUFLIRA)");
 		send("(set-logic ALL_SUPPORTED)");
 		
-		for(Type type : spec.typeMap.values()){
-			if(type instanceof InductType){
-				define((InductType) type);
-			}
+		if(spec instanceof InductiveDataTypeSpecification){
+		    InductiveDataTypeSpecification indSpec = (InductiveDataTypeSpecification)spec;
+	        for(InductType type : indSpec.inductTypes){
+	                define(type);
+	        }
+	        for(Sexp sexp : indSpec.functions){
+                send(sexp);
+            }
 		}
-		
-		if(spec instanceof RecursiveFunctionSpecification){
-		    for(Sexp sexp : ((RecursiveFunctionSpecification) spec).functions){
-		        send(sexp);
-		    }
-		}
-
 	}
 }

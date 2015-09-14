@@ -22,6 +22,7 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.Solver;
 import jkind.solvers.UnknownResult;
+import jkind.solvers.cvc4.Cvc4MultiSolver;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.SmtInterpolSolver;
@@ -57,7 +58,7 @@ public abstract class SolverBasedEngine extends Engine {
 	protected void initializeSolver() {
 		solver = getSolver();
 		
-		if(spec.containsInductiveDataTypes() && !(solver instanceof Cvc4Solver)){
+		if(spec.containsInductiveDataTypes() && !(solver instanceof Cvc4Solver || solver instanceof Cvc4MultiSolver)){
 			throw new JKindException("The model contains inductive datatypes. CVC4 must be used"); 
 		}
 		
@@ -72,7 +73,7 @@ public abstract class SolverBasedEngine extends Engine {
 		case YICES:
 			return new YicesSolver(scratchBase, YicesArithOnlyCheck.check(spec.node));
 		case CVC4:
-			return new Cvc4Solver(scratchBase);
+			return new Cvc4MultiSolver(scratchBase);
 		case Z3:
 			return new Z3Solver(scratchBase, LinearChecker.isLinear(spec.node));
 		case YICES2:
