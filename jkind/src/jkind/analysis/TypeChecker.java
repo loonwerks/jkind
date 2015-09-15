@@ -1,5 +1,6 @@
 package jkind.analysis;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -716,6 +717,15 @@ public class TypeChecker implements ExprVisitor<Type> {
 		for(int index = 0; index < argTypes.size(); index++){
 			Type argType = argTypes.get(index);
 			Type inputType = inputTypes.get(index);
+			
+			//strange hack we need to do for subrange types
+			if(argType instanceof SubrangeIntType){
+				BigInteger high = ((SubrangeIntType) argType).high;
+				BigInteger low = ((SubrangeIntType) argType).low;
+				if(low.equals(high)){
+					argType = NamedType.INT;
+				}
+			}
 			
 			if(!argType.toString().equals(inputType.toString())){
 				error(e, "argument "+index+" of data constructor, predicate, or function '"+e.name+"' "+
