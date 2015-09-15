@@ -20,6 +20,7 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -227,7 +228,6 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(InductDataExpr e) {
-		// TODO Auto-generated method stub
 		List<Sexp> args = new ArrayList<>();
 		for(Expr expr : e.args){
 			args.add(expr.accept(this));
@@ -236,5 +236,11 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
             return new Cons(e.name, args);
         }
         return new Symbol(e.name);
+	}
+
+	@Override
+	public Sexp visit(QuantExpr e) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

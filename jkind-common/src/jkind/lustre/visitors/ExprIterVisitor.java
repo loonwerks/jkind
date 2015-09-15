@@ -15,6 +15,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -140,6 +141,12 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 		for (Expr e : list) {
 			e.accept(this);
 		}
+		return null;
+	}
+
+	@Override
+	public Void visit(QuantExpr e) {
+		e.expr.accept(this);
 		return null;
 	}
 

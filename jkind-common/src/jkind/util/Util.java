@@ -45,6 +45,10 @@ public class Util {
 		decls.addAll(node.locals);
 		return decls;
 	}
+	
+	public static String capitalize(String string){
+		return Character.toUpperCase(string.charAt(0)) + string.substring(1);
+	}
 
 	public static Map<String, Type> getTypeMap(Node node) {
 		Map<String, Type> map = new HashMap<>();

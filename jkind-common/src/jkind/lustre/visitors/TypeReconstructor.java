@@ -26,6 +26,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -120,6 +121,18 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		variableTable.put(varDecl.id, resolveType(varDecl.type));
 	}
 
+	public void addVariables(List<VarDecl> varDecls){
+		for(VarDecl var : varDecls){
+			addVariable(var);
+		}
+	}
+	
+	public void removeVariables(List<VarDecl> varDecls){
+		for(VarDecl var : varDecls){
+			variableTable.remove(var.id);
+		}
+	}
+	
 	@Override
 	public Type visit(ArrayAccessExpr e) {
 		ArrayType array = (ArrayType) e.array.accept(this);
@@ -303,5 +316,13 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	@Override
 	public Type visit(InductDataExpr e) {
 		return inductDataTable.get(e.name);
+	}
+
+	@Override
+	public Type visit(QuantExpr e) {
+		addVariables(e.boundVars);
+		e.expr.accept(this);
+		removeVariables(e.boundVars);
+		return NamedType.BOOL;
 	}
 }

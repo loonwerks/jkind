@@ -88,6 +88,7 @@ expr: ID                                                       # idExpr
     | <assoc=right> expr op='=>' expr                          # binaryExpr
     | <assoc=right> expr op='->' expr                          # binaryExpr
     | 'if' expr 'then' expr 'else' expr                        # ifThenElseExpr
+    | ('forall' | 'exists') '(' vars=varDeclList ')' '.' expr  # quantExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
     | '(' ID (expr)* ')'                                       # inductDataExpr

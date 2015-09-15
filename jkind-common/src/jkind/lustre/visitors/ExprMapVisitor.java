@@ -22,6 +22,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -126,6 +127,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 	@Override
 	public Expr visit(InductDataExpr e) {
 		return new InductDataExpr(e.location, e.name, visitExprs(e.args));
+	}
+	
+	@Override
+	public Expr visit(QuantExpr e) {
+		return new QuantExpr(e.op, e.boundVars, e.expr.accept(this));
 	}
 	
 	protected List<Expr> visitExprs(List<? extends Expr> es) {

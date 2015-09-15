@@ -30,6 +30,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -548,6 +549,17 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		}
 		write(")");
         return null;
+	}
+
+	@Override
+	public Void visit(QuantExpr e) {
+		write(e.op);
+		write("(");
+		varDecls(e.boundVars);
+		write(")");
+		write(".");
+		expr(e.expr);
+		return null;
 	}
 
    

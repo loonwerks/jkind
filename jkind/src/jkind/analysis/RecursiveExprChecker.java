@@ -19,6 +19,7 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.Location;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -166,5 +167,11 @@ public class RecursiveExprChecker implements ExprVisitor<Void>{
         passed = false;
         Output.error(location, message);
     }
+
+	@Override
+	public Void visit(QuantExpr e) {
+		error(e.location, "recursive functions cannot contain quantifiers");
+		return null;
+	}
 
 }

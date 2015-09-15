@@ -41,6 +41,7 @@ public class StaticAnalyzer {
 		valid = valid && hasMainNode(program);
 		valid = valid && typesUnique(program);
 		valid = valid && inductTypesCapitalized(program);
+		valid = valid && reservedFunctionName(program);
 		valid = valid && TypesDefined.check(program);
 		valid = valid && TypeDependencyChecker.check(program);
 		valid = valid && enumsAndConstantsUnique(program);
@@ -79,6 +80,22 @@ public class StaticAnalyzer {
 	    
         return ok;
     }
+	
+	private static boolean reservedFunctionName(Program program){
+		boolean valid = true;
+		for(RecursiveFunction recFun : program.recFuns){
+			valid = valid && reservedFunctionName(recFun);
+		}
+		return valid;
+	}
+	
+	private static boolean reservedFunctionName(RecursiveFunction recFun){
+		if(recFun.id.equals("member")){
+			Output.error(recFun.location, "function name 'member' is reserved");
+			return false;
+		}
+		return true;
+	}
 	
 	private static boolean RecursiveLocalsAcyclic(RecursiveFunction recFun){
 

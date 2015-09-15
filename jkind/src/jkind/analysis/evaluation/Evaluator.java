@@ -18,6 +18,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -199,5 +200,10 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 			values.add(value);
 		}
 		return values;
+	}
+	
+	@Override
+	public Value visit(QuantExpr e){
+		return e.expr.accept(this);
 	}
 }

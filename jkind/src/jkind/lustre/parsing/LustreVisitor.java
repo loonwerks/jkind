@@ -218,6 +218,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPreExpr(@NotNull LustreParser.PreExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code quantExpr}
+	 * labeled alternative in {@link LustreParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitQuantExpr(@NotNull LustreParser.QuantExprContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#varDeclList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -18,6 +18,7 @@ import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -311,5 +312,10 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	@Override
 	public Void visit(InductDataExpr e) {
 		throw new JKindException("We do not have support for inductive datatypes for excel generation");
+	}
+
+	@Override
+	public Void visit(QuantExpr e) {
+		throw new JKindException("We do not have support for quantifiers for excel generation");
 	}
 }

@@ -2,13 +2,38 @@ type Lst = induct {cons (head int) (tail Lst) | nil };
 
 recursive plus_one (l : Lst) returns (res : Lst);
 let
-  res = if (is_nil l) then nil else (cons (1 + (head l)) (plus_one (tail l)));
+  res = if (is_nil l) then nil else (cons ((head l) + 1) (plus_one (tail l)));
 tel;
 
-node main() returns();
-var
-  prop : bool;
+recursive len (l : Lst) returns (res : int);
 let
-  prop = (head (cons (2-1) (cons (-3+5) nil))) - 1 = -3;
-  --%PROPERTY prop;
+  res = if (is_nil l) then 0 else 1 + (len (tail l));
+tel;
+
+recursive positive (l : Lst) returns (res : bool);
+let
+  res = if (is_nil l) then true else (head l) >= 0 and (positive (tail l));
+tel;
+
+recursive sum (l : Lst) returns (res : int);
+let
+  res = if (is_nil l) then 0 else (head l) + (sum (tail l));
+tel;
+
+recursive mymember (x : int; l : Lst) returns (res : bool);
+let
+  res = if (is_nil l) then false
+        else if (head l) = x then true
+	else (mymember x (tail l));
+tel;
+
+node main(input : int) returns();
+var
+  ok : bool;
+  pos, neg : Lst;
+let
+  pos = if (input >= 0) then (cons input (nil -> (pre pos))) else (nil -> pre pos);
+  neg = if (input >= 0) then (cons (- input) (nil -> (pre neg))) else (nil -> pre neg);
+  ok = (len pos) = (len neg);
+  --%PROPERTY ok;
 tel;

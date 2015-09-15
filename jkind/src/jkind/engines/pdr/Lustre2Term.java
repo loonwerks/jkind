@@ -3,6 +3,7 @@ package jkind.engines.pdr;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.JKindException;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
@@ -20,6 +21,7 @@ import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -272,6 +274,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 	private Term lessEqual(Term left, Term right) {
 		return term("<=", left, right);
+	}
+
+	@Override
+	public Term visit(QuantExpr e) {
+		throw new JKindException("PDR does not support quantifiers");
 	}
 
 }

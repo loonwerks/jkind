@@ -19,6 +19,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -155,5 +156,10 @@ public class IdRewriteVisitor implements ExprVisitor<Expr> {
         }
         return new InductDataExpr(e.name, args);
     }
+
+	@Override
+	public Expr visit(QuantExpr e) {
+		return new QuantExpr(e.op, e.boundVars, e.expr.accept(this));
+	}
 
 }

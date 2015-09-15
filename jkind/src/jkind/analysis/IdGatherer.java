@@ -20,12 +20,14 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
+import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 
 public class IdGatherer implements ExprVisitor<Set<String>> {
@@ -166,5 +168,15 @@ public class IdGatherer implements ExprVisitor<Set<String>> {
         }
         return ids;
     }
+
+	@Override
+	public Set<String> visit(QuantExpr e) {
+		Set<String> ids = new HashSet<>();
+		for(VarDecl var : e.boundVars){
+			ids.add(var.id);
+		}
+		ids.addAll(e.expr.accept(this));
+		return ids;
+	}
 
 }

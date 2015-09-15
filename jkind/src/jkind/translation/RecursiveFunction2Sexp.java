@@ -19,6 +19,7 @@ import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -54,8 +55,9 @@ public class RecursiveFunction2Sexp implements ExprVisitor<Sexp>{
         }
         
         List<Sexp> args = new ArrayList<>();
+        
         for(VarDecl var : recFun.inputs){
-            args.add(new Cons(var.id, new Symbol(var.type.toString())));
+            args.add(new Cons(var.id, new Symbol(Util.capitalize(var.type.toString()))));
         }
         Sexp argCons = new Cons(args);
         
@@ -184,7 +186,6 @@ public class RecursiveFunction2Sexp implements ExprVisitor<Sexp>{
 
     @Override
     public Sexp visit(InductDataExpr e) {
-        // TODO Auto-generated method stub
         List<Sexp> args = new ArrayList<>();
         for(Expr expr : e.args){
             args.add(expr.accept(this));
@@ -203,5 +204,10 @@ public class RecursiveFunction2Sexp implements ExprVisitor<Sexp>{
     private static String capitalize(String name) {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
+
+	@Override
+	public Sexp visit(QuantExpr e) {
+		throw new JKindException("recursive functions cannot contain quantifiers");
+	}
 
 }

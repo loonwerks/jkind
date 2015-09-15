@@ -9,6 +9,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.InductDataExpr;
 import jkind.lustre.Program;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.EnumValue;
@@ -65,5 +66,4 @@ public class ConstantEvaluator extends Evaluator {
 			return super.visit(e);
 		}
 	}
-
 }

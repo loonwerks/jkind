@@ -36,6 +36,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -214,6 +215,18 @@ public class TypeChecker implements ExprVisitor<Type> {
 		variableTable.clear();
 		for (VarDecl v : Util.getVarDecls(node)) {
 			variableTable.put(v.id, resolveType(v.type));
+		}
+	}
+	
+	private void addToVariableTable(List<VarDecl> vars){
+		for (VarDecl v : vars) {
+			variableTable.put(v.id, resolveType(v.type));
+		}
+	}
+	
+	private void removeFromVariableTable(List<VarDecl> vars){
+		for (VarDecl v : vars) {
+			variableTable.remove(v.id);
 		}
 	}
 	
@@ -735,6 +748,14 @@ public class TypeChecker implements ExprVisitor<Type> {
 		return returnType;
 	}
 	
+	@Override
+	public Type visit(QuantExpr e) {
+		addToVariableTable(e.boundVars);
+		e.expr.accept(this);
+		removeFromVariableTable(e.boundVars);
+		return NamedType.BOOL;
+	}
+	
 	private void compareTypeAssignment(Ast ast, Type expected, Type actual) {
 		if (expected == null || actual == null) {
 			return;
@@ -849,5 +870,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private void error(Ast ast, String message) {
 		error(ast.location, message);
 	}
+
 
 }

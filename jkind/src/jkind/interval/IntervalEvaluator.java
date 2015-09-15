@@ -1,5 +1,6 @@
 package jkind.interval;
 
+import jkind.JKindException;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
@@ -14,6 +15,7 @@ import jkind.lustre.InductDataExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.NodeCallExpr;
+import jkind.lustre.QuantExpr;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -159,6 +161,11 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 		} else {
 			return e.expr.accept(this).applyUnaryOp(e.op);
 		}
+	}
+
+	@Override
+	public Interval visit(QuantExpr e) {
+		throw new JKindException("Interval generalization does not support quantifiers");
 	}
 
 }
