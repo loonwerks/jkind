@@ -41,6 +41,7 @@ public class StaticAnalyzer {
 		valid = valid && hasMainNode(program);
 		valid = valid && typesUnique(program);
 		valid = valid && inductTypesCapitalized(program);
+		valid = valid && QuantifiedVariableChecker.check(program);
 		valid = valid && reservedFunctionName(program);
 		valid = valid && TypesDefined.check(program);
 		valid = valid && TypeDependencyChecker.check(program);
@@ -80,7 +81,7 @@ public class StaticAnalyzer {
 	    
         return ok;
     }
-	
+		
 	private static boolean reservedFunctionName(Program program){
 		boolean valid = true;
 		for(RecursiveFunction recFun : program.recFuns){

@@ -240,7 +240,10 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(QuantExpr e) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Sexp> args = new ArrayList<>();
+		for(VarDecl var : e.boundVars){
+			args.add(new Cons(var.id, new Symbol(Util.capitalize(var.type.toString()))));
+		}
+		return new Cons(e.toString(), new Cons(args), e.expr.accept(this));
 	}
 }
