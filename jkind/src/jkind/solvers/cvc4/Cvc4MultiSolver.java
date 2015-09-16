@@ -2,6 +2,7 @@ package jkind.solvers.cvc4;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -69,8 +70,11 @@ public class Cvc4MultiSolver extends Solver {
             solver.define(inductType);
         }
         boolean afterFirst = false;
-        for(List<Sexp> assertList : assertionsQueue){
-            if(afterFirst){
+        Iterator<List<Sexp>> descIter = assertionsQueue.descendingIterator();
+        
+        while(descIter.hasNext()){
+        	List<Sexp> assertList = descIter.next();
+        	if(afterFirst){
                 solver.push();
             }
             for(Sexp sexp : assertList){
@@ -78,6 +82,7 @@ public class Cvc4MultiSolver extends Solver {
             }
             afterFirst = true;
         }
+        
     }
 
     private static String getCVC4() {

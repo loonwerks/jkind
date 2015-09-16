@@ -20,11 +20,11 @@ let
   res = if (is_nil l) then 0 else (head l) + (sum (tail l));
 tel;
 
-recursive mymember (x : int; l : Lst) returns (res : bool);
+recursive mem (x : int; l : Lst) returns (res : bool);
 let
   res = if (is_nil l) then false
         else if (head l) = x then true
-	else (mymember x (tail l));
+	else (mem x (tail l));
 tel;
 
 node main(input : int) returns();
@@ -34,6 +34,6 @@ var
 let
   pos = if (input >= 0) then (cons input (nil -> (pre pos))) else (nil -> pre pos);
   neg = if (input >= 0) then (cons (- input) (nil -> (pre neg))) else (nil -> pre neg);
-  ok = (len pos) = (len neg);
+  ok = not ((mem 0 pos) and (mem 3 pos) and (mem 5 pos));
   --%PROPERTY ok;
 tel;
