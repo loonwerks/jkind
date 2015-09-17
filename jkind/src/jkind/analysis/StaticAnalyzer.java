@@ -91,9 +91,12 @@ public class StaticAnalyzer {
 	}
 	
 	private static boolean reservedFunctionName(RecursiveFunction recFun){
-		if(recFun.id.equals("member")){
-			Output.error(recFun.location, "function name 'member' is reserved");
+		switch(recFun.id){
+		case "member":
+		case "insert":
+			Output.error(recFun.location, "function name '"+recFun.id+"' is reserved");
 			return false;
+		default:
 		}
 		return true;
 	}
