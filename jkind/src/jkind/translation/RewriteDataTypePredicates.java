@@ -11,9 +11,9 @@ import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.visitors.AstMapVisitor;
 
-public class rewriteDataTypePredicates extends AstMapVisitor{
+public class RewriteDataTypePredicates extends AstMapVisitor{
 	Set<String> constructorNames = new HashSet<>();
-	public rewriteDataTypePredicates(Program program){
+	public RewriteDataTypePredicates(Program program){
 		for(TypeDef def : program.types){
 			if(def.type instanceof InductType){
 				InductType inductType = (InductType)def.type;
@@ -25,7 +25,7 @@ public class rewriteDataTypePredicates extends AstMapVisitor{
     }
 
     public static Program program(Program program) {
-        return new rewriteDataTypePredicates(program).visit(program);
+        return new RewriteDataTypePredicates(program).visit(program);
     }
 
     @Override

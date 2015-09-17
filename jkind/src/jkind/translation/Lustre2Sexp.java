@@ -2,7 +2,9 @@ package jkind.translation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -40,6 +42,8 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	public static final Symbol INIT = new Symbol("%init");
 	private final int index;
 	private boolean pre = false;
+	
+	private Set<String> boundVars = new HashSet<>();
 
 	public Lustre2Sexp(int index) {
 		this.index = index;
@@ -72,6 +76,10 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	}
 
 	private Symbol pre(String id) {
+		//don't want to rewrite quantified variabels over pre boundries
+		if(boundVars.contains(id)){
+			return curr(id);
+		}
 		return new StreamIndex(id, index - 1).getEncoded();
 	}
 
@@ -241,9 +249,14 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	@Override
 	public Sexp visit(QuantExpr e) {
 		List<Sexp> args = new ArrayList<>();
+		Set<String> preBoundVars = new HashSet<>();
+		preBoundVars.addAll(boundVars);
 		for(VarDecl var : e.boundVars){
-			args.add(new Cons(var.id, new Symbol(Util.capitalize(var.type.toString()))));
+			boundVars.add(var.id);
+			args.add(new Cons(curr(var.id), new Symbol(Util.capitalize(var.type.toString()))));
 		}
-		return new Cons(e.toString(), new Cons(args), e.expr.accept(this));
+		Sexp expr = e.expr.accept(this);
+		boundVars = preBoundVars;
+		return new Cons(e.op.toString(), new Cons(args), expr);
 	}
 }

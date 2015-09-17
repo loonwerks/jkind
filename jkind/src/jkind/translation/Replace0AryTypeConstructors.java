@@ -13,11 +13,11 @@ import jkind.lustre.TypeConstructor;
 import jkind.lustre.TypeDef;
 import jkind.lustre.visitors.AstMapVisitor;
 
-public class replace0AryTypeConstructors extends AstMapVisitor{
+public class Replace0AryTypeConstructors extends AstMapVisitor{
     
     private final Set<String> zeroAryConstructorNames = new HashSet<>();
     
-    public replace0AryTypeConstructors(Program program) {
+    public Replace0AryTypeConstructors(Program program) {
         for(TypeDef def : program.types){
             if(def.type instanceof InductType){
                 InductType inductType = (InductType)def.type;
@@ -31,7 +31,7 @@ public class replace0AryTypeConstructors extends AstMapVisitor{
     }
 
     public static Program program(Program program){
-        return new replace0AryTypeConstructors(program).visit(program);
+        return new Replace0AryTypeConstructors(program).visit(program);
     }
     
     @Override

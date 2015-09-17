@@ -539,9 +539,23 @@ public class TypeChecker implements ExprVisitor<Type> {
 	private List<Type> visitNodeCallExpr(NodeCallExpr e) {
 		Node node = nodeTable.get(e.node);
 		if (node == null) {
+			Type returnType;
+			//node calls and function calls or data constructors are ambiguous
 			
-			error(e, "unknown node " + e.node);
-			return null;
+			if (!(e.args.size() == 1 && inductDataTableReturn.containsKey(e.node))) {
+				RecursiveFunction recFun = recFunTable.get(e.node);
+				if (!(recFun != null && recFun.inputs.size() == 1)) {
+					error(e, "unknown node " + e.node);
+					return null;
+				}
+				returnType = recFun.output.type;
+			}else{
+				returnType = inductDataTableReturn.get(e.node);
+			}
+			
+			InductDataExpr inductExpr = new InductDataExpr(e.location, e.node, e.args);
+			inductExpr.accept(this);
+			return Collections.singletonList(returnType);
 		}
 
 		List<Type> actual = new ArrayList<>();

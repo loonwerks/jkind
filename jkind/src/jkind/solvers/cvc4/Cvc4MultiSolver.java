@@ -159,16 +159,18 @@ public class Cvc4MultiSolver extends Solver {
     }
 
     private void restartSolver(Cvc4SolverThread solver){
-        solver.destory();
-        if(solver == satSolver){
-            satSolver = null;
-            buildSatSolver();
-        }else if(solver == unsatSolver){
-            unsatSolver = null;
-            buildUnsatSolver();
-        }else{
-            throw new IllegalArgumentException("attempting to restart unkown solver");
-        }
+		synchronized (this) {
+			solver.destory();
+			if (solver == satSolver) {
+				satSolver = null;
+				buildSatSolver();
+			} else if (solver == unsatSolver) {
+				unsatSolver = null;
+				buildUnsatSolver();
+			} else {
+				throw new IllegalArgumentException("attempting to restart unkown solver");
+			}
+		}
     }
     
     @Override
@@ -193,7 +195,9 @@ public class Cvc4MultiSolver extends Solver {
 
     @Override
     public void stop() {
+    	satSolver.destory();
         satSolver.stop();
+        unsatSolver.destory();
         unsatSolver.stop();
     }
     

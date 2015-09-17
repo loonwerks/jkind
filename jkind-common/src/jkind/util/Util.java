@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.EnumType;
 import jkind.lustre.InductType;
+import jkind.lustre.InductTypeElement;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -38,6 +40,20 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 
 public class Util {
+
+	public static Collection<String> inductDataTypeFunctions(InductType type) {
+		Set<String> ids = new HashSet<>();
+		for (TypeConstructor constructor : type.constructors) {
+			if (constructor.elements.size() > 0) {
+				ids.add(constructor.name);
+				for (InductTypeElement el : constructor.elements) {
+					ids.add(el.name);
+				}
+			}
+		}
+		return ids;
+	}
+
 	public static List<VarDecl> getVarDecls(Node node) {
 		List<VarDecl> decls = new ArrayList<>();
 		decls.addAll(node.inputs);

@@ -262,10 +262,25 @@ public class StaticAnalyzer {
 	private static boolean nodesUnique(Program program) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
+		
+		Set<String> inductIds = new HashSet<>();
+		for(TypeDef def : program.types){
+			if(def.type instanceof InductType){
+				inductIds.addAll(Util.inductDataTypeFunctions(((InductType)def.type)));
+			}
+		}
+		
 		for (Node node : program.nodes) {
 			if (!seen.add(node.id)) {
 				Output.error(node.location, "node " + node.id + " already defined");
 				unique = false;
+			}
+			if(node.inputs.size() == 1){
+				if(inductIds.contains(node.id)){
+					Output.error(node.location, "node " +node.id + " has the same name as an "
+							+ "inductive data type constructor or data member");
+					unique = false;
+				}
 			}
 		}
 		return unique;

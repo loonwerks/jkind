@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import jkind.ExitCodes;
+import jkind.JKindException;
 import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -35,6 +36,8 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
+import jkind.lustre.QuantExpr;
+import jkind.lustre.QuantOp;
 import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
@@ -84,6 +87,7 @@ import jkind.lustre.parsing.LustreParser.PlainTypeContext;
 import jkind.lustre.parsing.LustreParser.PreExprContext;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreParser.PropertyContext;
+import jkind.lustre.parsing.LustreParser.QuantExprContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RealizabilityInputsContext;
@@ -105,6 +109,7 @@ import jkind.lustre.parsing.LustreParser.VarDeclListContext;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
@@ -465,6 +470,27 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	public Expr visitRecordUpdateExpr(RecordUpdateExprContext ctx) {
 		return new RecordUpdateExpr(loc(ctx), expr(ctx.expr(0)), ctx.ID().getText(),
 				expr(ctx.expr(1)));
+	}
+	
+	@Override
+	public Expr visitQuantExpr(QuantExprContext ctx){
+		ParseTree quant = ctx.getChild(0);
+		QuantOp quantOp;
+		switch(quant.getText()){
+		case "forall":
+			quantOp = QuantOp.FORALL;
+			break;
+		case "exists":
+			quantOp = QuantOp.EXISTS;
+			break;
+		default:
+			throw new JKindException("unkown quantifier '"+quant.getText()+"'");
+		}
+		
+		List<VarDecl> vars = varDecls(ctx.vars);
+		Expr expr = expr(ctx.expr());
+		
+		return new QuantExpr(loc(ctx), quantOp, vars, expr);
 	}
 
 	@Override
