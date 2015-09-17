@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.EnumType;
+import jkind.lustre.InductDataExpr;
 import jkind.lustre.InductType;
 import jkind.lustre.InductTypeElement;
 import jkind.lustre.NamedType;
@@ -50,6 +51,14 @@ public class Util {
 					ids.add(el.name);
 				}
 			}
+		}
+		return ids;
+	}
+	
+	public static Collection<String> inductDataTypeConstructorPredicateNames(InductType type) {
+		Set<String> ids = new HashSet<>();
+		for (TypeConstructor constructor : type.constructors) {
+			ids.add(InductDataExpr.CONSTRUCTOR_PREDICATE_PREFIX+constructor.name);
 		}
 		return ids;
 	}

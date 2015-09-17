@@ -9,9 +9,9 @@ import jkind.translation.tuples.FlattenTuples;
 
 public class Translate {
 	public static Node translate(Program program) {
-		program = RewriteDataTypePredicates.program(program);
 		program = Replace0AryTypeConstructors.program(program);
 		program = ReplaceNodesByInductivePredicates.program(program);
+		program = RewriteDataTypePredicates.program(program);
 		program = InlineEnumValues.program(program);
 		program = InlineUserTypes.program(program);
 		program = InlineConstants.program(program);
@@ -24,9 +24,9 @@ public class Translate {
 	}
 	
 	public static Program translateProgram(Program program) {
-        program = RewriteDataTypePredicates.program(program);
         program = Replace0AryTypeConstructors.program(program);
 		program = ReplaceNodesByInductivePredicates.program(program);
+        program = RewriteDataTypePredicates.program(program);
         program = InlineEnumValues.program(program);
         program = InlineUserTypes.program(program);
         program = InlineConstants.program(program);

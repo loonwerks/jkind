@@ -30,6 +30,7 @@ public class ReplaceNodesByInductivePredicates extends AstMapVisitor {
 			if (def.type instanceof InductType) {
 				InductType inductType = (InductType) def.type;
 				names.addAll(Util.inductDataTypeFunctions(inductType));
+				names.addAll(Util.inductDataTypeConstructorPredicateNames(inductType));
 			}
 		}
 		for(RecursiveFunction recFun : program.recFuns){

@@ -1,17 +1,24 @@
 type Lst = induct {cons (head int) (tail Lst) | nil };
 
-recursive mem (x : int; l : Lst) returns (res : bool);
+recursive mem(x : int; l : Lst) returns (res : bool);
 let
   res = if (is_nil l) then false
         else if (head l) = x then true
 	else (mem x (tail l));
 tel;
 
-recursive insert (x : int; xs : Lst) returns (ys : Lst);
+recursive ins(x : int; xs : Lst) returns (ys : Lst);
 let
   ys = if (is_nil xs) then (cons x nil)
        else if x < (head xs) then (cons x xs)
-       else (cons (head xs) (insert x (tail xs)));
+       else (cons (head xs) (ins x (tail xs)));
+tel;
+
+recursive sorted(xs : Lst) returns (res : bool);
+let
+  res = if (is_nil xs) then true
+        else if (is_nil (tail xs)) then true
+        else (head xs) <= (head (tail xs)) and (sorted (tail xs));
 tel;
 
 node main(input : int) returns();
@@ -19,7 +26,7 @@ var
   ok : bool;
   nums : Lst;
 let
-  nums = (insert input (nil -> pre nums));
-  ok = not ((mem 0 nums) and (mem 1 nums));
+  nums = (ins input (nil -> pre nums));
+  ok = (sorted nums);
   --%PROPERTY ok;
 tel;
