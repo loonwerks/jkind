@@ -190,19 +190,19 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEnumType(@NotNull LustreParser.EnumTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ifThenElseExpr}
-	 * labeled alternative in {@link LustreParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIfThenElseExpr(@NotNull LustreParser.IfThenElseExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code inductDataExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitInductDataExpr(@NotNull LustreParser.InductDataExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ifThenElseExpr}
+	 * labeled alternative in {@link LustreParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfThenElseExpr(@NotNull LustreParser.IfThenElseExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code arrayEID}
 	 * labeled alternative in {@link LustreParser#eID}.

@@ -14,11 +14,22 @@ let
        else (cons (head xs) (ins x (tail xs)));
 tel;
 
-recursive sorted(xs : Lst) returns (res : bool);
+-- recursive sorted(xs : Lst) returns (res : bool);
+-- let
+--   res = if (is_nil xs) then true
+--         else if (is_nil (tail xs)) then true
+--         else (head xs) <= (head (tail xs)) and (sorted (tail xs));
+-- tel;
+
+recursive sorted2(x : int; xs : Lst) returns (res : bool);
 let
   res = if (is_nil xs) then true
-        else if (is_nil (tail xs)) then true
-        else (head xs) <= (head (tail xs)) and (sorted (tail xs));
+        else x <= (head xs) and (sorted2 x (tail xs));
+tel;
+
+recursive sorted(xs : Lst) returns (res : bool);
+let
+  res = if (is_nil xs) then true else (sorted2 (head xs) (tail xs));
 tel;
 
 node main(input : int) returns();
@@ -27,6 +38,6 @@ var
   nums : Lst;
 let
   nums = (ins input (nil -> pre nums));
-  ok = (sorted nums);
+  ok = (mem (ins nums));
   --%PROPERTY ok;
 tel;

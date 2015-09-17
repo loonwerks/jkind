@@ -72,6 +72,7 @@ expr: ID                                                       # idExpr
     | BOOL                                                     # boolExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
+    | ID (expr)*                                               # inductDataExpr    
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
     | expr '{' ID ':=' expr '}'                                # recordUpdateExpr
@@ -91,7 +92,6 @@ expr: ID                                                       # idExpr
     | ('forall' | 'exists') '(' vars=varDeclList ')' '.' expr  # quantExpr
     | ID '{' ID '=' expr (';' ID '=' expr)* '}'                # recordExpr
     | '[' expr (',' expr)* ']'                                 # arrayExpr
-    | ID (expr)*                                               # inductDataExpr
     | '(' expr (',' expr)* ')'                                 # tupleExpr
     ;
 

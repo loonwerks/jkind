@@ -544,7 +544,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 			
 			if (!(e.args.size() == 1 && inductDataTableReturn.containsKey(e.node))) {
 				RecursiveFunction recFun = recFunTable.get(e.node);
-				if (!(recFun != null && recFun.inputs.size() == 1)) {
+				if (!(recFun != null )){//&& recFun.inputs.size() == 1)) {
 					error(e, "unknown node " + e.node);
 					return null;
 				}
@@ -754,7 +754,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 				}
 			}
 			
-			if(!argType.toString().equals(inputType.toString())){
+			if(argType != null && inputType !=null && !argType.toString().equals(inputType.toString())){
 				error(e, "argument "+index+" of data constructor, predicate, or function '"+e.name+"' "+
 			      "is of type '"+argType+"'. The expected type is '"+inputType+"'");
 			}
