@@ -26,9 +26,15 @@ public class InductType extends Type {
 	
 	@Override
 	public boolean equals(Object obj){
+		
+		if(obj instanceof NamedType){
+			return ((NamedType) obj).name.equals(name);
+		}
+		
 		if(!(obj instanceof InductType)){
 			return false;
 		}
+		
 		return ((InductType)obj).name.equals(name);
 	}
 	

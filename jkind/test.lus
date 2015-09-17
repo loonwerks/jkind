@@ -7,12 +7,19 @@ let
 	else (mem x (tail l));
 tel;
 
+recursive insert (x : int; xs : Lst) returns (ys : Lst);
+let
+  ys = if (is_nil xs) then (cons x nil)
+       else if x < (head xs) then (cons x xs)
+       else (cons (head xs) (insert x (tail xs)));
+tel;
+
 node main(input : int) returns();
 var
   ok : bool;
   nums : Lst;
 let
-  nums = (cons input (nil -> pre nums));
+  nums = (insert input (nil -> pre nums));
   ok = not ((mem 0 nums) and (mem 1 nums));
   --%PROPERTY ok;
 tel;
