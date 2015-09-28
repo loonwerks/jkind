@@ -1,43 +1,25 @@
 type Lst = induct {cons (head int) (tail Lst) | nil };
 
-recursive mem(x : int; l : Lst) returns (res : bool);
+recursive app(l1 : Lst; l2 : Lst) returns (res : Lst);
 let
-  res = if (is_nil l) then false
-        else if (head l) = x then true
-	else (mem x (tail l));
+  res = if (is_nil l1) then l2 else (cons (head l1) (app (tail l1) l2));
 tel;
 
-recursive ins(x : int; xs : Lst) returns (ys : Lst);
+recursive rev(l : Lst) returns (res : Lst);
 let
-  ys = if (is_nil xs) then (cons x nil)
-       else if x < (head xs) then (cons x xs)
-       else (cons (head xs) (ins x (tail xs)));
+  res = if (is_nil l) then nil else (app (rev (tail l)) (cons (head l) nil));
 tel;
 
--- recursive sorted(xs : Lst) returns (res : bool);
--- let
---   res = if (is_nil xs) then true
---         else if (is_nil (tail xs)) then true
---         else (head xs) <= (head (tail xs)) and (sorted (tail xs));
--- tel;
-
-recursive sorted2(x : int; xs : Lst) returns (res : bool);
-let
-  res = if (is_nil xs) then true
-        else x <= (head xs) and (sorted2 x (tail xs));
-tel;
-
-recursive sorted(xs : Lst) returns (res : bool);
-let
-  res = if (is_nil xs) then true else (sorted2 (head xs) (tail xs));
-tel;
-
-node main(input : int) returns();
+node main(l : Lst) returns();
 var
-  ok : bool;
-  nums : Lst;
+  ok1 : bool;
+  ok2 : bool;
+  ok3 : bool;
 let
-  nums = (ins input (nil -> pre nums));
-  ok = (mem (ins nums));
-  --%PROPERTY ok;
+  ok1 = forall (l1 : Lst; l2 : Lst; l3 : Lst) . (app l1 (app l2 l3)) = (app (app l1 l2) l3);
+  ok2 = forall (l1 : Lst; l2 : Lst) . (rev (app l1 l2)) = (app (rev l2) (rev l1));
+  ok3 = forall (l1 : Lst) . (rev (rev l1)) = l1;
+  --%PROPERTY ok1;
+  --%PROPERTY ok2;
+  --%PROPERTY ok3;
 tel;

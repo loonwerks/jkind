@@ -29,6 +29,7 @@ import jkind.solvers.smtinterpol.SmtInterpolSolver;
 import jkind.solvers.yices.YicesSolver;
 import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
+import jkind.translation.InductiveDataTypeSpecification;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
@@ -58,7 +59,7 @@ public abstract class SolverBasedEngine extends Engine {
 	protected void initializeSolver() {
 		solver = getSolver();
 		
-		if(spec.containsInductiveDataTypes() && !(solver instanceof Cvc4Solver || solver instanceof Cvc4MultiSolver)){
+		if(spec instanceof InductiveDataTypeSpecification && !(solver instanceof Cvc4Solver || solver instanceof Cvc4MultiSolver)){
 			throw new JKindException("The model contains inductive datatypes. CVC4 must be used"); 
 		}
 		

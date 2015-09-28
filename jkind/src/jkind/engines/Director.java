@@ -37,6 +37,7 @@ import jkind.results.Counterexample;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
+import jkind.translation.InductiveDataTypeSpecification;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.Util;
@@ -155,7 +156,7 @@ public class Director extends MessageHandler {
 		
 		//if the specification contains inductive datatypes we are
 		//very limited about what engines we can run
-		boolean noInductDataTypes = !spec.containsInductiveDataTypes();
+		boolean noInductDataTypes = !(spec instanceof InductiveDataTypeSpecification);
 		
 		if(!noInductDataTypes){
 			if(settings.smoothCounterexamples){
@@ -184,7 +185,11 @@ public class Director extends MessageHandler {
 		}
 
 		if (settings.kInduction) {
-			addEngine(new KInductionEngine(spec, settings, this));
+			if (!noInductDataTypes) {
+				addEngine(new QuantifiedKInductionEngine(spec, settings, this));
+			} else {
+				addEngine(new KInductionEngine(spec, settings, this));
+			}
 		}
 
 		if (settings.invariantGeneration) {

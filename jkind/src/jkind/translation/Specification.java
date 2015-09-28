@@ -21,13 +21,4 @@ public class Specification {
 		this.transitionRelation = Lustre2Sexp.constructTransitionRelation(node);
 	}
 	
-	public boolean containsInductiveDataTypes(){
-		for(Type type : typeMap.values()){
-			if(type instanceof InductType){
-				return true;
-			}
-		}
-		return false;
-	}
-	
 }

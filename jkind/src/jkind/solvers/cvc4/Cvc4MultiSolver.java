@@ -42,7 +42,7 @@ public class Cvc4MultiSolver extends Solver {
         if(satSolver != null){
             throw new JKindException("Cvc4MultiSolver attempt to to build solver that is already built");
         }
-        ProcessBuilder satProcess = new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun");
+        ProcessBuilder satProcess = new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun", "--uf-ss=none");
         satSolver = new Cvc4SolverThread(scratchBase+"_SAT", satProcess, incoming);
         rebuildSolver(satSolver);
     }

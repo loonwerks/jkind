@@ -56,6 +56,9 @@ public class NamedType extends Type {
 		if (obj == null) {
 			return false;
 		}
+		if(obj instanceof InductType){
+			return this.name.equals(((InductType)obj).name);
+		}
 		if (!(obj instanceof NamedType)) {
 			return false;
 		}
