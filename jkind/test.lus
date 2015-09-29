@@ -20,6 +20,6 @@ let
   ok2 = forall (l1 : Lst; l2 : Lst) . (rev (app l1 l2)) = (app (rev l2) (rev l1));
   ok3 = forall (l1 : Lst) . (rev l1) = l1;
   --%PROPERTY ok1;
-  --%PROPERTY ok2;
   --%PROPERTY ok3;
+  --%PROPERTY ok2;
 tel;

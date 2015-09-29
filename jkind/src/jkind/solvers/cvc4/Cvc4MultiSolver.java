@@ -192,21 +192,19 @@ public class Cvc4MultiSolver extends Solver {
     	return waitAndGetQueryResult();
     }
     
-    private void restartSolver(Cvc4SolverThread solver){
-		synchronized (this) {
-			solver.destory();
-			if (solver == satSolver) {
-				satSolver = null;
-				buildSatSolver();
-			} else if (solver == unsatSolver) {
-				unsatSolver = null;
-				buildUnsatSolver();
-			} else {
-				throw new IllegalArgumentException("attempting to restart unkown solver");
-			}
+	private synchronized void restartSolver(Cvc4SolverThread solver) {
+		solver.destory();
+		if (solver == satSolver) {
+			satSolver = null;
+			buildSatSolver();
+		} else if (solver == unsatSolver) {
+			unsatSolver = null;
+			buildUnsatSolver();
+		} else {
+			throw new IllegalArgumentException("attempting to restart unkown solver");
 		}
-    }
-    
+	}
+
     @Override
     public void push() {
         assertionsQueue.push((new ArrayList<>()));
@@ -228,11 +226,19 @@ public class Cvc4MultiSolver extends Solver {
     }
 
     @Override
-    public void stop() {
-    	satSolver.destory();
-        satSolver.stop();
-        unsatSolver.destory();
-        unsatSolver.stop();
+	public synchronized void stop() {
+    	//the call to the solver constructor in 
+    	//"buildSatSolver" may throw an exception
+    	//if we are already shutting down. This causes
+    	//the solver variable to be null
+		if (satSolver != null) {
+			satSolver.destory();
+			satSolver.stop();
+		}
+		if (unsatSolver != null) {
+			unsatSolver.destory();
+			unsatSolver.stop();
+		}
     }
     
     @Override

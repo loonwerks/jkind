@@ -107,7 +107,11 @@ public class Cvc4SolverThread extends Cvc4Solver implements Runnable{
                     readChar = false;
                 }
                 if(destroyed.get()){
-                    this.process.destroyForcibly();
+                	//might be null if we created the solver
+                	//during a shutdown signal
+					if (this.process != null) {
+						this.process.destroyForcibly();
+					}
                     return null;
                 }else if(!readChar){
                     Thread.sleep(10);

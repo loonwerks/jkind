@@ -169,6 +169,11 @@ public class Director extends MessageHandler {
 						+ "Interval Generalization has been disabled");
 			}
 			
+			if(settings.invariantGeneration){
+				Output.println("Warning!: model contains inductive datatypes. "
+						+ "Invariant Generation has been disabled");
+			}
+			
 			if(settings.pdrMax > 0){
 				Output.println("Warning!: model contains inductive datatypes. "
 						+ "PDR has been disabled");
@@ -196,7 +201,7 @@ public class Director extends MessageHandler {
 			}
 		}
 
-		if (settings.invariantGeneration) {
+		if (settings.invariantGeneration && !containsInductDataTypes) {
 			addEngine(new GraphInvariantGenerationEngine(spec, settings, this));
 		}
 
