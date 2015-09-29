@@ -10,7 +10,7 @@ let
   res = if (is_nil l) then nil else (app (rev (tail l)) (cons (head l) nil));
 tel;
 
-node main(l : Lst) returns();
+node main() returns();
 var
   ok1 : bool;
   ok2 : bool;
@@ -18,7 +18,7 @@ var
 let
   ok1 = forall (l1 : Lst; l2 : Lst; l3 : Lst) . (app l1 (app l2 l3)) = (app (app l1 l2) l3);
   ok2 = forall (l1 : Lst; l2 : Lst) . (rev (app l1 l2)) = (app (rev l2) (rev l1));
-  ok3 = forall (l1 : Lst) . (rev (rev l1)) = l1;
+  ok3 = forall (l1 : Lst) . (rev l1) = l1;
   --%PROPERTY ok1;
   --%PROPERTY ok2;
   --%PROPERTY ok3;

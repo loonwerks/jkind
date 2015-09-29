@@ -1,7 +1,5 @@
 package jkind.engines;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,8 +10,6 @@ import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.Node;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.solvers.Model;
@@ -21,21 +17,17 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
+import jkind.translation.InductiveDataTypeSpecification;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
 public class QuantifiedKInductionEngine extends KInductionEngine {
 
-	private final Map<String, Expr> exprMap = new HashMap<>();
-	public QuantifiedKInductionEngine(Specification spec, JKindSettings settings, Director director) {
+	private final Map<String, Expr> exprMap;
+	public QuantifiedKInductionEngine(InductiveDataTypeSpecification spec, JKindSettings settings, Director director) {
 		super(spec, settings, director);
-		for(Equation eq : spec.node.equations){
-			if(eq.lhs.size() != 1){
-				throw new JKindException("LHS of node equation should only have one element");
-			}
-			exprMap.put(eq.lhs.get(0).id, eq.expr);
-		}
+		exprMap = spec.propertyExprs;
 	}
 
 	
@@ -87,23 +79,20 @@ public class QuantifiedKInductionEngine extends KInductionEngine {
 	protected Sexp getInductiveQuery(int k, List<String> possiblyValid) {
 		
 		List<Sexp> hyps = new ArrayList<>();
-		List<Expr> propExprs = new ArrayList<>();
-		for(String str : possiblyValid){
-			propExprs.add(exprMap.get(str));
-		}
 		
 		for (int i = 0; i < k; i++) {
-			hyps.add(conjoin(toSexps(propExprs, i)));
+			hyps.add(conjoin(toSexps(possiblyValid, i)));
 		}
-		Sexp conc = conjoin(toSexps(propExprs, k));
+		Sexp conc = conjoin(toSexps(possiblyValid, k));
 
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 	
-	private List<Sexp> toSexps(List<Expr> exprs, int k){
+	private List<Sexp> toSexps(List<String> props, int k){
 		List<Sexp> sexps = new ArrayList<>();
 		Lustre2Sexp translater = new Lustre2Sexp(k);
-		for(Expr expr : exprs){
+		for(String prop : props){
+			Expr expr = exprMap.get(prop);
 			sexps.add(expr.accept(translater));
 		}
 		return sexps;

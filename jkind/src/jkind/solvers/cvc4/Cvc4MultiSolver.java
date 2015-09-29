@@ -30,6 +30,7 @@ public class Cvc4MultiSolver extends Solver {
     private List<Relation> definedRelations = new ArrayList<>();
     private List<InductType> definedInductTypes = new ArrayList<>();
     private Specification initialSpec = null;
+    private boolean asyncQueryFinished = true;
 
     public Cvc4MultiSolver(String scratchBase) {
         this.scratchBase = scratchBase;
@@ -124,17 +125,18 @@ public class Cvc4MultiSolver extends Solver {
         satSolver.define(relation);
         unsatSolver.define(relation);
     }
-
-    @Override
-    public Result query(Sexp sexp) {
-        satSolver.storeQuery(sexp);
-        unsatSolver.storeQuery(sexp);
-        Thread satThread = new Thread(satSolver);
-        Thread unsatThread = new Thread(unsatSolver);
-        satThread.start();
-        unsatThread.start();
-        
-        while(incoming.isEmpty()){
+    
+    private void startQuery(Sexp sexp){
+    	 satSolver.storeQuery(sexp);
+         unsatSolver.storeQuery(sexp);
+         Thread satThread = new Thread(satSolver);
+         Thread unsatThread = new Thread(unsatSolver);
+         satThread.start();
+         unsatThread.start();
+    }
+    
+    private Result waitAndGetQueryResult(){
+    	while(incoming.isEmpty()){
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -157,7 +159,39 @@ public class Cvc4MultiSolver extends Solver {
         incoming.clear(); //sometimes we get multiple results that we need to clear
         return multiResult.result;
     }
+    
+    @Override
+    public Result query(Sexp sexp) {
+        startQuery(sexp);
+        return waitAndGetQueryResult();
+    }
 
+    public void asyncQuery(Sexp sexp){
+    	if(!asyncQueryFinished){
+    		throw new JKindException("Tried to start another query before it finished");
+    	}
+    	startQuery(sexp);
+    }
+    
+    public void cancelAsyncQuery(){
+    	restartSolver(unsatSolver);
+    	restartSolver(satSolver);
+    	incoming.clear();
+    	asyncQueryFinished = true;
+    }
+    
+    public boolean asyncQueryCompleted(){
+    	return !incoming.isEmpty();
+    }
+    
+    public Result getAsyncQueryResult(){
+    	if(!asyncQueryCompleted()){
+    		throw new JKindException("Tried to get asynchronous query result before completed");
+    	}
+    	asyncQueryFinished = true;
+    	return waitAndGetQueryResult();
+    }
+    
     private void restartSolver(Cvc4SolverThread solver){
 		synchronized (this) {
 			solver.destory();

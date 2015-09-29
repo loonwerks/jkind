@@ -20,7 +20,7 @@ import jkind.util.StreamIndex;
 
 public class BmcEngine extends SolverBasedEngine {
 	public static final String NAME = "bmc";
-	private List<String> validProperties = new ArrayList<>();
+	protected List<String> validProperties = new ArrayList<>();
 
 	public BmcEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -43,7 +43,7 @@ public class BmcEngine extends SolverBasedEngine {
 		sendUnknown(properties);
 	}
 
-	private void checkProperties(int k) {
+	protected void checkProperties(int k) {
 		Result result;
 		do {
 			result = solver.query(StreamIndex.conjoinEncodings(properties, k));
@@ -70,16 +70,16 @@ public class BmcEngine extends SolverBasedEngine {
 		sendBaseStep(k);
 	}
 
-	private void sendInvalid(List<String> invalid, int k, Model model) {
+	protected void sendInvalid(List<String> invalid, int k, Model model) {
 		Itinerary itinerary = director.getInvalidMessageItinerary();
 		director.broadcast(new InvalidMessage(getName(), invalid, k + 1, model, itinerary));
 	}
 
-	private void sendBaseStep(int k) {
+	protected void sendBaseStep(int k) {
 		director.broadcast(new BaseStepMessage(k + 1, properties));
 	}
 
-	private void sendUnknown(List<String> unknown) {
+	protected void sendUnknown(List<String> unknown) {
 		director.receiveMessage(new UnknownMessage(getName(), unknown));
 	}
 
