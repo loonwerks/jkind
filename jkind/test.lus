@@ -10,16 +10,19 @@ let
   res = if (is_nil l) then nil else (app (rev (tail l)) (cons (head l) nil));
 tel;
 
-node main() returns();
-var
-  ok1 : bool;
-  ok2 : bool;
-  ok3 : bool;
+recursive pos(l : Lst) returns (res : bool);
 let
-  ok1 = forall (l1 : Lst; l2 : Lst; l3 : Lst) . (app l1 (app l2 l3)) = (app (app l1 l2) l3);
-  ok2 = forall (l1 : Lst; l2 : Lst) . (rev (app l1 l2)) = (app (rev l2) (rev l1));
-  ok3 = forall (l1 : Lst) . (rev l1) = l1;
-  --%PROPERTY ok1;
-  --%PROPERTY ok3;
-  --%PROPERTY ok2;
+  res = if (is_nil l) then true else if (head l) < 0 then false else (pos (tail l));
+tel;
+
+node main(i : int) returns();
+var
+  l : Lst;
+  ipos : bool;
+  prop : bool;
+let
+  l = (cons i nil) -> (cons i (pre l));
+  ipos = i >= 0 and (true -> pre ipos);
+  prop = ipos => forall (k : Lst) . k = l => (pos k);
+  --%PROPERTY prop;
 tel;

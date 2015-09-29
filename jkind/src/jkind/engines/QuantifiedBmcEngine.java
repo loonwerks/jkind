@@ -31,14 +31,13 @@ public class QuantifiedBmcEngine extends BmcEngine{
 	@Override
 	protected void checkProperties(int k) {
 		Result result;
+		List<String> possiblyFalse = new ArrayList<>(properties);
 		do {
-			String prop = properties.get(0);
+			String prop = possiblyFalse.remove(0);
 			List<String> singleProp = Collections.singletonList(prop);
 			
 			result = query(prop, k);
-
 			if (result instanceof SatResult || result instanceof UnknownResult) {
-				properties.remove(0);
 				Model model = getModel(result);
 				if (model == null) {
 					sendUnknown(properties);
@@ -53,7 +52,7 @@ public class QuantifiedBmcEngine extends BmcEngine{
 				}
 				
 			}
-		} while (!properties.isEmpty());
+		} while (!possiblyFalse.isEmpty());
 
 		sendBaseStep(k);
 	}

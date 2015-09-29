@@ -35,12 +35,12 @@ public class QuantifiedKInductionEngine extends KInductionEngine {
 	@Override
 	protected void checkProperties(int k) {
 
-		while (!properties.isEmpty()) {
-			String prop = properties.get(0);
-			Result result = query(prop, k);
-
+		List<String> possiblyValid = new ArrayList<>(properties);
+		while (!possiblyValid.isEmpty()) {
+			String prop = possiblyValid.remove(0);
 			List<String> propList = Collections.singletonList(prop);
-			properties.removeAll(propList);
+
+			Result result = query(prop, k);
 
 			if (result instanceof SatResult || result instanceof UnknownResult) {
 				
