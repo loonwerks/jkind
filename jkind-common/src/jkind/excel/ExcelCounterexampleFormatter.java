@@ -145,12 +145,8 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			sheet.addCell(new Label(col, row, ev.value));
 		} else if (value instanceof NumericInterval) {
 			NumericInterval ni = (NumericInterval) value;
-			if (ni.isExact()) {
-				sheet.addCell(new Number(col, row, ni.getLow().toDouble(), format));
-			} else {
-				String str = "[" + ni.getLow().toDouble() + ", " + ni.getHigh().toDouble() + "]";
-				sheet.addCell(new Label(col, row, str, format));
-			}
+			String str = "[" + ni.getLow().toDouble() + ", " + ni.getHigh().toDouble() + "]";
+			sheet.addCell(new Label(col, row, str, format));
 		} else if (value instanceof BoolInterval) {
 			BoolInterval bi = (BoolInterval) value;
 			sheet.addCell(new Boolean(col, row, bi.isTrue(), format));

@@ -14,4 +14,8 @@ public abstract class Interval extends Value {
 	public abstract Interval join(Interval other);
 
 	public abstract boolean isArbitrary();
+
+	public abstract boolean isExact();
+
+	public abstract Value getExactValue();
 }

@@ -3,6 +3,8 @@ package jkind.interval;
 import jkind.JKindException;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.values.IntegerValue;
+import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 
 public class NumericInterval extends Interval {
@@ -21,10 +23,32 @@ public class NumericInterval extends Interval {
 	public NumericEndpoint getHigh() {
 		return high;
 	}
-	
+
 	@Override
 	public boolean isArbitrary() {
 		return !low.isFinite() && !high.isFinite();
+	}
+
+	@Override
+	public boolean isExact() {
+		return low.equals(high);
+	}
+
+	@Override
+	public Value getExactValue() {
+		if (!isExact()) {
+			throw new IllegalArgumentException("Value is not exact");
+		}
+
+		if (low instanceof IntEndpoint) {
+			IntEndpoint ie = (IntEndpoint) low;
+			return new IntegerValue(ie.getValue());
+		} else if (low instanceof RealEndpoint) {
+			RealEndpoint re = (RealEndpoint) low;
+			return new RealValue(re.getValue());
+		} else {
+			throw new IllegalArgumentException("Unknown endpoint type");
+		}
 	}
 
 	@Override
@@ -93,13 +117,13 @@ public class NumericInterval extends Interval {
 
 		return new NumericInterval(min(val0, val1, val2, val3), max(val0, val1, val2, val3));
 	}
-	
+
 	private NumericInterval modulus(NumericInterval other) {
 		if (!other.low.equals(other.high)) {
 			throw new JKindException("Non-constant modulus in interval simulation");
 		}
 		IntEndpoint b = (IntEndpoint) other.low;
-		
+
 		if (isExact()) {
 			IntEndpoint a = (IntEndpoint) low;
 			IntEndpoint v = a.modulus(b);
@@ -155,10 +179,6 @@ public class NumericInterval extends Interval {
 		}
 	}
 
-	public boolean isExact() {
-		return low.equals(high);
-	}
-
 	private boolean disjoint(NumericInterval other) {
 		return high.compareTo(other.low) < 0 || low.compareTo(other.high) > 0;
 	}
@@ -183,7 +203,7 @@ public class NumericInterval extends Interval {
 		NumericInterval other = (NumericInterval) interval;
 		return new NumericInterval(low.min(other.low), high.max(other.high));
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof NumericInterval) {
@@ -192,7 +212,7 @@ public class NumericInterval extends Interval {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return low.hashCode() + high.hashCode();
