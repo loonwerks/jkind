@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="JKind Creator" basedir="." >
+
+   <!-- Build the JKind sources. Depends on the individual build.xml files
+        within each of the project subfolders. Only need to call the top level
+        from here, but this will build any dependencies.
+   -->
+   <ant antfile="build.xml" dir="./jkind" />
+
+   <!-- Build the jar -->
+   <ant antfile="build.xml" dir="./build" />
+   
+</project>
