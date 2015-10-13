@@ -5,3 +5,5 @@ bin
 *.xls
 *.log
 *.csv
+
+!build.xml
