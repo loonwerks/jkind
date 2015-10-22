@@ -119,7 +119,7 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 
 	@Override
 	public Interval visit(RealExpr e) {
-		RealEndpoint v = new RealEndpoint(new BigFraction(e.value));
+		RealEndpoint v = new RealEndpoint(BigFraction.valueOf(e.value));
 		return new NumericInterval(v, v);
 	}
 

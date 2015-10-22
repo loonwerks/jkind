@@ -3,6 +3,7 @@ package jkind.excel;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import jkind.JKindException;
@@ -16,12 +17,15 @@ import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.Layout;
+import jkind.util.BigFraction;
 import jkind.util.Util;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Boolean;
 import jxl.write.Label;
 import jxl.write.Number;
+import jxl.write.WritableCell;
+import jxl.write.WritableCellFeatures;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
@@ -136,10 +140,10 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			sheet.addCell(new Boolean(col, row, bv.value, format));
 		} else if (value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;
-			sheet.addCell(new Number(col, row, iv.value.doubleValue(), format));
+			sheet.addCell(getNumberCell(new BigFraction(iv.value), col, format));
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			sheet.addCell(new Number(col, row, rv.value.doubleValue(), format));
+			sheet.addCell(getNumberCell(rv.value, col, format));
 		} else if (value instanceof EnumValue) {
 			EnumValue ev = (EnumValue) value;
 			sheet.addCell(new Label(col, row, ev.value));
@@ -154,5 +158,50 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			throw new JKindException("Unknown value type in Excel writer: "
 					+ value.getClass().getSimpleName());
 		}
+	}
+
+	private WritableCell getNumberCell(BigFraction value, int col, CellFormat format) {
+		WritableCell cell = new Number(col, row, value.doubleValue(), format);
+
+		// Excel displays at most a float value. We check if that display
+		// will match the exact value. If not, we add a comment with a better
+		// approximation (or the exact value)
+		if (!isExactFloat(value)) {
+			WritableCellFeatures features = new WritableCellFeatures();
+			features.setComment(getTruncatedDecimal(value, 20), 8, 3);
+			cell.setCellFeatures(features);
+		}
+
+		return cell;
+	}
+
+	private boolean isExactFloat(BigFraction value) {
+		try {
+			String str = Float.toString((float) value.doubleValue());
+			BigFraction approx = BigFraction.valueOf(new BigDecimal(str));
+			return value.equals(approx);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
+	private String getTruncatedDecimal(BigFraction value, int scale) {
+		BigDecimal num = new BigDecimal(value.getNumerator());
+		BigDecimal denom = new BigDecimal(value.getDenominator());
+		BigDecimal truncated = num.divide(denom, scale, BigDecimal.ROUND_DOWN);
+
+		if (BigFraction.valueOf(truncated).equals(value)) {
+			return removeTrailingZeros(truncated.toPlainString());
+		} else {
+			return truncated.toPlainString() + "...";
+		}
+	}
+
+	private String removeTrailingZeros(String str) {
+		if (!str.contains(".")) {
+			return str;
+		}
+
+		return str.replaceFirst("\\.?0*$", "");
 	}
 }

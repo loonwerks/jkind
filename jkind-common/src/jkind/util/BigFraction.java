@@ -39,9 +39,13 @@ public class BigFraction implements Comparable<BigFraction> {
 	public BigFraction(BigInteger num) {
 		this(num, BigInteger.ONE);
 	}
-
-	public BigFraction(BigDecimal value) {
-		this(value.unscaledValue(), BigInteger.valueOf(10).pow(value.scale()));
+	
+	public static BigFraction valueOf(BigDecimal value) {
+		if (value.scale() >= 0) {
+			return new BigFraction(value.unscaledValue(), BigInteger.valueOf(10).pow(value.scale()));
+		} else {
+			return new BigFraction(value.unscaledValue().multiply(BigInteger.valueOf(10).pow(-value.scale())));
+		}
 	}
 
 	public BigInteger getNumerator() {
