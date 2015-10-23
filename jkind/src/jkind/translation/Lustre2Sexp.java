@@ -40,8 +40,8 @@ import jkind.util.Util;
 
 public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	public static final Symbol INIT = new Symbol("%init");
-	private final int index;
-	private boolean pre = false;
+	protected final int index;
+	protected boolean pre = false;
 	
 	private Set<String> boundVars = new HashSet<>();
 

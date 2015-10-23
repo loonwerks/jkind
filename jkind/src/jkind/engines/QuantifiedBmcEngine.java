@@ -18,6 +18,7 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.cvc4.Cvc4MultiSolver;
 import jkind.translation.InductiveDataTypeSpecification;
 import jkind.translation.Lustre2Sexp;
+import jkind.translation.Lustre2SexpNoArrow;
 
 public class QuantifiedBmcEngine extends BmcEngine{
 
@@ -94,7 +95,7 @@ public class QuantifiedBmcEngine extends BmcEngine{
 	
 	private List<Sexp> toSexps(List<String> props, int k){
 		List<Sexp> sexps = new ArrayList<>();
-		Lustre2Sexp translater = new Lustre2Sexp(k);
+		Lustre2Sexp translater = new Lustre2SexpNoArrow(k);
 		for(String prop : props){
 			Expr expr = exprMap.get(prop);
 			sexps.add(expr.accept(translater));

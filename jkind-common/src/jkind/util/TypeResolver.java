@@ -22,7 +22,11 @@ public class TypeResolver extends TypeMapVisitor {
 		if (e.isBuiltin()) {
 			return e;
 		} else {
-			return map.get(e.name).accept(this);
+			Type type = map.get(e.name);
+			if (type != null) {
+				return type.accept(this);
+			}
+			return null;
 		}
 	}
 }

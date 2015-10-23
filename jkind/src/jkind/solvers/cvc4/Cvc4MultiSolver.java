@@ -43,7 +43,9 @@ public class Cvc4MultiSolver extends Solver {
         if(satSolver != null){
             throw new JKindException("Cvc4MultiSolver attempt to to build solver that is already built");
         }
-        ProcessBuilder satProcess = new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun", "--uf-ss=none");
+        //ProcessBuilder satProcess = new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun", "--uf-ss=none");
+        ProcessBuilder satProcess = new ProcessBuilder(getCVC4(), "--lang", "smt", "--fmf-fun");
+
         satSolver = new Cvc4SolverThread(scratchBase+"_SAT", satProcess, incoming);
         rebuildSolver(satSolver);
     }
@@ -53,6 +55,7 @@ public class Cvc4MultiSolver extends Solver {
             throw new JKindException("Cvc4MultiSolver attempt to to build solver that is already built");
         }
         ProcessBuilder unsatProcess = new ProcessBuilder(getCVC4(), "--lang", "smt", "--quant-ind");
+        		//,"--conjecture-gen", "--conjecture-filter-canonical", "--conjecture-gen-per-round=100");
         unsatSolver = new Cvc4SolverThread(scratchBase+"_UNSAT", unsatProcess, incoming);
         rebuildSolver(unsatSolver);
     }

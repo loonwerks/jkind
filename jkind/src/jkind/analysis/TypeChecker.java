@@ -220,7 +220,11 @@ public class TypeChecker implements ExprVisitor<Type> {
 	
 	private void addToVariableTable(List<VarDecl> vars){
 		for (VarDecl v : vars) {
-			variableTable.put(v.id, resolveType(v.type));
+			Type resolveType = resolveType(v.type);
+			if(resolveType == null){
+				error(v.location, "variable '"+v.id+"' us undefined type '"+v.type+"'");
+			}
+			variableTable.put(v.id, resolveType);
 		}
 	}
 	
