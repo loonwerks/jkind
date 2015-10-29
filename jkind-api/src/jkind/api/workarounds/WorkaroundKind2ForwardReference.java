@@ -18,6 +18,7 @@ import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.AstIterVisitor;
 import jkind.lustre.visitors.ExprIterVisitor;
 import jkind.lustre.visitors.TypeIterVisitor;
+import jkind.util.TopologicalSorter;
 
 public class WorkaroundKind2ForwardReference {
 	public static Program program(Program program) {
@@ -29,11 +30,11 @@ public class WorkaroundKind2ForwardReference {
 	}
 
 	private static List<TypeDef> getSortedTypes(List<TypeDef> types) {
-		DependencyMap<TypeDef> depMap = new DependencyMap<>();
+		TopologicalSorter<TypeDef> sorter = new TopologicalSorter<>();
 		for (TypeDef type : types) {
-			depMap.put(type.id, type, getTypeDependencies(type.type));
+			sorter.put(type.id, type, getTypeDependencies(type.type));
 		}
-		return depMap.getSortedValues();
+		return sorter.getSortedValues();
 	}
 
 	private static Set<String> getTypeDependencies(Type type) {
@@ -51,11 +52,11 @@ public class WorkaroundKind2ForwardReference {
 	}
 
 	private static Collection<Constant> getSortedConstants(List<Constant> constants) {
-		DependencyMap<Constant> depMap = new DependencyMap<>();
+		TopologicalSorter<Constant> sorter = new TopologicalSorter<>();
 		for (Constant constant : constants) {
-			depMap.put(constant.id, constant, getConstantDependencies(constant.expr));
+			sorter.put(constant.id, constant, getConstantDependencies(constant.expr));
 		}
-		return depMap.getSortedValues();
+		return sorter.getSortedValues();
 	}
 
 	private static Set<String> getConstantDependencies(Expr expr) {
@@ -71,11 +72,11 @@ public class WorkaroundKind2ForwardReference {
 	}
 
 	private static Collection<Node> getSortedNodes(List<Node> nodes) {
-		DependencyMap<Node> depMap = new DependencyMap<>();
+		TopologicalSorter<Node> sorter = new TopologicalSorter<>();
 		for (Node node : nodes) {
-			depMap.put(node.id, node, getNodeDependencies(node));
+			sorter.put(node.id, node, getNodeDependencies(node));
 		}
-		return depMap.getSortedValues();
+		return sorter.getSortedValues();
 	}
 
 	private static Set<String> getNodeDependencies(Node node) {

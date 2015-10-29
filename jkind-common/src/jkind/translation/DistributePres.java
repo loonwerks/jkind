@@ -25,11 +25,11 @@ import jkind.lustre.visitors.AstMapVisitor;
  * If there are no node calls, condacts, or arrow expressions underneath 'pre'
  * operators, then in the result 'pre' will only be applied to variables.
  */
-public class DistributePre extends AstMapVisitor {
+public class DistributePres extends AstMapVisitor {
 	private int pres = 0;
 
 	public static Node node(Node node) {
-		return new DistributePre().visit(node);
+		return new DistributePres().visit(node);
 	}
 
 	private Expr applyPres(Expr e) {
@@ -43,8 +43,8 @@ public class DistributePre extends AstMapVisitor {
 	@Override
 	public Expr visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
-			Expr left = e.left.accept(new DistributePre());
-			Expr right = e.right.accept(new DistributePre());
+			Expr left = e.left.accept(new DistributePres());
+			Expr right = e.right.accept(new DistributePres());
 			return applyPres(arrow(left, right));
 		} else {
 			return super.visit(e);
