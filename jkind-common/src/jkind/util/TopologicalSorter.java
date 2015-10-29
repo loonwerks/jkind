@@ -37,12 +37,13 @@ public class TopologicalSorter<T> {
 			return;
 		}
 
-		for (String dependency : dependencyMap.get(id)) {
-			if (!sorted.contains(dependency)) {
-				addToSortedIdsList(dependency, sorted);
+		if (dependencyMap.containsKey(id)) {
+			for (String dependency : dependencyMap.get(id)) {
+				if (!sorted.contains(dependency)) {
+					addToSortedIdsList(dependency, sorted);
+				}
 			}
+			sorted.add(id);
 		}
-		
-		sorted.add(id);
 	}
 }
