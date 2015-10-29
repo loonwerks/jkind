@@ -7,6 +7,9 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprDisjunctiveVisitor;
 
+/**
+ * Check if an expression contains a 'pre' or '->' operator.
+ */
 public class ContainsTemporalOperator extends ExprDisjunctiveVisitor {
 	public static boolean check(Expr e) {
 		return e.accept(new ContainsTemporalOperator());

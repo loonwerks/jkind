@@ -19,11 +19,16 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.visitors.ExprMapVisitor;
 import jkind.util.Util;
 
+/**
+ * Inline node calls by introducing additional local variables. Assertions
+ * within called nodes are ignored. Properties within called nodes are lifted to
+ * properties in the main node.
+ */
 public class InlineNodeCalls extends ExprMapVisitor {
 	public static Node program(Program program) {
 		InlineNodeCalls inliner = new InlineNodeCalls(Util.getNodeTable(program.nodes));
 		Node main = program.getMainNode();
-		
+
 		NodeBuilder builder = new NodeBuilder(main);
 		builder.clearAssertions();
 		builder.addAssertions(inliner.visitExprs(main.assertions));
@@ -31,7 +36,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		builder.addEquations(inliner.visitEquationsQueue(main.equations));
 		builder.addLocals(inliner.newLocals);
 		builder.addProperties(inliner.newProperties);
-		
+
 		return builder.build();
 	}
 
@@ -60,14 +65,9 @@ public class InlineNodeCalls extends ExprMapVisitor {
 	@Override
 	public Expr visit(NodeCallExpr e) {
 		// Detect duplicate node calls to reduce code size
-		String key = getKey(e);
-		if (inlinedCalls.containsKey(key)) {
-			return inlinedCalls.get(key);
-		} else {
-			Expr result = TupleExpr.compress(visitNodeCallExpr(e));
-			inlinedCalls.put(key, result);
-			return result;
-		}
+		return inlinedCalls.computeIfAbsent(getKey(e), key -> {
+			return TupleExpr.compress(visitNodeCallExpr(e));
+		});
 	}
 
 	private String getKey(NodeCallExpr e) {
