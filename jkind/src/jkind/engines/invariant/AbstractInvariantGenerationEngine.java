@@ -28,7 +28,7 @@ import jkind.util.SexpUtil;
 
 public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
 	private final InvariantSet provenInvariants = new InvariantSet();
-	
+
 	public AbstractInvariantGenerationEngine(String name, Specification spec,
 			JKindSettings settings, Director director) {
 		super(name, spec, settings, director);
@@ -117,7 +117,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		provenInvariants.addAll(newInvariants);
 		sendValidProperties(newInvariants, k);
 		sendInvariants(newInvariants);
-		
+
 		original.reduceProven(invariant);
 		return;
 	}
@@ -144,9 +144,9 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		return new Cons("=>", SexpUtil.conjoin(hyps), conc);
 	}
 
-	private void sendValidProperties(List<Expr> invs, int k) {
+	private void sendValidProperties(List<Expr> newInvariants, int k) {
 		List<String> valid = new ArrayList<>();
-		for (Expr inv : invs) {
+		for (Expr inv : newInvariants) {
 			if (inv instanceof IdExpr) {
 				IdExpr idExpr = (IdExpr) inv;
 				if (properties.contains(idExpr.id)) {
@@ -156,12 +156,9 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		}
 
 		if (!valid.isEmpty()) {
-			List<Expr> allInvariants = new ArrayList<>();
-			allInvariants.addAll(provenInvariants.getInvariants());
-			allInvariants.addAll(invs);
-			
 			Itinerary itinerary = director.getValidMessageItinerary();
-			director.broadcast(new ValidMessage(getName(), valid, k, allInvariants, itinerary));
+			List<Expr> invariants = provenInvariants.getInvariants();
+			director.broadcast(new ValidMessage(getName(), valid, k, invariants, itinerary));
 		}
 	}
 
@@ -173,7 +170,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 
 		director.broadcast(new InvariantMessage(newInvariants));
 	}
-	
+
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 	}
