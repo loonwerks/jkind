@@ -69,6 +69,8 @@ public class Kind2WebApi extends Kind2Api {
 	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
 		XmlParseThread parseThread = null;
 
+		debug.println("Kind 2 URI: " + uri);
+		debug.println("Kind 2 arguments: " + String.join(" ", getArgs()));
 		try (Kind2WebInputStream stream = new Kind2WebInputStream(uri, getArgs(), program)) {
 			result.start();
 			parseThread = new XmlParseThread(stream, result, Backend.KIND2);

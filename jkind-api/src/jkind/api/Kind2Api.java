@@ -64,6 +64,7 @@ public class Kind2Api extends KindApi {
 	private void callKind2(File lustreFile, JKindResult result, IProgressMonitor monitor)
 			throws IOException, InterruptedException {
 		ProcessBuilder builder = getKind2ProcessBuilder(lustreFile);
+		debug.println("Kind 2 command: " + ApiUtil.getQuotedCommand(builder.command()));
 		Process process = null;
 		XmlParseThread parseThread = null;
 		int code = 0;

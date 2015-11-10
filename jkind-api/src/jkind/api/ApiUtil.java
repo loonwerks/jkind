@@ -1,9 +1,12 @@
 package jkind.api;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.function.Function;
 
 import jkind.JKindException;
@@ -61,6 +64,7 @@ public class ApiUtil {
 			File xmlFile, JKindResult result, IProgressMonitor monitor, DebugLogger debug)
 			throws IOException, InterruptedException {
 		ProcessBuilder builder = runCommand.apply(lustreFile);
+		debug.println("JKind command: " + ApiUtil.getQuotedCommand(builder.command()));
 		Process process = null;
 		try (JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile)) {
 			XmlParseThread parseThread = new XmlParseThread(xmlStream, result, Backend.JKIND);
@@ -178,5 +182,10 @@ public class ApiUtil {
 			result.append((char) i);
 		}
 		return result.toString();
+	}
+
+	public static String getQuotedCommand(List<String> pieces) {
+		return pieces.stream().map(p -> p.contains(" ") ? "\"" + p + "\"" : p)
+				.collect(joining(" "));
 	}
 }
