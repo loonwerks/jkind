@@ -89,6 +89,8 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 	private static final Image WAITING_IMAGE = loadImage("/icons/waiting.png");
 	private static final Image CANCEL_IMAGE = loadImage("/icons/cancel.png");
 	private static final Image ERROR_IMAGE = loadImage("/icons/error.png");
+	private static final Image VALID_WARNING_IMAGE = loadImage("/icons/valid-warning.png");
+	
 	private Spinner workingSpinner;
 
 	private static Image loadImage(String filename) {
@@ -134,6 +136,8 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 			return ERROR_IMAGE;
 		case WAITING:
 			return WAITING_IMAGE;
+		case VALID_REFINED:
+		    return VALID_WARNING_IMAGE;
 		default:
 			return WAITING_IMAGE;
 		}

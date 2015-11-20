@@ -11,7 +11,7 @@ public class UnknownMessage extends Message {
 	
 	public UnknownMessage(String source, List<String> unknown) {
 		this.source = source;
-		this.unknown = Util.safeCopy(unknown);
+		this.unknown = Util.safeList(unknown);
 	}
 
 	public UnknownMessage(String source, String unknown) {

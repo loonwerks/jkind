@@ -16,7 +16,7 @@ public final class InvalidProperty extends Property {
 			double runtime) {
 		super(name, runtime);
 		this.source = source;
-		this.conflicts = Util.safeCopy(conflicts);
+		this.conflicts = Util.safeList(conflicts);
 		this.cex = cex;
 	}
 

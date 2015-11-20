@@ -20,6 +20,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.Contract;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -142,11 +143,12 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
 		Optional<List<String>> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
+		Optional<Contract> contract = Optional.empty();
 		if (!ctx.main().isEmpty()) {
 			main = id;
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs);
+				realizabilityInputs, contract);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {

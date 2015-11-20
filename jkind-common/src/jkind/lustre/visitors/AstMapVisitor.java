@@ -1,9 +1,11 @@
 package jkind.lustre.visitors;
 
 import java.util.List;
+import java.util.Optional;
 
 import jkind.lustre.Ast;
 import jkind.lustre.Constant;
+import jkind.lustre.Contract;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -31,8 +33,13 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<Equation> equations = visitEquations(e.equations);
 		List<Expr> assertions = visitAssertions(e.assertions);
 		List<String> properties = visitProperties(e.properties);
+		Optional<Contract> contract = visitContract(e.contract);
 		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties,
-				assertions, e.realizabilityInputs);
+				assertions, e.realizabilityInputs, contract);
+	}
+
+	private Optional<Contract> visitContract(Optional<Contract> contract) {
+		return contract.map(this::visit);
 	}
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
@@ -83,5 +90,10 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	@Override
 	public VarDecl visit(VarDecl e) {
 		return e;
+	}
+
+	@Override
+	public Contract visit(Contract contract) {
+		return new Contract(visitExprs(contract.requires), visitExprs(contract.ensures));
 	}
 }

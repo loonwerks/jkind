@@ -10,7 +10,7 @@ public class InvariantMessage extends Message {
 	public final List<Expr> invariants;
 
 	public InvariantMessage(List<Expr> invs) {
-		this.invariants = Util.safeCopy(invs);
+		this.invariants = Util.safeList(invs);
 	}
 
 	public InvariantMessage(Expr invariant) {

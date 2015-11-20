@@ -1,7 +1,7 @@
 package jkind.api.results;
 
 public enum Status {
-	WORKING, VALID, INVALID, UNKNOWN, CANCELED, ERROR, WAITING;
+	WORKING, VALID, INVALID, UNKNOWN, CANCELED, ERROR, WAITING, VALID_REFINED;
 
 	@Override
 	public String toString() {
@@ -20,6 +20,8 @@ public enum Status {
 			return "Error";
 		case WAITING:
 			return "Waiting";
+		case VALID_REFINED:
+		    return "Valid (refined)";
 		default:
 			return "";
 		}

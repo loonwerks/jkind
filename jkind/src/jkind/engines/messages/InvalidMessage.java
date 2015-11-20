@@ -16,7 +16,7 @@ public class InvalidMessage extends Message {
 	public InvalidMessage(String source, List<String> invalid, int length, Model model,
 			Itinerary itinerary) {
 		this.source = source;
-		this.invalid = Util.safeCopy(invalid);
+		this.invalid = Util.safeList(invalid);
 		this.length = length;
 		this.model = model;
 		this.itinerary = itinerary;

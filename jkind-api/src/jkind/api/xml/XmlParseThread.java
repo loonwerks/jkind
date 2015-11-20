@@ -4,7 +4,9 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,6 +43,7 @@ public class XmlParseThread extends Thread {
 	private final Backend backend;
 	private final DocumentBuilderFactory factory;
 	private volatile Throwable throwable;
+	private Map<String, List<PropertyResult>> analysisToProps = new HashMap<>();
 
 	public XmlParseThread(InputStream xmlStream, JKindResult result, Backend backend) {
 		super("Xml Parse");
@@ -67,26 +70,33 @@ public class XmlParseThread extends Thread {
 		try (LineInputStream lines = new LineInputStream(xmlStream)) {
 			StringBuilder buffer = null;
 			String line;
+			String analysis = null;
 			while ((line = lines.readLine()) != null) {
 				boolean beginProperty = line.contains("<Property ");
 				boolean endProperty = line.contains("</Property>");
 				boolean beginProgress = line.contains("<Progress ");
 				boolean endProgress = line.contains("</Progress>");
+				boolean beginAnalysis = line.contains("<AnalysisStart");
+				boolean endAnalysis = line.contains("<AnalysisStop");
 
 				if (beginProgress && endProgress) {
 					// Kind 2 progress format uses a single line
-					parseKind2ProgressXml(line);
+					parseKind2ProgressXml(line, analysis);
 				} else if (beginProgress || beginProperty) {
 					buffer = new StringBuilder();
 					buffer.append(line);
 				} else if (endProperty) {
 					buffer.append(line);
-					parsePropetyXml(buffer.toString());
+					parsePropetyXml(buffer.toString(), analysis);
 					buffer = null;
 				} else if (endProgress) {
 					buffer.append(line);
 					parseJKindProgressXml(buffer.toString());
 					buffer = null;
+				} else if (beginAnalysis) {
+					analysis = parseKind2AnalysisXml(line);
+				} else if (endAnalysis) {
+					analysis = null;
 				} else if (buffer != null) {
 					buffer.append(line);
 				}
@@ -94,6 +104,13 @@ public class XmlParseThread extends Thread {
 		} catch (Throwable t) {
 			throwable = t;
 		}
+	}
+
+	private String parseKind2AnalysisXml(String line) {
+		Element progressElement = parseXml(line);
+		String analysis = progressElement.getAttribute("top");
+		analysisToProps.putIfAbsent(analysis, new ArrayList<>());
+		return analysis;
 	}
 
 	private Element parseXml(String xml) {
@@ -106,12 +123,14 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	private void parseKind2ProgressXml(String progressXml) {
+	private void parseKind2ProgressXml(String progressXml, String analysis) {
 		Element progressElement = parseXml(progressXml);
 		String source = progressElement.getAttribute("source");
 		if ("bmc".equals(source)) {
 			int k = Integer.parseInt(progressElement.getTextContent());
-			result.setBaseProgress(k);
+			for (PropertyResult pr : analysisToProps.get(analysis)) {
+				pr.setBaseProgress(k);
+			}
 		}
 	}
 
@@ -130,16 +149,26 @@ public class XmlParseThread extends Thread {
 		}
 	}
 
-	public void parsePropetyXml(String propertyXml) {
+	public void parsePropetyXml(String propertyXml, String analysis) {
 		Property prop = getProperty(parseXml(propertyXml));
-		PropertyResult pr = result.getPropertyResult(prop.getName());
+		String propName = prop.getName();
+		PropertyResult pr = getOrAddProperty(analysis, propName);
+		pr.setProperty(prop);
+		if (analysis != null) {
+			analysisToProps.get(analysis).add(pr);
+		}
+	}
+
+	private PropertyResult getOrAddProperty(String analysis, String propName) {
+		PropertyResult pr = result.getPropertyResult(propName);
 		if (pr == null) {
-			pr = result.addProperty(prop.getName());
-			if (pr == null) {
-				return;
+			if (analysis != null) {
+				pr = result.getPropertyResult(analysis + propName);
+			} else {
+				pr = result.addProperty(propName);
 			}
 		}
-		pr.setProperty(prop);
+		return pr;
 	}
 
 	private Property getProperty(Element propertyElement) {
@@ -209,7 +238,7 @@ public class XmlParseThread extends Thread {
 		if (conflictsElement == null) {
 			return Collections.emptyList();
 		}
-		
+
 		List<String> conflicts = new ArrayList<>();
 		for (Element conflictElement : getElements(conflictsElement, "Conflict")) {
 			conflicts.add(conflictElement.getTextContent());

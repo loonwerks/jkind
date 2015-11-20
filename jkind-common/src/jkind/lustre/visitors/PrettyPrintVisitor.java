@@ -14,6 +14,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.Contract;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -152,6 +153,9 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		newline();
 		write(");");
 		newline();
+
+		node.contract.ifPresent(c -> c.accept(this));
+
 		if (!node.locals.isEmpty()) {
 			write("var");
 			newline();
@@ -163,7 +167,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		newline();
 
 		if (node.id.equals(main)) {
-			write("  --%MAIN");
+			write("  --%MAIN;");
 			newline();
 		}
 
@@ -453,6 +457,24 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		}
 		expr(e.expr);
 		write(")");
+		return null;
+	}
+
+	@Override
+	public Void visit(Contract contract) {
+		newline();
+		for (Expr expr : contract.requires) {
+			write("--@assume ");
+			expr(expr);
+			write(";");
+			newline();
+		}
+		for (Expr expr : contract.ensures) {
+			write("--@guarantee ");
+			expr(expr);
+			write(";");
+			newline();
+		}
 		return null;
 	}
 }

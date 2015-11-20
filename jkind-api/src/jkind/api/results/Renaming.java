@@ -113,7 +113,7 @@ public abstract class Renaming {
 	 *            Counterexample to be renamed
 	 * @return Renamed version of the counterexample
 	 */
-	private Counterexample rename(Counterexample cex) {
+	protected Counterexample rename(Counterexample cex) {
 		if (cex == null) {
 			return null;
 		}

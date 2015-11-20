@@ -16,9 +16,9 @@ public class ValidMessage extends Message {
 	public ValidMessage(String source, List<String> valid, int k, List<Expr> invariants,
 			Itinerary itinerary) {
 		this.source = source;
-		this.valid = Util.safeCopy(valid);
+		this.valid = Util.safeList(valid);
 		this.k = k;
-		this.invariants = Util.safeCopy(invariants);
+		this.invariants = Util.safeList(invariants);
 		this.itinerary = itinerary;
 	}
 

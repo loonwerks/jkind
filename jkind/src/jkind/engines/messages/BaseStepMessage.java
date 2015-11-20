@@ -10,7 +10,7 @@ public class BaseStepMessage extends Message {
 
 	public BaseStepMessage(int step, List<String> properties) {
 		this.step = step;
-		this.properties = Util.safeCopy(properties);
+		this.properties = Util.safeList(properties);
 	}
 
 	@Override
