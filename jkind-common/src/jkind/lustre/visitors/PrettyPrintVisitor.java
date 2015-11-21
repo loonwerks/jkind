@@ -154,7 +154,9 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		write(");");
 		newline();
 
-		node.contract.ifPresent(c -> c.accept(this));
+		if (node.contract != null) {
+			node.contract.accept(this);
+		}
 
 		if (!node.locals.isEmpty()) {
 			write("var");
@@ -189,10 +191,10 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			}
 			newline();
 		}
-		
-		if (node.realizabilityInputs.isPresent()) {
+
+		if (node.realizabilityInputs != null) {
 			write("  --%REALIZABLE ");
-			write(node.realizabilityInputs.get().stream().collect(joining(", ")));
+			write(node.realizabilityInputs.stream().collect(joining(", ")));
 			write(";");
 			newline();
 			newline();

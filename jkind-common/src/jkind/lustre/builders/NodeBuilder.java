@@ -3,7 +3,6 @@ package jkind.lustre.builders;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import jkind.lustre.Contract;
 import jkind.lustre.Equation;
@@ -21,8 +20,8 @@ public class NodeBuilder {
 	private List<Equation> equations = new ArrayList<>();
 	private List<String> properties = new ArrayList<>();
 	private List<Expr> assertions = new ArrayList<>();
-	private Optional<List<String>> realizabilityInputs = Optional.empty();
-	private Optional<Contract> contract = Optional.empty();
+	private List<String> realizabilityInputs = null;
+	private Contract contract = null;
 
 	public NodeBuilder(String id) {
 		this.id = id;
@@ -36,8 +35,8 @@ public class NodeBuilder {
 		this.equations = new ArrayList<>(node.equations);
 		this.properties = new ArrayList<>(node.properties);
 		this.assertions = new ArrayList<>(node.assertions);
-		this.realizabilityInputs = Util.safeOptionalList(node.realizabilityInputs);
-		this.contract = Util.safeOptional(node.contract);
+		this.realizabilityInputs = Util.copyNullable(node.realizabilityInputs);
+		this.contract = node.contract;
 	}
 
 	public NodeBuilder setId(String id) {
@@ -136,22 +135,12 @@ public class NodeBuilder {
 	}
 
 	public NodeBuilder setRealizabilityInputs(List<String> realizabilityInputs) {
-		this.realizabilityInputs = Optional.of(new ArrayList<>(realizabilityInputs));
-		return this;
-	}
-
-	public NodeBuilder clearRealizabilityInputs() {
-		this.realizabilityInputs = Optional.empty();
+		this.realizabilityInputs = Util.copyNullable(realizabilityInputs);
 		return this;
 	}
 
 	public NodeBuilder setContract(Contract contract) {
-		this.contract = Optional.of(contract);
-		return this;
-	}
-
-	public NodeBuilder clearContract() {
-		this.contract = Optional.empty();
+		this.contract = contract;
 		return this;
 	}
 

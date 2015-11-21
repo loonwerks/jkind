@@ -34,12 +34,12 @@ public class RealizabilityNodeLayout implements Layout {
 			throw new IllegalArgumentException("Unable to create layout for null node");
 		}
 
-		if (!node.realizabilityInputs.isPresent()) {
+		if (node.realizabilityInputs == null) {
 			throw new IllegalArgumentException(
 					"Unable to create realizability-based layout for node without realizability query");
 		}
 
-		this.realizabilityInputs = getPrefix(node.realizabilityInputs.get());
+		this.realizabilityInputs = getPrefix(node.realizabilityInputs);
 		this.realizabilityOutputs = getPrefix(getRealizabilityOutputs(node));
 		this.nodeOutputs = getPrefix(Util.getIds(node.outputs));
 		this.nodeLocals = getPrefix(Util.getIds(node.locals));
@@ -47,7 +47,7 @@ public class RealizabilityNodeLayout implements Layout {
 
 	private static List<String> getRealizabilityOutputs(Node node) {
 		List<String> realizabilityOutputs = new ArrayList<>(Util.getIds(node.inputs));
-		realizabilityOutputs.removeAll(node.realizabilityInputs.get());
+		realizabilityOutputs.removeAll(node.realizabilityInputs);
 		return realizabilityOutputs;
 	}
 

@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -192,19 +191,11 @@ public class Util {
 		}
 	}
 
-	public static <T> Optional<T> safeOptional(Optional<T> original) {
+	public static <T> List<T> safeNullableList(List<? extends T> original) {
 		if (original == null) {
-			return Optional.empty();
+			return null;
 		} else {
-			return original;
-		}
-	}
-
-	public static <T> Optional<List<T>> safeOptionalList(Optional<List<T>> original) {
-		if (original == null || !original.isPresent()) {
-			return Optional.empty();
-		} else {
-			return Optional.of(safeList(original.get()));
+			return Collections.unmodifiableList(new ArrayList<>(original));
 		}
 	}
 
@@ -214,6 +205,13 @@ public class Util {
 			map.putAll(original);
 		}
 		return Collections.unmodifiableSortedMap(map);
+	}
+
+	public static <T> List<T> copyNullable(List<? extends T> original) {
+		if (original == null) {
+			return null;
+		}
+		return new ArrayList<>(original);
 	}
 
 	public static List<EnumType> getEnumTypes(List<TypeDef> types) {
@@ -241,7 +239,7 @@ public class Util {
 			throw new IllegalArgumentException();
 		}
 	}
-	
+
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";
 }

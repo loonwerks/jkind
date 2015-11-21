@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import jkind.ExitCodes;
 import jkind.Output;
@@ -142,8 +141,8 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
-		Optional<List<String>> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
-		Optional<Contract> contract = Optional.empty();
+		List<String> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
+		Contract contract = null;
 		if (!ctx.main().isEmpty()) {
 			main = id;
 		}
@@ -206,7 +205,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return assertions;
 	}
 
-	private Optional<List<String>> realizabilityInputs(List<RealizabilityInputsContext> ctxs) {
+	private List<String> realizabilityInputs(List<RealizabilityInputsContext> ctxs) {
 		if (ctxs.size() > 1) {
 			fatal(ctxs.get(1), "at most one realizability statement allowed");
 		}
@@ -216,10 +215,10 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			for (TerminalNode ictx : ctx.ID()) {
 				ids.add(ictx.getText());
 			}
-			return Optional.of(ids);
+			return ids;
 		}
 
-		return Optional.empty();
+		return null;
 	}
 
 	private Type topLevelType(String id, TopLevelTypeContext ctx) {

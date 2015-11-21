@@ -144,7 +144,7 @@ public abstract class RealizabilityEngine implements Runnable {
 	protected static final Symbol INIT = Lustre2Sexp.INIT;
 
 	private List<VarDecl> getRealizabilityOutputVarDecls() {
-		List<String> realizabilityInputs = spec.node.realizabilityInputs.get();
+		List<String> realizabilityInputs = spec.node.realizabilityInputs;
 		List<VarDecl> all = Util.getVarDecls(spec.node);
 		all.removeIf(vd -> realizabilityInputs.contains(vd.id));
 		return all;
