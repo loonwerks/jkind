@@ -239,6 +239,14 @@ public class Util {
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	public static String removeTrailingZeros(String str) {
+		if (!str.contains(".")) {
+			return str;
+		}
+
+		return str.replaceFirst("\\.?0*$", "");
+	}
 
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";

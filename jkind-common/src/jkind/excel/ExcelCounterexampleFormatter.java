@@ -168,7 +168,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		// approximation (or the exact value)
 		if (!isExactFloat(value)) {
 			WritableCellFeatures features = new WritableCellFeatures();
-			features.setComment(getTruncatedDecimal(value, 20), 8, 3);
+			features.setComment(value.toTruncatedDecimal(20, "..."), 8, 3);
 			cell.setCellFeatures(features);
 		}
 
@@ -183,25 +183,5 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-	}
-
-	private String getTruncatedDecimal(BigFraction value, int scale) {
-		BigDecimal num = new BigDecimal(value.getNumerator());
-		BigDecimal denom = new BigDecimal(value.getDenominator());
-		BigDecimal truncated = num.divide(denom, scale, BigDecimal.ROUND_DOWN);
-
-		if (BigFraction.valueOf(truncated).equals(value)) {
-			return removeTrailingZeros(truncated.toPlainString());
-		} else {
-			return truncated.toPlainString() + "...";
-		}
-	}
-
-	private String removeTrailingZeros(String str) {
-		if (!str.contains(".")) {
-			return str;
-		}
-
-		return str.replaceFirst("\\.?0*$", "");
 	}
 }

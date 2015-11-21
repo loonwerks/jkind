@@ -15,7 +15,7 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.layout.Layout;
 import jkind.results.layout.SingletonLayout;
-import jkind.util.Util;
+import jkind.util.CounterexampleFormatter;
 
 /**
  * A JKind counterexample
@@ -47,9 +47,10 @@ public final class Counterexample {
 		Collections.sort(result, new SignalNaturalOrdering());
 		return result;
 	}
-	
+
 	/**
-	 * All signals in the counterexample belonging to the given category in the given layout
+	 * All signals in the counterexample belonging to the given category in the
+	 * given layout
 	 */
 	public List<Signal<Value>> getCategorySignals(Layout layout, String category) {
 		List<Signal<Value>> result = new ArrayList<>();
@@ -184,50 +185,12 @@ public final class Counterexample {
 	public void toExcel(File file) {
 		toExcel(file, new SingletonLayout("Signals"));
 	}
-
-	private static final String NEWLINE = System.getProperty("line.separator");
-
 	@Override
 	public String toString() {
 		return toString(new SingletonLayout());
 	}
 
 	public String toString(Layout layout) {
-		StringBuilder text = new StringBuilder();
-
-		text.append(String.format("%25s %6s ", "", "Step"));
-		text.append(NEWLINE);
-		text.append(String.format("%-25s ", "variable"));
-		for (int i = 0; i < length; i++) {
-			text.append(String.format("%6s ", i));
-		}
-		text.append(NEWLINE);
-
-		for (String category : layout.getCategories()) {
-			List<Signal<Value>> signals = getCategorySignals(layout, category);
-			appendSection(text, category, signals);
-		}
-
-		return text.toString();
-	}
-
-	private void appendSection(StringBuilder text, String category, List<Signal<Value>> signals) {
-		if (!signals.isEmpty()) {
-			text.append(NEWLINE);
-			text.append(category.toUpperCase());
-			text.append(NEWLINE);
-			for (Signal<Value> signal : signals) {
-				appendSignal(text, signal);
-			}
-		}
-	}
-
-	private void appendSignal(StringBuilder text, Signal<Value> signal) {
-		text.append(String.format("%-25s ", signal.getName()));
-		for (int i = 0; i < length; i++) {
-			Value value = signal.getValue(i);
-			text.append(String.format("%6s ", !Util.isArbitrary(value) ? value : "-"));
-		}
-		text.append(NEWLINE);
+		return new CounterexampleFormatter(this, layout).toString();
 	}
 }
