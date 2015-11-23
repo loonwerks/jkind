@@ -1,7 +1,6 @@
 package jkind.lustre;
 
 import java.util.List;
-import java.util.Optional;
 
 import jkind.Assert;
 import jkind.lustre.visitors.AstVisitor;
@@ -15,11 +14,12 @@ public class Node extends Ast {
 	public final List<Equation> equations;
 	public final List<String> properties;
 	public final List<Expr> assertions;
-	public final Optional<List<String>> realizabilityInputs;
+	public final List<String> realizabilityInputs; // Nullable
+	public final Contract contract; // Nullable
 
 	public Node(Location location, String id, List<VarDecl> inputs, List<VarDecl> outputs,
 			List<VarDecl> locals, List<Equation> equations, List<String> properties,
-			List<Expr> assertions, Optional<List<String>> realizabilityInputs) {
+			List<Expr> assertions, List<String> realizabilityInputs, Contract contract) {
 		super(location);
 		Assert.isNotNull(id);
 		this.id = id;
@@ -29,29 +29,15 @@ public class Node extends Ast {
 		this.equations = Util.safeList(equations);
 		this.properties = Util.safeList(properties);
 		this.assertions = Util.safeList(assertions);
-		this.realizabilityInputs = Util.safeOptionalList(realizabilityInputs);
+		this.realizabilityInputs = Util.safeNullableList(realizabilityInputs);
+		this.contract = contract;
 	}
 
 	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
 			List<Equation> equations, List<String> properties, List<Expr> assertions,
-			Optional<List<String>> realizabilityInputs) {
+			List<String> realizabilityInputs, Contract contract) {
 		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs);
-	}
-
-	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
-			List<Equation> equations, List<String> properties, List<Expr> assertions) {
-		this(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions, null);
-	}
-
-	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
-			List<Equation> equations, List<String> properties) {
-		this(Location.NULL, id, inputs, outputs, locals, equations, properties, null, null);
-	}
-
-	public Node(String id, List<VarDecl> inputs, List<VarDecl> outputs, List<VarDecl> locals,
-			List<Equation> equations) {
-		this(Location.NULL, id, inputs, outputs, locals, equations, null, null, null);
+				realizabilityInputs, contract);
 	}
 
 	@Override

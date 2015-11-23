@@ -1,7 +1,5 @@
 package jkind.solvers.mathsat;
 
-import java.io.File;
-
 import jkind.JKindException;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -26,15 +24,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 public class MathSatSolver extends SmtLib2Solver {
 	public MathSatSolver(String scratchBase) {
-		super(scratchBase, new ProcessBuilder(getMathSat()), "MathSAT");
+		super(scratchBase);
 	}
 
-	private static String getMathSat() {
-		String home = System.getenv("MATHSAT_HOME");
-		if (home != null) {
-			return new File(new File(home, "bin"), "mathsat").toString();
-		}
-		return "mathsat";
+	@Override
+	protected String getSolverName() {
+		return "MathSAT";
 	}
 
 	@Override
@@ -83,7 +78,7 @@ public class MathSatSolver extends SmtLib2Solver {
 		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			throw new JKindException("Error parsing " + name + " output: " + string);
+			throw new JKindException("Error parsing " + getSolverName() + " output: " + string);
 		}
 
 		return ModelExtractor.getModel(ctx, varTypes);

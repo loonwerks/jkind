@@ -336,7 +336,7 @@ public class PdrSmt extends ScriptUser {
 				String name = vd.id + StreamIndex.getSuffix(i);
 				Term evaluated = model.evaluate(script.term(name));
 				Value value = SmtInterpolUtil.getValue(evaluated, vd.type);
-				result.addValue(name, value);
+				result.putValue(name, value);
 			}
 		}
 		return result;

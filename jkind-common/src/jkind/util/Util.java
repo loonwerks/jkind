@@ -11,13 +11,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.EnumType;
+import jkind.lustre.Equation;
+import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.SubrangeIntType;
@@ -135,6 +137,17 @@ public class Util {
 		return unresolved;
 	}
 
+	public static Map<String, Set<String>> getDirectDependencies(Node node) {
+		Map<String, Set<String>> directDepends = new HashMap<>();
+		for (Equation eq : node.equations) {
+			Set<String> set = CurrIdExtractorVisitor.getCurrIds(eq.expr);
+			for (IdExpr idExpr : eq.lhs) {
+				directDepends.put(idExpr.id, set);
+			}
+		}
+		return directDepends;
+	}
+
 	public static void writeToFile(String content, File file) throws IOException {
 		try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 			writer.append(content);
@@ -178,11 +191,11 @@ public class Util {
 		}
 	}
 
-	public static <T> Optional<List<T>> safeOptionalList(Optional<List<T>> original) {
-		if (original == null || !original.isPresent()) {
-			return Optional.empty();
+	public static <T> List<T> safeNullableList(List<? extends T> original) {
+		if (original == null) {
+			return null;
 		} else {
-			return Optional.of(safeList(original.get()));
+			return Collections.unmodifiableList(new ArrayList<>(original));
 		}
 	}
 
@@ -194,6 +207,13 @@ public class Util {
 		return Collections.unmodifiableSortedMap(map);
 	}
 
+	public static <T> List<T> copyNullable(List<? extends T> original) {
+		if (original == null) {
+			return null;
+		}
+		return new ArrayList<>(original);
+	}
+
 	public static List<EnumType> getEnumTypes(List<TypeDef> types) {
 		List<EnumType> enums = new ArrayList<>();
 		for (TypeDef def : types) {
@@ -202,6 +222,10 @@ public class Util {
 			}
 		}
 		return enums;
+	}
+
+	public static Value getDefaultValue(Type type) {
+		return type.accept(new DefaultValueVisitor());
 	}
 
 	public static Value cast(Type type, Value value) {
@@ -216,10 +240,14 @@ public class Util {
 		}
 	}
 	
-	public static <T> List<T> safeCopy(List<T> list) {
-		return Collections.unmodifiableList(new ArrayList<>(list));
+	public static String removeTrailingZeros(String str) {
+		if (!str.contains(".")) {
+			return str;
+		}
+
+		return str.replaceFirst("\\.?0*$", "");
 	}
-	
+
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";
 }

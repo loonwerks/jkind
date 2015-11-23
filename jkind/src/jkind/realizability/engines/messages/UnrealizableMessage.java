@@ -13,6 +13,6 @@ public class UnrealizableMessage extends Message {
 	public UnrealizableMessage(int k, Model model, List<String> conflicts) {
 		this.k = k;
 		this.model = model;
-		this.properties = Util.safeCopy(conflicts);
+		this.properties = Util.safeList(conflicts);
 	}
 }

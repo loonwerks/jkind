@@ -115,7 +115,8 @@ public class JKindApi extends KindApi {
 	 */
 	@Override
 	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
-		ApiUtil.execute(this::getJKindProcessBuilder, lustreFile, result, monitor);
+		debug.println("Lustre file", lustreFile);
+		ApiUtil.execute(this::getJKindProcessBuilder, lustreFile, result, monitor, debug);
 	}
 
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) {
@@ -172,7 +173,7 @@ public class JKindApi extends KindApi {
 	}
 
 	@Override
-	public void checkAvailable() throws Exception {
+	public String checkAvailable() throws Exception {
 		List<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(getJKindCommand()));
 		args.add("-version");
@@ -185,5 +186,6 @@ public class JKindApi extends KindApi {
 		if (process.exitValue() != 0) {
 			throw new JKindException("Error running JKind: " + output);
 		}
+		return output;
 	}
 }

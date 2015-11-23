@@ -40,13 +40,13 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 	}
 
 	public IntegerValue evalInt(Expr e) {
-		return (IntegerValue) e.accept(this);
+		return (IntegerValue) eval(e);
 	}
 
 	@Override
 	public Value visit(ArrayAccessExpr e) {
-		ArrayValue array = (ArrayValue) e.array.accept(this);
-		IntegerValue index = (IntegerValue) e.index.accept(this);
+		ArrayValue array = (ArrayValue) eval(e.array);
+		IntegerValue index = (IntegerValue) eval(e.index);
 		if (array == null || index == null) {
 			return null;
 		}
@@ -64,9 +64,9 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(ArrayUpdateExpr e) {
-		ArrayValue array = (ArrayValue) e.array.accept(this);
-		IntegerValue index = (IntegerValue) e.index.accept(this);
-		Value value = e.value.accept(this);
+		ArrayValue array = (ArrayValue) eval(e.array);
+		IntegerValue index = (IntegerValue) eval(e.index);
+		Value value = eval(e.value);
 		if (array == null || index == null || value == null) {
 			return null;
 		}
@@ -75,8 +75,8 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(BinaryExpr e) {
-		Value left = e.left.accept(this);
-		Value right = e.right.accept(this);
+		Value left = eval(e.left);
+		Value right = eval(e.right);
 		if (left == null || right == null) {
 			return null;
 		}
@@ -90,7 +90,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(CastExpr e) {
-		Value value = e.expr.accept(this);
+		Value value = eval(e.expr);
 		if (value == null) {
 			return null;
 		}
@@ -104,15 +104,15 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(IfThenElseExpr e) {
-		BooleanValue cond = (BooleanValue) e.cond.accept(this);
+		BooleanValue cond = (BooleanValue) eval(e.cond);
 		if (cond == null) {
 			return null;
 		}
 
 		if (cond.value) {
-			return e.thenExpr.accept(this);
+			return eval(e.thenExpr);
 		} else {
-			return e.elseExpr.accept(this);
+			return eval(e.elseExpr);
 		}
 	}
 
@@ -128,12 +128,12 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(RealExpr e) {
-		return new RealValue(new BigFraction(e.value));
+		return new RealValue(BigFraction.valueOf(e.value));
 	}
 
 	@Override
 	public Value visit(RecordAccessExpr e) {
-		RecordValue record = (RecordValue) e.record.accept(this);
+		RecordValue record = (RecordValue) eval(e.record);
 		if (record == null) {
 			return null;
 		}
@@ -144,7 +144,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 	public Value visit(RecordExpr e) {
 		Map<String, Value> fields = new HashMap<>();
 		for (Entry<String, Expr> entry : e.fields.entrySet()) {
-			Value value = entry.getValue().accept(this);
+			Value value = eval(entry.getValue());
 			if (value == null) {
 				return null;
 			}
@@ -155,8 +155,8 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(RecordUpdateExpr e) {
-		RecordValue record = (RecordValue) e.record.accept(this);
-		Value value = e.value.accept(this);
+		RecordValue record = (RecordValue) eval(e.record);
+		Value value = eval(e.value);
 		if (record == null || value == null) {
 			return null;
 		}
@@ -174,7 +174,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(UnaryExpr e) {
-		Value value = e.expr.accept(this);
+		Value value = eval(e.expr);
 		if (value == null) {
 			return null;
 		}
@@ -184,7 +184,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 	private List<Value> visitExprs(List<Expr> es) {
 		List<Value> values = new ArrayList<>();
 		for (Expr e : es) {
-			Value value = e.accept(this);
+			Value value = eval(e);
 			if (value == null) {
 				return null;
 			}

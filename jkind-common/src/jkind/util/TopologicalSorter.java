@@ -1,14 +1,13 @@
-package jkind.api.workarounds;
+package jkind.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DependencyMap<T> {
+public class TopologicalSorter<T> {
 	private Map<String, T> valueMap = new LinkedHashMap<>();
 	private Map<String, Set<String>> dependencyMap = new HashMap<>();
 
@@ -37,13 +36,14 @@ public class DependencyMap<T> {
 		if (sorted.contains(id)) {
 			return;
 		}
-		
-		Set<String> dependencies = new HashSet<>(dependencyMap.get(id));
-		dependencies.removeAll(sorted);
-		for (String dependency : dependencies) {
-			addToSortedIdsList(dependency, sorted);
+
+		if (dependencyMap.containsKey(id)) {
+			for (String dependency : dependencyMap.get(id)) {
+				if (!sorted.contains(dependency)) {
+					addToSortedIdsList(dependency, sorted);
+				}
+			}
+			sorted.add(id);
 		}
-		
-		sorted.add(id);
 	}
 }

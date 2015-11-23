@@ -1,7 +1,13 @@
 package jkind;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.Arrays;
 import java.util.List;
+
+import jkind.engines.SolverUtil;
+import jkind.lustre.Node;
+import jkind.lustre.builders.NodeBuilder;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -24,7 +30,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
-	
+
 	private final JKindSettings settings;
 
 	private JKindArgumentParser() {
@@ -60,7 +66,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
 		return options;
 	}
-	
+
 	public static JKindSettings parse(String[] args) {
 		JKindArgumentParser parser = new JKindArgumentParser();
 		parser.parseArguments(args);
@@ -70,6 +76,12 @@ public class JKindArgumentParser extends ArgumentParser {
 
 	@Override
 	protected void parseCommandLine(CommandLine line) {
+		if (line.hasOption(VERSION)) {
+			Output.println(name + " " + Main.VERSION);
+			printDectectedSolvers();
+			System.exit(0);
+		}
+
 		super.parseCommandLine(line);
 
 		ensureExclusive(line, EXCEL, XML);
@@ -130,6 +142,12 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(INTERVAL)) {
 			settings.intervalGeneralization = true;
+
+			/**
+			 * Reconstruction of inlined values does not yet support interval
+			 * generalization
+			 */
+			settings.inline = false;
 		}
 
 		if (line.hasOption(SOLVER)) {
@@ -184,5 +202,21 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (!settings.boundedModelChecking && settings.kInduction) {
 			Output.warning("k-induction requires bmc");
 		}
+	}
+
+	private void printDectectedSolvers() {
+		String detected = Arrays.stream(SolverOption.values()).filter(this::solverIsAvailable)
+				.map(Object::toString).collect(joining(", "));
+		System.out.println("Detected solvers: " + detected);
+	}
+
+	private boolean solverIsAvailable(SolverOption solverOption) {
+		try {
+			Node emptyNode = new NodeBuilder("empty").build();
+			SolverUtil.getSolver(solverOption, null, emptyNode);
+		} catch (JKindException e) {
+			return false;
+		}
+		return true;
 	}
 }

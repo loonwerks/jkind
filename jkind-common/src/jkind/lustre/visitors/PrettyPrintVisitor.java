@@ -14,6 +14,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
+import jkind.lustre.Contract;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
@@ -152,6 +153,11 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		newline();
 		write(");");
 		newline();
+
+		if (node.contract != null) {
+			node.contract.accept(this);
+		}
+
 		if (!node.locals.isEmpty()) {
 			write("var");
 			newline();
@@ -163,7 +169,7 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		newline();
 
 		if (node.id.equals(main)) {
-			write("  --%MAIN");
+			write("  --%MAIN;");
 			newline();
 		}
 
@@ -185,10 +191,10 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			}
 			newline();
 		}
-		
-		if (node.realizabilityInputs.isPresent()) {
+
+		if (node.realizabilityInputs != null) {
 			write("  --%REALIZABLE ");
-			write(node.realizabilityInputs.get().stream().collect(joining(", ")));
+			write(node.realizabilityInputs.stream().collect(joining(", ")));
 			write(";");
 			newline();
 			newline();
@@ -453,6 +459,24 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		}
 		expr(e.expr);
 		write(")");
+		return null;
+	}
+
+	@Override
+	public Void visit(Contract contract) {
+		newline();
+		for (Expr expr : contract.requires) {
+			write("--@assume ");
+			expr(expr);
+			write(";");
+			newline();
+		}
+		for (Expr expr : contract.ensures) {
+			write("--@guarantee ");
+			expr(expr);
+			write(";");
+			newline();
+		}
 		return null;
 	}
 }

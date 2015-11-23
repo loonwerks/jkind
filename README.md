@@ -29,7 +29,7 @@ Installation Notes
 By default, JKind requires [Yices (version
 1)](http://yices.csl.sri.com/download-yices1.shtml) to be installed on
 your PATH. Alternatively, one can use
-[CVC4](http://cvc4.cs.nyu.edu/web/), [Z3](http://z3.codeplex.com/),
+[CVC4](http://cvc4.cs.nyu.edu/web/), [Z3](https://github.com/Z3Prover/z3),
 [Yices 2](http://yices.csl.sri.com/index.shtml),
 [MathSAT](http://mathsat.fbk.eu/), or
 [SMTInterpol](http://ultimate.informatik.uni-freiburg.de/smtinterpol/).

@@ -1,9 +1,12 @@
 package jkind.api;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.function.Function;
 
 import jkind.JKindException;
@@ -18,37 +21,38 @@ public class ApiUtil {
 	public static File writeLustreFile(String program) {
 		File file = null;
 		try {
-			file = File.createTempFile("jkind-api", ".lus");
+			file = File.createTempFile("jkind-api-", ".lus");
 			Util.writeToFile(program, file);
 			return file;
 		} catch (IOException e) {
-			safeDelete(file);
 			throw new JKindException("Cannot write to file: " + file, e);
 		}
 	}
 
-	public static void safeDelete(File file) {
-		if (file != null && file.exists()) {
-			file.delete();
-		}
-	}
-
 	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile,
-			JKindResult result, IProgressMonitor monitor) {
+			JKindResult result, IProgressMonitor monitor, DebugLogger debug) {
 		File xmlFile = null;
 		try {
 			xmlFile = getXmlFile(lustreFile);
-			ApiUtil.safeDelete(xmlFile);
-			if (xmlFile.exists()) {
-				throw new JKindException("Existing XML file cannot be removed: " + xmlFile);
-			}
-			callJKind(runCommand, lustreFile, xmlFile, result, monitor);
+			debug.println("XML results file", xmlFile);
+			ensureDeleted(xmlFile);
+			callJKind(runCommand, lustreFile, xmlFile, result, monitor, debug);
 		} catch (JKindException e) {
 			throw e;
 		} catch (Throwable t) {
 			throw new JKindException(result.getText(), t);
 		} finally {
-			ApiUtil.safeDelete(xmlFile);
+			debug.deleteIfUnneeded(xmlFile);
+			debug.println();
+		}
+	}
+
+	private static void ensureDeleted(File file) {
+		if (file != null && file.exists()) {
+			file.delete();
+			if (file.exists()) {
+				throw new JKindException("Unable to delete file: " + file);
+			}
 		}
 	}
 
@@ -57,9 +61,10 @@ public class ApiUtil {
 	}
 
 	private static void callJKind(Function<File, ProcessBuilder> runCommand, File lustreFile,
-			File xmlFile, JKindResult result, IProgressMonitor monitor) throws IOException,
-			InterruptedException {
+			File xmlFile, JKindResult result, IProgressMonitor monitor, DebugLogger debug)
+			throws IOException, InterruptedException {
 		ProcessBuilder builder = runCommand.apply(lustreFile);
+		debug.println("JKind command: " + ApiUtil.getQuotedCommand(builder.command()));
 		Process process = null;
 		try (JKindXmlFileInputStream xmlStream = new JKindXmlFileInputStream(xmlFile)) {
 			XmlParseThread parseThread = new XmlParseThread(xmlStream, result, Backend.JKIND);
@@ -68,7 +73,9 @@ public class ApiUtil {
 				result.start();
 				process = builder.start();
 				parseThread.start();
-				result.setText(ApiUtil.readOutput(process, monitor));
+				String output = ApiUtil.readOutput(process, monitor);
+				result.setText(output);
+				debug.println("JKind output", debug.saveFile("jkind-output-", ".txt", output));
 			} finally {
 				int code = 0;
 				if (process != null) {
@@ -175,5 +182,10 @@ public class ApiUtil {
 			result.append((char) i);
 		}
 		return result.toString();
+	}
+
+	public static String getQuotedCommand(List<String> pieces) {
+		return pieces.stream().map(p -> p.contains(" ") ? "\"" + p + "\"" : p)
+				.collect(joining(" "));
 	}
 }

@@ -11,7 +11,7 @@ public class InductiveCounterexampleMessage extends Message {
 	public final Model model;
 
 	public InductiveCounterexampleMessage(List<String> properties, int length, Model model) {
-		this.properties = Util.safeCopy(properties);
+		this.properties = Util.safeList(properties);
 		this.length = length;
 		this.model = model;
 	}

@@ -186,7 +186,7 @@ public class ComplexUiExample {
 	public static void click(Shell parent, JKindResult result) {
 		if (result.getMultiStatus().getOverallStatus() != Status.WAITING) {
 			try {
-				File file = File.createTempFile("cex", ".xls");
+				File file = File.createTempFile("cex-", ".xls");
 				result.toExcel(file);
 				Program.launch(file.toString());
 			} catch (Throwable t) {

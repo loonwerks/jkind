@@ -121,8 +121,10 @@ public class ModelGeneralizer {
 			StreamIndex si = entry.getKey();
 			Interval value = entry.getValue();
 
-			if (!value.isArbitrary()) {
-				model.addValue(si, value);
+			if (value.isExact()) {
+				model.putValue(si, value.getExactValue());
+			} else if (!value.isArbitrary()) {
+				model.putValue(si, value);
 			}
 		}
 		return model;
@@ -195,7 +197,6 @@ public class ModelGeneralizer {
 			working.add(si);
 			result = eval(equations.get(si.getStream()), si.getIndex());
 			working.remove(si);
-
 		} else if (generalized.containsKey(si)) {
 			result = generalized.get(si);
 		} else {

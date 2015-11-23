@@ -8,7 +8,6 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.api.results.JKindResult;
 import jkind.api.workarounds.WorkaroundKind2ForwardReference;
-import jkind.api.workarounds.WorkaroundKind2RecordAccess;
 import jkind.api.xml.XmlParseThread;
 import jkind.lustre.Program;
 
@@ -18,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * The primary interface to Kind2.
  */
 public class Kind2Api extends KindApi {
+	public static final String KIND2 = "kind2-contracts";
 	private static final long POLL_INTERVAL = 100;
 	
 	/**
@@ -33,7 +33,6 @@ public class Kind2Api extends KindApi {
 	 */
 	@Override
 	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
-		program = WorkaroundKind2RecordAccess.program(program);
 		program = WorkaroundKind2ForwardReference.program(program);
 		execute(program.toString(), result, monitor);
 	}
@@ -51,6 +50,7 @@ public class Kind2Api extends KindApi {
 	 */
 	@Override
 	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
+		debug.println("Lustre file", lustreFile);
 		try {
 			callKind2(lustreFile, result, monitor);
 		} catch (JKindException e) {
@@ -63,6 +63,7 @@ public class Kind2Api extends KindApi {
 	private void callKind2(File lustreFile, JKindResult result, IProgressMonitor monitor)
 			throws IOException, InterruptedException {
 		ProcessBuilder builder = getKind2ProcessBuilder(lustreFile);
+		debug.println("Kind 2 command: " + ApiUtil.getQuotedCommand(builder.command()));
 		Process process = null;
 		XmlParseThread parseThread = null;
 		int code = 0;
@@ -104,7 +105,7 @@ public class Kind2Api extends KindApi {
 
 	private ProcessBuilder getKind2ProcessBuilder(File lustreFile) {
 		List<String> args = new ArrayList<>();
-		args.add("kind2");
+		args.add(KIND2);
 		args.addAll(getArgs());
 		args.add(lustreFile.toString());
 
@@ -132,7 +133,15 @@ public class Kind2Api extends KindApi {
 	}
 
 	@Override
-	public void checkAvailable() throws Exception {
-		new ProcessBuilder("kind2").start().waitFor();
+	public String checkAvailable() throws Exception {
+		ProcessBuilder builder = new ProcessBuilder(KIND2, "--version");
+		builder.redirectErrorStream(true);
+		Process process = builder.start();
+
+		String output = ApiUtil.readAll(process.getInputStream());
+		if (process.exitValue() != 0) {
+			throw new JKindException("Error running kind2: " + output);
+		}
+		return output;
 	}
 }

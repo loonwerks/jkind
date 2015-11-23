@@ -3,6 +3,7 @@ package jkind.excel;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import jkind.JKindException;
@@ -16,12 +17,15 @@ import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
 import jkind.results.layout.Layout;
+import jkind.util.BigFraction;
 import jkind.util.Util;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Boolean;
 import jxl.write.Label;
 import jxl.write.Number;
+import jxl.write.WritableCell;
+import jxl.write.WritableCellFeatures;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
@@ -136,27 +140,48 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			sheet.addCell(new Boolean(col, row, bv.value, format));
 		} else if (value instanceof IntegerValue) {
 			IntegerValue iv = (IntegerValue) value;
-			sheet.addCell(new Number(col, row, iv.value.doubleValue(), format));
+			sheet.addCell(getNumberCell(new BigFraction(iv.value), col, format));
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			sheet.addCell(new Number(col, row, rv.value.doubleValue(), format));
+			sheet.addCell(getNumberCell(rv.value, col, format));
 		} else if (value instanceof EnumValue) {
 			EnumValue ev = (EnumValue) value;
 			sheet.addCell(new Label(col, row, ev.value));
 		} else if (value instanceof NumericInterval) {
 			NumericInterval ni = (NumericInterval) value;
-			if (ni.isExact()) {
-				sheet.addCell(new Number(col, row, ni.getLow().toDouble(), format));
-			} else {
-				String str = "[" + ni.getLow().toDouble() + ", " + ni.getHigh().toDouble() + "]";
-				sheet.addCell(new Label(col, row, str, format));
-			}
+			String str = "[" + ni.getLow().toDouble() + ", " + ni.getHigh().toDouble() + "]";
+			sheet.addCell(new Label(col, row, str, format));
 		} else if (value instanceof BoolInterval) {
 			BoolInterval bi = (BoolInterval) value;
 			sheet.addCell(new Boolean(col, row, bi.isTrue(), format));
 		} else {
 			throw new JKindException("Unknown value type in Excel writer: "
 					+ value.getClass().getSimpleName());
+		}
+	}
+
+	private WritableCell getNumberCell(BigFraction value, int col, CellFormat format) {
+		WritableCell cell = new Number(col, row, value.doubleValue(), format);
+
+		// Excel displays at most a float value. We check if that display
+		// will match the exact value. If not, we add a comment with a better
+		// approximation (or the exact value)
+		if (!isExactFloat(value)) {
+			WritableCellFeatures features = new WritableCellFeatures();
+			features.setComment(value.toTruncatedDecimal(20, "..."), 8, 3);
+			cell.setCellFeatures(features);
+		}
+
+		return cell;
+	}
+
+	private boolean isExactFloat(BigFraction value) {
+		try {
+			String str = Float.toString((float) value.doubleValue());
+			BigFraction approx = BigFraction.valueOf(new BigDecimal(str));
+			return value.equals(approx);
+		} catch (NumberFormatException e) {
+			return false;
 		}
 	}
 }

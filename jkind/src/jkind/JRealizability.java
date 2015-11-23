@@ -8,8 +8,6 @@ import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.realizability.engines.RealizabilityDirector;
-import jkind.slicing.DependencyMap;
-import jkind.slicing.LustreSlicer;
 import jkind.translation.Specification;
 import jkind.translation.Translate;
 import jkind.util.Util;
@@ -25,9 +23,7 @@ public class JRealizability {
 			checkRealizablitityQuery(program);
 
 			Node main = Translate.translate(program);
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
-			main = LustreSlicer.slice(main, dependencyMap);
-			Specification spec = new Specification(main, dependencyMap);
+			Specification spec = new Specification(main);
 			new RealizabilityDirector(settings, spec).run();
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
@@ -50,7 +46,7 @@ public class JRealizability {
 	}
 
 	private static boolean realizablitityQueryExists(Node main) {
-		if (!main.realizabilityInputs.isPresent()) {
+		if (main.realizabilityInputs == null) {
 			Output.error("main node '" + main.id + "' must have realizability query");
 			return false;
 		} else {
@@ -61,7 +57,7 @@ public class JRealizability {
 	private static boolean realizablitityInputsNodeInputs(Node main) {
 		boolean pass = true;
 		List<String> inputs = Util.getIds(main.inputs);
-		for (String ri : main.realizabilityInputs.get()) {
+		for (String ri : main.realizabilityInputs) {
 			if (!inputs.contains(ri)) {
 				Output.error("in node '" + main.id + "' realizability input '" + ri
 						+ "' must be a node input");
@@ -74,7 +70,7 @@ public class JRealizability {
 	private static boolean realizablitityInputsUnique(Node main) {
 		boolean unique = true;
 		Set<String> seen = new HashSet<>();
-		for (String ri : main.realizabilityInputs.get()) {
+		for (String ri : main.realizabilityInputs) {
 			if (!seen.add(ri)) {
 				Output.error("in node '" + main.id + "' realizability input '" + ri
 						+ "' listed multiple times");

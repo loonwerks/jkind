@@ -2,6 +2,7 @@ package jkind.interval;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
+import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 
 public class BoolInterval extends Interval {
@@ -23,6 +24,19 @@ public class BoolInterval extends Interval {
 	@Override
 	public boolean isArbitrary() {
 		return this == ARBITRARY;
+	}
+
+	@Override
+	public boolean isExact() {
+		return isTrue() || isFalse();
+	}
+
+	@Override
+	public Value getExactValue() {
+		if (!isExact()) {
+			throw new IllegalArgumentException("Value is not exact");
+		}
+		return isTrue() ? BooleanValue.TRUE : BooleanValue.FALSE;
 	}
 	
 	@Override

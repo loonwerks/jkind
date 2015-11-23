@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public abstract class KindApi {
 	protected Integer timeout = null;
+	protected DebugLogger debug = new DebugLogger();
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -22,6 +23,23 @@ public abstract class KindApi {
 			throw new JKindException("Timeout must be positive");
 		}
 		this.timeout = timeout;
+	}
+
+	/**
+	 * Put the KindApi into debug mode where it saves all output
+	 */
+	public void setApiDebug() {
+		debug = new DebugLogger("jkind-api-debug-");
+	}
+
+	/**
+	 * Print string to debug log (assuming setApiDebug() has been called)
+	 * 
+	 * @param text
+	 *            text to print to debug log
+	 */
+	public void apiDebug(String text) {
+		debug.println(text);
 	}
 
 	/**
@@ -56,7 +74,7 @@ public abstract class KindApi {
 			lustreFile = ApiUtil.writeLustreFile(program);
 			execute(lustreFile, result, monitor);
 		} finally {
-			ApiUtil.safeDelete(lustreFile);
+			debug.deleteIfUnneeded(lustreFile);
 		}
 	}
 
@@ -72,11 +90,13 @@ public abstract class KindApi {
 	 * @throws jkind.JKindException
 	 */
 	public abstract void execute(File lustreFile, JKindResult result, IProgressMonitor monitor);
-	
+
 	/**
 	 * Check if the KindApi is available for running and throw exception if not
 	 * 
+	 * @return Availability information when Kind is available
 	 * @throws java.lang.Exception
+	 *             When Kind is not available
 	 */
-	public abstract void checkAvailable() throws Exception;
+	public abstract String checkAvailable() throws Exception;
 }

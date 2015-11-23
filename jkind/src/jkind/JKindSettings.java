@@ -17,6 +17,7 @@ public class JKindSettings extends Settings {
 	public boolean reduceInvariants = false;
 	public boolean smoothCounterexamples = false;
     public boolean intervalGeneralization = false;
+    public boolean inline = true;
 	
 	public SolverOption solver = SolverOption.YICES;
 	public boolean scratch = false;

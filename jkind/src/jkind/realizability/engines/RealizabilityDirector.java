@@ -193,6 +193,6 @@ public class RealizabilityDirector {
 	}
 
 	private Counterexample extractCounterexample(int k, Model model) {
-		return new CounterexampleExtractor(spec.typeMap).extractCounterexample(k, model);
+		return CounterexampleExtractor.extract(spec, k, model);
 	}
 }

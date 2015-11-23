@@ -2,12 +2,16 @@ package jkind.solvers;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jkind.JKindException;
 
@@ -19,14 +23,16 @@ public abstract class ProcessBasedSolver extends Solver {
 	protected BufferedReader fromSolver;
 	protected PrintWriter scratch;
 
-	protected ProcessBasedSolver(String scratchBase, ProcessBuilder processBuilder) {
+	protected ProcessBasedSolver(String scratchBase) {
 		this.scratch = getScratch(scratchBase);
 
+		ProcessBuilder processBuilder = new ProcessBuilder(getSolverCommand());
 		processBuilder.redirectErrorStream(true);
 		try {
 			process = processBuilder.start();
 		} catch (IOException e) {
-			throw new JKindException("Unable to start solver", e);
+			throw new JKindException("Unable to start solver by executing: "
+					+ processBuilder.command().get(0), e);
 		}
 		addShutdownHook();
 		toSolver = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
@@ -46,7 +52,47 @@ public abstract class ProcessBasedSolver extends Solver {
 		}
 	}
 
+	private List<String> getSolverCommand() {
+		List<String> command = new ArrayList<>();
+		command.add(getSolverPath());
+		command.addAll(Arrays.asList(getSolverOptions()));
+		return command;
+	}
+
+	private String getSolverPath() {
+		String executable = getSolverExecutable();
+		String home = System.getenv(getSolverHomeVariable());
+		if (home != null) {
+			return new File(getBinDir(home), executable).toString();
+		}
+		return executable;
+	}
+
+	private static File getBinDir(String homeString) {
+		File home = new File(homeString);
+		File bin = new File(home, "bin");
+		if (bin.isDirectory()) {
+			return bin;
+		} else {
+			return home;
+		}
+	}
+
+	protected abstract String getSolverName();
+
 	protected abstract String getSolverExtension();
+
+	protected String getSolverExecutable() {
+		return getSolverName().toLowerCase();
+	}
+
+	protected String[] getSolverOptions() {
+		return new String[0];
+	}
+
+	protected String getSolverHomeVariable() {
+		return getSolverName().toUpperCase() + "_HOME";
+	}
 
 	private void addShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {

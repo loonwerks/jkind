@@ -46,7 +46,12 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(BinaryExpr e) {
-		return new BinaryExpr(e.location, e.left.accept(this), e.op, e.right.accept(this));
+		Expr left = e.left.accept(this);
+		Expr right = e.right.accept(this);
+		if (e.left == left && e.right == right) {
+			return e;
+		}
+		return new BinaryExpr(e.location, left, e.op, right);
 	}
 
 	@Override
@@ -72,8 +77,13 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(IfThenElseExpr e) {
-		return new IfThenElseExpr(e.location, e.cond.accept(this), e.thenExpr.accept(this),
-				e.elseExpr.accept(this));
+		Expr cond = e.cond.accept(this);
+		Expr thenExpr = e.thenExpr.accept(this);
+		Expr elseExpr = e.elseExpr.accept(this);
+		if (e.cond == cond && e.thenExpr == thenExpr && e.elseExpr == elseExpr) {
+			return e;
+		}
+		return new IfThenElseExpr(e.location, cond, thenExpr, elseExpr);
 	}
 
 	@Override
@@ -118,7 +128,11 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(UnaryExpr e) {
-		return new UnaryExpr(e.location, e.op, e.expr.accept(this));
+		Expr expr = e.expr.accept(this);
+		if (e.expr == expr) {
+			return e;
+		}
+		return new UnaryExpr(e.location, e.op, expr);
 	}
 
 	protected List<Expr> visitExprs(List<? extends Expr> es) {

@@ -3,6 +3,7 @@ package jkind.lustre.visitors;
 import java.util.List;
 
 import jkind.lustre.Constant;
+import jkind.lustre.Contract;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -82,6 +83,13 @@ public class AstIterVisitor extends ExprIterVisitor implements AstVisitor<Void, 
 
 	@Override
 	public Void visit(VarDecl e) {
+		return null;
+	}
+
+	@Override
+	public Void visit(Contract contract) {
+		visitExprs(contract.requires);
+		visitExprs(contract.ensures);
 		return null;
 	}
 }

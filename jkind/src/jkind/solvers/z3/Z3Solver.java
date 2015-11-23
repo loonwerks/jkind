@@ -1,7 +1,5 @@
 package jkind.solvers.z3;
 
-import java.io.File;
-
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
@@ -17,16 +15,18 @@ public class Z3Solver extends SmtLib2Solver {
 	private final boolean linear;
 
 	public Z3Solver(String scratchBase, boolean linear) {
-		super(scratchBase, new ProcessBuilder(getZ3(), "-smt2", "-in"), "Z3");
+		super(scratchBase);
 		this.linear = linear;
 	}
 
-	private static String getZ3() {
-		String home = System.getenv("Z3_HOME");
-		if (home != null) {
-			return new File(new File(home, "bin"), "z3").toString();
-		}
-		return "z3";
+	@Override
+	protected String getSolverName() {
+		return "Z3";
+	}
+
+	@Override
+	protected String[] getSolverOptions() {
+		return new String[] { "-smt2", "-in" };
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class Z3Solver extends SmtLib2Solver {
 			// Even for unknown we can sometimes get a partial model
 			send("(get-model)");
 			markDone();
-			
+
 			String content = readFromSolver();
 			if (content == null) {
 				return new UnknownResult();

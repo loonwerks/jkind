@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jkind.JKindException;
+import jkind.api.Kind2Api;
 
 public class Kind2WebInputStream extends InputStream {
 	private static final int POLL_INTERVAL = 1000;
@@ -83,7 +84,7 @@ public class Kind2WebInputStream extends InputStream {
 			// kind param
 			writer.append("--" + boundary).append(CRLF);
 			writer.append("Content-Disposition: form-data; name=\"kind\"").append(CRLF);
-			writer.append(CRLF).append("kind2").append(CRLF).flush();
+			writer.append(CRLF).append(Kind2Api.KIND2).append(CRLF).flush();
 
 			// arg param
 			for (String arg : args) {
@@ -128,13 +129,18 @@ public class Kind2WebInputStream extends InputStream {
 	}
 
 	private String getJobId(InputStream is) throws IOException {
-		Pattern pattern = Pattern.compile(".*jobid=\"(.*?)\".*");
+		Pattern jobIdPattern = Pattern.compile(".*jobid=\"(.*?)\".*");
+		Pattern abortPattern = Pattern.compile(".*msg=\"aborted\">(.*?)</.*");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line;
 		while ((line = reader.readLine()) != null) {
-			Matcher match = pattern.matcher(line);
+			Matcher match = jobIdPattern.matcher(line);
 			if (match.matches()) {
 				return match.group(1);
+			}
+			match = abortPattern.matcher(line);
+			if (match.matches()) {
+				throw new JKindException("Kind2 server aborted job: " + match.group(1));
 			}
 		}
 		throw new JKindException("Failed to receive job id from " + baseUri);

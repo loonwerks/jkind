@@ -19,6 +19,7 @@ public class JRealizabilityApi {
 	private Integer n = null;
 	private boolean extendCounterexample = false;
 	private boolean reduce = false;
+	private DebugLogger debug = new DebugLogger();
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -61,6 +62,23 @@ public class JRealizabilityApi {
 	}
 
 	/**
+	 * Put the RealizabilityApi into debug mode where it saves all output
+	 */
+	public void setApiDebug() {
+		debug = new DebugLogger("jrealizability-api-debug-");
+	}
+
+	/**
+	 * Print string to debug log (assuming setApiDebug() has been called)
+	 * 
+	 * @param text
+	 *            text to print to debug log
+	 */
+	public void apiDebug(String text) {
+		debug.println(text);
+	}
+	
+	/**
 	 * Run JRealizability on a Lustre program
 	 * 
 	 * @param program
@@ -92,7 +110,7 @@ public class JRealizabilityApi {
 			lustreFile = ApiUtil.writeLustreFile(program);
 			execute(lustreFile, result, monitor);
 		} finally {
-			ApiUtil.safeDelete(lustreFile);
+			debug.deleteIfUnneeded(lustreFile);
 		}
 	}
 
@@ -108,7 +126,7 @@ public class JRealizabilityApi {
 	 * @throws jkind.JKindException
 	 */
 	public void execute(File lustreFile, JRealizabilityResult result, IProgressMonitor monitor) {
-		ApiUtil.execute(this::getJRealizabilityProcessBuilder, lustreFile, result, monitor);
+		ApiUtil.execute(this::getJRealizabilityProcessBuilder, lustreFile, result, monitor, debug);
 	}
 
 	private ProcessBuilder getJRealizabilityProcessBuilder(File lustreFile) {

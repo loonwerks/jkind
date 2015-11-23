@@ -153,7 +153,7 @@ public class RemoveCondacts {
 		List<VarDecl> stateLocals = new ArrayList<>();
 		Map<String, Expr> cache = new HashMap<>();
 
-		node = DistributePre.node(node);
+		node = DistributePres.node(node);
 		node = (Node) node.accept(new AstMapVisitor() {
 			private int counter = 0;
 

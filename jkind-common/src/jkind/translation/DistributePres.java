@@ -13,13 +13,25 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.AstMapVisitor;
 
-public class DistributePre extends AstMapVisitor {
+/**
+ * Push all instances of 'pre' operator down as far as possible.
+ * 
+ * For example:
+ * 
+ * <pre>
+ * pre(x + pre(3 * z)) = pre(x) + 3 * pre(pre(z))
+ * </pre>
+ * 
+ * If there are no node calls, condacts, or arrow expressions underneath 'pre'
+ * operators, then in the result 'pre' will only be applied to variables.
+ */
+public class DistributePres extends AstMapVisitor {
 	private int pres = 0;
-	
+
 	public static Node node(Node node) {
-		return new DistributePre().visit(node);
+		return new DistributePres().visit(node);
 	}
-	
+
 	private Expr applyPres(Expr e) {
 		Expr result = e;
 		for (int i = 0; i < pres; i++) {
@@ -27,12 +39,12 @@ public class DistributePre extends AstMapVisitor {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public Expr visit(BinaryExpr e) {
 		if (e.op == BinaryOp.ARROW) {
-			Expr left = e.left.accept(new DistributePre());
-			Expr right = e.right.accept(new DistributePre());
+			Expr left = e.left.accept(new DistributePres());
+			Expr right = e.right.accept(new DistributePres());
 			return applyPres(arrow(left, right));
 		} else {
 			return super.visit(e);

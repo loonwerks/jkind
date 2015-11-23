@@ -3,13 +3,14 @@ package jkind.lustre.builders;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
+import jkind.lustre.Contract;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Location;
 import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
+import jkind.util.Util;
 
 public class NodeBuilder {
 	private String id;
@@ -19,7 +20,8 @@ public class NodeBuilder {
 	private List<Equation> equations = new ArrayList<>();
 	private List<String> properties = new ArrayList<>();
 	private List<Expr> assertions = new ArrayList<>();
-	private Optional<List<String>> realizabilityInputs = Optional.empty();
+	private List<String> realizabilityInputs = null;
+	private Contract contract = null;
 
 	public NodeBuilder(String id) {
 		this.id = id;
@@ -33,15 +35,8 @@ public class NodeBuilder {
 		this.equations = new ArrayList<>(node.equations);
 		this.properties = new ArrayList<>(node.properties);
 		this.assertions = new ArrayList<>(node.assertions);
-		this.realizabilityInputs = copy(node.realizabilityInputs);
-	}
-	
-	private Optional<List<String>> copy(Optional<List<String>> original) {
-		if (original.isPresent()) {
-			return Optional.of(new ArrayList<>(original.get()));
-		} else {
-			return Optional.empty();
-		}
+		this.realizabilityInputs = Util.copyNullable(node.realizabilityInputs);
+		this.contract = node.contract;
 	}
 
 	public NodeBuilder setId(String id) {
@@ -133,19 +128,24 @@ public class NodeBuilder {
 		this.assertions.addAll(assertions);
 		return this;
 	}
-	
-	public NodeBuilder setRealizabilityInputs(List<String> realizabilityInputs) {
-		this.realizabilityInputs = Optional.of(new ArrayList<>(realizabilityInputs));
-		return this;
-	}
 
 	public NodeBuilder clearAssertions() {
 		this.assertions.clear();
 		return this;
 	}
 
+	public NodeBuilder setRealizabilityInputs(List<String> realizabilityInputs) {
+		this.realizabilityInputs = Util.copyNullable(realizabilityInputs);
+		return this;
+	}
+
+	public NodeBuilder setContract(Contract contract) {
+		this.contract = contract;
+		return this;
+	}
+
 	public Node build() {
 		return new Node(Location.NULL, id, inputs, outputs, locals, equations, properties,
-				assertions, realizabilityInputs);
+				assertions, realizabilityInputs, contract);
 	}
 }
