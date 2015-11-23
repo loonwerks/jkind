@@ -153,23 +153,25 @@ public class XmlParseThread extends Thread {
 		Property prop = getProperty(parseXml(propertyXml));
 		String propName = prop.getName();
 		PropertyResult pr = getOrAddProperty(analysis, propName);
-		pr.setProperty(prop);
-		if (analysis != null) {
-			analysisToProps.get(analysis).add(pr);
-		}
+        if (pr != null) {
+            pr.setProperty(prop);
+            if (analysis != null) {
+                analysisToProps.get(analysis).add(pr);
+            }
+        }
 	}
 
-	private PropertyResult getOrAddProperty(String analysis, String propName) {
-		PropertyResult pr = result.getPropertyResult(propName);
-		if (pr == null) {
-			if (analysis != null) {
-				pr = result.getPropertyResult(analysis + propName);
-			} else {
-				pr = result.addProperty(propName);
-			}
-		}
-		return pr;
-	}
+    private PropertyResult getOrAddProperty(String analysis, String propName) {
+        PropertyResult pr = result.getPropertyResult(propName);
+        if (pr == null && analysis != null) {
+            propName = analysis + propName;
+            pr = result.getPropertyResult(propName);
+        }
+        if (pr == null) {
+            pr = result.addProperty(propName);
+        }
+        return pr;
+    }
 
 	private Property getProperty(Element propertyElement) {
 		String name = propertyElement.getAttribute("name");
