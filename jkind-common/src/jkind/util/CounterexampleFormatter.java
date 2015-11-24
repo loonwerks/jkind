@@ -32,7 +32,7 @@ public class CounterexampleFormatter {
 
 	private String footer() {
 		if (truncated) {
-			return NEWLINE + " * value has been truncated" + NEWLINE;
+			return NEWLINE + " * display value has been truncated" + NEWLINE;
 		} else {
 			return "";
 		}
