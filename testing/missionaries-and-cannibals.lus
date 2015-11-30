@@ -1,0 +1,74 @@
+-- A Lustre encoding of the "Missionaries and cannibals problem"
+-- https://en.wikipedia.org/wiki/Missionaries_and_cannibals_problem
+-- Contributed by Steven Miller
+--
+-- This file has 3 true properties at K = 1 and one false at K = 12
+
+type bank = struct { m: int; c:int };
+
+type state = struct { left: bank; right: bank };
+
+const missionaries = 3;
+const cannibals = 3;
+
+const initial_state = state { left  = bank {m = missionaries; c = cannibals};
+                              right = bank {m = 0; c = 0}};
+
+-- constraint on cannibals and missionaries transported from source to destination bank
+node safe(src, dst : bank; m, c : int) returns (r: bool);
+let
+  r = m >= 0 and c >= 0 and                      -- non-negative occupants in boat
+      m + c >= 1 and m + c <= 2 and              -- 1 to 2 occupants in boat
+      m <= src.m and c <= src.c and              -- occupants on source bank
+      (src.m - m >= src.c - c or src.m = m) and  -- source bank will be safe
+      (dst.m + m >= dst.c + c or dst.m + m = 0); -- destination bank will be safe
+tel;
+
+node ferry_right(s:state; m, c : int) returns (r : state);
+let
+  r = state { left = bank {m = s.left.m - m; c = s.left.c - c};
+              right = bank {m = s.right.m + m; c = s.right.c + c}};
+tel;
+
+node ferry_left(s:state; m, c : int) returns (r : state);
+let
+  r = state { left = bank {m = s.left.m + m; c = s.left.c + c};
+              right = bank {m = s.right.m - m; c = s.right.c - c}};
+tel;
+
+node main(m, c : int) returns ();
+var
+  s : state;
+  boat_on_left_bank : bool;
+
+  -- properties to prove
+  conservation_missionaries, conservation_cannibals, safety_missionaries, cex : bool;
+let
+  -- boat alternates from left to right bank
+  boat_on_left_bank = (true -> not pre boat_on_left_bank);
+
+  -- constrain missionaries and cannibals in boat to maintain missionary safety
+  assert if (boat_on_left_bank)
+         then safe(s.left, s.right, m, c)
+         else safe(s.right, s.left, m, c);
+
+  -- compute next states
+  s = initial_state ->
+        if (pre boat_on_left_bank) then
+           ferry_right(pre s, pre m, pre c)
+        else
+           ferry_left(pre s, pre m, pre c);
+
+  conservation_missionaries = (s.left.m + s.right.m = missionaries);
+  --%PROPERTY conservation_missionaries;
+
+  conservation_cannibals = (s.left.c + s.right.c = cannibals);
+  --%PROPERTY conservation_cannibals;
+
+  safety_missionaries = ((s.left.m >= s.left.c or s.left.m = 0) and
+                         (s.right.m >= s.right.c or s.right.m = 0));
+  --%PROPERTY safety_missionaries;
+
+  cex = not (s.right.m = missionaries and s.right.c = cannibals);
+  --%PROPERTY cex;
+tel;
