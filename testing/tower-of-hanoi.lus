@@ -1,0 +1,50 @@
+-- A Lustre encoding of the Tower of Hanoi problem with 4 discs
+-- https://en.wikipedia.org/wiki/Tower_of_Hanoi
+--
+-- There is one property which is false at K = 16
+
+type rod = int[4];
+const FULL : rod = [1, 2, 3, 4];
+const EMPTY : rod = [0, 0, 0, 0];
+
+type state = rod[3];
+const INITIAL : state = [FULL, EMPTY, EMPTY];
+const SOLVED : state = [EMPTY, FULL, EMPTY];
+
+-- Update state by moving top element from src rod to dst rod
+node update(curr : state; src, dst : int) returns (next : state);
+var
+  src_rod, dst_rod : rod;
+let
+  src_rod = curr[src];
+  dst_rod = curr[dst];
+  next = curr[src := pop(src_rod)][dst := push(src_rod[0], dst_rod)];
+tel;
+
+-- Remove the top disc from a rod
+node pop(curr : rod) returns (next : rod);
+let
+  next = [curr[1], curr[2], curr[3], 0];
+tel;
+
+-- Add a new disc to the top of a rod
+node push(disc : int; curr : rod) returns (next : rod);
+let
+  next = [disc, curr[0], curr[1], curr[2]];
+tel;
+
+node main(src, dst : int) returns (state : state);
+var
+  cex : bool;
+let
+  state = INITIAL -> update(pre state, pre src, pre dst);
+
+  -- Must move a disc
+  assert (state[src][0] <> 0);
+
+  -- Cannot place bigger disc on smaller disc
+  assert (state[dst][0] = 0) or (state[src][0] < state[dst][0]);
+
+  cex = (state <> SOLVED);
+  --%PROPERTY cex;
+tel;
