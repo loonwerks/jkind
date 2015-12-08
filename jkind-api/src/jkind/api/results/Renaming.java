@@ -1,6 +1,8 @@
 package jkind.api.results;
 
-import java.util.ArrayList;
+import static java.util.stream.Collectors.toList;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -13,7 +15,7 @@ import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 
 /**
- * An class for renaming and removing variables from analysis results
+ * A class for renaming and removing variables from analysis results
  * 
  * @see MapRenaming
  */
@@ -66,7 +68,7 @@ public abstract class Renaming {
 		}
 
 		return new ValidProperty(name, property.getSource(), property.getK(),
-				property.getRuntime(), property.getInvariants());
+				property.getRuntime(), property.getInvariants(), rename(property.getSupport()));
 	}
 
 	/**
@@ -154,18 +156,11 @@ public abstract class Renaming {
 	/**
 	 * Rename conflicts, possibly omitting some
 	 * 
-	 * @param conflicts
-	 *            Conflicts to be renamed
+	 * @param es
+	 *            Strings to be renamed
 	 * @return Renamed version of the conflicts
 	 */
-	private List<String> rename(List<String> conflicts) {
-		List<String> result = new ArrayList<>();
-		for (String conflict : conflicts) {
-			String newConflict = rename(conflict);
-			if (newConflict != null) {
-				result.add(newConflict);
-			}
-		}
-		return result;
+	private List<String> rename(Collection<String> es) {
+		return es.stream().map(this::rename).filter(e -> e != null).collect(toList());
 	}
 }

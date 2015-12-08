@@ -200,6 +200,14 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			newline();
 		}
 
+		if (!node.support.isEmpty()) {
+			write("  --%SUPPORT ");
+			write(node.support.stream().collect(joining(", ")));
+			write(";");
+			newline();
+			newline();
+		}
+
 		write("tel;");
 		return null;
 	}

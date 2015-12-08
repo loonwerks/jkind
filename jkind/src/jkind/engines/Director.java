@@ -166,8 +166,8 @@ public class Director extends MessageHandler {
 			addEngine(new GraphInvariantGenerationEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.reduceInvariants) {
-			addEngine(new InvariantReductionEngine(analysisSpec, settings, this));
+		if (settings.reduceSupport) {
+			addEngine(new ReduceSupportEngine(analysisSpec, settings, this));
 		}
 
 		if (settings.smoothCounterexamples) {
@@ -276,8 +276,8 @@ public class Director extends MessageHandler {
 			adviceWriter.addInvariants(vm.invariants);
 		}
 
-		List<Expr> invariants = settings.reduceInvariants ? vm.invariants : Collections.emptyList();
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants);
+		List<Expr> invariants = settings.reduceSupport ? vm.invariants : Collections.emptyList();
+		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.support);
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {
@@ -399,8 +399,8 @@ public class Director extends MessageHandler {
 
 	public Itinerary getValidMessageItinerary() {
 		List<EngineType> destinations = new ArrayList<>();
-		if (settings.reduceInvariants) {
-			destinations.add(EngineType.INVARIANT_REDUCTION);
+		if (settings.reduceSupport) {
+			destinations.add(EngineType.REDUCE_SUPPORT);
 		}
 		return new Itinerary(destinations);
 	}

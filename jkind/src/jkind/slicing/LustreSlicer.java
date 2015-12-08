@@ -63,6 +63,17 @@ public class LustreSlicer extends AstMapVisitor {
 		return sliced;
 	}
 
+	@Override
+	protected List<String> visitSupport(List<String> support) {
+		List<String> sliced = new ArrayList<>();
+		for (String supp : support) {
+			if (keep.contains(supp)) {
+				sliced.add(supp);
+			}
+		}
+		return sliced;
+	}
+
 	private static boolean containsAny(DependencySet set, List<IdExpr> lhs) {
 		for (IdExpr idExpr : lhs) {
 			if (set.contains(idExpr.id)) {

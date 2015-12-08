@@ -50,6 +50,8 @@ public class StaticAnalyzer {
 		valid = valid && propertiesUnique(program);
 		valid = valid && propertiesExist(program);
 		valid = valid && propertiesBoolean(program);
+		valid = valid && supportUnique(program);
+		valid = valid && supportLocalOrOutput(program);
 		if (solver != SolverOption.Z3) {
 			valid = valid && LinearChecker.check(program, Level.ERROR);
 		}
@@ -325,5 +327,42 @@ public class StaticAnalyzer {
 		}
 
 		return false;
+	}
+
+	private static boolean supportUnique(Program program) {
+		boolean unique = true;
+
+		for (Node node : program.nodes) {
+			Set<String> seen = new HashSet<>();
+			for (String supp : node.support) {
+				if (!seen.add(supp)) {
+					Output.error("in node '" + node.id + "' support '" + supp
+							+ "' declared multiple times");
+					unique = false;
+				}
+			}
+		}
+
+		return unique;
+	}
+
+	private static boolean supportLocalOrOutput(Program program) {
+		boolean passed = true;
+
+		for (Node node : program.nodes) {
+			Set<String> assigned = new HashSet<>();
+			assigned.addAll(Util.getIds(node.outputs));
+			assigned.addAll(Util.getIds(node.locals));
+
+			for (String supp : node.support) {
+				if (!assigned.contains(supp)) {
+					Output.error("in node '" + node.id + "' element of support '" + supp
+							+ "' must be a local or output");
+					passed = false;
+				}
+			}
+		}
+
+		return passed;
 	}
 }

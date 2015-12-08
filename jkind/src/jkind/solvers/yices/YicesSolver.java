@@ -109,13 +109,13 @@ public class YicesSolver extends ProcessBasedSolver {
 
 	private int labelCount = 1;
 
-	public Label labelledAssert(Sexp sexp) {
+	public Symbol labelledAssert(Sexp sexp) {
 		comment("id = " + labelCount);
 		send("(assert+ " + sexp + ")");
-		return new Label(labelCount++);
+		return new Symbol(Integer.toString(labelCount++));
 	}
 
-	public void retract(Label label) {
+	public void retract(Symbol label) {
 		send("(retract " + label + ")");
 	}
 
@@ -132,7 +132,7 @@ public class YicesSolver extends ProcessBasedSolver {
 		 * and pop for some reason.
 		 */
 
-		Label label = labelledAssert(new Cons("not", sexp));
+		Symbol label = labelledAssert(new Cons("not", sexp));
 		send("(check)");
 		send("(echo \"" + DONE + "\\n\")");
 		retract(label);
@@ -142,7 +142,7 @@ public class YicesSolver extends ProcessBasedSolver {
 			throw new JKindException("Unknown result from yices");
 		}
 		if (result instanceof UnsatResult) {
-			List<Label> core = ((UnsatResult) result).getUnsatCore();
+			List<Symbol> core = ((UnsatResult) result).getUnsatCore();
 			if (core.contains(label)) {
 				core.remove(label);
 			} else {
@@ -153,7 +153,7 @@ public class YicesSolver extends ProcessBasedSolver {
 	}
 
 	public Result maxsatQuery(Sexp sexp) {
-		Label label = labelledAssert(new Cons("not", sexp));
+		Symbol label = labelledAssert(new Cons("not", sexp));
 		send("(max-sat)");
 		send("(echo \"" + DONE + "\\n\")");
 		retract(label);

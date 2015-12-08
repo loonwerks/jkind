@@ -22,7 +22,7 @@ public class JKindApi extends KindApi {
 	protected boolean invariantGeneration = true;
 	protected Integer pdrMax = null;
 	protected boolean inductiveCounterexamples = false;
-	protected boolean reduceInvariants = false;
+	protected boolean reduceSupport = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean intervalGeneralization = false;
 
@@ -81,10 +81,10 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
-	 * Reduce and report the invariants used for a valid property
+	 * Reduce and report the invariants and support used for a valid property
 	 */
-	public void setReduceInvariants() {
-		reduceInvariants = true;
+	public void setReduceSupport() {
+		reduceSupport = true;
 	}
 
 	/**
@@ -147,8 +147,8 @@ public class JKindApi extends KindApi {
 		if (inductiveCounterexamples) {
 			args.add("-induct_cex");
 		}
-		if (reduceInvariants) {
-			args.add("-reduce_inv");
+		if (reduceSupport) {
+			args.add("-support");
 		}
 		if (smoothCounterexamples) {
 			args.add("-smooth");

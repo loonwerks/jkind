@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.excel.ExcelFormatter;
 import jkind.lustre.Expr;
@@ -47,10 +48,10 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants) {
+			List<Expr> invariants, Set<String> support) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		for (String prop : props) {
-			properties.add(new ValidProperty(prop, source, k, runtime, invText));
+			properties.add(new ValidProperty(prop, source, k, runtime, invText, support));
 		}
 	}
 

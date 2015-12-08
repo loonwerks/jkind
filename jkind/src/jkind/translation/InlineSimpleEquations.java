@@ -18,8 +18,8 @@ public class InlineSimpleEquations {
 	private static Map<String, Expr> getInliningMap(Node node) {
 		ResolvingSubstitutionMap map = new ResolvingSubstitutionMap();
 		for (Equation eq : node.equations) {
-			if (isSimple(eq.expr)) {
-				String id = eq.lhs.get(0).id;
+			String id = eq.lhs.get(0).id;
+			if (isSimple(eq.expr) && !node.support.contains(id)) {
 				map.put(id, eq.expr);
 			}
 		}

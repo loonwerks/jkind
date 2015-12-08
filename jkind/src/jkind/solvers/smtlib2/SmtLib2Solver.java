@@ -111,6 +111,17 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		return output.trim().equals("unsat");
 	}
 
+	protected String readCore() {
+		String line = "";
+		try {
+			line = fromSolver.readLine();
+			comment(getSolverName() + ": " + line);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return line.substring(1, line.length() - 1);
+	}
+
 	protected String readFromSolver() {
 		try {
 			String line;

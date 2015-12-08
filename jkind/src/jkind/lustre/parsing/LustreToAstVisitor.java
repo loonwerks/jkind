@@ -76,6 +76,7 @@ import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RealizabilityInputsContext;
+import jkind.lustre.parsing.LustreParser.SupportContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
@@ -141,13 +142,14 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
+		List<String> support = support(ctx.support());
 		List<String> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
 		Contract contract = null;
 		if (!ctx.main().isEmpty()) {
 			main = id;
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs, contract);
+				realizabilityInputs, contract, support);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
@@ -211,6 +213,22 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 
 		for (RealizabilityInputsContext ctx : ctxs) {
+			List<String> ids = new ArrayList<>();
+			for (TerminalNode ictx : ctx.ID()) {
+				ids.add(ictx.getText());
+			}
+			return ids;
+		}
+
+		return null;
+	}
+	
+	private List<String> support(List<SupportContext> ctxs) {
+		if (ctxs.size() > 1) {
+			fatal(ctxs.get(1), "at most one support statement allowed");
+		}
+
+		for (SupportContext ctx : ctxs) {
 			List<String> ids = new ArrayList<>();
 			for (TerminalNode ictx : ctx.ID()) {
 				ids.add(ictx.getText());
