@@ -1,0 +1,29 @@
+-- SUPPORT for sub2~0.sub1~0.ok: sub2.sub1.b
+
+node sub1(x : int) returns (y : int; assum : bool);
+var
+  a, b, ok : bool;
+let
+  y = x + (0 -> pre y);
+
+  a = x >= -1;
+  b = x >= 0;
+  assum = a and b;
+
+  ok = y >= 0;
+  --%SUPPORT a, b;
+  --%PROPERTY ok;
+tel;
+
+node sub2(x : int) returns (y : int; assum : bool);
+let
+  y, assum = sub1(x);
+tel;
+
+node main(x : int) returns (y : int);
+var
+  assum : bool;
+let
+  y, assum = sub2(x);
+  assert assum;
+tel;

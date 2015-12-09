@@ -248,7 +248,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 	private Set<String> trimNode(Set<String> arg) {
 		Set<String> support = new HashSet<>();
 		for (String supp : arg) {
-			support.add(supp.replaceFirst("~[0-9]", ""));
+			support.add(supp.replaceAll("~[0-9]+", ""));
 		}
 		return support;
 	}
