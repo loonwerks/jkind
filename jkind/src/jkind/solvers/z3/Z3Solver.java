@@ -1,11 +1,9 @@
 package jkind.solvers.z3;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import jkind.lustre.NamedType;
-import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -58,18 +56,15 @@ public class Z3Solver extends SmtLib2Solver {
 			send(new Cons("check-sat"));
 		}
 
-		markDone();
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			markDone();
 			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
 			// Even for unknown we can sometimes get a partial model
 			send("(get-model)");
-			markDone();
 
 			String content = readFromSolver();
 			if (content == null) {
@@ -86,32 +81,21 @@ public class Z3Solver extends SmtLib2Solver {
 		return result;
 	}
 
-	/**
-	 * A query focused on the UNSAT result. Produces no model for SAT. Computes
-	 * a minimal unsat-core of activation literals for UNSAT.
-	 */
-	public Result unsatQuery(List<Symbol> actLits, Sexp query) {
-		Result result;
-		push();
-
-		send(new Cons("assert", new Cons("not", query)));
-		send(new Cons("check-sat", new ArrayList<>(actLits)));
-
-		markDone();
+	@Override
+	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver();
 		if (isSat(status)) {
-			result = new SatResult();
+			return new SatResult();
 		} else if (isUnsat(status)) {
-			result = new UnsatResult(minimizeUnsatCore(getUnsatCore()));
+			return new UnsatResult(getUnsatCore(activationLiterals));
 		} else {
 			return new UnknownResult();
 		}
-
-		pop();
-		return result;
 	}
 
-	private List<Symbol> getUnsatCore() {
+	@Override
+	protected List<Symbol> getUnsatCore(List<Symbol> activationLiterals) {
 		List<Symbol> unsatCore = new ArrayList<>();
 		send("(get-unsat-core)");
 		for (String s : readCore().split(" ")) {
@@ -122,50 +106,15 @@ public class Z3Solver extends SmtLib2Solver {
 		return unsatCore;
 	}
 
-	/**
-	 * Compute a minimal unsat-core for a check-sat under assumptions. This
-	 * method assumes that check-sat under all the assumption returns UNSAT.
-	 */
-	private List<Symbol> minimizeUnsatCore(List<Symbol> unsatCore) {
-		List<Symbol> result = new ArrayList<>(unsatCore);
-
-		Iterator<Symbol> iterator = result.iterator();
-		while (iterator.hasNext()) {
-			Symbol curr = iterator.next();
-			if (quickCheckSat(without(result, curr)) instanceof UnsatResult) {
-				iterator.remove();
-			}
+	private String readCore() {
+		String line = "";
+		try {
+			line = fromSolver.readLine();
+			comment(getSolverName() + ": " + line);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
-		comment("Minimal unsat core: " + result);
-		return result;
-	}
-
-	private <T> List<T> without(List<T> list, T elem) {
-		List<T> result = new ArrayList<>(list);
-		result.remove(elem);
-		return result;
-	}
-
-	/**
-	 * Perform a check-sat under assumptions without any additional information
-	 * (model or unsat-core)
-	 */
-	private Result quickCheckSat(List<Symbol> activationLiterals) {
-		send(new Cons("check-sat", activationLiterals));
-		markDone();
-		String status = readFromSolver();
-		if (isSat(status)) {
-			return new SatResult();
-		} else if (isUnsat(status)) {
-			return new UnsatResult();
-		} else {
-			return new UnknownResult();
-		}
-	}
-
-	private void markDone() {
-		send("(echo \"" + DONE + "\")");
+		return line.substring(1, line.length() - 1);
 	}
 
 	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties, int timeoutMs) {
@@ -179,11 +128,9 @@ public class Z3Solver extends SmtLib2Solver {
 		}
 		assertSexp(query);
 		send(new Cons("check-sat"));
-		markDone();
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			markDone();
 			pop();
 			return new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
@@ -197,11 +144,5 @@ public class Z3Solver extends SmtLib2Solver {
 
 	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
 		return realizabilityQuery(outputs, transition, properties, 0);
-	}
-
-	public Symbol createActivationLiteral(String prefix, int id) {
-		String name = prefix + id;
-		define(new VarDecl(name, NamedType.BOOL));
-		return new Symbol(name);
 	}
 }

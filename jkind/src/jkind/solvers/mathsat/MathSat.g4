@@ -4,6 +4,8 @@ model: '(' assignment* ')' EOF;
 
 assignment: '(' id body ')';
 
+unsatAssumptions: '(' symbol* ')';
+
 body: symbol                               # symbolBody
     | '(' fn body* ')'                     # consBody
     ;

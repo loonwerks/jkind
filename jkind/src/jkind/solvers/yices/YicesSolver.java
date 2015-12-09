@@ -1,7 +1,11 @@
 package jkind.solvers.yices;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import jkind.JKindException;
@@ -17,7 +21,6 @@ import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.Label;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.UnsatResult;
@@ -134,13 +137,9 @@ public class YicesSolver extends ProcessBasedSolver {
 
 		Symbol label = labelledAssert(new Cons("not", sexp));
 		send("(check)");
-		send("(echo \"" + DONE + "\\n\")");
 		retract(label);
 
 		Result result = readResult();
-		if (result == null) {
-			throw new JKindException("Unknown result from yices");
-		}
 		if (result instanceof UnsatResult) {
 			List<Symbol> core = ((UnsatResult) result).getUnsatCore();
 			if (core.contains(label)) {
@@ -155,17 +154,64 @@ public class YicesSolver extends ProcessBasedSolver {
 	public Result maxsatQuery(Sexp sexp) {
 		Symbol label = labelledAssert(new Cons("not", sexp));
 		send("(max-sat)");
-		send("(echo \"" + DONE + "\\n\")");
 		retract(label);
+		return readResult();
+	}
 
-		Result result = readResult();
-		if (result == null) {
-			throw new JKindException("Unknown result from yices");
+	@Override
+	public Result unsatQuery(List<Symbol> activationLiterals, Sexp query) {
+		push();
+
+		HashMap<Symbol, Symbol> labelToActivationLiteral = new HashMap<>();
+		for (Symbol actLit : activationLiterals) {
+			Symbol label = labelledAssert(actLit);
+			labelToActivationLiteral.put(label, actLit);
 		}
-		return result;
+
+		/** First use unsat-core to quickly remove many activationLiterals */
+		Result result = query(query);
+		if (!(result instanceof UnsatResult)) {
+			pop();
+			return result;
+		}
+
+		List<Symbol> labelCore = ((UnsatResult) result).getUnsatCore();
+		for (Symbol label : labelToActivationLiteral.keySet()) {
+			if (!labelCore.contains(label)) {
+				retract(label);
+			}
+		}
+
+		/** Then try removing activation literals one-by-one */
+
+		Iterator<Symbol> iterator = labelCore.iterator();
+		while (iterator.hasNext()) {
+			Symbol curr = iterator.next();
+			push();
+			retract(curr);
+			boolean unsat = query(query) instanceof UnsatResult;
+			pop();
+
+			if (unsat) {
+				retract(curr);
+				iterator.remove();
+			}
+		}
+
+		pop();
+		List<Symbol> core = labelCore.stream().map(labelToActivationLiteral::get).collect(toList());
+		return new UnsatResult(core);
+	}
+
+	@Override
+	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+		// We do not need this method since we are overriding unsatQuery
+		throw new UnsupportedOperationException();
 	}
 
 	private Result readResult() {
+		send("(echo \"" + DONE + "\\n\")");
+
 		try {
 			String line;
 			StringBuilder content = new StringBuilder();
@@ -221,7 +267,12 @@ public class YicesSolver extends ProcessBasedSolver {
 		ParseTreeWalker walker = new ParseTreeWalker();
 		ResultExtractorListener extractor = new ResultExtractorListener(varTypes);
 		walker.walk(extractor, ctx);
-		return extractor.getResult();
+
+		Result result = extractor.getResult();
+		if (result == null) {
+			throw new JKindException("Unknown result from yices");
+		}
+		return result;
 	}
 
 	@Override

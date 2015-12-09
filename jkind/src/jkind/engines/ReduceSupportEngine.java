@@ -27,7 +27,6 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.LinkedBiMap;
@@ -35,7 +34,6 @@ import jkind.util.SexpUtil;
 
 public class ReduceSupportEngine extends SolverBasedEngine {
 	public static final String NAME = "reduce-support";
-	private Z3Solver z3Solver;
 	private final LinkedBiMap<String, Symbol> supportMap;
 
 	public ReduceSupportEngine(Specification spec, JKindSettings settings, Director director) {
@@ -53,8 +51,6 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 		}
 		solver.define(spec.getSupportTransitionRelation());
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
-
-		z3Solver = (Z3Solver) solver;
 	}
 
 	@Override
@@ -82,8 +78,8 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 
 	private void reduceInvariants(Expr property, ValidMessage vm) {
 		comment("Reducing invariants for: " + property);
-		z3Solver.push();
-		z3Solver.assertSexp(SexpUtil.conjoin(supportMap.valueList()));
+		solver.push();
+		solver.assertSexp(SexpUtil.conjoin(supportMap.valueList()));
 
 		LinkedBiMap<Symbol, Expr> candidates = createActivationLiterals(vm.invariants, "inv");
 
@@ -98,7 +94,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 
 		while (true) {
 			Sexp query = SexpUtil.conjoinInvariants(irreducible, k);
-			Result result = z3Solver.unsatQuery(candidates.keyList(), query);
+			Result result = solver.unsatQuery(candidates.keyList(), query);
 
 			if (result instanceof SatResult) {
 				/*
@@ -107,10 +103,10 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 				 */
 
 				for (Expr inv : irreducible) {
-					z3Solver.assertSexp(inv.accept(new Lustre2Sexp(k)));
+					solver.assertSexp(inv.accept(new Lustre2Sexp(k)));
 				}
 				for (Entry<Symbol, Expr> entry : candidates.entrySet()) {
-					z3Solver.assertSexp(createConditional(entry, k));
+					solver.assertSexp(createConditional(entry, k));
 				}
 				k++;
 				createVariables(k);
@@ -138,7 +134,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 			}
 		}
 
-		z3Solver.pop();
+		solver.pop();
 		reduceSupport(property, k, new ArrayList<>(irreducible), vm);
 	}
 
@@ -149,7 +145,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 		}
 
 		comment("Computing support for: " + property);
-		z3Solver.push();
+		solver.push();
 
 		createVariables(-1);
 		for (int i = 0; i <= k; i++) {
@@ -157,12 +153,12 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 		}
 		assertInductiveTransition(0);
 
-		Result result = z3Solver.unsatQuery(supportMap.valueList(), getSupportQuery(invariants, k));
+		Result result = solver.unsatQuery(supportMap.valueList(), getSupportQuery(invariants, k));
 		if (!(result instanceof UnsatResult)) {
 			throw new JKindException("Trying to reduce support on falsifiable property");
 		}
 		List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
-		z3Solver.pop();
+		solver.pop();
 
 		sendValid(property.toString(), k, invariants, getSupportNames(unsatCore), vm);
 	}
@@ -223,7 +219,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 		LinkedBiMap<Symbol, T> map = new LinkedBiMap<>();
 		int i = 0;
 		for (T element : elements) {
-			map.put(z3Solver.createActivationLiteral(prefix, i++), element);
+			map.put(solver.createActivationLiteral(prefix, i++), element);
 		}
 		return map;
 	}

@@ -37,10 +37,14 @@ public class ResultExtractorListener extends YicesBaseListener {
 		model = new YicesModel(varTypes);
 		result = new SatResult(model);
 	}
-
+	
+	@Override
+	public void enterUnsatResult(UnsatResultContext ctx) {
+		unsatCore = new ArrayList<>();
+	}
+	
 	@Override
 	public void enterUnsatCore(UnsatCoreContext ctx) {
-		unsatCore = new ArrayList<>();
 		for (TerminalNode node : ctx.INT()) {
 			unsatCore.add(new Symbol(node.getText()));
 		}

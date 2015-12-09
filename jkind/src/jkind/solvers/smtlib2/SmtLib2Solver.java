@@ -16,6 +16,7 @@ import jkind.solvers.Model;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.translation.Relation;
@@ -87,11 +88,9 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 
 		assertSexp(new Cons("not", sexp));
 		send("(check-sat)");
-		send("(echo \"" + DONE + "\")");
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			send("(echo \"" + DONE + "\")");
 			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
@@ -103,6 +102,31 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		return result;
 	}
 
+	@Override
+	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+		push();
+		for (Symbol actLit : activationLiterals) {
+			String name = "_" + actLit.str;
+			assertSexp(new Cons("!", actLit, new Symbol(":named"), new Symbol(name)));
+		}
+
+		send("(check-sat)");
+		String status = readFromSolver();
+		Result result;
+		if (isSat(status)) {
+			result = new SatResult();
+		} else if (isUnsat(status)) {
+			result = new UnsatResult(getUnsatCore(activationLiterals));
+		} else {
+			result = new UnknownResult();
+		}
+		
+		pop();
+		return result;
+	}
+
+	protected abstract List<Symbol> getUnsatCore(List<Symbol> activationLiterals);
+
 	protected boolean isSat(String output) {
 		return output.trim().equals("sat");
 	}
@@ -110,19 +134,10 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	protected boolean isUnsat(String output) {
 		return output.trim().equals("unsat");
 	}
-
-	protected String readCore() {
-		String line = "";
-		try {
-			line = fromSolver.readLine();
-			comment(getSolverName() + ": " + line);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return line.substring(1, line.length() - 1);
-	}
-
+	
 	protected String readFromSolver() {
+		send("(echo \"" + DONE + "\")");
+
 		try {
 			String line;
 			StringBuilder content = new StringBuilder();

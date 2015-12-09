@@ -184,9 +184,9 @@ public class JKindArgumentParser extends ArgumentParser {
 
 	private void checkSettings() {
 		if (settings.reduceSupport) {
-			if (settings.solver != SolverOption.Z3) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "set of support not supported with "
-						+ settings.solver);
+			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
+				Output.warning(settings.solver
+						+ " does not support unsat-cores so support reduction will be slow");
 			}
 		}
 

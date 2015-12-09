@@ -1,7 +1,10 @@
 package jkind.solvers.yices2;
 
+import java.util.List;
+
 import jkind.JKindException;
 import jkind.lustre.parsing.StdoutErrorListener;
+import jkind.sexp.Symbol;
 import jkind.solvers.Model;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 import jkind.solvers.yices2.Yices2Parser.ModelContext;
@@ -35,6 +38,12 @@ public class Yices2Solver extends SmtLib2Solver {
 	public void initialize() {
 		send("(set-option :produce-models true)");
 		send("(set-logic QF_LIRA)");
+	}
+
+	@Override
+	protected List<Symbol> getUnsatCore(List<Symbol> activationLiterals) {
+		// Yices2 does not yet support unsat-cores
+		return activationLiterals;
 	}
 
 	@Override
