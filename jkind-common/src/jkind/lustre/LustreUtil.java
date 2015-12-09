@@ -58,6 +58,16 @@ public class LustreUtil {
 		return new UnaryExpr(UnaryOp.NOT, expr);
 	}
 
+	public static Expr optimizeNot(Expr expr) {
+		if (expr instanceof UnaryExpr) {
+			UnaryExpr ue = (UnaryExpr) expr;
+			if (ue.op == UnaryOp.NOT) {
+				return ue.expr;
+			}
+		}
+		return new UnaryExpr(UnaryOp.NOT, expr);
+	}
+
 	public static Expr castReal(Expr expr) {
 		return new CastExpr(NamedType.REAL, expr);
 	}
