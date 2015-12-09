@@ -1,9 +1,11 @@
--- SUPPORT for __GUARANTEE0:  _TOP__COMP~0.__COMP__PROP__0
--- SUPPORT for __GUARANTEE0:  _TOP__COMP~0.__COMP__PROP__1
+-- There is no SUPPORT for __GUARANTEE0
 
 node _TOP__COMP(
   in1 : int;
   in2 : int;
+  prop1 : bool;
+  prop2 : bool;
+  prop3 : bool;
   out1 : int;
   out2 : int
 ) returns (
@@ -69,6 +71,9 @@ node main(
   COMP2___CLOCK_ : bool;
   input1 : int;
   input2 : int;
+  COMP__prop1 : bool;
+  COMP__prop2 : bool;
+  COMP__prop3 : bool;
   COMP__out1 : int;
   COMP__out2 : int;
   COMP2__o1 : int;
@@ -82,9 +87,11 @@ var
   __GUARANTEE0 : bool;
 let
   --%MAIN;
-  __GUARANTEE0 = (output1 = 0);
+  __GUARANTEE0 = ((input1 > 1) => (output1 = 5));
 
-  assert condact(true, _TOP__COMP(COMP__in1, COMP__in2, COMP__out1, COMP__out2), true);
+  assert (input1 = 0);
+
+  assert condact(true, _TOP__COMP(COMP__in1, COMP__in2, COMP__prop1, COMP__prop2, COMP__prop3, COMP__out1, COMP__out2), true);
 
   assert condact(true, _TOP__COMP2(COMP2__i1, COMP2__i2, COMP2__o1, COMP2__o2), true);
 
