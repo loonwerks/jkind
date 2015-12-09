@@ -14,6 +14,7 @@ import jkind.results.Property;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.results.layout.Layout;
+import jkind.util.Util;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Label;
@@ -128,7 +129,7 @@ public class ExcelFormatter implements Closeable {
 		if (!invariants.isEmpty()) {
 			currSheet.addCell(new Label(0, currRow, "Invariants", boldFormat));
 			currRow++;
-			for (String invariant : invariants) {
+			for (String invariant : Util.safeStringSortedSet(invariants)) {
 				currSheet.addCell(new Label(0, currRow, invariant));
 				currRow++;
 			}

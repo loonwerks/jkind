@@ -1,5 +1,7 @@
 package jkind.writers;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +39,8 @@ public class ConsoleWriter extends Writer {
 				+ " || Time = " + runtime);
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
-			for (Expr invariant : invariants) {
+			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());
+			for (String invariant : Util.safeStringSortedSet(stringInvariants)) {
 				System.out.println("  " + invariant);
 			}
 		}
