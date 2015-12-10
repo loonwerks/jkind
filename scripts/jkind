@@ -1,2 +1,5 @@
 #!/bin/sh
-java -jar $(dirname $0)/jkind.jar -jkind "$@"
+JKIND_PATH=$(readlink -e $0)
+JKIND_DIR=$(dirname $JKIND_PATH)
+java -jar $JKIND_DIR/jkind.jar -jkind "$@"
+

@@ -1,2 +1,5 @@
 #!/bin/sh
-java -jar $(dirname $0)/jkind.jar -jlustre2excel "$@"
+JKIND_PATH=$(readlink -e $0)
+JKIND_DIR=$(dirname $JKIND_PATH)
+java -jar $JKIND_DIR/jkind.jar -jlustre2excel "$@"
+
