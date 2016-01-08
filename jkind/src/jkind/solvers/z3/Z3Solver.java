@@ -17,8 +17,8 @@ public class Z3Solver extends SmtLib2Solver {
 	private final boolean linear;
 	private int actCount = 1;
 
-	public Z3Solver(String scratchBase, boolean linear) {
-		super(scratchBase);
+	public Z3Solver(String scratchBase, int randomSeed, boolean linear) {
+		super(scratchBase, randomSeed);
 		this.linear = linear;
 	}
 
@@ -36,9 +36,10 @@ public class Z3Solver extends SmtLib2Solver {
 	public void initialize() {
 		setOption("produce-models", true);
 		setOption("produce-unsat-cores", true);
+		setOption("random-seed", randomSeed);
 	}
 
-	public void setOption(String option, boolean value) {
+	private void setOption(String option, Object value) {
 		send("(set-option :" + option + " " + value + ")");
 	}
 

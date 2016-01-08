@@ -6,8 +6,8 @@ import jkind.sexp.Symbol;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class Cvc4Solver extends SmtLib2Solver {
-	public Cvc4Solver(String scratchBase) {
-		super(scratchBase);
+	public Cvc4Solver(String scratchBase, int randomSeed) {
+		super(scratchBase, randomSeed);
 	}
 
 	@Override
@@ -25,6 +25,7 @@ public class Cvc4Solver extends SmtLib2Solver {
 		send("(set-option :produce-models true)");
 		send("(set-option :incremental true)");
 		send("(set-option :rewrite-divk true)");
+		send("(set-option :random-seed " + randomSeed + ")");
 		send("(set-logic AUFLIRA)");
 	}
 
