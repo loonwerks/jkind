@@ -66,6 +66,10 @@ public class Main {
 		case "-benchmark":
 			Benchmark.main(subArgs);
 			break;
+			
+		case "-jsupport":
+			JSupport.main(subArgs);
+			break;
 
 		default:
 			Output.error("unknown entry point: " + entryPoint);
