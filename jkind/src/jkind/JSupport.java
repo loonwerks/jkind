@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
@@ -105,14 +106,16 @@ public class JSupport {
 	}
 
 	private static boolean propertyTrue(Node node, String[] args) throws IOException {
-		Util.writeToFile(node.toString(), new File("jsupport.lus"));
+		String[] filePath = (args[args.length - 1]).split(Pattern.quote(File.separator));
+		String fileName = filePath[filePath.length - 1];
+		Util.writeToFile(node.toString(), new File("NEW" + fileName));
 
 		List<String> cmd = new ArrayList<>();
 		cmd.add("java");
 		cmd.add("-jar");
 		cmd.add(findJKindJar().toString());
 		cmd.add("-jkind");
-		cmd.add("jsupport.lus");
+		cmd.add(fileName);
 		for (String arg : args) {
 			if (!arg.contains(".lus")) {
 				cmd.add(arg);
@@ -134,7 +137,7 @@ public class JSupport {
 				throw new IllegalArgumentException("Got unknown result");
 			}
 			if (line.contains("Exception")) {
-				throw new IllegalArgumentException("Got exception");
+		     	throw new IllegalArgumentException("Got exception");
 			}
 		}
 		throw new IllegalArgumentException("Didn't find result");
