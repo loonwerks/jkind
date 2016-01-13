@@ -23,6 +23,12 @@ import jkind.translation.Translate;
 import jkind.util.Util;
 
 public class JSupport {
+	private final static long startTime = System.currentTimeMillis();
+	
+	private static double getRuntime() {
+		return (System.currentTimeMillis() - startTime) / 1000.0;
+	}
+	
 	public static void main(String args[]) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -58,6 +64,7 @@ public class JSupport {
 			for (String s : Util.safeStringSortedSet(minimal)) {
 				System.out.println("  " + s);
 			}
+			System.out.println("Time = " + getRuntime());
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
@@ -108,7 +115,7 @@ public class JSupport {
 	private static boolean propertyTrue(Node node, String[] args) throws IOException {
 		String[] filePath = (args[args.length - 1]).split(Pattern.quote(File.separator));
 		String fileName = filePath[filePath.length - 1];
-		Util.writeToFile(node.toString(), new File("NEW" + fileName));
+		Util.writeToFile(node.toString(), new File(fileName));
 
 		List<String> cmd = new ArrayList<>();
 		cmd.add("java");
