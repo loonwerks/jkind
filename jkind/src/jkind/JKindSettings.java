@@ -6,7 +6,7 @@ public class JKindSettings extends Settings {
 	public int timeout = 100;
 	
 	public boolean excel = false;
-	public boolean xml = false;
+	public String xml = null;
 	public boolean xmlToStdout = false;
 	
 	public boolean boundedModelChecking = true;

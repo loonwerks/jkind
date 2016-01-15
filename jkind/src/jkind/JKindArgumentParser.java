@@ -64,7 +64,7 @@ public class JKindArgumentParser extends ArgumentParser {
 				"SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
-		options.addOption(XML, false, "generate results in XML format");
+		options.addOption(XML, true, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
 		return options;
 	}
@@ -165,12 +165,12 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 
 		if (line.hasOption(XML)) {
-			settings.xml = true;
+			settings.xml = line.getOptionValue(XML).toString();
 		}
 
 		if (line.hasOption(XML_TO_STDOUT)) {
 			settings.xmlToStdout = true;
-			settings.xml = true;
+			settings.xml = "";
 		}
 	}
 

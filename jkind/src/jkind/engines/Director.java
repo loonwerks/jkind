@@ -90,8 +90,8 @@ public class Director extends MessageHandler {
 		try {
 			if (settings.excel) {
 				return new ExcelWriter(settings.filename + ".xls", userSpec.node);
-			} else if (settings.xml) {
-				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap,
+			} else if (settings.xml != null) {
+				return new XmlWriter(settings.xml + ".xml", userSpec.typeMap,
 						settings.xmlToStdout);
 			} else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
