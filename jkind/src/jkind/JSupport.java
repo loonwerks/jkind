@@ -64,14 +64,12 @@ public class JSupport {
 			//System.out.println("MINIMAL SUPPORT:");
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-			out.println("  <Property name=\"" + main.properties + "\">");
+			out.println("  <MinimalSupport property=\"" + main.properties + "\">");
 			out.println("    <Runtime unit=\"sec\">" + getRuntime() + "</Runtime>");
-			out.println("<MINIMAL SUPPORT>");
 			for (String s : Util.safeStringSortedSet(minimal)) {
 				out.println("    <Support>" + s + "</Support>");
 			} 
-			out.println("</MINIMAL SUPPORT>");
-			out.println("  </Property>");
+			out.println("  </MinimalSupport>");
 			out.println("</Results>");
 			out.flush();
 			out.close(); 
