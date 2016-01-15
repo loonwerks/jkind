@@ -2,16 +2,17 @@ package jkind;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.Equation;
+import jkind.lustre.Equation; 
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
@@ -58,13 +59,22 @@ public class JSupport {
 					minimal.remove(s);
 					main = candidate;
 				}
-			}
-
-			System.out.println("MINIMAL SUPPORT:");
+			} 
+			PrintWriter out = new PrintWriter(new FileOutputStream(settings.filename + "_jsup.xml"));
+			//System.out.println("MINIMAL SUPPORT:");
+			out.println("<?xml version=\"1.0\"?>");
+			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+			out.println("  <Property name=\"" + main.properties + "\">");
+			out.println("    <Runtime unit=\"sec\">" + getRuntime() + "</Runtime>");
+			out.println("<MINIMAL SUPPORT>");
 			for (String s : Util.safeStringSortedSet(minimal)) {
-				System.out.println("  " + s);
-			}
-			System.out.println("Time = " + getRuntime());
+				out.println("    <Support>" + s + "</Support>");
+			} 
+			out.println("</MINIMAL SUPPORT>");
+			out.println("  </Property>");
+			out.println("</Results>");
+			out.flush();
+			out.close(); 
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
