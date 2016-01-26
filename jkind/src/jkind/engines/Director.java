@@ -91,8 +91,7 @@ public class Director extends MessageHandler {
 			if (settings.excel) {
 				return new ExcelWriter(settings.filename + ".xls", userSpec.node);
 			} else if (settings.xml != null) {
-				return new XmlWriter(settings.xml + ".xml", userSpec.typeMap,
-						settings.xmlToStdout);
+				return new XmlWriter(settings.xml + ".xml", userSpec.typeMap, settings.xmlToStdout);
 			} else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
 			}
@@ -277,7 +276,8 @@ public class Director extends MessageHandler {
 		}
 
 		List<Expr> invariants = settings.reduceSupport ? vm.invariants : Collections.emptyList();
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.support);
+		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.support,
+				vm.supportRuntime);
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {

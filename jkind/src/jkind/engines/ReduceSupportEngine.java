@@ -35,6 +35,7 @@ import jkind.util.SexpUtil;
 public class ReduceSupportEngine extends SolverBasedEngine {
 	public static final String NAME = "reduce-support";
 	private final LinkedBiMap<String, Symbol> supportMap;
+	private long startTime;
 
 	public ReduceSupportEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -61,6 +62,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
+				startTime = System.currentTimeMillis();
 				reduceInvariants(getInvariantByName(property, vm.invariants), vm);
 			}
 		}
@@ -241,7 +243,8 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 		comment("Support: " + support.toString());
 
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(support),
+		double runtime = (System.currentTimeMillis() - startTime) / 1000.0;
+		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(support), runtime,
 				itinerary));
 	}
 

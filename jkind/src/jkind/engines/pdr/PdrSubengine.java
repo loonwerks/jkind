@@ -241,7 +241,8 @@ public class PdrSubengine extends Thread {
 
 	private void sendValidAndInvariants(List<Expr> invariants) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		director.broadcast(new ValidMessage(parent.getName(), prop, 1, invariants, null, itinerary));
+		director.broadcast(new ValidMessage(parent.getName(), prop, 1, invariants, null, 0,
+				itinerary));
 		director.broadcast(new InvariantMessage(invariants));
 	}
 

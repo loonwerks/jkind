@@ -80,7 +80,7 @@ public class KInductionEngine extends SolverBasedEngine {
 		result.removeAll(list2);
 		return result;
 	}
-	
+
 	private void checkProperties(int k) {
 		List<String> possiblyValid = new ArrayList<>(properties);
 
@@ -143,7 +143,8 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void sendValid(List<String> valid, int k) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), null, itinerary);
+		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), null, 0,
+				itinerary);
 		director.broadcast(vm);
 	}
 

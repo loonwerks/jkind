@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
-import jkind.lustre.Equation; 
+import jkind.lustre.Equation;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
@@ -25,11 +26,11 @@ import jkind.util.Util;
 
 public class JSupport {
 	private final static long startTime = System.currentTimeMillis();
-	
+
 	private static double getRuntime() {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
-	
+
 	public static void main(String args[]) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -59,20 +60,20 @@ public class JSupport {
 					minimal.remove(s);
 					main = candidate;
 				}
-			} 
-			PrintWriter out = new PrintWriter(new FileOutputStream(settings.filename + "_jsup.xml"));
-			//System.out.println("MINIMAL SUPPORT:");
-			out.println("<?xml version=\"1.0\"?>");
-			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-			out.println("  <MinimalSupport property=\"" + main.properties + "\">");
-			out.println("    <Runtime unit=\"sec\">" + getRuntime() + "</Runtime>");
-			for (String s : Util.safeStringSortedSet(minimal)) {
-				out.println("    <Support>" + s + "</Support>");
-			} 
-			out.println("  </MinimalSupport>");
-			out.println("</Results>");
-			out.flush();
-			out.close(); 
+			}
+
+			String xmlFilename = settings.filename + "_jsup.xml";
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+				out.println("<?xml version=\"1.0\"?>");
+				out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+				out.println("  <MinimalSupport property=\"" + main.properties + "\">");
+				out.println("    <Runtime unit=\"sec\">" + getRuntime() + "</Runtime>");
+				for (String s : Util.safeStringSortedSet(minimal)) {
+					out.println("    <Support>" + s + "</Support>");
+				}
+				out.println("  </MinimalSupport>");
+				out.println("</Results>");
+			}
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
@@ -152,7 +153,7 @@ public class JSupport {
 				throw new IllegalArgumentException("Got unknown result");
 			}
 			if (line.contains("Exception")) {
-		     	throw new IllegalArgumentException("Got exception");
+				throw new IllegalArgumentException("Got exception");
 			}
 		}
 		throw new IllegalArgumentException("Didn't find result");

@@ -13,7 +13,7 @@ public abstract class Writer {
 	public abstract void end();
 
 	public abstract void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support);
+			List<Expr> invariants, Set<String> support, double supportRuntime);
 
 	public abstract void writeInvalid(String prop, String source, Counterexample cex,
 			List<String> conflicts, double runtime);

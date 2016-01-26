@@ -33,10 +33,10 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support) {
+			List<Expr> invariants, Set<String> support, double supportRuntime) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
-				+ " || Time = " + runtime);
+				+ " || Time = " + runtime + " || SupportTime = " + supportRuntime);
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
 			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());

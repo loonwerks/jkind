@@ -48,7 +48,7 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support) {
+			List<Expr> invariants, Set<String> support, double supportRuntime) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		for (String prop : props) {
 			properties.add(new ValidProperty(prop, source, k, runtime, invText, support));

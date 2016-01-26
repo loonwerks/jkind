@@ -45,16 +45,17 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support) {
+			List<Expr> invariants, Set<String> support,  double supportRuntime) {
 		for (String prop : props) {
-			writeValid(prop, source, k, runtime, invariants, support);
+			writeValid(prop, source, k, runtime, invariants, support, supportRuntime);
 		}
 	}
 
 	public void writeValid(String prop, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support) {
+			List<Expr> invariants, Set<String> support, double supportRuntime) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
+		out.println("    <SupportRuntime unit=\"sec\">" +  supportRuntime + "</SupportRuntime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
 		for (Expr invariant : invariants) {
