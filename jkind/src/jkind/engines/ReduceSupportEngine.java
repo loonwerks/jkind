@@ -244,7 +244,7 @@ public class ReduceSupportEngine extends SolverBasedEngine {
 
 		Itinerary itinerary = vm.getNextItinerary();
 		double runtime = (System.currentTimeMillis() - startTime) / 1000.0;
-		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(support), runtime,
+		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, support, runtime,
 				itinerary));
 	}
 
