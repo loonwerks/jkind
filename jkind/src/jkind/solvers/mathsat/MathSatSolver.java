@@ -39,7 +39,6 @@ public class MathSatSolver extends SmtLib2Solver {
 	public void initialize() {
 		send("(set-option :produce-models true)");
 		send("(set-option :produce-unsat-cores true)");
-		throw new UnsupportedOperationException("Random seed not implemented");
 	}
 
 	private int actCount = 1;
