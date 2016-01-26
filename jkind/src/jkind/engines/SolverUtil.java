@@ -13,20 +13,20 @@ import jkind.solvers.yices2.Yices2Solver;
 import jkind.solvers.z3.Z3Solver;
 
 public class SolverUtil {
-	public static Solver getSolver(SolverOption solverOption, String scratchBase, Node node, int randomSeed) {
+	public static Solver getSolver(SolverOption solverOption, String scratchBase, Node node) {
 		switch (solverOption) {
 		case YICES:
-			return new YicesSolver(scratchBase, randomSeed, YicesArithOnlyCheck.check(node));
+			return new YicesSolver(scratchBase, YicesArithOnlyCheck.check(node));
 		case CVC4:
-			return new Cvc4Solver(scratchBase, randomSeed);
+			return new Cvc4Solver(scratchBase);
 		case Z3:
-			return new Z3Solver(scratchBase, randomSeed, LinearChecker.isLinear(node));
+			return new Z3Solver(scratchBase, LinearChecker.isLinear(node));
 		case YICES2:
-			return new Yices2Solver(scratchBase, randomSeed);
+			return new Yices2Solver(scratchBase);
 		case MATHSAT:
-			return new MathSatSolver(scratchBase, randomSeed);
+			return new MathSatSolver(scratchBase);
 		case SMTINTERPOL:
-			return new SmtInterpolSolver(scratchBase, randomSeed);
+			return new SmtInterpolSolver(scratchBase);
 		}
 		throw new IllegalArgumentException("Unknown solver: " + solverOption);
 	}

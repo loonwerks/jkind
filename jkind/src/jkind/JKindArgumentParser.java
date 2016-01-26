@@ -122,10 +122,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.pdrMax = Math.max(1, heuristic);
 		}
 
-		if (line.hasOption(RANDOM_SEED)) {
-			settings.randomSeed = parseNonnegativeInt(line.getOptionValue(RANDOM_SEED));
-		}
-
 		if (line.hasOption(READ_ADVICE)) {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
 		}
@@ -222,7 +218,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private boolean solverIsAvailable(SolverOption solverOption) {
 		try {
 			Node emptyNode = new NodeBuilder("empty").build();
-			SolverUtil.getSolver(solverOption, null, emptyNode, 0);
+			SolverUtil.getSolver(solverOption, null, emptyNode);
 		} catch (JKindException e) {
 			return false;
 		}

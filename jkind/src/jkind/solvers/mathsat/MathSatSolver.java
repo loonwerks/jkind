@@ -27,8 +27,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 public class MathSatSolver extends SmtLib2Solver {
-	public MathSatSolver(String scratchBase, int randomSeed) {
-		super(scratchBase, randomSeed);
+	public MathSatSolver(String scratchBase) {
+		super(scratchBase);
 	}
 	@Override
 	protected String getSolverName() {

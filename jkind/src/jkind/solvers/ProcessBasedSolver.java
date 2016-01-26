@@ -22,11 +22,9 @@ public abstract class ProcessBasedSolver extends Solver {
 	protected BufferedWriter toSolver;
 	protected BufferedReader fromSolver;
 	protected PrintWriter scratch;
-	protected final int randomSeed;
 
-	protected ProcessBasedSolver(String scratchBase, int randomSeed) {
+	protected ProcessBasedSolver(String scratchBase) {
 		this.scratch = getScratch(scratchBase);
-		this.randomSeed = randomSeed;
 
 		ProcessBuilder processBuilder = new ProcessBuilder(getSolverCommand());
 		processBuilder.redirectErrorStream(true);
