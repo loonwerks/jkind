@@ -24,4 +24,6 @@ public class JKindSettings extends Settings {
 
 	public String writeAdvice = null;
 	public String readAdvice = null;
+
+	public Integer randomSeed = null;
 }

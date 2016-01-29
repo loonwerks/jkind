@@ -21,6 +21,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
+	private static final String RANDOM_SEED = "random_seed";
 	private static final String READ_ADVICE = "read_advice";
 	private static final String SUPPORT = "support";
 	private static final String SCRATCH = "scratch";
@@ -54,6 +55,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
+		options.addOption(RANDOM_SEED, true, "specify random seed for the SMT solvers");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
 		options.addOption(SUPPORT, false, "find a set of support and reduce invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
@@ -118,6 +120,10 @@ public class JKindArgumentParser extends ArgumentParser {
 			int available = Runtime.getRuntime().availableProcessors();
 			int heuristic = (available - 4) / 2;
 			settings.pdrMax = Math.max(1, heuristic);
+		}
+
+		if (line.hasOption(RANDOM_SEED)) {
+			settings.randomSeed = parseNonnegativeInt(line.getOptionValue(RANDOM_SEED));
 		}
 
 		if (line.hasOption(READ_ADVICE)) {
@@ -196,6 +202,13 @@ public class JKindArgumentParser extends ArgumentParser {
 						+ settings.solver);
 			}
 		}
+		
+		if (settings.randomSeed != null) {
+			if (settings.solver == SolverOption.MATHSAT) {
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "random seed not supported with "
+						+ settings.solver);
+			}
+		}
 
 		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
 				&& settings.pdrMax == 0 && settings.readAdvice == null) {
@@ -216,7 +229,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private boolean solverIsAvailable(SolverOption solverOption) {
 		try {
 			Node emptyNode = new NodeBuilder("empty").build();
-			SolverUtil.getSolver(solverOption, null, emptyNode);
+			SolverUtil.getSolver(solverOption, null, emptyNode, 0);
 		} catch (JKindException e) {
 			return false;
 		}

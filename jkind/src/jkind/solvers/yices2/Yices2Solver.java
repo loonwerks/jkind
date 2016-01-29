@@ -15,8 +15,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Yices2Solver extends SmtLib2Solver {
-	public Yices2Solver(String scratchBase) {
-		super(scratchBase);
+	public Yices2Solver(String scratchBase, Integer randomSeed) {
+		super(scratchBase, randomSeed);
 	}
 
 	@Override
@@ -37,6 +37,9 @@ public class Yices2Solver extends SmtLib2Solver {
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
+		if (randomSeed != null) {
+			send("(set-option :random-seed " + randomSeed + ")");
+		}
 		send("(set-logic QF_LIRA)");
 	}
 

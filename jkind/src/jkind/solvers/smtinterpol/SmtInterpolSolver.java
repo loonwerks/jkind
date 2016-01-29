@@ -29,14 +29,19 @@ import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
 
 public class SmtInterpolSolver extends Solver {
 	private final Script script;
+	private final Integer randomSeed;
 
-	public SmtInterpolSolver(String scratchBase) {
+	public SmtInterpolSolver(String scratchBase, Integer randomSeed) {
 		this.script = SmtInterpolUtil.getScript(scratchBase);
+		this.randomSeed = randomSeed;
 	}
 
 	@Override
 	public void initialize() {
 		script.setOption(":produce-unsat-cores", true);
+		if (randomSeed != null) {
+			script.setOption(":random-seed", randomSeed);
+		}
 		script.setLogic(Logics.QF_UFLIRA);
 		script.setOption(":verbosity", 2);
 	}

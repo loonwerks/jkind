@@ -37,14 +37,23 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 public class YicesSolver extends ProcessBasedSolver {
 	private final boolean arithOnly;
 
-	public YicesSolver(String scratchBase, boolean arithOnly) {
-		super(scratchBase);
+	public YicesSolver(String scratchBase, Integer randomSeed, boolean arithOnly) {
+		super(scratchBase, randomSeed);
 		this.arithOnly = arithOnly;
 	}
 
 	@Override
 	protected String getSolverName() {
 		return "Yices";
+	}
+
+	@Override
+	protected String[] getSolverOptions() {
+		if (randomSeed != null) {
+			return new String[] { "--rand-seed=" + randomSeed };
+		} else {
+			return new String[0];
+		}
 	}
 
 	@Override
