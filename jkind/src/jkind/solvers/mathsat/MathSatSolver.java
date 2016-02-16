@@ -28,18 +28,27 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 public class MathSatSolver extends SmtLib2Solver {
 	public MathSatSolver(String scratchBase, Integer randomSeed) {
-		super(scratchBase, randomSeed);
+		super(scratchBase, randomSeed != 0 ? randomSeed : 1);
 	}
+
 	@Override
 	protected String getSolverName() {
 		return "MathSAT";
 	}
 
 	@Override
+	protected String[] getSolverOptions() {
+		if (randomSeed != null) {
+			return new String[] { "-random_seed=" + randomSeed };
+		} else {
+			return new String[0];
+		}
+	}
+
+	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
 		send("(set-option :produce-unsat-cores true)");
-		throw new UnsupportedOperationException("Random seed not implemented");
 	}
 
 	private int actCount = 1;
@@ -96,7 +105,6 @@ public class MathSatSolver extends SmtLib2Solver {
 		ensureNoParseError(parser, string);
 		return ModelExtractor.getModel(ctx, varTypes);
 	}
-
 
 	private List<Symbol> parseUnsatAssumptions(String string) {
 		MathSatParser parser = getParser(string);

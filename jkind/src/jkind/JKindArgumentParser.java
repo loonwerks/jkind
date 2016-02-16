@@ -202,13 +202,6 @@ public class JKindArgumentParser extends ArgumentParser {
 						+ settings.solver);
 			}
 		}
-		
-		if (settings.randomSeed != null) {
-			if (settings.solver == SolverOption.MATHSAT) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "random seed not supported with "
-						+ settings.solver);
-			}
-		}
 
 		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
 				&& settings.pdrMax == 0 && settings.readAdvice == null) {
