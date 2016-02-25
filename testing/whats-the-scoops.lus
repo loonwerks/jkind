@@ -1,0 +1,896 @@
+-- Lustre/JKind encoding of "WHAT'S THE SCOOPS?" puzzle
+--
+-- Steven P. Miller
+-- February 22, 2016
+--
+------------------------------------------------------------------------------------------------
+-- Original statement of puzzle
+
+--"WHAT'S THE SCOOPS?"
+--
+--by r. wayne schmittberger
+--
+--"Games" magazine August 1996 page 8
+--
+--*** Each player on the Weakened Warriors Baseball Club -- whose names are 
+--Andy, Brandy, Candy, Dean, Ellen, Fay, Gordon, Helen, Ichabod, and Jean -- 
+--plays a regular position every week (first base, second base, third base, shortstop, 
+--left field, center field, right field, catcher, pitcher, designated hitter) and 
+--wears a unique uniform number from 1 through 10.  
+--After their most recent loss, the teammates decided to treat themselves to three-scoop cones 
+--at the town's Exotic Ice Cream Emporium.  Each player chose three different flavors from this 
+--month's enticing 10-flavor menu: 
+--Kumquat Krunch, Lusty Lilac, Marmalade Mince, Nougat Nightmare, Olive Ooze, Prune Passion, 
+--Quirky Quince, Rhubarb Ripple, Seaweed Surprise, and Tofu Triumph. 
+--
+--From the clues below, can you determine each player's position and uniform number, 
+--and also which three flavors of ice cream each player tried?
+--
+--ANSWER, PAGE 40
+--
+--THE CLUES
+--
+--1. One flavor was ordered by just one player; two flavors were eaten by just two players; 
+--three flavors were sampled by exactly three players; and the other four flavors were tried 
+--by four players each.
+--
+--2. Since the Emporium always serves its flavors in alphabetical order, the flavors on each 
+--cone were arranged alphabetically from bottom to top.  No player had the same three-flavor 
+--combination as any other player.
+--
+--3. The names of the first baseman and second baseman rhyme with each other, as do the names 
+--of the third baseman and shortstop, and also the names of the catcher and pitcher.
+--
+--4. The three outfielders, who all wear even numbers, had Lusty Lilac, Olive Ooze, and 
+--Quirky Quince on the bottom of their cones. 
+--
+--5. Rhubarb Ripple was not tried by Andy, Brandy, or Candy.
+--
+--6. Three players whose names start with three consecutive letters of the alphabet didn't 
+--have any flavors in common, but they all had cones with three flavors that start with three 
+--consecutive letters of the alphabet. 
+--
+--7. Of the three players who had Olive Ooze at the bottom of their cones, only Gordon wore an 
+--even number.
+--
+--8. Of the players wearing numbers lower than 7, no one had Seaweed Surprise and only the 
+--catcher had Tofu Triumph.
+--
+--9. The three players wearing numbers greater than 7 are the designated hitter, whose bottom 
+--scoop was Olive Ooze, and players whose bottom scoops were Quirky Quince and Rhubarb Ripple.
+--
+--10. Neither (numbers) 1 nor 2 is worn by the first baseman, second baseman, or third baseman.
+--
+--11. Both Helen and the third baseman restricted themselves to combinations involving Kumquat 
+--Krunch, Lusty Lilac, Marmalade Mince, and Nougat Nightmare.
+--
+--12. The only player who tried Kumquat Krunch wears a number that is four less than the 
+--shortstop's; together, these two players' numbers add up to Brandy's number.
+--
+--13. The right fielder has a lower number than the other outfielders, and the center 
+--fielder's number is one higher than the designated hitter's. 
+--
+--14. The three players who tried Nougat Nightmare are the left fielder, the player who 
+--wears number 4, and Jean.
+--
+--15. Quirky Quince was tried by two players whose names rhymed only with each other, 
+--and also by Brandy and Fay.
+--
+--16. Helen's number is lower than Candy's.
+--
+--17. Gordon's three flavors were the ones on the bottom of Dean's and Ellen's cones 
+--and the one on top of Ichabod's cone. 
+--
+--18. The players wearing 6 and 7 both tried Prune Passion.
+--
+--19. The top scoop on the shortstop's cone was one of the flavors that the second baseman tried. 
+--
+--20. The only flavors ordered by three players wearing consecutive numbers were 
+--Prune Passion and Tofu Triumph.  No flavor was ordered by four players wearing 
+--consecutive numbers; but had Brandy not convinced the pitcher to try the flavor 
+--on the bottom of her cone, then the pitcher would have ordered Lusty Lilac instead, 
+--and then Lusty Lilac would have been on the cones of players wearing five consecutive numbers.
+------------------------------------------------------------------------------------------------
+
+-- The puzzle statement is formalized below as a set of constraints, one for each clue,
+-- written in the Lustre language, allowing it to be analyzed with the JKind model checker. 
+
+-- Lustre is a synchronous data flow language developed by the Verimag research laboratory
+-- in France for the specification of reactive systems. Lustre was later used as the
+-- textual representation for the SCADE graphical programming language used by Airbus to
+-- specify the avionics of many of their aircraft, including the A380.
+
+-- N. Halbwachs et al. The Synchronous Data Flow Programming Language LUSTRE. 
+-- In Proc. IEEE 1991 Vol. 79, No. 9. Accessed 17 March 2014.
+
+-- SCADE Suite. http://www.esterel-technologies.com/products/scade-suite/
+
+-- JKind is an implementation of the Kind SMT-based model checker written in Java.
+-- It accepts annotated Lustre programs as input and uses bounded model checking,
+-- k-induction, and Property Directed Reachability (PDR) to determine if properties
+-- about the Lustre program hold.
+
+-- JKind - An infinite-state model checker. https://github.com/agacek/jkind.
+
+-- Kind 2 - http://kind2-mc.github.io/kind2/
+
+-- Since Lustre was designed to the support specification of reactive systems, 
+-- it has several restrictions not usually found in modern programming languages.
+-- Among these are no support for recursion, no array iterators,
+-- no overloading of function names, and no nested scoping. However, these
+-- restrictions also make Lustre  well suited for formal analysis using model checking.
+
+-- To find a solution to the What's the Scoops puzzle, enumerated types 
+-- are defined for the player's name, positions, and ice cream flavors.
+-- A structure type is defined for a cone and a player.
+
+-- The players are encoded as an array of size 10. Without loss of generality,
+-- the number of each player assumed to be their array index plus one (since Lustre 
+-- arrays are indexed from zero).
+
+-- Each clue is specified as an assertion in Lustre, taking care to ensure that
+-- no logical contradictions are asserted. To force JKind to produce an assignment
+-- of values satisfying these constraints, a false property (the main property) 
+-- is specified to be proven by JKind.  To ensure that all the fields of interest
+-- are included in counterexample produced, this property references each relevant field.
+
+------------------------------------------------------------------------------------------------
+-- Type definitions
+------------------------------------------------------------------------------------------------
+type idx = subrange [0, 9] of int;
+
+type name     = enum {Andy, Brandy, Candy, Dean, Ellen, Fay, Gordon, Helen, Ichabod, Jean};
+
+type position = enum {first_base, second_base, third_base, shortstop, left_field, 
+                      center_field, right_field, catcher, pitcher, designated_hitter};
+                    
+type flavor   = enum {Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare, 
+                      Olive_Ooze, Prune_Passion, Quirky_Quince, Rhubarb_Ripple, 
+                      Seaweed_Surprise, Tofu_Triumph};
+                    
+type cone = struct {bot: flavor; mid: flavor; top: flavor};
+                    
+type player = struct {name: name; position: position; cone: cone};
+
+------------------------------------------------------------------------------------------------
+-- Useful nodes 
+--
+-- A node is most easily thought of as a function without external references.
+-- Technically, a  Lustre node operates over streams while a Lustre function operates over 
+-- single values, but that distinction is immaterial in this example.
+--
+-- Since Lustre does not support overloading, similar nodes of different arguments are
+-- given unique names.
+------------------------------------------------------------------------------------------------
+
+node b2i(b: bool) returns (i: int);
+let 
+  i = if b then 1 else 0; 
+tel;
+
+node disjoint_players2(i1, i2: idx) returns (r:bool);
+let
+  r = not (i1=i2);
+tel;
+
+node disjoint_players3(i1, i2, i3: idx) returns (r: bool);
+let
+  r = not (i1=i2 or i1=i3 or i2=i3);
+tel;
+
+node disjoint_players4(i1, i2, i3, i4:idx) returns (r: bool);
+let
+  r = not (i1=i2 or i1=i3 or i1=i4 or 
+                    i2=i3 or i2=i4 or 
+                             i3=i4);
+tel;
+
+node disjoint_players10(i1, i2, i3, i4, i5, i6, i7, i8, i9, i10:idx) returns (r: bool);
+let
+  r = not 
+  (i1=i2 or i1=i3 or i1=i4 or i1=i5 or i1=i6 or i1=i7 or i1=i8 or i1=i9 or i1=i10 or
+            i2=i3 or i2=i4 or i2=i5 or i2=i6 or i2=i7 or i2=i8 or i2=i9 or i2=i10 or
+                     i3=i4 or i3=i5 or i3=i6 or i3=i7 or i3=i8 or i3=i9 or i3=i10 or
+                              i4=i5 or i4=i6 or i4=i7 or i4=i8 or i4=i9 or i4=i10 or
+                                       i5=i6 or i5=i7 or i5=i8 or i5=i9 or i5=i10 or
+                                                i6=i7 or i6=i8 or i6=i9 or i6=i10 or
+                                                         i7=i8 or i7=i9 or i7=i10 or
+                                                                  i8=i9 or i8=i10 or
+                                                                           i9=i10);
+tel;
+
+node disjoint_flavors2(f1, f2: flavor) returns (r:bool);
+let
+  r = not (f1=f2);
+tel;
+
+node disjoint_flavors3(f1, f2, f3: flavor) returns (r: bool);
+let
+  r = not (f1=f2 or f1=f3 or f2=f3);
+tel;
+
+node disjoint_flavors4(f1, f2, f3, f4:flavor) returns (r: bool);
+let
+  r = not (f1=f2 or f1=f3 or f1=f4 or 
+                    f2=f3 or f2=f4 or 
+                             f3=f4);
+tel;
+
+node disjoint_flavors9(f1, f2, f3, f4, f5, f6, f7, f8, f9:flavor) returns (r: bool);
+let
+  r = not (f1=f2 or f1=f3 or f1=f4 or f1=f5 or f1=f6 or f1=f7 or f1=f8 or f1=f9 or
+                    f2=f3 or f2=f4 or f2=f5 or f2=f6 or f2=f7 or f2=f8 or f2=f9 or 
+                             f3=f4 or f3=f5 or f3=f6 or f3=f7 or f3=f8 or f3=f9 or 
+                                      f4=f5 or f4=f6 or f4=f7 or f4=f8 or f4=f9 or 
+                                               f5=f6 or f5=f7 or f5=f8 or f5=f9 or 
+                                                        f6=f7 or f6=f8 or f6=f9 or 
+                                                                 f7=f8 or f7=f9 or 
+                                                                          f8=f9);
+tel;
+
+
+
+node disjoint_flavors10(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10:flavor) returns (r: bool);
+let
+  r = not 
+  (f1=f2 or f1=f3 or f1=f4 or f1=f5 or f1=f6 or f1=f7 or f1=f8 or f1=f9 or f1=f10 or
+            f2=f3 or f2=f4 or f2=f5 or f2=f6 or f2=f7 or f2=f8 or f2=f9 or f2=f10 or
+                     f3=f4 or f3=f5 or f3=f6 or f3=f7 or f3=f8 or f3=f9 or f3=f10 or
+                              f4=f5 or f4=f6 or f4=f7 or f4=f8 or f4=f9 or f4=f10 or
+                                       f5=f6 or f5=f7 or f5=f8 or f5=f9 or f5=f10 or
+                                                f6=f7 or f6=f8 or f6=f9 or f6=f10 or
+                                                         f7=f8 or f7=f9 or f7=f10 or
+                                                                  f8=f9 or f8=f10 or
+                                                                           f9=f10);
+tel;
+
+
+node different_players_unique(player: player[10]; i,j: idx) returns (r: bool);
+let 
+  r = (i <> j => (player[i].name     <> player[j].name and 
+                  player[i].position <> player[j].position));
+tel;
+  
+node each_player_unique(player: player[10]; i: idx) returns (r: bool);
+let
+  r = different_players_unique(player, i, 0) and
+      different_players_unique(player, i, 1) and
+      different_players_unique(player, i, 2) and
+      different_players_unique(player, i, 3) and
+      different_players_unique(player, i, 4) and
+      different_players_unique(player, i, 5) and
+      different_players_unique(player, i, 6) and
+      different_players_unique(player, i, 7) and
+      different_players_unique(player, i, 8) and
+      different_players_unique(player, i, 9); 
+tel;
+
+node all_players_unique(player: player[10]) returns (r: bool);
+let
+  r = each_player_unique(player, 0) and
+      each_player_unique(player, 1) and
+      each_player_unique(player, 2) and
+      each_player_unique(player, 3) and
+      each_player_unique(player, 4) and
+      each_player_unique(player, 5) and
+      each_player_unique(player, 6) and
+      each_player_unique(player, 7) and
+      each_player_unique(player, 8) and
+      each_player_unique(player, 9);    
+tel;
+
+node three_different_flavors(cone : cone) returns (r: bool);
+let
+  r = disjoint_flavors3(cone.bot, cone.mid, cone.top); 
+tel;
+
+node all_players_try_three_different_flavors(players: player[10]) returns (r: bool);
+let
+  r = three_different_flavors(players[0].cone) and
+      three_different_flavors(players[1].cone) and
+      three_different_flavors(players[2].cone) and
+      three_different_flavors(players[3].cone) and
+      three_different_flavors(players[4].cone) and
+      three_different_flavors(players[5].cone) and
+      three_different_flavors(players[6].cone) and
+      three_different_flavors(players[7].cone) and
+      three_different_flavors(players[8].cone) and
+      three_different_flavors(players[9].cone);         
+tel;
+
+-- clue 1 
+node tried(p: player; f: flavor) returns (r: bool);
+let 
+  r = p.cone.bot = f or p.cone.mid = f or p.cone.top = f;
+tel; 
+
+node number_players_tried_flavor(player: player[10]; f: flavor) returns (r: int);
+let
+  r = b2i(tried(player[0], f)) + 
+      b2i(tried(player[1], f)) +
+      b2i(tried(player[2], f)) +
+      b2i(tried(player[3], f)) +
+      b2i(tried(player[4], f)) +
+      b2i(tried(player[5], f)) +
+      b2i(tried(player[6], f)) +
+      b2i(tried(player[7], f)) +
+      b2i(tried(player[8], f)) +
+      b2i(tried(player[9], f)) ;  
+tel;  
+
+-- clue 2
+node flavor_order(f: flavor) returns (r: int);
+let
+  r = if (f = Kumquat_Krunch)   then 1 else
+      if (f = Lusty_Lilac)      then 2 else
+      if (f = Marmalade_Mince)  then 3 else
+      if (f = Nougat_Nightmare) then 4 else
+      if (f = Olive_Ooze)       then 5 else
+      if (f = Prune_Passion)    then 6 else
+      if (f = Quirky_Quince)    then 7 else
+      if (f = Rhubarb_Ripple)   then 8 else
+      if (f = Seaweed_Surprise) then 9 else
+                                     10 ; -- Tofu Triumph
+tel;
+
+node flavors_ordered(cone: cone) returns (r: bool);
+let
+  r = flavor_order(cone.bot) < flavor_order(cone.mid) and
+      flavor_order(cone.mid) < flavor_order(cone.top);
+tel;
+
+node all_players_flavors_ordered(player: player[10]) returns (r: bool);
+let
+  r = flavors_ordered(player[0].cone) and
+      flavors_ordered(player[1].cone) and
+      flavors_ordered(player[2].cone) and
+      flavors_ordered(player[3].cone) and
+      flavors_ordered(player[4].cone) and
+      flavors_ordered(player[5].cone) and
+      flavors_ordered(player[6].cone) and
+      flavors_ordered(player[7].cone) and
+      flavors_ordered(player[8].cone) and
+      flavors_ordered(player[9].cone);         
+tel;
+
+node different_players_different_flavors(player: player[10]; i,j: idx) returns (r: bool);
+let
+   r = (i <> j => (player[i].cone.bot <> player[j].cone.bot or
+                   player[i].cone.mid <> player[j].cone.mid or
+                   player[i].cone.top <> player[j].cone.top));
+tel;
+
+node each_player_flavors_unique(player: player[10]; i: idx) returns (r: bool);
+let
+  r = different_players_different_flavors(player, i, 0) and
+      different_players_different_flavors(player, i, 1) and
+      different_players_different_flavors(player, i, 2) and
+      different_players_different_flavors(player, i, 3) and
+      different_players_different_flavors(player, i, 4) and
+      different_players_different_flavors(player, i, 5) and
+      different_players_different_flavors(player, i, 6) and
+      different_players_different_flavors(player, i, 7) and
+      different_players_different_flavors(player, i, 8) and
+      different_players_different_flavors(player, i, 9); 
+tel;
+
+node all_players_flavors_unique(player: player[10]) returns (r: bool);
+let
+  r = each_player_flavors_unique(player, 0) and
+      each_player_flavors_unique(player, 1) and
+      each_player_flavors_unique(player, 2) and
+      each_player_flavors_unique(player, 3) and
+      each_player_flavors_unique(player, 4) and
+      each_player_flavors_unique(player, 5) and
+      each_player_flavors_unique(player, 6) and
+      each_player_flavors_unique(player, 7) and
+      each_player_flavors_unique(player, 8) and
+      each_player_flavors_unique(player, 9);    
+tel;
+
+-- clue 3
+node rhymes(n1, n2: name) returns (r: bool);
+let
+  r = (n1 = Andy and n2 = Brandy) or
+      (n1 = Andy and n2 = Candy) or
+      (n1 = Brandy and n2 = Andy) or
+      (n1 = Brandy and n2 = Candy) or
+      (n1 = Candy and n2 = Andy) or
+      (n1 = Candy and n2 = Brandy) or
+      (n1 = Dean and n2 = Jean) or
+      (n1 = Ellen and n2 = Helen) or
+      (n1 = Helen and n2 = Ellen) or
+      (n1 = Jean and n2 = Dean);
+tel
+
+-- clue 4
+node member3(f0, f1, f2, f3: flavor) returns(r: bool);
+let
+  r = f0=f1 or f0=f2 or f0=f3;
+tel;  
+
+node even(i:int) returns (r: bool);
+let r = (i mod 2 = 0); tel; 
+
+-- clue 6
+node name_order(n: name) returns (r: int);
+let
+  r = if (n = Andy)    then 1 else
+      if (n = Brandy)  then 2 else
+      if (n = Candy)   then 3 else
+      if (n = Dean)    then 4 else
+      if (n = Ellen)   then 5 else
+      if (n = Fay)     then 6 else
+      if (n = Gordon)  then 7 else
+      if (n = Helen)   then 8 else
+      if (n = Ichabod) then 9 else
+                            10 ; -- Jean
+tel;
+
+node consecutive_names(n1, n2, n3: name) returns (r: bool);
+let
+  r = name_order(n3) - name_order(n2) = 1 and
+      name_order(n2) - name_order(n1) = 1;  
+tel;
+
+node consecutive_flavors(f1, f2, f3: flavor) returns (r: bool);
+let
+  r = flavor_order(f3) - flavor_order(f2) = 1 and
+      flavor_order(f2) - flavor_order(f1) = 1;  
+tel;
+
+-- clue 7
+node odd(i: int) returns(r: bool);
+let
+  r = not even(i);
+tel;
+
+node number_players_bottom_flavor(player: player[10]; f: flavor) returns (r: int);
+let
+  r = b2i(player[0].cone.bot = f) + 
+      b2i(player[1].cone.bot = f) +
+      b2i(player[2].cone.bot = f) +
+      b2i(player[3].cone.bot = f) + 
+      b2i(player[4].cone.bot = f) +
+      b2i(player[5].cone.bot = f) +
+      b2i(player[6].cone.bot = f) + 
+      b2i(player[7].cone.bot = f) +
+      b2i(player[8].cone.bot = f) +
+      b2i(player[9].cone.bot = f);           
+tel;
+
+-- clue 11
+node member4(f0, f1, f2, f3, f4: flavor) returns(r: bool);
+let
+  r = f0=f1 or f0=f2 or f0=f3 or f0=f4;
+tel;  
+
+-- clue 20
+node consecutive_numbers3(n1, n2, n3: idx) returns (r: bool);
+let
+  r = n3 - n2 = 1 and 
+      n2 - n1 = 1;
+tel;
+
+node consecutive_numbers4(n1, n2, n3, n4: idx) returns (r: bool);
+let
+  r = n4 - n3 = 1 and
+      n3 - n2 = 1 and 
+      n2 - n1 = 1;
+tel;
+
+node consecutive_numbers5(n1, n2, n3, n4, n5: idx) returns (r: bool);
+let
+  r = n5 - n4 = 1 and 
+      n4 - n3 = 1 and
+      n3 - n2 = 1 and 
+      n2 - n1 = 1;
+tel;
+
+------------------------------------------------------------------------------------------------
+-- Main node 
+--.
+-- The main node specifies the problem to be solved. The arguments to the main node
+-- are free variables that JKind assumes can take on any value consistent with the assert
+-- statements. The first and most important argument is the array of ten players
+--
+-- The other arguments are used as logical variables in the assertions or the main property. 
+-- If Lustre supported universal quantification with logical variables, these could be eliminated. 
+-- These variables are prefixed with c1, c2, ... indicating they are used in clue1, clue2, etc.
+------------------------------------------------------------------------------------------------
+
+node main(player:player[10]; 
+  
+   -- logical variables used in main property
+   i1, i2: idx;
+  
+   -- index of each player by name
+   i_Andy, i_Brandy, i_Candy, i_Dean, i_Ellen, 
+   i_Fay, i_Gordon, i_Helen, i_Ichabod, i_Jean: idx;
+   
+   -- index of each player by position      
+   i_first_base, i_second_base, i_third_base, i_shortstop, 
+   i_left_field, i_center_field, i_right_field, 
+   i_catcher, i_pitcher, i_designated_hitter: idx;
+   
+   -- logical variables for clues
+   c1_flavor_tried_by_one_player,
+   c1_flavor_tried_by_two_players_a,
+   c1_flavor_tried_by_two_players_b,
+   c1_flavor_tried_by_three_players_a,
+   c1_flavor_tried_by_three_players_b,
+   c1_flavor_tried_by_three_players_c,
+   c1_flavor_tried_by_four_players_a,
+   c1_flavor_tried_by_four_players_b, 
+   c1_flavor_tried_by_four_players_c, 
+   c1_flavor_tried_by_four_players_d: flavor;
+         
+   c6_p1, c6_p2, c6_p3: idx;
+        
+   c7_p1, c7_p2, c7_p3: idx;
+        
+   c9_p1,c9_p2, c9_p3: idx;
+        
+   c12_p1 :idx;
+   
+   c15_p1, c15_p2: idx;
+   
+   c20_p311, c20_p312, c20_p313: idx;
+   
+   c20_p321, c20_p322, c20_p323: idx;
+    
+   c20_p41, c20_p42, c20_p43, c20_p44: idx;
+   
+   c20_p51, c20_p52, c20_p53, c20_p54, c20_p55: idx;
+  
+   c20_f4: flavor
+                        
+) returns ();
+
+var
+  main_property: bool;
+  
+  clue1, 
+  clue2, 
+  clue3, 
+  clue4,
+  clue5,
+  clue6,
+  clue7,
+  clue8,
+  clue9,
+  clue10,
+  clue11,
+  clue12,
+  clue13,
+  clue14,
+  clue15,
+  clue16,
+  clue17,
+  clue18,
+  clue19,
+  clue20 : bool;
+
+let
+
+  -- associate name indices with each player
+  assert player[i_Andy].name    = Andy;
+  assert player[i_Brandy].name  = Brandy;
+  assert player[i_Candy].name   = Candy;
+  assert player[i_Dean].name    = Dean;
+  assert player[i_Ellen].name   = Ellen;
+  assert player[i_Fay].name     = Fay;
+  assert player[i_Gordon].name  = Gordon;
+  assert player[i_Helen].name   = Helen;
+  assert player[i_Ichabod].name = Ichabod;
+  assert player[i_Jean].name    = Jean;
+  
+  -- associate position indices with each player
+  assert player[i_first_base].position        = first_base;
+  assert player[i_second_base].position       = second_base;
+  assert player[i_third_base].position        = third_base;
+  assert player[i_shortstop].position         = shortstop;
+  assert player[i_left_field].position        = left_field;
+  assert player[i_center_field].position      = center_field;
+  assert player[i_right_field].position       = right_field;
+  assert player[i_pitcher].position           = pitcher;
+  assert player[i_catcher].position           = catcher;
+  assert player[i_designated_hitter].position = designated_hitter;
+  
+  -- assert that each player has a unique name, position, and number
+  assert all_players_unique(player);
+  
+  -- assert that each player tries a unique combination of flavors
+  assert all_players_try_three_different_flavors(player);
+  
+--1. One flavor was ordered by just one player; two flavors were eaten by just two players; 
+--three flavors were sampled by exactly three players; and the other four flavors were tried 
+--by four players each.
+  
+  clue1 = number_players_tried_flavor(player, c1_flavor_tried_by_one_player) = 1 and
+          disjoint_flavors2(c1_flavor_tried_by_two_players_a,
+                            c1_flavor_tried_by_two_players_b) and
+          number_players_tried_flavor(player, c1_flavor_tried_by_two_players_a) = 2 and
+          number_players_tried_flavor(player, c1_flavor_tried_by_two_players_b) = 2 and
+          disjoint_flavors3(c1_flavor_tried_by_three_players_a, 
+                            c1_flavor_tried_by_three_players_b,
+                            c1_flavor_tried_by_three_players_c) and
+          number_players_tried_flavor(player, c1_flavor_tried_by_three_players_a) = 3 and  
+          number_players_tried_flavor(player, c1_flavor_tried_by_three_players_b) = 3 and
+          number_players_tried_flavor(player, c1_flavor_tried_by_three_players_c) = 3 and
+          disjoint_flavors4(c1_flavor_tried_by_four_players_a, 
+                            c1_flavor_tried_by_four_players_b,
+                            c1_flavor_tried_by_four_players_c,
+                            c1_flavor_tried_by_four_players_d) and
+          number_players_tried_flavor(player, c1_flavor_tried_by_four_players_a)  = 4 and
+          number_players_tried_flavor(player, c1_flavor_tried_by_four_players_b)  = 4 and
+          number_players_tried_flavor(player, c1_flavor_tried_by_four_players_c)  = 4 and
+          number_players_tried_flavor(player, c1_flavor_tried_by_four_players_d)  = 4;    
+          
+--2. Since the Emporium always serves its flavors in alphabetical order, the flavors on each 
+--cone were arranged alphabetically from bottom to top.  No player had the same three-flavor 
+--combination as any other player.   
+   
+  clue2 = all_players_flavors_ordered(player) and 
+          all_players_flavors_unique(player);
+  
+--3. The names of the first baseman and second baseman rhyme with each other, as do the names 
+--of the third baseman and shortstop, and also the names of the catcher and pitcher.
+  
+  clue3 = rhymes(player[i_first_base].name, player[i_second_base].name) and
+          rhymes(player[i_third_base].name, player[i_shortstop].name) and
+          rhymes(player[i_catcher].name, player[i_pitcher].name);
+  
+--4. The three outfielders, who all wear even numbers, had Lusty Lilac, Olive Ooze, and 
+--Quirky Quince on the bottom of their cones. 
+
+  clue4 = even(i_left_field + 1) and 
+          even(i_center_field + 1) and
+          even(i_right_field + 1) and
+          member3(player[i_left_field].cone.bot,   Lusty_Lilac, Olive_Ooze, Quirky_Quince) and
+          member3(player[i_center_field].cone.bot, Lusty_Lilac, Olive_Ooze, Quirky_Quince) and
+          member3(player[i_right_field].cone.bot,  Lusty_Lilac, Olive_Ooze, Quirky_Quince) and
+          disjoint_flavors3(player[i_left_field].cone.bot,
+                            player[i_center_field].cone.bot,
+                            player[i_right_field].cone.bot);
+ 
+--5. Rhubarb Ripple was not tried by Andy, Brandy, or Candy.
+
+  clue5 = not tried(player[i_Andy], Rhubarb_Ripple) and
+          not tried(player[i_Brandy], Rhubarb_Ripple) and
+          not tried(player[i_Candy], Rhubarb_Ripple);   
+  
+--6. Three players whose names start with three consecutive letters of the alphabet didn't 
+--have any flavors in common, but they all had cones with three flavors that start with three 
+--consecutive letters of the alphabet. 
+
+  clue6 = disjoint_players3(c6_p1, c6_p2, c6_p3) and
+          consecutive_names(player[c6_p1].name, player[c6_p2].name, player[c6_p3].name) and 
+          disjoint_flavors9(player[c6_p1].cone.top, player[c6_p1].cone.mid, player[c6_p1].cone.bot,
+                            player[c6_p2].cone.top, player[c6_p2].cone.mid, player[c6_p2].cone.bot,
+                            player[c6_p3].cone.top, player[c6_p3].cone.mid,player[c6_p3].cone.bot) and
+          consecutive_flavors(player[c6_p1].cone.bot, player[c6_p1].cone.mid, player[c6_p1].cone.top) and 
+          consecutive_flavors(player[c6_p2].cone.bot, player[c6_p2].cone.mid, player[c6_p2].cone.top) and 
+          consecutive_flavors(player[c6_p3].cone.bot, player[c6_p3].cone.mid, player[c6_p3].cone.top); 
+  
+--7. Of the three players who had Olive Ooze at the bottom of their cones, only Gordon wore an 
+--even number.
+
+  clue7 = disjoint_players3(c7_p1, c7_p2, c7_p3) and 
+          number_players_bottom_flavor(player, Olive_Ooze) = 3 and
+          player[c7_p1].cone.bot = Olive_Ooze and
+          player[c7_p2].cone.bot = Olive_Ooze and
+          player[c7_p3].cone.bot = Olive_Ooze and
+          c7_p1 = i_Gordon and
+          even(c7_p1 + 1) and
+          odd(c7_p2 + 1) and
+          odd(c7_p3 + 1);
+  
+--8. Of the players wearing numbers lower than 7, no one had Seaweed Surprise and only the 
+--catcher had Tofu Triumph.
+
+  clue8 = not tried(player[0], Seaweed_Surprise) and
+          not tried(player[1], Seaweed_Surprise) and
+           not tried(player[2], Seaweed_Surprise) and 
+          not tried(player[3], Seaweed_Surprise) and 
+          not tried(player[4], Seaweed_Surprise) and 
+          not tried(player[5], Seaweed_Surprise) and
+          i_catcher < 6 and tried(player[i_catcher], Tofu_Triumph) and
+          (0 <> i_catcher => not tried(player[0], Tofu_Triumph)) and
+          (1 <> i_catcher => not tried(player[1], Tofu_Triumph)) and
+          (2 <> i_catcher => not tried(player[2], Tofu_Triumph)) and
+          (3 <> i_catcher => not tried(player[3], Tofu_Triumph)) and
+          (4 <> i_catcher => not tried(player[4], Tofu_Triumph)) and
+          (5 <> i_catcher => not tried(player[5], Tofu_Triumph));
+
+--9. The three players wearing numbers greater than 7 are the designated hitter, whose bottom 
+--scoop was Olive Ooze, and players whose bottom scoops were Quirky Quince and Rhubarb Ripple.
+
+  clue9 = disjoint_players3(c9_p1, c9_p2, c9_p3) and
+          c9_p1 + 1 > 7 and c9_p2 + 1 > 7 and c9_p3 + 1 > 7 and
+          player[c9_p1].position = designated_hitter and player[c9_p1].cone.bot = Olive_Ooze and
+          player[c9_p2].cone.bot = Quirky_Quince and 
+          player[c9_p3].cone.bot = Rhubarb_Ripple;
+
+--10. Neither (numbers) 1 nor 2 is worn by the first baseman, second baseman, or third baseman.
+
+  clue10 = i_first_base  > 1 and
+           i_second_base > 1 and
+           i_third_base  > 1; 
+  
+--11. Both Helen and the third baseman restricted themselves to combinations involving Kumquat 
+--Krunch, Lusty Lilac, Marmalade Mince, and Nougat Nightmare.
+
+  clue11 = 
+   member4(player[i_Helen].cone.bot, Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare) and
+   member4(player[i_Helen].cone.mid, Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare) and
+   member4(player[i_Helen].cone.top, Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare) and
+   member4(player[i_third_base].cone.bot, Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare) and
+   member4(player[i_third_base].cone.mid, Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare) and
+   member4(player[i_third_base].cone.top, Kumquat_Krunch, Lusty_Lilac, Marmalade_Mince, Nougat_Nightmare);
+
+--12. The only player who tried Kumquat Krunch wears a number that is four less than the 
+--shortstop's; together, these two players' numbers add up to Brandy's number.
+
+  clue12 = number_players_tried_flavor(player, Kumquat_Krunch) = 1 and
+           tried(player[c12_p1], Kumquat_Krunch) and
+           i_shortstop = c12_p1 + 4 and 
+           i_shortstop + c12_p1 = i_Brandy;
+
+--13. The right fielder has a lower number than the other outfielders, and the center 
+--fielder's number is one higher than the designated hitter's. 
+
+
+  clue13 = i_right_field < i_left_field  and
+           i_right_field < i_center_field and
+           i_center_field = i_designated_hitter + 1;
+
+--14. The three players who tried Nougat Nightmare are the left fielder, the player who 
+--wears number 4, and Jean.
+
+  clue14 = number_players_tried_flavor(player, Nougat_Nightmare) = 3 and
+           tried(player[i_left_field], Nougat_Nightmare) and
+           tried(player[3], Nougat_Nightmare) and
+           tried(player[i_Jean], Nougat_Nightmare);
+
+--15. Quirky Quince was tried by two players whose names rhymed only with each other, 
+--and also by Brandy and Fay.
+
+  clue15 = disjoint_players4(c15_p1, c15_p2, i_Brandy, i_Fay) and
+           tried(player[c15_p1], Quirky_Quince) and
+           tried(player[c15_p2], Quirky_Quince) and
+           rhymes(player[c15_p1].name, player[c15_p2].name) and
+           tried(player[i_Brandy], Quirky_Quince) and
+           tried(player[i_Fay], Quirky_Quince);
+           
+--16. Helen's number is lower than Candy's.
+
+  clue16 = i_Helen < i_Candy;
+
+--17. Gordon's three flavors were the ones on the bottom of Dean's and Ellen's cones 
+--and the one on top of Ichabod's cone.
+
+  clue17 = tried(player[i_Gordon], player[i_Dean].cone.bot) and 
+           tried(player[i_Gordon], player[i_Ellen].cone.bot) and 
+           tried(player[i_Gordon], player[i_Ichabod].cone.top);
+ 
+--18. The players wearing 6 and 7 both tried Prune Passion.
+
+  clue18 = tried(player[5], Prune_Passion) and
+           tried(player[6], Prune_Passion);
+
+--19. The top scoop on the shortstop's cone was one of the flavors that the second baseman tried. 
+
+  clue19 = tried(player[i_second_base], player[i_shortstop].cone.top);
+
+--20. The only flavors ordered by three players wearing consecutive numbers were 
+--Prune Passion and Tofu Triumph.  No flavor was ordered by four players wearing 
+--consecutive numbers; but had Brandy not convinced the pitcher to try the flavor 
+--on the bottom of her cone, then the pitcher would have ordered Lusty Lilac instead, 
+--and then Lusty Lilac would have been on the cones of players wearing five consecutive numbers.
+
+  clue20 = (consecutive_numbers3(c20_p311, c20_p312, c20_p313) and
+            tried(player[c20_p311], Prune_Passion) and 
+            tried(player[c20_p312], Prune_Passion) and
+            tried(player[c20_p313], Prune_Passion)) and 
+           (consecutive_numbers3(c20_p321, c20_p322, c20_p323) and
+            tried(player[c20_p321], Tofu_Triumph) and 
+            tried(player[c20_p322], Tofu_Triumph) and
+            tried(player[c20_p323], Tofu_Triumph)) and 
+           (consecutive_numbers4(c20_p41, c20_p42, c20_p43, c20_p44) =>  
+            not (tried(player[c20_p41], c20_f4) and 
+                 tried(player[c20_p42], c20_f4) and
+                 tried(player[c20_p43], c20_f4) and
+                 tried(player[c20_p44], c20_f4))) and
+           (consecutive_numbers5(c20_p51, c20_p52, c20_p53, c20_p54, c20_p55) and
+            (c20_p51 = i_pitcher or tried(player[c20_p51], Lusty_Lilac)) and
+            (c20_p52 = i_pitcher or tried(player[c20_p52], Lusty_Lilac)) and
+            (c20_p53 = i_pitcher or tried(player[c20_p53], Lusty_Lilac)) and
+            (c20_p54 = i_pitcher or tried(player[c20_p54], Lusty_Lilac)) and
+            (c20_p55 = i_pitcher or tried(player[c20_p55], Lusty_Lilac)) and
+            tried(player[i_pitcher], player[i_Brandy].cone.bot));
+         
+  -- assert each clue previously defined                                                    
+  assert clue1;
+  assert clue2;
+  assert clue3;
+  assert clue4;
+  assert clue5;
+  assert clue6;
+  assert clue7;
+  assert clue8;
+  assert clue9;
+  assert clue10;
+  assert clue11;
+  assert clue12;
+  assert clue13;
+  assert clue14;
+  assert clue15;
+  assert clue16;
+  assert clue17;
+  assert clue18;
+  assert clue19;
+  assert clue20;
+     
+  -- To generate a counterexample satisfying all the assertions, a known false property
+  -- is specified that references all the fields of interest
+  
+  main_property = not different_players_unique(player, i1, i2) or 
+                   not three_different_flavors(player[i1].cone);
+ 
+  --%PROPERTY main_property;
+   
+tel;
+
+-- Generated Solution
+  
+--player[0].cone.bot    Nougat_Nightmare
+--player[0].cone.mid    Quirky_Quince
+--player[0].cone.top    Tofu_Triumph
+--player[0].name        Jean
+--player[0].position    catcher
+--player[1].cone.bot    Olive_Ooze
+--player[1].cone.mid    Prune_Passion
+--player[1].cone.top    Rhubarb_Ripple
+--player[1].name        Gordon
+--player[1].position    right_field
+--player[2].cone.bot    Kumquat_Krunch
+--player[2].cone.mid    Lusty_Lilac
+--player[2].cone.top    Marmalade_Mince
+--player[2].name        Helen
+--player[2].position    first_base
+--player[3].cone.bot    Lusty_Lilac
+--player[3].cone.mid    Marmalade_Mince
+--player[3].cone.top    Nougat_Nightmare
+--player[3].name        Candy
+--player[3].position    third_base
+--player[4].cone.bot    Olive_Ooze
+--player[4].cone.mid    Prune_Passion
+--player[4].cone.top    Quirky_Quince
+--player[4].name        Dean
+--player[4].position    pitcher
+--player[5].cone.bot    Lusty_Lilac
+--player[5].cone.mid    Nougat_Nightmare
+--player[5].cone.top    Prune_Passion
+--player[5].name        Ichabod
+--player[5].position    left_field
+--player[6].cone.bot    Lusty_Lilac
+--player[6].cone.mid    Prune_Passion
+--player[6].cone.top    Seaweed_Surprise
+--player[6].name        Andy
+--player[6].position    shortstop
+--player[7].cone.bot    Rhubarb_Ripple
+--player[7].cone.mid    Seaweed_Surprise
+--player[7].cone.top    Tofu_Triumph
+--player[7].name        Ellen
+--player[7].position    second_base
+--player[8].cone.bot    Olive_Ooze
+--player[8].cone.mid    Quirky_Quince
+--player[8].cone.top    Tofu_Triumph
+--player[8].name        Brandy
+--player[8].position    designated_hitter
+--player[9].cone.bot    Quirky_Quince
+--player[9].cone.mid    Rhubarb_Ripple
+--player[9].cone.top    Tofu_Triumph
+--player[9].name        Fay
+--player[9].position    center_field
