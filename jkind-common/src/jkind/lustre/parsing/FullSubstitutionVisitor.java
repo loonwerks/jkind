@@ -69,7 +69,7 @@ public class FullSubstitutionVisitor extends AstMapVisitor {
 	}
 
 	@Override
-	protected String visitSupport(String e) {
+	protected String visitIvc(String e) {
 		return visit(e);
 	}
 

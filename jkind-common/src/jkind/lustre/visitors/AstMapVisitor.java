@@ -32,11 +32,11 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<Equation> equations = visitEquations(e.equations);
 		List<Expr> assertions = visitAssertions(e.assertions);
 		List<String> properties = visitProperties(e.properties);
-		List<String> support = visitSupport(e.support);
+		List<String> ivc = visitIvc(e.ivc);
 		List<String> realizabilityInputs = visitRealizabilityInputs(e.realizabilityInputs);
 		Contract contract = visit(e.contract);
 		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties,
-				assertions, realizabilityInputs, contract, support);
+				assertions, realizabilityInputs, contract, ivc);
 	}
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
@@ -59,11 +59,11 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		return e;
 	}
 
-	protected List<String> visitSupport(List<String> es) {
-		return map(this::visitSupport, es);
+	protected List<String> visitIvc(List<String> es) {
+		return map(this::visitIvc, es);
 	}
 	
-	protected String visitSupport(String e) {
+	protected String visitIvc(String e) {
 		return e;
 	}
 

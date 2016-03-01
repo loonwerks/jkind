@@ -1,4 +1,4 @@
--- There is no SUPPORT for __GUARANTEE0
+-- There is no IVC for __GUARANTEE0
 
 node _TOP__COMP(
   in1 : int;
@@ -30,7 +30,7 @@ let
 
   __ASSERT = (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true))));
 
-  --%SUPPORT __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
+  --%IVC __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
 
 tel;
 
@@ -58,7 +58,7 @@ let
 
   __ASSERT = (__ASSUME__HIST => (__COMP2__PROP__1 and (__COMP2__PROP__0 and true)));
 
-  --%SUPPORT __COMP2__PROP__0,__COMP2__PROP__1;
+  --%IVC __COMP2__PROP__0,__COMP2__PROP__1;
 
 tel;
 

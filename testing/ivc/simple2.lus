@@ -1,4 +1,4 @@
--- SUPPORT for ok: x, y
+-- IVC for ok: x, y
 
 node main(a1, a2 : int) returns ();
 var
@@ -10,6 +10,6 @@ let
   assert x;
 
   ok = a1 > 0;
-  --%SUPPORT x, y, z;
+  --%IVC x, y, z;
   --%PROPERTY ok;
 tel;

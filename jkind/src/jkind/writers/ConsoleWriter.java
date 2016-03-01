@@ -33,7 +33,7 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support) {
+			List<Expr> invariants, Set<String> ivc) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
 				+ " || Time = " + runtime);
@@ -44,10 +44,10 @@ public class ConsoleWriter extends Writer {
 				System.out.println("  " + invariant);
 			}
 		}
-		if (!support.isEmpty()) {
-			System.out.println("SUPPORT:");
-			for (String supp : Util.safeStringSortedSet(support)) {
-				System.out.println("  " + supp);
+		if (!ivc.isEmpty()) {
+			System.out.println("INDUCTIVE VALIDITY CORE:");
+			for (String e : Util.safeStringSortedSet(ivc)) {
+				System.out.println("  " + e);
 			}
 		}
 		writeLine();

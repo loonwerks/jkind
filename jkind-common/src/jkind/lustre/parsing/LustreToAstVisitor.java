@@ -62,6 +62,7 @@ import jkind.lustre.parsing.LustreParser.IdExprContext;
 import jkind.lustre.parsing.LustreParser.IfThenElseExprContext;
 import jkind.lustre.parsing.LustreParser.IntExprContext;
 import jkind.lustre.parsing.LustreParser.IntTypeContext;
+import jkind.lustre.parsing.LustreParser.IvcContext;
 import jkind.lustre.parsing.LustreParser.LhsContext;
 import jkind.lustre.parsing.LustreParser.NegateExprContext;
 import jkind.lustre.parsing.LustreParser.NodeCallExprContext;
@@ -80,7 +81,6 @@ import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
-import jkind.lustre.parsing.LustreParser.SupportContext;
 import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
 import jkind.lustre.parsing.LustreParser.TupleExprContext;
 import jkind.lustre.parsing.LustreParser.TypeContext;
@@ -140,14 +140,14 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
-		List<String> support = support(ctx.support());
+		List<String> ivc = ivc(ctx.ivc());
 		List<String> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
 		Contract contract = null;
 		if (!ctx.main().isEmpty()) {
 			main = id;
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs, contract, support);
+				realizabilityInputs, contract, ivc);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
@@ -225,12 +225,12 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return null;
 	}
 	
-	private List<String> support(List<SupportContext> ctxs) {
+	private List<String> ivc(List<IvcContext> ctxs) {
 		if (ctxs.size() > 1) {
-			fatal(ctxs.get(1), "at most one support statement allowed");
+			fatal(ctxs.get(1), "at most one ivc statement allowed per node");
 		}
 
-		for (SupportContext ctx : ctxs) {
+		for (IvcContext ctx : ctxs) {
 			List<String> ids = new ArrayList<>();
 			for (TerminalNode ictx : ctx.ID()) {
 				ids.add(ictx.getText());

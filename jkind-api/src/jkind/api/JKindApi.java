@@ -22,7 +22,7 @@ public class JKindApi extends KindApi {
 	protected boolean invariantGeneration = true;
 	protected Integer pdrMax = null;
 	protected boolean inductiveCounterexamples = false;
-	protected boolean reduceSupport = false;
+	protected boolean ivcReduction = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean intervalGeneralization = false;
 
@@ -81,10 +81,10 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
-	 * Reduce and report the invariants and support used for a valid property
+	 * Find an inductive validity core for valid properties
 	 */
-	public void setReduceSupport() {
-		reduceSupport = true;
+	public void setIvcReduction() {
+		ivcReduction = true;
 	}
 
 	/**
@@ -147,8 +147,8 @@ public class JKindApi extends KindApi {
 		if (inductiveCounterexamples) {
 			args.add("-induct_cex");
 		}
-		if (reduceSupport) {
-			args.add("-support");
+		if (ivcReduction) {
+			args.add("-ivc");
 		}
 		if (smoothCounterexamples) {
 			args.add("-smooth");
