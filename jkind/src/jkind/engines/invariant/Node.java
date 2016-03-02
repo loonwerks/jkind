@@ -57,7 +57,7 @@ public class Node {
 		List<Expr> invariants = new ArrayList<>();
 		while (iterator.hasNext()) {
 			Expr expr = iterator.next();
-			invariants.add(value ? expr : LustreUtil.not(expr));
+			invariants.add(value ? expr : LustreUtil.optimizeNot(expr));
 		}
 		return invariants;
 	}

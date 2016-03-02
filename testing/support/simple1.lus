@@ -1,0 +1,18 @@
+-- SUPPORT for ok: b
+
+node main(x : int) returns (y : int);
+var
+  a, b, ok : bool;
+let
+  y = x + (0 -> pre y);
+
+  a = x >= -1;
+  assert a;
+
+  b = x >= 0;
+  assert b;
+
+  ok = y >= 0;
+  --%SUPPORT a, b;
+  --%PROPERTY ok;
+tel;

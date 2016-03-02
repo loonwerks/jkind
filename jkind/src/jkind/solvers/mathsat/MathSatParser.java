@@ -23,10 +23,11 @@ public class MathSatParser extends Parser {
 		"ERROR"
 	};
 	public static final int
-		RULE_model = 0, RULE_assignment = 1, RULE_body = 2, RULE_fn = 3, RULE_symbol = 4, 
-		RULE_id = 5, RULE_qid = 6;
+		RULE_model = 0, RULE_assignment = 1, RULE_unsatAssumptions = 2, RULE_body = 3, 
+		RULE_fn = 4, RULE_symbol = 5, RULE_id = 6, RULE_qid = 7;
 	public static final String[] ruleNames = {
-		"model", "assignment", "body", "fn", "symbol", "id", "qid"
+		"model", "assignment", "unsatAssumptions", "body", "fn", "symbol", "id", 
+		"qid"
 	};
 
 	@Override
@@ -69,22 +70,22 @@ public class MathSatParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(14); match(T__3);
-			setState(18);
+			setState(16); match(T__3);
+			setState(20);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				setState(15); assignment();
+				setState(17); assignment();
 				}
 				}
-				setState(20);
+				setState(22);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(21); match(T__2);
-			setState(22); match(EOF);
+			setState(23); match(T__2);
+			setState(24); match(EOF);
 			}
 		}
 		catch (RecognitionException re) {
@@ -117,10 +118,58 @@ public class MathSatParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(24); match(T__3);
-			setState(25); id();
-			setState(26); body();
-			setState(27); match(T__2);
+			setState(26); match(T__3);
+			setState(27); id();
+			setState(28); body();
+			setState(29); match(T__2);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class UnsatAssumptionsContext extends ParserRuleContext {
+		public SymbolContext symbol(int i) {
+			return getRuleContext(SymbolContext.class,i);
+		}
+		public List<SymbolContext> symbol() {
+			return getRuleContexts(SymbolContext.class);
+		}
+		public UnsatAssumptionsContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_unsatAssumptions; }
+	}
+
+	public final UnsatAssumptionsContext unsatAssumptions() throws RecognitionException {
+		UnsatAssumptionsContext _localctx = new UnsatAssumptionsContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_unsatAssumptions);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(31); match(T__3);
+			setState(35);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << BOOL) | (1L << INT) | (1L << ID))) != 0)) {
+				{
+				{
+				setState(32); symbol();
+				}
+				}
+				setState(37);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(38); match(T__2);
 			}
 		}
 		catch (RecognitionException re) {
@@ -166,10 +215,10 @@ public class MathSatParser extends Parser {
 
 	public final BodyContext body() throws RecognitionException {
 		BodyContext _localctx = new BodyContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_body);
+		enterRule(_localctx, 6, RULE_body);
 		int _la;
 		try {
-			setState(40);
+			setState(51);
 			switch (_input.LA(1)) {
 			case T__1:
 			case BOOL:
@@ -178,29 +227,29 @@ public class MathSatParser extends Parser {
 				_localctx = new SymbolBodyContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(29); symbol();
+				setState(40); symbol();
 				}
 				break;
 			case T__3:
 				_localctx = new ConsBodyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(30); match(T__3);
-				setState(31); fn();
-				setState(35);
+				setState(41); match(T__3);
+				setState(42); fn();
+				setState(46);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__3) | (1L << T__1) | (1L << BOOL) | (1L << INT) | (1L << ID))) != 0)) {
 					{
 					{
-					setState(32); body();
+					setState(43); body();
 					}
 					}
-					setState(37);
+					setState(48);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(38); match(T__2);
+				setState(49); match(T__2);
 				}
 				break;
 			default:
@@ -227,12 +276,12 @@ public class MathSatParser extends Parser {
 
 	public final FnContext fn() throws RecognitionException {
 		FnContext _localctx = new FnContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_fn);
+		enterRule(_localctx, 8, RULE_fn);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(53);
 			_la = _input.LA(1);
 			if ( !(_la==T__4 || _la==T__0) ) {
 			_errHandler.recoverInline(this);
@@ -265,27 +314,27 @@ public class MathSatParser extends Parser {
 
 	public final SymbolContext symbol() throws RecognitionException {
 		SymbolContext _localctx = new SymbolContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_symbol);
+		enterRule(_localctx, 10, RULE_symbol);
 		try {
-			setState(47);
+			setState(58);
 			switch (_input.LA(1)) {
 			case T__1:
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(44); id();
+				setState(55); id();
 				}
 				break;
 			case BOOL:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(45); match(BOOL);
+				setState(56); match(BOOL);
 				}
 				break;
 			case INT:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(46); match(INT);
+				setState(57); match(INT);
 				}
 				break;
 			default:
@@ -316,20 +365,20 @@ public class MathSatParser extends Parser {
 
 	public final IdContext id() throws RecognitionException {
 		IdContext _localctx = new IdContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_id);
+		enterRule(_localctx, 12, RULE_id);
 		try {
-			setState(51);
+			setState(62);
 			switch (_input.LA(1)) {
 			case T__1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(49); qid();
+				setState(60); qid();
 				}
 				break;
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(50); match(ID);
+				setState(61); match(ID);
 				}
 				break;
 			default:
@@ -357,13 +406,13 @@ public class MathSatParser extends Parser {
 
 	public final QidContext qid() throws RecognitionException {
 		QidContext _localctx = new QidContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_qid);
+		enterRule(_localctx, 14, RULE_qid);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(53); match(T__1);
-			setState(54); match(ID);
-			setState(55); match(T__1);
+			setState(64); match(T__1);
+			setState(65); match(ID);
+			setState(66); match(T__1);
 			}
 		}
 		catch (RecognitionException re) {
@@ -378,22 +427,24 @@ public class MathSatParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\f<\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\7\2\23\n\2\f\2\16\2"+
-		"\26\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\7\4$\n\4\f\4"+
-		"\16\4\'\13\4\3\4\3\4\5\4+\n\4\3\5\3\5\3\6\3\6\3\6\5\6\62\n\6\3\7\3\7\5"+
-		"\7\66\n\7\3\b\3\b\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\3\4\2\3\3\7\7:\2"+
-		"\20\3\2\2\2\4\32\3\2\2\2\6*\3\2\2\2\b,\3\2\2\2\n\61\3\2\2\2\f\65\3\2\2"+
-		"\2\16\67\3\2\2\2\20\24\7\4\2\2\21\23\5\4\3\2\22\21\3\2\2\2\23\26\3\2\2"+
-		"\2\24\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3\2\2\2\27\30\7\5\2"+
-		"\2\30\31\7\2\2\3\31\3\3\2\2\2\32\33\7\4\2\2\33\34\5\f\7\2\34\35\5\6\4"+
-		"\2\35\36\7\5\2\2\36\5\3\2\2\2\37+\5\n\6\2 !\7\4\2\2!%\5\b\5\2\"$\5\6\4"+
-		"\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2()\7"+
-		"\5\2\2)+\3\2\2\2*\37\3\2\2\2* \3\2\2\2+\7\3\2\2\2,-\t\2\2\2-\t\3\2\2\2"+
-		".\62\5\f\7\2/\62\7\b\2\2\60\62\7\t\2\2\61.\3\2\2\2\61/\3\2\2\2\61\60\3"+
-		"\2\2\2\62\13\3\2\2\2\63\66\5\16\b\2\64\66\7\n\2\2\65\63\3\2\2\2\65\64"+
-		"\3\2\2\2\66\r\3\2\2\2\678\7\6\2\289\7\n\2\29:\7\6\2\2:\17\3\2\2\2\7\24"+
-		"%*\61\65";
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\fG\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\7\2\25\n\2"+
+		"\f\2\16\2\30\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\4\3\4\7\4$\n\4\f\4"+
+		"\16\4\'\13\4\3\4\3\4\3\5\3\5\3\5\3\5\7\5/\n\5\f\5\16\5\62\13\5\3\5\3\5"+
+		"\5\5\66\n\5\3\6\3\6\3\7\3\7\3\7\5\7=\n\7\3\b\3\b\5\bA\n\b\3\t\3\t\3\t"+
+		"\3\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\3\4\2\3\3\7\7E\2\22\3\2\2\2\4\34\3"+
+		"\2\2\2\6!\3\2\2\2\b\65\3\2\2\2\n\67\3\2\2\2\f<\3\2\2\2\16@\3\2\2\2\20"+
+		"B\3\2\2\2\22\26\7\4\2\2\23\25\5\4\3\2\24\23\3\2\2\2\25\30\3\2\2\2\26\24"+
+		"\3\2\2\2\26\27\3\2\2\2\27\31\3\2\2\2\30\26\3\2\2\2\31\32\7\5\2\2\32\33"+
+		"\7\2\2\3\33\3\3\2\2\2\34\35\7\4\2\2\35\36\5\16\b\2\36\37\5\b\5\2\37 \7"+
+		"\5\2\2 \5\3\2\2\2!%\7\4\2\2\"$\5\f\7\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2"+
+		"%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2()\7\5\2\2)\7\3\2\2\2*\66\5\f\7\2+,\7\4"+
+		"\2\2,\60\5\n\6\2-/\5\b\5\2.-\3\2\2\2/\62\3\2\2\2\60.\3\2\2\2\60\61\3\2"+
+		"\2\2\61\63\3\2\2\2\62\60\3\2\2\2\63\64\7\5\2\2\64\66\3\2\2\2\65*\3\2\2"+
+		"\2\65+\3\2\2\2\66\t\3\2\2\2\678\t\2\2\28\13\3\2\2\29=\5\16\b\2:=\7\b\2"+
+		"\2;=\7\t\2\2<9\3\2\2\2<:\3\2\2\2<;\3\2\2\2=\r\3\2\2\2>A\5\20\t\2?A\7\n"+
+		"\2\2@>\3\2\2\2@?\3\2\2\2A\17\3\2\2\2BC\7\6\2\2CD\7\n\2\2DE\7\6\2\2E\21"+
+		"\3\2\2\2\b\26%\60\65<@";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

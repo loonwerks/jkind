@@ -1,11 +1,13 @@
 package jkind.solvers.mathsat;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+
 import jkind.JKindException;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
-import jkind.lustre.NamedType;
-import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
@@ -14,8 +16,10 @@ import jkind.sexp.Symbol;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.mathsat.MathSatParser.ModelContext;
+import jkind.solvers.mathsat.MathSatParser.UnsatAssumptionsContext;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -35,23 +39,20 @@ public class MathSatSolver extends SmtLib2Solver {
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
+		send("(set-option :produce-unsat-cores true)");
 	}
 
-	private int assumCount = 1;
+	private int actCount = 1;
 
 	@Override
 	public Result query(Sexp sexp) {
 		Result result = null;
-
-		Symbol assum = new Symbol("assum" + assumCount++);
-		define(new VarDecl(assum.str, NamedType.BOOL));
-		send(new Cons("assert", new Cons("=>", assum, new Cons("not", sexp))));
-		send(new Cons("check-sat-assumptions", new Cons(assum)));
-		send("(echo \"" + DONE + "\")");
+		Symbol actLit = createActivationLiteral("act", actCount++);
+		send(new Cons("assert", new Cons("=>", actLit, new Cons("not", sexp))));
+		send(new Cons("check-sat-assumptions", new Cons(actLit)));
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			send("(echo \"" + DONE + "\")");
 			result = new SatResult(parseModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
@@ -63,25 +64,61 @@ public class MathSatSolver extends SmtLib2Solver {
 	}
 
 	@Override
-	protected boolean isDone(String line) {
-		return line.equals("(error \"unknown command: echo\")");
+	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+		if (activationLiterals.isEmpty()) {
+			send(new Cons("check-sat"));
+		} else {
+			Symbol head = activationLiterals.get(0);
+			List<Symbol> tail = activationLiterals.subList(1, activationLiterals.size());
+			send(new Cons("check-sat-assumptions", new Cons(head, tail)));
+		}
+
+		String status = readFromSolver();
+		if (isSat(status)) {
+			return new SatResult();
+		} else if (isUnsat(status)) {
+			return new UnsatResult(getUnsatCore(activationLiterals));
+		} else {
+			return new UnknownResult();
+		}
+	}
+
+	@Override
+	protected List<Symbol> getUnsatCore(List<Symbol> activationLiterals) {
+		send(new Cons("get-unsat-assumptions"));
+		return parseUnsatAssumptions(readFromSolver());
 	}
 
 	@Override
 	protected Model parseModel(String string) {
+		MathSatParser parser = getParser(string);
+		ModelContext ctx = parser.model();
+		ensureNoParseError(parser, string);
+		return ModelExtractor.getModel(ctx, varTypes);
+	}
+
+
+	private List<Symbol> parseUnsatAssumptions(String string) {
+		MathSatParser parser = getParser(string);
+		UnsatAssumptionsContext ctx = parser.unsatAssumptions();
+		ensureNoParseError(parser, string);
+		return ctx.symbol().stream().map(sctx -> new Symbol(sctx.getText())).collect(toList());
+	}
+
+	private MathSatParser getParser(String string) {
 		CharStream stream = new ANTLRInputStream(string);
 		MathSatLexer lexer = new MathSatLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		MathSatParser parser = new MathSatParser(tokens);
 		parser.removeErrorListeners();
 		parser.addErrorListener(new StdoutErrorListener());
-		ModelContext ctx = parser.model();
+		return parser;
+	}
 
+	private void ensureNoParseError(MathSatParser parser, String string) {
 		if (parser.getNumberOfSyntaxErrors() > 0) {
 			throw new JKindException("Error parsing " + getSolverName() + " output: " + string);
 		}
-
-		return ModelExtractor.getModel(ctx, varTypes);
 	}
 
 	@Override

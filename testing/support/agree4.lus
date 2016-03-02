@@ -1,0 +1,75 @@
+-- SUPPORT for __GUARANTEE0: _TOP__COMP~0.__COMP__PROP__2
+
+node _TOP__COMP(
+  in1 : int;
+  in2 : int;
+  out1 : int;
+  out2 : int
+) returns (
+  __ASSERT : bool
+);
+var
+  __ASSUME__HIST : bool;
+  __ASSUME__CONJ : bool;
+  __COMP__PROP__0 : bool;
+  __COMP__PROP__1 : bool;
+  __COMP__PROP__2 : bool;
+let
+  __ASSUME__CONJ = true;
+
+  __ASSUME__HIST = (__ASSUME__CONJ -> ((pre __ASSUME__HIST) and __ASSUME__CONJ));
+
+  __COMP__PROP__0 = (out1 > (-1));
+
+  __COMP__PROP__1 = (out1 < 1);
+
+  __COMP__PROP__2 = (out2 > 10);
+
+  __ASSERT = (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true))));
+
+  --%SUPPORT __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
+
+tel;
+
+node main(
+  COMP__in1 : int;
+  COMP__in2 : int;
+  COMP___CLOCK_ : bool;
+  input1 : int;
+  input2 : int;
+  COMP__out1 : int;
+  COMP__out2 : int;
+  internal_var1 : int;
+  internal_var2 : int;
+  output1 : int;
+  output2 : int;
+  output3 : int;
+  output4 : int
+) returns (
+
+);
+var
+  __GUARANTEE0 : bool;
+let
+  --%MAIN;
+  __GUARANTEE0 = (output2 > (internal_var1 + internal_var2));
+
+  assert condact(true, _TOP__COMP(COMP__in1, COMP__in2, COMP__out1, COMP__out2), true);
+
+  assert (input1 = COMP__in1);
+
+  assert (input2 = COMP__in2);
+
+  assert (COMP__out1 = output1);
+
+  assert (COMP__out2 = output2);
+
+  assert (internal_var1 = 5);
+
+  assert (internal_var2 = 5);
+
+  assert true;
+
+  --%PROPERTY __GUARANTEE0;
+
+tel;

@@ -2,28 +2,32 @@ package jkind.util;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BiMap<K, V> implements Map<K, V> {
+/**
+ * A bi-directional map that preserves the order of keys and values
+ */
+public class LinkedBiMap<K, V> implements Map<K, V> {
 	private Map<K, V> map;
 	private Map<V, K> inverse;
-	
-	public BiMap() {
-		this.map = new HashMap<>();
-		this.inverse = new HashMap<>();
+
+	public LinkedBiMap() {
+		this.map = new LinkedHashMap<>();
+		this.inverse = new LinkedHashMap<>();
 	}
-	
-	private BiMap(Map<K, V> map, Map<V, K> inverse) {
+
+	private LinkedBiMap(Map<K, V> map, Map<V, K> inverse) {
 		this.map = map;
 		this.inverse = inverse;
 	}
-	
-	public BiMap<V, K> inverse() {
-		return new BiMap<>(inverse, map);
+
+	public LinkedBiMap<V, K> inverse() {
+		return new LinkedBiMap<>(inverse, map);
 	}
-	
+
 	@Override
 	public void clear() {
 		map.clear();
@@ -65,7 +69,7 @@ public class BiMap<K, V> implements Map<K, V> {
 		if (inverse.containsKey(value)) {
 			throw new IllegalArgumentException("BiMap already has a mapping to value: " + value);
 		}
-		
+
 		if (map.containsKey(key)) {
 			inverse.remove(map.get(key));
 		}
@@ -100,5 +104,13 @@ public class BiMap<K, V> implements Map<K, V> {
 	@Override
 	public Collection<V> values() {
 		return Collections.unmodifiableCollection(map.values());
+	}
+
+	public List<K> keyList() {
+		return Util.safeList(map.keySet());
+	}
+
+	public List<V> valueList() {
+		return Util.safeList(map.values());
 	}
 }

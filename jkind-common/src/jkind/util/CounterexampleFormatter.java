@@ -12,11 +12,13 @@ import jkind.results.layout.Layout;
 
 public class CounterexampleFormatter {
 	private static final int DECIMAL_DIGITS = 3;
+	private static final String TRUNCATE_SUFFIX = "*";
 	private static final List<String> SEPARATOR = Collections.emptyList();
-	private static final String NEWLINE = System.getProperty("line.separator");
+	private static final String NEWLINE = System.lineSeparator();
 
 	private final Counterexample cex;
 	private final Layout layout;
+	private boolean truncated = false;
 
 	public CounterexampleFormatter(Counterexample cex, Layout layout) {
 		this.cex = cex;
@@ -25,7 +27,15 @@ public class CounterexampleFormatter {
 
 	@Override
 	public String toString() {
-		return formatContent(getContent());
+		return formatContent(getContent()) + footer();
+	}
+
+	private String footer() {
+		if (truncated) {
+			return NEWLINE + " * display value has been truncated" + NEWLINE;
+		} else {
+			return "";
+		}
 	}
 
 	private List<List<String>> getContent() {
@@ -84,7 +94,11 @@ public class CounterexampleFormatter {
 			return "-";
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			return rv.value.toTruncatedDecimal(DECIMAL_DIGITS, "~");
+			String text = rv.value.toTruncatedDecimal(DECIMAL_DIGITS, TRUNCATE_SUFFIX);
+			if (text.contains(TRUNCATE_SUFFIX)) {
+				truncated = true;
+			}
+			return text;
 		} else {
 			return value.toString();
 		}

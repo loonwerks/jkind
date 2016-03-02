@@ -50,7 +50,7 @@ public abstract class SolverBasedEngine extends Engine {
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}
 
-	private Solver getSolver() {
+	protected Solver getSolver() {
 		return SolverUtil.getSolver(settings.solver, getScratchBase(), spec.node);
 	}
 
@@ -82,26 +82,30 @@ public abstract class SolverBasedEngine extends Engine {
 		return result;
 	}
 
-	protected void assertBaseTransition(int k) {
-		assertTransition(k, k == 0);
-	}
-
 	protected static final Symbol INIT = Lustre2Sexp.INIT;
 
+	protected void assertBaseTransition(int k) {
+		solver.assertSexp(getBaseTransition(k));
+	}
+
 	protected void assertInductiveTransition(int k) {
+		solver.assertSexp(getInductiveTransition(k));
+	}
+
+	protected Sexp getBaseTransition(int k) {
+		return getTransition(k, k == 0);
+	}
+
+	protected Sexp getInductiveTransition(int k) {
 		if (k == 0) {
-			assertTransition(0, INIT);
+			return getTransition(0, INIT);
 		} else {
-			assertTransition(k, false);
+			return getTransition(k, false);
 		}
 	}
 
-	protected void assertTransition(int k, boolean init) {
-		assertTransition(k, Sexp.fromBoolean(init));
-	}
-
-	protected void assertTransition(int k, Sexp init) {
-		solver.assertSexp(getTransition(k, init));
+	protected Sexp getTransition(int k, boolean init) {
+		return getTransition(k, Sexp.fromBoolean(init));
 	}
 
 	protected Sexp getTransition(int k, Sexp init) {
@@ -112,7 +116,7 @@ public abstract class SolverBasedEngine extends Engine {
 		return new Cons(spec.getTransitionRelation().getName(), args);
 	}
 
-	private List<Sexp> getSymbols(List<VarDecl> varDecls) {
+	protected List<Sexp> getSymbols(List<VarDecl> varDecls) {
 		List<Sexp> result = new ArrayList<>();
 		for (VarDecl vd : varDecls) {
 			result.add(new Symbol(vd.id));

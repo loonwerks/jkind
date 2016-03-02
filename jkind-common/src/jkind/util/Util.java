@@ -7,13 +7,16 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import jkind.JKindException;
 import jkind.interval.Interval;
@@ -183,7 +186,7 @@ public class Util {
 		return a.subtract(a.mod(b)).divide(b);
 	}
 
-	public static <T> List<T> safeList(List<? extends T> original) {
+	public static <T> List<T> safeList(Collection<? extends T> original) {
 		if (original == null) {
 			return Collections.emptyList();
 		} else {
@@ -196,6 +199,14 @@ public class Util {
 			return null;
 		} else {
 			return Collections.unmodifiableList(new ArrayList<>(original));
+		}
+	}
+
+	public static <T> Set<T> safeSet(Set<? extends T> original) {
+		if (original == null) {
+			return Collections.emptySet();
+		} else {
+			return Collections.unmodifiableSet(new HashSet<>(original));
 		}
 	}
 
@@ -212,6 +223,12 @@ public class Util {
 			return null;
 		}
 		return new ArrayList<>(original);
+	}
+
+	public static Set<String> safeStringSortedSet(Collection<String> original) {
+		TreeSet<String> set = new TreeSet<>(new StringNaturalOrdering());
+		set.addAll(original);
+		return Collections.unmodifiableSet(set);
 	}
 
 	public static List<EnumType> getEnumTypes(List<TypeDef> types) {

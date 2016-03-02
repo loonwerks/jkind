@@ -2,6 +2,7 @@ package jkind.writers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
@@ -12,7 +13,7 @@ public abstract class Writer {
 	public abstract void end();
 
 	public abstract void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants);
+			List<Expr> invariants, Set<String> support);
 
 	public abstract void writeInvalid(String prop, String source, Counterexample cex,
 			List<String> conflicts, double runtime);

@@ -180,13 +180,14 @@ public class XmlParseThread extends Thread {
 		int k = getK(getElement(propertyElement, "K"));
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
 		String source = getSource(getElement(propertyElement, "Answer"));
-		List<String> invariants = getInvariants(getElements(propertyElement, "Invariant"));
+		List<String> invariants = getStringList(getElements(propertyElement, "Invariant"));
+		List<String> support = getStringList(getElements(propertyElement, "Support"));
 		List<String> conflicts = getConflicts(getElement(propertyElement, "Conflicts"));
 		Counterexample cex = getCounterexample(getElement(propertyElement, "Counterexample"), k);
 
 		switch (answer) {
 		case "valid":
-			return new ValidProperty(name, source, k, runtime, invariants);
+			return new ValidProperty(name, source, k, runtime, invariants, support);
 
 		case "falsifiable":
 			return new InvalidProperty(name, source, cex, conflicts, runtime);
@@ -228,12 +229,12 @@ public class XmlParseThread extends Thread {
 		return answerNode.getAttribute("source");
 	}
 
-	private List<String> getInvariants(List<Element> invariantElements) {
-		List<String> invariants = new ArrayList<>();
-		for (Element invariantElement : invariantElements) {
-			invariants.add(invariantElement.getTextContent());
+	private List<String> getStringList(List<Element> elements) {
+		List<String> result = new ArrayList<>();
+		for (Element e : elements) {
+			result.add(e.getTextContent());
 		}
-		return invariants;
+		return result;
 	}
 
 	private List<String> getConflicts(Element conflictsElement) {

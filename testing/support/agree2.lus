@@ -1,0 +1,114 @@
+-- There is no SUPPORT for __GUARANTEE0
+
+node _TOP__COMP(
+  in1 : int;
+  in2 : int;
+  prop1 : bool;
+  prop2 : bool;
+  prop3 : bool;
+  out1 : int;
+  out2 : int
+) returns (
+  __ASSERT : bool
+);
+var
+  __ASSUME__HIST : bool;
+  __ASSUME__CONJ : bool;
+  __COMP__PROP__0 : bool;
+  __COMP__PROP__1 : bool;
+  __COMP__PROP__2 : bool;
+let
+  __ASSUME__CONJ = true;
+
+  __ASSUME__HIST = (__ASSUME__CONJ -> ((pre __ASSUME__HIST) and __ASSUME__CONJ));
+
+  __COMP__PROP__0 = (out1 > (-1));
+
+  __COMP__PROP__1 = (out1 < 1);
+
+  __COMP__PROP__2 = (out2 > 10);
+
+  __ASSERT = (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true))));
+
+  --%SUPPORT __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
+
+tel;
+
+node _TOP__COMP2(
+  i1 : int;
+  i2 : int;
+  o1 : int;
+  o2 : int
+) returns (
+  __ASSERT : bool
+);
+var
+  __ASSUME__HIST : bool;
+  __ASSUME__CONJ : bool;
+  __COMP2__PROP__0 : bool;
+  __COMP2__PROP__1 : bool;
+let
+  __ASSUME__CONJ = true;
+
+  __ASSUME__HIST = (__ASSUME__CONJ -> ((pre __ASSUME__HIST) and __ASSUME__CONJ));
+
+  __COMP2__PROP__0 = (o1 > 5);
+
+  __COMP2__PROP__1 = (o2 > 9);
+
+  __ASSERT = (__ASSUME__HIST => (__COMP2__PROP__1 and (__COMP2__PROP__0 and true)));
+
+  --%SUPPORT __COMP2__PROP__0,__COMP2__PROP__1;
+
+tel;
+
+node main(
+  COMP__in1 : int;
+  COMP__in2 : int;
+  COMP___CLOCK_ : bool;
+  COMP2__i1 : int;
+  COMP2__i2 : int;
+  COMP2___CLOCK_ : bool;
+  input1 : int;
+  input2 : int;
+  COMP__prop1 : bool;
+  COMP__prop2 : bool;
+  COMP__prop3 : bool;
+  COMP__out1 : int;
+  COMP__out2 : int;
+  COMP2__o1 : int;
+  COMP2__o2 : int;
+  output1 : int;
+  output2 : int
+) returns (
+
+);
+var
+  __GUARANTEE0 : bool;
+let
+  --%MAIN;
+  __GUARANTEE0 = ((input1 > 1) => (output1 = 5));
+
+  assert (input1 = 0);
+
+  assert condact(true, _TOP__COMP(COMP__in1, COMP__in2, COMP__prop1, COMP__prop2, COMP__prop3, COMP__out1, COMP__out2), true);
+
+  assert condact(true, _TOP__COMP2(COMP2__i1, COMP2__i2, COMP2__o1, COMP2__o2), true);
+
+  assert (input1 = COMP__in1);
+
+  assert (input2 = COMP__in2);
+
+  assert (input1 = COMP2__i1);
+
+  assert (input2 = COMP2__i2);
+
+  assert (COMP__out1 = output1);
+
+  assert (COMP__out2 = output2);
+
+  assert true;
+
+  --%PROPERTY __GUARANTEE0;
+
+tel;

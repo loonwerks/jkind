@@ -1,11 +1,15 @@
 package jkind.writers;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
+import jkind.util.Util;
 
 public class ConsoleWriter extends Writer {
 	private final Layout layout;
@@ -29,14 +33,21 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants) {
+			List<Expr> invariants, Set<String> support) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
 				+ " || Time = " + runtime);
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
-			for (Expr invariant : invariants) {
+			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());
+			for (String invariant : Util.safeStringSortedSet(stringInvariants)) {
 				System.out.println("  " + invariant);
+			}
+		}
+		if (!support.isEmpty()) {
+			System.out.println("SUPPORT:");
+			for (String supp : Util.safeStringSortedSet(support)) {
+				System.out.println("  " + supp);
 			}
 		}
 		writeLine();

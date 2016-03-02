@@ -1,4 +1,4 @@
-package jkind.solvers;
+package jkind.solvers.yices;
 
 public class Label {
 	final private String name;

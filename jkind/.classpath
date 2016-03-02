@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="dependencies/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="dependencies/antlr-runtime-4.4.jar"/>
-	<classpathentry kind="lib" path="dependencies/smtinterpol.jar" sourcepath="C:/smtinterpol/SMTInterpol"/>
+	<classpathentry kind="lib" path="dependencies/smtinterpol.jar" sourcepath="C:/smtinterpol"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jkind-common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="output" path="bin"/>

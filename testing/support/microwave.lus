@@ -1,0 +1,367 @@
+-- No SUPPORT declared, but the invariants will be reduced
+--
+-- DC____ASSUME0: DC____ASSUME0
+--
+-- __GUARANTEE0: _TOP__DC~0.__ASSUME__HIST
+--               _TOP__MC~0.__ASSUME__HIST
+--               _TOP__OP~0.__ASSUME__HIST
+--               __GUARANTEE0
+--
+-- __GUARANTEE1: _TOP__DC~0.__ASSUME__HIST
+--               _TOP__MC~0.__ASSUME__HIST
+--               _TOP__OP~0.__ASSUME__HIST
+--               __GUARANTEE1
+--
+-- __GUARANTEE2: _TOP__DC~0.__ASSUME__HIST
+--               _TOP__MC~0.__ASSUME__HIST
+--               _TOP__OP~0.__ASSUME__HIST
+--               __GUARANTEE2
+--
+-- MC____ASSUME0: MC____ASSUME0
+--                _TOP__DC~0.__ASSUME__HIST
+
+node _TOP__MC(
+  __ASSUME0 : bool;
+  start : bool;
+  clear : bool;
+  seconds_to_cook : int;
+  door_closed : bool;
+  is_cooking : bool;
+  is_setup : bool;
+  is_suspended : bool;
+  is_running : bool;
+  cooking_mode : int
+) returns (
+  __ASSERT : bool
+);
+var
+  __ASSUME__HIST : bool;
+  __ASSUME__CONJ : bool;
+let
+  __ASSUME__CONJ = (__ASSUME0 and true);
+
+  __ASSUME__HIST = (__ASSUME__CONJ -> ((pre __ASSUME__HIST) and __ASSUME__CONJ));
+
+  __ASSERT = ((is_running = defs__is_running(cooking_mode)) and ((is_suspended = defs__is_suspended(cooking_mode))
+              and ((is_setup = defs__is_setup(cooking_mode)) and ((is_cooking = defs__is_cooking(cooking_mode))
+			  and ((__ASSUME__HIST => (((seconds_to_cook = 0) => is_setup) and ((true -> (((((defs__rising_edge(start)
+			  and (not defs__rising_edge(clear))) and (pre is_suspended)) and door_closed)
+			  and (seconds_to_cook > 0)) => is_cooking)) and ((true -> ((defs__rising_edge(clear) and (pre is_suspended)) => is_setup))
+			  and ((true -> ((defs__rising_edge(clear) and (pre is_cooking)) => (not is_cooking)))
+			  and (((defs__rising_edge(is_running) and (not door_closed)) => is_suspended)
+			  and (((defs__rising_edge(is_running) and door_closed) => is_cooking)
+			  and (std__Initiallyv(is_setup) and ((is_cooking => door_closed)
+			  and ((((cooking_mode = 1) or (cooking_mode = 2)) or (cooking_mode = 3)) and true))))))))))
+			  and ((__ASSUME0 = (seconds_to_cook >= 0)) and true))))));
+
+tel;
+
+node _TOP__DC(
+  __ASSUME0 : bool;
+  clear : bool;
+  kp_0 : bool;
+  kp_1 : bool;
+  kp_2 : bool;
+  kp_3 : bool;
+  kp_4 : bool;
+  kp_5 : bool;
+  kp_6 : bool;
+  kp_7 : bool;
+  kp_8 : bool;
+  kp_9 : bool;
+  cooking_mode : int;
+  kp_0_pressed : bool;
+  kp_1_pressed : bool;
+  kp_2_pressed : bool;
+  kp_3_pressed : bool;
+  kp_4_pressed : bool;
+  kp_5_pressed : bool;
+  kp_6_pressed : bool;
+  kp_7_pressed : bool;
+  kp_8_pressed : bool;
+  kp_9_pressed : bool;
+  clear_pressed : bool;
+  keypad_enabled : bool;
+  any_digit_pressed : bool;
+  any_button_pressed : bool;
+  is_cooking : bool;
+  left_digit : int;
+  middle_digit : int;
+  right_digit : int;
+  seconds_to_cook : int
+) returns (
+  __ASSERT : bool
+);
+var
+  __ASSUME__HIST : bool;
+  __ASSUME__CONJ : bool;
+let
+  __ASSUME__CONJ = (__ASSUME0 and true);
+
+  __ASSUME__HIST = (__ASSUME__CONJ -> ((pre __ASSUME__HIST) and __ASSUME__CONJ));
+
+  __ASSERT = ((is_cooking = defs__is_cooking(cooking_mode)) and ((any_button_pressed = (any_digit_pressed or clear_pressed))
+             and ((any_digit_pressed = (((((((((kp_1_pressed or kp_2_pressed) or kp_3_pressed) or kp_4_pressed) or kp_5_pressed)
+			 or kp_6_pressed) or kp_7_pressed) or kp_8_pressed) or kp_9_pressed) or kp_0_pressed))
+			 and ((keypad_enabled = defs__is_setup(cooking_mode)) and ((clear_pressed = defs__rising_edge(clear))
+			 and ((kp_9_pressed = defs__rising_edge(kp_9)) and ((kp_8_pressed = defs__rising_edge(kp_8))
+			 and ((kp_7_pressed = defs__rising_edge(kp_7)) and ((kp_6_pressed = defs__rising_edge(kp_6))
+			 and ((kp_5_pressed = defs__rising_edge(kp_5)) and ((kp_4_pressed = defs__rising_edge(kp_4))
+			 and ((kp_3_pressed = defs__rising_edge(kp_3)) and ((kp_2_pressed = defs__rising_edge(kp_2))
+			 and ((kp_1_pressed = defs__rising_edge(kp_1)) and ((kp_0_pressed = defs__rising_edge(kp_0))
+			 and ((__ASSUME__HIST => ((true -> (is_cooking => ((seconds_to_cook = 0) or (seconds_to_cook < (pre seconds_to_cook)))))
+			 and (std__Initiallyv((seconds_to_cook = 0)) and ((true -> ((((not any_button_pressed) and keypad_enabled)
+			 and (pre keypad_enabled)) => ((pre seconds_to_cook) = seconds_to_cook)))
+			 and (((keypad_enabled and clear_pressed) => (seconds_to_cook = 0))
+			 and ((seconds_to_cook = (((60 * left_digit) + (10 * middle_digit)) + right_digit))
+			 and (((right_digit >= 0) and (right_digit <= 9)) and (((middle_digit >= 0) and (middle_digit <= 9))
+			 and (((left_digit >= 0) and (left_digit <= 9)) and true)))))))))
+			 and ((__ASSUME0 = (not (clear and kp_0))) and true)))))))))))))))));
+
+tel;
+
+node _TOP__OP(
+  cooking_mode : int;
+  heating_element_on : bool
+) returns (
+  __ASSERT : bool
+);
+var
+  __ASSUME__HIST : bool;
+  __ASSUME__CONJ : bool;
+let
+  __ASSUME__CONJ = true;
+
+  __ASSUME__HIST = (__ASSUME__CONJ -> ((pre __ASSUME__HIST) and __ASSUME__CONJ));
+
+  __ASSERT = ((__ASSUME__HIST => ((heating_element_on = defs__is_cooking(cooking_mode)) and true)) and true);
+
+tel;
+
+node main(
+  MC__start : bool;
+  MC__clear : bool;
+  MC__seconds_to_cook : int;
+  MC__door_closed : bool;
+  MC___CLOCK_ : bool;
+  DC__clear : bool;
+  DC__kp_0 : bool;
+  DC__kp_1 : bool;
+  DC__kp_2 : bool;
+  DC__kp_3 : bool;
+  DC__kp_4 : bool;
+  DC__kp_5 : bool;
+  DC__kp_6 : bool;
+  DC__kp_7 : bool;
+  DC__kp_8 : bool;
+  DC__kp_9 : bool;
+  DC__cooking_mode : int;
+  DC___CLOCK_ : bool;
+  OP__cooking_mode : int;
+  OP___CLOCK_ : bool;
+  clear : bool;
+  start : bool;
+  kp_0 : bool;
+  kp_1 : bool;
+  kp_2 : bool;
+  kp_3 : bool;
+  kp_4 : bool;
+  kp_5 : bool;
+  kp_6 : bool;
+  kp_7 : bool;
+  kp_8 : bool;
+  kp_9 : bool;
+  door_closed : bool;
+  MC__is_cooking : bool;
+  MC__is_setup : bool;
+  MC__is_suspended : bool;
+  MC__is_running : bool;
+  MC__cooking_mode : int;
+  MC____ASSUME0 : bool;
+  DC__kp_0_pressed : bool;
+  DC__kp_1_pressed : bool;
+  DC__kp_2_pressed : bool;
+  DC__kp_3_pressed : bool;
+  DC__kp_4_pressed : bool;
+  DC__kp_5_pressed : bool;
+  DC__kp_6_pressed : bool;
+  DC__kp_7_pressed : bool;
+  DC__kp_8_pressed : bool;
+  DC__kp_9_pressed : bool;
+  DC__clear_pressed : bool;
+  DC__keypad_enabled : bool;
+  DC__any_digit_pressed : bool;
+  DC__any_button_pressed : bool;
+  DC__is_cooking : bool;
+  DC__left_digit : int;
+  DC__middle_digit : int;
+  DC__right_digit : int;
+  DC__seconds_to_cook : int;
+  DC____ASSUME0 : bool;
+  OP__heating_element_on : bool;
+  seconds_to_cook : int;
+  heating_element_on : bool;
+  left_digit : int;
+  middle_digit : int;
+  right_digit : int
+) returns (
+
+);
+var
+  __GUARANTEE0 : bool;
+  __GUARANTEE1 : bool;
+  __GUARANTEE2 : bool;
+let
+  --%MAIN
+  __GUARANTEE0 = (heating_element_on => door_closed);
+
+  __GUARANTEE1 = (std__While(heating_element_on) => std__DecreaseInt(seconds_to_cook));
+
+  __GUARANTEE2 = ((seconds_to_cook = 0) => (not heating_element_on));
+
+  assert (not (clear and kp_0));
+
+  assert condact(true, _TOP__MC(MC____ASSUME0, MC__start, MC__clear, MC__seconds_to_cook, MC__door_closed,
+                MC__is_cooking, MC__is_setup, MC__is_suspended, MC__is_running, MC__cooking_mode), true);
+
+  assert condact(true, _TOP__DC(DC____ASSUME0, DC__clear, DC__kp_0, DC__kp_1, DC__kp_2, DC__kp_3, DC__kp_4, DC__kp_5, DC__kp_6, DC__kp_7,
+               DC__kp_8, DC__kp_9, DC__cooking_mode, DC__kp_0_pressed, DC__kp_1_pressed, DC__kp_2_pressed, DC__kp_3_pressed,
+			   DC__kp_4_pressed, DC__kp_5_pressed, DC__kp_6_pressed, DC__kp_7_pressed, DC__kp_8_pressed, DC__kp_9_pressed,
+			   DC__clear_pressed, DC__keypad_enabled, DC__any_digit_pressed, DC__any_button_pressed,
+			   DC__is_cooking, DC__left_digit, DC__middle_digit, DC__right_digit, DC__seconds_to_cook), true);
+
+  assert condact(true, _TOP__OP(OP__cooking_mode, OP__heating_element_on), true);
+
+  assert (clear = MC__clear);
+
+  assert (clear = DC__clear);
+
+  assert (start = MC__start);
+
+  assert (kp_0 = DC__kp_0);
+
+  assert (kp_1 = DC__kp_1);
+
+  assert (kp_2 = DC__kp_2);
+
+  assert (kp_3 = DC__kp_3);
+
+  assert (kp_4 = DC__kp_4);
+
+  assert (kp_5 = DC__kp_5);
+
+  assert (kp_6 = DC__kp_6);
+
+  assert (kp_7 = DC__kp_7);
+
+  assert (kp_8 = DC__kp_8);
+
+  assert (kp_9 = DC__kp_9);
+
+  assert (door_closed = MC__door_closed);
+
+  assert (DC__seconds_to_cook = MC__seconds_to_cook);
+
+  assert (MC__cooking_mode = OP__cooking_mode);
+
+  assert (MC__cooking_mode = DC__cooking_mode);
+
+  assert (OP__heating_element_on = heating_element_on);
+
+  assert (DC__left_digit = left_digit);
+
+  assert (DC__middle_digit = middle_digit);
+
+  assert (DC__right_digit = right_digit);
+
+  assert (seconds_to_cook = (((left_digit * 60) + (middle_digit * 10)) + right_digit));
+
+  assert true;
+
+  --%PROPERTY __GUARANTEE0;
+  --%PROPERTY __GUARANTEE1;
+  --%PROPERTY __GUARANTEE2;
+  --%PROPERTY MC____ASSUME0;
+  --%PROPERTY DC____ASSUME0;
+
+tel;
+
+node std__Initiallyv(
+  i : bool
+) returns (
+  o : bool
+);
+let
+  o = (i -> true);
+
+tel;
+
+node defs__rising_edge(
+  signal : bool
+) returns (
+  re : bool
+);
+let
+  re = (signal and (not (false -> (pre signal))));
+
+tel;
+
+node defs__is_cooking(
+  m : int
+) returns (
+  _outvar : bool
+);
+let
+  _outvar = (m = 3);
+
+tel;
+
+node defs__is_setup(
+  m : int
+) returns (
+  _outvar : bool
+);
+let
+  _outvar = (m = 1);
+
+tel;
+
+node defs__is_suspended(
+  m : int
+) returns (
+  _outvar : bool
+);
+let
+  _outvar = (m = 2);
+
+tel;
+
+node defs__is_running(
+  m : int
+) returns (
+  _outvar : bool
+);
+let
+  _outvar = ((m = 3) or (m = 2));
+
+tel;
+
+node std__While(
+  i : bool
+) returns (
+  o : bool
+);
+let
+  o = (i -> (i and (pre i)));
+
+tel;
+
+node std__DecreaseInt(
+  i : int
+) returns (
+  o : bool
+);
+let
+  o = (true -> (i < (pre i)));
+
+tel;

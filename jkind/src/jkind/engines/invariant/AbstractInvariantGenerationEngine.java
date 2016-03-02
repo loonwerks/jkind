@@ -150,6 +150,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 			if (inv instanceof IdExpr) {
 				IdExpr idExpr = (IdExpr) inv;
 				if (properties.contains(idExpr.id)) {
+					properties.remove(idExpr.id);
 					valid.add(idExpr.id);
 				}
 			}
@@ -158,7 +159,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		if (!valid.isEmpty()) {
 			Itinerary itinerary = director.getValidMessageItinerary();
 			List<Expr> invariants = provenInvariants.getInvariants();
-			director.broadcast(new ValidMessage(getName(), valid, k, invariants, itinerary));
+			director.broadcast(new ValidMessage(getName(), valid, k, invariants, null, itinerary));
 		}
 	}
 

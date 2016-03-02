@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import jkind.JKindException;
 import jkind.results.Counterexample;
@@ -13,6 +14,7 @@ import jkind.results.Property;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.results.layout.Layout;
+import jkind.util.Util;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Label;
@@ -100,14 +102,15 @@ public class ExcelFormatter implements Closeable {
 		String source = property.getSource();
 		int k = property.getK();
 		List<String> invariants = property.getInvariants();
+		Set<String> support = property.getSupport();
 		double runtime = property.getRuntime();
 
 		summarySheet.addCell(new Label(0, summaryRow, name));
-		if (invariants.isEmpty()) {
+		if (invariants.isEmpty() && support.isEmpty()) {
 			summarySheet.addCell(new Label(1, summaryRow, "Valid"));
 		} else {
-			WritableSheet invSheet = writeInvariants(name, invariants);
-			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", invSheet, 0, 0);
+			WritableSheet validSheet = writeValidSheet(name, invariants, support);
+			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", validSheet, 0, 0);
 			summarySheet.addHyperlink(link);
 		}
 
@@ -117,18 +120,29 @@ public class ExcelFormatter implements Closeable {
 		summaryRow++;
 	}
 
-	private WritableSheet writeInvariants(String property, List<String> invariants)
-			throws WriteException {
+	private WritableSheet writeValidSheet(String property, List<String> invariants,
+			Set<String> support) throws WriteException {
 		currSheet = workbook
 				.createSheet(ExcelUtil.trimName(property), workbook.getNumberOfSheets());
 		currRow = 0;
 
-		currSheet.addCell(new Label(0, currRow, "Invariants for " + property, boldFormat));
-		currRow += 2;
-
-		for (String invariant : invariants) {
-			currSheet.addCell(new Label(0, currRow, invariant));
+		if (!invariants.isEmpty()) {
+			currSheet.addCell(new Label(0, currRow, "Invariants", boldFormat));
 			currRow++;
+			for (String invariant : Util.safeStringSortedSet(invariants)) {
+				currSheet.addCell(new Label(0, currRow, invariant));
+				currRow++;
+			}
+			currRow++;
+		}
+
+		if (!support.isEmpty()) {
+			currSheet.addCell(new Label(0, currRow, "Support", boldFormat));
+			currRow++;
+			for (String supp : support) {
+				currSheet.addCell(new Label(0, currRow, supp));
+				currRow++;
+			}
 		}
 
 		ExcelUtil.autosize(currSheet, 1);

@@ -1,0 +1,15 @@
+-- SUPPORT for ok: x, y
+
+node main(a1, a2 : int) returns ();
+var
+   x, y, z, ok : bool;
+let
+  x = y and z;
+  y = a1 > 0;
+  z = a2 > 10;
+  assert x;
+
+  ok = a1 > 0;
+  --%SUPPORT x, y, z;
+  --%PROPERTY ok;
+tel;

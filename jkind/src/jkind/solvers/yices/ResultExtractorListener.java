@@ -1,10 +1,11 @@
 package jkind.solvers.yices;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.Type;
-import jkind.solvers.Label;
+import jkind.sexp.Symbol;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnsatResult;
@@ -20,6 +21,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class ResultExtractorListener extends YicesBaseListener {
 	private Result result;
 	private YicesModel model;
+	private List<Symbol> unsatCore;
 	private final Map<String, Type> varTypes;
 
 	public ResultExtractorListener(Map<String, Type> varTypes) {
@@ -35,18 +37,22 @@ public class ResultExtractorListener extends YicesBaseListener {
 		model = new YicesModel(varTypes);
 		result = new SatResult(model);
 	}
-
+	
 	@Override
 	public void enterUnsatResult(UnsatResultContext ctx) {
-		result = new UnsatResult();
+		unsatCore = new ArrayList<>();
+	}
+	
+	@Override
+	public void enterUnsatCore(UnsatCoreContext ctx) {
+		for (TerminalNode node : ctx.INT()) {
+			unsatCore.add(new Symbol(node.getText()));
+		}
 	}
 
 	@Override
-	public void enterUnsatCore(UnsatCoreContext ctx) {
-		List<Label> unsatCore = ((UnsatResult) result).getUnsatCore();
-		for (TerminalNode node : ctx.INT()) {
-			unsatCore.add(new Label(node.getText()));
-		}
+	public void exitUnsatResult(UnsatResultContext ctx) {
+		result = new UnsatResult(unsatCore);
 	}
 
 	@Override

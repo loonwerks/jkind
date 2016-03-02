@@ -22,7 +22,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
-	private static final String REDUCE_INV = "reduce_inv";
+	private static final String SUPPORT = "support";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -55,7 +55,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
-		options.addOption(REDUCE_INV, false, "reduce and display invariants used");
+		options.addOption(SUPPORT, false, "find a set of support and reduce invariants used");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
@@ -124,8 +124,8 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
 		}
 
-		if (line.hasOption(REDUCE_INV)) {
-			settings.reduceInvariants = true;
+		if (line.hasOption(SUPPORT)) {
+			settings.reduceSupport = true;
 		}
 
 		if (line.hasOption(TIMEOUT)) {
@@ -183,13 +183,16 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
-		if (settings.solver != SolverOption.YICES) {
-			if (settings.smoothCounterexamples) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
-						+ settings.solver);
+		if (settings.reduceSupport) {
+			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
+				Output.warning(settings.solver
+						+ " does not support unsat-cores so support reduction will be slow");
 			}
-			if (settings.reduceInvariants) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "invariant reduction not supported with "
+		}
+
+		if (settings.smoothCounterexamples) {
+			if (settings.solver != SolverOption.YICES) {
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
 						+ settings.solver);
 			}
 		}
