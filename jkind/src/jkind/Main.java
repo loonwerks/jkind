@@ -58,6 +58,10 @@ public class Main {
 		case "-jlustre2excel":
 			JLustre2Excel.main(subArgs);
 			break;
+			
+		case "-jlustre2sally":
+			JLustre2Sally.main(subArgs);
+			break;
 
 		case "-jrealizability":
 			JRealizability.main(subArgs);

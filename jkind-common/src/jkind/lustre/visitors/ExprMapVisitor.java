@@ -139,7 +139,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 		return map(e -> e.accept(this), es);
 	}
 
-	protected <A, B> List<B> map(Function<? super A, ? extends B> f, List<A> xs) {
+	protected static <A, B> List<B> map(Function<? super A, ? extends B> f, List<A> xs) {
 		return xs.stream().map(f).collect(toList());
 	}
 }
