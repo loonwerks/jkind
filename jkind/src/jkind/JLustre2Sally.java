@@ -25,17 +25,22 @@ public class JLustre2Sally {
 			Sexp transitionSystem = Lustre2Sally.createTransitionSystem(main);
 			List<Sexp> queries = Lustre2Sally.createQueries(main);
 
-			System.out.println(stateType);
-			System.out.println(transitionSystem);
-			for (Sexp query : queries) {
-				System.out.println(query);
-			}
+//			System.out.println(stateType);
+//			System.out.println(transitionSystem);
+//			for (Sexp query : queries) {
+//				System.out.println(query);
+//			}
 
-			try (FileWriter file = new FileWriter("c:/share/test.mcmt")) {
+			try (FileWriter file = new FileWriter(filename + ".mcmt")) {
 				file.write(stateType.toString());
+				file.write(System.lineSeparator());
+				file.write(System.lineSeparator());
 				file.write(transitionSystem.toString());
+				file.write(System.lineSeparator());
+				file.write(System.lineSeparator());
 				for (Sexp query : queries) {
 					file.write(query.toString());
+					file.write(System.lineSeparator());
 				}
 			}
 
