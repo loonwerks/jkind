@@ -37,26 +37,26 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.util.SexpUtil;
+import jkind.util.Util;
 
 public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
-	private static final String INIT = "%init";
+	private static final String INIT = "i%init";
 
 	private boolean pre = false;
 
 	/**
 	 * <pre>
-	 * ;; State type with inputs 
-	 * (define-state-type state_type_with_inputs
+	 * ;; A definition of a state type called "my_state_type" with variables
+	 * ;; x and y of type Real. 
+	 * (define-state-type my_state_type 
 	 *   ((x Real) (y Real))
-	 *   ((d Real)) 
 	 * )
 	 * </pre>
 	 */
 	public static Sexp createStateType(Node node) {
-		List<Sexp> inputs = varDecls(node.inputs);
-		List<Sexp> states = varDecls(getStateVarDecls(node));
-		return new Cons("define-state-type", new Symbol("state"), new Cons(states),
-				new Cons(inputs));
+		List<Sexp> states = varDecls(Util.getVarDecls(node));
+		Sexp init = varDecl(new VarDecl(INIT, NamedType.BOOL));
+		return new Cons("define-state-type", new Symbol("state"), new Cons(init, states));
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 	 * </pre>
 	 */
 	public static Sexp createTransitionSystem(Node node) {
-		Sexp initial = new Symbol(INIT);
+		Sexp initial = new Symbol(quote(INIT));
 		Sexp transition = node.accept(new Lustre2Sally());
 		return new Cons("define-transition-system", new Symbol("T"), new Symbol("state"), initial,
 				transition);
@@ -100,16 +100,9 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 		return new Cons(quote(vd.id), new Symbol(type(vd.type)));
 	}
 
-	private static List<VarDecl> getStateVarDecls(Node node) {
-		List<VarDecl> stateVarDecls = new ArrayList<>();
-		stateVarDecls.add(new VarDecl(INIT, NamedType.BOOL));
-		stateVarDecls.addAll(node.locals);
-		stateVarDecls.addAll(node.outputs);
-		return stateVarDecls;
-	}
-
 	private static String quote(String id) {
-		return "|" + id + "|";
+		// return "|" + id + "|";
+		return id.replaceAll("%", "__").replaceAll("~", "__").replaceAll("\\.", "__");
 	}
 
 	private static String type(Type type) {
