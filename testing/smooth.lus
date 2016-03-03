@@ -10,6 +10,6 @@ tel;
 
 node main(x, y, z, w : int) returns (cex : bool);
 let
-  cex = delay(x < y and y < z and z < w);
+  cex = delay(x < y and y < z and z < w and x < w);
   --%PROPERTY cex;
 tel;

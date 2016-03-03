@@ -14,16 +14,16 @@ import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Symbol;
 import jkind.slicing.DependencySet;
+import jkind.solvers.MaxSatSolver;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
-import jkind.solvers.yices.YicesSolver;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class SmoothingEngine extends SolverBasedEngine {
 	public static final String NAME = "smoothing";
-	private YicesSolver yicesSolver;
+	private MaxSatSolver maxSatSolver;
 
 	public SmoothingEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -32,7 +32,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 	@Override
 	protected void initializeSolver() {
 		super.initializeSolver();
-		yicesSolver = (YicesSolver) solver;
+		maxSatSolver = (MaxSatSolver) solver;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 		comment("Smoothing: " + property);
 		DependencySet relevant = spec.dependencyMap.get(property);
 
-		yicesSolver.push();
+		solver.push();
 
 		createVariables(-1);
 		for (int i = 0; i < im.length; i++) {
@@ -63,14 +63,14 @@ public class SmoothingEngine extends SolverBasedEngine {
 			}
 		}
 
-		Result result = yicesSolver.maxsatQuery(new StreamIndex(property, im.length - 1)
+		Result result = maxSatSolver.maxsatQuery(new StreamIndex(property, im.length - 1)
 				.getEncoded());
 		if (!(result instanceof SatResult)) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
 
 		Model smoothModel = ((SatResult) result).getModel();
-		yicesSolver.pop();
+		solver.pop();
 		sendCounterexample(property, smoothModel, im);
 	}
 
@@ -79,7 +79,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 			if (relevant.contains(input.id)) {
 				Symbol prev = new StreamIndex(input.id, k - 1).getEncoded();
 				Symbol curr = new StreamIndex(input.id, k).getEncoded();
-				yicesSolver.weightedAssert(new Cons("=", prev, curr), 1);
+				maxSatSolver.assertSoft(new Cons("=", prev, curr));
 			}
 		}
 	}
