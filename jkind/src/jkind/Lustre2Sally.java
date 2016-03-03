@@ -105,7 +105,11 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 
 	private static String quote(String id) {
 		// return "|" + id + "|";
-		return id.replaceAll("%", "__").replaceAll("~", "__").replaceAll("\\.", "__");
+		id = id.replaceAll("[.%~\\[\\]]", "__");
+		if (id.startsWith("_")) {
+			id = "q" + id;
+		}
+		return id;
 	}
 
 	private static String type(Type type) {
