@@ -15,6 +15,7 @@ import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.Contract;
+import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
@@ -27,6 +28,7 @@ import jkind.lustre.RealExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordUpdateExpr;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -36,6 +38,7 @@ import jkind.lustre.visitors.AstVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.util.BigFraction;
 import jkind.util.SexpUtil;
 import jkind.util.Util;
 
@@ -112,6 +115,8 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 			return "Int";
 		} else if (type == NamedType.REAL) {
 			return "Real";
+		} else if (type instanceof SubrangeIntType || type instanceof EnumType) {
+			return "Int";
 		} else {
 			throw new UnsupportedOperationException("Type not supported: " + type);
 		}
@@ -121,11 +126,37 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 	public Sexp visit(Node node) {
 		Sexp equations = SexpUtil.conjoin(map(node.equations));
 		Sexp assertions = SexpUtil.conjoin(map(node.assertions));
+		Sexp typeConstraints = createTypeConstraints(node);
 		Sexp notInit = new Cons("not", curr(INIT));
 
-		int todo_type_constraints;
+		return new Cons("and", equations, assertions, typeConstraints, notInit);
+	}
 
-		return new Cons("and", equations, assertions, notInit);
+	private Sexp createTypeConstraints(Node node) {
+		List<Sexp> conjuncts = new ArrayList<>();
+		for (VarDecl vd : Util.getVarDecls(node)) {
+			Sexp constraint = createTypeConstraint(vd);
+			if (constraint != null) {
+				conjuncts.add(constraint);
+			}
+		}
+		return SexpUtil.conjoin(conjuncts);
+	}
+
+	private Sexp createTypeConstraint(VarDecl vd) {
+		if (vd.type instanceof SubrangeIntType) {
+			SubrangeIntType st = (SubrangeIntType) vd.type;
+			return boundConstraint(vd.id, Sexp.fromBigInt(st.low), Sexp.fromBigInt(st.high));
+		} else if (vd.type instanceof EnumType) {
+			EnumType et = (EnumType) vd.type;
+			return boundConstraint(vd.id, Sexp.fromInt(0), Sexp.fromInt(et.values.size() - 1));
+		} else {
+			return null;
+		}
+	}
+
+	private Sexp boundConstraint(String id, Sexp low, Sexp high) {
+		return new Cons("and", new Cons("<=", low, curr(id)), new Cons("<=", curr(id), high));
 	}
 
 	@Override
@@ -202,7 +233,19 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 
 	@Override
 	public Sexp visit(IntExpr e) {
-		return new Symbol(e.toString());
+		return Sexp.fromBigInt(e.value);
+	}
+
+	@Override
+	public Sexp visit(BoolExpr e) {
+		return new Symbol(e.value ? "true" : "false");
+	}
+
+	@Override
+	public Sexp visit(RealExpr e) {
+		BigFraction bf = BigFraction.valueOf(e.value);
+		return new Cons("/", Sexp.fromBigInt(bf.getNumerator()), Sexp.fromBigInt(bf
+				.getDenominator()));
 	}
 
 	protected List<Sexp> map(List<? extends Ast> xs) {
@@ -229,11 +272,6 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 	}
 
 	@Override
-	public Sexp visit(BoolExpr e) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public Sexp visit(CastExpr e) {
 		throw new UnsupportedOperationException();
 	}
@@ -245,11 +283,6 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 
 	@Override
 	public Sexp visit(NodeCallExpr e) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Sexp visit(RealExpr e) {
 		throw new UnsupportedOperationException();
 	}
 
