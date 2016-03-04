@@ -63,6 +63,10 @@ public class Main {
 			JRealizability.main(subArgs);
 			break;
 
+		case "-junroll":
+			JUnroll.main(subArgs);
+			break;
+
 		case "-benchmark":
 			Benchmark.main(subArgs);
 			break;
