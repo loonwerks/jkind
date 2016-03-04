@@ -43,7 +43,7 @@ import jkind.util.SexpUtil;
 import jkind.util.Util;
 
 public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
-	private static final String INIT = "i%init";
+	private static final String INIT = "%init";
 
 	private boolean pre = false;
 
@@ -104,12 +104,7 @@ public class Lustre2Sally implements AstVisitor<Sexp, Sexp> {
 	}
 
 	private static String quote(String id) {
-		// return "|" + id + "|";
-		id = id.replaceAll("[.%~\\[\\]]", "__");
-		if (id.startsWith("_")) {
-			id = "q" + id;
-		}
-		return id;
+		return "|" + id + "|";
 	}
 
 	private static String type(Type type) {
