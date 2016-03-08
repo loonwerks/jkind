@@ -150,7 +150,19 @@ public class JSupport {
 				return false;
 			}
 			if (line.startsWith("UNKNOWN PROPERTIES")) {
-				throw new IllegalArgumentException("Got unknown result");
+				String xmlFilename = fileName + "_jsup.xml";
+				try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+					out.println("<?xml version=\"1.0\"?>");
+					out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+					out.println("    <Runtime unit=\"sec\">" + getRuntime() + "</Runtime>");
+					out.println("    <Support> UNKNOWN </Support>");
+					out.println("</Results>");
+				
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+				}
+					throw new IllegalArgumentException("Got unknown result");
 			}
 			if (line.contains("Exception")) {
 				throw new IllegalArgumentException("Got exception");
