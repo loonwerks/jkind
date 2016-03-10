@@ -1,8 +1,9 @@
 package jkind;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream; 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -23,9 +24,21 @@ import jkind.slicing.LustreSlicer;
 import jkind.translation.RemoveEnumTypes;
 import jkind.translation.Translate;
 import jkind.util.Util;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 
 public class JSupport {
 	private final static long startTime = System.currentTimeMillis();
+	private static List<String> inputIVC;
+	private static boolean first = true;
 
 	private static double getRuntime() {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
@@ -35,12 +48,13 @@ public class JSupport {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			Program program = Main.parseLustre(settings.filename);
-
+			
 			StaticAnalyzer.check(program, settings.solver);
 			if (!LinearChecker.isLinear(program)) {
 				throw new IllegalArgumentException("Non-linear not supported");
 			}
-
+			
+			
 			Node main = Translate.translate(program);
 			main = RemoveEnumTypes.node(main);
 			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
@@ -51,11 +65,17 @@ public class JSupport {
 				throw new IllegalArgumentException("Expected exactly one property, but found "
 						+ main.properties.size());
 			}
-
-			List<String> possible = getAllAssigned(main);
-			List<String> minimal = new ArrayList<>(possible);
-			for (String s : possible) {
+			if(settings.useUnsatCore != null){ 
+				inputIVC = getIVC(settings.useUnsatCore);
+			}
+			else{
+				inputIVC = getAllAssigned(main); 
+			}
+			
+			List<String> minimal = new ArrayList<>(inputIVC);
+			for (String s : inputIVC) {
 				Node candidate = unassign(main, s);
+				
 				if (propertyTrue(candidate, args)) {
 					minimal.remove(s);
 					main = candidate;
@@ -114,6 +134,45 @@ public class JSupport {
 		return result;
 	}
 
+	private static List<String> getIVC(String file){  
+		List<String> support = null;
+		try{
+			DocumentBuilder builder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder();
+			Document doc = builder.parse(new InputSource(file));
+			Element progressElement =  doc.getDocumentElement();
+			support = getStringList(getElements(progressElement, "Support"));
+        }
+
+		catch(FileNotFoundException e) {
+            System.out.println("Unable to open file '" +  file + "'");                
+        }
+        catch(IOException e) {
+            System.out.println("Error reading file '"  + file + "'");  
+        } catch (SAXException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		return support;
+	}
+	
+	private static List<String> getStringList(List<Element> elements) {
+		List<String> result = new ArrayList<>();
+		for (Element e : elements) {
+			result.add(e.getTextContent());
+		}
+		return result;
+	}
+
+	private static List<Element> getElements(Element element, String name) {
+		List<Element> elements = new ArrayList<>();
+		NodeList nodeList = element.getElementsByTagName(name);
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			elements.add((Element) nodeList.item(i));
+		}
+		return elements;
+	}
+	
 	private static List<String> getAllAssigned(Node node) {
 		List<String> result = new ArrayList<>();
 		result.addAll(Util.getIds(node.locals));
@@ -132,15 +191,31 @@ public class JSupport {
 		cmd.add(findJKindJar().toString());
 		cmd.add("-jkind");
 		cmd.add(fileName);
+		boolean flag = false;
 		for (String arg : args) {
 			if (!arg.contains(".lus")) {
+				if(arg.contains("-use_unsat_core")){
+					flag = true;
+					continue;
+				}
+				else if(flag){
+					continue;
+				}
 				cmd.add(arg);
 			}
 		}
+		if (first){
+			cmd.add("-write_advice");
+			cmd.add(fileName + "_adv");
+			first = false;
+		}
+		else{
+			cmd.add("-read_advice");
+			cmd.add(fileName + "_adv");
+		}
 		ProcessBuilder pb = new ProcessBuilder(cmd);
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(pb.start()
-				.getInputStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(pb.start().getInputStream()));
 		String line;
 		while ((line = reader.readLine()) != null) {
 			if (line.startsWith("VALID PROPERTIES")) {

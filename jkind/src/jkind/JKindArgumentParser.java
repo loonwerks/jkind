@@ -31,6 +31,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
+	private static final String JSUPPORT_USE_UNSAT_CORE = "use_unsat_core";
 
 	private final JKindSettings settings;
 
@@ -66,6 +67,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, true, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
+		options.addOption(JSUPPORT_USE_UNSAT_CORE, true, "make JSupport use an initial IVC as input/");
 		return options;
 	}
 
@@ -167,6 +169,10 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(XML_TO_STDOUT)) {
 			settings.xmlToStdout = true;
 			settings.xml = "";
+		}
+		
+		if (line.hasOption(JSUPPORT_USE_UNSAT_CORE)) {
+			settings.useUnsatCore = line.getOptionValue(JSUPPORT_USE_UNSAT_CORE);
 		}
 	}
 
