@@ -67,7 +67,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, true, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
-		options.addOption(JSUPPORT_USE_UNSAT_CORE, true, "make JSupport use an initial IVC as input/");
+		options.addOption(JSUPPORT_USE_UNSAT_CORE, true, "make JSupport use an initial IVC as input");
 		return options;
 	}
 

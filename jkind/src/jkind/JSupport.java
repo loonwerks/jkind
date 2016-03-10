@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -36,9 +37,8 @@ import org.xml.sax.SAXException;
 
 
 public class JSupport {
-	private final static long startTime = System.currentTimeMillis();
+	private static long startTime = System.currentTimeMillis();
 	private static List<String> inputIVC;
-	private static boolean first = true;
 
 	private static double getRuntime() {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
@@ -65,6 +65,23 @@ public class JSupport {
 				throw new IllegalArgumentException("Expected exactly one property, but found "
 						+ main.properties.size());
 			}
+			
+			
+			List<String> cmd = new ArrayList<>();
+			cmd.addAll(cmdBuilder(args));
+			cmd.add(settings.filename);
+			cmd.add("-write_advice");
+			cmd.add(settings.filename + "_adv");
+			ProcessBuilder pb = new ProcessBuilder(cmd);
+			Process process = pb.start();
+			try {
+	            int exitValue = process.waitFor();
+	            System.out.println("\n\nWrote advice! Jkind exit value is " + exitValue);
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+			startTime = System.currentTimeMillis();
+			
 			if(settings.useUnsatCore != null){ 
 				inputIVC = getIVC(settings.useUnsatCore);
 			}
@@ -186,33 +203,10 @@ public class JSupport {
 		Util.writeToFile(node.toString(), new File(fileName));
 
 		List<String> cmd = new ArrayList<>();
-		cmd.add("java");
-		cmd.add("-jar");
-		cmd.add(findJKindJar().toString());
-		cmd.add("-jkind");
-		cmd.add(fileName);
-		boolean flag = false;
-		for (String arg : args) {
-			if (!arg.contains(".lus")) {
-				if(arg.contains("-use_unsat_core")){
-					flag = true;
-					continue;
-				}
-				else if(flag){
-					continue;
-				}
-				cmd.add(arg);
-			}
-		}
-		if (first){
-			cmd.add("-write_advice");
-			cmd.add(fileName + "_adv");
-			first = false;
-		}
-		else{
-			cmd.add("-read_advice");
-			cmd.add(fileName + "_adv");
-		}
+		cmd.addAll(cmdBuilder(args));
+		cmd.add("-read_advice");
+		cmd.add(fileName + "_adv");
+		cmd.add(fileName); 
 		ProcessBuilder pb = new ProcessBuilder(cmd);
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(pb.start().getInputStream()));
@@ -244,6 +238,30 @@ public class JSupport {
 			}
 		}
 		throw new IllegalArgumentException("Didn't find result");
+	}
+
+	private static List<String> cmdBuilder(String[] args) {
+		List<String> cmd = new ArrayList<>();
+		cmd.add("java");
+		cmd.add("-jar");
+		cmd.add(findJKindJar().toString());
+		cmd.add("-jkind");
+		
+		boolean flag = false;
+		for (String arg : args) {
+			if (!arg.contains(".lus")) {
+				if(arg.contains("-use_unsat_core")){
+					flag = true;
+					continue;
+				}
+				else if(flag){
+					flag = false;
+					continue;
+				}
+				cmd.add(arg);
+			}
+		} 
+		return cmd;
 	}
 
 	public static File findJKindJar() {
