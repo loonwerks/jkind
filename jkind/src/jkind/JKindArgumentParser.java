@@ -191,7 +191,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 
 		if (settings.smoothCounterexamples) {
-			if (settings.solver != SolverOption.YICES) {
+			if (settings.solver != SolverOption.YICES && settings.solver != SolverOption.Z3) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
 						+ settings.solver);
 			}

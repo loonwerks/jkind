@@ -152,6 +152,8 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 					break;
 				} else if (line.contains("model is not available")) {
 					return null;
+				} else if (line.contains(" |-> ")) {
+					// Ignore Z3 optimization information
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
 					while ((line = fromSolver.readLine()) != null) {

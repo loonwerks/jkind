@@ -21,6 +21,7 @@ import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.MaxSatSolver;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.UnsatResult;
@@ -34,7 +35,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-public class YicesSolver extends ProcessBasedSolver {
+public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 	private final boolean arithOnly;
 
 	public YicesSolver(String scratchBase, boolean arithOnly) {
@@ -122,12 +123,6 @@ public class YicesSolver extends ProcessBasedSolver {
 		send("(retract " + label + ")");
 	}
 
-	public Label weightedAssert(Sexp sexp, int weight) {
-		comment("id = " + labelCount);
-		send("(assert+ " + sexp + " " + weight + ")");
-		return new Label(labelCount++);
-	}
-
 	@Override
 	public Result query(Sexp sexp) {
 		/**
@@ -149,13 +144,6 @@ public class YicesSolver extends ProcessBasedSolver {
 			}
 		}
 		return result;
-	}
-
-	public Result maxsatQuery(Sexp sexp) {
-		Symbol label = labelledAssert(new Cons("not", sexp));
-		send("(max-sat)");
-		retract(label);
-		return readResult();
 	}
 
 	@Override
@@ -207,6 +195,21 @@ public class YicesSolver extends ProcessBasedSolver {
 	protected Result quickCheckSat(List<Symbol> activationLiterals) {
 		// We do not need this method since we are overriding unsatQuery
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void assertSoft(Sexp sexp) {
+		comment("id = " + labelCount);
+		send("(assert+ " + sexp + " 1)");
+		labelCount++;
+	}
+
+	@Override
+	public Result maxsatQuery(Sexp sexp) {
+		Symbol label = labelledAssert(new Cons("not", sexp));
+		send("(max-sat)");
+		retract(label);
+		return readResult();
 	}
 
 	private Result readResult() {
