@@ -7,8 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.ArrayList; 
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -68,10 +67,7 @@ public class JSupport {
 			
 			
 			List<String> cmd = new ArrayList<>();
-			cmd.addAll(cmdBuilder(args));
-			cmd.add(settings.filename);
-			cmd.add("-write_advice");
-			cmd.add(settings.filename + "_adv");
+			cmd.addAll(cmdBuilder(args, "-write_advice"));
 			ProcessBuilder pb = new ProcessBuilder(cmd);
 			Process process = pb.start();
 			try {
@@ -203,10 +199,7 @@ public class JSupport {
 		Util.writeToFile(node.toString(), new File(fileName));
 
 		List<String> cmd = new ArrayList<>();
-		cmd.addAll(cmdBuilder(args));
-		cmd.add("-read_advice");
-		cmd.add(fileName + "_adv");
-		cmd.add(fileName); 
+		cmd.addAll(cmdBuilder(args, "-read_advice"));
 		ProcessBuilder pb = new ProcessBuilder(cmd);
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(pb.start().getInputStream()));
@@ -240,27 +233,22 @@ public class JSupport {
 		throw new IllegalArgumentException("Didn't find result");
 	}
 
-	private static List<String> cmdBuilder(String[] args) {
+	private static List<String> cmdBuilder(String[] args, String advice) {
 		List<String> cmd = new ArrayList<>();
 		cmd.add("java");
 		cmd.add("-jar");
 		cmd.add(findJKindJar().toString());
 		cmd.add("-jkind");
-		
-		boolean flag = false;
+		String fileName = "";
 		for (String arg : args) {
-			if (!arg.contains(".lus")) {
-				if(arg.contains("-use_unsat_core")){
-					flag = true;
-					continue;
-				}
-				else if(flag){
-					flag = false;
-					continue;
-				}
-				cmd.add(arg);
+			if(arg.contains(".lus")){
+				fileName = arg;
 			}
-		} 
+			cmd.add(arg);
+		}
+
+		cmd.add(advice);
+		cmd.add(fileName + "_adv");
 		return cmd;
 	}
 
