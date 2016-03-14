@@ -305,6 +305,11 @@ public class XmlParseThread extends Thread {
 			return getIntervalValue(intervalElement, type);
 		}
 
+		if(type.startsWith("array of")){
+		    type = type.replaceAll("array of ", "");
+		    return Util.parseArrayValue(type, getElement(valueElement, "Array"));  
+		}
+		
 		return Util.parseValue(type, valueElement.getTextContent());
 	}
 

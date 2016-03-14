@@ -18,6 +18,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.w3c.dom.Element;
+
 import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.EnumType;
@@ -29,6 +31,7 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
 import jkind.lustre.VarDecl;
+import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
@@ -83,6 +86,7 @@ public class Util {
 	}
 
 	public static Value parseValue(String type, String value) {
+	    
 		switch (type) {
 		case "bool":
 			if (value.equals("0") || value.equals("false")) {
@@ -115,7 +119,32 @@ public class Util {
 		throw new JKindException("Unable to parse " + value + " as " + type);
 	}
 
-	public static Value parseValue(Type type, String value) {
+	public static Value parseArrayValue(String type, Element arrayElement) {
+        int size = Integer.parseInt(arrayElement.getAttribute("size"));
+        List<Value> elements =  new ArrayList<>();
+        for(int i = 0; i < size; i++){
+            Value elValue;
+            Element arrayEl = getElement(arrayElement, "Array", i);
+            if(arrayEl != null){
+                elValue = parseArrayValue(type, arrayEl);
+            }else{
+                arrayEl = getElement(arrayElement, "Item", i);
+                int index = Integer.parseInt(arrayEl.getAttribute("index"));
+                if(index != i){
+                    throw new IllegalArgumentException("We expect array indicies to be sorted");
+                }
+                elValue = parseValue(type, arrayEl.getTextContent());
+            }
+            elements.add(elValue);
+        }
+        return new ArrayValue(elements);
+    }
+
+	private static Element getElement(Element element, String name, int index) {
+        return (Element) element.getElementsByTagName(name).item(index);
+    }
+	
+    public static Value parseValue(Type type, String value) {
 		return parseValue(getName(type), value);
 	}
 
@@ -267,4 +296,5 @@ public class Util {
 
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";
+
 }

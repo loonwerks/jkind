@@ -37,6 +37,7 @@ public class Kind2Api extends KindApi {
 		program = WorkaroundKind2ForwardReference.program(program);
 		Kind2ArraysPrettyPrintVisitor kind2Printer = new Kind2ArraysPrettyPrintVisitor();
 		program.accept(kind2Printer);
+		System.out.println(kind2Printer.toString());
 		execute(kind2Printer.toString(), result, monitor);
 	}
 	
