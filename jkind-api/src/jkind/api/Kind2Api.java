@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindException;
+import jkind.api.kind2.Kind2PrettyPrintVisitor;
+import jkind.api.kind2.WorkaroundKind2ForwardReference;
 import jkind.api.results.JKindResult;
-import jkind.api.workarounds.WorkaroundKind2ForwardReference;
 import jkind.api.xml.XmlParseThread;
 import jkind.lustre.Program;
 
@@ -17,7 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * The primary interface to Kind2.
  */
 public class Kind2Api extends KindApi {
-	public static final String KIND2 = "kind2-contracts";
+	public static final String KIND2 = "kind2-arrays";
 	private static final long POLL_INTERVAL = 100;
 	
 	/**
@@ -34,7 +35,9 @@ public class Kind2Api extends KindApi {
 	@Override
 	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
 		program = WorkaroundKind2ForwardReference.program(program);
-		execute(program.toString(), result, monitor);
+		Kind2PrettyPrintVisitor kind2Printer = new Kind2PrettyPrintVisitor();
+		program.accept(kind2Printer);
+		execute(kind2Printer.toString(), result, monitor);
 	}
 	
 	/**

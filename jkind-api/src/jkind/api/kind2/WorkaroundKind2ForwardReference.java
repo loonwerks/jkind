@@ -1,4 +1,4 @@
-package jkind.api.workarounds;
+package jkind.api.kind2;
 
 import java.util.HashSet;
 import java.util.List;

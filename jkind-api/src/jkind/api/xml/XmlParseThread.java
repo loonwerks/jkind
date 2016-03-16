@@ -20,6 +20,7 @@ import jkind.interval.Interval;
 import jkind.interval.NumericEndpoint;
 import jkind.interval.NumericInterval;
 import jkind.interval.RealEndpoint;
+import jkind.lustre.values.ArrayValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
@@ -153,25 +154,25 @@ public class XmlParseThread extends Thread {
 		Property prop = getProperty(parseXml(propertyXml));
 		String propName = prop.getName();
 		PropertyResult pr = getOrAddProperty(analysis, propName);
-        if (pr != null) {
-            pr.setProperty(prop);
-            if (analysis != null) {
-                analysisToProps.get(analysis).add(pr);
-            }
-        }
+		if (pr != null) {
+			pr.setProperty(prop);
+			if (analysis != null) {
+				analysisToProps.get(analysis).add(pr);
+			}
+		}
 	}
 
-    private PropertyResult getOrAddProperty(String analysis, String propName) {
-        PropertyResult pr = result.getPropertyResult(propName);
-        if (pr == null && analysis != null) {
-            propName = analysis + propName;
-            pr = result.getPropertyResult(propName);
-        }
-        if (pr == null) {
-            pr = result.addProperty(propName);
-        }
-        return pr;
-    }
+	private PropertyResult getOrAddProperty(String analysis, String propName) {
+		PropertyResult pr = result.getPropertyResult(propName);
+		if (pr == null && analysis != null) {
+			propName = analysis + propName;
+			pr = result.getPropertyResult(propName);
+		}
+		if (pr == null) {
+			pr = result.addProperty(propName);
+		}
+		return pr;
+	}
 
 	private Property getProperty(Element propertyElement) {
 		String name = propertyElement.getAttribute("name");
@@ -218,7 +219,16 @@ public class XmlParseThread extends Thread {
 		if (kNode == null) {
 			return 0;
 		}
-		return Integer.parseInt(kNode.getTextContent());
+		int k = Integer.parseInt(kNode.getTextContent());
+
+		switch (backend) {
+		case JKIND:
+			return k;
+		case KIND2:
+			return k + 1;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	private String getAnswer(Node answerNode) {
@@ -304,7 +314,37 @@ public class XmlParseThread extends Thread {
 			return getIntervalValue(intervalElement, type);
 		}
 
+		if (type.startsWith("array of")) {
+			type = type.replaceAll("array of ", "");
+			return parseArrayValue(type, getElement(valueElement, "Array"));
+		}
+
 		return Util.parseValue(type, valueElement.getTextContent());
+	}
+
+	public static Value parseArrayValue(String type, Element arrayElement) {
+		int size = Integer.parseInt(arrayElement.getAttribute("size"));
+		List<Value> elements = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			Value elValue;
+			Element arrayEl = getElement(arrayElement, "Array", i);
+			if (arrayEl != null) {
+				elValue = parseArrayValue(type, arrayEl);
+			} else {
+				arrayEl = getElement(arrayElement, "Item", i);
+				int index = Integer.parseInt(arrayEl.getAttribute("index"));
+				if (index != i) {
+					throw new IllegalArgumentException("We expect array indicies to be sorted");
+				}
+				elValue = Util.parseValue(type, arrayEl.getTextContent());
+			}
+			elements.add(elValue);
+		}
+		return new ArrayValue(elements);
+	}
+
+	private static Element getElement(Element element, String name, int index) {
+		return (Element) element.getElementsByTagName(name).item(index);
 	}
 
 	private Interval getIntervalValue(Element intervalElement, String type) {

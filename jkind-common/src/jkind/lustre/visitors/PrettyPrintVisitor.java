@@ -473,18 +473,22 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	@Override
 	public Void visit(Contract contract) {
 		newline();
+		write("(*@contract");
+		newline();
 		for (Expr expr : contract.requires) {
-			write("--@assume ");
+			write("assume ");
 			expr(expr);
 			write(";");
 			newline();
 		}
 		for (Expr expr : contract.ensures) {
-			write("--@guarantee ");
+			write("guarantee ");
 			expr(expr);
 			write(";");
 			newline();
 		}
+		write("*)");
+		newline();
 		return null;
 	}
 }
