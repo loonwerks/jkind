@@ -215,12 +215,21 @@ public class XmlParseThread extends Thread {
 		return Integer.parseInt(trueForNode.getTextContent());
 	}
 
-	private int getK(Node kNode) {
-		if (kNode == null) {
-			return 0;
-		}
-		return Integer.parseInt(kNode.getTextContent());
-	}
+    private int getK(Node kNode) {
+        if (kNode == null) {
+            return 0;
+        }
+        int k = Integer.parseInt(kNode.getTextContent());
+
+        switch (backend) {
+        case JKIND:
+            return k;
+        case KIND2:
+            return k + 1;
+        default:
+            throw new IllegalArgumentException();
+        }
+    }
 
 	private String getAnswer(Node answerNode) {
 		return answerNode.getTextContent();
