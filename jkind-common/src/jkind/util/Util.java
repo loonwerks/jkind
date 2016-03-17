@@ -256,13 +256,21 @@ public class Util {
 			throw new IllegalArgumentException();
 		}
 	}
-	
+
 	public static String removeTrailingZeros(String str) {
 		if (!str.contains(".")) {
 			return str;
 		}
 
 		return str.replaceFirst("\\.?0*$", "");
+	}
+
+	public static String spaces(int n) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < n; i++) {
+			sb.append(' ');
+		}
+		return sb.toString();
 	}
 
 	/** Default name for realizability query property in XML file */

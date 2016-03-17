@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.ExitCodes;
-import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
@@ -76,13 +74,13 @@ import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RealizabilityInputsContext;
-import jkind.lustre.parsing.LustreParser.SupportContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
 import jkind.lustre.parsing.LustreParser.RecordTypeContext;
 import jkind.lustre.parsing.LustreParser.RecordUpdateExprContext;
 import jkind.lustre.parsing.LustreParser.SubrangeTypeContext;
+import jkind.lustre.parsing.LustreParser.SupportContext;
 import jkind.lustre.parsing.LustreParser.TopLevelTypeContext;
 import jkind.lustre.parsing.LustreParser.TupleExprContext;
 import jkind.lustre.parsing.LustreParser.TypeContext;
@@ -134,7 +132,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return nodes;
 	}
 
-	private Node node(NodeContext ctx) {
+	public Node node(NodeContext ctx) {
 		String id = ctx.ID().getText();
 		List<VarDecl> inputs = varDecls(ctx.input);
 		List<VarDecl> outputs = varDecls(ctx.output);
@@ -170,11 +168,15 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private List<Equation> equations(List<EquationContext> ctxs) {
 		List<Equation> equations = new ArrayList<>();
 		for (EquationContext ctx : ctxs) {
-			List<IdExpr> lhs = lhs(ctx.lhs());
-			Expr expr = expr(ctx.expr());
-			equations.add(new Equation(loc(ctx), lhs, expr));
+			equations.add(equation(ctx));
 		}
 		return equations;
+	}
+
+	public Equation equation(EquationContext ctx) {
+		List<IdExpr> lhs = lhs(ctx.lhs());
+		Expr expr = expr(ctx.expr());
+		return new Equation(loc(ctx), lhs, expr);
 	}
 
 	private List<IdExpr> lhs(LhsContext ctx) {
@@ -311,7 +313,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return new NamedType(loc(ctx), ctx.ID().getText());
 	}
 
-	private Expr expr(ExprContext ctx) {
+	public Expr expr(ExprContext ctx) {
 		return (Expr) ctx.accept(this);
 	}
 
@@ -489,7 +491,6 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private static void fatal(ParserRuleContext ctx, String text) {
-		Output.error(loc(ctx), text);
-		System.exit(ExitCodes.PARSE_ERROR);
+		throw new LustreParseException(loc(ctx), text);
 	}
 }

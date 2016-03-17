@@ -8,10 +8,10 @@ import jkind.JKindException;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.Model;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
@@ -188,7 +188,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		SmtLib2Parser parser = new SmtLib2Parser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new StdoutErrorListener());
+		parser.addErrorListener(new SolverParserErrorListener());
 		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
