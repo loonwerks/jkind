@@ -8,11 +8,11 @@ import jkind.JKindException;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
-import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
@@ -111,7 +111,7 @@ public class MathSatSolver extends SmtLib2Solver {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		MathSatParser parser = new MathSatParser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new StdoutErrorListener());
+		parser.addErrorListener(new SolverParserErrorListener());
 		return parser;
 	}
 

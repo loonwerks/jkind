@@ -16,11 +16,11 @@ import jkind.lustre.Expr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.MaxSatSolver;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
@@ -260,7 +260,7 @@ public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		YicesParser parser = new YicesParser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new StdoutErrorListener());
+		parser.addErrorListener(new SolverParserErrorListener());
 		ResultContext ctx = parser.result();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {

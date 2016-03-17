@@ -3,9 +3,9 @@ package jkind.solvers.yices2;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.lustre.parsing.StdoutErrorListener;
 import jkind.sexp.Symbol;
 import jkind.solvers.Model;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 import jkind.solvers.yices2.Yices2Parser.ModelContext;
 
@@ -53,7 +53,7 @@ public class Yices2Solver extends SmtLib2Solver {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		Yices2Parser parser = new Yices2Parser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new StdoutErrorListener());
+		parser.addErrorListener(new SolverParserErrorListener());
 		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {

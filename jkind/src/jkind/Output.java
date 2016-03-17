@@ -1,9 +1,18 @@
 package jkind;
 
+import java.util.List;
+
 import jkind.analysis.Level;
 import jkind.lustre.Location;
+import jkind.util.Util;
 
 public class Output {
+	private static List<String> locationReference;
+
+	public static void setLocationReference(List<String> locationReference) {
+		Output.locationReference = locationReference;
+	}
+
 	public static void warning(String text) {
 		output(Level.WARNING, text);
 	}
@@ -39,6 +48,15 @@ public class Output {
 	public static void output(Level level, Location loc, String text) {
 		if (level != Level.IGNORE) {
 			println(level + " at line " + loc + " " + text);
+			showLocation(loc);
+		}
+	}
+
+	public static void showLocation(Location loc) {
+		if (1 <= loc.line && loc.line <= locationReference.size()) {
+			String line = locationReference.get(loc.line - 1);
+			Output.println(line);
+			Output.println(Util.spaces(loc.charPositionInLine) + "^");
 		}
 	}
 
