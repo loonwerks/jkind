@@ -19,7 +19,7 @@ public class JKindSettings extends Settings {
     public boolean intervalGeneralization = false;
     public boolean inline = true;
 	
-	public SolverOption solver = SolverOption.YICES;
+	public SolverOption solver = SolverOption.SMTINTERPOL;
 	public boolean scratch = false;
 
 	public String writeAdvice = null;
