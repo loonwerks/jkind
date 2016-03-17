@@ -48,7 +48,9 @@ public class Output {
 	public static void output(Level level, Location loc, String text) {
 		if (level != Level.IGNORE) {
 			println(level + " at line " + loc + " " + text);
-			showLocation(loc);
+			if (level == Level.ERROR) {
+				showLocation(loc);
+			}
 		}
 	}
 
