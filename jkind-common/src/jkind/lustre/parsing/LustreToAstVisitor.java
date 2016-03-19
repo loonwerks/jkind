@@ -144,7 +144,11 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<String> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
 		Contract contract = null;
 		if (!ctx.main().isEmpty()) {
-			main = id;
+			if (main == null) {
+				main = id;
+			} else {
+				fatal(ctx.main(0), "node '" + main + "' already declared as --%MAIN");
+			}
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
 				realizabilityInputs, contract, ivc);
@@ -224,7 +228,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 		return null;
 	}
-	
+
 	private List<String> ivc(List<IvcContext> ctxs) {
 		if (ctxs.size() > 1) {
 			fatal(ctxs.get(1), "at most one ivc statement allowed per node");
