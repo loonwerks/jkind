@@ -1,7 +1,7 @@
 package jkind;
 
 public enum SolverOption {
-	YICES, CVC4, Z3, YICES2, MATHSAT, SMTINTERPOL;
+	SMTINTERPOL, Z3, YICES, YICES2, CVC4, MATHSAT;
 
 	@Override
 	public String toString() {
