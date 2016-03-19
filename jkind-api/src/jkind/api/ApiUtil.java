@@ -174,6 +174,11 @@ public class ApiUtil {
 		return null;
 	}
 
+	public static String getJavaPath() {
+		String slash = File.separator;
+		return System.getProperty("java.home") + slash + "bin" + slash + "java";
+	}
+
 	public static String readAll(InputStream inputStream) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedInputStream buffered = new BufferedInputStream(inputStream);

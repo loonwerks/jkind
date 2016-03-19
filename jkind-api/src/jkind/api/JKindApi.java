@@ -28,6 +28,8 @@ public class JKindApi extends KindApi {
 
 	protected SolverOption solver = null;
 
+	protected String jkindJar;
+
 	/**
 	 * Set the maximum depth for BMC and k-induction
 	 * 
@@ -103,6 +105,16 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
+	 * Provide a fixed JKind jar file to use
+	 */
+	public void setJKindJar(String jkindJar) {
+		if (!new File(jkindJar).exists()) {
+			throw new JKindException("JKind jar file does not exist: " + jkindJar);
+		}
+		this.jkindJar = jkindJar;
+	}
+
+	/**
 	 * Run JKind on a Lustre program
 	 * 
 	 * @param lustreFile
@@ -168,8 +180,16 @@ public class JKindApi extends KindApi {
 		return builder;
 	}
 
-	private static String[] getJKindCommand() {
-		return new String[] { "java", "-jar", ApiUtil.findJKindJar().toString(), "-jkind" };
+	protected String[] getJKindCommand() {
+		return new String[] { ApiUtil.getJavaPath(), "-jar", getOrFindJKindJar(), "-jkind" };
+	}
+
+	private String getOrFindJKindJar() {
+		if (jkindJar != null) {
+			return jkindJar;
+		} else {
+			return ApiUtil.findJKindJar().toString();
+		}
 	}
 
 	@Override
