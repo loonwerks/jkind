@@ -1,26 +1,28 @@
 JKind
 =====
 
-JKind is a Java implementation of the [Kind 2 model
-checker](http://kind2-mc.github.io/kind2/). Kind 2 is a multi-engine
-SMT-based automatic model checker for safety properties of Lustre
-programs.
+JKind is an SMT-based infinite-state model checker for safety
+properties in Lustre. JKind uses parallel cooperating engines
+including k-induction, property directed reachability, and
+template-based invariant generation.
 
 Downloads
 ---------
 
-The latest release of JKind is available on the [releases
-page](https://github.com/agacek/jkind/releases). This includes the
-JKind model checker as well as the Lustre2excel and Lustre2kind
-utilities.
+JKind is written in Java and requires at least [Java
+8](https://java.com/download). The latest release of JKind is available on the
+[releases page](https://github.com/agacek/jkind/releases). This includes the
+JKind model checker as well as the JRealizability, JLustre2Excel, and
+JLustre2Kind tools.
 
 Design Goals
 ------------
 
-JKind is designed to be cross-platform, reliable, and easy to extend.
-Power and performance are secondary goals. Additionally, JKind
-attempts to be mostly compatible with pkind and Kind 2, though this
-varies over time due to developments in both systems.
+JKind is designed to be cross-platform, reliable, and easy to
+extend. Power and performance are secondary goals. Additionally,
+JKind attempts to be mostly compatible with pkind and [Kind
+2](http://kind2-mc.github.io/kind2/), though this varies over
+time due to developments in both systems.
 
 
 Alternative Solvers (optional)
