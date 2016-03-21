@@ -23,13 +23,13 @@ attempts to be mostly compatible with pkind and Kind 2, though this
 varies over time due to developments in both systems.
 
 
-Installation Notes
-------------------
+Alternative Solvers (optional)
+------------------------------
 
-By default, JKind requires [Yices (version
-1)](http://yices.csl.sri.com/download-yices1.shtml) to be installed on
-your PATH. Alternatively, one can use
-[CVC4](http://cvc4.cs.nyu.edu/web/), [Z3](https://github.com/Z3Prover/z3),
+By default, JKind is packaged with [SMTInterpol](http://ultimate.informatik.uni-freiburg.de/smtinterpol/) 
+as its underlying SMT solver. Advanced users may wish to install alternative solvers such as 
+[Z3](https://github.com/Z3Prover/z3),
+[Yices (version 1)](http://yices.csl.sri.com/download-yices1.shtml) 
 [Yices 2](http://yices.csl.sri.com/index.shtml),
-[MathSAT](http://mathsat.fbk.eu/), or
-[SMTInterpol](http://ultimate.informatik.uni-freiburg.de/smtinterpol/).
+[CVC4](http://cvc4.cs.nyu.edu/web/), or
+[MathSAT](http://mathsat.fbk.eu/).
