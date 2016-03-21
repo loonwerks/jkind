@@ -13,6 +13,7 @@
     <path id="jkind-common.classpath">
         <pathelement location="bin"/>
         <pathelement location="dependencies/jxl.jar"/>
+        <pathelement location="dependencies/antlr-runtime-4.4.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
