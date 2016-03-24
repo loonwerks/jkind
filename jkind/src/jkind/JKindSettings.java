@@ -2,8 +2,8 @@ package jkind;
 
 
 public class JKindSettings extends Settings {
-	public int n = 200;
-	public int timeout = 100;
+	public int n = Integer.MAX_VALUE;
+	public int timeout = Integer.MAX_VALUE;
 	
 	public boolean excel = false;
 	public boolean xml = false;
