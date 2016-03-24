@@ -45,9 +45,9 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 					return pr.getStatus().toString();
 				case WORKING:
 					return pr.getStatus().toString() + "..." + getProgress(pr) + " ("
-							+ pr.getElapsed() + "s)";
+							+ Util.secondsToTime(pr.getElapsed()) + ")";
 				default:
-					return getFinalStatus(pr) + " (" + pr.getElapsed() + "s)";
+					return getFinalStatus(pr) + " (" + Util.secondsToTime(pr.getElapsed()) + ")";
 				}
 			}
 		} else if (element instanceof JRealizabilityResult) {
@@ -90,7 +90,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 	private static final Image CANCEL_IMAGE = loadImage("/icons/cancel.png");
 	private static final Image ERROR_IMAGE = loadImage("/icons/error.png");
 	private static final Image VALID_WARNING_IMAGE = loadImage("/icons/valid-warning.png");
-	
+
 	private Spinner workingSpinner;
 
 	private static Image loadImage(String filename) {
@@ -137,7 +137,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		case WAITING:
 			return WAITING_IMAGE;
 		case VALID_REFINED:
-		    return VALID_WARNING_IMAGE;
+			return VALID_WARNING_IMAGE;
 		default:
 			return WAITING_IMAGE;
 		}

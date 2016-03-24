@@ -36,7 +36,7 @@ public class ConsoleWriter extends Writer {
 			List<Expr> invariants, Set<String> ivc) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
-				+ " || Time = " + runtime);
+				+ " || Time = " + Util.secondsToTime(runtime));
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
 			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());
@@ -59,7 +59,7 @@ public class ConsoleWriter extends Writer {
 			List<String> conflicts, double runtime) {
 		writeLine();
 		System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "
-				+ cex.getLength() + " || Time = " + runtime);
+				+ cex.getLength() + " || Time = " + Util.secondsToTime(runtime));
 		System.out.println(cex.toString(layout));
 		writeLine();
 		System.out.println();
@@ -70,7 +70,7 @@ public class ConsoleWriter extends Writer {
 			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
 		writeLine();
 		System.out.println("UNKNOWN PROPERTIES: " + props + " || True for " + trueFor + " steps"
-				+ " || Time = " + runtime);
+				+ " || Time = " + Util.secondsToTime(runtime));
 		writeLine();
 		System.out.println();
 		for (String prop : props) {
