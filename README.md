@@ -31,7 +31,7 @@ Alternative Solvers (optional)
 By default, JKind is packaged with [SMTInterpol](http://ultimate.informatik.uni-freiburg.de/smtinterpol/) 
 as its underlying SMT solver. Advanced users may wish to install alternative solvers such as 
 [Z3](https://github.com/Z3Prover/z3),
-[Yices (version 1)](http://yices.csl.sri.com/download-yices1.shtml) 
+[Yices (version 1)](http://yices.csl.sri.com/download-yices1.shtml), 
 [Yices 2](http://yices.csl.sri.com/index.shtml),
 [CVC4](http://cvc4.cs.nyu.edu/web/), or
 [MathSAT](http://mathsat.fbk.eu/).
