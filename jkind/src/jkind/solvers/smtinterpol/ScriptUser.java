@@ -38,6 +38,10 @@ public abstract class ScriptUser {
 	protected Term ite(Term cond, Term thenPart, Term elsePart) {
 		return Util.ite(script, cond, thenPart, elsePart);
 	}
+	
+	protected Term implies(Term hyp, Term conc) {
+		return Util.implies(script, hyp, conc);
+	}
 
 	protected Term numeral(BigInteger value) {
 		return script.numeral(value);
