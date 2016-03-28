@@ -48,6 +48,8 @@ public class PdrSmt extends ScriptUser {
 
 	private final NameGenerator abstractAssertions = new NameGenerator("abstract");
 
+	private final Lustre2Term lustre2Term;
+
 	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
 		super(SmtInterpolUtil.getScript(scratchBase));
 		this.F = F;
@@ -58,7 +60,7 @@ public class PdrSmt extends ScriptUser {
 		script.setLogic(Logics.QF_UFLIRA);
 		script.setOption(":verbosity", 2);
 
-		Lustre2Term lustre2Term = new Lustre2Term(script, node);
+		lustre2Term = new Lustre2Term(script, node);
 		this.varDecls = lustre2Term.getVariables();
 
 		this.base = getVariables("");
@@ -74,6 +76,15 @@ public class PdrSmt extends ScriptUser {
 
 		addPredicates(PredicateCollector.collect(I));
 		addPredicates(PredicateCollector.collect(P));
+	}
+
+	public void addInvariant(Expr inv) {
+		Cube cube = new Cube();
+		cube.addPLiteral(not(inv.accept(lustre2Term)));
+		cube.addPLiteral(not(I));
+
+		Frame lastFrame = F.get(F.size() - 1);
+		lastFrame.add(cube);
 	}
 
 	private void assertAbstract(Term t) {

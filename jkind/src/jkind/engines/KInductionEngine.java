@@ -34,8 +34,8 @@ public class KInductionEngine extends SolverBasedEngine {
 	public static final String NAME = "k-induction";
 	private int kCurrent = 0;
 	private int kLimit = 0;
-	private InvariantSet invariants = new InvariantSet();
-	private Map<Integer, List<String>> baseStepValid = new HashMap<>();
+	private final InvariantSet invariants = new InvariantSet();
+	private final Map<Integer, List<String>> baseStepValid = new HashMap<>();
 
 	public KInductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);

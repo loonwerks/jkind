@@ -14,9 +14,12 @@ public class InvariantSet {
 	private final List<Expr> invariants = new ArrayList<>();
 	private final Set<String> uniqueRepresentations = new HashSet<>();
 	
-	public void add(Expr invariant) {
+	public boolean add(Expr invariant) {
 		if (uniqueRepresentations.add(invariant.toString())) {
 			invariants.add(invariant);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
