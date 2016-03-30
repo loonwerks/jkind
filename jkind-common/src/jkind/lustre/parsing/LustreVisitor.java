@@ -120,6 +120,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayAccessExpr(@NotNull LustreParser.ArrayAccessExprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LustreParser#ivc}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIvc(@NotNull LustreParser.IvcContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LustreParser#property}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -299,12 +305,6 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRecordUpdateExpr(@NotNull LustreParser.RecordUpdateExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LustreParser#support}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSupport(@NotNull LustreParser.SupportContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code idExpr}
 	 * labeled alternative in {@link LustreParser#expr}.

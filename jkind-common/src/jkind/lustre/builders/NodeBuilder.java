@@ -20,7 +20,7 @@ public class NodeBuilder {
 	private List<Equation> equations = new ArrayList<>();
 	private List<String> properties = new ArrayList<>();
 	private List<Expr> assertions = new ArrayList<>();
-	private List<String> support = new ArrayList<>();
+	private List<String> ivc = new ArrayList<>();
 	private List<String> realizabilityInputs = null;
 	private Contract contract = null;
 
@@ -36,7 +36,7 @@ public class NodeBuilder {
 		this.equations = new ArrayList<>(node.equations);
 		this.properties = new ArrayList<>(node.properties);
 		this.assertions = new ArrayList<>(node.assertions);
-		this.support = new ArrayList<>(node.support);
+		this.ivc = new ArrayList<>(node.ivc);
 		this.realizabilityInputs = Util.copyNullable(node.realizabilityInputs);
 		this.contract = node.contract;
 	}
@@ -136,18 +136,18 @@ public class NodeBuilder {
 		return this;
 	}
 
-	public NodeBuilder addSupport(String support) {
-		this.support.add(support);
+	public NodeBuilder addIvc(String e) {
+		this.ivc.add(e);
 		return this;
 	}
 
-	public NodeBuilder addSupports(List<String> supports) {
-		this.support.addAll(supports);
+	public NodeBuilder addIvcs(List<String> ivc) {
+		this.ivc.addAll(ivc);
 		return this;
 	}
 
-	public NodeBuilder clearSupport() {
-		this.support.clear();
+	public NodeBuilder clearIvc() {
+		this.ivc.clear();
 		return this;
 	}
 
@@ -163,6 +163,6 @@ public class NodeBuilder {
 
 	public Node build() {
 		return new Node(Location.NULL, id, inputs, outputs, locals, equations, properties,
-				assertions, realizabilityInputs, contract, support);
+				assertions, realizabilityInputs, contract, ivc);
 	}
 }

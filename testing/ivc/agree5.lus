@@ -1,8 +1,9 @@
--- SUPPORT for __GUARANTEE0: _TOP__COMP.__COMP__PROP__0
---                           _TOP__COMP.__COMP__PROP__1
+-- IVC for __GUARANTEE0: _TOP__COMP.__COMP__PROP__0
+--                       _TOP__COMP.__COMP__PROP__1
 --
--- SUPPORT for __GUARANTEE1: _TOP__COMP.__COMP__EXP__0
---                           _TOP__COMP.__COMP__PROP__2
+-- IVC for __GUARANTEE1: _TOP__COMP.__COMP__EXP__0
+--                       _TOP__COMP.__COMP__EXP__1
+--                       _TOP__COMP.__COMP__PROP__2
 
 node _TOP__COMP(
   in1 : int;
@@ -31,15 +32,15 @@ let
 
   __COMP__PROP__1 = (out1 < 1);
 
-  __COMP__PROP__2 = (out2 = int_var1);
+  __COMP__PROP__2 = (out2 > (int_var1 + int_var2));
 
-  __COMP__EXP__0 = (int_var1 = 11);
+  __COMP__EXP__0 = (int_var1 = 5);
 
-  __COMP__EXP__1 = (int_var2 = 11);
+  __COMP__EXP__1 = (int_var2 = 5);
 
   __ASSERT = ((__COMP__EXP__1 and (__COMP__EXP__0 and true)) and (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true)))));
 
-  --%SUPPORT __COMP__PROP__0, __COMP__PROP__1, __COMP__PROP__2, __COMP__EXP__0, __COMP__EXP__1;
+  --%IVC __COMP__PROP__0, __COMP__PROP__1, __COMP__PROP__2, __COMP__EXP__0, __COMP__EXP__1;
 
 tel;
 
@@ -67,7 +68,7 @@ let
 
   __ASSERT = (true and (__ASSUME__HIST => (__COMP2__PROP__1 and (__COMP2__PROP__0 and true))));
 
-  --%SUPPORT __COMP2__PROP__0, __COMP2__PROP__1;
+  --%IVC __COMP2__PROP__0, __COMP2__PROP__1;
 
 tel;
 

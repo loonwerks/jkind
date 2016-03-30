@@ -1,4 +1,4 @@
--- SUPPORT for sub2~0.sub1~0.ok: sub2.sub1.b
+-- IVC for sub2~0.sub1~0.ok: sub2.sub1.b
 
 node sub1(x : int) returns (y : int; assum : bool);
 var
@@ -11,7 +11,7 @@ let
   assum = a and b;
 
   ok = y >= 0;
-  --%SUPPORT a, b;
+  --%IVC a, b;
   --%PROPERTY ok;
 tel;
 

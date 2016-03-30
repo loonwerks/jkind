@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -256,13 +257,48 @@ public class Util {
 			throw new IllegalArgumentException();
 		}
 	}
-	
+
 	public static String removeTrailingZeros(String str) {
 		if (!str.contains(".")) {
 			return str;
 		}
 
 		return str.replaceFirst("\\.?0*$", "");
+	}
+
+	public static String spaces(int n) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < n; i++) {
+			sb.append(' ');
+		}
+		return sb.toString();
+	}
+
+	public static String secondsToTime(double seconds) {
+		String result;
+		
+		int minutes = (int) (seconds / 60);
+		seconds = seconds % 60;
+		result = new DecimalFormat("#.###").format(seconds) + "s";
+		if (minutes == 0) {
+			return result;
+		}
+		
+		int hours = minutes / 60;
+		minutes = minutes % 60;
+		result = minutes + "m " + result;
+		if (hours == 0) {
+			return result;
+		}
+		
+		int days = hours / 24;
+		hours = hours % 24;
+		result = hours + "h " + result;
+		if (days == 0) {
+			return result;
+		}
+		
+		return days + "d " + result;
 	}
 
 	/** Default name for realizability query property in XML file */
