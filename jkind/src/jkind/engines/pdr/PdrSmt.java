@@ -80,7 +80,8 @@ public class PdrSmt extends ScriptUser {
 
 	public void addInvariant(Expr inv) {
 		Cube cube = new Cube();
-		cube.addPLiteral(not(inv.accept(lustre2Term)));
+		Term tInv = lustre2Term.encodeInvariant(inv);
+		cube.addPLiteral(not(tInv));
 		cube.addPLiteral(not(I));
 
 		Frame lastFrame = F.get(F.size() - 1);

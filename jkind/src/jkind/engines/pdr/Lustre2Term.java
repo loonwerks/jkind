@@ -267,4 +267,11 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	private Term lessEqual(Term left, Term right) {
 		return term("<=", left, right);
 	}
+
+	public Term encodeInvariant(Expr inv) {
+		pre = true;
+		Term tInv = inv.accept(this);
+		pre = false;
+		return tInv;
+	}
 }

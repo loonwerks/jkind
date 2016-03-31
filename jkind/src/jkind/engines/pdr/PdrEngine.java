@@ -53,7 +53,8 @@ public class PdrEngine extends Engine {
 	private void spawnSubengine() {
 		String prop = properties.remove(0);
 		String scratch = settings.scratch ? getScratchBase() + scratchCounter++ : null;
-		PdrSubengine subengine = new PdrSubengine(prop, invariants.getInvariants(), spec, scratch, this, director);
+		PdrSubengine subengine = new PdrSubengine(prop,
+				new ArrayList<>(invariants.getInvariants()), spec, scratch, this, director);
 		subengines.put(prop, subengine);
 		subengine.start();
 	}
@@ -100,7 +101,7 @@ public class PdrEngine extends Engine {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		cancel(vm.valid);
-		
+
 		List<Expr> invs = new ArrayList<>();
 		for (String valid : vm.valid) {
 			invs.add(new IdExpr(valid));
