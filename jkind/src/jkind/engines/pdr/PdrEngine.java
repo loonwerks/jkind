@@ -87,9 +87,11 @@ public class PdrEngine extends Engine {
 	}
 
 	private void addInvariants(List<Expr> invs) {
-		invariants.addAll(invs);
-		for (PdrSubengine subengine : subengines.values()) {
-			subengine.recieveInvariants(invs);
+		if (settings.pdrInv) {
+			invariants.addAll(invs);
+			for (PdrSubengine subengine : subengines.values()) {
+				subengine.recieveInvariants(invs);
+			}
 		}
 	}
 

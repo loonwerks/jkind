@@ -21,6 +21,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
+	private static final String PDR_INV = "pdr_inv";
 	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
 	private static final String SCRATCH = "scratch";
@@ -56,6 +57,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
+		options.addOption(PDR_INV, true,
+				"use invariants with pdr");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
@@ -119,6 +122,10 @@ public class JKindArgumentParser extends ArgumentParser {
 			int available = Runtime.getRuntime().availableProcessors();
 			int heuristic = (available - 4) / 2;
 			settings.pdrMax = Math.max(1, heuristic);
+		}
+		
+		if (line.hasOption(PDR_INV)) {
+			settings.pdrInv = true;
 		}
 
 		if (line.hasOption(READ_ADVICE)) {

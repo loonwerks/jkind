@@ -13,6 +13,7 @@ public class JKindSettings extends Settings {
 	public boolean kInduction = true;
 	public boolean invariantGeneration = true;
     public int pdrMax = 1;
+	public boolean pdrInv = false;
 	public boolean inductiveCounterexamples = false;
 	public boolean reduceIvc = false;
 	public boolean smoothCounterexamples = false;
