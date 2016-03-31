@@ -57,8 +57,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
-		options.addOption(PDR_INV, true,
-				"use invariants with pdr");
+		options.addOption(PDR_INV, false, "use invariants with pdr");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
@@ -123,7 +122,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			int heuristic = (available - 4) / 2;
 			settings.pdrMax = Math.max(1, heuristic);
 		}
-		
+
 		if (line.hasOption(PDR_INV)) {
 			settings.pdrInv = true;
 		}
