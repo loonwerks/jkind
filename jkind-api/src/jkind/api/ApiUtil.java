@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import jkind.JKindException;
@@ -192,5 +194,11 @@ public class ApiUtil {
 	public static String getQuotedCommand(List<String> pieces) {
 		return pieces.stream().map(p -> p.contains(" ") ? "\"" + p + "\"" : p)
 				.collect(joining(" "));
+	}
+
+	public static void addEnvironment(ProcessBuilder builder, Map<String, String> environment) {
+		for (Entry<String, String> entry : environment.entrySet()) {
+			builder.environment().put(entry.getKey(), entry.getValue());
+		}
 	}
 }

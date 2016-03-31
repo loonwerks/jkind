@@ -3,7 +3,9 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
 import jkind.SolverOption;
@@ -29,6 +31,7 @@ public class JKindApi extends KindApi {
 	protected SolverOption solver = null;
 
 	protected String jkindJar;
+	protected Map<String, String> environment = new HashMap<>();
 
 	/**
 	 * Set the maximum depth for BMC and k-induction
@@ -115,6 +118,13 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
+	 * Set an environment variable for the JKind process
+	 */
+	public void setEnvironment(String key, String value) {
+		environment.put(key, value);
+	}
+
+	/**
 	 * Run JKind on a Lustre program
 	 * 
 	 * @param lustreFile
@@ -176,6 +186,7 @@ public class JKindApi extends KindApi {
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		return builder;
 	}
@@ -199,6 +210,7 @@ public class JKindApi extends KindApi {
 		args.add("-version");
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
 

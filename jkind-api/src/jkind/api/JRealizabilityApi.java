@@ -3,7 +3,9 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
 import jkind.api.results.JRealizabilityResult;
@@ -22,6 +24,7 @@ public class JRealizabilityApi {
 	private DebugLogger debug = new DebugLogger();
 
 	private String jkindJar;
+	private Map<String, String> environment = new HashMap<>();
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -90,6 +93,13 @@ public class JRealizabilityApi {
 			throw new JKindException("JKind jar file does not exist: " + jkindJar);
 		}
 		this.jkindJar = jkindJar;
+	}
+
+	/**
+	 * Set an environment variable for the JRealizability process
+	 */
+	public void setEnvironment(String key, String value) {
+		environment.put(key, value);
 	}
 
 	/**
@@ -165,6 +175,7 @@ public class JRealizabilityApi {
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		return builder;
 	}
@@ -187,6 +198,7 @@ public class JRealizabilityApi {
 		args.add("-version");
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
 
