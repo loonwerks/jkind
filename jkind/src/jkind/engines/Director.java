@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Main;
@@ -101,7 +102,7 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	public void run() {
+	public int run() {
 		printHeader();
 		writer.begin();
 		addShutdownHook();
@@ -113,10 +114,12 @@ public class Director extends MessageHandler {
 		}
 
 		processMessages();
+		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
-			reportFailures();
+			exitCode = reportFailures();
 		}
+		return exitCode;
 	}
 
 	private void postProcessing() {
@@ -223,13 +226,16 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	private void reportFailures() {
+	private int reportFailures() {
+		int exitCode = 0;
 		for (Engine engine : engines) {
 			if (engine.getThrowable() != null) {
 				Output.println(engine.getName() + " process failed");
 				Output.printStackTrace(engine.getThrowable());
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 			}
 		}
+		return exitCode;
 	}
 
 	private void printHeader() {

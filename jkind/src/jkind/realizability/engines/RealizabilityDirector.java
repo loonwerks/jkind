@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JRealizabilitySettings;
 import jkind.Main;
@@ -61,7 +62,7 @@ public class RealizabilityDirector {
 		}
 	}
 
-	public void run() {
+	public int run() {
 		printHeader();
 		writer.begin();
 		startThreads();
@@ -84,7 +85,7 @@ public class RealizabilityDirector {
 		}
 
 		writer.end();
-		reportFailures();
+		return reportFailures();
 	}
 
 	private boolean someThreadAlive() {
@@ -107,14 +108,17 @@ public class RealizabilityDirector {
 		return false;
 	}
 
-	private void reportFailures() {
+	private int reportFailures() {
+		int exitCode = 0;
 		for (RealizabilityEngine process : engines) {
 			if (process.getThrowable() != null) {
 				Throwable t = process.getThrowable();
 				Output.println(process.getName() + " process failed");
 				Output.printStackTrace(t);
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 			}
 		}
+		return exitCode;
 	}
 
 	private void printHeader() {

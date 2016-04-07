@@ -27,8 +27,8 @@ public class JKind {
 			Specification userSpec = new Specification(main);
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
-			new Director(settings, userSpec, analysisSpec).run();
-			System.exit(0); // Kills all threads
+			int exitCode = new Director(settings, userSpec, analysisSpec).run();
+			System.exit(exitCode); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
