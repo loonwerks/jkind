@@ -68,7 +68,7 @@ public abstract class Renaming {
 		}
 
 		return new ValidProperty(name, property.getSource(), property.getK(),
-				property.getRuntime(), property.getInvariants(), rename(property.getSupport()));
+				property.getRuntime(), property.getInvariants(), rename(property.getIvc()));
 	}
 
 	/**

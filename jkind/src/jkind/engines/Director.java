@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Main;
@@ -101,7 +102,7 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	public void run() {
+	public int run() {
 		printHeader();
 		writer.begin();
 		addShutdownHook();
@@ -113,10 +114,12 @@ public class Director extends MessageHandler {
 		}
 
 		processMessages();
+		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
-			reportFailures();
+			exitCode = reportFailures();
 		}
+		return exitCode;
 	}
 
 	private void postProcessing() {
@@ -166,8 +169,8 @@ public class Director extends MessageHandler {
 			addEngine(new GraphInvariantGenerationEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.reduceSupport) {
-			addEngine(new ReduceSupportEngine(analysisSpec, settings, this));
+		if (settings.reduceIvc) {
+			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
 		}
 
 		if (settings.smoothCounterexamples) {
@@ -223,13 +226,16 @@ public class Director extends MessageHandler {
 		}
 	}
 
-	private void reportFailures() {
+	private int reportFailures() {
+		int exitCode = 0;
 		for (Engine engine : engines) {
 			if (engine.getThrowable() != null) {
 				Output.println(engine.getName() + " process failed");
 				Output.printStackTrace(engine.getThrowable());
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 			}
 		}
+		return exitCode;
 	}
 
 	private void printHeader() {
@@ -276,8 +282,8 @@ public class Director extends MessageHandler {
 			adviceWriter.addInvariants(vm.invariants);
 		}
 
-		List<Expr> invariants = settings.reduceSupport ? vm.invariants : Collections.emptyList();
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.support);
+		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
+		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc);
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {
@@ -399,8 +405,8 @@ public class Director extends MessageHandler {
 
 	public Itinerary getValidMessageItinerary() {
 		List<EngineType> destinations = new ArrayList<>();
-		if (settings.reduceSupport) {
-			destinations.add(EngineType.REDUCE_SUPPORT);
+		if (settings.reduceIvc) {
+			destinations.add(EngineType.IVC_REDUCTION);
 		}
 		return new Itinerary(destinations);
 	}

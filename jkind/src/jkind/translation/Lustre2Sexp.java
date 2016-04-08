@@ -49,15 +49,15 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		return constructGeneralTransitionRelation(node, Collections.emptyList());
 	}
 
-	public static Relation constructSupportTransitionRelation(Node node) {
-		return constructGeneralTransitionRelation(node, node.support);
+	public static Relation constructIvcTransitionRelation(Node node) {
+		return constructGeneralTransitionRelation(node, node.ivc);
 	}
 
-	private static Relation constructGeneralTransitionRelation(Node node, List<String> support) {
+	private static Relation constructGeneralTransitionRelation(Node node, List<String> ivc) {
 		Lustre2Sexp visitor = new Lustre2Sexp(1);
 		List<Sexp> conjuncts = new ArrayList<>();
 
-		LinkedBiMap<String, Symbol> supportMap = createSupportMap(support);
+		LinkedBiMap<String, Symbol> ivcMap = createIvcMap(ivc);
 
 		for (Equation eq : node.equations) {
 			Sexp body = eq.expr.accept(visitor);
@@ -65,8 +65,8 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 			Sexp sexp = new Cons("=", head, body);
 			
 			String id = eq.lhs.get(0).id;
-			if (supportMap.containsKey(id)) {
-				sexp = new Cons("=>", supportMap.get(id), sexp);
+			if (ivcMap.containsKey(id)) {
+				sexp = new Cons("=>", ivcMap.get(id), sexp);
 			}
 			conjuncts.add(sexp);
 		}
@@ -82,13 +82,13 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		return new Relation(Relation.T, inputs, SexpUtil.conjoin(conjuncts));
 	}
 
-	public static LinkedBiMap<String, Symbol> createSupportMap(List<String> support) {
-		LinkedBiMap<String, Symbol> supportMap = new LinkedBiMap<>();
+	public static LinkedBiMap<String, Symbol> createIvcMap(List<String> ivc) {
+		LinkedBiMap<String, Symbol> ivcMap = new LinkedBiMap<>();
 		int id = 0;
-		for (String s : support) {
-			supportMap.put(s, new Symbol("sup" + id++));
+		for (String s : ivc) {
+			ivcMap.put(s, new Symbol("ivc" + id++));
 		}
-		return supportMap;
+		return ivcMap;
 	}
 	
 	private Symbol curr(String id) {

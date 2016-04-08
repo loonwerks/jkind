@@ -64,11 +64,11 @@ public class LustreSlicer extends AstMapVisitor {
 	}
 
 	@Override
-	protected List<String> visitSupport(List<String> support) {
+	protected List<String> visitIvc(List<String> ivc) {
 		List<String> sliced = new ArrayList<>();
-		for (String supp : support) {
-			if (keep.contains(supp)) {
-				sliced.add(supp);
+		for (String e : ivc) {
+			if (keep.contains(e)) {
+				sliced.add(e);
 			}
 		}
 		return sliced;

@@ -182,13 +182,13 @@ public class XmlParseThread extends Thread {
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
 		String source = getSource(getElement(propertyElement, "Answer"));
 		List<String> invariants = getStringList(getElements(propertyElement, "Invariant"));
-		List<String> support = getStringList(getElements(propertyElement, "Support"));
+		List<String> ivc = getStringList(getElements(propertyElement, "Ivc"));
 		List<String> conflicts = getConflicts(getElement(propertyElement, "Conflicts"));
 		Counterexample cex = getCounterexample(getElement(propertyElement, "Counterexample"), k);
 
 		switch (answer) {
 		case "valid":
-			return new ValidProperty(name, source, k, runtime, invariants, support);
+			return new ValidProperty(name, source, k, runtime, invariants, ivc);
 
 		case "falsifiable":
 			return new InvalidProperty(name, source, cex, conflicts, runtime);

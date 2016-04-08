@@ -4,6 +4,7 @@ import java.util.List;
 
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
+import jkind.util.Util;
 
 public class ConsoleWriter extends Writer {
 	private final Layout layout;
@@ -28,7 +29,7 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void writeRealizable(int k, double runtime) {
 		writeLine();
-		System.out.println("REALIZABLE || K = " + k + " || Time = " + runtime);
+		System.out.println("REALIZABLE || K = " + k + " || Time = " + Util.secondsToTime(runtime));
 		writeLine();
 		System.out.println();
 	}
@@ -38,7 +39,7 @@ public class ConsoleWriter extends Writer {
 		writeLine();
 		String details = conflicts.isEmpty() ? "" : ": " + conflicts;
 		System.out.println("UNREALIZABLE" + details + " || K = " + cex.getLength() + " || Time = "
-				+ runtime);
+				+ Util.secondsToTime(runtime));
 		if (layout != null) {
 			System.out.println(cex.toString(layout));
 		}
@@ -49,7 +50,8 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void writeUnknown(int trueFor, Counterexample cex, double runtime) {
 		writeLine();
-		System.out.println("UNKNOWN || True for " + trueFor + " steps" + " || Time = " + runtime);
+		System.out.println("UNKNOWN || True for " + trueFor + " steps" + " || Time = "
+				+ Util.secondsToTime(runtime));
 		writeLine();
 		System.out.println();
 		if (cex != null && layout != null) {

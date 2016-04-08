@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import jkind.engines.invariant.InvariantSet;
+import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.util.Util;
@@ -51,6 +54,21 @@ public class Advice {
 	}
 
 	private boolean baseTypesMatch(Type type1, Type type2) {
-		return Util.getName(type1).equals(Util.getName(type2));
+		return getBaseName(type1).equals(getBaseName(type2));
+	}
+
+	private String getBaseName(Type type) {
+		if (type instanceof EnumType) {
+			EnumType et = (EnumType) type;
+			return et.id;
+		} else if (type instanceof NamedType) {
+			NamedType nt = (NamedType) type;
+			return nt.name;
+		} else if (type instanceof SubrangeIntType) {
+			return NamedType.INT.name;
+		} else {
+			throw new IllegalArgumentException("Unexpected type: "
+					+ type.getClass().getSimpleName());
+		}
 	}
 }

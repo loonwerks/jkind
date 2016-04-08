@@ -39,7 +39,9 @@ public abstract class KindApi {
 	 *            text to print to debug log
 	 */
 	public void apiDebug(String text) {
-		debug.println(text);
+		if (debug != null) {
+			debug.println(text);
+		}
 	}
 
 	/**

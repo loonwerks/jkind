@@ -24,8 +24,8 @@ public class JRealizability {
 
 			Node main = Translate.translate(program);
 			Specification spec = new Specification(main);
-			new RealizabilityDirector(settings, spec).run();
-			System.exit(0); // Kills all threads
+			int exitCode = new RealizabilityDirector(settings, spec).run();
+			System.exit(exitCode); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);

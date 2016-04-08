@@ -50,12 +50,12 @@ public class StaticAnalyzer {
 		valid = valid && propertiesUnique(program);
 		valid = valid && propertiesExist(program);
 		valid = valid && propertiesBoolean(program);
-		valid = valid && supportUnique(program);
-		valid = valid && supportLocalOrOutput(program);
+		valid = valid && ivcUnique(program);
+		valid = valid && ivcLocalOrOutput(program);
 		if (solver != SolverOption.Z3) {
 			valid = valid && LinearChecker.check(program, Level.ERROR);
 		}
-		
+
 		if (!valid) {
 			System.exit(ExitCodes.STATIC_ANALYSIS_ERROR);
 		}
@@ -329,14 +329,14 @@ public class StaticAnalyzer {
 		return false;
 	}
 
-	private static boolean supportUnique(Program program) {
+	private static boolean ivcUnique(Program program) {
 		boolean unique = true;
 
 		for (Node node : program.nodes) {
 			Set<String> seen = new HashSet<>();
-			for (String supp : node.support) {
-				if (!seen.add(supp)) {
-					Output.error("in node '" + node.id + "' support '" + supp
+			for (String e : node.ivc) {
+				if (!seen.add(e)) {
+					Output.error("in node '" + node.id + "' IVC element '" + e
 							+ "' declared multiple times");
 					unique = false;
 				}
@@ -346,7 +346,7 @@ public class StaticAnalyzer {
 		return unique;
 	}
 
-	private static boolean supportLocalOrOutput(Program program) {
+	private static boolean ivcLocalOrOutput(Program program) {
 		boolean passed = true;
 
 		for (Node node : program.nodes) {
@@ -354,9 +354,9 @@ public class StaticAnalyzer {
 			assigned.addAll(Util.getIds(node.outputs));
 			assigned.addAll(Util.getIds(node.locals));
 
-			for (String supp : node.support) {
-				if (!assigned.contains(supp)) {
-					Output.error("in node '" + node.id + "' element of support '" + supp
+			for (String e : node.ivc) {
+				if (!assigned.contains(e)) {
+					Output.error("in node '" + node.id + "' IVC element '" + e
 							+ "' must be a local or output");
 					passed = false;
 				}

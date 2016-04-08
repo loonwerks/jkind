@@ -433,10 +433,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -455,10 +455,10 @@ let --%MAIN
                                                       else ((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)))
                                              else 0)
                                     else 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)
                            else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining)))
                   else 
@@ -503,18 +503,18 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           2
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: uint8((steps_remaining > uint16(0)))
-                                             Destination: microwave_mode_logic>RUNNING>rlt_outerloop_0 */
+                                             Destination: microwave_mode_logic>RUNNING>rlt_outerloop_0 *)
                                           1
                                     else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING))
                            else 
@@ -522,16 +522,16 @@ let --%MAIN
                            then 
                                  (if microwave_microwave_LE_Detector1_Logical_Operator1
                                     then 
-                                          /* Exiting state: microwave_mode_logic>RUNNING. */
+                                          (* Exiting state: microwave_mode_logic>RUNNING. *)
                                           0
                                     else 
                                  (if (microwave_microwave_LE_Detector12_Logical_Operator1 and 
                                     DOOR_CLOSED)
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           1
                                     else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING))
                            else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING)))
@@ -548,17 +548,17 @@ let --%MAIN
                                        else ((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)))
                               else 0) > 0))
                            then 
-                                 /* Evaluating Transition
+                                 (* Evaluating Transition
                                     Source: microwave_mode_logic>SETUP.microwave_mode_logic>junc8
                                     Transition Guarded By: (uint8(start) and uint8((steps_remaining > uint16(0))))
-                                    Destination: microwave_mode_logic>RUNNING */
+                                    Destination: microwave_mode_logic>RUNNING *)
                                  
                                  (if DOOR_CLOSED
                                     then 
-                                          /* Entering state: microwave_mode_logic>RUNNING>COOKING. */
+                                          (* Entering state: microwave_mode_logic>RUNNING>COOKING. *)
                                           1
                                     else 
-                                          /* Entering state: microwave_mode_logic>RUNNING>SUSPENDED. */
+                                          (* Entering state: microwave_mode_logic>RUNNING>SUSPENDED. *)
                                           2)
                            else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING)
                   else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING))
@@ -571,15 +571,15 @@ let --%MAIN
                   then 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)
                            then 
-                                 /* Entering state: microwave_mode_logic>SETUP. */
+                                 (* Entering state: microwave_mode_logic>SETUP. *)
                                  2
                            else 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING = 1)
                            then 
-                                 /* Evaluating Transition
+                                 (* Evaluating Transition
                                     Source: microwave_mode_logic>RUNNING>COOKING
                                     Transition Guarded By: (clear or (not door_closed))
-                                    Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                    Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                  microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic
                            else 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING = 2)
@@ -587,10 +587,10 @@ let --%MAIN
                                  (if microwave_microwave_LE_Detector1_Logical_Operator1
                                     then 2
                                     else 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic)
                            else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic)))
                   else 
@@ -606,11 +606,11 @@ let --%MAIN
                                        else ((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)))
                               else 0) > 0))
                            then 
-                                 /* Entering state: microwave_mode_logic>RUNNING>COOKING.
+                                 (* Entering state: microwave_mode_logic>RUNNING>COOKING.
                                     Evaluating Transition
                                     Source: microwave_mode_logic>SETUP.microwave_mode_logic>junc8
                                     Transition Guarded By: (uint8(start) and uint8((steps_remaining > uint16(0))))
-                                    Destination: microwave_mode_logic>RUNNING */
+                                    Destination: microwave_mode_logic>RUNNING *)
                                  1
                            else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic)
                   else microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic))
@@ -623,10 +623,10 @@ let --%MAIN
                   then 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)
                            then 
-                                 /* Evaluating Transition
+                                 (* Evaluating Transition
                                     Source: microwave_mode_logic>RUNNING
                                     Transition Guarded By: uint8((steps_remaining <= uint16(0)))
-                                    Destination: microwave_mode_logic>junc9 */
+                                    Destination: microwave_mode_logic>junc9 *)
                                  1
                            else 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING = 1)
@@ -634,18 +634,18 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           3
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: uint8((steps_remaining > uint16(0)))
-                                             Destination: microwave_mode_logic>RUNNING>rlt_outerloop_0 */
+                                             Destination: microwave_mode_logic>RUNNING>rlt_outerloop_0 *)
                                           2
                                     else 0))
                            else 
@@ -657,10 +657,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector12_Logical_Operator1 and 
                                     DOOR_CLOSED)
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           2
                                     else 0))
                            else 0)))
@@ -677,10 +677,10 @@ let --%MAIN
                                        else ((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)))
                               else 0) > 0))
                            then 
-                                 /* Evaluating Transition
+                                 (* Evaluating Transition
                                     Source: microwave_mode_logic>SETUP.microwave_mode_logic>junc8
                                     Transition Guarded By: (uint8(start) and uint8((steps_remaining > uint16(0))))
-                                    Destination: microwave_mode_logic>RUNNING */
+                                    Destination: microwave_mode_logic>RUNNING *)
                                  
                                  (if DOOR_CLOSED
                                     then 2
@@ -694,10 +694,10 @@ let --%MAIN
                   then 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining <= 0)
                            then 
-                                 /* Evaluating Transition
+                                 (* Evaluating Transition
                                     Source: microwave_mode_logic>RUNNING
                                     Transition Guarded By: uint8((steps_remaining <= uint16(0)))
-                                    Destination: microwave_mode_logic>junc9 */
+                                    Destination: microwave_mode_logic>junc9 *)
                                  1
                            else 
                         (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_states_microwave_mode_logic_RUNNING = 1)
@@ -705,18 +705,18 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           3
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: uint8((steps_remaining > uint16(0)))
-                                             Destination: microwave_mode_logic>RUNNING>rlt_outerloop_0 */
+                                             Destination: microwave_mode_logic>RUNNING>rlt_outerloop_0 *)
                                           2
                                     else ( pre MODE)))
                            else 
@@ -728,10 +728,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector12_Logical_Operator1 and 
                                     DOOR_CLOSED)
                                     then 
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           2
                                     else ( pre MODE)))
                            else ( pre MODE))))
@@ -748,10 +748,10 @@ let --%MAIN
                                        else ((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)))
                               else 0) > 0))
                            then 
-                                 /* Evaluating Transition
+                                 (* Evaluating Transition
                                     Source: microwave_mode_logic>SETUP.microwave_mode_logic>junc8
                                     Transition Guarded By: (uint8(start) and uint8((steps_remaining > uint16(0))))
-                                    Destination: microwave_mode_logic>RUNNING */
+                                    Destination: microwave_mode_logic>RUNNING *)
                                  
                                  (if DOOR_CLOSED
                                     then 2
@@ -780,10 +780,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -802,10 +802,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 
@@ -846,10 +846,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -868,10 +868,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 
@@ -914,10 +914,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -936,10 +936,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 
@@ -980,10 +980,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -1002,10 +1002,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 
@@ -1046,10 +1046,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -1068,10 +1068,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 
@@ -1112,10 +1112,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -1134,10 +1134,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 
@@ -1243,10 +1243,10 @@ let --%MAIN
                                  (if (microwave_microwave_LE_Detector1_Logical_Operator1 or 
                                     ( not DOOR_CLOSED))
                                     then (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>COOKING
                                              Transition Guarded By: (clear or (not door_closed))
-                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED */
+                                             Destination: microwave_mode_logic>RUNNING>SUSPENDED *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1)
                                     else 
                                  (if (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining > 0)
@@ -1265,10 +1265,10 @@ let --%MAIN
                                                       else (((microwave_microwave_KEYPAD_PROCESSING_RIGHT_DIGIT_Switch1 + (microwave_microwave_KEYPAD_PROCESSING_MIDDLE_DIGIT_Switch1 * 10)) + (microwave_microwave_KEYPAD_PROCESSING_LEFT_DIGIT_Switch1 * 60)) div 1))
                                              else (0 div 1))
                                     else (
-                                          /* Evaluating Transition
+                                          (* Evaluating Transition
                                              Source: microwave_mode_logic>RUNNING>SUSPENDED
                                              Transition Guarded By: (start and door_closed)
-                                             Destination: microwave_mode_logic>RUNNING>COOKING */
+                                             Destination: microwave_mode_logic>RUNNING>COOKING *)
                                           microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))
                            else (microwave_mode_logic_main_simp_rlt_node_state1_rlt_chart_data_outports_steps_remaining div 1))))
                   else 

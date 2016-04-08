@@ -2,8 +2,8 @@ package jkind;
 
 
 public class JKindSettings extends Settings {
-	public int n = 200;
-	public int timeout = 100;
+	public int n = Integer.MAX_VALUE;
+	public int timeout = Integer.MAX_VALUE;
 	
 	public boolean excel = false;
 	public boolean xml = false;
@@ -14,12 +14,12 @@ public class JKindSettings extends Settings {
 	public boolean invariantGeneration = true;
     public int pdrMax = 1;
 	public boolean inductiveCounterexamples = false;
-	public boolean reduceSupport = false;
+	public boolean reduceIvc = false;
 	public boolean smoothCounterexamples = false;
     public boolean intervalGeneralization = false;
     public boolean inline = true;
 	
-	public SolverOption solver = SolverOption.YICES;
+	public SolverOption solver = SolverOption.SMTINTERPOL;
 	public boolean scratch = false;
 
 	public String writeAdvice = null;
