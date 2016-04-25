@@ -2,6 +2,7 @@ package jkind.api.results;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -68,7 +69,7 @@ public abstract class Renaming {
 		}
 
 		return new ValidProperty(name, property.getSource(), property.getK(),
-				property.getRuntime(), property.getInvariants(), rename(property.getIvc()));
+				property.getRuntime(), property.getInvariants(), renameIVC(property.getIvc()));
 	}
 
 	/**
@@ -163,4 +164,27 @@ public abstract class Renaming {
 	private List<String> rename(Collection<String> es) {
 		return es.stream().map(this::rename).filter(e -> e != null).collect(toList());
 	}
+	
+	/**
+	 * Rename an IVC variable
+	 * 
+	 * @param ivc
+	 *           the string to be renamed
+	 * @return Renamed version of the ivc string
+	 */
+	public String renameIVC(String ivc){
+	    return rename(ivc);
+	}
+	
+	/**
+     * Rename a set of IVC variables
+     * 
+     * @param ivcs
+     *           ivcs to be renamed
+     * @return Set of renamed ivcs
+     */
+    private List<String> renameIVC(Collection<String> ivcs){
+        return ivcs.stream().map(this::renameIVC).filter(e -> e != null).collect(toList());
+    }
+	
 }
