@@ -184,11 +184,7 @@ public abstract class Renaming {
      * @return Set of renamed ivcs
      */
     public List<String> renameIVC(Collection<String> ivcs){
-        List<String> renamed = new ArrayList<>(ivcs.size());
-        for(String ivc : ivcs){
-            renamed.add(renameIVC(ivc));
-        }
-        return renamed;
+        return ivcs.stream().map(this::renameIVC).filter(e -> e != null).collect(toList());
     }
 	
 }
