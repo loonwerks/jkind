@@ -183,7 +183,7 @@ public abstract class Renaming {
      *           ivcs to be renamed
      * @return Set of renamed ivcs
      */
-    public List<String> renameIVC(Collection<String> ivcs){
+    private List<String> renameIVC(Collection<String> ivcs){
         return ivcs.stream().map(this::renameIVC).filter(e -> e != null).collect(toList());
     }
 	
