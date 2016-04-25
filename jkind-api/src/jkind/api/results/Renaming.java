@@ -166,7 +166,7 @@ public abstract class Renaming {
 	}
 	
 	/**
-	 * Rename a IVC variable
+	 * Rename an IVC variable
 	 * 
 	 * @param ivc
 	 *           the string to be renamed
