@@ -52,4 +52,10 @@ public class XmlWriter extends Writer {
 		internal.writeUnknown(REALIZABLE_LIST, trueFor, map, runtime);
 		summaryWriter.writeUnknown(trueFor, cex, runtime);
 	}
+
+	@Override
+	public void writeInconsistent(int k, double runtime) {
+		internal.writeInconsistent(Util.REALIZABLE, "base", k, runtime);
+		summaryWriter.writeInconsistent(k, runtime);
+	}
 }

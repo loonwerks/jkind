@@ -13,6 +13,7 @@ import jkind.Main;
 import jkind.Output;
 import jkind.realizability.engines.messages.BaseStepMessage;
 import jkind.realizability.engines.messages.ExtendCounterexampleMessage;
+import jkind.realizability.engines.messages.InconsistentMessage;
 import jkind.realizability.engines.messages.Message;
 import jkind.realizability.engines.messages.RealizableMessage;
 import jkind.realizability.engines.messages.UnknownMessage;
@@ -170,6 +171,10 @@ public class RealizabilityDirector {
 				BaseStepMessage bsm = (BaseStepMessage) message;
 				writer.writeBaseStep(bsm.step);
 				baseStep = bsm.step;
+			} else if (message instanceof InconsistentMessage) {
+				InconsistentMessage im = (InconsistentMessage) message;
+				done = true;
+				writer.writeInconsistent(im.k, runtime);
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());

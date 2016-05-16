@@ -89,4 +89,9 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void writeBaseStep(List<String> props, int k) {
 	}
+
+	@Override
+	public void writeInconsistent(String prop, String source, int k, double runtime) {
+		throw new UnsupportedOperationException();
+	}
 }
