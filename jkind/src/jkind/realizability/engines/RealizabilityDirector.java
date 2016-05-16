@@ -149,7 +149,7 @@ public class RealizabilityDirector {
 	}
 
 	private void processMessages(long startTime) {
-		while (!incoming.isEmpty()) {
+		while (!done && !incoming.isEmpty()) {
 			Message message = incoming.poll();
 			double runtime = getRuntime(startTime);
 			if (message instanceof RealizableMessage) {

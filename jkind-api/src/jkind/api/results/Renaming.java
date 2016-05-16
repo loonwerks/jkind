@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.Signal;
@@ -47,6 +48,8 @@ public abstract class Renaming {
 			return rename((InvalidProperty) property);
 		} else if (property instanceof UnknownProperty) {
 			return rename((UnknownProperty) property);
+		} else if (property instanceof InconsistentProperty) {
+			return rename((InconsistentProperty) property);
 		} else {
 			return null;
 		}
@@ -108,6 +111,24 @@ public abstract class Renaming {
 
 		return new UnknownProperty(name, property.getTrueFor(),
 				rename(property.getInductiveCounterexample()), property.getRuntime());
+	}
+
+	/**
+	 * Rename inconsistent property
+	 * 
+	 * @param property
+	 *            Property to be renamed
+	 * @return Renamed version of the property, or <code>null</code> if there is
+	 *         no renaming for the property
+	 */
+	public InconsistentProperty rename(InconsistentProperty property) {
+		String name = rename(property.getName());
+		if (name == null) {
+			return null;
+		}
+
+		return new InconsistentProperty(name, property.getSource(), property.getK(),
+				property.getRuntime());
 	}
 
 	/**

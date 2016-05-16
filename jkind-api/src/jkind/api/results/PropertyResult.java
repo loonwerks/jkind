@@ -1,6 +1,7 @@
 package jkind.api.results;
 
 import jkind.JKindException;
+import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
@@ -65,6 +66,8 @@ public class PropertyResult extends AnalysisResult {
 			setStatus(invertStatus ? Status.VALID : Status.INVALID);
 		} else if (property instanceof UnknownProperty) {
 			setStatus(Status.UNKNOWN);
+		} else if (property instanceof InconsistentProperty) {
+			setStatus(Status.INCONSISTENT);
 		}
 	}
 
