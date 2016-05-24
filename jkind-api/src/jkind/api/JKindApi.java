@@ -3,7 +3,9 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
 import jkind.SolverOption;
@@ -22,11 +24,14 @@ public class JKindApi extends KindApi {
 	protected boolean invariantGeneration = true;
 	protected Integer pdrMax = null;
 	protected boolean inductiveCounterexamples = false;
-	protected boolean reduceSupport = false;
+	protected boolean ivcReduction = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean intervalGeneralization = false;
 
 	protected SolverOption solver = null;
+
+	protected String jkindJar;
+	protected Map<String, String> environment = new HashMap<>();
 
 	/**
 	 * Set the maximum depth for BMC and k-induction
@@ -81,10 +86,10 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
-	 * Reduce and report the invariants and support used for a valid property
+	 * Find an inductive validity core for valid properties
 	 */
-	public void setReduceSupport() {
-		reduceSupport = true;
+	public void setIvcReduction() {
+		ivcReduction = true;
 	}
 
 	/**
@@ -100,6 +105,23 @@ public class JKindApi extends KindApi {
 	 */
 	public void setIntervalGeneralization() {
 		intervalGeneralization = true;
+	}
+
+	/**
+	 * Provide a fixed JKind jar file to use
+	 */
+	public void setJKindJar(String jkindJar) {
+		if (!new File(jkindJar).exists()) {
+			throw new JKindException("JKind jar file does not exist: " + jkindJar);
+		}
+		this.jkindJar = jkindJar;
+	}
+
+	/**
+	 * Set an environment variable for the JKind process
+	 */
+	public void setEnvironment(String key, String value) {
+		environment.put(key, value);
 	}
 
 	/**
@@ -147,8 +169,8 @@ public class JKindApi extends KindApi {
 		if (inductiveCounterexamples) {
 			args.add("-induct_cex");
 		}
-		if (reduceSupport) {
-			args.add("-support");
+		if (ivcReduction) {
+			args.add("-ivc");
 		}
 		if (smoothCounterexamples) {
 			args.add("-smooth");
@@ -164,12 +186,21 @@ public class JKindApi extends KindApi {
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		return builder;
 	}
 
-	private static String[] getJKindCommand() {
-		return new String[] { "java", "-jar", ApiUtil.findJKindJar().toString(), "-jkind" };
+	protected String[] getJKindCommand() {
+		return new String[] { ApiUtil.getJavaPath(), "-jar", getOrFindJKindJar(), "-jkind" };
+	}
+
+	private String getOrFindJKindJar() {
+		if (jkindJar != null) {
+			return jkindJar;
+		} else {
+			return ApiUtil.findJKindJar().toString();
+		}
 	}
 
 	@Override
@@ -179,6 +210,7 @@ public class JKindApi extends KindApi {
 		args.add("-version");
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
 

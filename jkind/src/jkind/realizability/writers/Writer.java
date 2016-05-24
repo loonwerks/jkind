@@ -13,7 +13,10 @@ public abstract class Writer {
 
 	public abstract void writeRealizable(int k, double runtime);
 
-	public abstract void writeUnrealizable(Counterexample cex, List<String> conflicts, double runtime);
+	public abstract void writeUnrealizable(Counterexample cex, List<String> conflicts,
+			double runtime);
 
 	public abstract void writeUnknown(int trueFor, Counterexample cex, double runtime);
+
+	public abstract void writeInconsistent(int k, double runtime);
 }

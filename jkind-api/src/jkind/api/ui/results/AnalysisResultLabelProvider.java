@@ -9,6 +9,7 @@ import jkind.api.results.PropertyResult;
 import jkind.api.results.ResultsUtil;
 import jkind.api.results.Status;
 import jkind.api.ui.results.AnalysisResultColumnViewer.Column;
+import jkind.results.InconsistentProperty;
 import jkind.util.Util;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -45,9 +46,12 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 					return pr.getStatus().toString();
 				case WORKING:
 					return pr.getStatus().toString() + "..." + getProgress(pr) + " ("
-							+ pr.getElapsed() + "s)";
+							+ Util.secondsToTime(pr.getElapsed()) + ")";
+				case INCONSISTENT:
+					InconsistentProperty ic = (InconsistentProperty) pr.getProperty();
+					return getFinalStatus(pr) + " (" + ic.getK() + " steps, " + Util.secondsToTime(pr.getElapsed()) + ")";
 				default:
-					return getFinalStatus(pr) + " (" + pr.getElapsed() + "s)";
+					return getFinalStatus(pr) + " (" + Util.secondsToTime(pr.getElapsed()) + ")";
 				}
 			}
 		} else if (element instanceof JRealizabilityResult) {
@@ -86,11 +90,12 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 	private static final Image VALID_IMAGE = loadImage("/icons/valid.png");
 	private static final Image INVALID_IMAGE = loadImage("/icons/invalid.png");
 	private static final Image UNKNOWN_IMAGE = loadImage("/icons/unknown.png");
+	private static final Image INCONSISTENT_IMAGE = loadImage("/icons/invalid.png");
 	private static final Image WAITING_IMAGE = loadImage("/icons/waiting.png");
 	private static final Image CANCEL_IMAGE = loadImage("/icons/cancel.png");
 	private static final Image ERROR_IMAGE = loadImage("/icons/error.png");
 	private static final Image VALID_WARNING_IMAGE = loadImage("/icons/valid-warning.png");
-	
+
 	private Spinner workingSpinner;
 
 	private static Image loadImage(String filename) {
@@ -130,6 +135,8 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 			return INVALID_IMAGE;
 		case UNKNOWN:
 			return UNKNOWN_IMAGE;
+		case INCONSISTENT:
+			return INCONSISTENT_IMAGE;
 		case CANCELED:
 			return CANCEL_IMAGE;
 		case ERROR:
@@ -137,7 +144,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		case WAITING:
 			return WAITING_IMAGE;
 		case VALID_REFINED:
-		    return VALID_WARNING_IMAGE;
+			return VALID_WARNING_IMAGE;
 		default:
 			return WAITING_IMAGE;
 		}

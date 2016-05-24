@@ -3,7 +3,9 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jkind.JKindException;
 import jkind.api.results.JRealizabilityResult;
@@ -20,6 +22,9 @@ public class JRealizabilityApi {
 	private boolean extendCounterexample = false;
 	private boolean reduce = false;
 	private DebugLogger debug = new DebugLogger();
+
+	private String jkindJar;
+	private Map<String, String> environment = new HashMap<>();
 
 	/**
 	 * Set a maximum run time for entire execution
@@ -75,9 +80,28 @@ public class JRealizabilityApi {
 	 *            text to print to debug log
 	 */
 	public void apiDebug(String text) {
-		debug.println(text);
+		if (debug != null) {
+			debug.println(text);
+		}
 	}
-	
+
+	/**
+	 * Provide a fixed JKind jar file to use
+	 */
+	public void setJKindJar(String jkindJar) {
+		if (!new File(jkindJar).exists()) {
+			throw new JKindException("JKind jar file does not exist: " + jkindJar);
+		}
+		this.jkindJar = jkindJar;
+	}
+
+	/**
+	 * Set an environment variable for the JRealizability process
+	 */
+	public void setEnvironment(String key, String value) {
+		environment.put(key, value);
+	}
+
 	/**
 	 * Run JRealizability on a Lustre program
 	 * 
@@ -151,12 +175,21 @@ public class JRealizabilityApi {
 		args.add(lustreFile.toString());
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		return builder;
 	}
 
-	private static String[] getJRealizabilityCommand() {
-		return new String[] { "java", "-jar", ApiUtil.findJKindJar().toString(), "-jrealizability" };
+	private String[] getJRealizabilityCommand() {
+		return new String[] { ApiUtil.getJavaPath(), "-jar", getOrFindJKindJar(), "-jrealizability" };
+	}
+
+	private String getOrFindJKindJar() {
+		if (jkindJar != null) {
+			return jkindJar;
+		} else {
+			return ApiUtil.findJKindJar().toString();
+		}
 	}
 
 	public void checkAvailable() throws Exception {
@@ -165,6 +198,7 @@ public class JRealizabilityApi {
 		args.add("-version");
 
 		ProcessBuilder builder = new ProcessBuilder(args);
+		ApiUtil.addEnvironment(builder, environment);
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
 

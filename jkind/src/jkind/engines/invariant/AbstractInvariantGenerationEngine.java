@@ -150,6 +150,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 			if (inv instanceof IdExpr) {
 				IdExpr idExpr = (IdExpr) inv;
 				if (properties.contains(idExpr.id)) {
+					properties.remove(idExpr.id);
 					valid.add(idExpr.id);
 				}
 			}

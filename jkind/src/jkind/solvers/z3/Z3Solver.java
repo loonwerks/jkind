@@ -7,13 +7,14 @@ import java.util.List;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.MaxSatSolver;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
-public class Z3Solver extends SmtLib2Solver {
+public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	private final boolean linear;
 	private int actCount = 1;
 
@@ -144,5 +145,15 @@ public class Z3Solver extends SmtLib2Solver {
 
 	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
 		return realizabilityQuery(outputs, transition, properties, 0);
+	}
+
+	@Override
+	public void assertSoft(Sexp sexp) {
+		send(new Cons("assert-soft", sexp));
+	}
+
+	@Override
+	public Result maxsatQuery(Sexp query) {
+		return query(query);
 	}
 }

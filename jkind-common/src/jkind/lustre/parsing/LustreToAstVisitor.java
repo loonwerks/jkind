@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.ExitCodes;
-import jkind.Output;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
@@ -64,6 +62,7 @@ import jkind.lustre.parsing.LustreParser.IdExprContext;
 import jkind.lustre.parsing.LustreParser.IfThenElseExprContext;
 import jkind.lustre.parsing.LustreParser.IntExprContext;
 import jkind.lustre.parsing.LustreParser.IntTypeContext;
+import jkind.lustre.parsing.LustreParser.IvcContext;
 import jkind.lustre.parsing.LustreParser.LhsContext;
 import jkind.lustre.parsing.LustreParser.NegateExprContext;
 import jkind.lustre.parsing.LustreParser.NodeCallExprContext;
@@ -76,7 +75,6 @@ import jkind.lustre.parsing.LustreParser.PropertyContext;
 import jkind.lustre.parsing.LustreParser.RealExprContext;
 import jkind.lustre.parsing.LustreParser.RealTypeContext;
 import jkind.lustre.parsing.LustreParser.RealizabilityInputsContext;
-import jkind.lustre.parsing.LustreParser.SupportContext;
 import jkind.lustre.parsing.LustreParser.RecordAccessExprContext;
 import jkind.lustre.parsing.LustreParser.RecordEIDContext;
 import jkind.lustre.parsing.LustreParser.RecordExprContext;
@@ -134,7 +132,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return nodes;
 	}
 
-	private Node node(NodeContext ctx) {
+	public Node node(NodeContext ctx) {
 		String id = ctx.ID().getText();
 		List<VarDecl> inputs = varDecls(ctx.input);
 		List<VarDecl> outputs = varDecls(ctx.output);
@@ -142,14 +140,18 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		List<Equation> equations = equations(ctx.equation());
 		List<String> properties = properties(ctx.property());
 		List<Expr> assertions = assertions(ctx.assertion());
-		List<String> support = support(ctx.support());
+		List<String> ivc = ivc(ctx.ivc());
 		List<String> realizabilityInputs = realizabilityInputs(ctx.realizabilityInputs());
 		Contract contract = null;
 		if (!ctx.main().isEmpty()) {
-			main = id;
+			if (main == null) {
+				main = id;
+			} else {
+				fatal(ctx.main(0), "node '" + main + "' already declared as --%MAIN");
+			}
 		}
 		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs, contract, support);
+				realizabilityInputs, contract, ivc);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
@@ -170,11 +172,15 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private List<Equation> equations(List<EquationContext> ctxs) {
 		List<Equation> equations = new ArrayList<>();
 		for (EquationContext ctx : ctxs) {
-			List<IdExpr> lhs = lhs(ctx.lhs());
-			Expr expr = expr(ctx.expr());
-			equations.add(new Equation(loc(ctx), lhs, expr));
+			equations.add(equation(ctx));
 		}
 		return equations;
+	}
+
+	public Equation equation(EquationContext ctx) {
+		List<IdExpr> lhs = lhs(ctx.lhs());
+		Expr expr = expr(ctx.expr());
+		return new Equation(loc(ctx), lhs, expr);
 	}
 
 	private List<IdExpr> lhs(LhsContext ctx) {
@@ -222,13 +228,13 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 		return null;
 	}
-	
-	private List<String> support(List<SupportContext> ctxs) {
+
+	private List<String> ivc(List<IvcContext> ctxs) {
 		if (ctxs.size() > 1) {
-			fatal(ctxs.get(1), "at most one support statement allowed");
+			fatal(ctxs.get(1), "at most one ivc statement allowed per node");
 		}
 
-		for (SupportContext ctx : ctxs) {
+		for (IvcContext ctx : ctxs) {
 			List<String> ids = new ArrayList<>();
 			for (TerminalNode ictx : ctx.ID()) {
 				ids.add(ictx.getText());
@@ -311,7 +317,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return new NamedType(loc(ctx), ctx.ID().getText());
 	}
 
-	private Expr expr(ExprContext ctx) {
+	public Expr expr(ExprContext ctx) {
 		return (Expr) ctx.accept(this);
 	}
 
@@ -489,7 +495,6 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	private static void fatal(ParserRuleContext ctx, String text) {
-		Output.error(loc(ctx), text);
-		System.exit(ExitCodes.PARSE_ERROR);
+		throw new LustreParseException(loc(ctx), text);
 	}
 }

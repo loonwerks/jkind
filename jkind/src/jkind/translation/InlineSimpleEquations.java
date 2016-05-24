@@ -19,7 +19,7 @@ public class InlineSimpleEquations {
 		ResolvingSubstitutionMap map = new ResolvingSubstitutionMap();
 		for (Equation eq : node.equations) {
 			String id = eq.lhs.get(0).id;
-			if (isSimple(eq.expr) && !node.support.contains(id)) {
+			if (isSimple(eq.expr) && !node.ivc.contains(id)) {
 				map.put(id, eq.expr);
 			}
 		}

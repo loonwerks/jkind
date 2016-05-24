@@ -2,7 +2,12 @@ package jkind;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import jkind.lustre.ArrayType;
 import jkind.lustre.Node;
@@ -11,6 +16,7 @@ import jkind.lustre.RecordType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.parsing.FlattenIds;
 import jkind.lustre.parsing.LustreLexer;
+import jkind.lustre.parsing.LustreParseException;
 import jkind.lustre.parsing.LustreParser;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;
@@ -33,7 +39,7 @@ import org.antlr.v4.runtime.RecognitionException;
  * runnable JARs allow only a single entry point.
  */
 public class Main {
-	public static final String VERSION = "2.2.1";
+	public static final String VERSION = "3.0.1";
 
 	public static void main(String[] args) {
 		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -jrealizability, -benchmark";
@@ -83,7 +89,17 @@ public class Main {
 			Output.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
 		}
 
+		Output.setLocationReference(readAllLines(filename));
 		return parseLustre(new ANTLRFileStream(filename));
+	}
+
+	private static List<String> readAllLines(String filename) {
+		Path path = FileSystems.getDefault().getPath(filename);
+		try {
+			return Files.readAllLines(path);
+		} catch (IOException e) {
+			return Collections.emptyList();
+		}
 	}
 
 	public static Program parseLustre(CharStream stream) throws RecognitionException {
@@ -98,7 +114,12 @@ public class Main {
 			System.exit(ExitCodes.PARSE_ERROR);
 		}
 
-		return flattenOrCheck(new LustreToAstVisitor().program(program));
+		try {
+			return flattenOrCheck(new LustreToAstVisitor().program(program));
+		} catch (LustreParseException e) {
+			Output.fatal(ExitCodes.PARSE_ERROR, e.getLocation(), e.getMessage());
+			throw e;
+		}
 	}
 
 	/**

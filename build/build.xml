@@ -17,7 +17,7 @@
             <zipfileset src="jar-in-jar-loader.zip"/>
             <fileset dir="../jkind/bin"/>
             <zipfileset dir="../jkind/dependencies" includes="commons-cli-1.2.jar"/>
-            <zipfileset dir="../jkind/dependencies" includes="antlr-runtime-4.4.jar"/>
+            <zipfileset dir="../jkind-common/dependencies" includes="antlr-runtime-4.4.jar"/>
             <zipfileset dir="../jkind/dependencies" includes="smtinterpol.jar"/>
             <fileset dir="../jkind-common/bin"/>
             <zipfileset dir="../jkind-common/dependencies" includes="jxl.jar"/>

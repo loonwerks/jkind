@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.JKindException;
 import jkind.results.Counterexample;
+import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
@@ -91,6 +92,8 @@ public class ExcelFormatter implements Closeable {
 			write((InvalidProperty) property);
 		} else if (property instanceof UnknownProperty) {
 			write((UnknownProperty) property);
+		} else if (property instanceof InconsistentProperty) {
+			write((InconsistentProperty) property);
 		} else {
 			throw new IllegalArgumentException("Unknown property type: "
 					+ property.getClass().getSimpleName());
@@ -102,14 +105,14 @@ public class ExcelFormatter implements Closeable {
 		String source = property.getSource();
 		int k = property.getK();
 		List<String> invariants = property.getInvariants();
-		Set<String> support = property.getSupport();
+		Set<String> ivc = property.getIvc();
 		double runtime = property.getRuntime();
 
 		summarySheet.addCell(new Label(0, summaryRow, name));
-		if (invariants.isEmpty() && support.isEmpty()) {
+		if (invariants.isEmpty() && ivc.isEmpty()) {
 			summarySheet.addCell(new Label(1, summaryRow, "Valid"));
 		} else {
-			WritableSheet validSheet = writeValidSheet(name, invariants, support);
+			WritableSheet validSheet = writeValidSheet(name, invariants, ivc);
 			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", validSheet, 0, 0);
 			summarySheet.addHyperlink(link);
 		}
@@ -120,8 +123,8 @@ public class ExcelFormatter implements Closeable {
 		summaryRow++;
 	}
 
-	private WritableSheet writeValidSheet(String property, List<String> invariants,
-			Set<String> support) throws WriteException {
+	private WritableSheet writeValidSheet(String property, List<String> invariants, Set<String> ivc)
+			throws WriteException {
 		currSheet = workbook
 				.createSheet(ExcelUtil.trimName(property), workbook.getNumberOfSheets());
 		currRow = 0;
@@ -136,11 +139,11 @@ public class ExcelFormatter implements Closeable {
 			currRow++;
 		}
 
-		if (!support.isEmpty()) {
-			currSheet.addCell(new Label(0, currRow, "Support", boldFormat));
+		if (!ivc.isEmpty()) {
+			currSheet.addCell(new Label(0, currRow, "Inductive Validity Core", boldFormat));
 			currRow++;
-			for (String supp : support) {
-				currSheet.addCell(new Label(0, currRow, supp));
+			for (String e : ivc) {
+				currSheet.addCell(new Label(0, currRow, e));
 				currRow++;
 			}
 		}
@@ -188,5 +191,19 @@ public class ExcelFormatter implements Closeable {
 	private WritableSheet writeCounterexample(String name, Counterexample cex,
 			List<String> conflicts) {
 		return cexFormatter.writeCounterexample(name, cex, conflicts);
+	}
+
+	private void write(InconsistentProperty property) throws WriteException {
+		String name = property.getName();
+		String source = property.getSource();
+		int k = property.getK();
+		double runtime = property.getRuntime();
+
+		summarySheet.addCell(new Label(0, summaryRow, name));
+		summarySheet.addCell(new Label(1, summaryRow, "Inconsistent"));
+		summarySheet.addCell(new Label(2, summaryRow, source));
+		summarySheet.addCell(new Number(3, summaryRow, k));
+		summarySheet.addCell(new Number(4, summaryRow, runtime));
+		summaryRow++;
 	}
 }

@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JRealizabilitySettings;
 import jkind.Main;
 import jkind.Output;
 import jkind.realizability.engines.messages.BaseStepMessage;
 import jkind.realizability.engines.messages.ExtendCounterexampleMessage;
+import jkind.realizability.engines.messages.InconsistentMessage;
 import jkind.realizability.engines.messages.Message;
 import jkind.realizability.engines.messages.RealizableMessage;
 import jkind.realizability.engines.messages.UnknownMessage;
@@ -61,7 +63,7 @@ public class RealizabilityDirector {
 		}
 	}
 
-	public void run() {
+	public int run() {
 		printHeader();
 		writer.begin();
 		startThreads();
@@ -84,7 +86,7 @@ public class RealizabilityDirector {
 		}
 
 		writer.end();
-		reportFailures();
+		return reportFailures();
 	}
 
 	private boolean someThreadAlive() {
@@ -107,14 +109,17 @@ public class RealizabilityDirector {
 		return false;
 	}
 
-	private void reportFailures() {
+	private int reportFailures() {
+		int exitCode = 0;
 		for (RealizabilityEngine process : engines) {
 			if (process.getThrowable() != null) {
 				Throwable t = process.getThrowable();
 				Output.println(process.getName() + " process failed");
 				Output.printStackTrace(t);
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 			}
 		}
+		return exitCode;
 	}
 
 	private void printHeader() {
@@ -144,7 +149,7 @@ public class RealizabilityDirector {
 	}
 
 	private void processMessages(long startTime) {
-		while (!incoming.isEmpty()) {
+		while (!done && !incoming.isEmpty()) {
 			Message message = incoming.poll();
 			double runtime = getRuntime(startTime);
 			if (message instanceof RealizableMessage) {
@@ -166,6 +171,10 @@ public class RealizabilityDirector {
 				BaseStepMessage bsm = (BaseStepMessage) message;
 				writer.writeBaseStep(bsm.step);
 				baseStep = bsm.step;
+			} else if (message instanceof InconsistentMessage) {
+				InconsistentMessage im = (InconsistentMessage) message;
+				done = true;
+				writer.writeInconsistent(im.k, runtime);
 			} else {
 				throw new JKindException("Unknown message type in director: "
 						+ message.getClass().getCanonicalName());

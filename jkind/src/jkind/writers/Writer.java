@@ -13,7 +13,7 @@ public abstract class Writer {
 	public abstract void end();
 
 	public abstract void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support);
+			List<Expr> invariants, Set<String> ivc);
 
 	public abstract void writeInvalid(String prop, String source, Counterexample cex,
 			List<String> conflicts, double runtime);
@@ -22,4 +22,7 @@ public abstract class Writer {
 			Map<String, Counterexample> inductiveCounterexamples, double runtime);
 
 	public abstract void writeBaseStep(List<String> props, int k);
+
+	// Used only by JRealiability
+	public abstract void writeInconsistent(String prop, String source, int k, double runtime);
 }

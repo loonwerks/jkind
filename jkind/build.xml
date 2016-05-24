@@ -17,11 +17,11 @@
     <path id="jkind-common.classpath">
         <pathelement location="${jkind-common.location}/bin"/>
         <pathelement location="${jkind-common.location}/dependencies/jxl.jar"/>
+        <pathelement location="${jkind-common.location}/dependencies/antlr-runtime-4.4.jar"/>
     </path>
     <path id="jkind.classpath">
         <pathelement location="bin"/>
         <pathelement location="dependencies/commons-cli-1.2.jar"/>
-        <pathelement location="dependencies/antlr-runtime-4.4.jar"/>
         <pathelement location="dependencies/smtinterpol.jar"/>
         <path refid="jkind-common.classpath"/>
     </path>

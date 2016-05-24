@@ -1,4 +1,4 @@
--- No SUPPORT declared, but the invariants will be reduced
+-- No IVC declared, but the invariants will be reduced
 --
 -- DC____ASSUME0: DC____ASSUME0
 --

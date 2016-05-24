@@ -33,10 +33,10 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> support) {
+			List<Expr> invariants, Set<String> ivc) {
 		writeLine();
 		System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
-				+ " || Time = " + runtime);
+				+ " || Time = " + Util.secondsToTime(runtime));
 		if (!invariants.isEmpty()) {
 			System.out.println("INVARIANTS:");
 			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());
@@ -44,10 +44,10 @@ public class ConsoleWriter extends Writer {
 				System.out.println("  " + invariant);
 			}
 		}
-		if (!support.isEmpty()) {
-			System.out.println("SUPPORT:");
-			for (String supp : Util.safeStringSortedSet(support)) {
-				System.out.println("  " + supp);
+		if (!ivc.isEmpty()) {
+			System.out.println("INDUCTIVE VALIDITY CORE:");
+			for (String e : Util.safeStringSortedSet(ivc)) {
+				System.out.println("  " + e);
 			}
 		}
 		writeLine();
@@ -59,7 +59,7 @@ public class ConsoleWriter extends Writer {
 			List<String> conflicts, double runtime) {
 		writeLine();
 		System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "
-				+ cex.getLength() + " || Time = " + runtime);
+				+ cex.getLength() + " || Time = " + Util.secondsToTime(runtime));
 		System.out.println(cex.toString(layout));
 		writeLine();
 		System.out.println();
@@ -70,7 +70,7 @@ public class ConsoleWriter extends Writer {
 			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
 		writeLine();
 		System.out.println("UNKNOWN PROPERTIES: " + props + " || True for " + trueFor + " steps"
-				+ " || Time = " + runtime);
+				+ " || Time = " + Util.secondsToTime(runtime));
 		writeLine();
 		System.out.println();
 		for (String prop : props) {
@@ -88,5 +88,10 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeBaseStep(List<String> props, int k) {
+	}
+
+	@Override
+	public void writeInconsistent(String prop, String source, int k, double runtime) {
+		throw new UnsupportedOperationException();
 	}
 }

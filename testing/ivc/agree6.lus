@@ -1,9 +1,14 @@
--- SUPPORT for __GUARANTEE0: _TOP__COMP~0.__COMP__PROP__0
---                           _TOP__COMP~0.__COMP__PROP__1
+-- IVC for __GUARANTEE0: _TOP__COMP.__COMP__PROP__0
+--                       _TOP__COMP.__COMP__PROP__1
+--
+-- IVC for __GUARANTEE1: _TOP__COMP.__COMP__EXP__0
+--                       _TOP__COMP.__COMP__PROP__2
 
 node _TOP__COMP(
   in1 : int;
   in2 : int;
+  int_var1 : int;
+  int_var2 : int;
   out1 : int;
   out2 : int
 ) returns (
@@ -15,6 +20,8 @@ var
   __COMP__PROP__0 : bool;
   __COMP__PROP__1 : bool;
   __COMP__PROP__2 : bool;
+  __COMP__EXP__0 : bool;
+  __COMP__EXP__1 : bool;
 let
   __ASSUME__CONJ = true;
 
@@ -24,11 +31,15 @@ let
 
   __COMP__PROP__1 = (out1 < 1);
 
-  __COMP__PROP__2 = (out2 > 10);
+  __COMP__PROP__2 = (out2 = int_var1);
 
-  __ASSERT = (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true))));
+  __COMP__EXP__0 = (int_var1 = 11);
 
-  --%SUPPORT __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
+  __COMP__EXP__1 = (int_var2 = 11);
+
+  __ASSERT = ((__COMP__EXP__1 and (__COMP__EXP__0 and true)) and (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true)))));
+
+  --%IVC __COMP__PROP__0, __COMP__PROP__1, __COMP__PROP__2, __COMP__EXP__0, __COMP__EXP__1;
 
 tel;
 
@@ -54,9 +65,9 @@ let
 
   __COMP2__PROP__1 = (o2 > 9);
 
-  __ASSERT = (__ASSUME__HIST => (__COMP2__PROP__1 and (__COMP2__PROP__0 and true)));
+  __ASSERT = (true and (__ASSUME__HIST => (__COMP2__PROP__1 and (__COMP2__PROP__0 and true))));
 
-  --%SUPPORT __COMP2__PROP__0,__COMP2__PROP__1;
+  --%IVC __COMP2__PROP__0, __COMP2__PROP__1;
 
 tel;
 
@@ -69,22 +80,29 @@ node main(
   COMP2___CLOCK_ : bool;
   input1 : int;
   input2 : int;
+  COMP__int_var1 : int;
+  COMP__int_var2 : int;
   COMP__out1 : int;
   COMP__out2 : int;
   COMP2__o1 : int;
   COMP2__o2 : int;
   output1 : int;
-  output2 : int
+  output2 : int;
+  output3 : int;
+  output4 : int
 ) returns (
 
 );
 var
   __GUARANTEE0 : bool;
+  __GUARANTEE1 : bool;
 let
   --%MAIN;
   __GUARANTEE0 = (output1 = 0);
 
-  assert condact(true, _TOP__COMP(COMP__in1, COMP__in2, COMP__out1, COMP__out2), true);
+  __GUARANTEE1 = (output2 > 10);
+
+  assert condact(true, _TOP__COMP(COMP__in1, COMP__in2, COMP__int_var1, COMP__int_var2, COMP__out1, COMP__out2), true);
 
   assert condact(true, _TOP__COMP2(COMP2__i1, COMP2__i2, COMP2__o1, COMP2__o2), true);
 
@@ -100,8 +118,13 @@ let
 
   assert (COMP__out2 = output2);
 
+  assert (COMP2__o1 = output3);
+
+  assert (COMP2__o2 = output4);
+
   assert true;
 
   --%PROPERTY __GUARANTEE0;
+  --%PROPERTY __GUARANTEE1;
 
 tel;

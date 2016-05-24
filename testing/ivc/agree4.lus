@@ -1,4 +1,4 @@
--- SUPPORT for __GUARANTEE0: _TOP__COMP~0.__COMP__PROP__2
+-- IVC for __GUARANTEE0: _TOP__COMP~0.__COMP__PROP__2
 
 node _TOP__COMP(
   in1 : int;
@@ -27,7 +27,7 @@ let
 
   __ASSERT = (__ASSUME__HIST => (__COMP__PROP__2 and (__COMP__PROP__1 and (__COMP__PROP__0 and true))));
 
-  --%SUPPORT __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
+  --%IVC __COMP__PROP__0,__COMP__PROP__1,__COMP__PROP__2;
 
 tel;
 

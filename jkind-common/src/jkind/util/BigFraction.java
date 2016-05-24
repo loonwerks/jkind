@@ -2,6 +2,7 @@ package jkind.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
 import jkind.JKindException;
 
@@ -102,7 +103,14 @@ public class BigFraction implements Comparable<BigFraction> {
 	}
 
 	public double doubleValue() {
-		return num.doubleValue() / denom.doubleValue();
+		double result = num.doubleValue() / denom.doubleValue();
+		if (Double.isFinite(result)) {
+			return result;
+		} else {
+			BigDecimal numDec = new BigDecimal(num);
+			BigDecimal denomDec = new BigDecimal(denom);
+			return numDec.divide(denomDec, MathContext.DECIMAL64).doubleValue();
+		}
 	}
 
 	public BigInteger floor() {
@@ -119,12 +127,12 @@ public class BigFraction implements Comparable<BigFraction> {
 		BigDecimal decDenom = new BigDecimal(denom);
 		return decNum.divide(decDenom, BigDecimal.ROUND_DOWN);
 	}
-	
+
 	public String toTruncatedDecimal(int scale, String suffix) {
 		if (scale <= 0) {
 			throw new JKindException("Scale must be positive");
 		}
-		
+
 		BigDecimal dec = toBigDecimal(scale);
 		if (this.equals(BigFraction.valueOf(dec))) {
 			return Util.removeTrailingZeros(dec.toPlainString());

@@ -1,4 +1,4 @@
-/*
+(*
 This file exercises tuple expressions.  Tuple types are not allowed to
 be declared by the user, but are used to generalize node calls that 
 return multiple values such that they can be called from within another
@@ -9,7 +9,7 @@ Expected Output:
 VALID PROPERTIES: [ok1, ok3, ok2]
 
 INVALID PROPERTIES: [cex1, cex2]
-*/
+*)
 
 node count_by(diff : int) returns (down, up : int);
 let

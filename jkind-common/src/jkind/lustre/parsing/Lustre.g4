@@ -11,7 +11,7 @@ node:
   'returns' '(' output=varDeclList? ')' ';'
   ('var' local=varDeclList ';')?
   'let'
-    (equation | property | assertion | main | realizabilityInputs | support)*
+    (equation | property | assertion | main | realizabilityInputs | ivc)*
   'tel' ';'?
 ;
 
@@ -38,7 +38,7 @@ property: '--%PROPERTY' eID ';';
 
 realizabilityInputs: '--%REALIZABLE' (ID (',' ID)*)? ';';
 
-support: '--%SUPPORT' (ID (',' ID)*)? ';';
+ivc: '--%IVC' (ID (',' ID)*)? ';';
 
 main: '--%MAIN' ';'?;
 
@@ -92,6 +92,6 @@ ID: [a-zA-Z_~][a-zA-Z_0-9~]*;
 WS: [ \t\n\r\f]+ -> skip;
 
 SL_COMMENT: '--' (~[%\n\r] ~[\n\r]* | /* empty */) ('\r'? '\n')? -> skip;
-ML_COMMENT: '/*' .*? '*/' -> skip;
+ML_COMMENT: '(*' .*? '*)' -> skip;
 
 ERROR: .;
