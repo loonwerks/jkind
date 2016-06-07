@@ -5,6 +5,7 @@ import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.builders.ProgramBuilder;
 import jkind.translation.InlineSimpleEquations;
 import jkind.translation.Specification;
 import jkind.translation.Translate;
@@ -14,6 +15,7 @@ public class JKind {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			Program program = Main.parseLustre(settings.filename);
+			program = setMainNode(program, settings.main);
 
 			StaticAnalyzer.check(program, settings.solver);
 			if (!LinearChecker.isLinear(program)) {
@@ -33,6 +35,19 @@ public class JKind {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
+	}
+
+	private static Program setMainNode(Program program, String main) {
+		if (main == null) {
+			return program;
+		}
+
+		boolean hasMainNode = program.nodes.stream().anyMatch(n -> n.id.equals(main));
+		if (!hasMainNode) {
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "Unable to find main node '" + main + "'");
+		}
+
+		return new ProgramBuilder(program).setMain(main).build();
 	}
 
 	private static Specification getAnalysisSpec(Specification userSpec, JKindSettings settings) {

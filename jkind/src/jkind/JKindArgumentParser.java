@@ -16,13 +16,14 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
 	private static final String INTERVAL = "interval";
+	private static final String IVC = "ivc";
+	private static final String MAIN = "main";
 	private static final String N = "n";
 	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
-	private static final String IVC = "ivc";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -50,6 +51,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
+		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
@@ -97,6 +99,14 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.inductiveCounterexamples = true;
 		}
 
+		if (line.hasOption(IVC)) {
+			settings.reduceIvc = true;
+		}
+
+		if (line.hasOption(MAIN)) {
+			settings.main = line.getOptionValue(MAIN);
+		}
+
 		if (line.hasOption(NO_BMC)) {
 			settings.boundedModelChecking = false;
 		}
@@ -123,10 +133,6 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(READ_ADVICE)) {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
-		}
-
-		if (line.hasOption(IVC)) {
-			settings.reduceIvc = true;
 		}
 
 		if (line.hasOption(TIMEOUT)) {

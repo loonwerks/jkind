@@ -8,7 +8,8 @@ public class JKindSettings extends Settings {
 	public boolean excel = false;
 	public boolean xml = false;
 	public boolean xmlToStdout = false;
-	
+
+	public String main = null;
 	public boolean boundedModelChecking = true;
 	public boolean kInduction = true;
 	public boolean invariantGeneration = true;
