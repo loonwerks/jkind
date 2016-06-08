@@ -1,7 +1,10 @@
 package jkind.sexp;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Cons extends Sexp {
 	public final Sexp head;
@@ -27,6 +30,12 @@ public class Cons extends Sexp {
 
 	public Cons(List<Sexp> sexps) {
 		this(sexps.get(0), sexps.subList(1, sexps.size()));
+	}
+
+	public Cons(String head, String arg1, String... args) {
+		this.head = new Symbol(head);
+		Stream<String> argStream = Stream.concat(Stream.of(arg1), Arrays.stream(args));
+		this.args = argStream.map(Symbol::new).collect(toList());
 	}
 
 	@Override

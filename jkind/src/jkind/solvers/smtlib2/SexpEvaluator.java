@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.lustre.BinaryOp;
+import jkind.lustre.NamedType;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.IntegerValue;
@@ -94,8 +95,10 @@ public class SexpEvaluator {
 			return applyBinaryOp(args.get(0), BinaryOp.GREATER, args.get(1));
 		case "not":
 			return args.get(0).applyUnaryOp(UnaryOp.NOT);
+		case "to_int":
+			return Util.cast(NamedType.INT, args.get(0));
 		default:
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Unknown function: " + fn);
 		}
 	}
 

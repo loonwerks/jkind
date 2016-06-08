@@ -54,7 +54,8 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 		} else {
 			push();
 			send(new Cons("assert", new Cons("not", sexp)));
-			send(new Cons("check-sat"));
+			// We should use 'default' instead of 'smt' when Z3 4.4.2 is officially released
+			send(new Cons("check-sat-using", new Cons("then", "qfnra-nlsat", "smt")));
 		}
 
 		String status = readFromSolver();
