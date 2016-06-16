@@ -23,6 +23,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
+	private static final String IVCALL = "all_ivcs";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -50,6 +51,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
+		options.addOption(IVCALL, false,
+				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
@@ -128,6 +131,12 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(IVC)) {
 			settings.reduceIvc = true;
 		}
+		
+		if (line.hasOption(IVCALL)) {
+			settings.reduceIvc = false;
+			settings.allIvcs = true;
+		}
+
 
 		if (line.hasOption(TIMEOUT)) {
 			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
@@ -189,6 +198,13 @@ public class JKindArgumentParser extends ArgumentParser {
 				Output.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}
+		}
+		
+		if (settings.allIvcs) {
+			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
+				Output.warning(settings.solver
+						+ " does not support unsat-cores so IVC reduction will be slow");
+			} 
 		}
 
 		if (settings.smoothCounterexamples) {

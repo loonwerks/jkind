@@ -159,7 +159,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		if (!valid.isEmpty()) {
 			Itinerary itinerary = director.getValidMessageItinerary();
 			List<Expr> invariants = provenInvariants.getInvariants();
-			director.broadcast(new ValidMessage(getName(), valid, k, invariants, null, itinerary));
+			director.broadcast(new ValidMessage(getName(), valid, k, invariants, null, itinerary, null));
 		}
 	}
 

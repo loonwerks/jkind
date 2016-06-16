@@ -143,7 +143,7 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void sendValid(List<String> valid, int k) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), null, itinerary);
+		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), null, itinerary, null);
 		director.broadcast(vm);
 	}
 

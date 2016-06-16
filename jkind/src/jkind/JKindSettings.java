@@ -15,6 +15,7 @@ public class JKindSettings extends Settings {
     public int pdrMax = 1;
 	public boolean inductiveCounterexamples = false;
 	public boolean reduceIvc = false;
+	public boolean allIvcs = false;
 	public boolean smoothCounterexamples = false;
     public boolean intervalGeneralization = false;
     public boolean inline = true;

@@ -169,10 +169,6 @@ public class Director extends MessageHandler {
 			addEngine(new GraphInvariantGenerationEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.reduceIvc) {
-			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
-		}
-
 		if (settings.smoothCounterexamples) {
 			addEngine(new SmoothingEngine(analysisSpec, settings, this));
 		}
@@ -187,6 +183,14 @@ public class Director extends MessageHandler {
 
 		if (settings.readAdvice != null) {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
+		}
+		
+		if (settings.reduceIvc) {
+			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
+		}
+		
+		if (settings.allIvcs) { 
+			addEngine(new AllIvcComputerEngine(analysisSpec, settings, this));
 		}
 	}
 
@@ -282,7 +286,7 @@ public class Director extends MessageHandler {
 			adviceWriter.addInvariants(vm.invariants);
 		}
 
-		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
+		List<Expr> invariants = (settings.allIvcs || settings.reduceIvc) ? vm.invariants : Collections.emptyList();
 		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc);
 	}
 
@@ -407,6 +411,9 @@ public class Director extends MessageHandler {
 		List<EngineType> destinations = new ArrayList<>();
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
+		}
+		if (settings.allIvcs) {
+			destinations.add(EngineType.IVC_REDUCTION_ALL);
 		}
 		return new Itinerary(destinations);
 	}
