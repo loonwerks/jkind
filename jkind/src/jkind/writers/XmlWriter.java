@@ -15,6 +15,7 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.util.Tuple;
 import jkind.util.Util;
 
 public class XmlWriter extends Writer {
@@ -177,5 +178,12 @@ public class XmlWriter extends Writer {
 		out.println("    <K>" + k + "</K>");
 		out.println("  </Property>");
 		out.flush();
+	}
+
+	@Override
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
+			Set<String> ivc, Set<Tuple<Set<String>, List<String>>> allIvcs) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
+import jkind.util.Tuple;
 
 public abstract class Writer {
 	public abstract void begin();
@@ -25,4 +26,8 @@ public abstract class Writer {
 
 	// Used only by JRealiability
 	public abstract void writeInconsistent(String prop, String source, int k, double runtime);
+
+	public abstract void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
+			Set<String> ivc, Set<Tuple<Set<String>, List<String>>> allIvcs);
+
 }

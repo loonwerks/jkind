@@ -19,6 +19,7 @@ import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.results.layout.Layout;
 import jkind.results.layout.NodeLayout;
+import jkind.util.Tuple;
 
 public class ExcelWriter extends Writer {
 	private final File file;
@@ -78,5 +79,12 @@ public class ExcelWriter extends Writer {
 	@Override
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		properties.add(new InconsistentProperty(prop, source, k, runtime));
+	}
+
+	@Override
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
+			Set<String> ivc, Set<Tuple<Set<String>, List<String>>> allIvcs) {
+		// TODO Auto-generated method stub
+		
 	}
 }

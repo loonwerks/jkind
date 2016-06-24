@@ -3,16 +3,15 @@ package jkind.solvers.z3;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.MaxSatSolver;
+import jkind.solvers.MaxSatSolver; 
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.solvers.smtlib2.SmtLib2Solver; 
 
 public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	private final boolean linear;
@@ -83,13 +82,28 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	}
 
 	@Override
-	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+	public Result quickCheckSat(List<Symbol> activationLiterals) {
 		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver();
 		if (isSat(status)) {
 			return new SatResult();
 		} else if (isUnsat(status)) {
 			return new UnsatResult(getUnsatCore(activationLiterals));
+		} else {
+			return new UnknownResult();
+		}
+	}
+	
+	public Result checkSat(List<Symbol> activationLiterals) {
+		send(new Cons("check-sat", activationLiterals));
+		String status = readFromSolver(); 
+		
+		if (isSat(status)) {
+			send("(get-model)"); 
+			return new SatResult(parseModel(readFromSolver()));
+		} else if (isUnsat(status)) {
+			UnsatResult unsat =  new UnsatResult(getUnsatCore(activationLiterals));
+			return new UnsatResult(minimizeUnsatCore(unsat.getUnsatCore()));
 		} else {
 			return new UnknownResult();
 		}
@@ -153,7 +167,7 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	}
 
 	@Override
-	public Result maxsatQuery(Sexp query) {
+	public Result maxsatQuery(Sexp query) { 
 		return query(query);
 	}
 }

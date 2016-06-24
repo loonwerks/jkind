@@ -66,6 +66,8 @@ public class Director extends MessageHandler {
 	private Advice inputAdvice;
 	private AdviceWriter adviceWriter;
 
+	private MiniJKind miniJkind;
+
 	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec) {
 		this.settings = settings;
 		this.userSpec = userSpec;
@@ -86,7 +88,28 @@ public class Director extends MessageHandler {
 
 		initializeUnknowns(settings, analysisSpec.node.properties);
 	}
+	
+	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec, MiniJKind miniJkind) {
+		this.settings = settings;
+		this.userSpec = userSpec;
+		this.analysisSpec = analysisSpec;
+		this.miniJkind = miniJkind;
+		this.writer = getWriter();
+		this.startTime = System.currentTimeMillis();
+		this.remainingProperties.addAll(analysisSpec.node.properties);
 
+		if (settings.readAdvice != null) {
+			this.inputAdvice = AdviceReader.read(settings.readAdvice);
+		}
+
+		if (settings.writeAdvice != null) {
+			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
+			this.adviceWriter.addVarDecls(Util.getVarDecls(analysisSpec.node));
+		}
+
+		initializeUnknowns(settings, analysisSpec.node.properties);
+	}
+	 
 	private final Writer getWriter() {
 		try {
 			if (settings.excel) {
@@ -94,7 +117,10 @@ public class Director extends MessageHandler {
 			} else if (settings.xml) {
 				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap,
 						settings.xmlToStdout);
-			} else {
+			} else if (miniJkind != null){
+				return new ConsoleWriter(new NodeLayout(userSpec.node), miniJkind);
+			}
+			else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
 			}
 		} catch (IOException e) {
@@ -103,7 +129,9 @@ public class Director extends MessageHandler {
 	}
 
 	public int run() {
-		printHeader();
+		if(miniJkind == null){
+			printHeader();
+		}
 		writer.begin();
 		addShutdownHook();
 		createAndStartEngines();
@@ -286,8 +314,8 @@ public class Director extends MessageHandler {
 			adviceWriter.addInvariants(vm.invariants);
 		}
 
-		List<Expr> invariants = (settings.allIvcs || settings.reduceIvc) ? vm.invariants : Collections.emptyList();
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc);
+		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
+		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc, vm.allIvcs);
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {
@@ -434,7 +462,7 @@ public class Director extends MessageHandler {
 	}
 
 	private void printSummary() {
-		if (!settings.xmlToStdout) {
+		if (!settings.xmlToStdout && !MiniJKind.active) {
 			Output.println("    -------------------------------------");
 			Output.println("    --^^--        SUMMARY          --^^--");
 			Output.println("    -------------------------------------");

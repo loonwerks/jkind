@@ -5,19 +5,20 @@ import java.util.List;
 import java.util.Set;
 
 import jkind.lustre.Expr;
+import jkind.util.Tuple;
 import jkind.util.Util;
 
 public class ValidMessage extends Message {
 	public final String source;
 	public final List<String> valid;
 	public final Set<String> ivc;
-	public final Set<Set<String>> allIvcs;
+	public final Set<Tuple<Set<String>, List<String>>> allIvcs;
 	public final int k;
 	public final List<Expr> invariants;
 	private final Itinerary itinerary;
 
 	public ValidMessage(String source, List<String> valid, int k, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, Set<Set<String>> allIvcs) {
+			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs) {
 		this.source = source;
 		this.valid = Util.safeList(valid);
 		this.k = k;
@@ -28,7 +29,7 @@ public class ValidMessage extends Message {
 	}
 
 	public ValidMessage(String source, String valid, int k, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, Set<Set<String>> allIvcs) {
+			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs) {
 		this(source, Collections.singletonList(valid), k, invariants, ivc, itinerary, allIvcs);
 	}
 

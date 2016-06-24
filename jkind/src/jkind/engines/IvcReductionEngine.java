@@ -34,7 +34,7 @@ import jkind.util.SexpUtil;
 
 public class IvcReductionEngine extends SolverBasedEngine {
 	public static final String NAME = "ivc-reduction";
-	protected final LinkedBiMap<String, Symbol> ivcMap;
+	private final LinkedBiMap<String, Symbol> ivcMap;
 
 	public IvcReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -58,15 +58,15 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		processMessagesAndWaitUntil(() -> properties.isEmpty());
 	}
 
-	protected void reduce(ValidMessage vm) {
+	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				reduce(getInvariantByName(property, vm.invariants), vm);
+				reduceInvariants(getInvariantByName(property, vm.invariants), vm);
 			}
 		}
 	}
 
-	protected Expr getInvariantByName(String name, List<Expr> invariants) {
+	private Expr getInvariantByName(String name, List<Expr> invariants) {
 		for (Expr invariant : invariants) {
 			if (invariant.toString().equals(name)) {
 				return invariant;
@@ -75,28 +75,26 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 		throw new JKindException("Unable to find property " + name + " during reduction");
 	}
-	
-	protected void reduce (Expr property, ValidMessage vm){
-		Set<Expr> irreducible = new HashSet<>(); 
-		
-		solver.push(); 
 
-		irreducible.add(property); 
-		
+	private void reduceInvariants(Expr property, ValidMessage vm) {
+		comment("Reducing invariants for: " + property);
+		solver.push();
+		solver.assertSexp(SexpUtil.conjoin(ivcMap.valueList()));
+
+		LinkedBiMap<Symbol, Expr> candidates = createActivationLiterals(vm.invariants, "inv");
+
+		Set<Expr> irreducible = new HashSet<>();
+		irreducible.add(property);
+		candidates.inverse().remove(property);
+
 		int k = 0;
 		createVariables(-1);
 		createVariables(0);
-		assertInductiveTransition(0); 
-		for (Expr inv : vm.invariants) {
-			solver.assertSexp(inv.accept(new Lustre2Sexp(-1)));
-		}
-		
-		List<Symbol> unsatCore1;
-		comment("INDUCTIVE STEP-- Reducing ivc for: " + property);
-		
+		assertInductiveTransition(0);
+
 		while (true) {
 			Sexp query = SexpUtil.conjoinInvariants(irreducible, k);
-			Result result = solver.unsatQuery(ivcMap.valueList(), query);
+			Result result = solver.unsatQuery(candidates.keyList(), query);
 
 			if (result instanceof SatResult) {
 				/*
@@ -107,8 +105,8 @@ public class IvcReductionEngine extends SolverBasedEngine {
 				for (Expr inv : irreducible) {
 					solver.assertSexp(inv.accept(new Lustre2Sexp(k)));
 				}
-				for (Expr inv: vm.invariants) {
-					solver.assertSexp(inv.accept(new Lustre2Sexp(k)));
+				for (Entry<Symbol, Expr> entry : candidates.entrySet()) {
+					solver.assertSexp(createConditional(entry, k));
 				}
 				k++;
 				createVariables(k);
@@ -123,38 +121,58 @@ public class IvcReductionEngine extends SolverBasedEngine {
 				 * those.
 				 */
 
-				unsatCore1 = ((UnsatResult) result).getUnsatCore();
-				break; 
-				
+				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
+				if (unsatCore.isEmpty()) {
+					break;
+				}
+				for (Symbol core : unsatCore) {
+					irreducible.add(candidates.remove(core));
+					solver.assertSexp(core);
+				}
 			} else if (result instanceof UnknownResult) {
 				throw new JKindException("Unknown result in invariant reducer");
 			}
 		}
 
 		solver.pop();
+		reduceIvc(property, k, new ArrayList<>(irreducible), vm);
+	}
+
+	private void reduceIvc(Expr property, int k, List<Expr> invariants, ValidMessage vm) {
+		if (spec.node.ivc.isEmpty()) {
+			sendValid(property.toString(), k, invariants, Collections.emptySet(), vm);
+			return;
+		}
+
+		comment("Reducing ivc for: " + property);
 		solver.push();
-		comment("BASE CASE-- Reducing ivc for: " + property);
+
 		createVariables(-1);
 		for (int i = 0; i <= k; i++) {
 			createVariables(i);
 		}
 		assertInductiveTransition(0);
-		Sexp base = getBaseIvcQuery(new ArrayList<>(irreducible), k);
-		Result result = solver.unsatQuery(ivcMap.valueList(), base);
+
+		Result result = solver.unsatQuery(ivcMap.valueList(), getIvcQuery(invariants, k));
 		if (!(result instanceof UnsatResult)) {
 			throw new JKindException("Trying to reduce IVC on falsifiable property");
 		}
-		List<Symbol> unsatCore2 = ((UnsatResult) result).getUnsatCore();
+		List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 		solver.pop();
-		
-		Set<Symbol> unsatCore = new HashSet<>();
-		unsatCore.addAll(unsatCore1);
-		unsatCore.addAll(unsatCore2);
-		sendValid(property.toString(), k, new ArrayList<>(irreducible),
-				                            getIvcNames(new ArrayList<>(unsatCore)), vm);
+
+		sendValid(property.toString(), k, invariants, getIvcNames(unsatCore), vm);
 	}
 
-	
+	private Sexp getIvcQuery(List<Expr> properties, int k) {
+		if (k == 0) {
+			return SexpUtil.conjoinInvariants(properties, k);
+		}
+
+		Sexp base = getBaseIvcQuery(properties, k);
+		Sexp inductiveStep = getStepIvcQuery(properties, k);
+		return new Cons("and", base, inductiveStep);
+	}
+
 	/**
 	 * Base step query for IVC reduction. Examples for k = 1, 2, 3:
 	 * 
@@ -172,14 +190,32 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		}
 		return new Cons("=>", INIT, query);
 	}
-	
-	protected Sexp createConditional(Entry<Symbol, Expr> entry, int k) {
+
+	/**
+	 * Inductive step query for IVC reduction. Examples for k = 1, 2, 3:
+	 * 
+	 * (P(0) and T(0, 1)) => P(1)
+	 * 
+	 * (P(0) and T(0, 1) and P(1) and T(1, 2)) => P(2)
+	 *
+	 * (P(0) and T(0, 1) and P(1) and T(1, 2) and P(2) and T(2, 3)) => P(3)
+	 */
+	private Sexp getStepIvcQuery(List<Expr> properties, int k) {
+		List<Sexp> hyps = new ArrayList<>();
+		for (int i = 0; i < k; i++) {
+			hyps.add(SexpUtil.conjoinInvariants(properties, i));
+			hyps.add(getInductiveTransition(i + 1));
+		}
+		return new Cons("=>", SexpUtil.conjoin(hyps), SexpUtil.conjoinInvariants(properties, k));
+	}
+
+	private Sexp createConditional(Entry<Symbol, Expr> entry, int k) {
 		Symbol actLit = entry.getKey();
 		Sexp inv = entry.getValue().accept(new Lustre2Sexp(k));
 		return new Cons("=>", actLit, inv);
 	}
 
-	protected <T> LinkedBiMap<Symbol, T> createActivationLiterals(List<T> elements, String prefix) {
+	private <T> LinkedBiMap<Symbol, T> createActivationLiterals(List<T> elements, String prefix) {
 		LinkedBiMap<Symbol, T> map = new LinkedBiMap<>();
 		int i = 0;
 		for (T element : elements) {
@@ -188,7 +224,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		return map;
 	}
 
-	protected Set<String> getIvcNames(List<Symbol> symbols) {
+	private Set<String> getIvcNames(List<Symbol> symbols) {
 		Set<String> result = new HashSet<>();
 		for (Symbol s : symbols) {
 			result.add(ivcMap.inverse().get(s));
@@ -196,19 +232,23 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		return result;
 	}
 
-	protected void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
+	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());
 		}
 		comment("IVC: " + ivc.toString());
-		
+
 		Itinerary itinerary = vm.getNextItinerary();
-		
-		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc),
+		if(settings.allIvcs){
+		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc,
 				itinerary, null));
-		
+		}
+		else {
+			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc),
+					itinerary, null));
+		}
 	}
 
 	private Set<String> trimNode(Set<String> arg) {

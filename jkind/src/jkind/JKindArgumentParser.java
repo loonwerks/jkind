@@ -133,7 +133,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 		
 		if (line.hasOption(IVCALL)) {
-			settings.reduceIvc = false;
+			settings.reduceIvc = true;
 			settings.allIvcs = true;
 		}
 
@@ -200,11 +200,19 @@ public class JKindArgumentParser extends ArgumentParser {
 			}
 		}
 		
-		if (settings.allIvcs) {
+		if (settings.allIvcs) { 
+			if (settings.solver != SolverOption.Z3) {
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
+				 						+ settings.solver);
+				 			}
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				Output.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			} 
+			if (settings.xml) {
+				Output.warning("XML generation is not supported for -all_ivcs option");
+				settings.xml = false;
+			}
 		}
 
 		if (settings.smoothCounterexamples) {
