@@ -232,8 +232,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));
 		}
-
-		System.out.println(all);
+ 
 		Itinerary itinerary = vm.getNextItinerary();
 		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, all)); 
 	}
