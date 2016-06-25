@@ -8,8 +8,6 @@ import java.util.List;
 import jkind.engines.SolverUtil;
 import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
-import jkind.slicing.LustreSlicer;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -34,6 +32,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
+	private static final String ALL_ASSIGNED = "all_assigned";
 
 	private final JKindSettings settings;
 
@@ -57,6 +56,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_SLICING, false, "deactivate JKind slicing");
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
+		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
 		options.addOption(IVC_ALL2, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
@@ -138,6 +138,12 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.noSlicing = true; 
 		}
 		
+		if (line.hasOption(ALL_ASSIGNED)){
+			if (line.hasOption(IVC) || line.hasOption(IVC_ALL) || line.hasOption(IVC_ALL2)) {
+				settings.allAssigned = true;
+			}
+		}
+		
 		if (line.hasOption(IVC)) {
 			settings.reduceIvc = true;
 		}
@@ -214,6 +220,9 @@ public class JKindArgumentParser extends ArgumentParser {
 				Output.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}
+			if(! settings.allAssigned){
+				Output.warning("-all_assigned option is inactive: use this option to mark all equations as __%IVC elements");
+			}
 		}
 		
 		if (settings.allIvcs || settings.allIvcs2) { 
@@ -228,6 +237,9 @@ public class JKindArgumentParser extends ArgumentParser {
 			if (settings.xml) {
 				Output.warning("XML generation is not supported for -all_ivcs option");
 				settings.xml = false;
+			}
+			if(!settings.allAssigned && !settings.reduceIvc){
+				Output.warning("-all_assigned option is inactive: use this option to mark all equations as __%IVC elements");
 			}
 		}
 

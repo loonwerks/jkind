@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set; 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.Output;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -69,7 +70,13 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void reduce(ValidMessage vm) { 
+		
 		for (String property : vm.valid) {
+			if (spec.node.ivc.isEmpty()) {
+				Output.warning(NAME + ": __%IVC option has no argument for property  "+ property.toString());
+				sendValid(property.toString(), vm);
+				return;
+			}
 			if (properties.remove(property)) {
 				computeAllIvcs(getInvariantByName(property, vm.invariants), vm);
 			}
@@ -108,7 +115,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		
 		// optional-- could be commented later:
 		//js.scratch = true;
-		js.noSlicing = true;
+		js.noSlicing = settings.noSlicing;
+		js.allAssigned = settings.allAssigned;
 		
 		List <String> wantedElem = getIvcNames(new ArrayList<> (seed)); 
 		Node nodeSpec = unassign(spec.node, wantedElem); 

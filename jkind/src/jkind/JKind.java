@@ -29,7 +29,9 @@ public class JKind {
 			}
 
 			Node main = Translate.translate(program);
-			main = setIvcArgs(main, getAllAssigned(main));
+			if(settings.allAssigned){
+				main = setIvcArgs(main, getAllAssigned(main));
+			}
 			Specification userSpec = new Specification(main, settings.noSlicing);
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
