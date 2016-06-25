@@ -29,8 +29,8 @@ public class JKind {
 			}
 
 			Node main = Translate.translate(program);
-			main = setSupport(main, getAllAssigned(main));
-			Specification userSpec = new Specification(main);
+			main = setIvcArgs(main, getAllAssigned(main));
+			Specification userSpec = new Specification(main, settings.noSlicing);
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
 			new Director(settings, userSpec, analysisSpec).run();
@@ -48,14 +48,14 @@ public class JKind {
 		return result;
 	}
 
-	private static Node setSupport(Node node, List<String> newSupport) {
+	private static Node setIvcArgs(Node node, List<String> newSupport) {
 		return new NodeBuilder(node).clearIvc().addIvcs(newSupport).build();
 	}
 
 	private static Specification getAnalysisSpec(Specification userSpec, JKindSettings settings) {
 		if (settings.inline) {
 			Node inlined = InlineSimpleEquations.node(userSpec.node);
-			return new Specification(inlined);
+			return new Specification(inlined, settings.noSlicing);
 		} else {
 			return userSpec;
 		}

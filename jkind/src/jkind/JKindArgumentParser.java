@@ -8,6 +8,7 @@ import java.util.List;
 import jkind.engines.SolverUtil;
 import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
+import jkind.slicing.LustreSlicer;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -23,8 +24,9 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
-	private static final String IVCALL = "all_ivcs";
-	private static final String IVCALL2 = "all_ivcs_2";
+	private static final String IVC_ALL = "all_ivcs";
+	private static final String IVC_ALL2 = "all_ivcs_2";
+	private static final String NO_SLICING = "no_slicing";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -52,9 +54,10 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
-		options.addOption(IVCALL, false,
+		options.addOption(NO_SLICING, false, "deactivate JKind slicing");
+		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
-		options.addOption(IVCALL2, false,
+		options.addOption(IVC_ALL2, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
@@ -131,16 +134,20 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
 		}
 
+		if (line.hasOption(NO_SLICING)) {
+			settings.noSlicing = true; 
+		}
+		
 		if (line.hasOption(IVC)) {
 			settings.reduceIvc = true;
 		}
 		
-		if (line.hasOption(IVCALL)) {
+		if (line.hasOption(IVC_ALL)) {
 			settings.reduceIvc = true;
 			settings.allIvcs = true;
 		}
 		
-		if (line.hasOption(IVCALL2)) {
+		if (line.hasOption(IVC_ALL2)) {
 			settings.reduceIvc = true;
 			settings.allIvcs = false;
 			settings.allIvcs2 = true; 

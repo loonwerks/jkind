@@ -14,10 +14,20 @@ public class Specification {
 	public final Map<String, Type> typeMap;
 	private Relation transitionRelation;
 	private Relation ivcTransitionRelation;
-
+	
 	public Specification(Node raw) {
 		this.dependencyMap = new DependencyMap(raw, raw.properties);
 		this.node = LustreSlicer.slice(raw, dependencyMap);
+		this.typeMap = Util.getTypeMap(node);
+	}
+	
+	public Specification(Node raw, boolean noSlicing) {
+		this.dependencyMap = new DependencyMap(raw, raw.properties);
+		if(! noSlicing){
+			this.node = LustreSlicer.slice(raw, dependencyMap);
+		}else{
+			this.node = raw;
+		}
 		this.typeMap = Util.getTypeMap(node);
 	}
 

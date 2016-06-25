@@ -89,7 +89,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		map = blockUp(seed);
 		
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed)){
+		while(checkMapSatisfiability(map, seed)){ 
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
@@ -104,11 +104,16 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	
 	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder) {
 		JKindSettings js = new JKindSettings();
-		js.reduceIvc = true;  
+		js.reduceIvc = true; 
+		
+		// optional-- could be commented later:
+		//js.scratch = true;
+		js.noSlicing = true;
+		
 		List <String> wantedElem = getIvcNames(new ArrayList<> (seed)); 
 		Node nodeSpec = unassign(spec.node, wantedElem); 
 		
-		Specification newSpec = new Specification(nodeSpec);  
+		Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
  
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 			miniJkind.verify();
@@ -185,6 +190,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				temp.remove(literal);
 			}
 		}
+		
 		return new ArrayList<>(seed); 
 	}
 
@@ -269,6 +275,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		builder.clearLocals().addLocals(locals);
 		builder.clearOutputs().addOutputs(outputs);
 		builder.clearEquations().addEquations(equations);
+		builder.clearIvc().addIvcs(vars);
 		return builder.build();
 	}
 

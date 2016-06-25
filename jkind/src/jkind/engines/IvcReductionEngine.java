@@ -38,7 +38,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	public IvcReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
-		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc);
+		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
 	}
 
 	@Override
