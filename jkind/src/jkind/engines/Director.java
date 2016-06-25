@@ -72,7 +72,7 @@ public class Director extends MessageHandler {
 		this.settings = settings;
 		this.userSpec = userSpec;
 		this.analysisSpec = analysisSpec;
-
+		this.miniJkind = null;
 		this.writer = getWriter();
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(analysisSpec.node.properties);
@@ -220,6 +220,9 @@ public class Director extends MessageHandler {
 		if (settings.allIvcs) { 
 			addEngine(new AllIvcComputerEngine(analysisSpec, settings, this));
 		}
+		if (settings.allIvcsFast) { 
+			addEngine(new AllIvcComputerFastEngine(analysisSpec, settings, this));
+		}
 	}
 
 	private void addEngine(Engine engine) {
@@ -315,6 +318,7 @@ public class Director extends MessageHandler {
 		}
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
+
 		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc, vm.allIvcs);
 	}
 
@@ -442,6 +446,9 @@ public class Director extends MessageHandler {
 		}
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);
+		}
+		if (settings.allIvcsFast) {
+			destinations.add(EngineType.IVC_REDUCTION_ALL_FAST);
 		}
 		return new Itinerary(destinations);
 	}

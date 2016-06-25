@@ -24,6 +24,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
 	private static final String IVCALL = "all_ivcs";
+	private static final String IVCALLFAST = "all_ivcs_fast";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -52,6 +53,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
 		options.addOption(IVCALL, false,
+				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
+		options.addOption(IVCALLFAST, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
@@ -136,6 +139,13 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.reduceIvc = true;
 			settings.allIvcs = true;
 		}
+		
+		if (line.hasOption(IVCALLFAST)) {
+			settings.reduceIvc = true;
+			settings.allIvcs = false;
+			settings.allIvcsFast = true;
+			settings.writeAdvice = line.getOptionValue(WRITE_ADVICE);
+		}
 
 
 		if (line.hasOption(TIMEOUT)) {
@@ -200,7 +210,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			}
 		}
 		
-		if (settings.allIvcs) { 
+		if (settings.allIvcs || settings.allIvcsFast) { 
 			if (settings.solver != SolverOption.Z3) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
 				 						+ settings.solver);

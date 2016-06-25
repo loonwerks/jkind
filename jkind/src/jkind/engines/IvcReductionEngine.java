@@ -241,7 +241,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 
 		Itinerary itinerary = vm.getNextItinerary();
-		if(settings.allIvcs){
+		if(settings.allIvcs || settings.allIvcsFast){
 		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc,
 				itinerary, null));
 		}
