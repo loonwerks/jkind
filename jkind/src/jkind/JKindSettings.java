@@ -25,5 +25,5 @@ public class JKindSettings extends Settings {
 
 	public String writeAdvice = null;
 	public String readAdvice = null;
-	public boolean allIvcsFast = false;
+	public boolean allIvcs2 = false;
 }

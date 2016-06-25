@@ -3,17 +3,13 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashSet; 
 import java.util.List; 
 import java.util.Set;
 import java.util.Map.Entry;
 
 import jkind.JKindException;
-import jkind.JKindSettings;
-import jkind.SolverOption;
-import jkind.advice.Advice;
-import jkind.advice.AdviceReader;
+import jkind.JKindSettings;  
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -21,13 +17,11 @@ import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
-import jkind.engines.messages.ValidMessage; 
-import jkind.lustre.Equation;
-import jkind.lustre.Expr; 
-import jkind.lustre.NamedType;
-import jkind.lustre.Node;
-import jkind.lustre.VarDecl;
-import jkind.lustre.builders.NodeBuilder; 
+import jkind.engines.messages.ValidMessage;  
+import jkind.lustre.Expr;
+import jkind.lustre.LustreUtil;
+import jkind.lustre.NamedType; 
+import jkind.lustre.VarDecl;  
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -44,14 +38,14 @@ import jkind.util.SexpUtil;
 import jkind.util.Tuple;
 import jkind.util.Util;
 
-public class AllIvcComputerFastEngine extends SolverBasedEngine {
-	public static final String NAME = "all-ivc-fast-computer";
+public class AllIvcComputerEngine2 extends SolverBasedEngine {
+	public static final String NAME = "all-ivc-slow-computer";
 	private final LinkedBiMap<String, Symbol> ivcMap;
 	private Z3Solver z3Solver;	 
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
-	public AllIvcComputerFastEngine(Specification spec, JKindSettings settings, Director director) {
+	public AllIvcComputerEngine2(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
 		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
 	}
@@ -97,7 +91,7 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 		z3Solver.push();
 		while(checkMapSatisfiability(map, seed)){
 			resultOfIvcFinder.clear();
-			if (ivcFinder(seed, resultOfIvcFinder, property.toString())){
+			if (ivcFinder(seed, resultOfIvcFinder, property.toString(), vm)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
 			}else{
 				map = new Cons("and", map, blockDown(getIvcLiterals(resultOfIvcFinder))); 
@@ -108,18 +102,18 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 		sendValid(property.toString(), vm);
 	}
 	
-	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder, String property) {
+	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder, String property, ValidMessage vm) {
 		List <String> wantedElem = getIvcNames(new ArrayList<> (seed)); 
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);  
  
-		IvcReduction ivcReducer = new IvcReduction(property, getIvcLiterals(deactivate)); 
+		IvcReduction ivcReducer = new IvcReduction(property, getIvcLiterals(deactivate), vm); 
 		if(ivcReducer.getPropertyStatus() == IvcReduction.VALID){
 			resultOfIvcFinder.addAll(ivcReducer.getIvc());
 			Set<String> newIvc = new HashSet<>(resultOfIvcFinder);
 			allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, ivcReducer.getInvariants()));
- 
+           
 			return true;
 		}
 		else{
@@ -234,7 +228,7 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));
 		}
- 
+		
 		Itinerary itinerary = vm.getNextItinerary();
 		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, all)); 
 	}
@@ -270,39 +264,44 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 
 	@Override
 	protected void handleMessage(ValidMessage vm) {
-		if (vm.getNextDestination() == EngineType.IVC_REDUCTION_ALL) {
+		if (vm.getNextDestination() == EngineType.IVC_REDUCTION_ALL_2) {
 			reduce(vm);
 		}
 	}
 	
-	private class IvcReduction {
-		private Advice inputAdvice;
+	private class IvcReduction { 
 		private final List<Expr> potentialInvariants;
 		private final String property; 
-		private Z3Solver internalSolver;
+		//private Z3Solver internalSolver;
  
 		public static final String INVALID = "INVALID";
 		public static final String VALID = "VALID";
+		public static final String UNKNOWN = "UNKNOWN";
 		public static final String NOT_YET_CHECKED = "NOT_YET_CHECKED";
 		private String status = NOT_YET_CHECKED;
 		private List<Symbol> ivcLiterals = new ArrayList<>();
+		private Z3Solver internalSolver;
 		
 		public int k;
 		public List<Expr> internalInvariants =  new ArrayList<>();
 		public Set<String> internalIvc = new HashSet<>();
 		
-		public IvcReduction(String property, Set<Symbol> deactivate) { 
-			this.inputAdvice = AdviceReader.read(settings.readAdvice);
-			this.potentialInvariants = inputAdvice.getInvariants();
+		public IvcReduction(String property, Set<Symbol> deactivate, ValidMessage vm) {  
+			this.potentialInvariants = vm.invariants;
 			this.property = property;  
-			
+			k = vm.k;
 			ivcLiterals.addAll(ivcMap.valueList());
 			ivcLiterals.removeAll(deactivate);
-			try {
-				Node emptyNode = new NodeBuilder("empty").build();
-				this.internalSolver = (Z3Solver) SolverUtil.getSolver(SolverOption.Z3, null, emptyNode);
-			} catch (JKindException e) {
-			} 
+			 
+			this.internalSolver = new Z3Solver("internal_reduction", true);
+			internalSolver.initialize(); 
+			
+			for (Symbol e : ivcMap.values()) {
+				internalSolver.define(new VarDecl(e.str, NamedType.BOOL));
+			}
+			
+			internalSolver.define(spec.getIvcTransitionRelation());
+			internalSolver.define(new VarDecl(INIT.str, NamedType.BOOL)); 
 			reduce();
 		}
 		
@@ -321,25 +320,28 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 			irreducible.add(property);
 			candidates.inverse().remove(property);
 
-			int k = 0;
-			createVariables(-1);
-			createVariables(0);
-			assertInductiveTransition(0);
+			int st = 0;
+			this.createVariables(-1);
+			this.createVariables(0);
+			this.assertInductiveTransition(0);
 
 			while (true) {
-				Sexp query = SexpUtil.conjoinInvariants(irreducible, k);
+				Sexp query = SexpUtil.conjoinInvariants(irreducible, st);
 				Result result = internalSolver.unsatQuery(candidates.keyList(), query);
-
+				if (st > (k + 30)){
+					status = UNKNOWN;
+					return;
+				}
 				if (result instanceof SatResult) { 
 					for (Expr inv : irreducible) {
-						internalSolver.assertSexp(inv.accept(new Lustre2Sexp(k)));
+						internalSolver.assertSexp(inv.accept(new Lustre2Sexp(st)));
 					}
 					for (Entry<Symbol, Expr> entry : candidates.entrySet()) {
-						internalSolver.assertSexp(createConditional(entry, k));
+						internalSolver.assertSexp(createConditional(entry, st));
 					}
-					k++;
-					createVariables(k);
-					assertInductiveTransition(k);
+					st++;
+					this.createVariables(st);
+					this.assertInductiveTransition(st);
 				} else if (result instanceof UnsatResult) {
 
 					List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
@@ -351,28 +353,28 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 						internalSolver.assertSexp(core);
 					}
 				} else if (result instanceof UnknownResult) {
-					throw new JKindException("Unknown result in invariant reducer");
+					 status = UNKNOWN; 
 				}
 			}
 
 			internalSolver.pop();
-			reduceIvc(property, k, new ArrayList<>(irreducible));
+			reduceIvc(property, st, new ArrayList<>(irreducible));
 		}
 		
 		private void reduceIvc(Expr property, int k, List<Expr> invariants) {
+			
 			if (spec.node.ivc.isEmpty()) {
-				getResult(k, invariants, Collections.emptySet());
+				getResult(k, invariants, Collections.emptySet()); 
 				return;
-			}
- 
+			} 
 			internalSolver.push();
 
-			createVariables(-1);
+			this.createVariables(-1);
 			for (int i = 0; i <= k; i++) {
-				createVariables(i);
+				this.createVariables(i);
 			}
-			assertInductiveTransition(0);
-
+			this.assertInductiveTransition(0);
+ 
 			Result result = internalSolver.unsatQuery(ivcLiterals, getIvcQuery(invariants, k));
 			if (!(result instanceof UnsatResult)) {
 				status = INVALID;
@@ -441,7 +443,24 @@ public class AllIvcComputerFastEngine extends SolverBasedEngine {
 		public String getPropertyStatus() {
 			return status;
 		}
+		
+		private void assertInductiveTransition(int k) {
+			internalSolver.assertSexp(getInductiveTransition(k));
+		}
+		
+		private void createVariables(int k) {
+			for (VarDecl vd : getOffsetVarDecls(k)) {
+				internalSolver.define(vd);
+			}
 
+			for (VarDecl vd : Util.getVarDecls(spec.node)) {
+				Expr constraint = LustreUtil.typeConstraint(vd.id, vd.type);
+				if (constraint != null) {
+					internalSolver.assertSexp(constraint.accept(new Lustre2Sexp(k)));
+				}
+			}
+		}
+		 
 		private <T> LinkedBiMap<Symbol, T> createActivationLiterals(List<T> elements, String prefix) {
 			LinkedBiMap<Symbol, T> map = new LinkedBiMap<>();
 			int i = 0;

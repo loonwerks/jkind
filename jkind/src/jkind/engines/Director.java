@@ -220,8 +220,8 @@ public class Director extends MessageHandler {
 		if (settings.allIvcs) { 
 			addEngine(new AllIvcComputerEngine(analysisSpec, settings, this));
 		}
-		if (settings.allIvcsFast) { 
-			addEngine(new AllIvcComputerFastEngine(analysisSpec, settings, this));
+		if (settings.allIvcs2) { 
+			addEngine(new AllIvcComputerEngine2(analysisSpec, settings, this));
 		}
 	}
 
@@ -447,8 +447,8 @@ public class Director extends MessageHandler {
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);
 		}
-		if (settings.allIvcsFast) {
-			destinations.add(EngineType.IVC_REDUCTION_ALL_FAST);
+		if (settings.allIvcs2) {
+			destinations.add(EngineType.IVC_REDUCTION_ALL_2);
 		}
 		return new Itinerary(destinations);
 	}
