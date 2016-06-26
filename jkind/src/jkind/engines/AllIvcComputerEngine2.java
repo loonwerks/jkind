@@ -312,7 +312,7 @@ public class AllIvcComputerEngine2 extends SolverBasedEngine {
 		private void reduceInvariants(Expr property) { 
 			internalSolver.push();
 			
-			internalSolver.assertSexp(SexpUtil.conjoin(ivcMap.valueList()));
+			internalSolver.assertSexp(SexpUtil.conjoin(ivcLiterals));
 
 			LinkedBiMap<Symbol, Expr> candidates = createActivationLiterals(potentialInvariants, "inv");
 
@@ -328,10 +328,10 @@ public class AllIvcComputerEngine2 extends SolverBasedEngine {
 			while (true) {
 				Sexp query = SexpUtil.conjoinInvariants(irreducible, st);
 				Result result = internalSolver.unsatQuery(candidates.keyList(), query);
-				//if (st > (k + 30)){
-					//status = UNKNOWN;
-					//return;
-				//}
+				if (st > (k + 30)){
+					status = UNKNOWN;
+					return;
+				}
 				if (result instanceof SatResult) { 
 					for (Expr inv : irreducible) {
 						internalSolver.assertSexp(inv.accept(new Lustre2Sexp(st)));
