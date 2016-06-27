@@ -45,6 +45,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Z3Solver z3Solver;	 
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
 	private Set<String> mustElements = new HashSet<>();
+	private Set<String> mustChckList = new HashSet<>();
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
@@ -107,9 +108,34 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		
 		z3Solver.pop();
+		processMustElements();
 		sendValid(property.toString(), vm);
 	}
 	
+	private void processMustElements() {
+		JKindSettings js = new JKindSettings();
+		js.reduceIvc = true; 
+		js.noSlicing = settings.noSlicing;
+		js.allAssigned = settings.allAssigned; 
+		
+		for(String core : mustChckList){
+			List<String> wantedElem = new ArrayList<>();
+			wantedElem.addAll(ivcMap.keyList());
+			wantedElem.remove(core);
+			List<String> deactivate = new ArrayList<String>();
+			deactivate.add(core);
+			Node nodeSpec = unassign(spec.node, wantedElem, deactivate);  	
+			Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
+	 
+			MiniJKind miniJkind = new MiniJKind (newSpec, js);
+			miniJkind.verify();
+			if(miniJkind.getPropertyStatus() != MiniJKind.VALID){
+				mustElements.add(core);
+			}
+		}
+		// we can improve the coverage of the algorithm after this post-processing
+	}
+
 	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
@@ -137,7 +163,13 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		else{
 			resultOfIvcFinder.addAll(wantedElem); 
-			mustElements.addAll(deactivate);
+			if(deactivate.size() == 1){
+				mustElements.addAll(deactivate);
+			}
+			else{
+				deactivate.removeAll(mustElements);
+				mustChckList.addAll(deactivate);
+			}
 			return false;
 		} 
 	}
