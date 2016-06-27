@@ -55,16 +55,18 @@ public class ConsoleWriter extends Writer {
 					System.out.println("  " + invariant);
 				}
 			}
-				if (!ivc.isEmpty()) {
-					System.out.println("INDUCTIVE VALIDITY CORE:");
-					for (String e : Util.safeStringSortedSet(ivc)) {
-						System.out.println("  " + e);
-					}
-				}
-				if (!allIvcs.isEmpty()) {
+			if (!allIvcs.isEmpty()) {
 					int counter = 1;
 					System.out.println(allIvcs.size() + " INDUCTIVE VALIDITY CORE WAS FOUND:");
 					System.out.println("============================");
+					
+					if (!ivc.isEmpty()) {
+						System.out.println("MUST ELEMENTS FOR THE PROPERTY:");
+						for (String e : Util.safeStringSortedSet(ivc)) {
+							System.out.println("  " + e);
+						}
+					}
+					
 					for (Tuple<Set<String>, List<String>> t : allIvcs) {
 						System.out.println("IVC  #" + counter + ":");
 						counter++;
@@ -79,6 +81,12 @@ public class ConsoleWriter extends Writer {
 						System.out.println("============================");
 					}
 				}
+			else if (!ivc.isEmpty()) {
+				System.out.println("INDUCTIVE VALIDITY CORE:");
+				for (String e : Util.safeStringSortedSet(ivc)) {
+					System.out.println("  " + e);
+				}
+			}
 				writeLine();
 				System.out.println();
 		}

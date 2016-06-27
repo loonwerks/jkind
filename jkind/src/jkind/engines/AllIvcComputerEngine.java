@@ -44,6 +44,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private final LinkedBiMap<String, Symbol> ivcMap;
 	private Z3Solver z3Solver;	 
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
+	private Set<String> mustElements = new HashSet<>();
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
@@ -96,7 +97,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		map = blockUp(seed);
 		
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed)){ 
+		while(checkMapSatisfiability(map, seed)){
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
@@ -119,8 +120,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		js.allAssigned = settings.allAssigned;
 		
 		List <String> wantedElem = getIvcNames(new ArrayList<> (seed)); 
-		Node nodeSpec = unassign(spec.node, wantedElem); 
-		
+		List<String> deactivate = new ArrayList<>();
+		deactivate.addAll(ivcMap.keyList());
+		deactivate.removeAll(wantedElem);
+		Node nodeSpec = unassign(spec.node, wantedElem, deactivate);  	
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
  
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
@@ -134,6 +137,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		else{
 			resultOfIvcFinder.addAll(wantedElem); 
+			mustElements.addAll(deactivate);
 			return false;
 		} 
 	}
@@ -198,7 +202,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				temp.remove(literal);
 			}
 		}
-		
+
 		return new ArrayList<>(seed); 
 	}
 
@@ -248,7 +252,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
  
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, all)); 
+		director.broadcast(new ValidMessage(vm.source, valid, 0, null, mustElements , itinerary, all)); 
 	}
 	private Set<String> trimNode(Set<String> arg) {
 		Set<String> ivc = new HashSet<>();
@@ -258,11 +262,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return ivc;
 	}
 	
-	private Node unassign(Node node, List<String> vars) {
+	private Node unassign(Node node, List<String> vars, List<String> deactivate) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
-		List<String> deactivate = new ArrayList<>();
-		deactivate.addAll(ivcMap.keyList());
-		deactivate.removeAll(vars);
+		
 		for(String v : deactivate){
 			inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v))); 
 		}
