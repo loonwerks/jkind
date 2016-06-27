@@ -182,7 +182,7 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
-			Set<String> ivc, Set<Tuple<Set<String>, List<String>>> allIvcs) {
+			Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		// TODO Auto-generated method stub
 		
 	}

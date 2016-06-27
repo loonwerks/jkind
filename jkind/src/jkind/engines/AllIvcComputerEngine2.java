@@ -224,7 +224,7 @@ public class AllIvcComputerEngine2 extends SolverBasedEngine {
 	private void sendValid(String valid, ValidMessage vm) {
 		MiniJKind.active = false;
 		comment("Sending " + valid);
-		Set<Tuple<Set<String>, List<String>>> all = new HashSet<>(); 
+		List<Tuple<Set<String>, List<String>>> all = new ArrayList<>(); 
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));
 		}

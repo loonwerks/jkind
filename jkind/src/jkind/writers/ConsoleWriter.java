@@ -40,7 +40,7 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc, Set<Tuple<Set<String>, List<String>>> allIvcs) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		if(miniJkind != null){
 			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());
 			miniJkind.getValid(Util.safeStringSortedSet(ivc), Util.safeStringSortedSet(stringInvariants));

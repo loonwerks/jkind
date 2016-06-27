@@ -46,7 +46,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
 	private Set<String> mustElements = new HashSet<>();
 	
-	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
+	List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -152,7 +152,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			boolean remove = false;
 			int add = 0;
 			
-			//this could be too expensive. we may want to skip this check and just keep the else part of the loop
+			//this could get expensive. we may want to skip this check and just keep the if part after the loop
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){
 				int beingSubset = setInclusion(newIvc, curr.firstElement());
 				if(beingSubset == 1){
@@ -320,9 +320,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		MiniJKind.active = false;
 		comment("Sending " + valid);
 		comment("All IVC sets found: " + allIvcs.toString());
-		Set<Tuple<Set<String>, List<String>>> all = new HashSet<>(); 
+		List<Tuple<Set<String>, List<String>>> all = new ArrayList<>(); 
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));
 		}
  
