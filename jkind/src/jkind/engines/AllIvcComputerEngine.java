@@ -62,8 +62,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		for (Symbol e : ivcMap.values()) {
 			z3Solver.define(new VarDecl(e.str, NamedType.BOOL));
 		}
-		z3Solver.define(spec.getIvcTransitionRelation());
-		z3Solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}
 
 	@Override
