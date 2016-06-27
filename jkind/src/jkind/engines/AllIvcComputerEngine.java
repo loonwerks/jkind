@@ -45,7 +45,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Z3Solver z3Solver;	 
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
 	private Set<String> mustElements = new HashSet<>();
-	private Set<String> mustChckList = new HashSet<>();
+	
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
@@ -89,7 +89,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
 		Sexp map;
 		Set<Symbol> seed = new HashSet<Symbol>();
-		 
+		Set<String> mustChckList = new HashSet<>();
+		
 		List<String> resultOfIvcFinder = new ArrayList<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList()); 
 		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
@@ -100,7 +101,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		z3Solver.push();
 		while(checkMapSatisfiability(map, seed)){
 			resultOfIvcFinder.clear();
-			if (ivcFinder(seed, resultOfIvcFinder)){
+			if (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
 			}else{
 				map = new Cons("and", map, blockDown(getIvcLiterals(resultOfIvcFinder))); 
@@ -108,35 +109,25 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		
 		z3Solver.pop();
-		processMustElements();
+		processMustElements(mustChckList);
 		sendValid(property.toString(), vm);
 	}
 	
-	private void processMustElements() {
-		JKindSettings js = new JKindSettings();
-		js.reduceIvc = true; 
-		js.noSlicing = settings.noSlicing;
-		js.allAssigned = settings.allAssigned; 
+	private void processMustElements(Set<String> mustChckList) { 
 		
 		for(String core : mustChckList){
-			List<String> wantedElem = new ArrayList<>();
-			wantedElem.addAll(ivcMap.keyList());
-			wantedElem.remove(core);
+			Set<Symbol> wantedElem = new HashSet<>();
+			wantedElem.addAll(ivcMap.valueList());
+			wantedElem.remove(ivcMap.get(core));
 			List<String> deactivate = new ArrayList<String>();
 			deactivate.add(core);
-			Node nodeSpec = unassign(spec.node, wantedElem, deactivate);  	
-			Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
-	 
-			MiniJKind miniJkind = new MiniJKind (newSpec, js);
-			miniJkind.verify();
-			if(miniJkind.getPropertyStatus() != MiniJKind.VALID){
-				mustElements.add(core);
-			}
+			ivcFinder(wantedElem, new ArrayList<String>(), new HashSet<String>());
+			
 		}
 		// we can improve the coverage of the algorithm after this post-processing
 	}
 
-	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder) {
+	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		
