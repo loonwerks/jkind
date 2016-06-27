@@ -57,16 +57,15 @@ public class ConsoleWriter extends Writer {
 			}
 			if (!allIvcs.isEmpty()) {
 					int counter = 1;
-					System.out.println(allIvcs.size() + " INDUCTIVE VALIDITY CORE WAS FOUND:");
-					System.out.println("============================");
-					
+					System.out.println("\nINDUCTIVE VALIDITY CORES:\n");
 					if (!ivc.isEmpty()) {
 						System.out.println("MUST ELEMENTS FOR THE PROPERTY:");
 						for (String e : Util.safeStringSortedSet(ivc)) {
 							System.out.println("  " + e);
 						}
 					}
-					
+					System.out.println("\n"+ allIvcs.size() + " INDUCTIVE VALIDITY CORES WERE FOUND:");
+					System.out.println("============================");
 					for (Tuple<Set<String>, List<String>> t : allIvcs) {
 						System.out.println("IVC  #" + counter + ":");
 						counter++;
