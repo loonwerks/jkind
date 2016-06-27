@@ -45,6 +45,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Z3Solver z3Solver;	 
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
 	private Set<String> mustElements = new HashSet<>();
+	private Set<String> mayElements = new HashSet<>();
 	
 	List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>(); 
 
@@ -78,6 +79,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				return;
 			}
 			if (properties.remove(property)) {
+				mustElements.add(property);
 				computeAllIvcs(getInvariantByName(property, vm.invariants), vm);
 			}
 			
@@ -86,7 +88,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
 		Sexp map;
-		Set<Symbol> seed = new HashSet<Symbol>();
+		List<Symbol> seed = new ArrayList<Symbol>();
 		Set<String> mustChckList = new HashSet<>();
 		
 		List<String> resultOfIvcFinder = new ArrayList<>();
@@ -95,6 +97,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		 
 		seed.addAll(getIvcLiterals(new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
+		map = new Cons("and", map, ivcMap.get(property.toString()));
 		
 		z3Solver.push();
 		while(checkMapSatisfiability(map, seed)){
@@ -114,7 +117,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private void processMustElements(Set<String> mustChckList) { 
 		
 		for(String core : mustChckList){
-			Set<Symbol> wantedElem = new HashSet<>();
+			List<Symbol> wantedElem = new ArrayList<>();
 			wantedElem.addAll(ivcMap.valueList());
 			wantedElem.remove(ivcMap.get(core));
 			List<String> deactivate = new ArrayList<String>();
@@ -125,7 +128,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		// we can improve the coverage of the algorithm after this post-processing
 	}
 
-	private boolean ivcFinder(Set<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
+	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		
@@ -141,11 +144,21 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		Node nodeSpec = unassign(spec.node, wantedElem, deactivate);  	
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
  
+		if (settings.scratch){
+			comment("Sending a request for a new IVC while deactivating "+ getIvcLiterals(deactivate));
+		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
-			miniJkind.verify();
+		miniJkind.verify();
 		if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
+			mayElements.addAll(deactivate);
+			mustChckList.removeAll(deactivate);
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
 			Set<String> newIvc = new HashSet<>(resultOfIvcFinder);
+			
+			if (settings.scratch){
+				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
+			}
+			
 			Tuple<Set<String>, List<String>> temp = null;
 			boolean remove = false;
 			int add = 0;
@@ -175,12 +188,23 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			return true;
 		}
 		else{
-			resultOfIvcFinder.addAll(wantedElem); 
+			resultOfIvcFinder.addAll(deactivate); 
+			if (settings.scratch){
+				comment("Property got violated. Adding back the elements");
+			}
+			
 			if(deactivate.size() == 1){
 				mustElements.addAll(deactivate);
+				if (settings.scratch){
+					comment("One MUST element was found: "+ getIvcLiterals(deactivate));
+				}
 			}
 			else{
 				deactivate.removeAll(mustElements);
+				deactivate.removeAll(mayElements);
+				if (settings.scratch){
+					comment(getIvcLiterals(deactivate) + " could be MUST elements; added to the check list...");
+				}
 				mustChckList.addAll(deactivate);
 			}
 			return false;
@@ -214,37 +238,27 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 	}
 
-	private Sexp blockUp(Set<Symbol> set) {
+	private Sexp blockUp(List<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
-		for(Symbol literal : set){
+		for(Symbol literal : list){
 			ret.add(new Cons("not", literal));
 		}
 		return SexpUtil.disjoin(ret);
 	}
 	
-	private Sexp blockDown(Set<Symbol> set) {
+	private Sexp blockDown(List<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
-		for(Symbol literal : computeMCS(set)){
+		for(Symbol literal : list){
 			ret.add(literal);
 		}
 		return SexpUtil.disjoin(ret);
 	}
 
-	private Set<Symbol> computeMCS(Set<Symbol> seed) {
-		Set<Symbol> result = new HashSet<>();
-		for(Symbol core : ivcMap.valueList()){
-			if (!seed.contains(core)){
-				result.add(core);
-			}
-		}
-		return result;
-	}
-
-	private boolean checkMapSatisfiability(Sexp map, Set<Symbol> seed) { 
+	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed) { 
 		z3Solver.push();
 		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
 		solver.assertSexp(map);
-		Result result = z3Solver.checkSat(new ArrayList<>());
+		Result result = z3Solver.checkSat(new ArrayList<>(), true);
 		if (result instanceof UnsatResult){
 			return false;
 		}
@@ -268,7 +282,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		temp.addAll(seed); 
 		for(Symbol literal : ivcMap.valueList()){ 
 			temp.add(literal); 
-			if(z3Solver.quickCheckSat(new ArrayList<>(temp)) instanceof SatResult){
+			if(z3Solver.checkSat(new ArrayList<>(temp), false) instanceof SatResult){
 				seed.add(literal);
 			}else{
 				temp.remove(literal);
@@ -306,8 +320,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return result;
 	}
 	
-	private Set<Symbol> getIvcLiterals(List<String> resultOfIvcFinder) {
-		Set<Symbol> result = new HashSet<>();
+	private List<Symbol> getIvcLiterals(List<String> resultOfIvcFinder) {
+		List<Symbol> result = new ArrayList<>();
 		for (String ivc : resultOfIvcFinder) {
 			result.add(ivcMap.get(ivc));
 		}
@@ -315,9 +329,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		MiniJKind.active = false;
-		comment("Sending " + valid);
-		comment("All IVC sets found: " + allIvcs.toString());
+		MiniJKind.active = false; 
 		List<Tuple<Set<String>, List<String>>> all = new ArrayList<>(); 
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));

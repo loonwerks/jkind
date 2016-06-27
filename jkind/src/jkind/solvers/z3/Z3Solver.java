@@ -94,16 +94,24 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 		}
 	}
 	
-	public Result checkSat(List<Symbol> activationLiterals) {
+	/** 
+	 * similar to quickCheckSat, but focused on 
+	 *     1- either the SAT model
+	 *     2- or just the return Type of Result
+	 */
+	public Result checkSat(List<Symbol> activationLiterals, boolean getModel) {
 		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver(); 
 		
 		if (isSat(status)) {
-			send("(get-model)"); 
-			return new SatResult(parseModel(readFromSolver()));
-		} else if (isUnsat(status)) {
-			UnsatResult unsat =  new UnsatResult(getUnsatCore(activationLiterals));
-			return new UnsatResult(minimizeUnsatCore(unsat.getUnsatCore()));
+			if(getModel){
+				send("(get-model)"); 
+				return new SatResult(parseModel(readFromSolver()));
+			}else{
+				return new SatResult();
+			}
+		} else if (isUnsat(status)) { 
+			return new UnsatResult();
 		} else {
 			return new UnknownResult();
 		}

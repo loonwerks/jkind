@@ -152,7 +152,7 @@ public class AllIvcComputerEngine2 extends SolverBasedEngine {
 		z3Solver.push();
 		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
 		z3Solver.assertSexp(map);
-		Result result = z3Solver.checkSat(new ArrayList<>());
+		Result result = z3Solver.checkSat(new ArrayList<>(), true);
 		if (result instanceof UnsatResult){
 			return false;
 		}
