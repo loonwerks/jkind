@@ -148,7 +148,31 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
 			Set<String> newIvc = new HashSet<>(resultOfIvcFinder);
-			allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+			Tuple<Set<String>, List<String>> temp = null;
+			boolean remove = false;
+			int add = 0;
+			
+			//this could be too expensive. we may want to skip this check and just keep the else part of the loop
+			for(Tuple<Set<String>, List<String>> curr: allIvcs){
+				int beingSubset = setInclusion(newIvc, curr.firstElement());
+				if(beingSubset == 1){
+					break;
+				}
+				else if (beingSubset == 0){
+					temp = curr;
+					remove = true;
+					break;
+				}
+				add ++;
+			}
+			
+			if(add == allIvcs.size()){
+				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+			}
+			else if(remove){
+				allIvcs.remove(temp);
+				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+			}
  
 			return true;
 		}
@@ -163,6 +187,33 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 			return false;
 		} 
+	}
+
+	
+	/**
+	 * 
+	 * checks if A is a subset/ superset of B
+	 * @return: 
+	 * 			0 : A is a subset of B
+	 * 			1 : A is a superset of B
+	 * 		   -1 : A is neither superset nor subset of B
+	 */
+	private int setInclusion(Set<String> A, Set<String> B) {
+		Set<String> temp = new HashSet<>();
+		temp.addAll(A);
+		temp.removeAll(B);
+		if (temp.size() == 0){
+			return 0;
+		}
+		else{
+			temp.clear();
+			temp.addAll(B);
+			temp.removeAll(A);
+			if (temp.size() == 0){
+				return 1;
+			}
+			else return -1;
+		}
 	}
 
 	private Sexp blockUp(Set<Symbol> set) {
@@ -271,6 +322,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		comment("All IVC sets found: " + allIvcs.toString());
 		Set<Tuple<Set<String>, List<String>>> all = new HashSet<>(); 
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));
 		}
  

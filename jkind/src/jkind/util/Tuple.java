@@ -7,8 +7,8 @@ public class Tuple<X, Y> {
 	    this.x = x; 
 	    this.y = y; 
 	  } 
-	  
-	  public X firstElement(){
+
+	public X firstElement(){
 		  return x;
 	  }
 	  
