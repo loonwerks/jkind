@@ -120,7 +120,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	
 	private void processMustElements(Set<String> mustChckList) { 
 		// if the algorithm is complete, or for efficiency, we could replace the following
-		// finding an intersection of the all sets found
+		// with finding an intersection of the all sets found
+		mustChckList.removeAll(mustElements);
 		for(String core : mustChckList){
 			List<Symbol> wantedElem = new ArrayList<>();
 			wantedElem.addAll(ivcMap.valueList());
