@@ -122,6 +122,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		// if the algorithm is complete, or for efficiency, we could replace the following
 		// with finding an intersection of the all sets found
 		mustChckList.removeAll(mustElements);
+		comment("Processing mustChckList... ");
 		for(String core : mustChckList){
 			List<Symbol> wantedElem = new ArrayList<>();
 			wantedElem.addAll(ivcMap.valueList());
@@ -157,12 +158,13 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
+			
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
 			Set<String> newIvc = new HashSet<>(resultOfIvcFinder);
 			
 			if (settings.scratch){
 				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
-			}
+			} 
 			
 			Tuple<Set<String>, List<String>> temp = null;
 			boolean remove = false;
@@ -272,7 +274,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		seed.addAll(maximizeSat(((SatResult) result).getModel()));
+		seed.addAll(maximizeSat(((SatResult) result).getModel())); 
 		z3Solver.pop();
 	
 		return true;
@@ -282,7 +284,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 **/
 	private List<Symbol> maximizeSat(Model model) {
-		Set<Symbol> seed = getActiveLiteralsFromModel(model);
+		Set<Symbol> seed = getActiveLiteralsFromModel(model, "true");
 		Set<Symbol> temp = new HashSet<>();
 		temp.addAll(seed); 
 		for(Symbol literal : ivcMap.valueList()){ 
@@ -297,10 +299,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return new ArrayList<>(seed); 
 	}
 
-	private Set<Symbol> getActiveLiteralsFromModel(Model model) {
+	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
 		Set<Symbol> seed = new HashSet<>();
 		for (String var : model.getVariableNames()) { 
-			if(model.getValue(var).toString() == "true"){
+			if(model.getValue(var).toString() == val){
 				seed.add(new Symbol(var));
 			}
 		}

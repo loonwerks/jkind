@@ -241,13 +241,13 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 
 		Itinerary itinerary = vm.getNextItinerary();
-		if(settings.allIvcs || settings.allIvcs2){
-		director.broadcast(new ValidMessage(vm.source, valid, k, vm.invariants, ivc,
-				itinerary, null));
+		if(settings.allIvcs2){
+		    director.broadcast(new ValidMessage(vm.source, valid, k, vm.invariants, ivc, itinerary, null));
+		}else if(settings.allIvcs || MiniJKind.active){
+			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null));
 		}
 		else {
-			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc),
-					itinerary, null));
+			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary, null));
 		}
 	}
 
