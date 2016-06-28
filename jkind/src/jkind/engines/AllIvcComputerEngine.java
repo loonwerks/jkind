@@ -73,13 +73,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) { 
 		
 		for (String property : vm.valid) {
+			mayElements.clear();
+			mustElements.clear();
 			if (spec.node.ivc.isEmpty()) {
 				Output.warning(NAME + ": __%IVC option has no argument for property  "+ property.toString());
 				sendValid(property.toString(), vm);
 				return;
 			}
 			if (properties.remove(property)) {
-				mustElements.add(property);
 				computeAllIvcs(getInvariantByName(property, vm.invariants), vm);
 			}
 			
@@ -97,7 +98,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		 
 		seed.addAll(getIvcLiterals(new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
+		
+		//if we're not sure that the property is not vacuous, we should skip the following two lines  
 		map = new Cons("and", map, ivcMap.get(property.toString()));
+		mustElements.add(property.toString());
 		
 		z3Solver.push();
 		while(checkMapSatisfiability(map, seed)){
@@ -115,15 +119,15 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void processMustElements(Set<String> mustChckList) { 
-		
+		// if the algorithm is complete, or for efficiency, we could replace the following
+		// finding an intersection of the all sets found
 		for(String core : mustChckList){
 			List<Symbol> wantedElem = new ArrayList<>();
 			wantedElem.addAll(ivcMap.valueList());
 			wantedElem.remove(ivcMap.get(core));
 			List<String> deactivate = new ArrayList<String>();
 			deactivate.add(core);
-			ivcFinder(wantedElem, new ArrayList<String>(), new HashSet<String>());
-			
+			ivcFinder(wantedElem, new ArrayList<String>(), new HashSet<String>());	
 		}
 		// we can improve the coverage of the algorithm after this post-processing
 	}
