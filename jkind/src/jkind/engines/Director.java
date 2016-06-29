@@ -469,7 +469,7 @@ public class Director extends MessageHandler {
 	}
 
 	private void printSummary() {
-		if (!settings.xmlToStdout && !MiniJKind.active) {
+		if (!settings.xmlToStdout && !settings.miniJkind) {
 			Output.println("    -------------------------------------");
 			Output.println("    --^^--        SUMMARY          --^^--");
 			Output.println("    -------------------------------------");

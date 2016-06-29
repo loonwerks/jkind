@@ -99,7 +99,7 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	 *     1- either the SAT model
 	 *     2- or just the return Type of Result
 	 */
-	public Result checkSat(List<Symbol> activationLiterals, boolean getModel) {
+	public Result checkSat(List<Symbol> activationLiterals, boolean getModel, boolean getCore) {
 		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver(); 
 		
@@ -111,7 +111,12 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 				return new SatResult();
 			}
 		} else if (isUnsat(status)) { 
-			return new UnsatResult();
+			if(getCore){
+				return new UnsatResult(getUnsatCore(activationLiterals));
+			}
+			else{
+				return new UnsatResult();
+			}
 		} else {
 			return new UnknownResult();
 		}

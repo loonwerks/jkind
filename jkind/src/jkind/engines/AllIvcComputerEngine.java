@@ -142,6 +142,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		//js.scratch = true;
 		js.noSlicing = settings.noSlicing;
 		js.allAssigned = settings.allAssigned;
+		js.miniJkind = true;
 		
 		List <String> wantedElem = getIvcNames(new ArrayList<> (seed)); 
 		List<String> deactivate = new ArrayList<>();
@@ -265,7 +266,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		z3Solver.push();
 		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
 		solver.assertSexp(map);
-		Result result = z3Solver.checkSat(new ArrayList<>(), true);
+		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
 			return false;
 		}
@@ -289,14 +290,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		temp.addAll(seed); 
 		for(Symbol literal : ivcMap.valueList()){ 
 			temp.add(literal); 
-			if(z3Solver.checkSat(new ArrayList<>(temp), false) instanceof SatResult){
+			if(z3Solver.checkSat(new ArrayList<>(temp), false, false) instanceof SatResult){
 				seed.add(literal);
 			}else{
 				temp.remove(literal);
 			}
 		}
 
-		return new ArrayList<>(seed); 
+			return new ArrayList<>(seed);  
 	}
 
 	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
@@ -336,7 +337,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		MiniJKind.active = false; 
 		List<Tuple<Set<String>, List<String>>> all = new ArrayList<>(); 
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
 			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));

@@ -152,7 +152,7 @@ public class AllIvcComputerEngine2 extends SolverBasedEngine {
 		z3Solver.push();
 		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
 		z3Solver.assertSexp(map);
-		Result result = z3Solver.checkSat(new ArrayList<>(), true);
+		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
 			return false;
 		}
@@ -222,7 +222,6 @@ public class AllIvcComputerEngine2 extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		MiniJKind.active = false;
 		comment("Sending " + valid);
 		List<Tuple<Set<String>, List<String>>> all = new ArrayList<>(); 
 		for(Tuple<Set<String>, List<String>> item : allIvcs){

@@ -5,6 +5,7 @@ public class JKindSettings extends Settings {
 	public int n = Integer.MAX_VALUE;
 	public int timeout = Integer.MAX_VALUE;
 	
+	public boolean miniJkind = false;
 	public boolean excel = false;
 	public boolean xml = false;
 	public boolean xmlToStdout = false;

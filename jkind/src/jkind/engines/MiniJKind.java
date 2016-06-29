@@ -23,8 +23,7 @@ public class MiniJKind extends Engine {
 	 
 	private List<String> ivc = new ArrayList<>();
 	private List<String> invariants = new ArrayList<>();
-	private String status = NOT_YET_CHECKED;
-    public static boolean active = false;  
+	private String status = NOT_YET_CHECKED; 
     
 	public MiniJKind(Specification spec, JKindSettings settings) {
 		super(NAME, spec, settings, null);
@@ -32,7 +31,7 @@ public class MiniJKind extends Engine {
 		if (spec.node.properties.size() != 1) {
 			throw new IllegalArgumentException("MiniJKind Expects exactly one property");
 		}
-		active = true; 
+		settings.miniJkind = true;
 	}
 	
 	public void verify() {
