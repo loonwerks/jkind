@@ -172,12 +172,11 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			int add = 0;
 			
 			//this could get expensive. we may want to skip this check and just keep the if part after the loop
-			for(Tuple<Set<String>, List<String>> curr: allIvcs){
-				int beingSubset = setInclusion(newIvc, curr.firstElement());
-				if(beingSubset == 1){
+			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
+				if(newIvc.containsAll(curr.firstElement())){
 					break;
 				}
-				else if (beingSubset == 0){
+				else if (curr.firstElement().containsAll(newIvc)){
 					temp = curr;
 					remove = true;
 					break;
@@ -219,33 +218,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 	}
 
-	
-	/**
-	 * 
-	 * checks if A is a subset/ superset of B
-	 * @return: 
-	 * 			0 : A is a subset of B
-	 * 			1 : A is a superset of B
-	 * 		   -1 : A is neither superset nor subset of B
-	 */
-	private int setInclusion(Set<String> A, Set<String> B) {
-		Set<String> temp = new HashSet<>();
-		temp.addAll(A);
-		temp.removeAll(B);
-		if (temp.size() == 0){
-			return 0;
-		}
-		else{
-			temp.clear();
-			temp.addAll(B);
-			temp.removeAll(A);
-			if (temp.size() == 0){
-				return 1;
-			}
-			else return -1;
-		}
-	}
-
 	private Sexp blockUp(List<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
 		for(Symbol literal : list){
@@ -285,6 +257,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 **/
 	private List<Symbol> maximizeSat(Model model) {
+		// this could be inefficient in large models. We need to find a better way
+		// using unsatCores or just false literals in the model, is even worse...
 		Set<Symbol> seed = getActiveLiteralsFromModel(model, "true");
 		Set<Symbol> temp = new HashSet<>();
 		temp.addAll(seed); 

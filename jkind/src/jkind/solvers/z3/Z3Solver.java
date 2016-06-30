@@ -96,7 +96,7 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	
 	/** 
 	 * similar to quickCheckSat, but focused on 
-	 *     1- either the SAT model
+	 *     1- either the SAT model or unsat-core
 	 *     2- or just the return Type of Result
 	 */
 	public Result checkSat(List<Symbol> activationLiterals, boolean getModel, boolean getCore) {
