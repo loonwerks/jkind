@@ -88,7 +88,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
-		Sexp map;
+		Sexp map; 
 		List<Symbol> seed = new ArrayList<Symbol>();
 		Set<String> mustChckList = new HashSet<>();
 		
@@ -104,7 +104,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		mustElements.add(property.toString());
 		
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed)){
+		while(checkMapSatisfiability(map, seed, mustChckList)){
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
@@ -170,8 +170,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			Tuple<Set<String>, List<String>> temp = null;
 			boolean remove = false;
 			int add = 0;
-			
-			//this could get expensive. we may want to skip this check and just keep the if part after the loop
+			 
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
 				if(newIvc.containsAll(curr.firstElement())){
 					break;
@@ -202,6 +201,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			
 			if(deactivate.size() == 1){
 				mustElements.addAll(deactivate);
+				mustChckList.removeAll(deactivate);
 				if (settings.scratch){
 					comment("One MUST element was found: "+ getIvcLiterals(deactivate));
 				}
@@ -234,7 +234,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 
-	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed) { 
+	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
 		z3Solver.push();
 		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
 		solver.assertSexp(map);
@@ -247,7 +247,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		seed.addAll(maximizeSat(((SatResult) result).getModel())); 
+		seed.addAll(maximizeSat(((SatResult) result).getModel(), mustChckList)); 
 		z3Solver.pop();
 	
 		return true;
@@ -255,23 +255,17 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	
 	/**
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
+	 * @param mustChckList 
 	 **/
-	private List<Symbol> maximizeSat(Model model) {
-		// this could be inefficient in large models. We need to find a better way
-		// using unsatCores or just false literals in the model, is even worse...
-		Set<Symbol> seed = getActiveLiteralsFromModel(model, "true");
-		Set<Symbol> temp = new HashSet<>();
-		temp.addAll(seed); 
-		for(Symbol literal : ivcMap.valueList()){ 
-			temp.add(literal); 
-			if(z3Solver.checkSat(new ArrayList<>(temp), false, false) instanceof SatResult){
-				seed.add(literal);
-			}else{
-				temp.remove(literal);
-			}
+	private List<Symbol> maximizeSat(Model model, Set<String> mustChckList) { 
+		List<Symbol> seed = new ArrayList<>();
+		seed.addAll(ivcMap.valueList());
+		for (String s : mustChckList){
+			seed.remove(ivcMap.get(s));
+			return seed;
 		}
-
-			return new ArrayList<>(seed);  
+		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
+		return seed; 
 	}
 
 	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
