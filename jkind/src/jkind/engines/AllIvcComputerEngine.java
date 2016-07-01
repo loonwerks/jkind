@@ -247,7 +247,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		seed.addAll(maximizeSat(((SatResult) result).getModel(), mustChckList)); 
+		seed.addAll(maximizeSat(result, mustChckList)); 
 		z3Solver.pop();
 	
 		return true;
@@ -257,13 +257,15 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 * @param mustChckList 
 	 **/
-	private List<Symbol> maximizeSat(Model model, Set<String> mustChckList) { 
+	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList) { 
+	
 		List<Symbol> seed = new ArrayList<>();
 		seed.addAll(ivcMap.valueList());
 		for (String s : mustChckList){
 			seed.remove(ivcMap.get(s));
 			return seed;
 		}
+		Model model = ((SatResult) result).getModel();
 		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
 		return seed; 
 	}
