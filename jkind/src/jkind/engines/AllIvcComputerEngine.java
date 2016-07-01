@@ -117,8 +117,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				controller.clear();
 				break;
 			case -1:
-				controller.clear();
-				controller = getIvcLiterals(resultOfIvcFinder);
+				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
+				controller.clear(); 
+				controller.addAll(ivcMap.valueList());
+				controller.removeAll(seed); 
 				break;
 			}
 		}
@@ -184,9 +186,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
 				if(newIvc.containsAll(curr.firstElement())){
 					System.out.println("WARNING : SUPER SET");
-					comment("WARNING : SUPER SET");
-					resultOfIvcFinder.clear();
-					resultOfIvcFinder.addAll(deactivate);
+					comment("WARNING : SUPER SET"); 
 					return -1;
 				}
 				else if (curr.firstElement().containsAll(newIvc)){
