@@ -43,8 +43,7 @@ import jkind.util.Util;
 public class AllIvcComputerEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
 	private final LinkedBiMap<String, Symbol> ivcMap;
-	private Z3Solver z3Solver;	 
-	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
+	private Z3Solver z3Solver;	  
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();
 	private boolean guide = false;
@@ -237,8 +236,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 
 	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
-		z3Solver.push();
-		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
+		z3Solver.push(); 
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
@@ -262,23 +260,29 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList) { 
 		Set<Symbol> seed = new HashSet<>();
 		seed.addAll(ivcMap.valueList());
+		Model model = ((SatResult) result).getModel();
+		Set<Symbol> falseLiterals = getActiveLiteralsFromModel(model, "false");
 		/*
-		 * we may not use guide because, by doing so, in the worse case, we won't get any new IVC 
+		 * we may not use guide, but , by doing so, in the worse case, we won't get any new IVC 
 		 * until finding all must elements, especially if
 		 * mustChckList contains only must elements. 
-		 * But, the sooner we get new IVCs, the sooner we are able to prone the search space
+		 * But, the sooner we get new IVCs, the sooner we are able to prune the search space
 		 * However, at the same time, guiding maximizeSat with potential must elements is important
 		 * */
 		if(guide){
 			for (String s : mustChckList){ 
 				guide = false;
 				seed.remove(ivcMap.get(s));
+				for (Symbol f : falseLiterals){
+					seed.remove(f);
+					break;
+				}
 				return new ArrayList<>(seed);
 			}
 		} 
 		guide = true;
-		Model model = ((SatResult) result).getModel();
-		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
+		
+		seed.removeAll(falseLiterals);
 		
 		//we don't need this since seed automatically shouldn't exclude any mustElements
 		//seed.addAll(getIvcLiterals(new ArrayList<>(mustElements)));
