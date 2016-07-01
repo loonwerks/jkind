@@ -46,7 +46,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Z3Solver z3Solver;	  
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();
-	private boolean guide = false;
+
 	
 	List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>(); 
 
@@ -103,14 +103,23 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		//if we're not sure that the property is not vacuous, we should skip the following two lines  
 		map = new Cons("and", map, ivcMap.get(property.toString()));
 		mustElements.add(property.toString());
-		
+		List<Symbol> controller = new ArrayList<>();
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed, mustChckList)){
+		while(checkMapSatisfiability(map, seed, mustChckList, controller)){
 			resultOfIvcFinder.clear();
-			if (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
+			switch (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
+			case 1: 
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
-			}else{
+				controller.clear();
+			    break;
+			case 0:
 				map = new Cons("and", map, blockDown(getIvcLiterals(resultOfIvcFinder))); 
+				controller.clear();
+				break;
+			case -1:
+				controller.clear();
+				controller = getIvcLiterals(resultOfIvcFinder);
+				break;
 			}
 		}
 		
@@ -135,7 +144,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		// we can improve the coverage of the algorithm after this post-processing
 	}
 
-	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
+	private int ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		
@@ -176,14 +185,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				if(newIvc.containsAll(curr.firstElement())){
 					System.out.println("WARNING : SUPER SET");
 					comment("WARNING : SUPER SET");
-					if (newIvc.size() != curr.firstElement().size()){
-						resultOfIvcFinder.removeAll(curr.firstElement());
-					}else{
-						resultOfIvcFinder.clear();
-						resultOfIvcFinder.addAll(deactivate);
-						return false;
-					}
-					break;
+					resultOfIvcFinder.clear();
+					resultOfIvcFinder.addAll(deactivate);
+					return -1;
 				}
 				else if (curr.firstElement().containsAll(newIvc)){
 					temp = curr;
@@ -201,7 +205,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
  
-			return true;
+			return 1;
 		}
 		else{
 			resultOfIvcFinder.addAll(deactivate); 
@@ -224,7 +228,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				}
 				mustChckList.addAll(deactivate);
 			}
-			return false;
+			return 0;
 		} 
 	}
 
@@ -244,7 +248,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 
-	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
+	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList, List<Symbol> controller) { 
 		z3Solver.push(); 
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
@@ -256,7 +260,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		seed.addAll(maximizeSat(result, mustChckList)); 
+		seed.addAll(maximizeSat(result, mustChckList, controller)); 
 		z3Solver.pop();
 	
 		return true;
@@ -265,30 +269,26 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	/**
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 * @param mustChckList 
+	 * @param controller 
 	 **/
-	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList) { 
+	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList, List<Symbol> controller) { 
 		Set<Symbol> seed = new HashSet<>();
 		seed.addAll(ivcMap.valueList());
-		/*
-		 * we may not use guide, but , by doing so, in the worse case, we won't get any new IVC 
-		 * until finding all must elements, especially if
-		 * mustChckList contains only must elements. 
-		 * But, the sooner we get new IVCs, the sooner we are able to prune the search space
-		 * However, at the same time, guiding maximizeSat with potential must elements is important
-		 * */
-		if(guide){
-			for (String s : mustChckList){ 
-				guide = false;
-				seed.remove(ivcMap.get(s));
-				return new ArrayList<>(seed);
-			}
-		} 
-		guide = true;
+		 
+		for (String s : mustChckList){ 
+			seed.remove(ivcMap.get(s));
+			return new ArrayList<>(seed);
+		}
+ 
 		Model model = ((SatResult) result).getModel();
 		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
-		
-		//we don't need this since seed automatically shouldn't exclude any mustElements
-		//seed.addAll(getIvcLiterals(new ArrayList<>(mustElements)));
+		for(Symbol c : controller){
+			if(! seed.contains(c)){
+				seed.add(c);
+				break;
+			}
+		}
+		 
 		return new ArrayList<>(seed); 
 	}
 
