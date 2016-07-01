@@ -47,6 +47,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();
+	private boolean guide = false;
 	
 	List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>(); 
 
@@ -259,20 +260,28 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * @param mustChckList 
 	 **/
 	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList) { 
-		Random random = new Random();
 		Set<Symbol> seed = new HashSet<>();
 		seed.addAll(ivcMap.valueList());
-		
-		if(random.nextBoolean()){
+		/*
+		 * we may not use guide because, by doing so, in the worse case, we won't get any new IVC 
+		 * until finding all must elements, especially if
+		 * mustChckList contains only must elements. 
+		 * But, the sooner we get new IVCs, the sooner we are able to prone the search space
+		 * However, at the same time, guiding maximizeSat with potential must elements is important
+		 * */
+		if(guide){
 			for (String s : mustChckList){ 
+				guide = false;
 				seed.remove(ivcMap.get(s));
 				return new ArrayList<>(seed);
 			}
 		} 
-		
+		guide = true;
 		Model model = ((SatResult) result).getModel();
 		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
-		seed.addAll(getIvcLiterals(new ArrayList<>(mustElements)));
+		
+		//we don't need this since seed automatically shouldn't exclude any mustElements
+		//seed.addAll(getIvcLiterals(new ArrayList<>(mustElements)));
 		return new ArrayList<>(seed); 
 	}
 
