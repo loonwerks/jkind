@@ -4,7 +4,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList; 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List; 
+import java.util.List;
+import java.util.Random;
 import java.util.Set; 
 import jkind.JKindException;
 import jkind.JKindSettings;
@@ -164,7 +165,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			Set<String> newIvc = new HashSet<>(resultOfIvcFinder);
 			
 			if (settings.scratch){
-				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
+				comment("New IVC set was found: "+ getIvcLiterals(resultOfIvcFinder));
 			} 
 			
 			Tuple<Set<String>, List<String>> temp = null;
@@ -258,16 +259,21 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * @param mustChckList 
 	 **/
 	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList) { 
-	
-		List<Symbol> seed = new ArrayList<>();
+		Random random = new Random();
+		Set<Symbol> seed = new HashSet<>();
 		seed.addAll(ivcMap.valueList());
-		for (String s : mustChckList){
-			seed.remove(ivcMap.get(s));
-			return seed;
-		}
+		
+		if(random.nextBoolean()){
+			for (String s : mustChckList){ 
+				seed.remove(ivcMap.get(s));
+				return new ArrayList<>(seed);
+			}
+		} 
+		
 		Model model = ((SatResult) result).getModel();
 		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
-		return seed; 
+		seed.addAll(getIvcLiterals(new ArrayList<>(mustElements)));
+		return new ArrayList<>(seed); 
 	}
 
 	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
