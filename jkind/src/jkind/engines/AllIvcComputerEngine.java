@@ -174,6 +174,15 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			 
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
 				if(newIvc.containsAll(curr.firstElement())){
+					System.out.println("WARNING : SUPER SET");
+					comment("WARNING : SUPER SET");
+					if (newIvc.size() != curr.firstElement().size()){
+						resultOfIvcFinder.removeAll(curr.firstElement());
+					}else{
+						resultOfIvcFinder.clear();
+						resultOfIvcFinder.addAll(deactivate);
+						return false;
+					}
 					break;
 				}
 				else if (curr.firstElement().containsAll(newIvc)){
@@ -260,8 +269,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private List<Symbol> maximizeSat(Result result, Set<String> mustChckList) { 
 		Set<Symbol> seed = new HashSet<>();
 		seed.addAll(ivcMap.valueList());
-		Model model = ((SatResult) result).getModel();
-		Set<Symbol> falseLiterals = getActiveLiteralsFromModel(model, "false");
 		/*
 		 * we may not use guide, but , by doing so, in the worse case, we won't get any new IVC 
 		 * until finding all must elements, especially if
@@ -273,16 +280,12 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			for (String s : mustChckList){ 
 				guide = false;
 				seed.remove(ivcMap.get(s));
-				for (Symbol f : falseLiterals){
-					seed.remove(f);
-					break;
-				}
 				return new ArrayList<>(seed);
 			}
 		} 
 		guide = true;
-		
-		seed.removeAll(falseLiterals);
+		Model model = ((SatResult) result).getModel();
+		seed.removeAll(getActiveLiteralsFromModel(model, "false"));
 		
 		//we don't need this since seed automatically shouldn't exclude any mustElements
 		//seed.addAll(getIvcLiterals(new ArrayList<>(mustElements)));
