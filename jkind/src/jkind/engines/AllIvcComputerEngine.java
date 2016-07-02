@@ -42,10 +42,9 @@ import jkind.util.Util;
 public class AllIvcComputerEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
 	private final LinkedBiMap<String, Symbol> ivcMap;
-	private Z3Solver z3Solver;	 
-	private static final Symbol MAP_NAME = new Symbol("ivcmap"); 
+	private Z3Solver z3Solver;	   
 	private Set<String> mustElements = new HashSet<>();
-	private Set<String> mayElements = new HashSet<>();
+	private Set<String> mayElements = new HashSet<>();  
 	
 	List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>(); 
 
@@ -74,7 +73,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		
 		for (String property : vm.valid) {
 			mayElements.clear();
-			mustElements.clear();
+			mustElements.clear(); 
 			if (spec.node.ivc.isEmpty()) {
 				Output.warning(NAME + ": __%IVC option has no argument for property  "+ property.toString());
 				sendValid(property.toString(), vm);
@@ -90,6 +89,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>();
+		
+		// once we make sure the algorithm is complete, we can get rid of mustChckList
 		Set<String> mustChckList = new HashSet<>();
 		
 		List<String> resultOfIvcFinder = new ArrayList<>();
@@ -104,7 +105,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		mustElements.add(property.toString());
 		
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed, mustChckList)){
+		while(checkMapSatisfiability(map, seed)){
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
@@ -114,24 +115,25 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		
 		z3Solver.pop();
-		processMustElements(mustChckList);
+		processMustElements(mustChckList, vm.ivc);
 		sendValid(property.toString(), vm);
 	}
 	
-	private void processMustElements(Set<String> mustChckList) { 
-		// if the algorithm is complete, or for efficiency, we could replace the following
-		// with finding an intersection of the all sets found
-		mustChckList.removeAll(mustElements);
-		comment("Processing mustChckList... ");
-		for(String core : mustChckList){
-			List<Symbol> wantedElem = new ArrayList<>();
-			wantedElem.addAll(ivcMap.valueList());
-			wantedElem.remove(ivcMap.get(core));
-			List<String> deactivate = new ArrayList<String>();
-			deactivate.add(core);
-			ivcFinder(wantedElem, new ArrayList<String>(), new HashSet<String>());	
+	private void processMustElements(Set<String> mustChckList, Set<String> initialIvc) { 
+		// if the algorithm is not complete, we need to process mucstChckList
+		Set<String> intersect = new HashSet<>();
+		intersect.addAll(initialIvc);
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			intersect.retainAll(item.firstElement());
 		}
-		// we can improve the coverage of the algorithm after this post-processing
+		
+		// to see if they are different? 
+		System.out.println(intersect.size());
+		System.out.println(mustElements.size());
+		
+		
+		mustElements.addAll(intersect);
+	//	mustChckList.removeAll(mustElements); 
 	}
 
 	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
@@ -148,6 +150,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
+		
 		Node nodeSpec = unassign(spec.node, wantedElem, deactivate);  	
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
  
@@ -171,11 +174,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			boolean remove = false;
 			int add = 0;
 			
-			//this could get expensive. we may want to skip this check and just keep the if part after the loop
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
 				if(newIvc.containsAll(curr.firstElement())){
-					comment("WARNING : SUPER SET");
-					break;
+					throw new JKindException("A superset was found!"); 
 				}
 				else if (curr.firstElement().containsAll(newIvc)){
 					temp = curr;
@@ -214,6 +215,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				if (settings.scratch){
 					comment(getIvcLiterals(deactivate) + " could be MUST elements; added to the check list...");
 				}
+			 
 				mustChckList.addAll(deactivate);
 			}
 			return false;
@@ -236,9 +238,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 
-	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
-		z3Solver.push();
-		z3Solver.define(new VarDecl(MAP_NAME.str, NamedType.BOOL));
+	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed) { 
+		z3Solver.push(); 
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
@@ -249,7 +250,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		seed.addAll(maximizeSat(((SatResult) result).getModel(), mustChckList)); 
+		seed.addAll(maximizeSat(((SatResult) result).getModel())); 
 		z3Solver.pop();
 	
 		return true;
@@ -259,19 +260,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 * @param  
 	 **/
-	private List<Symbol> maximizeSat(Model model, Set<String> mustChckList) {
-		// this could be inefficient in large models. We need to find a better way
-		// using unsatCores or just false literals in the model, is even worse...
-		// we may want to start with deactivating elements of the mustChckList like so:
-		
-		Set<Symbol> seed = new HashSet<>();
-		seed.addAll(ivcMap.valueList());
-		for (String s : mustChckList){ 
-				seed.remove(ivcMap.get(s));
-				return new ArrayList<>(seed);
-		} 
-		seed.clear();	
-		seed.addAll(getActiveLiteralsFromModel(model, "true"));  
+	private List<Symbol> maximizeSat(Model model) { 
+		Set<Symbol> seed = getActiveLiteralsFromModel(model, "true"); 
 		for(Symbol literal : ivcMap.valueList()){ 
 			seed.add(literal); 
 			if(!(z3Solver.checkSat(new ArrayList<>(seed), false, false) instanceof SatResult)){
@@ -279,7 +269,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 		}
 
-			return new ArrayList<>(seed);  
+		return new ArrayList<>(seed); 
 	}
 
 	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
