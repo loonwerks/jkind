@@ -88,11 +88,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
 		Sexp map;
-		List<Symbol> seed = new ArrayList<Symbol>();
-		
-		// once we make sure the algorithm is complete, we can get rid of mustChckList
-		Set<String> mustChckList = new HashSet<>();
-		
+		List<Symbol> seed = new ArrayList<Symbol>(); 
+		Set<String> mustChckList = new HashSet<>(); 
 		List<String> resultOfIvcFinder = new ArrayList<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList()); 
 		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
@@ -100,12 +97,12 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		seed.addAll(getIvcLiterals(new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 		
-		//if we're not sure that the property is not vacuous, we should skip the following two lines  
-		map = new Cons("and", map, ivcMap.get(property.toString()));
-		mustElements.add(property.toString());
+		//if we're sure that the property is not vacuous, we can uncomment the following two lines: 
+		// mustElements.add(property.toString());
+		//map = new Cons("and", map, ivcMap.get(property.toString()));  
 		
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed)){
+		while(checkMapSatisfiability(map, seed, mustChckList)){
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
@@ -115,11 +112,11 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		
 		z3Solver.pop();
-		processMustElements(mustChckList, vm.ivc);
+		processMustElements(mustChckList, vm.ivc, property.toString());
 		sendValid(property.toString(), vm);
 	}
 	
-	private void processMustElements(Set<String> mustChckList, Set<String> initialIvc) { 
+	private void processMustElements(Set<String> mustChckList, Set<String> initialIvc, String prop) { 
 		// if the algorithm is not complete, we need to process mucstChckList
 		Set<String> intersect = new HashSet<>();
 		intersect.addAll(initialIvc);
@@ -127,10 +124,16 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			intersect.retainAll(item.firstElement());
 		}
 		
-		// to see if they are different? 
-		System.out.println(intersect.size());
-		System.out.println(mustElements.size());
+		if(!(intersect.contains(prop))){
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+			Output.println("WARNING: some inconsistent equations were found: ");
+			Output.println("property "+ prop + " is vacuously valid in some IVCs");
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+		}
 		
+		// to see if they are different? 
+		System.out.println("intersection size: " + intersect.size());
+		System.out.println("mustElements size: " + mustElements.size());
 		
 		mustElements.addAll(intersect);
 	//	mustChckList.removeAll(mustElements); 
@@ -171,16 +174,11 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			} 
 			
 			Tuple<Set<String>, List<String>> temp = null;
-			boolean remove = false;
 			int add = 0;
 			
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
-				if(newIvc.containsAll(curr.firstElement())){
-					throw new JKindException("A superset was found!"); 
-				}
-				else if (curr.firstElement().containsAll(newIvc)){
+				if (curr.firstElement().containsAll(newIvc)){
 					temp = curr;
-					remove = true;
 					break;
 				}
 				add ++;
@@ -189,7 +187,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			if(add == allIvcs.size()){
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
-			else if(remove){
+			else{
 				allIvcs.remove(temp);
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
@@ -238,7 +236,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 
-	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed) { 
+	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
 		z3Solver.push(); 
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
@@ -250,7 +248,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		seed.addAll(maximizeSat(((SatResult) result).getModel())); 
+		seed.addAll(maximizeSat(((SatResult) result), mustChckList)); 
 		z3Solver.pop();
 	
 		return true;
@@ -260,15 +258,38 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 * @param  
 	 **/
-	private List<Symbol> maximizeSat(Model model) { 
-		Set<Symbol> seed = getActiveLiteralsFromModel(model, "true"); 
-		for(Symbol literal : ivcMap.valueList()){ 
+	private List<Symbol> maximizeSat(SatResult result, Set<String> mustChckList) { 
+		Set<Symbol> seed = getActiveLiteralsFromModel(result.getModel(), "true");
+		Set<Symbol> falseLiterals = getActiveLiteralsFromModel(result.getModel(), "false");
+		Set<Symbol> temp = new HashSet<>();
+		temp.addAll(ivcMap.valueList());
+		List<Symbol> literalList = getIvcLiterals(new ArrayList<>(mustChckList));
+		temp.removeAll(literalList);
+		temp.removeAll(falseLiterals);
+		temp.removeAll(seed);
+		
+		for(Symbol literal : literalList){ 
+			if(! seed.contains(literal)){
+				seed.add(literal); 
+				if(z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult){
+					seed.remove(literal);
+				}
+			}
+		}
+		for(Symbol literal : falseLiterals){ 
+			if(! seed.contains(literal)){
+				seed.add(literal); 
+				if(z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult){
+					seed.remove(literal);
+				}
+			}
+		}
+		for(Symbol literal : temp){
 			seed.add(literal); 
-			if(!(z3Solver.checkSat(new ArrayList<>(seed), false, false) instanceof SatResult)){
+			if(z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult){
 				seed.remove(literal);
 			}
 		}
-
 		return new ArrayList<>(seed); 
 	}
 
