@@ -115,29 +115,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		processMustElements(mustChckList, vm.ivc, property.toString());
 		sendValid(property.toString(), vm);
 	}
-	
-	private void processMustElements(Set<String> mustChckList, Set<String> initialIvc, String prop) { 
-		// if the algorithm is not complete, we need to process mucstChckList
-		Set<String> intersect = new HashSet<>();
-		intersect.addAll(initialIvc);
-		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			intersect.retainAll(item.firstElement());
-		}
-		
-		if(!(intersect.contains(prop))){
-			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-			Output.println("WARNING: some inconsistent equations were found: ");
-			Output.println("property "+ prop + " is vacuously valid in some IVCs");
-			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-		}
-		
-		// to see if they are different? 
-		System.out.println("intersection size: " + intersect.size());
-		System.out.println("mustElements size: " + mustElements.size());
-		
-		mustElements.addAll(intersect);
-	//	mustChckList.removeAll(mustElements); 
-	}
 
 	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
 		JKindSettings js = new JKindSettings();
@@ -180,6 +157,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				if (curr.firstElement().containsAll(newIvc)){
 					temp = curr;
 					break;
+				}// the else part can only happen while processing mustChckList after finding all IVC sets
+				else if (newIvc.containsAll(curr.firstElement())){
+					return true;
 				}
 				add ++;
 			}
@@ -382,6 +362,87 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 		}
 		return result;
+	}
+	
+	private void processMustElements(Set<String> mustChckList, Set<String> initialIvc, String prop) { 
+		// if the algorithm is not complete, we need to process mucstChckList instead of the following
+		Set<String> intersect = new HashSet<>();
+		intersect.addAll(initialIvc);
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			intersect.retainAll(item.firstElement());
+		}
+		
+		if(!(intersect.contains(prop))){
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+			Output.println("WARNING: some inconsistent equations were found: ");
+			Output.println("property "+ prop + " is vacuously valid in some IVCs");
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+		}
+		
+		if(mustElements.size() < intersect.size()){
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+			Output.println("WARNING: IVC sets might not be truly minimal!");
+			Output.println("So far "+ allIvcs.size() + " IVC sets have been found.");
+			Output.println("Trying to minimize the sets...");
+			Set<String> diff = new HashSet<>();
+			diff.addAll(intersect);
+			diff.removeAll(mustElements);
+			List<String> extra = new ArrayList<>();
+			
+			for(String item : diff){
+				List<Symbol> seed = new ArrayList<>();
+				seed.addAll(ivcMap.valueList());
+				seed.remove(ivcMap.get(item)); 
+				if(ivcFinder(seed, new ArrayList<>(), mustChckList)){
+					Output.println("one extra element has been found: " + item);
+					extra.add(item);
+				}else{
+					Output.println("WARNING: FAILED TO FIND ONE OR MORE IVCs!");
+				}
+			}
+			Output.println("Total #of IVC sets found: "+ allIvcs.size());
+			if(extra.size() > 0){
+				minimizeSets(extra);
+			}
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+		}
+		else if(mustElements.size() > intersect.size()){
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+			Output.println("WARNING: FAILED TO FIND ONE OR MORE IVCs!");
+			Output.println("So far "+ allIvcs.size() + " IVC sets have been found.");
+			Output.println("Processing must-check-list to try find more IVCs...");
+			
+			mustChckList.removeAll(mustElements); 
+			List<Symbol> seed = new ArrayList<>();
+			seed.addAll(ivcMap.valueList());
+			seed.removeAll(getIvcLiterals(new ArrayList<>(mustChckList)));
+			List<String> resultOfIvcFinder = new ArrayList<>();
+			if(mustChckList.size() > 0){
+				ivcFinder(seed, resultOfIvcFinder, mustChckList); 
+				if(mustChckList.size() == 0){
+					Output.println("ALL the must-check-list has been processed."); 
+				}else{
+					Output.println("must-check-list has been processed."); 
+				}
+			}else{
+				Output.println("must-check-list is empty. terminating the process..."); 
+			}
+			
+			Output.println("Total #of IVC sets found: "+ allIvcs.size());
+			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+		}
+		
+		mustElements.addAll(intersect);
+		if(mustChckList.size() > 0){
+			Output.println("WARNING: must-check-llist is not empty. there might be more IVCs...");
+		}
+	}
+
+	private void minimizeSets(List<String> extra) {
+		Output.println("WARNING: to reconstruct the proof with output invariants extra elements must be added back");
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			item.firstElement().removeAll(extra);
+		}
 	}
 	
 	@Override
