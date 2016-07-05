@@ -150,25 +150,24 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
 			} 
 			
-			Tuple<Set<String>, List<String>> temp = null;
-			int add = 0;
+			List<Tuple<Set<String>, List<String>>> temp = new ArrayList<>();
+			 
 			
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
 				if (curr.firstElement().containsAll(newIvc)){
-					temp = curr;
-					break;
+					temp.add(curr);  
 				}// the else part can only happen while processing mustChckList after finding all IVC sets
 				else if (newIvc.containsAll(curr.firstElement())){
 					return true;
 				}
-				add ++;
+				 
 			}
 			
-			if(add == allIvcs.size()){
+			if(temp.isEmpty()){
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
 			else{
-				allIvcs.remove(temp);
+				allIvcs.removeAll(temp);
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
  
