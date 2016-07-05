@@ -96,10 +96,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		 
 		seed.addAll(getIvcLiterals(new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
-		
-		//if we're sure that the property is not vacuous, we can uncomment the following two lines: 
-		// mustElements.add(property.toString());
-		//map = new Cons("and", map, ivcMap.get(property.toString()));  
+		  
+		mustElements.add(property.toString());
+		map = new Cons("and", map, ivcMap.get(property.toString()));  
 		
 		z3Solver.push();
 		while(checkMapSatisfiability(map, seed, mustChckList)){
