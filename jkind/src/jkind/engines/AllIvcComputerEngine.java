@@ -46,7 +46,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();  
 	
-	List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>(); 
+	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -92,8 +92,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		Set<String> mustChckList = new HashSet<>(); 
 		List<String> resultOfIvcFinder = new ArrayList<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList()); 
-		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
-		 
+		
+		allIvcs.add(new Tuple<Set<String>, List<String>>(trimNode(new ArrayList<>(vm.ivc)), inv));
 		seed.addAll(getIvcLiterals(new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 		  
@@ -103,7 +103,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		z3Solver.push();
 		while(checkMapSatisfiability(map, seed, mustChckList)){
 			resultOfIvcFinder.clear();
-			if (ivcFinder(seed, resultOfIvcFinder, mustChckList)){
+			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
 				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
 			}else{
 				map = new Cons("and", map, blockDown(getIvcLiterals(resultOfIvcFinder))); 
@@ -115,7 +115,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		sendValid(property.toString(), vm);
 	}
 
-	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList) {
+	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		
@@ -130,7 +130,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
 		
-		Node nodeSpec = unassign(spec.node, wantedElem, deactivate);  	
+		Node nodeSpec = unassign(spec.node, wantedElem, deactivate, property);  	
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);  
  
 		if (settings.scratch){
@@ -143,23 +143,25 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			mustChckList.removeAll(deactivate);
 			
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
-			Set<String> newIvc = new HashSet<>(resultOfIvcFinder);
+			Set<String> newIvc = trimNode(resultOfIvcFinder);
 			
 			if (settings.scratch){
 				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
 			} 
 			
-			List<Tuple<Set<String>, List<String>>> temp = new ArrayList<>();
+			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
 			 
 			
-			for(Tuple<Set<String>, List<String>> curr: allIvcs){ 
+			for(Tuple<Set<String>, List<String>> curr: allIvcs){  
 				if (curr.firstElement().containsAll(newIvc)){
 					temp.add(curr);  
-				}// the else part can only happen while processing mustChckList after finding all IVC sets
+				}
+				// the else part can only happen 
+				//         while processing mustChckList after finding all IVC sets
+				//         if we have different instances of a node in the Lustre file
 				else if (newIvc.containsAll(curr.firstElement())){
 					return true;
-				}
-				 
+				} 
 			}
 			
 			if(temp.isEmpty()){
@@ -308,23 +310,19 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		List<Tuple<Set<String>, List<String>>> all = new ArrayList<>(); 
-		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			all.add(new Tuple<>(trimNode(item.firstElement()), item.secondElement()));
-		}
- 
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, 0, null, mustElements , itinerary, all)); 
+		director.broadcast(new ValidMessage(vm.source, valid, 0, null, mustElements , itinerary, allIvcs)); 
 	}
-	private Set<String> trimNode(Set<String> arg) {
+	
+	private Set<String> trimNode(List<String> set) {
 		Set<String> ivc = new HashSet<>();
-		for (String e : arg) {
+		for (String e : set) {
 			ivc.add(e.replaceAll("~[0-9]+", ""));
 		}
 		return ivc;
 	}
 	
-	private Node unassign(Node node, List<String> vars, List<String> deactivate) {
+	private Node unassign(Node node, List<String> vars, List<String> deactivate, String property) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
 		
 		for(String v : deactivate){
@@ -348,6 +346,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		builder.clearOutputs().addOutputs(outputs);
 		builder.clearEquations().addEquations(equations);
 		builder.clearIvc().addIvcs(vars);
+		builder.clearProperties().addProperty(property);
 		return builder.build();
 	}
 
@@ -391,12 +390,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				List<Symbol> seed = new ArrayList<>();
 				seed.addAll(ivcMap.valueList());
 				seed.remove(ivcMap.get(item)); 
-				if(ivcFinder(seed, new ArrayList<>(), mustChckList)){
-					Output.println("one extra element has been found: " + item);
-					extra.add(item);
-				}else{
-					Output.println("WARNING: FAILED TO FIND ONE OR MORE IVCs!");
-				}
+				ivcFinder(seed, new ArrayList<>(), mustChckList, prop);
 			}
 			Output.println("Total #of IVC sets found: "+ allIvcs.size());
 			if(extra.size() > 0){
@@ -416,7 +410,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			seed.removeAll(getIvcLiterals(new ArrayList<>(mustChckList)));
 			List<String> resultOfIvcFinder = new ArrayList<>();
 			if(mustChckList.size() > 0){
-				ivcFinder(seed, resultOfIvcFinder, mustChckList); 
+				ivcFinder(seed, resultOfIvcFinder, mustChckList, prop); 
 				if(mustChckList.size() == 0){
 					Output.println("ALL the must-check-list has been processed."); 
 				}else{

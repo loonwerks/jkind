@@ -46,24 +46,42 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		for (String prop : props) {
-			writeValid(prop, source, k, runtime, invariants, ivc);
+			writeValid(prop, source, k, runtime, invariants, ivc, allIvcs);
 		}
 	}
 
 	public void writeValid(String prop, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
-		for (Expr invariant : invariants) {
-			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+		
+		if(allIvcs.isEmpty()){
+			for (Expr invariant : invariants) {
+				out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+			}
+			for (String supp : ivc) {
+				out.println("    <Ivc>" + supp + "</Ivc>");
+			}
+		}else{
+			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
+			int count = 1;
+			for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
+				out.println("    <IvcSet number=\"" + count + "\">");
+				for (String invariant : ivcSet.secondElement()) {
+					out.println("    <Invariant>" + invariant + "</Invariant>");
+				}
+				for (String supp : ivcSet.firstElement()) {
+					out.println("    <Ivc>" + supp + "</Ivc>");
+				}
+				out.println("    </IvcSet>");
+				count++;
+			}
 		}
-		for (String supp : ivc) {
-			out.println("    <Ivc>" + supp + "</Ivc>");
-		}
+		
 		out.println("  </Property>");
 		out.flush();
 	}
@@ -179,11 +197,5 @@ public class XmlWriter extends Writer {
 		out.println("  </Property>");
 		out.flush();
 	}
-
-	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
-			Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
-		// TODO Auto-generated method stub
-		
-	}
+ 
 }

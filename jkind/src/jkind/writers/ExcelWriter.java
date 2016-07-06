@@ -50,8 +50,9 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
+		// doesn't write allIvcs...
 		for (String prop : props) {
 			properties.add(new ValidProperty(prop, source, k, runtime, invText, ivc));
 		}
@@ -80,11 +81,5 @@ public class ExcelWriter extends Writer {
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		properties.add(new InconsistentProperty(prop, source, k, runtime));
 	}
-
-	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
-			Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
-		// TODO Auto-generated method stub
-		
-	}
+ 
 }

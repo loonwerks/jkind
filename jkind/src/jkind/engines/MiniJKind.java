@@ -35,10 +35,8 @@ public class MiniJKind extends Engine {
 	}
 	
 	public void verify() {
-		try {
-			//CountDownLatch latch = new CountDownLatch(1);
-			director.run(); 
-			//latch.await();
+		try { 
+			director.run();  
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);

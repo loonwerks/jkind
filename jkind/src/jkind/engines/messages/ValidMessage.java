@@ -18,7 +18,7 @@ public class ValidMessage extends Message {
 	private final Itinerary itinerary;
 
 	public ValidMessage(String source, List<String> valid, int k, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, List<Tuple<Set<String>, List<String>>> allIvcs) {
+			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs) {
 		this.source = source;
 		this.valid = Util.safeList(valid);
 		this.k = k;
@@ -29,7 +29,7 @@ public class ValidMessage extends Message {
 	}
 
 	public ValidMessage(String source, String valid, int k, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, List<Tuple<Set<String>, List<String>>> allIvcs) {
+			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs) {
 		this(source, Collections.singletonList(valid), k, invariants, ivc, itinerary, allIvcs);
 	}
 

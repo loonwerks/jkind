@@ -219,10 +219,7 @@ public class Director extends MessageHandler {
 		
 		if (settings.allIvcs) { 
 			addEngine(new AllIvcComputerEngine(analysisSpec, settings, this));
-		}
-		if (settings.allIvcs2) { 
-			addEngine(new AllIvcComputerEngine2(analysisSpec, settings, this));
-		}
+		} 
 	}
 
 	private void addEngine(Engine engine) {
@@ -447,9 +444,7 @@ public class Director extends MessageHandler {
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);
 		}
-		if (settings.allIvcs2) {
-			destinations.add(EngineType.IVC_REDUCTION_ALL_2);
-		}
+
 		return new Itinerary(destinations);
 	}
 

@@ -139,11 +139,4 @@ public class ConsoleWriter extends Writer {
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
-			Set<String> ivc) {
-		// TODO Auto-generated method stub
-		
-	}
 }

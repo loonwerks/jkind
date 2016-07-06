@@ -23,7 +23,6 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
 	private static final String IVC_ALL = "all_ivcs";
-	private static final String IVC_ALL2 = "all_ivcs_2";
 	private static final String NO_SLICING = "no_slicing";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
@@ -57,9 +56,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
-		options.addOption(IVC_ALL2, false,
-				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
-		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
+		 options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
@@ -139,7 +136,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 		
 		if (line.hasOption(ALL_ASSIGNED)){
-			if (line.hasOption(IVC) || line.hasOption(IVC_ALL) || line.hasOption(IVC_ALL2)) {
+			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
 				settings.allAssigned = true;
 			}
 		}
@@ -152,13 +149,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.reduceIvc = true;
 			settings.allIvcs = true;
 		}
-		
-		if (line.hasOption(IVC_ALL2)) {
-			settings.reduceIvc = true;
-			settings.allIvcs = false;
-			settings.allIvcs2 = true; 
-		}
-
 
 		if (line.hasOption(TIMEOUT)) {
 			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
@@ -225,7 +215,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			}
 		}
 		
-		if (settings.allIvcs || settings.allIvcs2) { 
+		if (settings.allIvcs) { 
 			if (settings.solver != SolverOption.Z3) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
 				 						+ settings.solver);
@@ -233,11 +223,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				Output.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
-			} 
-			if (settings.xml) {
-				Output.warning("XML generation is not supported for -all_ivcs option");
-				settings.xml = false;
-			}
+			}  
 			if(!settings.allAssigned && !settings.reduceIvc){
 				Output.warning("-all_assigned option is inactive: use this option to mark all equations as __%IVC elements");
 			}
