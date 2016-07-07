@@ -424,6 +424,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
 		}
 		
+		mustElements.clear();
 		mustElements.addAll(intersect);
 		if(mustChckList.size() > 0){
 			Output.println("WARNING: must-check-llist is not empty. there might be more IVCs...");

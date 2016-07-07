@@ -69,6 +69,11 @@ public class XmlWriter extends Writer {
 		}else{
 			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
 			int count = 1;
+			 
+			for (String supp : ivc) {
+				out.println("    <MustElem>" + supp + "</MustElem>");
+			}
+			
 			for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
 				out.println("    <IvcSet number=\"" + count + "\">");
 				for (String invariant : ivcSet.secondElement()) {
