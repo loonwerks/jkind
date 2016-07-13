@@ -74,7 +74,7 @@ public class ConsistencyChecker  extends Engine {
 		js.miniJkind = true; 
 		js.reduceIvc = true;
 		
-		Node normalNode = normalizeAssertions();
+		Node normalNode = normalizeAssertions(property);
 		Specification newSpec = new Specification(normalNode, js.noSlicing); 
 	 
 		MiniJKind jkind = new MiniJKind (newSpec, js);
@@ -168,7 +168,7 @@ public class ConsistencyChecker  extends Engine {
 		return builder.build();
 	}
 	
-	private Node normalizeAssertions() {
+	private Node normalizeAssertions(String property) {
 		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs); 
 		List<VarDecl> locals = new ArrayList<>(spec.node.locals); 
 		List<Equation> equations = new ArrayList<>(spec.node.equations);
@@ -195,6 +195,7 @@ public class ConsistencyChecker  extends Engine {
 		builder.clearOutputs().addOutputs(spec.node.outputs);
 		builder.clearEquations().addEquations(equations);
 		builder.clearAssertions().addAssertions(assertions); 
+		builder.clearProperties().addProperty(property);
 		return builder.build();
 	}
 	
@@ -235,6 +236,7 @@ public class ConsistencyChecker  extends Engine {
 		builder.clearOutputs().addOutputs(outputs);
 		builder.clearEquations().addEquations(equations);
 		builder.clearAssertions().addAssertions(assertions); 
+		builder.clearProperties().addProperty(property);
 		return builder.build();
 	}
 
