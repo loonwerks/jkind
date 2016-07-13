@@ -17,8 +17,7 @@ import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
-import jkind.lustre.Node;
-import jkind.lustre.Type;
+import jkind.lustre.Node; 
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
@@ -81,9 +80,13 @@ public class ConsistencyChecker  extends Engine {
 		MiniJKind jkind = new MiniJKind (newSpec, js);
 		jkind.verify();  
 		for(String ivc : jkind.getPropertyIvc()){ 
+			if(notBool(ivc, normalNode)){
+				continue;
+			}
 			Node newNode = negateIvc(ivc, normalNode); 
 			newSpec = new Specification(newNode, js.noSlicing); 
-			MiniJKind checker = new MiniJKind (newSpec, js);
+			MiniJKind checker = new MiniJKind (newSpec, js); 
+			
 			checker.verify();
 			if(checker.getPropertyStatus() == MiniJKind.VALID){
 				Output.println("--------------------------------------------");
@@ -96,6 +99,26 @@ public class ConsistencyChecker  extends Engine {
 		Output.println("------------------------------------------");
 		Output.println("     No inconsistency was detected.");
 		Output.println("------------------------------------------");
+	}
+
+	private boolean notBool(String ivc, Node normalNode) {
+		for(VarDecl var : normalNode.locals){
+			if(ivc.equals(var.id)){
+				if(var.type.equals(NamedType.BOOL)){
+					return false;
+				}
+				else return true;
+			}
+		}
+		for(VarDecl var : normalNode.outputs){
+			if(ivc.equals(var.id)){
+				if(var.type.equals(NamedType.BOOL)){
+					return false;
+				}
+				else return true;
+			}
+		}
+		return false;
 	}
 
 	private String findRightSide(String ivc, Node node) {
@@ -125,19 +148,24 @@ public class ConsistencyChecker  extends Engine {
 		} 
 		equations.add(negEq);
 
+		List<Expr> assertions = new ArrayList<>(normalNode.assertions); 
+
+		Iterator<Expr> iter0 = assertions.iterator();
+		while (iter0.hasNext()) {
+			Expr asr = iter0.next();
+			if (ivc.equals(asr.toString())) {
+				iter0.remove();  
+				break;
+			}
+		} 
 		NodeBuilder builder = new NodeBuilder(normalNode);
 		builder.clearInputs().addInputs(normalNode.inputs);
 		builder.clearLocals().addLocals(normalNode.locals);
 		builder.clearOutputs().addOutputs(normalNode.outputs);
 		builder.clearEquations().addEquations(equations);
-		builder.clearAssertions().addAssertions(normalNode.assertions); 
+		builder.clearAssertions().addAssertions(assertions); 
 		builder.clearProperties().addProperty(ivc);
 		return builder.build();
-	}
-
-	private void sendValid(String valid, ValidMessage vm) {
-		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, null)); 
 	}
 	
 	private Node normalizeAssertions() {
@@ -219,6 +247,12 @@ public class ConsistencyChecker  extends Engine {
 			}
 		}
 		return result;
+	}
+	
+
+	private void sendValid(String valid, ValidMessage vm) {
+		Itinerary itinerary = vm.getNextItinerary();
+		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, null)); 
 	}
 
 	@Override
