@@ -15,14 +15,20 @@ import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
+import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.Type;
+import jkind.lustre.UnaryExpr;
+import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder; 
 import jkind.translation.Specification;  
 import jkind.util.Util;
 
 public class ConsistencyChecker  extends Engine {
-	public static final String NAME = "consistency-checker";  
+	public static final String NAME = "consistency-checker";
+	private static final String EQUATION_NAME = "__addedEQforAsrInconsis_by_JKind__";  
 
 	public ConsistencyChecker(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director); 
@@ -38,8 +44,7 @@ public class ConsistencyChecker  extends Engine {
 			if (properties.remove(property)) {
 				JKindSettings js = new JKindSettings(); 
 				js.noSlicing = true; 
-				js.miniJkind = true;
-				js.scratch = true;
+				js.miniJkind = true; 
 				Node newNode = unassignProp(property); 
 				Specification newSpec = new Specification(newNode, js.noSlicing); 
 				//System.out.println(newNode.toString());
@@ -49,24 +54,131 @@ public class ConsistencyChecker  extends Engine {
 				if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
 					Output.println("---------------------------------");
 					Output.println("  The model is NOT consistent.");
+					Output.println("  Some inconsistent parts: ");
+					for(String ivc : miniJkind.getPropertyIvc()){
+						Output.println( "   - "+ ivc);
+					}
 					Output.println("---------------------------------");
 				}else{
-					Output.println("---------------------------------------------------------------------------");
-					Output.println("  No inconsistency was detected. The model could still be inconsistent:");
-					Output.println("  Run JKind with -all_ivcs and look into the IVC sets for inconsistencies");
-					Output.println("  If ivc-reduction process failed, add    -pdr_max 0   option");
-					Output.println("---------------------------------------------------------------------------");
+					miniJkind = null;
+					checkPropertyConsistency(property, vm);
 				}
 				sendValid(property, vm);
 			}
 		}
 	}
 	
+	private void checkPropertyConsistency(String property, ValidMessage vm) {
+		JKindSettings js = new JKindSettings(); 
+		js.noSlicing = true; 
+		js.allAssigned = true; 
+		js.miniJkind = true; 
+		js.reduceIvc = true;
+		
+		Node normalNode = normalizeAssertions();
+		Specification newSpec = new Specification(normalNode, js.noSlicing); 
+	 
+		MiniJKind jkind = new MiniJKind (newSpec, js);
+		jkind.verify();  
+		for(String ivc : jkind.getPropertyIvc()){ 
+			Node newNode = negateIvc(ivc, normalNode); 
+			newSpec = new Specification(newNode, js.noSlicing); 
+			MiniJKind checker = new MiniJKind (newSpec, js);
+			checker.verify();
+			if(checker.getPropertyStatus() == MiniJKind.VALID){
+				Output.println("--------------------------------------------");
+				Output.println("    One inconsistency was found: ");
+				Output.println("      - " + findRightSide(ivc, newNode));
+				Output.println("--------------------------------------------");
+				return;
+			}
+		}
+		Output.println("------------------------------------------");
+		Output.println("     No inconsistency was detected.");
+		Output.println("------------------------------------------");
+	}
+
+	private String findRightSide(String ivc, Node node) {
+		for (Equation eq : node.equations){
+			if(ivc.equals(eq.lhs.get(0).id)){
+				if(ivc.contains(EQUATION_NAME)){
+					return "assert (" + eq.expr.toString() +")";
+				}else{
+					return ivc + " = " + eq.expr.toString();
+				}
+			}
+		}
+		return null;
+	}
+
+	private Node negateIvc(String ivc, Node normalNode) {
+		List<Equation> equations = new ArrayList<>(normalNode.equations); 
+		Iterator<Equation> iter = equations.iterator();
+		Equation negEq = null;
+		while (iter.hasNext()) {
+			Equation eq = iter.next();
+			if (ivc.equals(eq.lhs.get(0).id)) {
+				negEq = new Equation(eq.lhs.get(0), new UnaryExpr(UnaryOp.NOT, eq.expr)); 
+				iter.remove(); 
+				break;
+			}
+		} 
+		equations.add(negEq);
+
+		NodeBuilder builder = new NodeBuilder(normalNode);
+		builder.clearInputs().addInputs(normalNode.inputs);
+		builder.clearLocals().addLocals(normalNode.locals);
+		builder.clearOutputs().addOutputs(normalNode.outputs);
+		builder.clearEquations().addEquations(equations);
+		builder.clearAssertions().addAssertions(normalNode.assertions); 
+		builder.clearProperties().addProperty(ivc);
+		return builder.build();
+	}
+
 	private void sendValid(String valid, ValidMessage vm) {
 		Itinerary itinerary = vm.getNextItinerary();
 		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, null)); 
 	}
 	
+	private Node normalizeAssertions() {
+		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs); 
+		List<VarDecl> locals = new ArrayList<>(spec.node.locals); 
+		List<Equation> equations = new ArrayList<>(spec.node.equations);
+		List<Expr> assertions = new ArrayList<>(spec.node.assertions);
+		 
+		
+		Iterator<Expr> iter = assertions.iterator();
+		int counter = 0;
+		List<IdExpr> newAssertions = new ArrayList<>();
+		
+		while (iter.hasNext()) {
+			Expr asr = iter.next();
+			if (! (asr instanceof IdExpr)) {
+				newAssertions.add(defineNewEquation(asr, locals, equations, counter));
+				counter ++;
+				iter.remove(); 
+			}
+		}
+		assertions.addAll(newAssertions);
+
+		NodeBuilder builder = new NodeBuilder(spec.node);
+		builder.clearInputs().addInputs(inputs);
+		builder.clearLocals().addLocals(locals);
+		builder.clearOutputs().addOutputs(spec.node.outputs);
+		builder.clearEquations().addEquations(equations);
+		builder.clearAssertions().addAssertions(assertions); 
+		return builder.build();
+	}
+	
+	private IdExpr defineNewEquation(Expr asr, List<VarDecl> locals, List<Equation> equations, int id) {
+		String newVar = EQUATION_NAME + id;
+		locals.add(new VarDecl(newVar, NamedType.BOOL));
+		IdExpr ret = new IdExpr(newVar);
+		equations.add(new Equation(ret, asr));
+		 
+		return ret;
+	}
+
 	private Node unassignProp(String property) {
 		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs);
 		inputs.add(new VarDecl(property, Util.getTypeMap(spec.node).get(property))); 
