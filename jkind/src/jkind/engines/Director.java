@@ -213,6 +213,10 @@ public class Director extends MessageHandler {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
 		
+		if (settings.consistencyCheck) { 
+			addEngine(new ConsistencyChecker(analysisSpec, settings, this));
+		} 
+		
 		if (settings.reduceIvc) {
 			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
 		}
@@ -438,6 +442,9 @@ public class Director extends MessageHandler {
 
 	public Itinerary getValidMessageItinerary() {
 		List<EngineType> destinations = new ArrayList<>();
+		if (settings.consistencyCheck) {
+			destinations.add(EngineType.CONSISTENCY_CHECKER);
+		}
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}

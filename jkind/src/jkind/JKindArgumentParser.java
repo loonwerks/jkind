@@ -32,6 +32,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
 	private static final String ALL_ASSIGNED = "all_assigned";
+	private static final String CONSISTENCY = "consistency_check";
 
 	private final JKindSettings settings;
 
@@ -55,6 +56,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_SLICING, false, "deactivate JKind slicing");
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
+		options.addOption(CONSISTENCY, false,
+				"find if the model is consistent");
 		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
 		 options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
@@ -135,6 +138,10 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.noSlicing = true; 
 		}
 		
+		if (line.hasOption(CONSISTENCY)){
+			settings.consistencyCheck = true; 
+		}
+		
 		if (line.hasOption(ALL_ASSIGNED)){
 			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
 				settings.allAssigned = true;
@@ -205,13 +212,17 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
+		if (settings.consistencyCheck && (settings.reduceIvc || settings.allIvcs)){
+			Output.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check option shouldn't be used along with the IVC reduction process");
+		}
+		
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				Output.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}
 			if(! settings.allAssigned){
-				Output.warning("-all_assigned option is inactive: use this option to mark all equations as __%IVC elements");
+				Output.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
 			}
 		}
 		
@@ -225,7 +236,7 @@ public class JKindArgumentParser extends ArgumentParser {
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}  
 			if(!settings.allAssigned && !settings.reduceIvc){
-				Output.warning("-all_assigned option is inactive: use this option to mark all equations as __%IVC elements");
+				Output.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
 			}
 		}
 

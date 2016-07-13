@@ -71,9 +71,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			if (invariant.toString().equals(name)) {
 				return invariant;
 			}
-		}
-
-		throw new JKindException("Unable to find property " + name + " during reduction");
+		} 
+   
+		throw new JKindException("Unable to find property " + name + " during reduction\n"
+				+ " try to re-run the process with  -pdr_max 0  option.");
 	}
 
 	private void reduceInvariants(Expr property, ValidMessage vm) {
