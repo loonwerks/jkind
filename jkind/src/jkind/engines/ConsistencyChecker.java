@@ -79,6 +79,7 @@ public class ConsistencyChecker  extends Engine {
 	 
 		MiniJKind jkind = new MiniJKind (newSpec, js);
 		jkind.verify();  
+		boolean detect = false;
 		for(String ivc : jkind.getPropertyIvc()){ 
 			if(notBool(ivc, normalNode)){
 				continue;
@@ -91,14 +92,17 @@ public class ConsistencyChecker  extends Engine {
 			if(checker.getPropertyStatus() == MiniJKind.VALID){
 				Output.println("--------------------------------------------");
 				Output.println("    One inconsistency was found: ");
-				Output.println("      - " + findRightSide(ivc, newNode));
+				Output.println("      - " + findRightSide(ivc, normalNode));
 				Output.println("--------------------------------------------");
-				return;
+				detect = true;
 			}
+
 		}
-		Output.println("------------------------------------------");
-		Output.println("     No inconsistency was detected.");
-		Output.println("------------------------------------------");
+		if(! detect){
+			Output.println("------------------------------------------");
+			Output.println("     No inconsistency was detected.");
+			Output.println("------------------------------------------");
+		}
 	}
 
 	private boolean notBool(String ivc, Node normalNode) {
