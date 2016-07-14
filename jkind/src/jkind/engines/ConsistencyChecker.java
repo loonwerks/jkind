@@ -74,13 +74,14 @@ public class ConsistencyChecker  extends Engine {
 		js.noSlicing = true; 
 		js.allAssigned = true; 
 		js.miniJkind = true; 
-		js.reduceIvc = true;
+		js.reduceIvc = true; 
 		
 		Specification newSpec = new Specification(normalNode, js.noSlicing); 
 	 
 		MiniJKind jkind = new MiniJKind (newSpec, js);
 		jkind.verify();  
 		boolean detect = false;
+		js.reduceIvc = false;
 		for(String ivc : jkind.getPropertyIvc()){ 
 			if(notBool(ivc, normalNode)){
 				continue;
