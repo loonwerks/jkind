@@ -362,7 +362,7 @@ public class ConsistencyChecker  extends Engine {
 
 	private void sendValid(String valid, ValidMessage vm) {
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, 0, null, null , itinerary, null)); 
+		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.invariants, null , itinerary, null)); 
 	}
 
 	@Override
