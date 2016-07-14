@@ -45,8 +45,10 @@ public class ConsistencyChecker  extends Engine {
 				js.noSlicing = true; 
 				js.miniJkind = true; 
 				js.allAssigned = true;
-				Node newNode = unassignProp(property); 
-				Specification newSpec = new Specification(newNode, js.noSlicing); 
+				js.reduceIvc = true;
+				Node normalNode = normalizeAssertions(property); 
+				Node newNode = unassignProp(normalNode, property);  
+				Specification newSpec = new Specification(newNode, js.noSlicing);  
 				MiniJKind miniJkind = new MiniJKind (newSpec, js);
 				miniJkind.verify();
 				 
@@ -55,26 +57,25 @@ public class ConsistencyChecker  extends Engine {
 					Output.println("  The model is NOT consistent.");
 					Output.println("  Some inconsistent parts: ");
 					for(String ivc : miniJkind.getPropertyIvc()){
-						Output.println( "   - "+ ivc);
+						Output.println( "   - "+ findRightSide(ivc, normalNode));
 					}
 					Output.println("---------------------------------");
 				}else{
 					miniJkind = null;
-					checkPropertyConsistency(property, vm);
+					checkPropertyConsistency(normalNode, property, vm);
 				}
 				sendValid(property, vm);
 			}
 		}
 	}
 	
-	private void checkPropertyConsistency(String property, ValidMessage vm) {
+	private void checkPropertyConsistency(Node normalNode, String property, ValidMessage vm) {
 		JKindSettings js = new JKindSettings(); 
 		js.noSlicing = true; 
 		js.allAssigned = true; 
 		js.miniJkind = true; 
 		js.reduceIvc = true;
 		
-		Node normalNode = normalizeAssertions(property);
 		Specification newSpec = new Specification(normalNode, js.noSlicing); 
 	 
 		MiniJKind jkind = new MiniJKind (newSpec, js);
@@ -86,8 +87,7 @@ public class ConsistencyChecker  extends Engine {
 			}
 			Node newNode = negateIvc(ivc, normalNode); 
 			newSpec = new Specification(newNode, js.noSlicing); 
-			MiniJKind checker = new MiniJKind (newSpec, js);  
-			//System.out.println(newNode.toString());
+			MiniJKind checker = new MiniJKind (newSpec, js);   
 			checker.verify();
 			if(checker.getPropertyStatus() == MiniJKind.VALID){
 				Output.println("--------------------------------------------");
@@ -100,7 +100,7 @@ public class ConsistencyChecker  extends Engine {
 		}
 		if(! detect){
 			Output.println("------------------------------------------");
-			Output.println("     No inconsistency was detected.");
+			Output.println("     No inconsistency was detected."); 
 			Output.println("------------------------------------------");
 		}
 	}
@@ -174,8 +174,7 @@ public class ConsistencyChecker  extends Engine {
 		return builder.build();
 	}
 	
-	private Node normalizeAssertions(String property) {
-		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs); 
+	private Node normalizeAssertions(String property) { 
 		List<VarDecl> locals = new ArrayList<>(spec.node.locals); 
 		List<Equation> equations = new ArrayList<>(spec.node.equations);
 		List<Expr> assertions = new ArrayList<>(spec.node.assertions);
@@ -196,7 +195,7 @@ public class ConsistencyChecker  extends Engine {
 		assertions.addAll(newAssertions);
 
 		NodeBuilder builder = new NodeBuilder(spec.node);
-		builder.clearInputs().addInputs(inputs);
+		builder.clearInputs().addInputs(spec.node.inputs);
 		builder.clearLocals().addLocals(locals);
 		builder.clearOutputs().addOutputs(spec.node.outputs);
 		builder.clearEquations().addEquations(equations);
@@ -214,13 +213,13 @@ public class ConsistencyChecker  extends Engine {
 		return ret;
 	}
 
-	private Node unassignProp(String property) {
-		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs);
-		inputs.add(new VarDecl(property, Util.getTypeMap(spec.node).get(property))); 
-		List<VarDecl> locals = removeVariable(spec.node.locals, property);
-		List<VarDecl> outputs = removeVariable(spec.node.outputs, property);
-		List<Equation> equations = new ArrayList<>(spec.node.equations);
-		List<Expr> assertions = new ArrayList<>(spec.node.assertions);
+	private Node unassignProp(Node node, String property) {
+		List<VarDecl> inputs = new ArrayList<>(node.inputs);
+		inputs.add(new VarDecl(property, Util.getTypeMap(node).get(property))); 
+		List<VarDecl> locals = removeVariable(node.locals, property);
+		List<VarDecl> outputs = removeVariable(node.outputs, property);
+		List<Equation> equations = new ArrayList<>(node.equations);
+		List<Expr> assertions = new ArrayList<>(node.assertions);
 		Iterator<Equation> iter = equations.iterator();
 		while (iter.hasNext()) {
 			Equation eq = iter.next();
@@ -236,7 +235,7 @@ public class ConsistencyChecker  extends Engine {
 			}
 		}
 
-		NodeBuilder builder = new NodeBuilder(spec.node);
+		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearInputs().addInputs(inputs);
 		builder.clearLocals().addLocals(locals);
 		builder.clearOutputs().addOutputs(outputs);

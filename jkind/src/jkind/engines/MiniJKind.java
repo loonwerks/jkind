@@ -29,11 +29,12 @@ public class MiniJKind extends Engine {
 	private String status = NOT_YET_CHECKED; 
     
 	public MiniJKind(Specification spec, JKindSettings settings) {
-		super(NAME, spec, settings, null);
+		super(NAME, spec, settings, null); 
 		if (settings.allAssigned){
 			Node newNode = spec.node;
 			newNode = setIvcArgs(spec.node, getAllAssigned(spec.node));
-			this.director =  new Director(settings, new Specification(newNode), new Specification(newNode), this);
+			this.director =  new Director(settings, new Specification(newNode, settings.noSlicing), 
+										new Specification(newNode, settings.noSlicing), this);
 		}else{
 			this.director =  new Director(settings, spec, spec, this);
 		}
@@ -53,7 +54,7 @@ public class MiniJKind extends Engine {
 	}
 	
 	public void getValid(Set<String> core, Set<String> inv) {
-		ivc.addAll(core);
+		ivc.addAll(core); 
 		invariants.addAll(inv);
 		status = VALID;
 	}
