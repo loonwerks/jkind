@@ -95,7 +95,7 @@ public class ConsoleWriter extends Writer {
 	public void writeInvalid(String prop, String source, Counterexample cex,
 			List<String> conflicts, double runtime) {
 		if(miniJkind != null){
-			miniJkind.getInvalid();
+			miniJkind.getInvalid(cex.toString(layout));
 		}else{
 			writeLine();
 			System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "

@@ -25,6 +25,7 @@ public class MiniJKind extends Engine {
 	public static final String NOT_YET_CHECKED = "NOT_YET_CHECKED";
 	 
 	private List<String> ivc = new ArrayList<>();
+	private String invalidModel = "";
 	private List<String> invariants = new ArrayList<>();
 	private String status = NOT_YET_CHECKED; 
     
@@ -59,8 +60,13 @@ public class MiniJKind extends Engine {
 		status = VALID;
 	}
 
-	public void getInvalid() {
+	public void getInvalid(String invalidModel) {
 		status = INVALID;
+		this.invalidModel = invalidModel;
+	}
+	
+	public String getInvalidModel() {
+		return invalidModel;
 	}
 
 	public void getUnknown() {
