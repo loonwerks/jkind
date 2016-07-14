@@ -44,9 +44,9 @@ public class ConsistencyChecker  extends Engine {
 				JKindSettings js = new JKindSettings(); 
 				js.noSlicing = true; 
 				js.miniJkind = true; 
+				js.allAssigned = true;
 				Node newNode = unassignProp(property); 
 				Specification newSpec = new Specification(newNode, js.noSlicing); 
-				//System.out.println(newNode.toString());
 				MiniJKind miniJkind = new MiniJKind (newSpec, js);
 				miniJkind.verify();
 				 
@@ -86,8 +86,8 @@ public class ConsistencyChecker  extends Engine {
 			}
 			Node newNode = negateIvc(ivc, normalNode); 
 			newSpec = new Specification(newNode, js.noSlicing); 
-			MiniJKind checker = new MiniJKind (newSpec, js); 
-			
+			MiniJKind checker = new MiniJKind (newSpec, js);  
+			//System.out.println(newNode.toString());
 			checker.verify();
 			if(checker.getPropertyStatus() == MiniJKind.VALID){
 				Output.println("--------------------------------------------");
@@ -153,15 +153,17 @@ public class ConsistencyChecker  extends Engine {
 		equations.add(negEq);
 
 		List<Expr> assertions = new ArrayList<>(normalNode.assertions); 
-
-		Iterator<Expr> iter0 = assertions.iterator();
-		while (iter0.hasNext()) {
-			Expr asr = iter0.next();
-			if (ivc.equals(asr.toString())) {
-				iter0.remove();  
-				break;
-			}
-		} 
+        if(! (normalNode.properties.contains(ivc))){
+        	assertions.add(new IdExpr(normalNode.properties.get(0)));
+        	Iterator<Expr> iter0 = assertions.iterator();
+        	while (iter0.hasNext()) {
+        		Expr asr = iter0.next();
+        		if (ivc.equals(asr.toString())) {
+        			iter0.remove();  
+        			break;
+        		}
+        	} 
+        }
 		NodeBuilder builder = new NodeBuilder(normalNode);
 		builder.clearInputs().addInputs(normalNode.inputs);
 		builder.clearLocals().addLocals(normalNode.locals);
