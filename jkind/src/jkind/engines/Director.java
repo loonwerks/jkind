@@ -442,11 +442,11 @@ public class Director extends MessageHandler {
 
 	public Itinerary getValidMessageItinerary() {
 		List<EngineType> destinations = new ArrayList<>();
-		if (settings.consistencyCheck) {
-			destinations.add(EngineType.CONSISTENCY_CHECKER);
-		}
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
+		}
+		if (settings.consistencyCheck) {
+			destinations.add(EngineType.CONSISTENCY_CHECKER);
 		}
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);

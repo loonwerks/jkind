@@ -140,6 +140,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		
 		if (line.hasOption(CONSISTENCY)){
 			settings.consistencyCheck = true; 
+			settings.allAssigned = true;
+			settings.reduceIvc = true; 
 		}
 		
 		if (line.hasOption(ALL_ASSIGNED)){
@@ -212,8 +214,15 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
-		if (settings.consistencyCheck && (settings.reduceIvc || settings.allIvcs)){
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check option shouldn't be used along with the IVC reduction process");
+		if (settings.consistencyCheck ){
+			if (settings.solver != SolverOption.Z3) {
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
+				 						+ settings.solver);
+			}
+			if(settings.allIvcs){
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check option shouldn't be used along with the All-IVC reduction process");
+		
+			}
 		}
 		
 		if (settings.reduceIvc) {

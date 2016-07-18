@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.engines.MiniJKind;
+import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
@@ -42,8 +43,8 @@ public class ConsoleWriter extends Writer {
 	public void writeValid(List<String> props, String source, int k, double runtime,
 			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		if(miniJkind != null){
-			List<String> stringInvariants = invariants.stream().map(Object::toString).collect(toList());
-			miniJkind.getValid(Util.safeStringSortedSet(ivc), Util.safeStringSortedSet(stringInvariants));
+			miniJkind.setRuntime(runtime);
+			miniJkind.setValidMessage(new ValidMessage(source, props.get(0), k, invariants, ivc, null, null));
 		}else{
 			writeLine();
 			System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
@@ -95,7 +96,8 @@ public class ConsoleWriter extends Writer {
 	public void writeInvalid(String prop, String source, Counterexample cex,
 			List<String> conflicts, double runtime) {
 		if(miniJkind != null){
-			miniJkind.getInvalid(cex.toString(layout));
+			miniJkind.setRuntime(runtime); 
+			miniJkind.setInvalid(cex.toString(layout));
 		}else{
 			writeLine();
 			System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "
@@ -110,7 +112,8 @@ public class ConsoleWriter extends Writer {
 	public void writeUnknown(List<String> props, int trueFor,
 			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
 		if(miniJkind != null){
-			miniJkind.getUnknown();
+			miniJkind.setRuntime(runtime);
+			miniJkind.setUnknown();
 		}else{
 			writeLine();
 			System.out.println("UNKNOWN PROPERTIES: " + props + " || True for " + trueFor + " steps"
