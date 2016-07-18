@@ -51,8 +51,8 @@ public class ConsistencyChecker  extends Engine {
 				// otherwise ==> it will find an example to show the inconsistency
 				Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 				main = setIvcArgs(main, getAllAssigned(main)); 
-				localSpec = new Specification(main, settings.noSlicing);  
-				System.out.println(main.toString());
+				localSpec = new Specification(main, settings.noSlicing);    
+				checkConsistency(property, vm);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ public class ConsistencyChecker  extends Engine {
 	private Node overApproximateWithIvc(String prop, Node node, Set<String> ivc, List<Expr> invariants) { 
 		List<VarDecl> locals = removeVariable(node.locals, ivc);
 		List<VarDecl> outputs = removeVariable(node.outputs, ivc);
-		List<Expr> assertions = removeAssertions(node.assertions, ivc, node.inputs);
+		List<Expr> assertions = removeAssertions(node.equations, node.inputs);
 		List<Equation> equations = removeEquations(node.equations, ivc, assertions);
 		//assertions.add(new IdExpr(prop));
 		NodeBuilder builder = new NodeBuilder(node);  
@@ -111,18 +111,14 @@ public class ConsistencyChecker  extends Engine {
 		}
 		return false;
 	}
-	private List<Expr> removeAssertions(List<Expr> assertions, Set<String> ivc, List<VarDecl> inputs) {
-		List<Expr> ret = new ArrayList<>();
-		List<String> strIn = new ArrayList<>();
+	private List<Expr> removeAssertions(List<Equation> equations, List<VarDecl> inputs) {
+		List<Expr> ret = new ArrayList<>(); 
 		for(VarDecl in : inputs){
-			strIn.add(in.id);
-		}
-		for(Expr asr : assertions){
-			if (ivc.contains(asr.toString())){
-				ret.add(asr);
-			}
-			else if (strIn.contains(asr.toString())){
-				ret.add(asr);
+			for(Equation right : equations){
+				// I need a better way, this could go wrong:
+				 if (right.expr.toString().contains(in.id)){
+					ret.add(right.lhs.get(0));
+				}
 			}
 		}
 		return ret;
