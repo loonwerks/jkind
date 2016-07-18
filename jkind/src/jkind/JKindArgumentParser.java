@@ -32,6 +32,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
 	private static final String ALL_ASSIGNED = "all_assigned";
+	private static final String CONSISTENCY_BMC = "bmc_consistency_check";
 	private static final String CONSISTENCY = "consistency_check";
 
 	private final JKindSettings settings;
@@ -56,6 +57,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_SLICING, false, "deactivate JKind slicing");
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
+		options.addOption(CONSISTENCY_BMC, false,
+				"find if the model is consistent based on BMC");
 		options.addOption(CONSISTENCY, false,
 				"find if the model is consistent");
 		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
@@ -138,9 +141,17 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.noSlicing = true; 
 		}
 		
+		if (line.hasOption(CONSISTENCY_BMC)){
+			settings.BmcConsistencyCheck = true; 
+			settings.allAssigned = true;
+			settings.noSlicing = true;
+			settings.reduceIvc = true; 
+		}
+		
 		if (line.hasOption(CONSISTENCY)){
 			settings.consistencyCheck = true; 
 			settings.allAssigned = true;
+			settings.noSlicing = true;
 			settings.reduceIvc = true; 
 		}
 		
@@ -214,7 +225,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
-		if (settings.consistencyCheck ){
+		if (settings.BmcConsistencyCheck || settings.consistencyCheck){
 			if (settings.solver != SolverOption.Z3) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
 				 						+ settings.solver);

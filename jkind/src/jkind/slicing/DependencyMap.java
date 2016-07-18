@@ -58,8 +58,8 @@ public class DependencyMap {
 				}
 
 				DependencySet deps = map.get(curr);
-				for (Dependency dep : deps) {
-					map.get(dep).add(curr);
+				for (Dependency dep : deps) { 
+					map.get(dep).add(curr); 
 				}
 				todo.addAll(deps.getSet());
 			}

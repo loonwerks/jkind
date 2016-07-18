@@ -213,8 +213,15 @@ public class Director extends MessageHandler {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
 		
+		if (settings.BmcConsistencyCheck) { 
+			addEngine(new BmcBasedConsistencyChecker(analysisSpec, settings, this));
+		} 
+		
 		if (settings.consistencyCheck) { 
-			addEngine(new ConsistencyChecker(analysisSpec, settings, this));
+			//addEngine(new ConsistencyChecker(analysisSpec, settings, this));
+			Output.println("Sorry!!! the ConsistencyChecker class is under construction");
+			Output.println("try -bmc_consistency_check option!");
+			System.exit(0);
 		} 
 		
 		if (settings.reduceIvc) {
@@ -445,8 +452,8 @@ public class Director extends MessageHandler {
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}
-		if (settings.consistencyCheck) {
-			destinations.add(EngineType.CONSISTENCY_CHECKER);
+		if (settings.BmcConsistencyCheck) {
+			destinations.add(EngineType.BMC_BASED_CONSISTENCY_CHECKER);
 		}
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);

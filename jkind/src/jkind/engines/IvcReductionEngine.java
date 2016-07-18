@@ -242,7 +242,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 
 		Itinerary itinerary = vm.getNextItinerary();
-		if(settings.allIvcs || settings.miniJkind || settings.consistencyCheck){
+		if(settings.allIvcs || settings.miniJkind || settings.BmcConsistencyCheck){
 			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null));
 		}
 		else {
