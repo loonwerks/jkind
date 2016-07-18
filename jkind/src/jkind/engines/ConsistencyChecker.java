@@ -44,10 +44,11 @@ public class ConsistencyChecker  extends Engine {
 	private void check(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				// creat an over appr of the model with IVCs
-				// define a new property which is negation of conjunction of all IVcs
-				// we need a new node because we might have several IVCs
-				// if proof goes through "for vm.k" ==> inconsistency
+				// create an over-approx of the model with IVCs
+				// define a new property which is the same as boolean expressions in the transition system
+				// we need this over-approx node because we might have several IVCs
+				// if proof goes through ==> no inconsistency
+				// otherwise ==> it will find an example to show the inconsistency
 				Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 				main = setIvcArgs(main, getAllAssigned(main));
 				localSpec = new Specification(main, settings.noSlicing);  
