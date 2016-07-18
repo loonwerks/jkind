@@ -50,9 +50,9 @@ public class ConsistencyChecker  extends Engine {
 				// if proof goes through ==> no inconsistency
 				// otherwise ==> it will find an example to show the inconsistency
 				Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
-				main = setIvcArgs(main, getAllAssigned(main));
+				main = setIvcArgs(main, getAllAssigned(main)); 
 				localSpec = new Specification(main, settings.noSlicing);  
-				checkConsistency(property, vm);
+				System.out.println(main.toString());
 			}
 		}
 	}
@@ -62,9 +62,9 @@ public class ConsistencyChecker  extends Engine {
 	private Node overApproximateWithIvc(String prop, Node node, Set<String> ivc, List<Expr> invariants) { 
 		List<VarDecl> locals = removeVariable(node.locals, ivc);
 		List<VarDecl> outputs = removeVariable(node.outputs, ivc);
-		List<Equation> equations = removeEquations(node.equations, ivc);
-		List<Expr> assertions = removeAssertions(node.assertions, ivc);
-		assertions.add(new IdExpr(prop));
+		List<Expr> assertions = removeAssertions(node.assertions, ivc, node.inputs);
+		List<Equation> equations = removeEquations(node.equations, ivc, assertions);
+		//assertions.add(new IdExpr(prop));
 		NodeBuilder builder = new NodeBuilder(node);  
 		builder.clearProperties().addProperty(defineNewPropertyForT(equations, locals, outputs));
 		builder.clearLocals().addLocals(locals);
@@ -111,25 +111,32 @@ public class ConsistencyChecker  extends Engine {
 		}
 		return false;
 	}
-	private List<Expr> removeAssertions(List<Expr> assertions, Set<String> ivc) {
-		List<Expr> ret = new ArrayList<>(assertions);
-		Iterator<Expr> iter = ret.iterator();
-		while (iter.hasNext()) {
-			Expr asr = iter.next();
-			if (ivc.contains(asr.toString())) {
-				iter.remove(); 
+	private List<Expr> removeAssertions(List<Expr> assertions, Set<String> ivc, List<VarDecl> inputs) {
+		List<Expr> ret = new ArrayList<>();
+		List<String> strIn = new ArrayList<>();
+		for(VarDecl in : inputs){
+			strIn.add(in.id);
+		}
+		for(Expr asr : assertions){
+			if (ivc.contains(asr.toString())){
+				ret.add(asr);
+			}
+			else if (strIn.contains(asr.toString())){
+				ret.add(asr);
 			}
 		}
 		return ret;
 	}
 
-	private List<Equation> removeEquations(List<Equation> equations, Set<String> ivc) {
+	private List<Equation> removeEquations(List<Equation> equations, Set<String> ivc, List<Expr> assertions) {
 		List<Equation> ret = new ArrayList<>(equations);
 		Iterator<Equation> iter = ret.iterator();
 		while (iter.hasNext()) {
 			Equation eq = iter.next();
-			if (ivc.contains(eq.lhs.get(0))) {
-				iter.remove(); 
+			if (! ivc.contains(eq.lhs.get(0).id)) {
+				if(! assertions.contains(eq.lhs.get(0))){
+					iter.remove(); 
+				}
 			}
 		}
 		return ret; 
