@@ -156,22 +156,24 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			assertBaseTransition(k);
 			Result result  = z3Solver.quickCheckSat(ivcMap.valueList());
 			if (result instanceof UnsatResult){
-				Output.println("--------------------------------------------");
-				Output.println("  Model is inconsistent at K = " + k  + " with:"); 
+				Output.println("------------------------------------------------------------------");
+				Output.println("  Model is inconsistent with property \n         "
+									+ property + ", at K = " + k  + " with:"); 
 				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 				for(Symbol s : unsatCore){
 					Output.println("    - "+ findRightSide(ivcMap.getKey(s)));
 				}
-				Output.println("--------------------------------------------");
+				Output.println("-------------------------------------------------------------------");
 				sendValid(property, vm);
 				return;
 			} 
 			assertProperty(property, k);
 		}
 		
-		Output.println("--------------------------------------------------------------------");
-		Output.println("  No inconsistency was found to the depth of K = " +  settings.n);
-		Output.println("--------------------------------------------------------------------");
+		Output.println("---------------------------------------------------------------------------");
+		Output.println("  No inconsistency was found for \n"+
+						  "        property " + property + " to the depth of K = " +  settings.n);
+		Output.println("----------------------------------------------------------------------------");
 		sendValid(property, vm);
 	}
 	
