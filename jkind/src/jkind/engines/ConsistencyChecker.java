@@ -48,10 +48,9 @@ public class ConsistencyChecker  extends Engine {
 				// define a new property which is negation of conjunction of all IVcs
 				// we need a new node because we might have several IVCs
 				// if proof goes through "for vm.k" ==> inconsistency
-				Node main = overApproximateWithIvc(spec.node, vm.ivc, vm.invariants);
+				Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 				main = setIvcArgs(main, getAllAssigned(main));
 				localSpec = new Specification(main, settings.noSlicing);  
-				 
 				checkConsistency(property, vm);
 			}
 		}
@@ -59,12 +58,12 @@ public class ConsistencyChecker  extends Engine {
 	
 	 
  
-	private Node overApproximateWithIvc(Node node, Set<String> ivc, List<Expr> invariants) { 
+	private Node overApproximateWithIvc(String prop, Node node, Set<String> ivc, List<Expr> invariants) { 
 		List<VarDecl> locals = removeVariable(node.locals, ivc);
 		List<VarDecl> outputs = removeVariable(node.outputs, ivc);
 		List<Equation> equations = removeEquations(node.equations, ivc);
 		List<Expr> assertions = removeAssertions(node.assertions, ivc);
-		
+		assertions.add(new IdExpr(prop));
 		NodeBuilder builder = new NodeBuilder(node);  
 		builder.clearProperties().addProperty(defineNewPropertyForT(equations, locals, outputs));
 		builder.clearLocals().addLocals(locals);
