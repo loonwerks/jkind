@@ -28,6 +28,6 @@ public class JKindSettings extends Settings {
 	public String readAdvice = null; 
 	public boolean noSlicing = false;
 	public boolean allAssigned = false;
-	public boolean BmcConsistencyCheck =  false;
+	public boolean bmcConsistencyCheck =  false;
 	public boolean consistencyCheck =  false;
 }

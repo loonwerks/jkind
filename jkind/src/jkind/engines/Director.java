@@ -213,7 +213,7 @@ public class Director extends MessageHandler {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
 		
-		if (settings.BmcConsistencyCheck) { 
+		if (settings.bmcConsistencyCheck) { 
 			addEngine(new BmcBasedConsistencyChecker(analysisSpec, settings, this));
 		} 
 		
@@ -452,7 +452,10 @@ public class Director extends MessageHandler {
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}
-		if (settings.BmcConsistencyCheck) {
+		/*if (settings.consistencyCheck) {
+			destinations.add(EngineType.CONSISTENCY_CHECKER);
+		}
+		else */if (settings.bmcConsistencyCheck) {
 			destinations.add(EngineType.BMC_BASED_CONSISTENCY_CHECKER);
 		}
 		if (settings.allIvcs) {

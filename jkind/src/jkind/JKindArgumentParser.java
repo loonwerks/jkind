@@ -142,7 +142,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 		
 		if (line.hasOption(CONSISTENCY_BMC)){
-			settings.BmcConsistencyCheck = true; 
+			settings.bmcConsistencyCheck = true; 
 			settings.allAssigned = true;
 			settings.noSlicing = true;
 			settings.reduceIvc = true; 
@@ -225,7 +225,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
-		if (settings.BmcConsistencyCheck || settings.consistencyCheck){
+		if (settings.bmcConsistencyCheck || settings.consistencyCheck){
 			if (settings.solver != SolverOption.Z3) {
 				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
 				 						+ settings.solver);

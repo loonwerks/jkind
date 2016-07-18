@@ -62,11 +62,9 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			if (properties.remove(property)) {
 				comment("Checking consistency for: " + property);
 				solver.push();
-				// create an over-approx of the model with IVCs
-				// define a new property which is the same as boolean expressions in the transition system
+				// create an over-approx of the model with IVCs 
 				// we need this over-approx node because we might have several IVCs
-				// if proof goes through ==> no inconsistency
-				// otherwise ==> it will find an example to show the inconsistency
+				// do a BMC check to find a false transition
 				Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 				main = setIvcArgs(main, getAllAssigned(main));   
 				localSpec = new Specification(main, settings.noSlicing);  
@@ -83,7 +81,53 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			}
 		}
 	}
- 
+
+	private void checkConsistency(String property, ValidMessage vm) {
+		createVariables(-1);
+		for (int k = 0; k < settings.n; k++) {
+			comment("K = " + (k + 1));  
+			createVariables(k);
+			assertBaseTransition(k);
+			Result result  = z3Solver.quickCheckSat(ivcMap.valueList());
+			if (result instanceof UnsatResult){
+				Output.println("------------------------------------------------------------------");
+				Output.println("  Model is inconsistent for property \n         "
+									+ property + ", at K = " + k  + " with:"); 
+				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
+				for(Symbol s : unsatCore){
+					Output.println("    - "+ findRightSide(ivcMap.getKey(s)));
+				}
+				Output.println("-------------------------------------------------------------------");
+				sendValid(property, vm);
+				return;
+			} 
+			assertProperty(property, k);
+		}
+		
+		Output.println("---------------------------------------------------------------------------");
+		Output.println("  No inconsistency was found for \n"+
+						  "        property " + property + " to the depth of K = " +  settings.n);
+		Output.println("----------------------------------------------------------------------------");
+		sendValid(property, vm);
+	}
+	
+	private void assertProperty(String prop, int k) {
+		solver.assertSexp(new StreamIndex(prop, k).getEncoded());
+	} 
+	
+	private String findRightSide(String ivc) {
+		for (Equation eq : localSpec.node.equations){
+			if(ivc.equals(eq.lhs.get(0).id)){
+				if(ivc.contains(MiniJKind.EQUATION_NAME ) || ivc.contains(JKind.EQUATION_NAME)){
+					return "assert (" + eq.expr.toString() +")";
+				}else{
+					return ivc ;
+				}
+			}
+		}
+		return null;
+	}
+	
 	private Node overApproximateWithIvc(String prop, Node node, Set<String> ivc, List<Expr> invariants) { 
 		List<Expr> assertions = removeAssertions(node.assertions, ivc);
 		List<Equation> equations = removeEquations(node.equations, ivc); 
@@ -143,52 +187,6 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 		}
 		return ret; 
 	}
-	
-	private void assertProperty(String prop, int k) {
-		solver.assertSexp(new StreamIndex(prop, k).getEncoded());
-	}
-
-	private void checkConsistency(String property, ValidMessage vm) {
-		createVariables(-1);
-		for (int k = 0; k < settings.n; k++) {
-			comment("K = " + (k + 1));  
-			createVariables(k);
-			assertBaseTransition(k);
-			Result result  = z3Solver.quickCheckSat(ivcMap.valueList());
-			if (result instanceof UnsatResult){
-				Output.println("------------------------------------------------------------------");
-				Output.println("  Model is inconsistent with property \n         "
-									+ property + ", at K = " + k  + " with:"); 
-				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
-				for(Symbol s : unsatCore){
-					Output.println("    - "+ findRightSide(ivcMap.getKey(s)));
-				}
-				Output.println("-------------------------------------------------------------------");
-				sendValid(property, vm);
-				return;
-			} 
-			assertProperty(property, k);
-		}
-		
-		Output.println("---------------------------------------------------------------------------");
-		Output.println("  No inconsistency was found for \n"+
-						  "        property " + property + " to the depth of K = " +  settings.n);
-		Output.println("----------------------------------------------------------------------------");
-		sendValid(property, vm);
-	}
-	
-	private String findRightSide(String ivc) {
-		for (Equation eq : localSpec.node.equations){
-			if(ivc.equals(eq.lhs.get(0).id)){
-				if(ivc.contains(MiniJKind.EQUATION_NAME ) || ivc.contains(JKind.EQUATION_NAME)){
-					return "assert (" + eq.expr.toString() +")";
-				}else{
-					return ivc ;
-				}
-			}
-		}
-		return null;
-	}
  
 	private static List<String> getAllAssigned(Node node) {
 		List<String> result = new ArrayList<>();
@@ -205,7 +203,40 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 		Itinerary itinerary = vm.getNextItinerary();
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.invariants, vm.ivc , itinerary, null)); 
 	}
+	
+	@Override
+	protected void createVariables(int k) {
+		for (VarDecl vd : getOffsetVarDecls(k)) {
+			solver.define(vd);
+		}
 
+		for (VarDecl vd : Util.getVarDecls(localSpec.node)) {
+			Expr constraint = LustreUtil.typeConstraint(vd.id, vd.type);
+			if (constraint != null) {
+				solver.assertSexp(constraint.accept(new Lustre2Sexp(k)));
+			}
+		}
+	}
+
+	@Override
+	protected List<VarDecl> getOffsetVarDecls(int k) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl vd : Util.getVarDecls(localSpec.node)) {
+			StreamIndex si = new StreamIndex(vd.id, k);
+			result.add(new VarDecl(si.getEncoded().str, vd.type));
+		}
+		return result;
+	}
+
+	@Override
+	protected Sexp getTransition(int k, Sexp init) {
+		List<Sexp> args = new ArrayList<>();
+		args.add(init);
+		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
+		args.addAll(getSymbols(getOffsetVarDecls(k)));
+		return new Cons(localSpec.getTransitionRelation().getName(), args);
+	}
+	
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 		// TODO Auto-generated method stub
@@ -242,39 +273,6 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			check(vm);
 		}
 		
-	}
-	
-	@Override
-	protected void createVariables(int k) {
-		for (VarDecl vd : getOffsetVarDecls(k)) {
-			solver.define(vd);
-		}
-
-		for (VarDecl vd : Util.getVarDecls(localSpec.node)) {
-			Expr constraint = LustreUtil.typeConstraint(vd.id, vd.type);
-			if (constraint != null) {
-				solver.assertSexp(constraint.accept(new Lustre2Sexp(k)));
-			}
-		}
-	}
-
-	@Override
-	protected List<VarDecl> getOffsetVarDecls(int k) {
-		List<VarDecl> result = new ArrayList<>();
-		for (VarDecl vd : Util.getVarDecls(localSpec.node)) {
-			StreamIndex si = new StreamIndex(vd.id, k);
-			result.add(new VarDecl(si.getEncoded().str, vd.type));
-		}
-		return result;
-	}
-
-	@Override
-	protected Sexp getTransition(int k, Sexp init) {
-		List<Sexp> args = new ArrayList<>();
-		args.add(init);
-		args.addAll(getSymbols(getOffsetVarDecls(k - 1)));
-		args.addAll(getSymbols(getOffsetVarDecls(k)));
-		return new Cons(localSpec.getTransitionRelation().getName(), args);
 	}
 
 }
