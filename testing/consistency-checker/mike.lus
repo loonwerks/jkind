@@ -2,9 +2,9 @@ node main(in : real) returns (prop : bool);
 	var 
 	  out : real;
 	let 
-		out = 10.0 -> (out + pre (in));
-		assert (in < 0.0 and pre(in) > -10.0 );
-		prop = out >= 0.0;
+		assert(in > 0.0 and in > pre(in)); 
+		out = 1.0 -> pre(out) + in;
+		prop = out >= 1.0;
 		--%PROPERTY prop;
 	tel;
 	

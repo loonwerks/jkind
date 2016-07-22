@@ -139,7 +139,11 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
+		if(miniJkind.getPropertyStatus() == MiniJKind.UNKNOWN){
+			js.pdrMax = 0;
+			return retryVerification(newSpec, js,resultOfIvcFinder, mustChckList, deactivate);
+		}
+		else if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
 			
@@ -160,6 +164,70 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				// the else part can only happen 
 				//         while processing mustChckList after finding all IVC sets
 				//         if we have different instances of a node in the Lustre file
+				else if (newIvc.containsAll(curr.firstElement())){
+					return true;
+				} 
+			}
+			
+			if(temp.isEmpty()){
+				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+			}
+			else{
+				allIvcs.removeAll(temp);
+				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+			}
+ 
+			return true;
+		}
+		else{
+			resultOfIvcFinder.addAll(deactivate); 
+			if (settings.scratch){
+				comment("Property got violated. Adding back the elements");
+			}
+			
+			if(deactivate.size() == 1){
+				mustElements.addAll(deactivate);
+				mustChckList.removeAll(deactivate);
+				if (settings.scratch){
+					comment("One MUST element was found: "+ getIvcLiterals(deactivate));
+				}
+			}
+			else{
+				deactivate.removeAll(mustElements);
+				deactivate.removeAll(mayElements);
+				if (settings.scratch){
+					comment(getIvcLiterals(deactivate) + " could be MUST elements; added to the check list...");
+				}
+			 
+				mustChckList.addAll(deactivate);
+			}
+			return false;
+		} 
+	}
+
+	private boolean retryVerification(Specification newSpec, JKindSettings js, List<String> resultOfIvcFinder,
+			Set<String> mustChckList, List<String> deactivate) {
+		if (settings.scratch){
+			comment("Result was UNKNOWN; Resend the request with pdrMax = 0 ...");
+		}
+		MiniJKind miniJkind = new MiniJKind (newSpec, js);
+		miniJkind.verify();
+		if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
+			mayElements.addAll(deactivate);
+			mustChckList.removeAll(deactivate);
+			
+			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
+			Set<String> newIvc = trimNode(resultOfIvcFinder);
+			
+			if (settings.scratch){
+				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
+			} 
+			
+			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
+			for(Tuple<Set<String>, List<String>> curr: allIvcs){  
+				if (curr.firstElement().containsAll(newIvc)){
+					temp.add(curr);  
+				} 
 				else if (newIvc.containsAll(curr.firstElement())){
 					return true;
 				} 
