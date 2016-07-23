@@ -40,11 +40,18 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 	private Specification localSpec;   
 	private Z3Solver z3Solver;
 	private LinkedBiMap<String, Symbol> ivcMap;
+	private boolean noDirector = false;
 	
 	public BmcBasedConsistencyChecker(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director); 
 	}
 	
+	public BmcBasedConsistencyChecker(Specification spec, JKindSettings settings) {
+		super(NAME, spec, settings, null); 
+		noDirector = true;
+		localSpec = spec;
+	}
+
 	@Override
 	protected void initializeSolver() {
 		solver = getSolver();
@@ -82,7 +89,7 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 		}
 	}
 
-	private void checkConsistency(String property, ValidMessage vm) {
+	private boolean checkConsistency(String property, ValidMessage vm) {
 		createVariables(-1);
 		for (int k = 0; k < settings.n; k++) {
 			comment("K = " + (k + 1));  
@@ -90,25 +97,28 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			assertBaseTransition(k);
 			Result result  = z3Solver.quickCheckSat(ivcMap.valueList());
 			if (result instanceof UnsatResult){
-				Output.println("------------------------------------------------------------------");
-				Output.println("  Model is inconsistent for property \n         "
-									+ property + ", at K = " + k  + " with:"); 
+				Output.println("---------------------------------------------------------------------------------");
+				Output.println("  Model is inconsistent for property " + property + ", at K = " + k  + " with:"); 
 				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 				for(Symbol s : unsatCore){
 					Output.println("    - "+ findRightSide(ivcMap.getKey(s)));
 				}
-				Output.println("-------------------------------------------------------------------");
-				sendValid(property, vm);
-				return;
+				Output.println("---------------------------------------------------------------------------------");
+				if(! noDirector){
+					sendValid(property, vm);
+				}
+				return false;
 			} 
 			assertProperty(property, k);
 		}
-		
-		Output.println("---------------------------------------------------------------------------");
-		Output.println("  No inconsistency was found for \n"+
+		if(! noDirector){
+			Output.println("---------------------------------------------------------------------------");
+			Output.println("  No inconsistency was found for \n"+
 						  "        property " + property + " to the depth of K = " +  settings.n);
-		Output.println("----------------------------------------------------------------------------");
-		sendValid(property, vm);
+			Output.println("----------------------------------------------------------------------------");
+			sendValid(property, vm);
+		}
+		return true;
 	}
 	
 	private void assertProperty(String prop, int k) {
@@ -273,6 +283,23 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			check(vm);
 		}
 		
+	}
+
+	public boolean acceptFromConsistencyChecker(String property) {
+		this.initializeSolver();
+		comment("Checking consistency for: " + property);
+		solver.push();      
+		ivcMap = Lustre2Sexp.createIvcMap(localSpec.node.ivc); 
+		
+		for (Symbol e : ivcMap.values()) {
+			solver.define(new VarDecl(e.str, NamedType.BOOL));
+		}
+		
+		solver.define(localSpec.getIvcTransitionRelation());
+		solver.define(new VarDecl(INIT.str, NamedType.BOOL));  
+		boolean ret = checkConsistency(property, null);
+		solver.pop();
+		return ret;
 	}
 
 }

@@ -218,10 +218,7 @@ public class Director extends MessageHandler {
 		} 
 		
 		if (settings.consistencyCheck) { 
-			//addEngine(new ConsistencyChecker(analysisSpec, settings, this));
-			Output.println("Sorry!!! the ConsistencyChecker class is under construction");
-			Output.println("try -bmc_consistency_check option!");
-			System.exit(0);
+			addEngine(new ConsistencyChecker(analysisSpec, settings, this)); 
 		} 
 		
 		if (settings.reduceIvc) {
@@ -452,10 +449,10 @@ public class Director extends MessageHandler {
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}
-		/*if (settings.consistencyCheck) {
+		if (settings.consistencyCheck) {
 			destinations.add(EngineType.CONSISTENCY_CHECKER);
 		}
-		else */if (settings.bmcConsistencyCheck) {
+		else if (settings.bmcConsistencyCheck) {
 			destinations.add(EngineType.BMC_BASED_CONSISTENCY_CHECKER);
 		}
 		if (settings.allIvcs) {
