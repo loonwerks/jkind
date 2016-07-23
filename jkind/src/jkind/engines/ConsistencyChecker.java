@@ -49,6 +49,7 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value; 
 import jkind.lustre.visitors.ExprVisitor;
+import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -94,13 +95,17 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 					sendValid(property, vm);
 				}
 				else{ 
-					// create an over-approx of the model with IVCs
-					// if the first check is passed,
-					// will make all the assertions regular equations
-					// define a new property which is the same as transition system
-					// we need this over-approx node because we might have several IVCs
-					// if proof goes through ==> no inconsistency
-					// otherwise ==> it will find an example to show the inconsistency 
+					/*
+					   create an over-approx of the model with IVCs
+					   if the first check is passed,
+					   will make all the assertions regular equations
+					   define a new property which is the same as conjunction of the assertions
+					   we need this over-approx node because 
+					           1- we might have several IVCs
+					           2- it would be cheaper to verify
+					   if proof goes through ==> no inconsistency
+					   otherwise ==> it will find an example to show the inconsistency 
+					*/
 					Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 					if(main == null){
 						sendValid(property, vm);
@@ -527,7 +532,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	}
 	
 	
-	private class ReplacePres implements ExprVisitor<Expr> { 
+	private class ReplacePres extends TypeAwareAstMapVisitor{ 
 	    Expr eq;
 		Expr value;
 		String name;
@@ -538,95 +543,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		}
 		public Expr check() { 
 		    return eq.accept (new ReplacePres(name, eq, value));
-		}
- 
-		@Override
-		public Expr visit(ArrayAccessExpr e) {
-			return new ArrayAccessExpr(e.array.accept(this), e.index.accept(this)); 
-		}
-
-		@Override
-		public Expr visit(ArrayExpr e) {
-			visitExprs(e.elements);
-			//not sure about this
-			return null;
-		}
-
-		@Override
-		public Expr visit(ArrayUpdateExpr e) {
-			return new ArrayUpdateExpr(e.array.accept(this), e.index.accept(this), e.value.accept(this));
-		}
-
-		@Override
-		public Expr visit(BinaryExpr e) {
-			return new BinaryExpr(e.left.accept(this), e.op, e.right.accept(this));
-		}
-
-		@Override
-		public Expr visit(BoolExpr e) {
-			return new BoolExpr(e.value);
-		}
-
-		@Override
-		public Expr visit(CastExpr e) {
-			return e.expr.accept(this);
-		}
-
-		@Override
-		public Expr visit(CondactExpr e) {
-			//not sure about this one
-			return new CondactExpr(e.clock.accept(this), ((NodeCallExpr) e.call.accept(this)), visitExprs(e.args));
-		}
-
-		@Override
-		public Expr visit(IdExpr e) {
-			return new IdExpr(e.id);
-		}
-
-		@Override
-		public Expr visit(IfThenElseExpr e) {
-			return new IfThenElseExpr(e.cond.accept(this), e.thenExpr.accept(this), e.elseExpr.accept(this));
-		}
-
-		@Override
-		public Expr visit(IntExpr e) {
-			return new IntExpr(e.value);
-		}
-
-		@Override
-		public Expr visit(NodeCallExpr e) {
-			//not sure
-			visitExprs(e.args);
-			return null;
-		}
-
-		@Override
-		public Expr visit(RealExpr e) {
-			return new RealExpr(e.value);
-		}
-
-		@Override
-		public Expr visit(RecordAccessExpr e) {
-			return new RecordAccessExpr(e.record.accept(this), e.field);
-		}
-
-		@Override
-		public Expr visit(RecordExpr e) {
-			//not sure
-			visitExprs(e.fields.values());
-			return null;
-		}
-
-		@Override
-		public Expr visit(RecordUpdateExpr e) {
-			return new RecordUpdateExpr(e.record.accept(this), e.field, e.value.accept(this));
-		}
-
-		@Override
-		public Expr visit(TupleExpr e) {
-			// not sure
-			visitExprs(e.elements);
-			return null;
 		}
 
 		@Override
@@ -639,13 +555,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			return new UnaryExpr(e.op, e.expr.accept(this));
 		}
 
-		protected List<Expr> visitExprs(Collection<Expr> list) {
-			List<Expr> ret = new ArrayList<>();
-			for (Expr e : list) {
-				 ret.add(e.accept(this));
-			}
-			return ret;
-		}
 	}
 
 }
