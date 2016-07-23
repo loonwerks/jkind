@@ -90,17 +90,17 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	private void check(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				// create an over-approx of the model with IVCs
-				// if the first check is passed,
-				// will make all the assertions regular equations
-				// define a new property which is the same as transition system
-				// we need this over-approx node because we might have several IVCs
-				// if proof goes through ==> no inconsistency
-				// otherwise ==> it will find an example to show the inconsistency 
 				if (preCheck(property)){
 					sendValid(property, vm);
 				}
 				else{ 
+					// create an over-approx of the model with IVCs
+					// if the first check is passed,
+					// will make all the assertions regular equations
+					// define a new property which is the same as transition system
+					// we need this over-approx node because we might have several IVCs
+					// if proof goes through ==> no inconsistency
+					// otherwise ==> it will find an example to show the inconsistency 
 					Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 					if(main == null){
 						sendValid(property, vm);
@@ -139,22 +139,30 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (localSpec, js);
         miniJkind.verify();   
 		if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
-			printNoInconsistency();
+			if(postChecke(property, vm)){
+				printNoInconsistency();  
+				sendValid(property, vm);
+				return;
+			}
 		}
 		else if (miniJkind.getPropertyStatus() == MiniJKind.INVALID) {  
 			printInconsistency(miniJkind.getInvalidModel(), vm.ivc);
 		}
 		else{
-			JKindSettings temp = new JKindSettings();
-			temp.n = BMC_STEPS;
-			temp.solver =  SolverOption.Z3;
-			if (! (new BmcBasedConsistencyChecker(spec, temp).acceptFromConsistencyChecker(property))){
-				sendValid(property, vm);
-				return;
-			}
 			printInconsistency("", vm.ivc);
 		}
 		sendValid(property, vm);
+	}
+
+	private boolean postChecke(String property, ValidMessage vm) {
+		JKindSettings temp = new JKindSettings();
+		temp.n = BMC_STEPS;
+		temp.solver =  SolverOption.Z3;
+		if (! (new BmcBasedConsistencyChecker(spec, temp).acceptFromConsistencyChecker(property))){
+			sendValid(property, vm);
+			return false;
+		}
+		return true;
 	}
 
 	private Node overApproximateWithIvc(String prop, Node node, Set<String> ivc, List<Expr> invariants) { 
@@ -334,10 +342,8 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	private String defineNewPropertyForT(List<Equation> equations, List<VarDecl> locals, List<VarDecl> outputs) {
 		Expr prop = new BoolExpr(true); 
 		for(Equation eq : equations){
-			if(boolExpr(eq.lhs.get(0).id, locals, outputs)){
+			if(isAssertion(eq)){
 				prop = new BinaryExpr(prop, BinaryOp.AND, eq.lhs.get(0));
-			}else{
-				prop = new BinaryExpr(prop, BinaryOp.AND, new BinaryExpr(eq.lhs.get(0), BinaryOp.EQUAL, eq.expr));
 			}
 		}  
 		prop = new BinaryExpr(new BoolExpr(true), BinaryOp.ARROW, prop);
@@ -346,22 +352,10 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		return newVar;
 	}
 	
-	private boolean boolExpr(String ivc, List<VarDecl> locals, List<VarDecl> outputs) {
-		for(VarDecl var : locals){
-			if(ivc.equals(var.id)){
-				if(var.type.equals(NamedType.BOOL)){
-					return true;
-				}
-				else return false;
-			}
-		}
-		for(VarDecl var : outputs){
-			if(ivc.equals(var.id)){
-				if(var.type.equals(NamedType.BOOL)){
-					return true;
-				}
-				else return false;
-			}
+	private boolean isAssertion(Equation eq) {
+		for(Expr asr : spec.node.assertions){
+			if (asr.toString().equals(eq.lhs.get(0).id))
+				return true;
 		}
 		return false;
 	}

@@ -1,0 +1,15 @@
+
+node main(
+
+) returns (
+  x : bool;
+  ok : bool
+);
+let
+  x = (true -> (not (pre x)));
+
+  ok = (true -> (x or (pre x)));
+
+  --%PROPERTY ok;
+
+tel;
