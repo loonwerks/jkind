@@ -66,6 +66,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	public static final String NAME = "consistency-checker";
 	private Specification localSpec; 
 	private Z3Solver z3Solver;
+	private static final int BMC_STEPS = 3;
 	
 	public ConsistencyChecker(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director); 
@@ -100,13 +101,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 					sendValid(property, vm);
 				}
 				else{ 
-					JKindSettings temp = new JKindSettings();
-					temp.n = 2;
-					temp.solver =  SolverOption.Z3;
-					if (! (new BmcBasedConsistencyChecker(spec, temp).acceptFromConsistencyChecker(property))){
-						sendValid(property, vm);
-						return;
-					}
 					Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 					if(main == null){
 						sendValid(property, vm);
@@ -151,6 +145,13 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			printInconsistency(miniJkind.getInvalidModel(), vm.ivc);
 		}
 		else{
+			JKindSettings temp = new JKindSettings();
+			temp.n = BMC_STEPS;
+			temp.solver =  SolverOption.Z3;
+			if (! (new BmcBasedConsistencyChecker(spec, temp).acceptFromConsistencyChecker(property))){
+				sendValid(property, vm);
+				return;
+			}
 			printInconsistency("", vm.ivc);
 		}
 		sendValid(property, vm);
@@ -249,7 +250,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	private void inlinePre(String in, List<Equation> equations, Expr valueToExpr) {
 		List<Equation> itr = new ArrayList<>(equations);
 		for(Equation eq : itr){
-			Expr newEq = new ReplacePres(in, eq.expr, valueToExpr).check();
+			Expr newEq = new ReplacePres(in, eq.expr, valueToExpr).check(); 
 			equations.remove(eq);
 			equations.add(new Equation(eq.lhs.get(0), newEq));
 		}
@@ -438,6 +439,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			}
 		}else{ 
 			String[] cex = invalidModel.split("\n");
+			Output.println("                      " + cex[0].trim());
 			for(String core : ivc){
 				Output.println("     "+ parseModel(cex, core)); 
 			}
@@ -462,7 +464,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 				}else{
 					ret = ivc + ":\n                      ";
 				}
-				return ret + temp;
+				return ret + temp + "\n";
 			}
 		}
 		return ret;
@@ -637,7 +639,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		public Expr visit(UnaryExpr e) {
 			if (e.op == UnaryOp.PRE) { 
 				if(e.expr.toString().equals(name)){  
-					return new UnaryExpr(UnaryOp.NEGATIVE, new UnaryExpr(UnaryOp.NEGATIVE, value));
+					return value;
 				}else return new UnaryExpr(UnaryOp.PRE, e.expr);
 			} 
 			return new UnaryExpr(e.op, e.expr.accept(this));
