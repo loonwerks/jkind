@@ -166,7 +166,7 @@ public class Director extends MessageHandler {
 	};
 
 	private void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+		Runtime.getRuntime().addShutdownHook(shutdownHook); 
 	}
 
 	private boolean removeShutdownHook() {

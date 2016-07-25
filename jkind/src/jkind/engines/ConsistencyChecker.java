@@ -122,7 +122,11 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		js.pdrMax = 0;  
  
 		MiniJKind miniJkind = new MiniJKind (new Specification(unassignProp(prop), settings.noSlicing), js);
-        miniJkind.verify();   
+		try{
+			miniJkind.verify();   
+		}catch(IllegalStateException e){
+			System.out.println("IllegalStateException in Consistency checker: status = "+miniJkind.getPropertyStatus());
+		}
 		if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
 			message.setConsistencyMsgWithUc(findRightSide(miniJkind.getPropertyIvc())); 
 			return true;
@@ -456,7 +460,10 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	private Set<String> findRightSide(List<String> propertyIvc) {
 		Set<String> ret = new HashSet<>(); 
 		for (String core : propertyIvc){
-			ret.add(findRightSide(core));
+			String rn = findRightSide(core);
+			if (rn != ""){
+				ret.add(rn);
+			}
 		}
 		return ret;
 	}
@@ -468,6 +475,8 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 					return ("assert "+ eq.expr.toString());
 				}
 			}
+		}else if(name.contains("__newPrpAddedByConsistencyChecker_by_JKind__")){
+			return "";
 		}
 		return name;
 
