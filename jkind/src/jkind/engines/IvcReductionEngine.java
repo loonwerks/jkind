@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import jkind.JKind;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -17,6 +19,7 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
+import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
@@ -240,13 +243,37 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			comment(invariant.toString());
 		}
 		comment("IVC: " + ivc.toString());
-
-		Itinerary itinerary = vm.getNextItinerary();
-		if(settings.allIvcs || settings.miniJkind || settings.bmcConsistencyCheck){
-			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null));
+		Itinerary itinerary = vm.getNextItinerary(); 
+		if(settings.allIvcs || settings.miniJkind || settings.consistencyCheck){
+			ValidMessage nvm = new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null);
+			director.broadcast(nvm);
+			if(settings.allIvcs && settings.consistencyCheck){
+				director.handleMessage(new ConsistencyMessage(nvm));
+			}
 		}
+		else if(settings.bmcConsistencyCheck){
+			findRightSide(ivc);
+			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null));
+		} 
 		else {
+			findRightSide(ivc);
 			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary, null));
+		}
+	}
+
+	private void findRightSide(Set<String> ivc) {
+		if(settings.allAssigned){
+			Set<String> itr = new HashSet<>(ivc);
+			for(String core : itr){
+				if(core.contains(MiniJKind.EQUATION_NAME ) || core.contains(JKind.EQUATION_NAME)){
+					for (Equation eq : spec.node.equations){
+						if(core.equals(eq.lhs.get(0).id)){
+							ivc.remove(core);
+							ivc.add("assert "+ eq.expr.toString());
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -285,5 +312,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		if (vm.getNextDestination() == EngineType.IVC_REDUCTION) {
 			reduce(vm);
 		}
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

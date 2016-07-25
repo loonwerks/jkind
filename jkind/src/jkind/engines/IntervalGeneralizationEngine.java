@@ -2,6 +2,7 @@ package jkind.engines;
 
 import jkind.JKindSettings;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -75,5 +76,9 @@ public class IntervalGeneralizationEngine extends Engine {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

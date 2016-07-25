@@ -21,6 +21,7 @@ import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -140,7 +141,6 @@ public class Director extends MessageHandler {
 			processMessages();
 			sleep(100);
 		}
-
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {
@@ -439,24 +439,33 @@ public class Director extends MessageHandler {
 			writer.writeBaseStep(bsm.properties, baseStep);
 		}
 	}
+	
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) {
+		for (Engine e : engines){
+			if(e.name.equals(ConsistencyChecker.NAME)){
+				e.receiveMessage(cm);
+				break;
+			}
+		}
+	}
 
 	@Override
 	protected void handleMessage(InvariantMessage im) {
 	}
 
 	public Itinerary getValidMessageItinerary() {
-		List<EngineType> destinations = new ArrayList<>();
+		List<EngineType> destinations = new ArrayList<>(); 
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}
-		if (settings.consistencyCheck) {
-			destinations.add(EngineType.CONSISTENCY_CHECKER);
-		}
-		else if (settings.bmcConsistencyCheck) {
+		if (settings.bmcConsistencyCheck) {
 			destinations.add(EngineType.BMC_BASED_CONSISTENCY_CHECKER);
 		}
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);
+		}else if (settings.consistencyCheck){
+			destinations.add(EngineType.CONSISTENCY_CHECKER);
 		}
 
 		return new Itinerary(destinations);
@@ -521,5 +530,9 @@ public class Director extends MessageHandler {
 			ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
 		}
 		return CounterexampleExtractor.extract(userSpec, k, model);
+	}
+
+	public void writeConsistencyCheckerResults(ConsistencyMessage message) {
+		writer.writeConsistencyCheckerResults(message);
 	}
 }

@@ -7,6 +7,7 @@ import jkind.advice.Advice;
 import jkind.engines.invariant.AbstractInvariantGenerationEngine;
 import jkind.engines.invariant.ListInvariant;
 import jkind.engines.invariant.StructuredInvariant;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.lustre.Expr;
 import jkind.translation.Specification;
 
@@ -24,5 +25,9 @@ public class AdviceEngine extends AbstractInvariantGenerationEngine {
 	@Override
 	protected StructuredInvariant createInitialInvariant() {
 		return new ListInvariant(potentialInvariants);
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

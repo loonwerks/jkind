@@ -4,6 +4,7 @@ import java.util.List;
 
 import jkind.JKindSettings;
 import jkind.engines.Director;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.lustre.Expr;
 import jkind.translation.Specification;
 
@@ -20,5 +21,9 @@ public class GraphInvariantGenerationEngine extends AbstractInvariantGenerationE
 		List<Expr> candidates = new CandidateGenerator(spec).generate();
 		comment("Proposed " + candidates.size() + " candidates");
 		return new GraphInvariant(candidates);
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

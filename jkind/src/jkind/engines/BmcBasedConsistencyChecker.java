@@ -8,6 +8,7 @@ import jkind.JKind;
 import jkind.JKindSettings;
 import jkind.Output;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -89,8 +90,9 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 		}
 	}
 
-	private boolean checkConsistency(String property, ValidMessage vm) {
+	private Set<String> checkConsistency(String property, ValidMessage vm) {
 		createVariables(-1);
+		Set<String> ret = new HashSet<>();
 		for (int k = 0; k < settings.n; k++) {
 			comment("K = " + (k + 1));  
 			createVariables(k);
@@ -101,13 +103,15 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 				Output.println("  Model is inconsistent for property " + property + ", at K = " + k  + " with:"); 
 				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 				for(Symbol s : unsatCore){
-					Output.println("    - "+ findRightSide(ivcMap.getKey(s)));
+					String rs = findRightSide(ivcMap.getKey(s));
+					Output.println("    - "+ rs);
+					ret.add(rs);
 				}
 				Output.println("---------------------------------------------------------------------------------");
 				if(! noDirector){
 					sendValid(property, vm);
 				}
-				return false;
+				return ret;
 			} 
 			assertProperty(property, k);
 		}
@@ -118,7 +122,7 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			Output.println("----------------------------------------------------------------------------");
 			sendValid(property, vm);
 		}
-		return true;
+		return null;
 	}
 	
 	private void assertProperty(String prop, int k) {
@@ -279,13 +283,13 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 
 	@Override
 	protected void handleMessage(ValidMessage vm) {
-		if (vm.getNextDestination() == EngineType.BMC_BASED_CONSISTENCY_CHECKER) { 
+		if (vm.getNextDestination() == EngineType.BMC_BASED_CONSISTENCY_CHECKER) {  
 			check(vm);
 		}
 		
 	}
 
-	public boolean acceptFromConsistencyChecker(String property) {
+	public Set<String> acceptWithNoDirector(String property) {
 		this.initializeSolver();
 		comment("Checking consistency for: " + property);
 		solver.push();      
@@ -297,9 +301,12 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 		
 		solver.define(localSpec.getIvcTransitionRelation());
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));  
-		boolean ret = checkConsistency(property, null);
-		solver.pop();
-		return ret;
+		return checkConsistency(property, null);
+		//solver.pop();
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) {  
 	}
 
 }

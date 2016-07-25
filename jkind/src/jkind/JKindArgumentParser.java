@@ -3,11 +3,10 @@ package jkind;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
-import java.util.List;
-
+import java.util.List; 
 import jkind.engines.SolverUtil;
 import jkind.lustre.Node;
-import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.builders.NodeBuilder;  
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -148,26 +147,31 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.reduceIvc = true; 
 		}
 		
+		if (line.hasOption(IVC)) {
+			settings.reduceIvc = true;
+		}
+		
 		if (line.hasOption(CONSISTENCY)){
-			settings.consistencyCheck = true; 
+			settings.consistencyCheck = true;
+			settings.bmcConsistencyCheck = false; 
 			settings.allAssigned = true;
 			settings.noSlicing = true;
-			settings.reduceIvc = true; 
+			
+			if(! settings.reduceIvc){
+				settings.reduceIvc = true;
+				settings.allIvcs = true;
+			}
+		}
+		
+		if (line.hasOption(IVC_ALL)) {
+			settings.reduceIvc = true;
+			settings.allIvcs = true;
 		}
 		
 		if (line.hasOption(ALL_ASSIGNED)){
 			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
 				settings.allAssigned = true;
 			}
-		}
-		
-		if (line.hasOption(IVC)) {
-			settings.reduceIvc = true;
-		}
-		
-		if (line.hasOption(IVC_ALL)) {
-			settings.reduceIvc = true;
-			settings.allIvcs = true;
 		}
 
 		if (line.hasOption(TIMEOUT)) {
@@ -227,12 +231,16 @@ public class JKindArgumentParser extends ArgumentParser {
 	private void checkSettings() {
 		if (settings.bmcConsistencyCheck || settings.consistencyCheck){
 			if (settings.solver != SolverOption.Z3) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check is not supported with "
 				 						+ settings.solver);
 			}
-			if(settings.allIvcs){
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check option shouldn't be used along with the All-IVC reduction process");
+			if(settings.reduceIvc && settings.consistencyCheck && !settings.allIvcs){
+				Output.warning("-consistency_check with -ivc option will work with a single proof."
+						+ "\nin order for a complete check, use -consistency_check without -ivc");
 		
+			}
+			if (settings.excel) {
+				Output.fatal(ExitCodes.INVALID_OPTIONS, "consistency check does not suppoert option: "+ EXCEL);
 			}
 		}
 		

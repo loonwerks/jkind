@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.util.Tuple;
@@ -26,5 +27,7 @@ public abstract class Writer {
 
 	public abstract void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
 			Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs);
+
+	public abstract void writeConsistencyCheckerResults(ConsistencyMessage message);
 
 }

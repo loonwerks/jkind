@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
 import jkind.lustre.Expr;
@@ -200,6 +201,33 @@ public class XmlWriter extends Writer {
 		out.println("    <Answer source=\"" + source + "\">inconsistent</Answer>");
 		out.println("    <K>" + k + "</K>");
 		out.println("  </Property>");
+		out.flush();
+	}
+
+	@SuppressWarnings({ "incomplete-switch", "unchecked" })
+	@Override
+	public void writeConsistencyCheckerResults(ConsistencyMessage cm) {
+		switch(cm.getStatus()){
+			case CONSISTENT: 
+				return;
+				
+			case UC: 
+				out.println("    <Inconsistencies>");  
+				for(String c : (Set<String>)cm.getConsistencyMsg()){
+					out.println("      <Inconsistency>" + c + "</Inconsistency>"); 
+				} 
+				out.println("    </Inconsistencies>");  
+				break;
+				
+			case CEX:
+				out.println("    <InconsistencyWithCounterexample>"); 
+				Counterexample cex = ((List<Counterexample>)cm.getConsistencyMsg()).get(0);
+				for (Signal<Value> signal : cex.getSignals()) {
+					writeSignal(cex.getLength(), signal);
+				}
+				out.println("    </InonsistencyCounterexample>");
+				break;
+		}
 		out.flush();
 	}
  

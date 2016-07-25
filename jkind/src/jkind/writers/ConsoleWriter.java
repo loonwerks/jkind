@@ -5,8 +5,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import jkind.engines.MiniJKind;
+import jkind.engines.messages.ConsistencyMessage; 
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
@@ -97,7 +97,7 @@ public class ConsoleWriter extends Writer {
 			List<String> conflicts, double runtime) {
 		if(miniJkind != null){
 			miniJkind.setRuntime(runtime); 
-			miniJkind.setInvalid(cex.toString(layout));
+			miniJkind.setInvalid(cex);
 		}else{
 			writeLine();
 			System.out.println("INVALID PROPERTY: " + prop + " || " + source + " || K = "
@@ -141,5 +141,30 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		throw new UnsupportedOperationException();
+	}
+ 
+	@SuppressWarnings({ "unchecked", "incomplete-switch" })
+	@Override
+	public void writeConsistencyCheckerResults(ConsistencyMessage cm) {
+		System.out.println("==================================================================================");
+		System.out.println("  for property <" + cm.vm.valid + "> with IVC set "+ cm.vm.ivc.toString());
+		switch(cm.getStatus()){
+			case CONSISTENT: 
+				System.out.println("    - no inconsistency was found"); 
+				break;
+				
+			case UC: 
+				System.out.println("    - model is inconsistent with:");
+				for(String c : (Set<String>)cm.getConsistencyMsg()){
+					System.out.println( "       + " + c);
+				} 
+				break;
+				
+			case CEX:
+				System.out.println("    - model is inconsistent:"); 
+				System.out.println((((List<Counterexample>)cm.getConsistencyMsg()).get(0)).toString(layout));
+				break;
+		}
+		System.out.println("==================================================================================");
 	}
 }

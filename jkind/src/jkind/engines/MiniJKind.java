@@ -2,6 +2,7 @@ package jkind.engines;
 import jkind.ExitCodes; 
 import jkind.JKindSettings; 
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage; 
@@ -18,6 +19,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
+import jkind.results.Counterexample;
 import jkind.translation.Specification; 
 import jkind.util.Util; 
 
@@ -32,7 +34,7 @@ public class MiniJKind extends Engine {
 	public static final String NOT_YET_CHECKED = "NOT_YET_CHECKED";
 	 
 	private ValidMessage validMessage;
-	private String invalidModel = ""; 
+	private Counterexample invalidModel; 
 	private double runtime;
 	private String status = NOT_YET_CHECKED; 
     
@@ -73,12 +75,12 @@ public class MiniJKind extends Engine {
 		return validMessage;
 	}
 
-	public void setInvalid(String invalidModel) {
+	public void setInvalid(Counterexample cex) {
 		status = INVALID;
-		this.invalidModel = invalidModel;
+		this.invalidModel = cex;
 	}
 	
-	public String getInvalidModel() {
+	public Counterexample getInvalidModel() {
 		return invalidModel;
 	}
 	
@@ -158,44 +160,34 @@ public class MiniJKind extends Engine {
 	
 	 
 	@Override
-	protected void main() {
-		// TODO Auto-generated method stub
-		
+	protected void main() { 
 	}
 
 	@Override
-	protected void handleMessage(BaseStepMessage bsm) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(BaseStepMessage bsm) { 
 	}
 
 	@Override
-	protected void handleMessage(InductiveCounterexampleMessage icm) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(InductiveCounterexampleMessage icm) { 
 	}
 
 	@Override
-	protected void handleMessage(InvalidMessage im) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(InvalidMessage im) { 
 	}
 
 	@Override
-	protected void handleMessage(InvariantMessage im) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(InvariantMessage im) { 
 	}
 
 	@Override
-	protected void handleMessage(UnknownMessage um) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(UnknownMessage um) {  
 	}
 
 	@Override
-	protected void handleMessage(ValidMessage vm) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(ValidMessage vm) { 
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

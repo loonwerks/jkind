@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List; 
-import java.util.Set; 
+import java.util.Set;
+
+import jkind.JKind;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Output;
 import jkind.engines.messages.BaseStepMessage;
+import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -101,6 +104,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		//map = new Cons("and", map, ivcMap.get(property.toString()));  
 		
 		z3Solver.push();
+
 		while(checkMapSatisfiability(map, seed, mustChckList)){
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
@@ -108,7 +112,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}else{
 				map = new Cons("and", map, blockDown(getIvcLiterals(resultOfIvcFinder))); 
 			}
-		}
+		} 
 		
 		z3Solver.pop();
 		processMustElements(mustChckList, vm.ivc, property.toString());
@@ -141,7 +145,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		miniJkind.verify();
 		if(miniJkind.getPropertyStatus() == MiniJKind.UNKNOWN){
 			js.pdrMax = 0;
-			return retryVerification(newSpec, js,resultOfIvcFinder, mustChckList, deactivate);
+			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
 		else if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
 			mayElements.addAll(deactivate);
@@ -169,7 +173,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				} 
 			}
 			
-			if(temp.isEmpty()){
+			if(temp.isEmpty()){ 
+				director.handleMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
 			else{
@@ -205,7 +210,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 	}
 
-	private boolean retryVerification(Specification newSpec, JKindSettings js, List<String> resultOfIvcFinder,
+	private boolean retryVerification(Specification newSpec, String prop, JKindSettings js, List<String> resultOfIvcFinder,
 			Set<String> mustChckList, List<String> deactivate) {
 		if (settings.scratch){
 			comment("Result was UNKNOWN; Resend the request with pdrMax = 0 ...");
@@ -233,7 +238,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				} 
 			}
 			
-			if(temp.isEmpty()){
+			if(temp.isEmpty()){ 
+				director.handleMessage(miniJkind.getValidMessage());
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
 			else{
@@ -380,6 +386,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 
 	private void sendValid(String valid, ValidMessage vm) {
 		Itinerary itinerary = vm.getNextItinerary();
+		findRightSide(mustElements);
+		for(Tuple<Set<String>, List<String>> pair : allIvcs){
+			findRightSide(pair.firstElement());
+		}
 		director.broadcast(new ValidMessage(vm.source, valid, 0, null, mustElements , itinerary, allIvcs)); 
 	}
 	
@@ -389,6 +399,22 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			ivc.add(e.replaceAll("~[0-9]+", ""));
 		}
 		return ivc;
+	}
+	
+	private void findRightSide(Set<String> ivc) {
+		if(settings.allAssigned){
+			Set<String> itr = new HashSet<>(ivc);
+			for(String core : itr){
+				if(core.contains(MiniJKind.EQUATION_NAME ) || core.contains(JKind.EQUATION_NAME)){
+					for (Equation eq : spec.node.equations){
+						if(core.equals(eq.lhs.get(0).id)){
+							ivc.remove(core);
+							ivc.add("assert "+ eq.expr.toString());
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	private Node unassign(Node node, List<String> vars, List<String> deactivate, String property) {
@@ -541,5 +567,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		if (vm.getNextDestination() == EngineType.IVC_REDUCTION_ALL) {
 			reduce(vm);
 		}
+	}
+
+	@Override
+	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }
