@@ -154,7 +154,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			message.setConsistencyMsgWithCex(renameSignals(miniJkind.getInvalidModel()));
 		}
 		else{
-			message.setConsistencyMsgWithUc(message.vm.ivc);
+			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
 		}
 		sendValid();
 	}
@@ -165,7 +165,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		temp.solver =  SolverOption.Z3;
 		Set<String> result = new BmcBasedConsistencyChecker(spec, temp).acceptWithNoDirector(message.vm.valid.get(0));
 		if (result != null){
-			message.setConsistencyMsgWithUc(result);
+			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(result)));
 			sendValid();
 			return false;
 		}
@@ -257,7 +257,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			z3Solver.pop();
 			return valueToExpr(((SatResult)result).getModel().getValue(var.toString()));
 		}else{
-			message.setConsistencyMsgWithUc(message.vm.ivc);
+			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
 			throw new JKindException ("");
 		}
 	}
