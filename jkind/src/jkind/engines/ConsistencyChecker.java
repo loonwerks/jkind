@@ -16,7 +16,8 @@ import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
-import jkind.engines.messages.InvariantMessage; 
+import jkind.engines.messages.InvariantMessage;
+import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage; 
 import jkind.lustre.BinaryExpr;
@@ -45,8 +46,10 @@ import jkind.sexp.Symbol;
 import jkind.slicing.Dependency;
 import jkind.slicing.DependencySet;
 import jkind.slicing.DependencyVisitor;
+import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnsatResult;
 import jkind.solvers.z3.Z3Solver; 
 import jkind.translation.Lustre2Sexp; 
 import jkind.translation.Specification;
@@ -120,14 +123,15 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		js.reduceIvc = true;
 		js.allAssigned = true;
 		js.pdrMax = 0;  
- 
-		MiniJKind miniJkind = new MiniJKind (new Specification(unassignProp(prop), settings.noSlicing), js);
+ Node test = unassignProp(prop);
+		MiniJKind miniJkind = new MiniJKind (new Specification(test, settings.noSlicing), js);
 		try{
 			miniJkind.verify();   
 		}catch(IllegalStateException e){
 			System.out.println("IllegalStateException in Consistency checker: status = "+miniJkind.getPropertyStatus());
 		}
 		if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
+			 
 			message.setConsistencyMsgWithUc(findRightSide(miniJkind.getPropertyIvc())); 
 			return true;
 		}
@@ -143,17 +147,20 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 
 		MiniJKind miniJkind = new MiniJKind (localSpec, js);
         miniJkind.verify();   
+       
 		if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
-			if(postCheck()){
+			if(postCheck()){ 
 				message.setNoInConsistency();  
 				sendValid();
 				return;
 			}
 		}
 		else if (miniJkind.getPropertyStatus() == MiniJKind.INVALID) {  
+			 
 			message.setConsistencyMsgWithCex(renameSignals(miniJkind.getInvalidModel()));
 		}
 		else{
+			
 			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
 		}
 		sendValid();
@@ -165,6 +172,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		temp.solver =  SolverOption.Z3;
 		Set<String> result = new BmcBasedConsistencyChecker(spec, temp).acceptWithNoDirector(message.vm.valid.get(0));
 		if (result != null){
+			 
 			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(result)));
 			sendValid();
 			return false;
@@ -182,7 +190,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		}catch(JKindException e){
 			return null;
 		}
-		
+
 		NodeBuilder builder = new NodeBuilder(node);  
 		builder.clearAssertions();
 		builder.clearInputs();
@@ -201,17 +209,46 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			strAsr.add(asr.toString());
 		}
 		
-		List<Equation> itr = new ArrayList<>(equations);
-		for (Equation eq : itr){
+		// collect equations that are asserted
+		List<Equation> neededAssertions = new ArrayList<>();
+		for (Equation eq : equations){
 			if(strAsr.contains(eq.lhs.get(0).id)){
-				Set<VarDecl> neededInputs = new HashSet<>(); 
-				if(containsInput(eq, inputs, neededInputs)){
-					for(VarDecl i : neededInputs){ 
-						defineNewEquation(getValue(i, equations, assertions), locals, equations, i);
-					}
-				}
+				neededAssertions.add(eq);
 			}
 		}
+		// find inputs consumed in the collected assertions
+		Set<VarDecl> neededInputs = getRequiredInputs(inputs, neededAssertions);
+		if (passAssumCons(equations)){
+			for(VarDecl i : neededInputs){ 
+				defineNewEquation(getValue(i, equations, assertions), locals, equations, i);
+			}
+		}
+	}
+
+	private Set<VarDecl> getRequiredInputs(List<VarDecl> inputs, List<Equation> neededAssertions) {
+		Set<VarDecl> ret = new HashSet<>();
+		for (Equation eq : neededAssertions){
+			containsInput(eq.expr, inputs, ret);
+		}
+		return ret;
+	}
+
+	private boolean passAssumCons(List<Equation> eqs) {
+		// IGNORE THIS METHOD FOR NOW... NEEDS FURTHER RESEARCH
+		/*comment("Checking consistency over assertion: ");
+		solver.push();
+		assertEquations(eqs);
+		solver.assertSexp(new Cons("not", getSexpEquation(getEquation(message.vm.valid.get(0), spec.node.equations))));
+		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
+		if(result instanceof UnsatResult){
+			solver.pop();
+			return true;
+		}
+		Model model = ((SatResult) result).getModel();  
+		solver.pop();
+		message.setConsistencyMsgWithUc(message.vm.ivc);
+		throw new JKindException (""); */
+		return true;
 	}
 
 	private Expr getValue(VarDecl i, List<Equation> equations, List<Expr> assertions) {
@@ -231,12 +268,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	private void assertAssertions(VarDecl i, List<Expr> assertions, List<Equation> equations) {
 		Expr rs = new IdExpr("");
 		for (Expr asr : assertions){
-			for(Equation eq : equations){
-				if(eq.lhs.get(0).id.equals(asr.toString())){
-					rs = eq.expr;
-					break;
-				}
-			}
+			rs = getEquation(asr.toString(), equations).expr; 
 			if(containsVar(rs, i)){  
 				solver.assertSexp(asr.accept(new Lustre2Sexp(1)));
 			}
@@ -257,6 +289,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			z3Solver.pop();
 			return valueToExpr(((SatResult)result).getModel().getValue(var.toString()));
 		}else{
+			
 			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
 			throw new JKindException ("");
 		}
@@ -281,17 +314,22 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		}
 	}
 
-	private void assertEquations(List<Equation> equations) {
-		Lustre2Sexp visitor = new Lustre2Sexp(1); 
+	private void assertEquations(List<Equation> equations) { 
 		for (Equation eq : equations) {
-			Sexp body = eq.expr.accept(visitor);
-			Sexp head = eq.lhs.get(0).accept(visitor); 
-			z3Solver.assertSexp(new Cons("=", head, body));
+			z3Solver.assertSexp(getSexpEquation(eq));
 		}
 	}
-
-	private boolean containsInput(Equation eq, List<VarDecl> inputs, Set<VarDecl> neededInputs) {
-		DependencySet ds = DependencyVisitor.get(eq.expr);
+	
+	private Sexp getSexpEquation(Equation eq) {
+		Lustre2Sexp visitor = new Lustre2Sexp(1); 
+		Sexp body = eq.expr.accept(visitor);
+		Sexp head = eq.lhs.get(0).accept(visitor); 
+		return new Cons("=", head, body);
+	}
+	
+	
+	private boolean containsInput(Expr eq, List<VarDecl> inputs, Set<VarDecl> neededInputs) {
+		DependencySet ds = DependencyVisitor.get(eq);
 		boolean ret = false;
 		List<VarDecl> itr = new ArrayList<>(inputs);
 		for(VarDecl i : itr){
@@ -327,41 +365,42 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		for(VarDecl i : spec.node.locals){
 			for(Equation e : right){
 				if (containsVar (e.expr, i)){
-					ret.add(getEquation(i, equations));
+					ret.add(getEquation(i.id, equations));
 				}
 			}
 		}
-		/*for(VarDecl i : spec.node.outputs){
+		for(VarDecl i : spec.node.outputs){
 			for(Equation e : right){
 				if (containsVar (e.expr, i)){
 					ret.add(e);
 				}
 			}
-		}*/
+		}
 
 		return new ArrayList<>(ret); 
 	}
 	
-	private Equation getEquation(VarDecl i, List<Equation> equations) {
+	private Equation getEquation(String i, List<Equation> equations) {
 		for(Equation eq : equations){
-			if(eq.lhs.get(0).id.equals(i.id))
+			if(eq.lhs.get(0).id.equals(i))
 				return eq;
 		}
 		return null;
 	}
 
 	private List<VarDecl> removeVariables(List<VarDecl> vars, List<Equation> equations) {
-		List<VarDecl> ret = new ArrayList<>();
-		List<String> left = new ArrayList<>();
+		Set<VarDecl> ret = new HashSet<>();
+		List<String> left = new ArrayList<>(); 
+		
 		for(Equation eq : equations){
-			left.add(eq.lhs.get(0).id);
+			left.add(eq.lhs.get(0).id); 
 		}
-		for(VarDecl var : vars){
-			if(left.contains(var.id)){
-				ret.add(var);
+		for(VarDecl v : vars){
+			if(left.contains(v.id)){
+				ret.add(v);
 			}
 		}
-		return ret; 
+		return new ArrayList<>(ret); 
 	}
 
 	private String defineNewPropertyForT(List<Equation> equations, List<VarDecl> locals, List<VarDecl> outputs) {
@@ -402,7 +441,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	}
 	
 	private Node unassignProp(String property) {
-		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs);
+		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs); 
 		inputs.add(new VarDecl(property, Util.getTypeMap(spec.node).get(property))); 
 		List<VarDecl> locals = removeVariable(spec.node.locals, property);
 		List<VarDecl> outputs = removeVariable(spec.node.outputs, property);
@@ -411,6 +450,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		Set<String> keepAsr = new HashSet<>();
 		
 		equations = removeEquations(equations, message.vm.ivc); 
+		equations.remove(getEquation(property, equations));
 		Iterator<Expr> iter0 = assertions.iterator();
 		for(Equation eq : equations){
 			keepAsr.add(eq.expr.toString());
@@ -491,8 +531,9 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		        message.vm.invariants, ivc, null, null);
 		director.writeConsistencyCheckerResults(message); 
 		if(! settings.allIvcs){ 
+			Itinerary itinerary = message.vm.getNextItinerary();
 			director.broadcast(new ValidMessage(message.vm.source, message.vm.valid, message.vm.k,
-					        message.vm.invariants, ivc, message.vm.getNextItinerary(), null));
+					        message.vm.invariants, ivc, itinerary, null));
 		}
 	}
 
