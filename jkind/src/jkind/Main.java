@@ -80,7 +80,7 @@ public class Main {
 		}
 	}
 
-	public static Program parseLustre(String filename) throws IOException, RecognitionException {
+	public static Program parseLustre(String filename) throws Exception {
 		File file = new File(filename);
 		if (!file.exists() || !file.isFile()) {
 			Output.fatal(ExitCodes.FILE_NOT_FOUND, "cannot find file " + filename);
@@ -102,7 +102,7 @@ public class Main {
 		}
 	}
 
-	public static Program parseLustre(CharStream stream) throws RecognitionException {
+	public static Program parseLustre(CharStream stream) throws Exception {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
