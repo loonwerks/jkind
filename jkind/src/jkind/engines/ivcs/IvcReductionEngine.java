@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set; 
-import jkind.JKind;
+import java.util.Set;  
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.engines.Director; 
@@ -19,8 +18,7 @@ import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
-import jkind.engines.messages.ValidMessage;
-import jkind.lustre.Equation;
+import jkind.engines.messages.ValidMessage; 
 import jkind.lustre.Expr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
@@ -65,20 +63,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				reduceInvariants(getInvariantByName(property, vm.invariants), vm);
+				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 		}
-	}
-
-	private Expr getInvariantByName(String name, List<Expr> invariants) {
-		for (Expr invariant : invariants) {
-			if (invariant.toString().equals(name)) {
-				return invariant;
-			}
-		} 
-   
-		throw new JKindException("Unable to find property " + name + " during reduction\n"
-				+ " try to re-run the process with  -pdr_max 0  option.");
 	}
 
 	private void reduceInvariants(Expr property, ValidMessage vm) {
@@ -165,7 +152,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 		solver.pop();
 
-		sendValid(property.toString(), k, invariants, getIvcNames(unsatCore), vm);
+		sendValid(property.toString(), k, invariants, IvcUtil.getIvcNames(ivcMap, unsatCore), vm);
 	}
 
 	private Sexp getIvcQuery(List<Expr> properties, int k) {
@@ -229,14 +216,6 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		return map;
 	}
 
-	private Set<String> getIvcNames(List<Symbol> symbols) {
-		Set<String> result = new HashSet<>();
-		for (Symbol s : symbols) {
-			result.add(ivcMap.inverse().get(s));
-		}
-		return result;
-	}
-
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
@@ -253,37 +232,13 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			}
 		}
 		else if(settings.bmcConsistencyCheck){
-			findRightSide(ivc);
+			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
 			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null));
 		} 
 		else {
-			findRightSide(ivc);
-			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary, null));
+			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
+			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, IvcUtil.trimNode(ivc), itinerary, null));
 		}
-	}
-
-	private void findRightSide(Set<String> ivc) {
-		if(settings.allAssigned){
-			Set<String> itr = new HashSet<>(ivc);
-			for(String core : itr){
-				if(core.contains(JKind.EQUATION_NAME)){
-					for (Equation eq : spec.node.equations){
-						if(core.equals(eq.lhs.get(0).id)){
-							ivc.remove(core);
-							ivc.add("assert "+ eq.expr.toString());
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private Set<String> trimNode(Set<String> arg) {
-		Set<String> ivc = new HashSet<>();
-		for (String e : arg) {
-			ivc.add(e.replaceAll("~[0-9]+", ""));
-		}
-		return ivc;
 	}
 
 	@Override

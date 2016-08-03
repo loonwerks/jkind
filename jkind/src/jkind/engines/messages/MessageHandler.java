@@ -4,9 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import jkind.JKindException;
-import jkind.engines.ivcs.messages.ConsistencyMessage;
+import jkind.JKindException; 
 
 public abstract class MessageHandler {
 	private BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();

@@ -109,7 +109,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 					sendValid();
 					return;
 				} 
-				main = setIvcArgs(main, getAllAssigned(main)); 
+				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main)); 
 				localSpec = new Specification(main, settings.noSlicing);  
 				checkConsistency();
 		}else{
@@ -425,16 +425,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		equations.add(new Equation(new IdExpr(i.id), rightSide));
 	}
  
-	private static List<String> getAllAssigned(Node node) {
-		List<String> result = new ArrayList<>();
-		result.addAll(Util.getIds(node.locals));
-		result.addAll(Util.getIds(node.outputs));
-		return result;
-	}
-	
-	private static Node setIvcArgs(Node node, List<String> newSupport) {
-		return new NodeBuilder(node).clearIvc().addIvcs(newSupport).build();
-	}
 	
 	private Node unassignProp(String property) {
 		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs); 

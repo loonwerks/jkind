@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import jkind.JKindSettings;
 import jkind.engines.Director;
-import jkind.engines.Engine;
-import jkind.engines.ivcs.messages.ConsistencyMessage;
+import jkind.engines.Engine; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;

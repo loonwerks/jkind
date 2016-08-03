@@ -1,18 +1,12 @@
 package jkind.engines.ivcs; 
 import java.io.FileOutputStream;  
-import java.io.PrintWriter;
-import java.util.ArrayList; 
-import java.util.Iterator;
-import java.util.List;
+import java.io.PrintWriter; 
+import java.util.HashSet; 
 import java.util.Set;
-
 import jkind.ExitCodes;
 import jkind.JKindSettings; 
-import jkind.engines.MiniJKind; 
-import jkind.lustre.Equation;
-import jkind.lustre.Node; 
-import jkind.lustre.VarDecl;
-import jkind.lustre.builders.NodeBuilder; 
+import jkind.engines.MiniJKind;  
+import jkind.lustre.Node;  
 import jkind.translation.Specification; 
 import jkind.util.Util; 
 
@@ -20,23 +14,21 @@ public class MinimalIvcFinder {
 	private long startTime; 
 	private Node node; 
 	private String fileName; 
+	private String property;
 	
-	protected MinimalIvcFinder(Node node, String fileName){
+	protected MinimalIvcFinder(Node node, String fileName, String property){
 		startTime = System.currentTimeMillis(); 
 	    this.node = node; 
 	    this.fileName = fileName; 
-		if (node.properties.size() != 1) {
-			throw new IllegalArgumentException("Expected exactly one property, but found "
-					+ node.properties.size());
-		} 
+	    this.property = property;
 	}
 
 	private double getRuntime() {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
 
-	public List<String> reduce(Set<String> candidates, Set<String> mustElements, boolean writeToFile) {  
-		List<String> minimal = new ArrayList<>(candidates);
+	public Set<String> reduce(Set<String> candidates, Set<String> mustElements, boolean writeToFile) {  
+		Set<String> minimal = new HashSet<>(candidates);
 		JKindSettings js = new JKindSettings(); 
 		//js.noSlicing = true;   
 		js.allAssigned = false;
@@ -51,7 +43,7 @@ public class MinimalIvcFinder {
 		//--------------------------------------------------
 		
 		for (String s : candidates) {    
-			Node candidate = unassign(node, s);
+			Node candidate = IvcUtil.unassign(node, s, property);
 			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.noSlicing), js);
 			miniJkind.verify();
 			
@@ -68,6 +60,7 @@ public class MinimalIvcFinder {
 				node = candidate;
 			}
 		}
+		minimal = IvcUtil.trimNode(minimal);
 		minimal.addAll(mustElements);
 		if (writeToFile){
 			writeXML(minimal, getRuntime());
@@ -89,7 +82,7 @@ public class MinimalIvcFinder {
 		return minimal;
 	}
 
-	private void writeXML(List<String> minimal, double runtime) {
+	private void writeXML(Set<String> minimal, double runtime) {
 		String xmlFilename = fileName + "_minimalIvc.xml";
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
@@ -108,39 +101,5 @@ public class MinimalIvcFinder {
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
-
-	private static Node unassign(Node node, String v) {
-		List<VarDecl> inputs = new ArrayList<>(node.inputs);
-		inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v)));
-		List<VarDecl> locals = removeVariable(node.locals, v);
-		List<VarDecl> outputs = removeVariable(node.outputs, v);
-
-		List<Equation> equations = new ArrayList<>(node.equations);
-		Iterator<Equation> iter = equations.iterator();
-		while (iter.hasNext()) {
-			Equation eq = iter.next();
-			if (eq.lhs.get(0).id.equals(v)) {
-				iter.remove();
-			}
-		}
-
-		NodeBuilder builder = new NodeBuilder(node);
-		builder.clearIvc();
-		builder.clearInputs().addInputs(inputs);
-		builder.clearLocals().addLocals(locals);
-		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations);
-		return builder.build();
-	}
-
-	private static List<VarDecl> removeVariable(List<VarDecl> varDecls, String v) {
-		List<VarDecl> result = new ArrayList<>(varDecls);
-		Iterator<VarDecl> iter = result.iterator();
-		while (iter.hasNext()) {
-			if (iter.next().id.equals(v)) {
-				iter.remove();
-			}
-		}
-		return result;
-	}
+	
 }

@@ -1,6 +1,7 @@
 package jkind.engines;
 import jkind.ExitCodes; 
-import jkind.JKindSettings; 
+import jkind.JKindSettings;
+import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -10,11 +11,9 @@ import java.util.ArrayList;
 import java.util.List;  
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage; 
-import jkind.lustre.Node; 
-import jkind.lustre.builders.NodeBuilder;
+import jkind.lustre.Node;  
 import jkind.results.Counterexample;
-import jkind.translation.Specification; 
-import jkind.util.Util; 
+import jkind.translation.Specification;  
 
 public class MiniJKind extends Engine { 
 	public static final String NAME = "mini-jkind";
@@ -37,7 +36,7 @@ public class MiniJKind extends Engine {
 		}
 		
 		if (settings.allAssigned && settings.reduceIvc){ 
-			Node newNode = setIvcArgs(spec.node, getAllAssigned(spec.node));
+			Node newNode = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
 			
 			
 			this.director =  new Director(settings, new Specification(newNode, settings.noSlicing), 
@@ -102,17 +101,6 @@ public class MiniJKind extends Engine {
 	
 	public int getK() {
 		return validMessage.k;
-	}
-	
-	private static List<String> getAllAssigned(Node node) {
-		List<String> result = new ArrayList<>();
-		result.addAll(Util.getIds(node.locals));
-		result.addAll(Util.getIds(node.outputs));
-		return result;
-	}
-
-	private static Node setIvcArgs(Node node, List<String> newSupport) {
-		return new NodeBuilder(node).clearIvc().addIvcs(newSupport).build();
 	}
 	
 	@Override

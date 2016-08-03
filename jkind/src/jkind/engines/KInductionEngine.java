@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.JKindSettings;
-import jkind.engines.invariant.InvariantSet;
-import jkind.engines.ivcs.messages.ConsistencyMessage;
+import jkind.engines.invariant.InvariantSet; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;

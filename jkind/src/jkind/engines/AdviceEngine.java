@@ -6,8 +6,7 @@ import jkind.JKindSettings;
 import jkind.advice.Advice;
 import jkind.engines.invariant.AbstractInvariantGenerationEngine;
 import jkind.engines.invariant.ListInvariant;
-import jkind.engines.invariant.StructuredInvariant;
-import jkind.engines.ivcs.messages.ConsistencyMessage;
+import jkind.engines.invariant.StructuredInvariant; 
 import jkind.lustre.Expr;
 import jkind.translation.Specification;
 

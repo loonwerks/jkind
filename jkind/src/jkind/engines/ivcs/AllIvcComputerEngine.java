@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List; 
-import java.util.Set;
-
-import jkind.ExitCodes;
-import jkind.JKind;
+import java.util.Set; 
+import jkind.ExitCodes; 
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Output;
@@ -96,7 +94,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				return;
 			}
 			if (properties.remove(property)) {
-				computeAllIvcs(getInvariantByName(property, vm.invariants), vm);
+				computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 			
 		}
@@ -109,8 +107,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		List<String> resultOfIvcFinder = new ArrayList<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList()); 
 		
-		allIvcs.add(new Tuple<Set<String>, List<String>>(trimNode(new ArrayList<>(vm.ivc)), inv));
-		seed.addAll(getIvcLiterals(new ArrayList<>(vm.ivc)));
+		allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.trimNode(new ArrayList<>(vm.ivc)), inv));
+		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 		  
 		//mustElements.add(property.toString());
@@ -121,9 +119,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		while(checkMapSatisfiability(map, seed, mustChckList)){
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
-				map = new Cons("and", map, blockUp(getIvcLiterals(resultOfIvcFinder)));
+				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
 			}else{
-				map = new Cons("and", map, blockDown(getIvcLiterals(resultOfIvcFinder))); 
+				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder))); 
 			}
 		} 
 		
@@ -150,7 +148,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		js.boundedModelChecking = settings.boundedModelChecking;
 		js.miniJkind = true;
 		
-		List <String> wantedElem = getIvcNames(new ArrayList<> (seed)); 
+		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed)); 
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
@@ -158,7 +156,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		Node nodeSpec = unassign(spec.node, wantedElem, deactivate, property);  
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);   
 		if (settings.scratch){
-			comment("Sending a request for a new IVC while deactivating "+ getIvcLiterals(deactivate));
+			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
@@ -171,10 +169,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			mustChckList.removeAll(deactivate);
 			
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
-			Set<String> newIvc = trimNode(resultOfIvcFinder);
+			Set<String> newIvc = IvcUtil.trimNode(resultOfIvcFinder);
 			
 			if (settings.scratch){
-				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
+				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			} 
 			
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
@@ -213,14 +211,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				mustElements.addAll(deactivate);
 				mustChckList.removeAll(deactivate);
 				if (settings.scratch){
-					comment("One MUST element was found: "+ getIvcLiterals(deactivate));
+					comment("One MUST element was found: "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 				}
 			}
 			else{
 				deactivate.removeAll(mustElements);
 				deactivate.removeAll(mayElements);
 				if (settings.scratch){
-					comment(getIvcLiterals(deactivate) + " could be MUST elements; added to the check list...");
+					comment(IvcUtil.getIvcLiterals(ivcMap, deactivate) + " could be MUST elements; added to the check list...");
 				}
 			 
 				mustChckList.addAll(deactivate);
@@ -241,10 +239,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			mustChckList.removeAll(deactivate);
 			
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
-			Set<String> newIvc = trimNode(resultOfIvcFinder);
+			Set<String> newIvc = IvcUtil.trimNode(resultOfIvcFinder);
 			
 			if (settings.scratch){
-				comment("New IVC set found: "+ getIvcLiterals(resultOfIvcFinder));
+				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			} 
 			
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
@@ -278,14 +276,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				mustElements.addAll(deactivate);
 				mustChckList.removeAll(deactivate);
 				if (settings.scratch){
-					comment("One MUST element was found: "+ getIvcLiterals(deactivate));
+					comment("One MUST element was found: "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 				}
 			}
 			else{
 				deactivate.removeAll(mustElements);
 				deactivate.removeAll(mayElements);
 				if (settings.scratch){
-					comment(getIvcLiterals(deactivate) + " could be MUST elements; added to the check list...");
+					comment(IvcUtil.getIvcLiterals(ivcMap, deactivate) + " could be MUST elements; added to the check list...");
 				}
 			 
 				mustChckList.addAll(deactivate);
@@ -336,7 +334,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		Set<Symbol> falseLiterals = getActiveLiteralsFromModel(result.getModel(), "false");
 		Set<Symbol> temp = new HashSet<>();
 		temp.addAll(ivcMap.valueList());
-		List<Symbol> literalList = getIvcLiterals(new ArrayList<>(mustChckList));
+		List<Symbol> literalList = IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(mustChckList));
 		temp.removeAll(literalList);
 		temp.removeAll(falseLiterals);
 		temp.removeAll(seed);
@@ -376,74 +374,24 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return seed;
 	}
 
-	private Expr getInvariantByName(String name, List<Expr> invariants) {
-		for (Expr invariant : invariants) {
-			if (invariant.toString().equals(name)) {
-				return invariant;
-			}
-		}
-
-		throw new JKindException("Unable to find property " + name + " during reduction");
-	}
-
-	private List<String> getIvcNames(List<Symbol> symbols) {
-		List<String> result = new ArrayList<>();
-		for (Symbol s : symbols) {
-			result.add(ivcMap.inverse().get(s));
-		}
-		return result;
-	}
-	
-	private List<Symbol> getIvcLiterals(List<String> resultOfIvcFinder) {
-		List<Symbol> result = new ArrayList<>();
-		for (String ivc : resultOfIvcFinder) {
-			result.add(ivcMap.get(ivc));
-		}
-		return result;
-	}
-
 	private void sendValid(String valid, ValidMessage vm) {
 		Itinerary itinerary = vm.getNextItinerary();
-		findRightSide(mustElements);
+		IvcUtil.findRightSide(mustElements, settings.allAssigned, spec.node.equations);
 		for(Tuple<Set<String>, List<String>> pair : allIvcs){
-			findRightSide(pair.firstElement());
+			IvcUtil.findRightSide(pair.firstElement(), settings.allAssigned, spec.node.equations);
 		}
 		director.broadcast(new ValidMessage(vm.source, valid, 0, null, mustElements , itinerary, allIvcs)); 
 	}
 	
-	private Set<String> trimNode(List<String> set) {
-		Set<String> ivc = new HashSet<>();
-		for (String e : set) {
-			ivc.add(e.replaceAll("~[0-9]+", ""));
-		}
-		return ivc;
-	}
-	
-	private void findRightSide(Set<String> ivc) {
-		if(settings.allAssigned){
-			Set<String> itr = new HashSet<>(ivc);
-			for(String core : itr){
-				if(core.contains(JKind.EQUATION_NAME)){
-					for (Equation eq : spec.node.equations){
-						if(core.equals(eq.lhs.get(0).id)){
-							ivc.remove(core);
-							ivc.add("assert "+ eq.expr.toString());
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	private Node unassign(Node node, List<String> vars, List<String> deactivate, String property) {
+	private Node unassign(Node node, Set<String> wantedElem, List<String> deactivate, String property) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
 		
 		for(String v : deactivate){
 			inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v))); 
 		}
 
-		List<VarDecl> locals = removeVariable(node.locals, deactivate);
-		List<VarDecl> outputs = removeVariable(node.outputs, deactivate);
+		List<VarDecl> locals = IvcUtil.removeVariable(node.locals, deactivate);
+		List<VarDecl> outputs = IvcUtil.removeVariable(node.outputs, deactivate);
 		List<Equation> equations = new ArrayList<>(node.equations);
 		List<Expr> assertions = new ArrayList<>(node.assertions);
 		Iterator<Equation> iter = equations.iterator();
@@ -467,20 +415,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		builder.clearOutputs().addOutputs(outputs);
 		builder.clearEquations().addEquations(equations);
 		builder.clearAssertions().addAssertions(assertions);
-		builder.clearIvc().addIvcs(vars);
+		builder.clearIvc().addIvcs(new ArrayList<>(wantedElem));
 		builder.clearProperties().addProperty(property);
 		return builder.build();
-	}
-
-	private List<VarDecl> removeVariable(List<VarDecl> varDecls, List<String> vars) {
-		List<VarDecl> result = new ArrayList<>(varDecls);
-		Iterator<VarDecl> iter = result.iterator();
-		while (iter.hasNext()) {
-			if (vars.contains(iter.next().id)) {
-				iter.remove(); 
-			}
-		}
-		return result;
 	}
 	
 	private void processMustElements (Set<String> mustChckList, Set<String> initialIvc, String prop) { 
@@ -493,15 +430,16 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		
 		Set<String> candidates = new HashSet<>(smallestSet);
-		candidates.removeAll(mustElements); 
-		MinimalIvcFinder minimalFinder = new MinimalIvcFinder(spec.node, settings.filename);
+		Set<String> trimmedMustList = IvcUtil.trimNode(mustElements);
+		candidates.removeAll(trimmedMustList); 
+		MinimalIvcFinder minimalFinder = new MinimalIvcFinder(spec.node, settings.filename, prop);
 		
 		/*
 		 * for now, we don't really use this part. The output only matters for the experiments
 		 * if we're not running experiment the following line should be replaced with the next
-		 * */ 
-		List<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, true);
-		//List<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false); 
+		 * */  
+		Set<String> minimalIvc = minimalFinder.reduce(candidates, trimmedMustList, true);
+		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false); 
 		//processIntersection(mustChckList, initialIvc, prop);
 	}
 	
@@ -561,7 +499,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				mustChckList.removeAll(mustElements); 
 				List<Symbol> seed = new ArrayList<>();
 				seed.addAll(ivcMap.valueList());
-				seed.removeAll(getIvcLiterals(new ArrayList<>(mustChckList)));
+				seed.removeAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(mustChckList)));
 				List<String> resultOfIvcFinder = new ArrayList<>();
 				if(mustChckList.size() > 0){
 					ivcFinder(seed, resultOfIvcFinder, mustChckList, prop); 				
