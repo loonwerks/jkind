@@ -1,14 +1,14 @@
-package jkind.engines; 
+package jkind.engines.ivcs; 
 import java.util.ArrayList; 
 import java.util.HashSet; 
 import java.util.List; 
-import java.util.Set;
-
+import java.util.Set; 
 import jkind.JKind; 
 import jkind.JKindSettings;
 import jkind.Output;
+import jkind.engines.Director; 
+import jkind.engines.SolverBasedEngine; 
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -134,7 +134,7 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 	private String findRightSide(String ivc) {
 		for (Equation eq : localSpec.node.equations){
 			if(ivc.equals(eq.lhs.get(0).id)){
-				if(ivc.contains(MiniJKind.EQUATION_NAME ) || ivc.contains(JKind.EQUATION_NAME)){
+				if(ivc.contains(JKind.EQUATION_NAME)){
 					return "assert (" + eq.expr.toString() +")";
 				}else{
 					return ivc ;
@@ -306,9 +306,4 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 		return checkConsistency(property, null);
 		//solver.pop();
 	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) {  
-	}
-
 }

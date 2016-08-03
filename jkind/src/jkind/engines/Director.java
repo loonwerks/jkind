@@ -20,8 +20,12 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
+import jkind.engines.ivcs.AllIvcComputerEngine;
+import jkind.engines.ivcs.BmcBasedConsistencyChecker;
+import jkind.engines.ivcs.ConsistencyChecker;
+import jkind.engines.ivcs.IvcReductionEngine;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -440,11 +444,10 @@ public class Director extends MessageHandler {
 		}
 	}
 	
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) {
+	public void handleConsistencyMessage(ConsistencyMessage cm){
 		for (Engine e : engines){
 			if(e.name.equals(ConsistencyChecker.NAME)){
-				e.receiveMessage(cm);
+				((ConsistencyChecker)e).handleMessage(cm);
 				break;
 			}
 		}

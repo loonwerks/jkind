@@ -1,18 +1,24 @@
-package jkind.engines;
+package jkind.engines.ivcs;
 import static java.util.stream.Collectors.toList;
 
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList; 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List; 
 import java.util.Set;
 
+import jkind.ExitCodes;
 import jkind.JKind;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Output;
+import jkind.engines.Director;
+import jkind.engines.MiniJKind;
+import jkind.engines.SolverBasedEngine;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -49,6 +55,9 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();  
 	
+	// this variable is only used for the experiments
+	private double runtime;
+	
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
@@ -73,6 +82,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void reduce(ValidMessage vm) { 
+		
+		//----- for the experiments---------
+		runtime = System.currentTimeMillis(); 
+		//-----------------------------------
 		
 		for (String property : vm.valid) {
 			mayElements.clear();
@@ -115,6 +128,12 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 		
 		z3Solver.pop();
+		
+		//--------- for the experiments --------------
+		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+		recordRuntime();
+		//--------------------------------------------
+		
 		processMustElements(mustChckList, vm.ivc, property.toString());
 		sendValid(property.toString(), vm);
 	}
@@ -174,7 +193,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 			
 			if(temp.isEmpty()){ 
-				director.handleMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
+				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
 			else{
@@ -239,7 +258,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 			
 			if(temp.isEmpty()){ 
-				director.handleMessage(miniJkind.getValidMessage());
+				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
 			}
 			else{
@@ -292,7 +311,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 
 	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
-		z3Solver.push(); 
+		z3Solver.push();  
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
@@ -311,7 +330,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	
 	/**
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
-	 * @param  
 	 **/
 	private List<Symbol> maximizeSat(SatResult result, Set<String> mustChckList) { 
 		Set<Symbol> seed = getActiveLiteralsFromModel(result.getModel(), "true");
@@ -405,7 +423,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		if(settings.allAssigned){
 			Set<String> itr = new HashSet<>(ivc);
 			for(String core : itr){
-				if(core.contains(MiniJKind.EQUATION_NAME ) || core.contains(JKind.EQUATION_NAME)){
+				if(core.contains(JKind.EQUATION_NAME)){
 					for (Equation eq : spec.node.equations){
 						if(core.equals(eq.lhs.get(0).id)){
 							ivc.remove(core);
@@ -465,14 +483,46 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return result;
 	}
 	
-	private void processMustElements(Set<String> mustChckList, Set<String> initialIvc, String prop) { 
-		// if the algorithm is not complete, we need to process mucstChckList instead of the following
-			Set<String> intersect = new HashSet<>();
-			intersect.addAll(initialIvc);
-			for(Tuple<Set<String>, List<String>> item : allIvcs){
-				intersect.retainAll(item.firstElement());
+	private void processMustElements (Set<String> mustChckList, Set<String> initialIvc, String prop) { 
+		Set<String> smallestSet = initialIvc; 
+		
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			if(item.firstElement().size() < smallestSet.size()){
+				smallestSet = item.firstElement();
 			}
-				
+		}
+		
+		Set<String> candidates = new HashSet<>(smallestSet);
+		candidates.removeAll(mustElements); 
+		MinimalIvcFinder minimalFinder = new MinimalIvcFinder(spec.node, settings.filename);
+		
+		/*
+		 * for now, we don't really use this part. The output only matters for the experiments
+		 * if we're not running experiment the following line should be replaced with the next
+		 * */ 
+		List<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, true);
+		//List<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false); 
+		//processIntersection(mustChckList, initialIvc, prop);
+	}
+	
+	/** we don't have a well-formed idea for this method yet. 
+	 * the following implementation puts just some pieces of code together that might be used later
+	 */
+	private void processIntersection(Set<String> mustChckList, Set<String> initialIvc, String prop) { 
+		// if the algorithm is not complete, we need to process mucstChckList instead of the following
+		Set<String> intersect = new HashSet<>();
+		intersect.addAll(initialIvc); 
+		
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			intersect.retainAll(item.firstElement()); 
+		}	
+		Set<String> temp = new HashSet<>();
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			temp.addAll(item.firstElement());
+			temp.removeAll(intersect);
+			mayElements.addAll(temp);
+			mustChckList.removeAll(temp);
+		}
 			if(!(intersect.contains(prop))){
 				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
 				Output.println("WARNING: some inconsistent equations were found: ");
@@ -568,8 +618,21 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			reduce(vm);
 		}
 	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
+	
+	// this method is used only in our experiments
+	private void recordRuntime() {
+		String xmlFilename = settings.filename + "_runtimeAllIvcs.xml";
+		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+			out.println("<?xml version=\"1.0\"?>");
+			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
+			out.println("  <Runtime unit=\"sec\">" + runtime + "</Runtime>");
+			out.println("</Results>");
+			out.flush();
+			out.close();
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		}
+		
 	}
 }

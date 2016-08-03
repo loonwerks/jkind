@@ -2,8 +2,8 @@ package jkind.engines;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -119,9 +119,5 @@ public class SmoothingEngine extends SolverBasedEngine {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
-	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

@@ -1,4 +1,4 @@
-package jkind.engines;  
+package jkind.engines.ivcs;  
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -11,8 +11,11 @@ import jkind.JKind;
 import jkind.JKindException;
 import jkind.JKindSettings; 
 import jkind.SolverOption;
+import jkind.engines.Director;
+import jkind.engines.MiniJKind;
+import jkind.engines.SolverBasedEngine;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -45,11 +48,9 @@ import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
 import jkind.slicing.Dependency;
 import jkind.slicing.DependencySet;
-import jkind.slicing.DependencyVisitor;
-import jkind.solvers.Model;
+import jkind.slicing.DependencyVisitor; 
 import jkind.solvers.Result;
-import jkind.solvers.SatResult;
-import jkind.solvers.UnsatResult;
+import jkind.solvers.SatResult; 
 import jkind.solvers.z3.Z3Solver; 
 import jkind.translation.Lustre2Sexp; 
 import jkind.translation.Specification;
@@ -131,7 +132,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			System.out.println("IllegalStateException in Consistency checker: status = "+miniJkind.getPropertyStatus());
 		}
 		if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
-			 
 			message.setConsistencyMsgWithUc(findRightSide(miniJkind.getPropertyIvc())); 
 			return true;
 		}
@@ -155,12 +155,10 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 				return;
 			}
 		}
-		else if (miniJkind.getPropertyStatus() == MiniJKind.INVALID) {  
-			 
+		else if (miniJkind.getPropertyStatus() == MiniJKind.INVALID) {   
 			message.setConsistencyMsgWithCex(renameSignals(miniJkind.getInvalidModel()));
 		}
-		else{
-			
+		else{ 
 			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
 		}
 		sendValid();
@@ -171,8 +169,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		temp.n = BMC_STEPS;
 		temp.solver =  SolverOption.Z3;
 		Set<String> result = new BmcBasedConsistencyChecker(spec, temp).acceptWithNoDirector(message.vm.valid.get(0));
-		if (result != null){
-			 
+		if (result != null){ 
 			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(result)));
 			sendValid();
 			return false;
@@ -288,8 +285,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 			inlinePre(in, equations, valueToExpr(((SatResult)result).getModel().getValue(var.toString())));
 			z3Solver.pop();
 			return valueToExpr(((SatResult)result).getModel().getValue(var.toString()));
-		}else{
-			
+		}else{ 
 			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
 			throw new JKindException ("");
 		}
@@ -509,7 +505,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	}
 	
 	private String findRightSide(String name) { 
-		if(name.contains(MiniJKind.EQUATION_NAME ) || name.contains(JKind.EQUATION_NAME)){
+		if(name.contains(JKind.EQUATION_NAME)){
 			for(Equation eq : spec.node.equations){
 				if(name.equals(eq.lhs.get(0).id)){
 					return ("assert "+ eq.expr.toString());
@@ -564,8 +560,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		}
 	}
 	
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) {
+	public void handleMessage(ConsistencyMessage cm) {
 		this.message  = cm;
 		check();
 	}

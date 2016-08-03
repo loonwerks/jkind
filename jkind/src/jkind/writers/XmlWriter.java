@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.engines.messages.ConsistencyMessage;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
 import jkind.lustre.Expr;

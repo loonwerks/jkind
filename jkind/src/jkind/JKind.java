@@ -36,7 +36,8 @@ public class JKind {
 
 			Node main = Translate.translate(program);
 			if(settings.allAssigned){
-				main = normalizeAssertions(main);
+				//after experiments, uncomment this line:
+				//main = normalizeAssertions(main);
 				main = setIvcArgs(main, getAllAssigned(main));
 			}
 			Specification userSpec = new Specification(main, settings.noSlicing);

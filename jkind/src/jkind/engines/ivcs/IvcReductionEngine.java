@@ -1,17 +1,18 @@
-package jkind.engines;
+package jkind.engines.ivcs;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
-
+import java.util.Set; 
 import jkind.JKind;
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.Director; 
+import jkind.engines.SolverBasedEngine;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -248,7 +249,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			ValidMessage nvm = new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null);
 			director.broadcast(nvm);
 			if(settings.allIvcs && settings.consistencyCheck){
-				director.handleMessage(new ConsistencyMessage(nvm));
+				director.handleConsistencyMessage(new ConsistencyMessage(nvm));
 			}
 		}
 		else if(settings.bmcConsistencyCheck){
@@ -265,7 +266,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		if(settings.allAssigned){
 			Set<String> itr = new HashSet<>(ivc);
 			for(String core : itr){
-				if(core.contains(MiniJKind.EQUATION_NAME ) || core.contains(JKind.EQUATION_NAME)){
+				if(core.contains(JKind.EQUATION_NAME)){
 					for (Equation eq : spec.node.equations){
 						if(core.equals(eq.lhs.get(0).id)){
 							ivc.remove(core);
@@ -312,9 +313,5 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		if (vm.getNextDestination() == EngineType.IVC_REDUCTION) {
 			reduce(vm);
 		}
-	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

@@ -2,22 +2,15 @@ package jkind.engines;
 import jkind.ExitCodes; 
 import jkind.JKindSettings; 
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage; 
 import static java.util.stream.Collectors.toList; 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.ArrayList; 
 import java.util.List;  
 import jkind.engines.messages.UnknownMessage;
-import jkind.engines.messages.ValidMessage;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.NamedType;
-import jkind.lustre.Node;
-import jkind.lustre.VarDecl;
+import jkind.engines.messages.ValidMessage; 
+import jkind.lustre.Node; 
 import jkind.lustre.builders.NodeBuilder;
 import jkind.results.Counterexample;
 import jkind.translation.Specification; 
@@ -26,8 +19,6 @@ import jkind.util.Util;
 public class MiniJKind extends Engine { 
 	public static final String NAME = "mini-jkind";
     private  Director director;  
-    
-    public static final String EQUATION_NAME = "__addedEQforAsrInconsis_by_MiniJKind__";  
 	public static final String UNKNOWN = "UNKNOWN";
 	public static final String INVALID = "INVALID";
 	public static final String VALID = "VALID";
@@ -45,9 +36,10 @@ public class MiniJKind extends Engine {
 			throw new IllegalArgumentException("MiniJKind Expects exactly one property");
 		}
 		
-		if (settings.allAssigned){
-			Node newNode = normalizeAssertions(spec.node);
-			newNode = setIvcArgs(newNode, getAllAssigned(newNode));
+		if (settings.allAssigned && settings.reduceIvc){ 
+			Node newNode = setIvcArgs(spec.node, getAllAssigned(spec.node));
+			
+			
 			this.director =  new Director(settings, new Specification(newNode, settings.noSlicing), 
 										new Specification(newNode, settings.noSlicing), this);
 		}else{
@@ -123,42 +115,6 @@ public class MiniJKind extends Engine {
 		return new NodeBuilder(node).clearIvc().addIvcs(newSupport).build();
 	}
 	
-	private Node normalizeAssertions(Node node) { 
-		List<VarDecl> locals = new ArrayList<>(node.locals); 
-		List<Equation> equations = new ArrayList<>(node.equations);
-		List<Expr> assertions = new ArrayList<>(node.assertions);
-		 
-		
-		Iterator<Expr> iter = assertions.iterator();
-		int id = 0;
-		List<IdExpr> newAssertions = new ArrayList<>();
-		
-		while (iter.hasNext()) {
-			Expr asr = iter.next();
-			if (! (asr instanceof IdExpr)) {
-				newAssertions.add(defineNewEquation(asr, locals, equations, EQUATION_NAME + id));
-				id ++;
-				iter.remove(); 
-			}
-		}
-		assertions.addAll(newAssertions);
-
-		NodeBuilder builder = new NodeBuilder(node); 
-		builder.clearLocals().addLocals(locals); 
-		builder.clearEquations().addEquations(equations);
-		builder.clearAssertions().addAssertions(assertions);  
-		return builder.build();
-	}
-	
-	private IdExpr defineNewEquation(Expr rightSide, List<VarDecl> locals, List<Equation> equations, String newVar) {
-		locals.add(new VarDecl(newVar, NamedType.BOOL));
-		IdExpr ret = new IdExpr(newVar);
-		equations.add(new Equation(ret, rightSide));
-		 
-		return ret;
-	}
-	
-	 
 	@Override
 	protected void main() { 
 	}
@@ -185,9 +141,5 @@ public class MiniJKind extends Engine {
 
 	@Override
 	protected void handleMessage(ValidMessage vm) { 
-	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

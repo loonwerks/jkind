@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentMap;
 import jkind.JKindSettings;
 import jkind.engines.Director;
 import jkind.engines.Engine;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
@@ -98,9 +98,5 @@ public class PdrEngine extends Engine {
 			}
 		}
 		properties.removeAll(cancel);
-	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

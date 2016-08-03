@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindSettings;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
@@ -120,9 +120,5 @@ public class BmcEngine extends SolverBasedEngine {
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
 		validProperties.addAll(vm.valid);
-	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

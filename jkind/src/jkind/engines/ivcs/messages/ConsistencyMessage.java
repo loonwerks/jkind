@@ -1,16 +1,10 @@
-package jkind.engines.messages;
+package jkind.engines.ivcs.messages;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collection; 
 import java.util.List;
 import java.util.Set;
-
-import jkind.engines.messages.Message;
-import jkind.engines.messages.MessageHandler;
-import jkind.lustre.Expr;
-import jkind.results.Counterexample;
-import jkind.util.Tuple;
-import jkind.util.Util;
+import jkind.engines.messages.ValidMessage; 
+import jkind.results.Counterexample; 
 
 public class ConsistencyMessage extends Message {
 	public ValidMessage vm;
@@ -38,11 +32,6 @@ public class ConsistencyMessage extends Message {
 	
 	public ConsistencyStatus getStatus(){
 		return consResult.status;
-	}
-
-	@Override
-	public void accept(MessageHandler handler) {
-		handler.handleMessage(this);
 	}
 	
 	public enum ConsistencyStatus {NotSetYet, CEX, UC, CONSISTENT;};

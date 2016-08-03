@@ -9,8 +9,8 @@ import java.util.Map;
 
 import jkind.JKindSettings;
 import jkind.engines.invariant.InvariantSet;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
-import jkind.engines.messages.ConsistencyMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
@@ -189,9 +189,5 @@ public class KInductionEngine extends SolverBasedEngine {
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
 		addPropertiesAsInvariants(kCurrent - 1, vm.valid);
-	}
-
-	@Override
-	protected void handleMessage(ConsistencyMessage cm) { 
 	}
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.engines.messages.ConsistencyMessage;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.util.Tuple;

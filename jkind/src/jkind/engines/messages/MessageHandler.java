@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import jkind.JKindException;
-import jkind.engines.messages.ConsistencyMessage;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 
 public abstract class MessageHandler {
 	private BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
@@ -45,8 +45,6 @@ public abstract class MessageHandler {
 	}
 
 	protected abstract void handleMessage(BaseStepMessage bsm);
-	
-	protected abstract void handleMessage(ConsistencyMessage cm);
 
 	protected abstract void handleMessage(InductiveCounterexampleMessage icm);
 
