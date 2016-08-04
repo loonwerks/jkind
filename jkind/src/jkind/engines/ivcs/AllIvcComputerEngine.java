@@ -1,11 +1,9 @@
 package jkind.engines.ivcs;
-import static java.util.stream.Collectors.toList;
-
+import static java.util.stream.Collectors.toList; 
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList; 
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashSet; 
 import java.util.List; 
 import java.util.Set; 
 import jkind.ExitCodes; 
@@ -23,13 +21,11 @@ import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
-import jkind.engines.messages.ValidMessage; 
-import jkind.lustre.Equation;
+import jkind.engines.messages.ValidMessage;  
 import jkind.lustre.Expr; 
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
-import jkind.lustre.VarDecl;
-import jkind.lustre.builders.NodeBuilder; 
+import jkind.lustre.VarDecl; 
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -43,8 +39,7 @@ import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.LinkedBiMap;
 import jkind.util.SexpUtil;
-import jkind.util.Tuple;
-import jkind.util.Util;
+import jkind.util.Tuple; 
 
 public class AllIvcComputerEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
@@ -161,7 +156,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		if(miniJkind.getPropertyStatus() == MiniJKind.NOT_YET_CHECKED){
+		if(miniJkind.getPropertyStatus() == MiniJKind.UNKNOW_WITH_EXCEPTION){
 			js.pdrMax = 0;
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}

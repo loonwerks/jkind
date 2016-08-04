@@ -18,7 +18,8 @@ import jkind.translation.Specification;
 public class MiniJKind extends Engine { 
 	public static final String NAME = "mini-jkind";
     private  Director director;  
-	public static final String UNKNOWN = "UNKNOWN"; 
+	public static final String UNKNOWN = "UNKNOWN";
+	public static final String UNKNOW_WITH_EXCEPTION = "UNKNOW_WITH_EXCEPTION";
 	public static final String INVALID = "INVALID";
 	public static final String VALID = "VALID";
 	public static final String NOT_YET_CHECKED = "NOT_YET_CHECKED";
@@ -50,7 +51,11 @@ public class MiniJKind extends Engine {
 	
 	public void verify() {
 		try { 
-			director.run();   
+			int ret = director.run();   
+			if(ret == ExitCodes.PROP_IS_NOT_IN_INVARIANTS)
+			{
+				status = UNKNOW_WITH_EXCEPTION;
+			}
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
