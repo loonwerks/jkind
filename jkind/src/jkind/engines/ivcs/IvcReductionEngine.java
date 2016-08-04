@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;  
+import java.util.Set;
+
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.engines.Director; 
@@ -63,7 +65,12 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
+				try{
+					reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
+				}catch(JKindException j){
+					j.printStackTrace();
+					System.exit(ExitCodes.PROP_IS_NOT_IN_INVARIANTS);
+				}
 			}
 		}
 	}

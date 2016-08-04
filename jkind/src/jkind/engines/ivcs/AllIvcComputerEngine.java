@@ -161,7 +161,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		if(miniJkind.getPropertyStatus() == MiniJKind.UNKNOWN){
+		if(miniJkind.getPropertyStatus() == MiniJKind.NOT_YET_CHECKED){
 			js.pdrMax = 0;
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}

@@ -18,7 +18,7 @@ import jkind.translation.Specification;
 public class MiniJKind extends Engine { 
 	public static final String NAME = "mini-jkind";
     private  Director director;  
-	public static final String UNKNOWN = "UNKNOWN";
+	public static final String UNKNOWN = "UNKNOWN"; 
 	public static final String INVALID = "INVALID";
 	public static final String VALID = "VALID";
 	public static final String NOT_YET_CHECKED = "NOT_YET_CHECKED";
@@ -83,7 +83,7 @@ public class MiniJKind extends Engine {
 		runtime = rt;
 	}
 
-	public void setUnknown() {
+	public void setUnknown() { 
 		status = UNKNOWN;
 	}
 	
