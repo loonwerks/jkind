@@ -33,6 +33,7 @@ public class MinimalIvcFinder {
 		//js.noSlicing = true;   
 		js.allAssigned = false;
 		js.miniJkind = true; 
+		js.timeout = 300;
 		
 		//------------ only for the experiment -------------
 		String xmlFilename = fileName + "_minimizationInfo.xml";
