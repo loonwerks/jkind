@@ -92,7 +92,7 @@ public class IvcUtil {
 		return builder.build();
 	}
 	
-	public static List<VarDecl> removeVariable(List<VarDecl> varDecls, List<String> vars) {
+	public static List<VarDecl> removeVariables(List<VarDecl> varDecls, List<String> vars) {
 		List<VarDecl> result = new ArrayList<>(varDecls);
 		Iterator<VarDecl> iter = result.iterator();
 		while (iter.hasNext()) {
@@ -185,5 +185,33 @@ public class IvcUtil {
 			result.add(ivcMap.get(ivc));
 		}
 		return result;
+	}
+	
+	protected static Node unassign(Node node, Set<String> wantedElem, List<String> deactivate, String property) {
+		List<VarDecl> inputs = new ArrayList<>(node.inputs);
+		
+		for(String v : deactivate){
+			inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v))); 
+		}
+
+		List<VarDecl> locals = removeVariables(node.locals, deactivate);
+		List<VarDecl> outputs = removeVariables(node.outputs, deactivate);
+		List<Equation> equations = new ArrayList<>(node.equations);
+		Iterator<Equation> iter = equations.iterator();
+		while (iter.hasNext()) {
+			Equation eq = iter.next();
+			if (deactivate.contains(eq.lhs.get(0).id)) {
+				iter.remove(); 
+			}
+		} 
+     
+		NodeBuilder builder = new NodeBuilder(node);
+		builder.clearInputs().addInputs(inputs);
+		builder.clearLocals().addLocals(locals);
+		builder.clearOutputs().addOutputs(outputs);
+		builder.clearEquations().addEquations(equations); 
+		builder.clearIvc().addIvcs(new ArrayList<>(wantedElem));
+		builder.clearProperties().addProperty(property);
+		return builder.build();
 	}
 }

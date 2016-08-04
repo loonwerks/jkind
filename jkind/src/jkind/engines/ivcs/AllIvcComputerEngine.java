@@ -106,8 +106,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		Set<String> mustChckList = new HashSet<>(); 
 		List<String> resultOfIvcFinder = new ArrayList<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList()); 
-		
-		allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.trimNode(new ArrayList<>(vm.ivc)), inv));
+		Set<String> initialIvc = IvcUtil.trimNode(vm.ivc);
+		allIvcs.add(new Tuple<Set<String>, List<String>>(initialIvc, inv));
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 		  
@@ -132,7 +132,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		recordRuntime();
 		//--------------------------------------------
 		
-		processMustElements(mustChckList, vm.ivc, property.toString());
+		processMustElements(mustChckList, initialIvc, property.toString());
 		sendValid(property.toString(), vm);
 	}
 
@@ -154,7 +154,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
 		
-		Node nodeSpec = unassign(spec.node, wantedElem, deactivate, property);  
+		Node nodeSpec = IvcUtil.unassign(spec.node, wantedElem, deactivate, property);  
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);   
 		if (settings.scratch){
 			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
@@ -381,44 +381,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		for(Tuple<Set<String>, List<String>> pair : allIvcs){
 			IvcUtil.findRightSide(pair.firstElement(), settings.allAssigned, spec.node.equations);
 		}
-		director.broadcast(new ValidMessage(vm.source, valid, 0, null, mustElements , itinerary, allIvcs)); 
-	}
-	
-	private Node unassign(Node node, Set<String> wantedElem, List<String> deactivate, String property) {
-		List<VarDecl> inputs = new ArrayList<>(node.inputs);
-		
-		for(String v : deactivate){
-			inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v))); 
-		}
-
-		List<VarDecl> locals = IvcUtil.removeVariable(node.locals, deactivate);
-		List<VarDecl> outputs = IvcUtil.removeVariable(node.outputs, deactivate);
-		List<Equation> equations = new ArrayList<>(node.equations);
-		List<Expr> assertions = new ArrayList<>(node.assertions);
-		Iterator<Equation> iter = equations.iterator();
-		while (iter.hasNext()) {
-			Equation eq = iter.next();
-			if (deactivate.contains(eq.lhs.get(0).id)) {
-				iter.remove(); 
-			}
-		}
-		Iterator<Expr> iter0 = assertions.iterator();
-		while (iter0.hasNext()) {
-			Expr asr = iter0.next();
-			if (deactivate.contains(asr.toString())) {
-				iter0.remove(); 
-			}
-		}
-
-		NodeBuilder builder = new NodeBuilder(node);
-		builder.clearInputs().addInputs(inputs);
-		builder.clearLocals().addLocals(locals);
-		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations);
-		builder.clearAssertions().addAssertions(assertions);
-		builder.clearIvc().addIvcs(new ArrayList<>(wantedElem));
-		builder.clearProperties().addProperty(property);
-		return builder.build();
+		director.broadcast(new ValidMessage(vm.source, valid, 0, null, IvcUtil.trimNode(mustElements) , itinerary, allIvcs)); 
 	}
 	
 	private void processMustElements (Set<String> mustChckList, Set<String> initialIvc, String prop) { 
@@ -438,7 +401,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		/*
 		 * for now, we don't really use this part. The output only matters for the experiments
 		 * if we're not running experiment the following line should be replaced with the next
-		 * */  
+		 * */   
+		
 		Set<String> minimalIvc = minimalFinder.reduce(candidates, trimmedMustList, true);
 		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false); 
 		//processIntersection(mustChckList, initialIvc, prop);
