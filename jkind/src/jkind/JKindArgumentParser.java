@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import jkind.engines.SolverUtil;
-import jkind.lustre.Node;
-import jkind.lustre.builders.NodeBuilder;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -215,18 +213,9 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void printDectectedSolvers() {
-		String detected = Arrays.stream(SolverOption.values()).filter(this::solverIsAvailable)
-				.map(Object::toString).collect(joining(", "));
+		String detected = SolverUtil.availableSolvers().stream().map(Object::toString)
+				.collect(joining(", "));
 		System.out.println("Detected solvers: " + detected);
 	}
 
-	private boolean solverIsAvailable(SolverOption solverOption) {
-		try {
-			Node emptyNode = new NodeBuilder("empty").build();
-			SolverUtil.getSolver(solverOption, null, emptyNode);
-		} catch (JKindException e) {
-			return false;
-		}
-		return true;
-	}
 }
