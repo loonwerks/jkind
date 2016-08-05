@@ -15,10 +15,14 @@ public class Specification {
 	private Relation transitionRelation;
 	private Relation ivcTransitionRelation;
 
-	public Specification(Node raw) {
+	public Specification(Node raw, boolean slicing) {
 		this.dependencyMap = new DependencyMap(raw, raw.properties);
-		this.node = LustreSlicer.slice(raw, dependencyMap);
+		this.node = slicing ? LustreSlicer.slice(raw, dependencyMap) : raw;
 		this.typeMap = Util.getTypeMap(node);
+	}
+
+	public Specification(Node raw) {
+		this(raw, true);
 	}
 
 	public Relation getTransitionRelation() {

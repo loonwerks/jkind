@@ -20,6 +20,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
+	private static final String NO_SLICING = "no_slicing";
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
 	private static final String SCRATCH = "scratch";
@@ -54,6 +55,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
+		options.addOption(NO_SLICING, false, "disable slicing");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
@@ -116,7 +118,11 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(NO_K_INDUCTION)) {
 			settings.kInduction = false;
 		}
-
+		
+		if (line.hasOption(NO_SLICING)) {
+			settings.slicing = false;
+		}
+		
 		if (line.hasOption(N)) {
 			settings.n = parseNonnegativeInt(line.getOptionValue(N));
 		}
@@ -152,7 +158,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			 * Reconstruction of inlined values does not yet support interval
 			 * generalization
 			 */
-			settings.inline = false;
+			settings.inlining = false;
 		}
 
 		if (line.hasOption(SOLVER)) {

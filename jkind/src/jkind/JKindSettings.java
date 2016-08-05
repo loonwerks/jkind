@@ -18,7 +18,8 @@ public class JKindSettings extends Settings {
 	public boolean reduceIvc = false;
 	public boolean smoothCounterexamples = false;
     public boolean intervalGeneralization = false;
-    public boolean inline = true;
+    public boolean inlining = true;
+	public boolean slicing = true;
 	
 	public SolverOption solver = SolverOption.SMTINTERPOL;
 	public boolean scratch = false;
