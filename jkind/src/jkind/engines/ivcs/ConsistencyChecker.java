@@ -513,12 +513,12 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		for(String core : message.vm.ivc){
 			ivc.add(findRightSide(core));
 		}
-		message.vm = new ValidMessage (message.vm.source, message.vm.valid, message.vm.k,
+		message.vm = new ValidMessage (message.vm.source, message.vm.valid, message.vm.k, message.vm.proofTime,
 		        message.vm.invariants, ivc, null, null);
 		director.writeConsistencyCheckerResults(message); 
 		if(! settings.allIvcs){ 
 			Itinerary itinerary = message.vm.getNextItinerary();
-			director.broadcast(new ValidMessage(message.vm.source, message.vm.valid, message.vm.k,
+			director.broadcast(new ValidMessage(message.vm.source, message.vm.valid, message.vm.k, message.vm.proofTime,
 					        message.vm.invariants, ivc, itinerary, null));
 		}
 	}

@@ -63,7 +63,7 @@ public class MiniJKind extends Engine {
 	}
 	
 	public void setValidMessage(ValidMessage vm) {
-		validMessage = new ValidMessage(vm.source, vm.valid, vm.k, vm.invariants, vm.ivc, null, null);
+		validMessage = new ValidMessage(vm.source, vm.valid, vm.k, vm.proofTime, vm.invariants, vm.ivc, null, null);
 		status = VALID;
 	}
 	

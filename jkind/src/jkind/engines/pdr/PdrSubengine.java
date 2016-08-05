@@ -241,7 +241,7 @@ public class PdrSubengine extends Thread {
 
 	private void sendValidAndInvariants(List<Expr> invariants) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		director.broadcast(new ValidMessage(parent.getName(), prop, 1, invariants, null, itinerary, null));
+		director.broadcast(new ValidMessage(parent.getName(), prop, 1, getRuntime(), invariants, null, itinerary, null));
 		director.broadcast(new InvariantMessage(invariants));
 	}
 
@@ -252,5 +252,9 @@ public class PdrSubengine extends Thread {
 
 	private void sendInvariant(Expr invariant) {
 		director.broadcast(new InvariantMessage(invariant));
+	}
+	
+	private double getRuntime() {
+		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}
 }

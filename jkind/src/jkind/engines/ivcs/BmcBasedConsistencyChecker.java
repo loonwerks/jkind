@@ -217,7 +217,7 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 
 	private void sendValid(String valid, ValidMessage vm) {
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.invariants, vm.ivc , itinerary, null)); 
+		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, vm.invariants, vm.ivc , itinerary, null)); 
 	}
 	
 	@Override

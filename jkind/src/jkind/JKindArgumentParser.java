@@ -33,6 +33,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String ALL_ASSIGNED = "all_assigned";
 	private static final String CONSISTENCY_BMC = "bmc_consistency_check";
 	private static final String CONSISTENCY = "consistency_check";
+	private static final String JSUPPORT_USE_UNSAT_CORE = "use_unsat_core";
 
 	private final JKindSettings settings;
 
@@ -76,6 +77,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
+		options.addOption(JSUPPORT_USE_UNSAT_CORE, true, "make JSupport use an initial IVC as input");
 		return options;
 	}
 
@@ -211,6 +213,10 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(XML_TO_STDOUT)) {
 			settings.xmlToStdout = true;
 			settings.xml = true;
+		}
+		
+		if (line.hasOption(JSUPPORT_USE_UNSAT_CORE)) {
+			settings.useUnsatCore = line.getOptionValue(JSUPPORT_USE_UNSAT_CORE);
 		}
 	}
 

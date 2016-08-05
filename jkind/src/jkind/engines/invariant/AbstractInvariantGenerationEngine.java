@@ -159,7 +159,7 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		if (!valid.isEmpty()) {
 			Itinerary itinerary = director.getValidMessageItinerary();
 			List<Expr> invariants = provenInvariants.getInvariants();
-			director.broadcast(new ValidMessage(getName(), valid, k, invariants, null, itinerary, null));
+			director.broadcast(new ValidMessage(getName(), valid, k, getRuntime(), invariants, null, itinerary, null));
 		}
 	}
 
@@ -197,5 +197,9 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
+	}
+	
+	private double getRuntime() {
+		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}
 }

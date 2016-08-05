@@ -39,7 +39,8 @@ import jkind.util.SexpUtil;
 public class IvcReductionEngine extends SolverBasedEngine {
 	public static final String NAME = "ivc-reduction";
 	private final LinkedBiMap<String, Symbol> ivcMap;
-
+	private double runtime;
+	
 	public IvcReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
 		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
@@ -66,6 +67,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
 				try{
+					//----- for the experiments---------
+					runtime = System.currentTimeMillis(); 
+					//-----------------------------------
 					reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 				}catch(JKindException j){
 					j.printStackTrace();
@@ -225,6 +229,11 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
+		
+		//--------- for the experiments --------------
+		AllIvcComputerEngine.UC_TIME = (System.currentTimeMillis() - runtime) / 1000.0;
+		//--------------------------------------------
+		
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());
@@ -232,7 +241,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 		Itinerary itinerary = vm.getNextItinerary(); 
 		if(settings.allIvcs || settings.miniJkind || settings.consistencyCheck){
-			ValidMessage nvm = new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null);
+			ValidMessage nvm = new ValidMessage(vm.source, valid, k, vm.proofTime, invariants, ivc, itinerary, null);
 			director.broadcast(nvm);
 			if(settings.allIvcs && settings.consistencyCheck){
 				director.handleConsistencyMessage(new ConsistencyMessage(nvm));
@@ -240,11 +249,11 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		}
 		else if(settings.bmcConsistencyCheck){
 			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
-			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, ivc, itinerary, null));
+			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime, invariants, ivc, itinerary, null));
 		} 
 		else {
 			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
-			director.broadcast(new ValidMessage(vm.source, valid, k, invariants, IvcUtil.trimNode(ivc), itinerary, null));
+			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime, invariants, IvcUtil.trimNode(ivc), itinerary, null));
 		}
 	}
 

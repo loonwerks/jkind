@@ -30,4 +30,5 @@ public class JKindSettings extends Settings {
 	public boolean allAssigned = false;
 	public boolean bmcConsistencyCheck =  false;
 	public boolean consistencyCheck =  false;
+	public String useUnsatCore = null;
 }

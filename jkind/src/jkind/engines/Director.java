@@ -57,7 +57,7 @@ public class Director extends MessageHandler {
 	private final Specification userSpec;
 	private final Specification analysisSpec;
 	private final Writer writer;
-	private final long startTime;
+	public final long startTime;
 
 	private final List<String> remainingProperties = new ArrayList<>();
 	private final List<String> validProperties = new ArrayList<>();
@@ -328,7 +328,7 @@ public class Director extends MessageHandler {
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
 
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc, vm.allIvcs);
+		writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs);
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {

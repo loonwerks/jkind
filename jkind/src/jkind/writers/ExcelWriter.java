@@ -50,7 +50,7 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime,
+	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
 			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		// doesn't write allIvcs...

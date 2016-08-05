@@ -35,7 +35,7 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeRealizable(int k, double runtime) {
-		internal.writeValid(REALIZABLE_LIST, "extend", k, runtime, Collections.emptyList(),
+		internal.writeValid(REALIZABLE_LIST, "extend", k, runtime, runtime, Collections.emptyList(),
 				Collections.emptySet(), Collections.emptyList());
 		summaryWriter.writeRealizable(k, runtime);
 	}

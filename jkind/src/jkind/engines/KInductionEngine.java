@@ -143,7 +143,7 @@ public class KInductionEngine extends SolverBasedEngine {
 
 	private void sendValid(List<String> valid, int k) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		Message vm = new ValidMessage(getName(), valid, k, invariants.getInvariants(), null, itinerary, null);
+		Message vm = new ValidMessage(getName(), valid, k, getRuntime(), invariants.getInvariants(), null, itinerary, null);
 		director.broadcast(vm);
 	}
 
@@ -188,5 +188,9 @@ public class KInductionEngine extends SolverBasedEngine {
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
 		addPropertiesAsInvariants(kCurrent - 1, vm.valid);
+	}
+	
+	private double getRuntime() {
+		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}
 }

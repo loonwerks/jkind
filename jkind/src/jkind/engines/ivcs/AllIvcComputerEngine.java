@@ -47,11 +47,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private Z3Solver z3Solver;	   
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();  
+	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
+	private int TIMEOUT; 
 	
-	// this variable is only used for the experiments
-	private double runtime;
+	// these variables are only used for the experiments
+	private double runtime; 
+	static protected double UC_TIME;
+	//--------------------------------------------------
 	
-	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>(); 
 
 	public AllIvcComputerEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -96,6 +99,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
+		TIMEOUT = (int)(vm.proofTime * 5);
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
@@ -124,7 +128,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		
 		//--------- for the experiments --------------
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-		recordRuntime();
+		recordRuntime(vm.proofTime);
 		//--------------------------------------------
 		
 		processMustElements(mustChckList, initialIvc, property.toString());
@@ -134,7 +138,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
-		js.timeout = 300;
+		js.timeout = TIMEOUT;
 		
 		// optional-- could be commented later:
 		//js.scratch = true;
@@ -376,7 +380,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		for(Tuple<Set<String>, List<String>> pair : allIvcs){
 			IvcUtil.findRightSide(pair.firstElement(), settings.allAssigned, spec.node.equations);
 		}
-		director.broadcast(new ValidMessage(vm.source, valid, 0, null, IvcUtil.trimNode(mustElements) , itinerary, allIvcs)); 
+		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, IvcUtil.trimNode(mustElements) , itinerary, allIvcs)); 
 	}
 	
 	private void processMustElements (Set<String> mustChckList, Set<String> initialIvc, String prop) { 
@@ -518,12 +522,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	// this method is used only in our experiments
-	private void recordRuntime() {
+	private void recordRuntime(double proofTime) {
 		String xmlFilename = settings.filename + "_runtimeAllIvcs.xml";
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
-			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
-			out.println("  <Runtime unit=\"sec\">" + runtime + "</Runtime>");
+			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+			out.println("  <ProofTime unit=\"sec\">" + proofTime + "</ProofTime>");
+			out.println("  <UcRuntime unit=\"sec\">" + UC_TIME + "</UcRuntimeRuntime>");
+			out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntimeRuntime>");
 			out.println("</Results>");
 			out.flush();
 			out.close();
