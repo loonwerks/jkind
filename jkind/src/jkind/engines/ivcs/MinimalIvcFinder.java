@@ -16,7 +16,7 @@ public class MinimalIvcFinder {
 	private String fileName; 
 	private String property;
 	
-	protected MinimalIvcFinder(Node node, String fileName, String property){
+	public MinimalIvcFinder(Node node, String fileName, String property){
 		startTime = System.currentTimeMillis(); 
 	    this.node = node; 
 	    this.fileName = fileName; 
@@ -27,13 +27,13 @@ public class MinimalIvcFinder {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
 
-	public Set<String> reduce(Set<String> candidates, Set<String> mustElements, boolean writeToFile) {  
+	public Set<String> reduce(Set<String> candidates, Set<String> mustElements, boolean writeToFile, int timeout) {  
 		Set<String> minimal = new HashSet<>(candidates);
 		JKindSettings js = new JKindSettings(); 
 		//js.noSlicing = true;   
 		js.allAssigned = false;
 		js.miniJkind = true; 
-		js.timeout = 300;
+		js.timeout = timeout;
 		
 		//------------ only for the experiment -------------
 		String xmlFilename = fileName + "_minimizationInfo.xml";
