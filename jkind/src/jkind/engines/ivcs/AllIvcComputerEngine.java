@@ -403,7 +403,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		 * */   
 		
 		Set<String> minimalIvc = minimalFinder.reduce(candidates, trimmedMustList, true, TIMEOUT);
-		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false); 
+		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false, TIMEOUT); 
 		//processIntersection(mustChckList, initialIvc, prop);
 	}
 	
@@ -528,8 +528,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 			out.println("  <ProofTime unit=\"sec\">" + proofTime + "</ProofTime>");
-			out.println("  <UcRuntime unit=\"sec\">" + UC_TIME + "</UcRuntimeRuntime>");
-			out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntimeRuntime>");
+			out.println("  <UcRuntime unit=\"sec\">" + UC_TIME + "</UcRuntime>");
+			out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntime>");
 			out.println("</Results>");
 			out.flush();
 			out.close();
