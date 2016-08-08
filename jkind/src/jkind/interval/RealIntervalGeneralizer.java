@@ -15,7 +15,7 @@ public class RealIntervalGeneralizer {
 		this.generalizer = generalizer;
 	}
 
-	public Interval generalize(StreamIndex si, NumericInterval initial) {
+	public NumericInterval generalize(StreamIndex si, NumericInterval initial) {
 		NumericInterval curr = initial;
 		curr = generalizeRealIntervalLow(si, curr);
 		curr = generalizeRealIntervalHigh(si, curr);
