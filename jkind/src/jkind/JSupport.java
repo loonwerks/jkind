@@ -56,7 +56,8 @@ public class JSupport {
 			inputIVC = getIVC(settings.useUnsatCore);
 			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(main, settings.filename, main.properties.get(0));
 			minimalFinder.reduce(inputIVC, new HashSet<>(), true, TIMEOUT);
-		 
+			System.exit(0);
+		 	
 			}catch (Throwable t) {
 				t.printStackTrace();
 				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
@@ -71,7 +72,6 @@ public class JSupport {
 			Element progressElement =  doc.getDocumentElement();
 			support = getStringList(getElements(progressElement, "IVC"));
 			double d = Double.parseDouble(getStringList(getElements(progressElement, "Timeout")).get(0));
-			d *= 1000.0;
 			TIMEOUT = (int)d;
         }
 

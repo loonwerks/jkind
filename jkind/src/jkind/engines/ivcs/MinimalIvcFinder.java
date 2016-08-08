@@ -33,8 +33,7 @@ public class MinimalIvcFinder {
 		//js.noSlicing = true;   
 		js.allAssigned = false;
 		js.miniJkind = true; 
-		js.timeout = timeout;
-		
+		js.timeout = timeout; 
 		//------------ only for the experiment -------------
 		String xmlFilename = fileName + "_minimizationInfo.xml";
 		int counter = 1;
@@ -60,6 +59,7 @@ public class MinimalIvcFinder {
 				minimal.remove(s);
 				node = candidate;
 			}
+			miniJkind = null;
 		}
 		minimal = IvcUtil.trimNode(minimal);
 		minimal.addAll(mustElements);
@@ -68,13 +68,12 @@ public class MinimalIvcFinder {
 		}
 		
 		
-		
 		//------------ only for the experiment -------------
 		out.println("</Results>");
 		out.flush();
 		out.close(); 
 		}catch (Throwable t) {
-			t.printStackTrace();
+			t.printStackTrace(); 
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 		//--------------------------------------------------
