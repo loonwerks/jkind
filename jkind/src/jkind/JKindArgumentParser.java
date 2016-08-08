@@ -215,9 +215,18 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void printDectectedSolvers() {
-		String detected = SolverUtil.availableSolvers().stream()
+		String detected = Arrays.stream(SolverOption.values()).filter(this::solverIsAvailable)
 				.map(Object::toString).collect(joining(", "));
 		System.out.println("Detected solvers: " + detected);
 	}
 
+	private boolean solverIsAvailable(SolverOption solverOption) {
+		try {
+			Node emptyNode = new NodeBuilder("empty").build();
+			SolverUtil.getSolver(solverOption, null, emptyNode);
+		} catch (JKindException e) {
+			return false;
+		}
+		return true;
+	}
 }
