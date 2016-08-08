@@ -18,25 +18,22 @@ public class IntIntervalGeneralizer {
 		curr = generalizeIntIntervalHigh(si, curr);
 		return curr;
 	}
-	
+
 	private NumericInterval generalizeIntIntervalLow(StreamIndex si, NumericInterval curr) {
 		NumericInterval next = new NumericInterval(IntEndpoint.NEGATIVE_INFINITY, curr.getHigh());
 		if (generalizer.modelConsistent(si, next)) {
 			return next;
 		}
+
 		BigInteger a = ((IntEndpoint) curr.getLow()).getValue();
 		BigInteger b = getLowerBoundInt(si, curr);
-		return generalizeIntIntervalLow(si,a,b,curr.getHigh());
-	}
-	
-	public NumericInterval generalizeIntIntervalLow(StreamIndex si, BigInteger a, BigInteger b, NumericEndpoint high) {
 		// Invariant b < true lower bound <= a
 		while (true) {
 			BigInteger guess = a.add(b).divide(TWO_INT);
 			if (guess.equals(a) || guess.equals(b)) {
-				return new NumericInterval(new IntEndpoint(a), high);
+				return new NumericInterval(new IntEndpoint(a), curr.getHigh());
 			}
-			NumericInterval next = new NumericInterval(new IntEndpoint(guess), high);
+			next = new NumericInterval(new IntEndpoint(guess), curr.getHigh());
 			if (generalizer.modelConsistent(si, next)) {
 				a = guess;
 			} else {
@@ -44,6 +41,7 @@ public class IntIntervalGeneralizer {
 			}
 		}
 	}
+
 	private BigInteger getLowerBoundInt(StreamIndex si, NumericInterval curr) {
 		BigInteger gap = BigInteger.ONE;
 		BigInteger low = ((IntEndpoint) curr.getLow()).getValue();
@@ -64,19 +62,16 @@ public class IntIntervalGeneralizer {
 		if (generalizer.modelConsistent(si, next)) {
 			return next;
 		}
+
 		BigInteger a = ((IntEndpoint) curr.getHigh()).getValue();
 		BigInteger b = getUpperBoundInt(si, curr);
-		return generalizeIntIntervalHigh(si, a, b, curr.getLow());
-	}
-
-	public NumericInterval generalizeIntIntervalHigh(StreamIndex si, BigInteger a, BigInteger b, NumericEndpoint low) {
 		// Invariant a <= true upper bound < b
 		while (true) {
 			BigInteger guess = a.add(b).divide(TWO_INT);
 			if (guess.equals(a) || guess.equals(b)) {
-				return new NumericInterval(low, new IntEndpoint(a));
+				return new NumericInterval(curr.getLow(), new IntEndpoint(a));
 			}
-			NumericInterval next = new NumericInterval(low, new IntEndpoint(guess));
+			next = new NumericInterval(curr.getLow(), new IntEndpoint(guess));
 			if (generalizer.modelConsistent(si, next)) {
 				a = guess;
 			} else {
@@ -84,7 +79,7 @@ public class IntIntervalGeneralizer {
 			}
 		}
 	}
-	
+
 	private BigInteger getUpperBoundInt(StreamIndex si, NumericInterval curr) {
 		BigInteger gap = BigInteger.ONE;
 		BigInteger high = ((IntEndpoint) curr.getHigh()).getValue();

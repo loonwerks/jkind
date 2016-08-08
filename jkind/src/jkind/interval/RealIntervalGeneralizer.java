@@ -30,18 +30,14 @@ public class RealIntervalGeneralizer {
 
 		BigFraction a = ((RealEndpoint) curr.getLow()).getValue();
 		BigFraction b = getLowerBoundReal(si, curr);
-		return generalizeRealIntervalLow(si, a, b, curr.getHigh());
-	}
-
-	public NumericInterval generalizeRealIntervalLow(StreamIndex si, BigFraction a, BigFraction b, NumericEndpoint high) {
 		// Invariant b < true lower bound <= a
 		while (true) {
 			if (a.subtract(b).compareTo(REAL_THRESHHOLD) < 0) {
-				return new NumericInterval(new RealEndpoint(a), high);
+				return new NumericInterval(new RealEndpoint(a), curr.getHigh());
 			}
 
 			BigFraction guess = a.add(b).divide(TWO);
-			NumericInterval next = new NumericInterval(new RealEndpoint(guess), high);
+			next = new NumericInterval(new RealEndpoint(guess), curr.getHigh());
 			if (generalizer.modelConsistent(si, next)) {
 				a = guess;
 			} else {
@@ -73,18 +69,14 @@ public class RealIntervalGeneralizer {
 
 		BigFraction a = ((RealEndpoint) curr.getHigh()).getValue();
 		BigFraction b = getUpperBoundReal(si, curr);
-		return generalizeRealIntervalHigh(si, a, b, curr.getLow());
-	}
-
-	public NumericInterval generalizeRealIntervalHigh(StreamIndex si, BigFraction a, BigFraction b, NumericEndpoint low) {
 		// Invariant a <= true upper bound < b
 		while (true) {
 			if (b.subtract(a).compareTo(REAL_THRESHHOLD) < 0) {
-				return new NumericInterval(low, new RealEndpoint(a));
+				return new NumericInterval(curr.getLow(), new RealEndpoint(a));
 			}
 			
 			BigFraction guess = a.add(b).divide(TWO);
-			NumericInterval next = new NumericInterval(low, new RealEndpoint(guess));
+			next = new NumericInterval(curr.getLow(), new RealEndpoint(guess));
 			if (generalizer.modelConsistent(si, next)) {
 				a = guess;
 			} else {
