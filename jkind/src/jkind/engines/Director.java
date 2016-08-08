@@ -466,7 +466,7 @@ public class Director extends MessageHandler {
 
 	private Counterexample extractCounterexample(String property, int k, SimpleModel model,
 			boolean concrete) {
-		if (settings.inline) {
+		if (settings.inlining) {
 			ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
 		}
 		return CounterexampleExtractor.extract(userSpec, k, model);

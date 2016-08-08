@@ -27,7 +27,6 @@ import jkind.util.Util;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
 
 /**
  * This class serves as a single entry point for all JKind-based command line

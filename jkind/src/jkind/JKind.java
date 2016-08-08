@@ -26,7 +26,7 @@ public class JKind {
 			}
 
 			Node main = Translate.translate(program);
-			Specification userSpec = new Specification(main);
+			Specification userSpec = new Specification(main, settings.slicing);
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
 			int exitCode = new Director(settings, userSpec, analysisSpec).run();
@@ -51,9 +51,9 @@ public class JKind {
 	}
 
 	private static Specification getAnalysisSpec(Specification userSpec, JKindSettings settings) {
-		if (settings.inline) {
+		if (settings.inlining) {
 			Node inlined = InlineSimpleEquations.node(userSpec.node);
-			return new Specification(inlined);
+			return new Specification(inlined, settings.slicing);
 		} else {
 			return userSpec;
 		}

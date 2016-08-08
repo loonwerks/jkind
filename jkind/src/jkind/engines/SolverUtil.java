@@ -30,4 +30,20 @@ public class SolverUtil {
 		}
 		throw new IllegalArgumentException("Unknown solver: " + solverOption);
 	}
+
+	public static boolean solverIsAvailable(SolverOption solverOption) {
+		try {
+			Node emptyNode = new NodeBuilder("empty").build();
+			getSolver(solverOption, null, emptyNode);
+		} catch (JKindException e) {
+			return false;
+		}
+		return true;
+	}
+
+	public static List<SolverOption> availableSolvers() {
+		return Arrays.stream(SolverOption.values()).filter(x -> solverIsAvailable(x))
+				.collect(Collectors.toList());
+	}
+
 }
