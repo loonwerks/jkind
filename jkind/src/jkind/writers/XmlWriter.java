@@ -78,7 +78,7 @@ public class XmlWriter extends Writer {
 			for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
 				out.println("    <IvcSet number=\"" + count + "\">");
 				for (String invariant : ivcSet.secondElement()) {
-					out.println("    <Invariant>" + invariant + "</Invariant>");
+					out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 				}
 				for (String supp : ivcSet.firstElement()) {
 					out.println("    <Ivc>" + supp + "</Ivc>");
@@ -94,6 +94,10 @@ public class XmlWriter extends Writer {
 
 	private String escape(Expr invariant) {
 		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
+	}
+	
+	private String escape(String invariant) {
+		return invariant.replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	@Override
