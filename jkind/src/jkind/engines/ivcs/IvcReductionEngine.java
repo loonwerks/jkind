@@ -232,10 +232,12 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
-		
+		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
 		//--------- for the experiments --------------
-		AllIvcComputerEngine.UC_TIME = (System.currentTimeMillis() - runtime) / 1000.0;
+		AllIvcComputerEngine.UC_TIME = runtime;
 		writeToXml(IvcUtil.trimNode(ivc), vm.proofTime);
+		
+		
 		//--------------------------------------------
 		
 		
@@ -246,7 +248,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 		Itinerary itinerary = vm.getNextItinerary(); 
 		if(settings.allIvcs || settings.miniJkind || settings.consistencyCheck){
-			ValidMessage nvm = new ValidMessage(vm.source, valid, k, vm.proofTime, invariants, ivc, itinerary, null);
+			ValidMessage nvm = new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, ivc, itinerary, null);
 			director.broadcast(nvm);
 			if(settings.allIvcs && settings.consistencyCheck){
 				director.handleConsistencyMessage(new ConsistencyMessage(nvm));
@@ -254,11 +256,11 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		}
 		else if(settings.bmcConsistencyCheck){
 			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
-			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime, invariants, ivc, itinerary, null));
+			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, ivc, itinerary, null));
 		} 
 		else {
 			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
-			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime, invariants, IvcUtil.trimNode(ivc), itinerary, null));
+			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, IvcUtil.trimNode(ivc), itinerary, null));
 		}
 	}
 
@@ -268,7 +270,8 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 			out.println("   <Runtime unit=\"sec\">" + AllIvcComputerEngine.UC_TIME + "</Runtime>");
-			out.println("   <Timeout unit=\"sec\">" + ((AllIvcComputerEngine.UC_TIME + proofTime) * 7) + "</Timeout>");
+			double t = 60.0 + ((AllIvcComputerEngine.UC_TIME + proofTime) * 7);
+			out.println("   <Timeout unit=\"sec\">" + t + "</Timeout>");
 			for (String s : Util.safeStringSortedSet(ivc)) {
 				out.println("   <IVC>" + s + "</IVC>");
 			}

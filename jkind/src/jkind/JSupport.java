@@ -55,7 +55,7 @@ public class JSupport {
 			
 			inputIVC = getIVC(settings.useUnsatCore);
 			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(main, settings.filename, main.properties.get(0));
-			minimalFinder.reduce(inputIVC, new HashSet<>(), true, TIMEOUT);
+			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), true, TIMEOUT);
 			System.exit(0);
 		 	
 			}catch (Throwable t) {

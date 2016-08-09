@@ -99,7 +99,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
-		TIMEOUT = (int)((vm.proofTime + UC_TIME) * 7);
+		TIMEOUT = 60 + (int)(vm.proofTime * 7);
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
@@ -402,7 +402,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		 * if we're not running experiment the following line should be replaced with the next
 		 * */   
 		
-		Set<String> minimalIvc = minimalFinder.reduce(candidates, trimmedMustList, true, TIMEOUT);
+		Set<String> minimalIvc = minimalFinder.minimizeIvc(candidates, trimmedMustList, true, TIMEOUT);
 		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false, TIMEOUT); 
 		//processIntersection(mustChckList, initialIvc, prop);
 	}
