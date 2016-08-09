@@ -237,7 +237,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		AllIvcComputerEngine.UC_TIME = runtime;
 		writeToXml(IvcUtil.trimNode(ivc), vm.proofTime);
 		
-		
+		//========== for the completeness paper ============
+		 new MinimalIvcFinder(spec.node, 
+				 settings.filename, valid).computeMust(ivc, 
+						 true, (int)(60.0 + ((runtime + vm.proofTime) * 7)));
 		//--------------------------------------------
 		
 		
