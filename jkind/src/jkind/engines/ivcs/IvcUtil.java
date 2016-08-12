@@ -5,10 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import jkind.JKind;
-import jkind.JKindException;
+import java.util.Set; 
+import jkind.JKind; 
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -21,7 +19,7 @@ import jkind.util.LinkedBiMap;
 import jkind.util.Util;
 
 public class IvcUtil {
-	
+	 
 	public static Node normalizeAssertions(Node node) {   
 		List<VarDecl> locals = new ArrayList<>(node.locals); 
 		List<Equation> equations = new ArrayList<>(node.equations);
@@ -157,13 +155,13 @@ public class IvcUtil {
 		return v.replaceAll("~[0-9]+", "");
 	}
 	
-	protected static Expr getInvariantByName(String name, List<Expr> invariants) {
+	protected static Expr getInvariantByName(String name, List<Expr> invariants) { 
 		for (Expr invariant : invariants) {
 			if (invariant.toString().equals(name)) {
 				return invariant;
 			}
 		}
-		throw new JKindException("Unable to find property " + name + " during reduction\n"
+		throw new IvcException("Unable to find property " + name + " during reduction\n"
 				+ " try to re-run the process with  -pdr_max 0  option.");
 	}
 

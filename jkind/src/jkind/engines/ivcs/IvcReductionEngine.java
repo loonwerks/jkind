@@ -46,13 +46,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	
 	public IvcReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
-		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
-		//System.out.println(spec.node.toString());
-//System.exit(0);
-		// Q: We know this variable:   _TOP__ALARM~0.DEFS__Is_Infusion_above_tolerance~0.tol : int;
-		// Is actually necessary (at least, according to three solvers).  
-		// When we do UCBF, we are removing variables from a list.  Is this variable in the list?
-		// If so, can we print out the Lustre that is generated and compare with expectations.
+		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc);  
 }
 
 	@Override
@@ -75,15 +69,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				try{
-					//----- for the experiments---------
-					runtime = System.currentTimeMillis(); 
-					//-----------------------------------
-					reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
-				}catch(JKindException j){
-					j.printStackTrace();
-					System.exit(ExitCodes.PROP_IS_NOT_IN_INVARIANTS);
-				}
+				//----- for the experiments---------
+				runtime = System.currentTimeMillis(); 
+				//-----------------------------------
+				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 		}
 	}

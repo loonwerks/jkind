@@ -31,8 +31,7 @@ public class MiniJKind extends Engine {
 	private String status = NOT_YET_CHECKED; 
     
 	public MiniJKind(Specification spec, JKindSettings settings) {
-		super(NAME, spec, settings, null); 
-		
+		super(NAME, spec, settings, null);  
 		if (spec.node.properties.size() != 1) {
 			throw new IllegalArgumentException("MiniJKind Expects exactly one property");
 		}
@@ -53,10 +52,11 @@ public class MiniJKind extends Engine {
 	public void verify() {
 		try { 
 			int ret = director.run();   
-			if(ret == ExitCodes.PROP_IS_NOT_IN_INVARIANTS)
-			{
+			
+			if(ret == ExitCodes.IVC_EXCEPTION)
+			{ 
 				status = UNKNOW_WITH_EXCEPTION;
-			}
+			} 
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);

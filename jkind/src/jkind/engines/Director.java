@@ -151,7 +151,7 @@ public class Director extends MessageHandler {
 		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
-			exitCode = reportFailures();
+			exitCode = reportFailures(); 
 		}
 		return exitCode;
 	}
@@ -278,7 +278,10 @@ public class Director extends MessageHandler {
 			if (engine.getThrowable() != null) {
 				Output.println(engine.getName() + " process failed");
 				Output.printStackTrace(engine.getThrowable());
-				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION; 
+				if(engine.getThrowable().toString().contains("IvcException")){
+					exitCode = ExitCodes.IVC_EXCEPTION;
+				}
 			}
 		}
 		return exitCode;

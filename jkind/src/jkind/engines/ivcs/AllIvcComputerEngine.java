@@ -137,7 +137,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
-		js.timeout = TIMEOUT;
+		js.timeout = TIMEOUT; 
 		
 		// optional-- could be commented later:
 		//js.scratch = true;
