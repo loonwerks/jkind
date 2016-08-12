@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
+import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.ivcs.MinimalIvcFinder; 
 import jkind.lustre.Node;
 import jkind.lustre.Program; 
@@ -54,7 +55,8 @@ public class JSupport {
 			}
 			
 			inputIVC = getIVC(settings.useUnsatCore);
-			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(main, settings.filename, main.properties.get(0));
+			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0)),
+					settings.filename, main.properties.get(0));
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), true, TIMEOUT);
 			System.exit(0);
 		 	

@@ -47,7 +47,13 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	public IvcReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
 		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
-	}
+		//System.out.println(spec.node.toString());
+//System.exit(0);
+		// Q: We know this variable:   _TOP__ALARM~0.DEFS__Is_Infusion_above_tolerance~0.tol : int;
+		// Is actually necessary (at least, according to three solvers).  
+		// When we do UCBF, we are removing variables from a list.  Is this variable in the list?
+		// If so, can we print out the Lustre that is generated and compare with expectations.
+}
 
 	@Override
 	protected void initializeSolver() {
@@ -233,14 +239,13 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-		//--------- for the experiments --------------
-		AllIvcComputerEngine.UC_TIME = runtime;
-		writeToXml(IvcUtil.trimNode(ivc), vm.proofTime);
+		//--------- for the experiments -------------- 
+		writeToXml(ivc, vm.proofTime);
 		
 		//========== for the completeness paper ============
 		 new MinimalIvcFinder(spec.node, 
 				 settings.filename, valid).computeMust(ivc, 
-						 true, (int)(60.0 + ((runtime + vm.proofTime) * 7)));
+						 true, (int)(60.0 + ((runtime + vm.proofTime) * 10)));
 		//--------------------------------------------
 		
 		
@@ -250,20 +255,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		}
 		comment("IVC: " + ivc.toString());
 		Itinerary itinerary = vm.getNextItinerary(); 
-		if(settings.allIvcs || settings.miniJkind || settings.consistencyCheck){
-			ValidMessage nvm = new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, ivc, itinerary, null);
-			director.broadcast(nvm);
-			if(settings.allIvcs && settings.consistencyCheck){
-				director.handleConsistencyMessage(new ConsistencyMessage(nvm));
-			}
-		}
-		else if(settings.bmcConsistencyCheck){
-			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
-			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, ivc, itinerary, null));
-		} 
-		else {
-			IvcUtil.findRightSide(ivc, settings.allAssigned, spec.node.equations);
-			director.broadcast(new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, IvcUtil.trimNode(ivc), itinerary, null));
+		ValidMessage nvm = new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, ivc, itinerary, null);
+		director.broadcast(nvm);
+		if(settings.allIvcs && settings.consistencyCheck){
+			director.handleConsistencyMessage(new ConsistencyMessage(nvm));
 		}
 	}
 
@@ -272,11 +267,16 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-			out.println("   <Runtime unit=\"sec\">" + AllIvcComputerEngine.UC_TIME + "</Runtime>");
-			double t = 60.0 + ((AllIvcComputerEngine.UC_TIME + proofTime) * 7);
+			out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
+			double t = 60.0 + ((runtime + proofTime) * 10);
 			out.println("   <Timeout unit=\"sec\">" + t + "</Timeout>");
+			out.println("   <ProofTime unit=\"sec\">" + proofTime + "</ProofTime>");
+			out.println("   <Runtime unit=\"sec\">" + (runtime + proofTime) + "</Runtime>");
 			for (String s : Util.safeStringSortedSet(ivc)) {
 				out.println("   <IVC>" + s + "</IVC>");
+			}
+			for (String s : IvcUtil.trimNode(ivc)) {
+				out.println("   <TRIVC>" + s + "</TRIVC>");
 			}
 			out.println("</Results>");
 			out.flush();

@@ -42,8 +42,9 @@ public class MinimalIvcFinder {
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 		//--------------------------------------------------
 		
-		for (String s : candidates) {    
+		for (String s : candidates) {  
 			Node candidate = IvcUtil.unassign(node, s, property);
+	
 			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.noSlicing), js);
 			miniJkind.verify();
 			
@@ -61,8 +62,8 @@ public class MinimalIvcFinder {
 			}
 			miniJkind = null;
 		}
-		minimal = IvcUtil.trimNode(minimal);
 		minimal.addAll(mustElements);
+		minimal = IvcUtil.trimNode(minimal);
 		if (writeToFile){
 			writeXML(minimal, getRuntime());
 		}

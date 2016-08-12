@@ -62,13 +62,7 @@ public class IvcUtil {
 	
 	public static Node unassign(Node node, String v, String property) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
-		try{
-			inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v)));
-		}catch(jkind.JKindException e){
-			VarDecl untrimV = IvcUtil.unTrim(v, node);
-			inputs.add(untrimV);
-			v = untrimV.id;
-		}
+		inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v)));
 		List<VarDecl> locals = removeVariable(node.locals, v);
 		List<VarDecl> outputs = removeVariable(node.outputs, v);
 
@@ -122,7 +116,7 @@ public class IvcUtil {
 		return ret;
 	}
 	
-	protected static Set<String> trimNode(Collection<String> set) {
+	public static Set<String> trimNode(Collection<String> set) {
 		Set<String> ret = new HashSet<>();
 		for (String e : set) {
 			ret.add(e.replaceAll("~[0-9]+", ""));
@@ -130,7 +124,8 @@ public class IvcUtil {
 		return ret;
 	}
 	
-	protected static void findRightSide(Set<String> ivc, boolean allAssigned, List<Equation> equations) {
+	public static Set<String> findRightSide(Set<String> initialIvc, boolean allAssigned, List<Equation> equations) {
+		Set<String> ivc = new HashSet<>(initialIvc);
 		if(allAssigned){
 			Set<String> itr = new HashSet<>(ivc);
 			for(String core : itr){
@@ -144,6 +139,7 @@ public class IvcUtil {
 				}
 			}
 		}
+		return ivc;
 	}
 	
 	protected static VarDecl unTrim(String v, Node node) {
@@ -179,7 +175,7 @@ public class IvcUtil {
 		return result;
 	}
 	
-	protected static List<Symbol> getIvcLiterals(LinkedBiMap<String, Symbol> ivcMap, List<String> set) {
+	protected static List<Symbol> getIvcLiterals(LinkedBiMap<String, Symbol> ivcMap, Collection<String> set) {
 		List<Symbol> result = new ArrayList<>();
 		for (String ivc : set) {
 			result.add(ivcMap.get(ivc));
@@ -214,4 +210,47 @@ public class IvcUtil {
 		builder.clearProperties().addProperty(property);
 		return builder.build();
 	}
+	
+	public static Node overApproximateWithIvc(Node node, Set<String> ivc, String property) { 
+		List<Equation> equations = removeEquations(node.equations, ivc); 
+		List<VarDecl> inputs = new ArrayList<>(node.inputs); 
+		List<VarDecl> locals = keepVariables(node.locals, equations, inputs);
+		List<VarDecl> outputs = keepVariables(node.outputs, equations, inputs); 
+		
+		NodeBuilder builder = new NodeBuilder(node); 
+		builder.clearInputs().addInputs(inputs);
+		builder.clearProperties().addProperty(property);
+		builder.clearLocals().addLocals(locals);
+		builder.clearOutputs().addOutputs(outputs);
+		builder.clearEquations().addEquations(equations); 
+		return builder.build();
+	}
+
+	protected static List<VarDecl> keepVariables(List<VarDecl> vars, List<Equation> equations, List<VarDecl> inputs) {
+		Set<VarDecl> ret = new HashSet<>();
+		List<String> left = new ArrayList<>(); 
+		
+		for(Equation eq : equations){
+			left.add(eq.lhs.get(0).id); 
+		}
+		for(VarDecl v : vars){
+			if(left.contains(v.id)){
+				ret.add(v);
+			}else{
+				inputs.add(v);
+			}
+		}
+		return new ArrayList<>(ret); 
+	}
+
+	protected static List<Equation> removeEquations(List<Equation> equations, Set<String> ivc) { 
+			List<Equation> ret = new ArrayList<>(); 
+			for(Equation eq : equations){
+				if(ivc.contains(eq.lhs.get(0).id)){
+					ret.add(eq);  
+				}
+			}
+
+			return ret; 
+	} 
 }

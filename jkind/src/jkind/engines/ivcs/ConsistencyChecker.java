@@ -56,6 +56,10 @@ import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.Util; 
 
+/**
+ * THIS CLASS NEEDS TO BE RE_WRITTEN
+ * NOW, IT DOES NOT WORK!!!!!!! 
+ **/
 public class ConsistencyChecker  extends SolverBasedEngine {
 	public static final String NAME = "consistency-checker";
 	private Specification localSpec; 
@@ -177,24 +181,16 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		return true;
 	}
 
-	private Node overApproximateWithIvc(Node node) { 
-		List<Equation> equations = removeEquations(node.equations, message.vm.ivc); 
-		List<VarDecl> locals = removeVariables(node.locals, equations);
-		List<VarDecl> outputs = removeVariables(node.outputs, equations);
-		List<VarDecl> inputs = new ArrayList<>(node.inputs);
+	private Node overApproximateWithIvc(Node node) {   
+		Node newNode = IvcUtil.overApproximateWithIvc(node, message.vm.ivc, node.properties.get(0));
 		try{
-			removeAssertions(node.assertions, equations, inputs, locals);
+			removeAssertions(node.assertions, newNode.equations, newNode.inputs, newNode.locals);
 		}catch(JKindException e){
 			return null;
 		}
-
-		NodeBuilder builder = new NodeBuilder(node);  
-		builder.clearAssertions();
-		builder.clearInputs();
-		builder.clearProperties().addProperty(defineNewPropertyForT(equations, locals, outputs));
-		builder.clearLocals().addLocals(locals);
-		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations); 
+		NodeBuilder builder = new NodeBuilder(newNode);  
+		builder.clearAssertions(); 
+		builder.clearProperties().addProperty(defineNewPropertyForT(newNode.equations, newNode.locals, newNode.outputs)); 
 		return builder.build();
 	}
 	
@@ -349,32 +345,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		return false;
 	}
 
-	private List<Equation> removeEquations(List<Equation> equations, Collection<String> ivc) {
-		Set<Equation> ret = new HashSet<>(); 
-		Set<Equation> right = new HashSet<>();
-		for(Equation eq : equations){
-			if(ivc.contains(eq.lhs.get(0).id)){
-				ret.add(eq); 
-				right.add(eq);
-			}
-		} 
-		for(VarDecl i : spec.node.locals){
-			for(Equation e : right){
-				if (containsVar (e.expr, i)){
-					ret.add(getEquation(i.id, equations));
-				}
-			}
-		}
-		for(VarDecl i : spec.node.outputs){
-			for(Equation e : right){
-				if (containsVar (e.expr, i)){
-					ret.add(e);
-				}
-			}
-		}
-
-		return new ArrayList<>(ret); 
-	}
 	
 	private Equation getEquation(String i, List<Equation> equations) {
 		for(Equation eq : equations){
@@ -382,21 +352,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 				return eq;
 		}
 		return null;
-	}
-
-	private List<VarDecl> removeVariables(List<VarDecl> vars, List<Equation> equations) {
-		Set<VarDecl> ret = new HashSet<>();
-		List<String> left = new ArrayList<>(); 
-		
-		for(Equation eq : equations){
-			left.add(eq.lhs.get(0).id); 
-		}
-		for(VarDecl v : vars){
-			if(left.contains(v.id)){
-				ret.add(v);
-			}
-		}
-		return new ArrayList<>(ret); 
 	}
 
 	private String defineNewPropertyForT(List<Equation> equations, List<VarDecl> locals, List<VarDecl> outputs) {
@@ -435,7 +390,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		List<Expr> assertions = new ArrayList<>(spec.node.assertions); 
 		Set<String> keepAsr = new HashSet<>();
 		
-		equations = removeEquations(equations, message.vm.ivc); 
+		equations = IvcUtil.removeEquations(equations, message.vm.ivc); 
 		equations.remove(getEquation(property, equations));
 		Iterator<Expr> iter0 = assertions.iterator();
 		for(Equation eq : equations){
@@ -449,8 +404,8 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 				iter0.remove(); 
 				}
 		}  
-		locals = removeVariables(locals, equations);
-		outputs = removeVariables(outputs, equations);
+		locals = IvcUtil.keepVariables(locals, equations, inputs);
+		outputs = IvcUtil.keepVariables(outputs, equations, inputs);
 
 		NodeBuilder builder = new NodeBuilder(spec.node);
 		builder.clearInputs().addInputs(inputs);
@@ -483,7 +438,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		return ret;
 	}
 	
-	private Set<String> findRightSide(List<String> propertyIvc) {
+	private Set<String> findRightSide(Collection<String> propertyIvc) {
 		Set<String> ret = new HashSet<>(); 
 		for (String core : propertyIvc){
 			String rn = findRightSide(core);

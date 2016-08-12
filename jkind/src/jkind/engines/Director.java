@@ -24,6 +24,7 @@ import jkind.engines.ivcs.AllIvcComputerEngine;
 import jkind.engines.ivcs.BmcBasedConsistencyChecker;
 import jkind.engines.ivcs.ConsistencyChecker;
 import jkind.engines.ivcs.IvcReductionEngine;
+import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
@@ -44,6 +45,7 @@ import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.ModelReconstructionEvaluator;
+import jkind.util.Tuple;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -122,7 +124,7 @@ public class Director extends MessageHandler {
 			} else if (settings.xml) {
 				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap,
 						settings.xmlToStdout);
-			} else if (miniJkind != null){
+			} else if (settings.miniJkind){
 				return new ConsoleWriter(new NodeLayout(userSpec.node), miniJkind);
 			}
 			else {
@@ -134,7 +136,7 @@ public class Director extends MessageHandler {
 	}
 
 	public int run() {
-		if(miniJkind == null){
+		if(!settings.miniJkind){
 			printHeader();
 		}
 		writer.begin();
@@ -327,8 +329,21 @@ public class Director extends MessageHandler {
 		}
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
-
-		writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs);
+		
+		if((!settings.miniJkind) && (settings.reduceIvc)){
+			Set<String> ivc = IvcUtil.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
+			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
+			if(settings.allIvcs){
+				for(Tuple<Set<String>, List<String>> item : vm.allIvcs){ 
+					allIvcs.add(new Tuple<Set<String>, List<String>>(
+							IvcUtil.trimNode(IvcUtil.findRightSide(item.firstElement(),
+									settings.allAssigned, analysisSpec.node.equations)), item.secondElement()));
+				}
+			}
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs);
+		}else{
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs);
+		}
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {

@@ -6,9 +6,10 @@ import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
 import jkind.engines.messages.InvariantMessage; 
-import static java.util.stream.Collectors.toList; 
-import java.util.ArrayList; 
-import java.util.List;  
+import static java.util.stream.Collectors.toList;  
+import java.util.List;
+import java.util.Set;
+
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage; 
 import jkind.lustre.Node;  
@@ -96,8 +97,8 @@ public class MiniJKind extends Engine {
 		return status;
 	}
 	
-	public List<String> getPropertyIvc() {
-		return new ArrayList<String> (validMessage.ivc);
+	public Set<String> getPropertyIvc() {
+		return validMessage.ivc;
 	}
 	
 	public List<String> getPropertyInvariants() {

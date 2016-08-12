@@ -2,7 +2,8 @@ package jkind.engines.ivcs;
 import static java.util.stream.Collectors.toList; 
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet; 
 import java.util.List; 
 import java.util.Set; 
@@ -51,8 +52,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	private int TIMEOUT; 
 	
 	// these variables are only used for the experiments
-	private double runtime; 
-	static protected double UC_TIME;
+	private double runtime;  
 	//--------------------------------------------------
 	
 
@@ -99,14 +99,13 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
-		TIMEOUT = 60 + (int)(vm.proofTime * 7);
+		TIMEOUT = 60 + (int)(vm.proofTime * 10);
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
-		List<String> resultOfIvcFinder = new ArrayList<>();
-		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList()); 
-		Set<String> initialIvc = IvcUtil.trimNode(vm.ivc);
-		allIvcs.add(new Tuple<Set<String>, List<String>>(initialIvc, inv));
+		Set<String> resultOfIvcFinder = new HashSet<>();
+		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
+		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 		  
@@ -128,14 +127,14 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		
 		//--------- for the experiments --------------
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-		recordRuntime(vm.proofTime);
+		recordRuntime();
 		//--------------------------------------------
 		
-		processMustElements(mustChckList, initialIvc, property.toString());
+		processMustElements(mustChckList, vm.ivc, property.toString());
 		sendValid(property.toString(), vm);
 	}
 
-	private boolean ivcFinder(List<Symbol> seed, List<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
+	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		js.timeout = TIMEOUT;
@@ -179,24 +178,25 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			 
 			
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){  
-				if (curr.firstElement().containsAll(newIvc)){
+				Set<String> trimmed = IvcUtil.trimNode(curr.firstElement());
+				if (trimmed.containsAll(newIvc)){
 					temp.add(curr);  
 				}
 				// the else part can only happen 
 				//         while processing mustChckList after finding all IVC sets
 				//         if we have different instances of a node in the Lustre file
-				else if (newIvc.containsAll(curr.firstElement())){
+				else if (newIvc.containsAll(trimmed)){
 					return true;
 				} 
 			}
 			
 			if(temp.isEmpty()){ 
 				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
-				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
 			}
 			else{
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
 			}
  
 			return true;
@@ -227,7 +227,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 	}
 
-	private boolean retryVerification(Specification newSpec, String prop, JKindSettings js, List<String> resultOfIvcFinder,
+	private boolean retryVerification(Specification newSpec, String prop, JKindSettings js, Set<String> resultOfIvcFinder,
 			Set<String> mustChckList, List<String> deactivate) {
 		if (settings.scratch){
 			comment("Result was UNKNOWN; Resend the request with pdrMax = 0 ...");
@@ -247,21 +247,22 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){  
-				if (curr.firstElement().containsAll(newIvc)){
+				Set<String> trimmed = IvcUtil.trimNode(curr.firstElement());
+				if (trimmed.containsAll(newIvc)){
 					temp.add(curr);  
 				} 
-				else if (newIvc.containsAll(curr.firstElement())){
+				else if (newIvc.containsAll(trimmed)){
 					return true;
 				} 
 			}
 			
 			if(temp.isEmpty()){ 
 				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
-				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
 			}
 			else{
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(newIvc, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
 			}
  
 			return true;
@@ -292,7 +293,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		} 
 	}
 
-	private Sexp blockUp(List<Symbol> list) {
+	private Sexp blockUp(Collection<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
 		for(Symbol literal : list){
 			ret.add(new Cons("not", literal));
@@ -300,7 +301,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 	
-	private Sexp blockDown(List<Symbol> list) {
+	private Sexp blockDown(Collection<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
 		for(Symbol literal : list){
 			ret.add(literal);
@@ -375,12 +376,8 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		Itinerary itinerary = vm.getNextItinerary();
-		IvcUtil.findRightSide(mustElements, settings.allAssigned, spec.node.equations);
-		for(Tuple<Set<String>, List<String>> pair : allIvcs){
-			IvcUtil.findRightSide(pair.firstElement(), settings.allAssigned, spec.node.equations);
-		}
-		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, IvcUtil.trimNode(mustElements) , itinerary, allIvcs)); 
+		Itinerary itinerary = vm.getNextItinerary(); 
+		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
 	
 	private void processMustElements (Set<String> mustChckList, Set<String> initialIvc, String prop) { 
@@ -392,17 +389,16 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 		}
 		
-		Set<String> candidates = new HashSet<>(smallestSet);
-		Set<String> trimmedMustList = IvcUtil.trimNode(mustElements);
-		candidates.removeAll(trimmedMustList); 
-		MinimalIvcFinder minimalFinder = new MinimalIvcFinder(spec.node, settings.filename, prop);
+		Set<String> candidates = new HashSet<>(smallestSet); 
+		candidates.removeAll(mustElements); 
+		MinimalIvcFinder minimalFinder = new MinimalIvcFinder(IvcUtil.overApproximateWithIvc(spec.node, smallestSet, prop), settings.filename, prop);
 		
 		/*
 		 * for now, we don't really use this part. The output only matters for the experiments
 		 * if we're not running experiment the following line should be replaced with the next
 		 * */   
 		
-		Set<String> minimalIvc = minimalFinder.minimizeIvc(candidates, trimmedMustList, true, TIMEOUT);
+		Set<String> minimalIvc = minimalFinder.minimizeIvc(candidates, mustElements, true, TIMEOUT);
 		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false, TIMEOUT); 
 		//processIntersection(mustChckList, initialIvc, prop);
 	}
@@ -446,7 +442,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 					List<Symbol> seed = new ArrayList<>();
 					seed.addAll(ivcMap.valueList());
 					seed.remove(ivcMap.get(item)); 
-					ivcFinder(seed, new ArrayList<>(), mustChckList, prop);
+					ivcFinder(seed, new HashSet<>(), mustChckList, prop);
 				}
 				Output.println("Total #of IVC sets found: "+ allIvcs.size());
 				if(extra.size() > 0){
@@ -464,7 +460,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				List<Symbol> seed = new ArrayList<>();
 				seed.addAll(ivcMap.valueList());
 				seed.removeAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(mustChckList)));
-				List<String> resultOfIvcFinder = new ArrayList<>();
+				Set<String> resultOfIvcFinder = new HashSet<>();
 				if(mustChckList.size() > 0){
 					ivcFinder(seed, resultOfIvcFinder, mustChckList, prop); 				
 					if(mustChckList.size() == 0){
@@ -522,13 +518,11 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 	}
 	
 	// this method is used only in our experiments
-	private void recordRuntime(double proofTime) {
+	private void recordRuntime() {
 		String xmlFilename = settings.filename + "_runtimeAllIvcs.xml";
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
-			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-			out.println("  <ProofTime unit=\"sec\">" + proofTime + "</ProofTime>");
-			out.println("  <UcRuntime unit=\"sec\">" + UC_TIME + "</UcRuntime>");
+			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
 			out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntime>");
 			out.println("</Results>");
 			out.flush();
