@@ -128,7 +128,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		js.reduceIvc = true;
 		js.allAssigned = true;
 		js.pdrMax = 0;  
- Node test = unassignProp(prop);
+ Node test = IvcUtil.unassign(spec.node, prop, prop);
 		MiniJKind miniJkind = new MiniJKind (new Specification(test, settings.noSlicing), js);
 		try{
 			miniJkind.verify();   
@@ -378,56 +378,6 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	private void defineNewEquation(Expr rightSide, List<VarDecl> locals, List<Equation> equations, VarDecl i) {
 		locals.add(i); 
 		equations.add(new Equation(new IdExpr(i.id), rightSide));
-	}
- 
-	
-	private Node unassignProp(String property) {
-		List<VarDecl> inputs = new ArrayList<>(spec.node.inputs); 
-		inputs.add(new VarDecl(property, Util.getTypeMap(spec.node).get(property))); 
-		List<VarDecl> locals = removeVariable(spec.node.locals, property);
-		List<VarDecl> outputs = removeVariable(spec.node.outputs, property);
-		List<Equation> equations = new ArrayList<>(spec.node.equations);
-		List<Expr> assertions = new ArrayList<>(spec.node.assertions); 
-		Set<String> keepAsr = new HashSet<>();
-		
-		equations = IvcUtil.removeEquations(equations, message.vm.ivc); 
-		equations.remove(getEquation(property, equations));
-		Iterator<Expr> iter0 = assertions.iterator();
-		for(Equation eq : equations){
-			keepAsr.add(eq.expr.toString());
-		} 
-		while (iter0.hasNext()) {
-			Expr asr = iter0.next();
-			if(!(keepAsr.contains(asr))){
-				iter0.remove(); 
-			}else if (property.equals(asr.toString())) {
-				iter0.remove(); 
-				}
-		}  
-		locals = IvcUtil.keepVariables(locals, equations, inputs);
-		outputs = IvcUtil.keepVariables(outputs, equations, inputs);
-
-		NodeBuilder builder = new NodeBuilder(spec.node);
-		builder.clearInputs().addInputs(inputs);
-		builder.clearLocals().addLocals(locals);
-		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations);
-		builder.clearAssertions().addAssertions(assertions); 
-		builder.clearProperties().addProperty(property); 
-		builder.clearIvc();
-		return builder.build();
-	}
-	
-	private List<VarDecl> removeVariable(List<VarDecl> varDecls, String property) {
-		List<VarDecl> result = new ArrayList<>(varDecls);
-		Iterator<VarDecl> iter = result.iterator();
-		while (iter.hasNext()) {
-			if (property.equals(iter.next().id)) {
-				iter.remove(); 
-				break;
-			}
-		}
-		return result;
 	}
 	
 	private Counterexample renameSignals(Counterexample cex) {

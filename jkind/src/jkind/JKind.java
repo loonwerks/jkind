@@ -30,7 +30,7 @@ public class JKind {
 				
 				//to compare with the results of our first paper, comment the next line
 				// the next line is necessary for consistency_checker
-				//main = IvcUtil.normalizeAssertions(main);
+				main = IvcUtil.normalizeAssertions(main);
 				
 				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			}

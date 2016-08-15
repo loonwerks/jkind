@@ -152,7 +152,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
 		
-		Node nodeSpec = IvcUtil.unassign(spec.node, wantedElem, deactivate, property);  
+		Node nodeSpec = IvcUtil.unassign(spec.node, deactivate, property);  
 		Specification newSpec = new Specification(nodeSpec, js.noSlicing);   
 		if (settings.scratch){
 			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));

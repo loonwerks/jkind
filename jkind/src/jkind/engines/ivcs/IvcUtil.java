@@ -72,9 +72,10 @@ public class IvcUtil {
 				iter.remove();
 			}
 		}
-
+		List<String> ivcs = new ArrayList<>(node.ivc);
+		ivcs.remove(v);
 		NodeBuilder builder = new NodeBuilder(node);
-		builder.clearIvc();
+		builder.clearIvc().addIvcs(ivcs);
 		builder.clearInputs().addInputs(inputs);
 		builder.clearProperties();
 		builder.addProperty(property);
@@ -181,7 +182,7 @@ public class IvcUtil {
 		return result;
 	}
 	
-	protected static Node unassign(Node node, Set<String> wantedElem, List<String> deactivate, String property) {
+	protected static Node unassign(Node node, List<String> deactivate, String property) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
 		
 		for(String v : deactivate){
@@ -198,57 +199,24 @@ public class IvcUtil {
 				iter.remove(); 
 			}
 		} 
-     
+		List<String> ivcs = new ArrayList<>(node.ivc);
+		ivcs.removeAll(deactivate);
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearInputs().addInputs(inputs);
+		builder.clearIvc().addIvcs(ivcs);
 		builder.clearLocals().addLocals(locals);
 		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations); 
-		builder.clearIvc().addIvcs(new ArrayList<>(wantedElem));
+		builder.clearEquations().addEquations(equations);  
 		builder.clearProperties().addProperty(property);
 		return builder.build();
 	}
 	
 	public static Node overApproximateWithIvc(Node node, Set<String> ivc, String property) { 
-		List<Equation> equations = removeEquations(node.equations, ivc); 
-		List<VarDecl> inputs = new ArrayList<>(node.inputs); 
-		List<VarDecl> locals = keepVariables(node.locals, equations, inputs);
-		List<VarDecl> outputs = keepVariables(node.outputs, equations, inputs); 
-		
-		NodeBuilder builder = new NodeBuilder(node); 
-		builder.clearInputs().addInputs(inputs);
-		builder.clearProperties().addProperty(property);
-		builder.clearLocals().addLocals(locals);
-		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations); 
-		return builder.build();
+		List<String> deactivate = new ArrayList<>();
+		for(Equation eq : node.equations){
+			if(! ivc.contains(eq.lhs.get(0).id))
+				deactivate.add(eq.lhs.get(0).id);
+		}  
+		return unassign(node, deactivate, property);
 	}
-
-	protected static List<VarDecl> keepVariables(List<VarDecl> vars, List<Equation> equations, List<VarDecl> inputs) {
-		Set<VarDecl> ret = new HashSet<>();
-		List<String> left = new ArrayList<>(); 
-		
-		for(Equation eq : equations){
-			left.add(eq.lhs.get(0).id); 
-		}
-		for(VarDecl v : vars){
-			if(left.contains(v.id)){
-				ret.add(v);
-			}else{
-				inputs.add(v);
-			}
-		}
-		return new ArrayList<>(ret); 
-	}
-
-	protected static List<Equation> removeEquations(List<Equation> equations, Set<String> ivc) { 
-			List<Equation> ret = new ArrayList<>(); 
-			for(Equation eq : equations){
-				if(ivc.contains(eq.lhs.get(0).id)){
-					ret.add(eq);  
-				}
-			}
-
-			return ret; 
-	} 
 }
