@@ -12,7 +12,7 @@ public class IntIntervalGeneralizer {
 		this.generalizer = generalizer;
 	}
 
-	public Interval generalize(StreamIndex si, NumericInterval initial) {
+	public NumericInterval generalize(StreamIndex si, NumericInterval initial) {
 		NumericInterval curr = initial;
 		curr = generalizeIntIntervalLow(si, curr);
 		curr = generalizeIntIntervalHigh(si, curr);

@@ -26,7 +26,7 @@ import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class ModelGeneralizer {
-	private final Specification spec;
+	protected final Specification spec;
 	private final String property;
 	private final Model basisModel;
 	private final int k;
@@ -34,13 +34,13 @@ public class ModelGeneralizer {
 	private final Map<StreamIndex, Interval> cache = new HashMap<>();
 	private final Map<String, Expr> equations = new HashMap<>();
 
-	private final Queue<StreamIndex> toGeneralize = new ArrayDeque<>();
-	private final Map<StreamIndex, Interval> generalized = new HashMap<>();
+	protected final Queue<StreamIndex> toGeneralize = new ArrayDeque<>();
+	protected final Map<StreamIndex, Interval> generalized = new HashMap<>();
 
 	private final ReverseDependencyMap dependsOn;
 
-	private final IntIntervalGeneralizer intIntervalGeneralizer;
-	private final RealIntervalGeneralizer realIntervalGeneralizer;
+	protected final IntIntervalGeneralizer intIntervalGeneralizer;
+	protected final RealIntervalGeneralizer realIntervalGeneralizer;
 
 	public ModelGeneralizer(Specification spec, String property, Model model, int k) {
 		this.spec = spec;
@@ -130,11 +130,11 @@ public class ModelGeneralizer {
 		return model;
 	}
 
-	private Interval originalInterval(StreamIndex si) {
+	protected Interval originalInterval(StreamIndex si) {
 		return eval(si);
 	}
 
-	private boolean modelConsistent() {
+	protected boolean modelConsistent() {
 		BoolInterval interval = (BoolInterval) eval(new StreamIndex(property, k - 1));
 		if (!interval.isFalse()) {
 			return false;
