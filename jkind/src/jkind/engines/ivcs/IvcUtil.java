@@ -58,33 +58,6 @@ public class IvcUtil {
 		return new NodeBuilder(node).clearIvc().addIvcs(newIvc).build();
 	}	
 	
-	public static Node unassign(Node node, String v, String property) {
-		List<VarDecl> inputs = new ArrayList<>(node.inputs);
-		inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v)));
-		List<VarDecl> locals = removeVariable(node.locals, v);
-		List<VarDecl> outputs = removeVariable(node.outputs, v);
-
-		List<Equation> equations = new ArrayList<>(node.equations);
-		Iterator<Equation> iter = equations.iterator();
-		while (iter.hasNext()) {
-			Equation eq = iter.next();
-			if (eq.lhs.get(0).id.equals(v)) {
-				iter.remove();
-			}
-		}
-		List<String> ivcs = new ArrayList<>(node.ivc);
-		ivcs.remove(v);
-		NodeBuilder builder = new NodeBuilder(node);
-		builder.clearIvc().addIvcs(ivcs);
-		builder.clearInputs().addInputs(inputs);
-		builder.clearProperties();
-		builder.addProperty(property);
-		builder.clearLocals().addLocals(locals);
-		builder.clearOutputs().addOutputs(outputs);
-		builder.clearEquations().addEquations(equations);
-		return builder.build();
-	}
-	
 	public static List<VarDecl> removeVariables(List<VarDecl> varDecls, List<String> vars) {
 		List<VarDecl> result = new ArrayList<>(varDecls);
 		Iterator<VarDecl> iter = result.iterator();
@@ -141,21 +114,6 @@ public class IvcUtil {
 		return ivc;
 	}
 	
-	protected static VarDecl unTrim(String v, Node node) {
-		Set<VarDecl> args = new HashSet<>();
-		args.addAll(node.locals);
-		args.addAll(node.outputs);
-		for(VarDecl var : args){
-			if(trimVar(var.id).equals(v)){
-				return var;
-			}
-		}
-		return null;
-	}
-	protected static String trimVar(String v) {
-		return v.replaceAll("~[0-9]+", "");
-	}
-	
 	protected static Expr getInvariantByName(String name, List<Expr> invariants) { 
 		for (Expr invariant : invariants) {
 			if (invariant.toString().equals(name)) {
@@ -182,7 +140,13 @@ public class IvcUtil {
 		return result;
 	}
 	
-	protected static Node unassign(Node node, List<String> deactivate, String property) {
+	public static Node unassign(Node node, String v, String property) {
+		List<String> in = new ArrayList<>();
+		in.add(v);
+		return unassign(node, in, property);
+	}
+	
+	public static Node unassign(Node node, List<String> deactivate, String property) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
 		
 		for(String v : deactivate){
