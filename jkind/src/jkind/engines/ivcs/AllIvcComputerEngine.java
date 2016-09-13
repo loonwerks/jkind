@@ -93,6 +93,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			}
 			if (properties.remove(property)) {
 				computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
+				allIvcs.clear();
 			}
 			
 		}
@@ -198,10 +199,10 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				allIvcs.removeAll(temp);
 				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
 			}
- 
+			 
 			return true;
 		}
-		else{
+		else{	
 			resultOfIvcFinder.addAll(deactivate); 
 			if (settings.scratch){
 				comment("Property got violated. Adding back the elements");
