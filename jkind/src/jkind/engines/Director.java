@@ -108,7 +108,8 @@ public class Director extends MessageHandler {
 		addShutdownHook();
 		createAndStartEngines();
 
-		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()) {
+		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()
+				&& !exitRequested()) {
 			processMessages();
 			sleep(100);
 		}
@@ -120,6 +121,18 @@ public class Director extends MessageHandler {
 			exitCode = reportFailures();
 		}
 		return exitCode;
+	}
+
+	private boolean exitRequested() {
+		try {
+			while (System.in.available() > 0) {
+				if (System.in.read() == Util.END_OF_TEXT) {
+					return true;
+				}
+			}
+		} catch (IOException e) {
+		}
+		return false;
 	}
 
 	private void postProcessing() {

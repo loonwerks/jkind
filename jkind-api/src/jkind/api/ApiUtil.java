@@ -116,22 +116,31 @@ public class ApiUtil {
 		StringBuilder text = new StringBuilder();
 
 		while (true) {
-			if (monitor.isCanceled()) {
+			if (!process.isAlive()) {
 				return text.toString();
-			} else if (stream.available() > 0) {
+			}
+
+			checkMonitor(monitor, process);
+			while (stream.available() > 0) {
 				int c = stream.read();
 				if (c == -1) {
 					return text.toString();
 				}
 				text.append((char) c);
-			} else if (!process.isAlive()) {
-				return text.toString();
-			} else {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}
+				checkMonitor(monitor, process);
 			}
+
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private static void checkMonitor(IProgressMonitor monitor, Process process) throws IOException {
+		if (monitor.isCanceled()) {
+			process.getOutputStream().write(Util.END_OF_TEXT);
+			process.getOutputStream().flush();
 		}
 	}
 
