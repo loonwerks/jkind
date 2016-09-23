@@ -3,6 +3,7 @@ package jkind.interval;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -72,6 +73,25 @@ public class ModelGeneralizer {
 			generalized.put(si, interval);
 		}
 
+		return extractModel();
+	}
+
+	public Model generalize(List<StreamIndex> indicies) {
+		// This fills the initial toGeneralize queue as a side-effect
+		if (!modelConsistent()) {
+			throw new IllegalStateException("Internal JKind error during interval generalization");
+		}
+
+		// Generalize the list of user provided variables ..
+		for (StreamIndex si : indicies) {
+			if (basisModel.getVariableNames().contains(si.getEncoded().str)) {
+				Interval interval = generalizeInterval(si);
+				generalized.put(si, interval);
+			}
+		}
+
+		// Clean up the toGeneralize Queue ..
+		toGeneralize.clear();
 		return extractModel();
 	}
 
