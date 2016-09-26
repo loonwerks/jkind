@@ -107,6 +107,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		Set<String> resultOfIvcFinder = new HashSet<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
 		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
+		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 		  
@@ -116,7 +117,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		z3Solver.push();
 
 		while(checkMapSatisfiability(map, seed, mustChckList)){
-			resultOfIvcFinder.clear();
+			resultOfIvcFinder.clear(); 
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
 			}else{
@@ -130,7 +131,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
 		recordRuntime();
 		//--------------------------------------------
-		
+	
 		processMustElements(mustChckList, vm.ivc, property.toString());
 		sendValid(property.toString(), vm);
 	}
@@ -139,7 +140,6 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		js.timeout = TIMEOUT; 
-		
 		// optional-- could be commented later:
 		//js.scratch = true;
 		js.noSlicing = settings.noSlicing;
@@ -189,17 +189,15 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				else if (newIvc.containsAll(trimmed)){
 					return true;
 				} 
-			}
-			
+			} 
 			if(temp.isEmpty()){ 
 				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
-				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
-			else{
+			else{ 
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
-			}
-			 
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
+			} 
 			return true;
 		}
 		else{	
@@ -223,7 +221,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				}
 			 
 				mustChckList.addAll(deactivate);
-			}
+			} 
 			return false;
 		} 
 	}
@@ -259,11 +257,11 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			
 			if(temp.isEmpty()){ 
 				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
-				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
 			else{
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(resultOfIvcFinder, miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
  
 			return true;

@@ -254,33 +254,23 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 	}
 	
 	@Override
-	protected void handleMessage(BaseStepMessage bsm) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(BaseStepMessage bsm) { 
 	}
 
 	@Override
-	protected void handleMessage(InductiveCounterexampleMessage icm) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(InductiveCounterexampleMessage icm) { 
 	}
 
 	@Override
-	protected void handleMessage(InvalidMessage im) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(InvalidMessage im) { 
 	}
 
 	@Override
-	protected void handleMessage(InvariantMessage im) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(InvariantMessage im) { 
 	}
 
 	@Override
-	protected void handleMessage(UnknownMessage um) {
-		// TODO Auto-generated method stub
-		
+	protected void handleMessage(UnknownMessage um) { 
 	}
 
 	@Override

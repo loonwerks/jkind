@@ -3,6 +3,8 @@ package jkind.solvers.z3;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import jkind.lustre.NamedType;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
@@ -183,4 +185,5 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	public Result maxsatQuery(Sexp query) { 
 		return query(query);
 	}
+ 
 }

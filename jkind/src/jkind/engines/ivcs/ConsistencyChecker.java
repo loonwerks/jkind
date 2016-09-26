@@ -1,21 +1,12 @@
 package jkind.engines.ivcs;  
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashSet; 
 import java.util.List; 
-import java.util.Set;
-
-import org.omg.CORBA.VM_ABSTRACT;
-
-import jkind.JKind;
-import jkind.JKindException;
-import jkind.JKindSettings; 
-import jkind.SolverOption;
-import jkind.engines.Director;
-import jkind.engines.MiniJKind;
+import java.util.Set; 
+import jkind.JKind; 
+import jkind.JKindSettings;  
+import jkind.engines.Director; 
 import jkind.engines.SolverBasedEngine;
 import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
@@ -30,33 +21,29 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr; 
 import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.IdExpr; 
-import jkind.lustre.IntExpr;
+import jkind.lustre.Expr; 
 import jkind.lustre.NamedType;
-import jkind.lustre.Node; 
-import jkind.lustre.RealExpr;  
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
+import jkind.lustre.Node;  
+import jkind.lustre.Type; 
 import jkind.lustre.VarDecl;
-import jkind.lustre.builders.NodeBuilder;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.RealValue;
-import jkind.lustre.values.Value;  
-import jkind.lustre.visitors.TypeAwareAstMapVisitor;
+import jkind.lustre.builders.NodeBuilder; 
+import jkind.lustre.values.Value;   
 import jkind.results.Counterexample;
 import jkind.results.Signal; 
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
-import jkind.slicing.Dependency;
-import jkind.slicing.DependencySet;
-import jkind.slicing.DependencyVisitor; 
+import jkind.sexp.Symbol; 
+import jkind.slicing.ModelSlicer;
 import jkind.solvers.Result;
-import jkind.solvers.SatResult; 
-import jkind.solvers.z3.Z3Solver; 
-import jkind.translation.Lustre2Sexp; 
+import jkind.solvers.SatResult;
+import jkind.solvers.SimpleModel;
+import jkind.solvers.z3.Z3Solver;
+import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
+import jkind.util.CounterexampleExtractor;
+import jkind.util.ModelReconstructionEvaluator;
+import jkind.util.SexpUtil;
+import jkind.util.StreamIndex;
 import jkind.util.Util; 
 
  
@@ -64,8 +51,9 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 	public static final String NAME = "consistency-checker";
 	private Specification localSpec; 
 	private Z3Solver z3Solver;
-	private ConsistencyMessage message = null;
-	private static final int BMC_STEPS = 3; 
+	private ConsistencyMessage message = null; 
+	private static final String PROP_NAME = "__newPrpAddedByConsistencyChecker_by_JKind__";
+	private static final String EF = "__ef__CTL_operator__JKind"; 
 	
 	public ConsistencyChecker(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);  
@@ -112,15 +100,97 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 						IvcUtil.overApproximateWithIvc(mutant, 
 								         vm.ivc, mutant.properties.get(0)), settings.noSlicing); 
 		
-		solver.define(localSpec.getIvcTransitionRelation());
+		solver.define(localSpec.getTransitionRelation());
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 		solver.push();
+		
+		defineEF();
+		
+		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
+		if (result instanceof SatResult){
+			SimpleModel slicedModel = ModelSlicer.slice(((SatResult)result).getModel(),
+					localSpec.dependencyMap.get(PROP_NAME));
+			Counterexample cex = extractCounterexample(PROP_NAME, 1, slicedModel, true);
+			message.setConsistencyMsgWithCex(renameSignals(cex));
+		}else{
+			message.setConsistencyMsgWithUc(findRightSide(new ArrayList<>(message.vm.ivc)));
+		}
 		
 		solver.pop();
 		
 		sendValid();
 	}
+	
+	public Symbol type(Type type) {
+		return new Symbol(capitalize(Util.getName(type)));
+	}
+	
+	private String capitalize(String name) {
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
  
+	private void defineEF() {
+		z3Solver.declFun(EF, NamedType.BOOL, NamedType.BOOL);
+		z3Solver.assertSexp(getEfFirstObl());
+		z3Solver.assertSexp(getEfSecObl());
+		z3Solver.assertSexp(getNegOfProp());
+	}
+	
+	private Counterexample extractCounterexample(String property, int k, SimpleModel model,
+			boolean concrete) {
+		if (settings.inline) {
+			ModelReconstructionEvaluator.reconstruct(localSpec, model, property, k, concrete);
+		}
+		return CounterexampleExtractor.extract(localSpec, k, model);
+	}
+
+	private Sexp getNegOfProp() { 
+		Symbol var = new Symbol("a"); 
+		return new Cons ("not", 
+				new Cons("forall", new Cons(new Cons(var.str, type(NamedType.BOOL))), 
+						new Cons("=>", INIT, new Cons(EF, var))));
+	}
+	
+	private Sexp getEfFirstObl() {
+		Symbol var = new Symbol("a"); 
+		return new Cons("forall",  new Cons(new Cons(var.str, type(NamedType.BOOL))), 
+				new Cons("=>", var, new Cons(EF, var)));
+	}
+
+	private Sexp getEfSecObl() {
+		List<Sexp> vars = getVar(0);
+		List<Sexp> varsNext = getVar(1);
+		List<Sexp> noInit = new ArrayList<>(varsNext);
+		noInit.remove(0);
+		return new Cons("forall",  new Cons(vars), 
+				new Cons("=>",
+						new Cons("exists",  new Cons(noInit), 
+								new Cons("and", 
+										callTR()
+										, new Cons(EF, getTimeStep(PROP_NAME, 1))))
+						, new Cons(EF, getTimeStep(PROP_NAME, 0))));
+	}
+
+	private Symbol getTimeStep(String v, int i) { 
+			return new Symbol(new StreamIndex(v, i).getEncoded().str); 
+	}
+
+	private List<Sexp> getVar(int i) {
+		List <Sexp> args = new ArrayList<>();
+		for(VarDecl v : localSpec.getTransitionRelation().getInputs()){
+			args.add(new Cons(v.id, type(v.type)));
+		} 
+		return args;
+	}
+
+	private Sexp callTR() { 
+		List <Symbol> args = new ArrayList<>();
+		for(VarDecl v : localSpec.getTransitionRelation().getInputs()){
+			args.add(new Symbol(v.id));
+		} 
+		return new Cons(localSpec.getTransitionRelation().getName(), args);
+	}
+
 	private Node defineNewProperty() {
 		Expr prop = new BoolExpr(true); 
 		for(Equation eq : spec.node.equations){
@@ -128,10 +198,9 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 				prop = new BinaryExpr(prop, BinaryOp.AND, eq.lhs.get(0));
 			}
 		}   
-		String newVar = "__newPrpAddedByConsistencyChecker_by_JKind__";
 		List<VarDecl> locals = new ArrayList<>(spec.node.locals); 
 		List<Equation> equations = new ArrayList<>(spec.node.equations);
-		IvcUtil.defineNewEquation(prop, locals, equations, newVar);
+		IvcUtil.defineNewEquation(prop, locals, equations, PROP_NAME);
 		NodeBuilder builder = new NodeBuilder(spec.node); 
 		builder.clearLocals().addLocals(locals); 
 		builder.clearEquations().addEquations(equations);  
@@ -146,55 +215,17 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		return false;
 	}
 	
-	private void assertAssertions(VarDecl i, List<Expr> assertions, List<Equation> equations) {
-		Expr rs = new IdExpr("");
-		for (Expr asr : assertions){
-			rs = getEquation(asr.toString(), equations).expr; 
-			if(containsVar(rs, i)){  
-				solver.assertSexp(asr.accept(new Lustre2Sexp(1)));
+	private Set<String> findRightSide(Collection<String> propertyIvc) {
+		Set<String> ret = new HashSet<>(); 
+		for (String core : propertyIvc){
+			String rn = findRightSide(core);
+			if (rn != ""){
+				ret.add(rn);
 			}
 		}
+		return ret;
 	}
-
-	 
-  
-
-	private void assertEquations(List<Equation> equations) { 
-		for (Equation eq : equations) {
-			z3Solver.assertSexp(getSexpEquation(eq));
-		}
-	}
-	
-	private Sexp getSexpEquation(Equation eq) {
-		Lustre2Sexp visitor = new Lustre2Sexp(1); 
-		Sexp body = eq.expr.accept(visitor);
-		Sexp head = eq.lhs.get(0).accept(visitor); 
-		return new Cons("=", head, body);
-	}
-	
-	
-	 
-	
-	private boolean containsVar(Expr rs, VarDecl input) {
-		DependencySet ds = DependencyVisitor.get(rs);
-		for(Dependency d : ds){
-			if(d.name.equals(input.id)){
-					return true;
-			}
-		}
-		
-		return false;
-	}
-
-	
-	private Equation getEquation(String i, List<Equation> equations) {
-		for(Equation eq : equations){
-			if(eq.lhs.get(0).id.equals(i))
-				return eq;
-		}
-		return null;
-	}
-	
+	 	
 	private Counterexample renameSignals(Counterexample cex) {
 		Counterexample ret = new Counterexample(cex.getLength());
 		for (Signal<Value> signal : cex.getSignals()) { 
@@ -211,7 +242,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 					return ("assert "+ eq.expr.toString());
 				}
 			}
-		}else if(name.contains("__newPrpAddedByConsistencyChecker_by_JKind__")){
+		}else if(name.contains(PROP_NAME)){
 			return "";
 		}
 		return name;
