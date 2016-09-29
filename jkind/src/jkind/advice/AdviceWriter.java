@@ -11,7 +11,7 @@ import java.util.zip.GZIPOutputStream;
 
 import jkind.ExitCodes;
 import jkind.JKindException;
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.Expr;
 import jkind.lustre.VarDecl;
 
@@ -24,7 +24,7 @@ public class AdviceWriter {
 			OutputStream stream = new GZIPOutputStream(new FileOutputStream(outputFilename));
 			this.out = new BufferedWriter(new OutputStreamWriter(stream));
 		} catch (IOException e) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS,
+			StdErr.fatal(ExitCodes.INVALID_OPTIONS,
 					"unable to open advice file for writing: " + e.getMessage());
 		}
 	}

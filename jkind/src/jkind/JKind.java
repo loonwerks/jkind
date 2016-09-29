@@ -20,7 +20,7 @@ public class JKind {
 			StaticAnalyzer.check(program, settings.solver);
 			if (!LinearChecker.isLinear(program)) {
 				if (settings.pdrMax > 0) {
-					Output.warning("disabling PDR due to non-linearities");
+					StdErr.warning("disabling PDR due to non-linearities");
 					settings.pdrMax = 0;
 				}
 			}
@@ -44,7 +44,7 @@ public class JKind {
 
 		boolean hasMainNode = program.nodes.stream().anyMatch(n -> n.id.equals(main));
 		if (!hasMainNode) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "Unable to find main node '" + main + "'");
+			StdErr.fatal(ExitCodes.INVALID_OPTIONS, "Unable to find main node '" + main + "'");
 		}
 
 		return new ProgramBuilder(program).setMain(main).build();

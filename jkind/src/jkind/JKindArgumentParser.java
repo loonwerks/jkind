@@ -80,7 +80,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	@Override
 	protected void parseCommandLine(CommandLine line) {
 		if (line.hasOption(VERSION)) {
-			Output.println(name + " " + Main.VERSION);
+			StdErr.println(name + " " + Main.VERSION);
 			printDectectedSolvers();
 			System.exit(0);
 		}
@@ -187,8 +187,8 @@ public class JKindArgumentParser extends ArgumentParser {
 			}
 		}
 
-		Output.error("unknown solver: " + solver);
-		Output.println("Valid options: " + options);
+		StdErr.error("unknown solver: " + solver);
+		StdErr.println("Valid options: " + options);
 		System.exit(ExitCodes.INVALID_OPTIONS);
 		return null;
 	}
@@ -196,32 +196,32 @@ public class JKindArgumentParser extends ArgumentParser {
 	private void checkSettings() {
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
-				Output.warning(settings.solver
+				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}
 		}
 
 		if (settings.smoothCounterexamples) {
 			if (settings.solver != SolverOption.YICES && settings.solver != SolverOption.Z3) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
+				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
 						+ settings.solver);
 			}
 		}
 
 		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
 				&& settings.pdrMax == 0 && settings.readAdvice == null) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
+			StdErr.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
 		}
 
 		if (!settings.boundedModelChecking && settings.kInduction) {
-			Output.warning("k-induction requires bmc");
+			StdErr.warning("k-induction requires bmc");
 		}
 	}
 
 	private void printDectectedSolvers() {
 		String detected = SolverUtil.availableSolvers().stream().map(Object::toString)
 				.collect(joining(", "));
-		System.out.println("Detected solvers: " + detected);
+		StdErr.println("Detected solvers: " + detected);
 	}
 
 }

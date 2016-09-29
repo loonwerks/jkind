@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Program;
 import jkind.lustre.Type;
@@ -27,7 +27,7 @@ public class TypeDependencyChecker {
 
 		List<String> cycle = CycleFinder.findCycle(dependencies);
 		if (cycle != null) {
-			Output.error("cyclic types: " + cycle);
+			StdErr.error("cyclic types: " + cycle);
 			return false;
 		}
 		return true;
