@@ -35,7 +35,7 @@ import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
-import jkind.solvers.SimpleModel;
+import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.ModelReconstructionEvaluator;
@@ -257,7 +257,8 @@ public class Director extends MessageHandler {
 			System.out.println("  JKind " + Main.VERSION);
 			System.out.println("==========================================");
 			System.out.println();
-			System.out.println("There are " + remainingProperties.size() + " properties to be checked.");
+			System.out.println("There are " + remainingProperties.size()
+					+ " properties to be checked.");
 			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
 			System.out.println();
 		}
@@ -323,9 +324,11 @@ public class Director extends MessageHandler {
 
 		double runtime = getRuntime();
 		for (String invalidProp : newInvalid) {
-			SimpleModel slicedModel = ModelSlicer.slice(im.model,
-					analysisSpec.dependencyMap.get(invalidProp));
-			Counterexample cex = extractCounterexample(invalidProp, im.length, slicedModel, true);
+			Model model = im.model;
+			if (settings.slicing) {
+				model = ModelSlicer.slice(model, analysisSpec.dependencyMap.get(invalidProp));
+			}
+			Counterexample cex = extractCounterexample(invalidProp, im.length, model, true);
 			writer.writeInvalid(invalidProp, im.source, cex, Collections.emptyList(), runtime);
 		}
 	}
@@ -469,15 +472,17 @@ public class Director extends MessageHandler {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			SimpleModel slicedModel = ModelSlicer.slice(icm.model,
-					analysisSpec.dependencyMap.get(prop));
-			result.put(prop, extractCounterexample(prop, icm.length, slicedModel, false));
+			Model model = icm.model;
+			if (settings.slicing) {
+				model = ModelSlicer.slice(model, analysisSpec.dependencyMap.get(prop));
+			}
+			result.put(prop, extractCounterexample(prop, icm.length, model, false));
 		}
 
 		return result;
 	}
 
-	private Counterexample extractCounterexample(String property, int k, SimpleModel model,
+	private Counterexample extractCounterexample(String property, int k, Model model,
 			boolean concrete) {
 		if (settings.inlining) {
 			ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
