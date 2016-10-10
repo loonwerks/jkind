@@ -16,8 +16,12 @@ public class Specification {
 	private Relation ivcTransitionRelation;
 
 	public Specification(Node raw, boolean slicing) {
-		this.dependencyMap = new DependencyMap(raw, raw.properties);
-		this.node = slicing ? LustreSlicer.slice(raw, dependencyMap) : raw;
+		if (slicing) {
+			this.dependencyMap = new DependencyMap(raw, raw.properties);
+		} else {
+			this.dependencyMap = DependencyMap.full(raw);
+		}
+		this.node = LustreSlicer.slice(raw, dependencyMap);
 		this.typeMap = Util.getTypeMap(node);
 	}
 

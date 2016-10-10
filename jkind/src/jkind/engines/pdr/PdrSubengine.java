@@ -40,12 +40,12 @@ public class PdrSubengine extends Thread {
 
 	private volatile boolean cancel = false;
 
-	public PdrSubengine(String prop, Specification spec, boolean slicing, String scratchBase,
-			PdrEngine parent, Director director) {
+	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent,
+			Director director) {
 		super("pdr-" + prop);
 		this.prop = prop;
 		Node single = new NodeBuilder(spec.node).clearProperties().addProperty(prop).build();
-		this.node = slicing ? LustreSlicer.slice(single, spec.dependencyMap) : single;
+		this.node = LustreSlicer.slice(single, spec.dependencyMap);
 		this.parent = parent;
 		this.director = director;
 

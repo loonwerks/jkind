@@ -19,9 +19,11 @@ import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 
 public class ModelReconstructionEvaluator extends Evaluator {
-	public static void reconstruct(Specification spec, Model model, String property, int k,
+	public static Model reconstruct(Specification spec, Model model, String property, int k,
 			boolean concrete) {
-		new ModelReconstructionEvaluator(spec, model, concrete).reconstructValues(property, k);
+		ModelReconstructionEvaluator eval = new ModelReconstructionEvaluator(spec, model, concrete);
+		eval.reconstructValues(property, k);
+		return eval.model;
 	}
 
 	private final Specification spec;
@@ -66,10 +68,11 @@ public class ModelReconstructionEvaluator extends Evaluator {
 
 		Expr expr = equations.get(e.id);
 		if (expr == null) {
-			return getDefaultValue(si);
+			value = getDefaultValue(si);
+		} else {
+			value = eval(expr);
 		}
 
-		value = eval(expr);
 		model.putValue(si, value);
 		return value;
 	}
