@@ -242,14 +242,12 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	@Override
 	public Type visit(UnaryExpr e) {
 		switch (e.op) {
+		case PRE:
 		case NEGATIVE:
-			return NamedType.INT;
+			return e.expr.accept(this);
 
 		case NOT:
 			return NamedType.BOOL;
-
-		case PRE:
-			return e.expr.accept(this);
 
 		default:
 			throw new IllegalArgumentException();
