@@ -426,7 +426,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		String op = ctx.op.getText();
 		Expr left = expr(ctx.expr(0));
 		Expr right = expr(ctx.expr(1));
-		return new BinaryExpr(loc(ctx.op), left, BinaryOp.fromString(op), right);
+		return new BinaryExpr(loc(ctx), left, BinaryOp.fromString(op), right);
 	}
 
 	@Override
@@ -486,15 +486,16 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return visit(ctx.eID()) + "." + ctx.ID().getText();
 	}
 
-	private static Location loc(ParserRuleContext ctx) {
-		return loc(ctx.getStart());
-	}
-
-	private static Location loc(Token token) {
+	protected Location loc(ParserRuleContext ctx) {
+		Token token = ctx.getStart();
+		if (ctx instanceof BinaryExprContext) {
+			BinaryExprContext binExpr = (BinaryExprContext) ctx;
+			token = binExpr.op;
+		}
 		return new Location(token.getLine(), token.getCharPositionInLine());
 	}
 
-	private static void fatal(ParserRuleContext ctx, String text) {
+	private void fatal(ParserRuleContext ctx, String text) {
 		throw new LustreParseException(loc(ctx), text);
 	}
 }
