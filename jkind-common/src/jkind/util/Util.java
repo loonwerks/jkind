@@ -276,31 +276,36 @@ public class Util {
 
 	public static String secondsToTime(double seconds) {
 		String result;
-		
+
 		int minutes = (int) (seconds / 60);
 		seconds = seconds % 60;
 		result = new DecimalFormat("#.###").format(seconds) + "s";
 		if (minutes == 0) {
 			return result;
 		}
-		
+
 		int hours = minutes / 60;
 		minutes = minutes % 60;
 		result = minutes + "m " + result;
 		if (hours == 0) {
 			return result;
 		}
-		
+
 		int days = hours / 24;
 		hours = hours % 24;
 		result = hours + "h " + result;
 		if (days == 0) {
 			return result;
 		}
-		
+
 		return days + "d " + result;
 	}
 
 	/** Default name for realizability query property in XML file */
 	public static final String REALIZABLE = "%REALIZABLE";
+
+	/**
+	 * ASCII "End of Text" character, used by JKindApi to ask JKind to terminate
+	 */
+	public static final int END_OF_TEXT = 0x03;
 }

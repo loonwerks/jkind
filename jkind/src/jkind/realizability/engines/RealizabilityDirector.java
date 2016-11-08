@@ -10,7 +10,7 @@ import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JRealizabilitySettings;
 import jkind.Main;
-import jkind.Output;
+import jkind.StdErr;
 import jkind.realizability.engines.messages.BaseStepMessage;
 import jkind.realizability.engines.messages.ExtendCounterexampleMessage;
 import jkind.realizability.engines.messages.InconsistentMessage;
@@ -114,8 +114,8 @@ public class RealizabilityDirector {
 		for (RealizabilityEngine process : engines) {
 			if (process.getThrowable() != null) {
 				Throwable t = process.getThrowable();
-				Output.println(process.getName() + " process failed");
-				Output.printStackTrace(t);
+				StdErr.println(process.getName() + " process failed");
+				StdErr.printStackTrace(t);
 				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 			}
 		}
@@ -123,10 +123,10 @@ public class RealizabilityDirector {
 	}
 
 	private void printHeader() {
-		Output.println("==========================================");
-		Output.println("  JRealizability " + Main.VERSION);
-		Output.println("==========================================");
-		Output.println();
+		System.out.println("==========================================");
+		System.out.println("  JRealizability " + Main.VERSION);
+		System.out.println("==========================================");
+		System.out.println();
 	}
 
 	private void startThreads() {

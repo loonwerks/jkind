@@ -3,6 +3,7 @@ package jkind.interval;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -26,7 +27,7 @@ import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
 public class ModelGeneralizer {
-	private final Specification spec;
+	protected final Specification spec;
 	private final String property;
 	private final Model basisModel;
 	private final int k;
@@ -34,13 +35,13 @@ public class ModelGeneralizer {
 	private final Map<StreamIndex, Interval> cache = new HashMap<>();
 	private final Map<String, Expr> equations = new HashMap<>();
 
-	private final Queue<StreamIndex> toGeneralize = new ArrayDeque<>();
-	private final Map<StreamIndex, Interval> generalized = new HashMap<>();
+	protected final Queue<StreamIndex> toGeneralize = new ArrayDeque<>();
+	protected final Map<StreamIndex, Interval> generalized = new HashMap<>();
 
 	private final ReverseDependencyMap dependsOn;
 
-	private final IntIntervalGeneralizer intIntervalGeneralizer;
-	private final RealIntervalGeneralizer realIntervalGeneralizer;
+	protected final IntIntervalGeneralizer intIntervalGeneralizer;
+	protected final RealIntervalGeneralizer realIntervalGeneralizer;
 
 	public ModelGeneralizer(Specification spec, String property, Model model, int k) {
 		this.spec = spec;
@@ -72,6 +73,25 @@ public class ModelGeneralizer {
 			generalized.put(si, interval);
 		}
 
+		return extractModel();
+	}
+
+	public Model generalize(List<StreamIndex> indicies) {
+		// This fills the initial toGeneralize queue as a side-effect
+		if (!modelConsistent()) {
+			throw new IllegalStateException("Internal JKind error during interval generalization");
+		}
+
+		// Generalize the list of user provided variables ..
+		for (StreamIndex si : indicies) {
+			if (basisModel.getVariableNames().contains(si.getEncoded().str)) {
+				Interval interval = generalizeInterval(si);
+				generalized.put(si, interval);
+			}
+		}
+
+		// Clean up the toGeneralize Queue ..
+		toGeneralize.clear();
 		return extractModel();
 	}
 
@@ -130,11 +150,11 @@ public class ModelGeneralizer {
 		return model;
 	}
 
-	private Interval originalInterval(StreamIndex si) {
+	protected Interval originalInterval(StreamIndex si) {
 		return eval(si);
 	}
 
-	private boolean modelConsistent() {
+	protected boolean modelConsistent() {
 		BoolInterval interval = (BoolInterval) eval(new StreamIndex(property, k - 1));
 		if (!interval.isFalse()) {
 			return false;

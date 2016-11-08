@@ -45,7 +45,7 @@ public class MinimalIvcFinder {
 		for (String s : candidates) {  
 			Node candidate = IvcUtil.unassign(node, s, property);
 	
-			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.noSlicing), js);
+			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.slicing), js);
 			miniJkind.verify();
 			
 			//------------ only for the experiment -------------
@@ -101,7 +101,7 @@ public class MinimalIvcFinder {
 		
 		for (String s : candidates) {    
 			Node candidate = IvcUtil.unassign(node, s, property);
-			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.noSlicing), js);
+			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.slicing), js);
 			miniJkind.verify();
 			
 			//------------ only for the experiment -------------

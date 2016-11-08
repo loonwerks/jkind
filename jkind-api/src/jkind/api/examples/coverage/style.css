@@ -1,0 +1,32 @@
+body {
+  font-family: monospace;
+}
+
+.not-valid {
+  font-weight: bold;
+  font-size: 125%;
+  background-color: lightcoral;
+  margin: 5px;
+  padding: 5px;
+}
+
+.valid {
+  margin: 20px 5px 5px 5px;
+}
+
+.stats {
+  font-weight: bold;
+  font-size: 125%;
+  background-color: lightgreen;
+  padding: 5px;
+}
+
+.lustre {
+  background-color: linen;
+  padding: 5px;
+  white-space: pre-wrap;
+}
+
+.lustre .unused {
+  color: #B3B3B3;
+}

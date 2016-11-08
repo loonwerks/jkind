@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Set; 
 import jkind.ExitCodes; 
 import jkind.JKindException;
-import jkind.JKindSettings;
-import jkind.Output;
+import jkind.JKindSettings; 
+import jkind.StdErr;
 import jkind.engines.Director;
 import jkind.engines.MiniJKind;
 import jkind.engines.SolverBasedEngine;
@@ -87,7 +87,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			mayElements.clear();
 			mustElements.clear(); 
 			if (spec.node.ivc.isEmpty()) {
-				Output.warning(NAME + ": --%IVC option has no argument for property  "+ property.toString());
+				StdErr.warning(NAME + ": --%IVC option has no argument for property  "+ property.toString());
 				sendValid(property.toString(), vm);
 				return;
 			}
@@ -142,7 +142,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		js.timeout = TIMEOUT; 
 		// optional-- could be commented later:
 		//js.scratch = true;
-		js.noSlicing = settings.noSlicing;
+		js.slicing = settings.slicing;
 		js.allAssigned = settings.allAssigned;
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
@@ -154,7 +154,7 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 		deactivate.removeAll(wantedElem);
 		
 		Node nodeSpec = IvcUtil.unassign(spec.node, deactivate, property);  
-		Specification newSpec = new Specification(nodeSpec, js.noSlicing);   
+		Specification newSpec = new Specification(nodeSpec, js.slicing);   
 		if (settings.scratch){
 			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 		}
@@ -421,17 +421,17 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 			mustChckList.removeAll(temp);
 		}
 			if(!(intersect.contains(prop))){
-				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-				Output.println("WARNING: some inconsistent equations were found: ");
-				Output.println("property "+ prop + " is vacuously valid in some IVCs");
-				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+				StdErr.println("WARNING: some inconsistent equations were found: ");
+				StdErr.println("property "+ prop + " is vacuously valid in some IVCs");
+				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
 			}
 				
 			if(mustElements.size() < intersect.size()){
-				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-				Output.println("WARNING: IVC sets might not be truly minimal!");
-				Output.println("So far "+ allIvcs.size() + " IVC sets have been found.");
-				Output.println("Trying to minimize the sets...");
+				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+				StdErr.println("WARNING: IVC sets might not be truly minimal!");
+				StdErr.println("So far "+ allIvcs.size() + " IVC sets have been found.");
+				StdErr.println("Trying to minimize the sets...");
 				Set<String> diff = new HashSet<>();
 				diff.addAll(intersect);
 				diff.removeAll(mustElements);
@@ -443,17 +443,17 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 					seed.remove(ivcMap.get(item)); 
 					ivcFinder(seed, new HashSet<>(), mustChckList, prop);
 				}
-				Output.println("Total #of IVC sets found: "+ allIvcs.size());
+				StdErr.println("Total #of IVC sets found: "+ allIvcs.size());
 				if(extra.size() > 0){
 					minimizeSets(extra);
 				}
-				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
 			}
 			else if(mustElements.size() > intersect.size()){
-				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-				Output.println("WARNING: FAILED TO FIND ONE OR MORE IVCs!");
-				Output.println("So far "+ allIvcs.size() + " IVC sets have been found.");
-				Output.println("Processing must-check-list to try find more IVCs...");
+				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+				StdErr.println("WARNING: FAILED TO FIND ONE OR MORE IVCs!");
+				StdErr.println("So far "+ allIvcs.size() + " IVC sets have been found.");
+				StdErr.println("Processing must-check-list to try find more IVCs...");
 					
 				mustChckList.removeAll(mustElements); 
 				List<Symbol> seed = new ArrayList<>();
@@ -463,25 +463,25 @@ public class AllIvcComputerEngine extends SolverBasedEngine {
 				if(mustChckList.size() > 0){
 					ivcFinder(seed, resultOfIvcFinder, mustChckList, prop); 				
 					if(mustChckList.size() == 0){
-						Output.println("ALL the must-check-list has been processed."); 
+						StdErr.println("ALL the must-check-list has been processed."); 
 					}else{
-						Output.println("must-check-list has been processed."); 
+						StdErr.println("must-check-list has been processed."); 
 					}
 				}else{
-						Output.println("must-check-list is empty. terminating the process..."); 
+						StdErr.println("must-check-list is empty. terminating the process..."); 
 				}
 					
-				Output.println("Total #of IVC sets found: "+ allIvcs.size());
-				Output.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
+				StdErr.println("Total #of IVC sets found: "+ allIvcs.size());
+				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
 			}
 			 
 			if(mustChckList.size() > 0){
-				Output.println("WARNING: must-check-llist is not empty. there might be more IVCs...");
+				StdErr.println("WARNING: must-check-llist is not empty. there might be more IVCs...");
 			}
 	}
 
 	private void minimizeSets(List<String> extra) {
-		Output.println("WARNING: to reconstruct the proof with output invariants extra elements must be added back");
+		StdErr.println("WARNING: to reconstruct the proof with output invariants extra elements must be added back");
 		for(Tuple<Set<String>, List<String>> item : allIvcs){
 			item.firstElement().removeAll(extra);
 		}

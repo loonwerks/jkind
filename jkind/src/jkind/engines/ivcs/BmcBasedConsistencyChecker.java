@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.List; 
 import java.util.Set; 
 import jkind.JKind; 
-import jkind.JKindSettings;
-import jkind.Output;
+import jkind.JKindSettings; 
+import jkind.StdErr;
 import jkind.engines.Director; 
 import jkind.engines.SolverBasedEngine; 
 import jkind.engines.messages.BaseStepMessage;
@@ -75,7 +75,7 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 				// do a BMC check to find a false transition
 				Node main = overApproximateWithIvc(property, spec.node, vm.ivc, vm.invariants);
 				main = setIvcArgs(main, getAllAssigned(main));   
-				localSpec = new Specification(main, settings.noSlicing);  
+				localSpec = new Specification(main, settings.slicing);  
 				ivcMap = Lustre2Sexp.createIvcMap(localSpec.node.ivc); 
 				
 				for (Symbol e : ivcMap.values()) {
@@ -101,16 +101,16 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			if (result instanceof UnsatResult){
 				List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 				if(! noDirector){
-					Output.println("---------------------------------------------------------------------------------");
-					Output.println("  Model is inconsistent for property " + property + ", at K = " + k  + " with:"); 
+					StdErr.println("---------------------------------------------------------------------------------");
+					StdErr.println("  Model is inconsistent for property " + property + ", at K = " + k  + " with:"); 
 				}
 				for(Symbol s : unsatCore){
 					String rs = findRightSide(ivcMap.getKey(s));
-					if (! noDirector){Output.println("    - "+ rs);}
+					if (! noDirector){StdErr.println("    - "+ rs);}
 					ret.add(rs);
 				}
 				if (! noDirector){
-				Output.println("---------------------------------------------------------------------------------");
+					StdErr.println("---------------------------------------------------------------------------------");
 					sendValid(property, vm);
 				}
 				return ret;
@@ -118,10 +118,10 @@ public class BmcBasedConsistencyChecker  extends SolverBasedEngine {
 			assertProperty(property, k);
 		}
 		if(! noDirector){
-			Output.println("---------------------------------------------------------------------------");
-			Output.println("  No inconsistency was found for \n"+
+			StdErr.println("---------------------------------------------------------------------------");
+			StdErr.println("  No inconsistency was found for \n"+
 						  "        property " + property + " to the depth of K = " +  settings.n);
-			Output.println("----------------------------------------------------------------------------");
+			StdErr.println("----------------------------------------------------------------------------");
 			sendValid(property, vm);
 		}
 		return null;

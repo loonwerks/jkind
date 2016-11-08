@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.Constant;
 import jkind.lustre.NamedType;
 import jkind.lustre.Program;
@@ -57,7 +57,7 @@ public class TypesDefined extends AstIterVisitor {
 			@Override
 			public Void visit(NamedType e) {
 				if (!e.isBuiltin() && !defined.contains(e.name)) {
-					Output.error(e.location, "unknown type " + e.name);
+					StdErr.error(e.location, "unknown type " + e.name);
 					passed = false;
 				}
 				return null;

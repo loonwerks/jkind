@@ -20,14 +20,13 @@ import jkind.lustre.parsing.LustreParseException;
 import jkind.lustre.parsing.LustreParser;
 import jkind.lustre.parsing.LustreParser.ProgramContext;
 import jkind.lustre.parsing.LustreToAstVisitor;
-import jkind.lustre.parsing.StdoutErrorListener;
+import jkind.lustre.parsing.StdErrErrorListener;
 import jkind.lustre.parsing.ValidIdChecker;
 import jkind.util.Util;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
 
 /**
  * This class serves as a single entry point for all JKind-based command line
@@ -44,8 +43,8 @@ public class Main {
 	public static void main(String[] args) {
 		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -jrealizability, -benchmark";
 		if (args.length == 0) {
-			Output.println("JKind Suite " + VERSION);
-			Output.println(availableEntryPoints);
+			StdErr.println("JKind Suite " + VERSION);
+			StdErr.println(availableEntryPoints);
 			System.exit(0);
 		}
 
@@ -78,22 +77,22 @@ public class Main {
 			break;
 
 		default:
-			Output.error("unknown entry point: " + entryPoint);
-			Output.println(availableEntryPoints);
+			StdErr.error("unknown entry point: " + entryPoint);
+			StdErr.println(availableEntryPoints);
 			System.exit(ExitCodes.UNKNOWN_ENTRY_POINT);
 		}
 	}
 
-	public static Program parseLustre(String filename) throws IOException, RecognitionException {
+	public static Program parseLustre(String filename) throws Exception {
 		File file = new File(filename);
 		if (!file.exists() || !file.isFile()) {
-			Output.fatal(ExitCodes.FILE_NOT_FOUND, "cannot find file " + filename);
+			StdErr.fatal(ExitCodes.FILE_NOT_FOUND, "cannot find file " + filename);
 		}
 		if (!file.canRead()) {
-			Output.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
+			StdErr.fatal(ExitCodes.FILE_NOT_READABLE, "cannot read file " + filename);
 		}
 
-		Output.setLocationReference(readAllLines(filename));
+		StdErr.setLocationReference(readAllLines(filename));
 		return parseLustre(new ANTLRFileStream(filename));
 	}
 
@@ -106,12 +105,12 @@ public class Main {
 		}
 	}
 
-	public static Program parseLustre(CharStream stream) throws RecognitionException {
+	public static Program parseLustre(CharStream stream) throws Exception {
 		LustreLexer lexer = new LustreLexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		LustreParser parser = new LustreParser(tokens);
 		parser.removeErrorListeners();
-		parser.addErrorListener(new StdoutErrorListener());
+		parser.addErrorListener(new StdErrErrorListener());
 		ProgramContext program = parser.program();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
@@ -121,7 +120,7 @@ public class Main {
 		try {
 			return flattenOrCheck(new LustreToAstVisitor().program(program));
 		} catch (LustreParseException e) {
-			Output.fatal(ExitCodes.PARSE_ERROR, e.getLocation(), e.getMessage());
+			StdErr.fatal(ExitCodes.PARSE_ERROR, e.getLocation(), e.getMessage());
 			throw e;
 		}
 	}

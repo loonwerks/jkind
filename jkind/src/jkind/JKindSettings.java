@@ -9,7 +9,8 @@ public class JKindSettings extends Settings {
 	public boolean excel = false;
 	public boolean xml = false;
 	public boolean xmlToStdout = false;
-	
+
+	public String main = null;
 	public boolean boundedModelChecking = true;
 	public boolean kInduction = true;
 	public boolean invariantGeneration = true;
@@ -19,14 +20,12 @@ public class JKindSettings extends Settings {
 	public boolean allIvcs = false;
 	public boolean smoothCounterexamples = false;
     public boolean intervalGeneralization = false;
-    public boolean inline = true;
-	
+    public boolean inlining = true;
+	public boolean slicing = true;
 	public SolverOption solver = SolverOption.SMTINTERPOL;
 	public boolean scratch = false;
-
 	public String writeAdvice = null;
 	public String readAdvice = null; 
-	public boolean noSlicing = false;
 	public boolean allAssigned = false;
 	public boolean bmcConsistencyCheck =  false;
 	public boolean consistencyCheck =  false;

@@ -1,6 +1,6 @@
 package jkind.analysis;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.Program;
 import jkind.lustre.visitors.AstIterVisitor;
@@ -20,12 +20,12 @@ public class MathSatFeatureChecker extends AstIterVisitor {
 
 		switch (e.op) {
 		case INT_DIVIDE:
-			Output.error(e.location, "integer division not supported in MathSAT");
+			StdErr.error(e.location, "integer division not supported in MathSAT");
 			passed = false;
 			break;
 
 		case MODULUS:
-			Output.error(e.location, "modulus not supported in MathSAT");
+			StdErr.error(e.location, "modulus not supported in MathSAT");
 			passed = false;
 			break;
 

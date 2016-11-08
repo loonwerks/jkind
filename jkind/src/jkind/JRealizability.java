@@ -47,7 +47,7 @@ public class JRealizability {
 
 	private static boolean realizablitityQueryExists(Node main) {
 		if (main.realizabilityInputs == null) {
-			Output.error("main node '" + main.id + "' must have realizability query");
+			StdErr.error("main node '" + main.id + "' must have realizability query");
 			return false;
 		} else {
 			return true;
@@ -59,7 +59,7 @@ public class JRealizability {
 		List<String> inputs = Util.getIds(main.inputs);
 		for (String ri : main.realizabilityInputs) {
 			if (!inputs.contains(ri)) {
-				Output.error("in node '" + main.id + "' realizability input '" + ri
+				StdErr.error("in node '" + main.id + "' realizability input '" + ri
 						+ "' must be a node input");
 				pass = false;
 			}
@@ -72,7 +72,7 @@ public class JRealizability {
 		Set<String> seen = new HashSet<>();
 		for (String ri : main.realizabilityInputs) {
 			if (!seen.add(ri)) {
-				Output.error("in node '" + main.id + "' realizability input '" + ri
+				StdErr.error("in node '" + main.id + "' realizability input '" + ri
 						+ "' listed multiple times");
 				unique = false;
 			}

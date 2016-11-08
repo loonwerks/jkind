@@ -34,6 +34,7 @@ import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol; 
 import jkind.slicing.ModelSlicer;
+import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.SimpleModel;
@@ -98,7 +99,7 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		Node mutant = defineNewProperty();
 		localSpec = new Specification(
 						IvcUtil.overApproximateWithIvc(mutant, 
-								         vm.ivc, mutant.properties.get(0)), settings.noSlicing); 
+								         vm.ivc, mutant.properties.get(0)), settings.slicing); 
 		
 		solver.define(localSpec.getTransitionRelation());
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
@@ -136,11 +137,9 @@ public class ConsistencyChecker  extends SolverBasedEngine {
 		z3Solver.assertSexp(getNegOfProp());
 	}
 	
-	private Counterexample extractCounterexample(String property, int k, SimpleModel model,
+	private Counterexample extractCounterexample(String property, int k, Model model,
 			boolean concrete) {
-		if (settings.inline) {
-			ModelReconstructionEvaluator.reconstruct(localSpec, model, property, k, concrete);
-		}
+		model = ModelReconstructionEvaluator.reconstruct(localSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(localSpec, k, model);
 	}
 

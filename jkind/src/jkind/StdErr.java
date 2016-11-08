@@ -6,11 +6,11 @@ import jkind.analysis.Level;
 import jkind.lustre.Location;
 import jkind.util.Util;
 
-public class Output {
+public class StdErr {
 	private static List<String> locationReference;
 
 	public static void setLocationReference(List<String> locationReference) {
-		Output.locationReference = locationReference;
+		StdErr.locationReference = locationReference;
 	}
 
 	public static void warning(String text) {
@@ -57,24 +57,16 @@ public class Output {
 	public static void showLocation(Location loc) {
 		if (1 <= loc.line && loc.line <= locationReference.size()) {
 			String line = locationReference.get(loc.line - 1);
-			Output.println(line);
-			Output.println(Util.spaces(loc.charPositionInLine) + "^");
+			StdErr.println(line);
+			StdErr.println(Util.spaces(loc.charPositionInLine) + "^");
 		}
 	}
 
 	public static void println(String text) {
-		System.out.println(text);
-	}
-
-	public static void println() {
-		System.out.println();
-	}
-
-	public static void printf(String format, Object... args) {
-		System.out.printf(format, args);
+		System.err.println(text);
 	}
 
 	public static void printStackTrace(Throwable t) {
-		t.printStackTrace(System.out);
+		t.printStackTrace(System.err);
 	}
 }
