@@ -4,26 +4,27 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import java.util.regex.Pattern; 
 import jkind.api.results.JKindResult;
-import jkind.api.results.PropertyResult;
+import jkind.api.results.PropertyResult; 
 import jkind.lustre.Program;
-import jkind.results.ValidProperty;
+import jkind.results.ValidProperty; 
 
 public class CoverageReporter {
 	public static void writeHtml(String filename, Program program,
-			Map<String, ELocation> locationMap, JKindResult result) throws Exception {
+			Map<String, ELocation> locationMap, JKindResult result, double runtime) throws Exception {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename + ".html"))) {
 			writer.write("<html>\n");
 			writeHeader(writer);
@@ -48,6 +49,11 @@ public class CoverageReporter {
 					int covered = total - locations.size();
 					String stats = String.format("%s: %.1f%% (%d of %d covered)", vp.getName(),
 							100.0 * covered / total, covered, total);
+					
+					//--------- just for the experiments ---------------------------
+					writeToXml(filename, 100.0 * covered / total, runtime);
+					//--------------------------------------------------------------
+					
 					writer.write("<div class='valid'>\n");
 					writer.write("<div class='stats'>" + stats + "</div>\n");
 					displayLocations(writer, filename, locations);
@@ -128,4 +134,21 @@ public class CoverageReporter {
 	private static boolean contains(List<ELocation> locations, int i) {
 		return locations.stream().anyMatch(loc -> loc.start <= i && i <= loc.stop);
 	}
+//-------------------------------- just for the experiments ----------------------
+	private static void writeToXml(String filename, double d, double rt) {
+		String xmlFilename = filename + "_jcv.xml";
+		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+			out.println("<?xml version=\"1.0\"?>");
+			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+			out.println("   <Score>" + d + "</Score>");  
+			out.println("   <Runtime unit=\"sec\">" + rt + "</Runtime>");
+			out.println("</Results>");
+			out.flush();
+			out.close();
+		} catch (Throwable t) {
+			t.printStackTrace(); 
+		}
+		
+	}
+//-----------------------------------------------------------------------------------------	
 }

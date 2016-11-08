@@ -23,7 +23,7 @@ public class Specification {
 		}
 		this.node = LustreSlicer.slice(raw, dependencyMap);
 		this.typeMap = Util.getTypeMap(node);
-}
+	}
 
 	public Specification(Node raw) {
 		this(raw, true);

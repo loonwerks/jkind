@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 public class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
-			System.err.println("Usage: jcoverage <filename.lus>");
+			System.err.println("Usage of jcoverage : <filename.lus>");
 			System.exit(-1);
 		}
 		String filename = args[0];
@@ -32,8 +32,22 @@ public class Main {
 		program = SubrangeFixVisitor.fix(program);
 		
 		Util.writeToFile(program.toString(), new File(filename + ".coverage"));
+		
+		//-------------- for the experiments -------------------------
+		double runtime = System.currentTimeMillis(); 
+		//----------------------------------------------------------
+		
+		
 		JKindResult result = runJKind(program);
-		CoverageReporter.writeHtml(filename, program, visitor.getLocationMap(), result);
+		
+		
+		//------------ for the experiments -------------------------
+		runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
+		// ---------------------------------------------------------
+		
+		
+		
+		CoverageReporter.writeHtml(filename, program, visitor.getLocationMap(), result, runtime);
 	}
 
 	private static Program parseLustre(CharStream stream) throws Exception {
