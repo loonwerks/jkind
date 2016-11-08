@@ -1,6 +1,6 @@
 package jkind.lustre.parsing;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Location;
@@ -40,7 +40,7 @@ public class ValidIdChecker extends AstIterVisitor {
 
 	private void check(Location location, String id) {
 		if (id.contains("~") || id.contains("[") || id.contains("]") || id.contains(".")) {
-			Output.error(location, "Invalid id: " + id);
+			StdErr.error(location, "Invalid id: " + id);
 			passed  = false;
 		}
 	}

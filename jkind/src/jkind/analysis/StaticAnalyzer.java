@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.ExitCodes;
-import jkind.Output;
+import jkind.StdErr;
 import jkind.SolverOption;
 import jkind.analysis.evaluation.DivisionChecker;
 import jkind.lustre.Constant;
@@ -80,7 +80,7 @@ public class StaticAnalyzer {
 
 	private static boolean hasMainNode(Program program) {
 		if (program.getMainNode() == null) {
-			Output.error("no main node");
+			StdErr.error("no main node");
 			return false;
 		}
 		return true;
@@ -91,7 +91,7 @@ public class StaticAnalyzer {
 		Set<String> seen = new HashSet<>();
 		for (TypeDef def : program.types) {
 			if (!seen.add(def.id)) {
-				Output.error(def.location, "type " + def.id + " already defined");
+				StdErr.error(def.location, "type " + def.id + " already defined");
 				unique = false;
 			}
 		}
@@ -105,7 +105,7 @@ public class StaticAnalyzer {
 		for (EnumType et : Util.getEnumTypes(program.types)) {
 			for (String value : et.values) {
 				if (!seen.add(value)) {
-					Output.error(et.location, value + " defined multiple times");
+					StdErr.error(et.location, value + " defined multiple times");
 					unique = false;
 				}
 			}
@@ -113,7 +113,7 @@ public class StaticAnalyzer {
 
 		for (Constant c : program.constants) {
 			if (!seen.add(c.id)) {
-				Output.error(c.location, c.id + " defined multiple times");
+				StdErr.error(c.location, c.id + " defined multiple times");
 				unique = false;
 			}
 		}
@@ -121,7 +121,7 @@ public class StaticAnalyzer {
 		for (Node node : program.nodes) {
 			for (VarDecl vd : Util.getVarDecls(node)) {
 				if (seen.contains(vd.id)) {
-					Output.error(vd.location, vd.id + " already defined globally");
+					StdErr.error(vd.location, vd.id + " already defined globally");
 					unique = false;
 				}
 			}
@@ -135,7 +135,7 @@ public class StaticAnalyzer {
 		Set<String> seen = new HashSet<>();
 		for (Node node : program.nodes) {
 			if (!seen.add(node.id)) {
-				Output.error(node.location, "node " + node.id + " already defined");
+				StdErr.error(node.location, "node " + node.id + " already defined");
 				unique = false;
 			}
 		}
@@ -155,7 +155,7 @@ public class StaticAnalyzer {
 		Set<String> seen = new HashSet<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			if (!seen.add(decl.id)) {
-				Output.error(decl.location, "variable " + decl.id + " already declared");
+				StdErr.error(decl.location, "variable " + decl.id + " already declared");
 				unique = false;
 			}
 		}
@@ -167,7 +167,7 @@ public class StaticAnalyzer {
 		ConstantAnalyzer constantAnalyzer = new ConstantAnalyzer(program);
 		for (Constant c : program.constants) {
 			if (!c.expr.accept(constantAnalyzer)) {
-				Output.error(c.location, "constant " + c.id + " does not have a constant value");
+				StdErr.error(c.location, "constant " + c.id + " does not have a constant value");
 				constant = false;
 			}
 		}
@@ -195,18 +195,18 @@ public class StaticAnalyzer {
 					toAssign.remove(idExpr.id);
 					assigned.add(idExpr.id);
 				} else if (assigned.contains(idExpr.id)) {
-					Output.error(idExpr.location, "variable '" + idExpr.id
+					StdErr.error(idExpr.location, "variable '" + idExpr.id
 							+ "' cannot be reassigned");
 					sound = false;
 				} else {
-					Output.error(idExpr.location, "variable '" + idExpr.id + "' cannot be assigned");
+					StdErr.error(idExpr.location, "variable '" + idExpr.id + "' cannot be assigned");
 					sound = false;
 				}
 			}
 		}
 
 		if (!toAssign.isEmpty()) {
-			Output.error("in node '" + node.id + "' variables must be assigned: " + toAssign);
+			StdErr.error("in node '" + node.id + "' variables must be assigned: " + toAssign);
 			sound = false;
 		}
 
@@ -220,7 +220,7 @@ public class StaticAnalyzer {
 			Set<String> seen = new HashSet<>();
 			for (String prop : node.properties) {
 				if (!seen.add(prop)) {
-					Output.error("in node '" + node.id + "' property '" + prop
+					StdErr.error("in node '" + node.id + "' property '" + prop
 							+ "' declared multiple times");
 					unique = false;
 				}
@@ -237,7 +237,7 @@ public class StaticAnalyzer {
 			Set<String> variables = new HashSet<>(Util.getIds(Util.getVarDecls(node)));
 			for (String prop : node.properties) {
 				if (!variables.contains(prop)) {
-					Output.error("in node '" + node.id + "' property '" + prop + "' does not exist");
+					StdErr.error("in node '" + node.id + "' property '" + prop + "' does not exist");
 					exist = false;
 				}
 			}
@@ -253,7 +253,7 @@ public class StaticAnalyzer {
 			Set<String> booleans = getBooleans(node);
 			for (String prop : node.properties) {
 				if (!booleans.contains(prop)) {
-					Output.error("in node '" + node.id + "' property '" + prop
+					StdErr.error("in node '" + node.id + "' property '" + prop
 							+ "' does not have type bool");
 					allBoolean = false;
 				}
@@ -280,7 +280,7 @@ public class StaticAnalyzer {
 			}
 
 			for (Expr expr : node.assertions) {
-				Output.warning(expr.location, "assertion in subnode ignored");
+				StdErr.warning(expr.location, "assertion in subnode ignored");
 			}
 		}
 	}
@@ -308,7 +308,7 @@ public class StaticAnalyzer {
 				text.append(s + " -> ");
 			}
 			text.append(id);
-			Output.warning(text.toString());
+			StdErr.warning(text.toString());
 			return true;
 		}
 
@@ -336,7 +336,7 @@ public class StaticAnalyzer {
 			Set<String> seen = new HashSet<>();
 			for (String e : node.ivc) {
 				if (!seen.add(e)) {
-					Output.error("in node '" + node.id + "' IVC element '" + e
+					StdErr.error("in node '" + node.id + "' IVC element '" + e
 							+ "' declared multiple times");
 					unique = false;
 				}
@@ -356,7 +356,7 @@ public class StaticAnalyzer {
 
 			for (String e : node.ivc) {
 				if (!assigned.contains(e)) {
-					Output.error("in node '" + node.id + "' IVC element '" + e
+					StdErr.error("in node '" + node.id + "' IVC element '" + e
 							+ "' must be a local or output");
 					passed = false;
 				}

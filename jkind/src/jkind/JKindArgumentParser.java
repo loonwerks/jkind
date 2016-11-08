@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import jkind.engines.SolverUtil;
-import jkind.lustre.Node;
-import jkind.lustre.builders.NodeBuilder;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -16,13 +14,15 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
 	private static final String INTERVAL = "interval";
+	private static final String IVC = "ivc";
+	private static final String MAIN = "main";
 	private static final String N = "n";
 	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
+	private static final String NO_SLICING = "no_slicing";
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
-	private static final String IVC = "ivc";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -50,17 +50,19 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
+		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
+		options.addOption(NO_SLICING, false, "disable slicing");
 		options.addOption(PDR_MAX, true,
 				"maximum number of PDR parallel instances (0 to disable PDR)");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
-				"SMT solver (default: yices, alternatives: cvc4, z3, yices2, mathsat, smtinterpol)");
+				"SMT solver (default: smtinterpol, alternatives: z3, yices, yices2, cvc4, mathsat)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
@@ -78,7 +80,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	@Override
 	protected void parseCommandLine(CommandLine line) {
 		if (line.hasOption(VERSION)) {
-			Output.println(name + " " + Main.VERSION);
+			StdErr.println(name + " " + Main.VERSION);
 			printDectectedSolvers();
 			System.exit(0);
 		}
@@ -97,6 +99,14 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.inductiveCounterexamples = true;
 		}
 
+		if (line.hasOption(IVC)) {
+			settings.reduceIvc = true;
+		}
+
+		if (line.hasOption(MAIN)) {
+			settings.main = line.getOptionValue(MAIN);
+		}
+
 		if (line.hasOption(NO_BMC)) {
 			settings.boundedModelChecking = false;
 		}
@@ -108,7 +118,11 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(NO_K_INDUCTION)) {
 			settings.kInduction = false;
 		}
-
+		
+		if (line.hasOption(NO_SLICING)) {
+			settings.slicing = false;
+		}
+		
 		if (line.hasOption(N)) {
 			settings.n = parseNonnegativeInt(line.getOptionValue(N));
 		}
@@ -123,10 +137,6 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(READ_ADVICE)) {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
-		}
-
-		if (line.hasOption(IVC)) {
-			settings.reduceIvc = true;
 		}
 
 		if (line.hasOption(TIMEOUT)) {
@@ -148,7 +158,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			 * Reconstruction of inlined values does not yet support interval
 			 * generalization
 			 */
-			settings.inline = false;
+			settings.inlining = false;
 		}
 
 		if (line.hasOption(SOLVER)) {
@@ -177,8 +187,8 @@ public class JKindArgumentParser extends ArgumentParser {
 			}
 		}
 
-		Output.error("unknown solver: " + solver);
-		Output.println("Valid options: " + options);
+		StdErr.error("unknown solver: " + solver);
+		StdErr.println("Valid options: " + options);
 		System.exit(ExitCodes.INVALID_OPTIONS);
 		return null;
 	}
@@ -186,41 +196,32 @@ public class JKindArgumentParser extends ArgumentParser {
 	private void checkSettings() {
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
-				Output.warning(settings.solver
+				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}
 		}
 
 		if (settings.smoothCounterexamples) {
 			if (settings.solver != SolverOption.YICES && settings.solver != SolverOption.Z3) {
-				Output.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
+				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
 						+ settings.solver);
 			}
 		}
 
 		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
 				&& settings.pdrMax == 0 && settings.readAdvice == null) {
-			Output.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
+			StdErr.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
 		}
 
 		if (!settings.boundedModelChecking && settings.kInduction) {
-			Output.warning("k-induction requires bmc");
+			StdErr.warning("k-induction requires bmc");
 		}
 	}
 
 	private void printDectectedSolvers() {
-		String detected = Arrays.stream(SolverOption.values()).filter(this::solverIsAvailable)
-				.map(Object::toString).collect(joining(", "));
-		System.out.println("Detected solvers: " + detected);
+		String detected = SolverUtil.availableSolvers().stream().map(Object::toString)
+				.collect(joining(", "));
+		StdErr.println("Detected solvers: " + detected);
 	}
 
-	private boolean solverIsAvailable(SolverOption solverOption) {
-		try {
-			Node emptyNode = new NodeBuilder("empty").build();
-			SolverUtil.getSolver(solverOption, null, emptyNode);
-		} catch (JKindException e) {
-			return false;
-		}
-		return true;
-	}
 }

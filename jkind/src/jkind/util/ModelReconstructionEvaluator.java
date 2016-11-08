@@ -14,13 +14,16 @@ import jkind.lustre.UnaryOp;
 import jkind.lustre.values.Value;
 import jkind.slicing.Dependency;
 import jkind.slicing.DependencySet;
+import jkind.solvers.Model;
 import jkind.solvers.SimpleModel;
 import jkind.translation.Specification;
 
 public class ModelReconstructionEvaluator extends Evaluator {
-	public static void reconstruct(Specification spec, SimpleModel model, String property, int k,
+	public static Model reconstruct(Specification spec, Model model, String property, int k,
 			boolean concrete) {
-		new ModelReconstructionEvaluator(spec, model, concrete).reconstructValues(property, k);
+		ModelReconstructionEvaluator eval = new ModelReconstructionEvaluator(spec, model, concrete);
+		eval.reconstructValues(property, k);
+		return eval.model;
 	}
 
 	private final Specification spec;
@@ -31,9 +34,9 @@ public class ModelReconstructionEvaluator extends Evaluator {
 
 	private int step;
 
-	private ModelReconstructionEvaluator(Specification spec, SimpleModel model, boolean concrete) {
+	private ModelReconstructionEvaluator(Specification spec, Model model, boolean concrete) {
 		this.spec = spec;
-		this.model = model;
+		this.model = new SimpleModel(model);
 		this.concrete = concrete;
 
 		for (Equation eq : spec.node.equations) {
@@ -65,10 +68,11 @@ public class ModelReconstructionEvaluator extends Evaluator {
 
 		Expr expr = equations.get(e.id);
 		if (expr == null) {
-			return getDefaultValue(si);
+			value = getDefaultValue(si);
+		} else {
+			value = eval(expr);
 		}
 
-		value = eval(expr);
 		model.putValue(si, value);
 		return value;
 	}

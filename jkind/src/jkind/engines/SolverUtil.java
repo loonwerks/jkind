@@ -1,9 +1,15 @@
 package jkind.engines;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import jkind.JKindException;
 import jkind.SolverOption;
 import jkind.analysis.LinearChecker;
 import jkind.analysis.YicesArithOnlyCheck;
 import jkind.lustre.Node;
+import jkind.lustre.builders.NodeBuilder;
 import jkind.solvers.Solver;
 import jkind.solvers.cvc4.Cvc4Solver;
 import jkind.solvers.mathsat.MathSatSolver;
@@ -30,4 +36,20 @@ public class SolverUtil {
 		}
 		throw new IllegalArgumentException("Unknown solver: " + solverOption);
 	}
+
+	public static boolean solverIsAvailable(SolverOption solverOption) {
+		try {
+			Node emptyNode = new NodeBuilder("empty").build();
+			getSolver(solverOption, null, emptyNode);
+		} catch (JKindException e) {
+			return false;
+		}
+		return true;
+	}
+
+	public static List<SolverOption> availableSolvers() {
+		return Arrays.stream(SolverOption.values()).filter(x -> solverIsAvailable(x))
+				.collect(Collectors.toList());
+	}
+
 }
