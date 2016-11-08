@@ -207,9 +207,9 @@ public class JKindApi extends KindApi {
 	}
 
 	private String getOrFindJKindJar() {
-		if (jkindJar != null) {
-			return jkindJar;
-		} else {
+		if (jkindJar != null) { 
+			return jkindJar; 
+		} else { 
 			return ApiUtil.findJKindJar().toString();
 		}
 	}

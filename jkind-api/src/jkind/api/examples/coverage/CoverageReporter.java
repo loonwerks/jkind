@@ -51,7 +51,7 @@ public class CoverageReporter {
 							100.0 * covered / total, covered, total);
 					
 					//--------- just for the experiments ---------------------------
-					writeToXml(filename, 100.0 * covered / total, runtime);
+					writeToXml(filename, 100.0 * covered / total, covered, total, runtime);
 					//--------------------------------------------------------------
 					
 					writer.write("<div class='valid'>\n");
@@ -135,12 +135,14 @@ public class CoverageReporter {
 		return locations.stream().anyMatch(loc -> loc.start <= i && i <= loc.stop);
 	}
 //-------------------------------- just for the experiments ----------------------
-	private static void writeToXml(String filename, double d, double rt) {
+	private static void writeToXml(String filename, double d, int covered, int total, double rt) {
 		String xmlFilename = filename + "_jcv.xml";
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 			out.println("   <Score>" + d + "</Score>");  
+			out.println("   <Covered>" + covered + "</Covered>");  
+			out.println("   <Total>" + total + "</Total>");  
 			out.println("   <Runtime unit=\"sec\">" + rt + "</Runtime>");
 			out.println("</Results>");
 			out.flush();

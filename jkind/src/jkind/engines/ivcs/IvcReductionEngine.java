@@ -228,6 +228,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+		
 		//--------- for the experiments -------------- 
 		writeToXml(ivc, vm.proofTime);
 		
