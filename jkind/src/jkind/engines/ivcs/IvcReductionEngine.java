@@ -1,7 +1,13 @@
 package jkind.engines.ivcs;
 
+import java.io.File;
+import static java.nio.file.StandardCopyOption.*;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,7 +17,7 @@ import java.util.Set;
 
 import jkind.ExitCodes;
 import jkind.JKindException;
-import jkind.JKindSettings;
+import jkind.JKindSettings; 
 import jkind.engines.Director; 
 import jkind.engines.SolverBasedEngine;
 import jkind.engines.ivcs.messages.ConsistencyMessage;
@@ -160,7 +166,6 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		}
 		List<Symbol> unsatCore = ((UnsatResult) result).getUnsatCore();
 		solver.pop();
-		
 		sendValid(property.toString(), k, invariants, IvcUtil.getIvcNames(ivcMap, unsatCore), vm);
 	}
 
@@ -230,15 +235,14 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
 		
 		//--------- for the experiments -------------- 
-		writeToXml(ivc, vm.proofTime);
-		
+		writeToXml(ivc, vm.proofTime); 
 		//========== for the completeness paper ============
 		 new MinimalIvcFinder(spec.node, 
 				 settings.filename, valid).computeMust(ivc, 
 						 true, (int)(60.0 + ((runtime + vm.proofTime) * 10)));
 		//--------------------------------------------
-		
-		
+
+		 
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());
@@ -253,7 +257,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	}
 
 	private void writeToXml(Set<String> ivc, double proofTime) {
-		String xmlFilename = settings.filename + "_uc.xml";
+		String xmlFilename = settings.filename + "_uc.xml";  
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
@@ -269,9 +273,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 				out.println("   <TRIVC>" + s + "</TRIVC>");
 			}
 			out.println("</Results>");
-			out.flush();
-			out.close();
-		} catch (Throwable t) {
+			out.flush(); 
+			out.close(); 
+		} catch (Throwable t) { 
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}

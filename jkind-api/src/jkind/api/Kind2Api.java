@@ -32,9 +32,9 @@ public class Kind2Api extends KindApi {
 	 * @throws jkind.JKindException
 	 */
 	@Override
-	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
+	public void execute(String filename, Program program, JKindResult result, IProgressMonitor monitor) {
 		program = WorkaroundKind2ForwardReference.program(program);
-		execute(program.toString(), result, monitor);
+		execute(filename, program.toString(), result, monitor);
 	}
 	
 	/**

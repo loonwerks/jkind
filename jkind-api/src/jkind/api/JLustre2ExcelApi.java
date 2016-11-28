@@ -72,7 +72,7 @@ public class JLustre2ExcelApi {
 	public File execute(String program) {
 		File lustreFile = null;
 		try {
-			lustreFile = ApiUtil.writeLustreFile(program);
+			lustreFile = ApiUtil.writeLustreFile("null", program);
 			return execute(lustreFile);
 		} finally {
 			debug.deleteIfUnneeded(lustreFile);

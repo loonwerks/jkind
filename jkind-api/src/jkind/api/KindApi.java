@@ -55,8 +55,8 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
-		execute(program.toString(), result, monitor);
+	public void execute(String filename, Program program, JKindResult result, IProgressMonitor monitor) {
+		execute(filename, program.toString(), result, monitor);
 	}
 
 	/**
@@ -70,10 +70,10 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
+	public void execute(String filename, String program, JKindResult result, IProgressMonitor monitor) {
 		File lustreFile = null;
 		try {
-			lustreFile = ApiUtil.writeLustreFile(program);
+			lustreFile = ApiUtil.writeLustreFile(filename, program);
 			execute(lustreFile, result, monitor);
 		} finally {
 			debug.deleteIfUnneeded(lustreFile);

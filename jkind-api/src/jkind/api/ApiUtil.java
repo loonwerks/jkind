@@ -20,10 +20,11 @@ import jkind.util.Util;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class ApiUtil {
-	public static File writeLustreFile(String program) {
+	public static File writeLustreFile(String filename, String program) {
 		File file = null;
 		try {
-			file = File.createTempFile("jkind-api-", ".lus");
+			//file = File.createTempFile("jkind-api-", ".lus");
+			file = new File(filename+"C.lus");
 			Util.writeToFile(program, file);
 			return file;
 		} catch (IOException e) {

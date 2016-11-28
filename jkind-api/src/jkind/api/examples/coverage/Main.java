@@ -38,7 +38,7 @@ public class Main {
 		//----------------------------------------------------------
 		
 		
-		JKindResult result = runJKind(program);
+		JKindResult result = runJKind(filename, program);
 		
 		
 		//------------ for the experiments -------------------------
@@ -61,12 +61,13 @@ public class Main {
 		return new LustreToEAstVisitor().program(program);
 	}
 
-	private static JKindResult runJKind(Program program) {
+	private static JKindResult runJKind(String filename, Program program) {
 		JKindResult result = initialJKindResult(program);
 		JKindApi api = new JKindApi();
 		api.setIvcReduction();
 		api.setSolver(SolverOption.Z3);
-		api.execute(program, result, new NullProgressMonitor());
+		api.execute(filename, program, result, new NullProgressMonitor());
+
 		return result;
 	}
 

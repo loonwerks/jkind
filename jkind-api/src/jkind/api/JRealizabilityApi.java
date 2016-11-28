@@ -131,7 +131,7 @@ public class JRealizabilityApi {
 	public void execute(String program, JRealizabilityResult result, IProgressMonitor monitor) {
 		File lustreFile = null;
 		try {
-			lustreFile = ApiUtil.writeLustreFile(program);
+			lustreFile = ApiUtil.writeLustreFile("null",program);
 			execute(lustreFile, result, monitor);
 		} finally {
 			debug.deleteIfUnneeded(lustreFile);

@@ -43,7 +43,7 @@ public class Kind2WebApi extends Kind2Api {
 	 */
 	@Override
 	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
-		execute(readFile(lustreFile), result, monitor);
+		execute("null", readFile(lustreFile), result, monitor);
 	}
 
 	private String readFile(File file) {
@@ -66,7 +66,7 @@ public class Kind2WebApi extends Kind2Api {
 	 * @throws jkind.JKindException
 	 */
 	@Override
-	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
+	public void execute(String filename, String program, JKindResult result, IProgressMonitor monitor) {
 		XmlParseThread parseThread = null;
 
 		debug.println("Kind 2 URI: " + uri);
