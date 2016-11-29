@@ -21,10 +21,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public class ApiUtil {
 	public static File writeLustreFile(String program) {
+		return writeTempFile("jkind-api-", ".lus", program);
+	}
+	
+	public static File writeTempFile(String fileName, String fileExt, String contents){
 		File file = null;
 		try {
-			file = File.createTempFile("jkind-api-", ".lus");
-			Util.writeToFile(program, file);
+			file = File.createTempFile(fileName, fileExt);
+			if (contents != null) {
+				Util.writeToFile(contents, file);
+			}
 			return file;
 		} catch (IOException e) {
 			throw new JKindException("Cannot write to file: " + file, e);

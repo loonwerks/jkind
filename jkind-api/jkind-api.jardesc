@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="jkind-api/jkind-api.jar"/>
+    <jar path="com.rockwellcollins.atc.agree.analysis/dependencies/jkind-api.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/jkind-api/jkind-api.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
