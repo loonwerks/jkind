@@ -7,6 +7,7 @@ import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.realizability.engines.messages.BaseStepMessage;
 import jkind.realizability.engines.messages.ExtendCounterexampleMessage;
+import jkind.realizability.engines.messages.InconsistentMessage;
 import jkind.realizability.engines.messages.Message;
 import jkind.realizability.engines.messages.RealizableMessage;
 import jkind.realizability.engines.messages.UnknownMessage;
@@ -59,6 +60,8 @@ public class RealizabilityExtendEngine extends RealizabilityEngine {
 			while (!incoming.isEmpty() || k > kLimit) {
 				Message message = incoming.take();
 				if (message instanceof UnrealizableMessage) {
+					throw new StopException();
+				} else if (message instanceof InconsistentMessage) {
 					throw new StopException();
 				} else if (message instanceof BaseStepMessage) {
 					BaseStepMessage baseStepMessage = (BaseStepMessage) message;

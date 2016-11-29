@@ -43,7 +43,8 @@ public class MultiStatus {
 	}
 
 	private static final Status[] PRECEDENCE = new Status[] { Status.WORKING, Status.WAITING,
-			Status.ERROR, Status.INVALID, Status.UNKNOWN, Status.CANCELED, Status.VALID };
+			Status.ERROR, Status.INVALID, Status.INCONSISTENT, Status.UNKNOWN, Status.CANCELED,
+			Status.VALID };
 
 	public Status getOverallStatus() {
 		for (Status status : PRECEDENCE) {

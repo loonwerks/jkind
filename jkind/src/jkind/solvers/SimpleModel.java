@@ -15,6 +15,16 @@ public class SimpleModel extends Model {
 		super(Collections.emptyMap());
 	}
 
+	public SimpleModel(Model other) {
+		super(Collections.emptyMap());
+		for (String var : other.getVariableNames()) {
+			StreamIndex si = StreamIndex.decode(var);
+			if (si != null) {
+				putValue(si, other.getValue(var));
+			}
+		}
+	}
+
 	public void putValue(StreamIndex si, Value value) {
 		values.put(si.getEncoded().str, value);
 	}

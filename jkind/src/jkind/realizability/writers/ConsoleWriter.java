@@ -63,6 +63,15 @@ public class ConsoleWriter extends Writer {
 		}
 	}
 
+	@Override
+	public void writeInconsistent(int k, double runtime) {
+		writeLine();
+		System.out.println("INCONSISTENT || System inconsistent at " + k + " steps" + " || Time = "
+				+ Util.secondsToTime(runtime));
+		writeLine();
+		System.out.println();
+	}
+
 	private void writeLine() {
 		System.out
 				.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");

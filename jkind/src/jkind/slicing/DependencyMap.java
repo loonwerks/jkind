@@ -14,6 +14,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
 import jkind.lustre.VarDecl;
+import jkind.util.Util;
 
 public class DependencyMap {
 	private Map<Dependency, DependencySet> map = new HashMap<>();
@@ -28,7 +29,7 @@ public class DependencyMap {
 		for (VarDecl input : node.inputs) {
 			map.put(new Dependency(input.id), new DependencySet());
 		}
-		
+
 		for (Equation eq : node.equations) {
 			DependencySet deps = DependencyVisitor.get(eq.expr);
 			for (IdExpr idExpr : eq.lhs) {
@@ -100,6 +101,24 @@ public class DependencyMap {
 		return closure;
 	}
 
+	private DependencyMap() {
+	}
+
+	public static DependencyMap full(Node node) {
+		DependencyMap result = new DependencyMap();
+
+		DependencySet set = new DependencySet();
+		for (VarDecl vd : Util.getVarDecls(node)) {
+			set.add(vd.id);
+		}
+
+		for (VarDecl vd : Util.getVarDecls(node)) {
+			result.map.put(new Dependency(vd.id), set);
+		}
+
+		return result;
+	}
+
 	public DependencySet get(Dependency dependency) {
 		return map.get(dependency);
 	}
@@ -107,7 +126,7 @@ public class DependencyMap {
 	public DependencySet get(String var) {
 		return get(new Dependency(var));
 	}
-	
+
 	public DependencySet get(List<String> vars) {
 		DependencySet result = new DependencySet();
 		for (String var : vars) {

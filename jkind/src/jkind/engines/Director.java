@@ -15,7 +15,7 @@ import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.Main;
-import jkind.Output;
+import jkind.StdErr;
 import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
@@ -35,7 +35,7 @@ import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.NodeLayout;
 import jkind.slicing.ModelSlicer;
-import jkind.solvers.SimpleModel;
+import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.ModelReconstructionEvaluator;
@@ -108,7 +108,8 @@ public class Director extends MessageHandler {
 		addShutdownHook();
 		createAndStartEngines();
 
-		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()) {
+		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()
+				&& !exitRequested()) {
 			processMessages();
 			sleep(100);
 		}
@@ -120,6 +121,18 @@ public class Director extends MessageHandler {
 			exitCode = reportFailures();
 		}
 		return exitCode;
+	}
+
+	private boolean exitRequested() {
+		try {
+			while (System.in.available() > 0) {
+				if (System.in.read() == Util.END_OF_TEXT) {
+					return true;
+				}
+			}
+		} catch (IOException e) {
+		}
+		return false;
 	}
 
 	private void postProcessing() {
@@ -230,8 +243,8 @@ public class Director extends MessageHandler {
 		int exitCode = 0;
 		for (Engine engine : engines) {
 			if (engine.getThrowable() != null) {
-				Output.println(engine.getName() + " process failed");
-				Output.printStackTrace(engine.getThrowable());
+				StdErr.println(engine.getName() + " process failed");
+				StdErr.printStackTrace(engine.getThrowable());
 				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 			}
 		}
@@ -240,13 +253,14 @@ public class Director extends MessageHandler {
 
 	private void printHeader() {
 		if (!settings.xmlToStdout) {
-			Output.println("==========================================");
-			Output.println("  JKind " + Main.VERSION);
-			Output.println("==========================================");
-			Output.println();
-			Output.println("There are " + remainingProperties.size() + " properties to be checked.");
-			Output.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
-			Output.println();
+			System.out.println("==========================================");
+			System.out.println("  JKind " + Main.VERSION);
+			System.out.println("==========================================");
+			System.out.println();
+			System.out.println("There are " + remainingProperties.size()
+					+ " properties to be checked.");
+			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
+			System.out.println();
 		}
 	}
 
@@ -310,9 +324,8 @@ public class Director extends MessageHandler {
 
 		double runtime = getRuntime();
 		for (String invalidProp : newInvalid) {
-			SimpleModel slicedModel = ModelSlicer.slice(im.model,
-					analysisSpec.dependencyMap.get(invalidProp));
-			Counterexample cex = extractCounterexample(invalidProp, im.length, slicedModel, true);
+			Model model = ModelSlicer.slice(im.model, analysisSpec.dependencyMap.get(invalidProp));
+			Counterexample cex = extractCounterexample(invalidProp, im.length, model, true);
 			writer.writeInvalid(invalidProp, im.source, cex, Collections.emptyList(), runtime);
 		}
 	}
@@ -428,25 +441,25 @@ public class Director extends MessageHandler {
 
 	private void printSummary() {
 		if (!settings.xmlToStdout) {
-			Output.println("    -------------------------------------");
-			Output.println("    --^^--        SUMMARY          --^^--");
-			Output.println("    -------------------------------------");
-			Output.println();
+			System.out.println("    -------------------------------------");
+			System.out.println("    --^^--        SUMMARY          --^^--");
+			System.out.println("    -------------------------------------");
+			System.out.println();
 			if (!validProperties.isEmpty()) {
-				Output.println("VALID PROPERTIES: " + validProperties);
-				Output.println();
+				System.out.println("VALID PROPERTIES: " + validProperties);
+				System.out.println();
 			}
 			if (!invalidProperties.isEmpty()) {
-				Output.println("INVALID PROPERTIES: " + invalidProperties);
-				Output.println();
+				System.out.println("INVALID PROPERTIES: " + invalidProperties);
+				System.out.println();
 			}
 
 			List<String> unknownProperties = new ArrayList<>(analysisSpec.node.properties);
 			unknownProperties.removeAll(validProperties);
 			unknownProperties.removeAll(invalidProperties);
 			if (!unknownProperties.isEmpty()) {
-				Output.println("UNKNOWN PROPERTIES: " + unknownProperties);
-				Output.println();
+				System.out.println("UNKNOWN PROPERTIES: " + unknownProperties);
+				System.out.println();
 			}
 		}
 	}
@@ -456,19 +469,16 @@ public class Director extends MessageHandler {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			SimpleModel slicedModel = ModelSlicer.slice(icm.model,
-					analysisSpec.dependencyMap.get(prop));
-			result.put(prop, extractCounterexample(prop, icm.length, slicedModel, false));
+			Model model = ModelSlicer.slice(icm.model, analysisSpec.dependencyMap.get(prop));
+			result.put(prop, extractCounterexample(prop, icm.length, model, false));
 		}
 
 		return result;
 	}
 
-	private Counterexample extractCounterexample(String property, int k, SimpleModel model,
+	private Counterexample extractCounterexample(String property, int k, Model model,
 			boolean concrete) {
-		if (settings.inline) {
-			ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
-		}
+		model = ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(userSpec, k, model);
 	}
 }

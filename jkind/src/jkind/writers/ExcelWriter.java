@@ -12,6 +12,7 @@ import jkind.excel.ExcelFormatter;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.results.Counterexample;
+import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.UnknownProperty;
@@ -72,5 +73,10 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeBaseStep(List<String> props, int k) {
+	}
+
+	@Override
+	public void writeInconsistent(String prop, String source, int k, double runtime) {
+		properties.add(new InconsistentProperty(prop, source, k, runtime));
 	}
 }

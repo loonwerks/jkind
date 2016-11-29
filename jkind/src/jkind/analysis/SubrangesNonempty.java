@@ -1,6 +1,6 @@
 package jkind.analysis;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.Program;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.visitors.TypeIterVisitor;
@@ -17,7 +17,7 @@ public class SubrangesNonempty extends TypeIterVisitor {
 	@Override
 	public Void visit(SubrangeIntType e) {
 		if (e.high.compareTo(e.low) < 0) {
-			Output.error(e.location, "subrange is empty");
+			StdErr.error(e.location, "subrange is empty");
 			nonempty = false;
 		}
 		return null;

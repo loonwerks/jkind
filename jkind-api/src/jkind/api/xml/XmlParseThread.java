@@ -24,6 +24,7 @@ import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.Signal;
@@ -153,25 +154,25 @@ public class XmlParseThread extends Thread {
 		Property prop = getProperty(parseXml(propertyXml));
 		String propName = prop.getName();
 		PropertyResult pr = getOrAddProperty(analysis, propName);
-        if (pr != null) {
-            pr.setProperty(prop);
-            if (analysis != null) {
-                analysisToProps.get(analysis).add(pr);
-            }
-        }
+		if (pr != null) {
+			pr.setProperty(prop);
+			if (analysis != null) {
+				analysisToProps.get(analysis).add(pr);
+			}
+		}
 	}
 
-    private PropertyResult getOrAddProperty(String analysis, String propName) {
-        PropertyResult pr = result.getPropertyResult(propName);
-        if (pr == null && analysis != null) {
-            propName = analysis + propName;
-            pr = result.getPropertyResult(propName);
-        }
-        if (pr == null) {
-            pr = result.addProperty(propName);
-        }
-        return pr;
-    }
+	private PropertyResult getOrAddProperty(String analysis, String propName) {
+		PropertyResult pr = result.getPropertyResult(propName);
+		if (pr == null && analysis != null) {
+			propName = analysis + propName;
+			pr = result.getPropertyResult(propName);
+		}
+		if (pr == null) {
+			pr = result.addProperty(propName);
+		}
+		return pr;
+	}
 
 	private Property getProperty(Element propertyElement) {
 		String name = propertyElement.getAttribute("name");
@@ -194,6 +195,9 @@ public class XmlParseThread extends Thread {
 
 		case "unknown":
 			return new UnknownProperty(name, trueFor, cex, runtime);
+
+		case "inconsistent":
+			return new InconsistentProperty(name, source, k, runtime);
 
 		default:
 			throw new JKindException("Unknown property answer in XML file: " + answer);

@@ -5,9 +5,11 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
 import jkind.results.Signal;
@@ -46,6 +48,8 @@ public abstract class Renaming {
 			return rename((InvalidProperty) property);
 		} else if (property instanceof UnknownProperty) {
 			return rename((UnknownProperty) property);
+		} else if (property instanceof InconsistentProperty) {
+			return rename((InconsistentProperty) property);
 		} else {
 			return null;
 		}
@@ -68,7 +72,8 @@ public abstract class Renaming {
 		}
 
 		return new ValidProperty(name, property.getSource(), property.getK(),
-				property.getRuntime(), property.getInvariants(), rename(property.getIvc()));
+				property.getRuntime(), property.getInvariants(), rename(this::renameIVC,
+						property.getIvc()));
 	}
 
 	/**
@@ -86,8 +91,8 @@ public abstract class Renaming {
 		}
 
 		return new InvalidProperty(name, property.getSource(),
-				rename(property.getCounterexample()), rename(property.getConflicts()),
-				property.getRuntime());
+				rename(property.getCounterexample()),
+				rename(this::rename, property.getConflicts()), property.getRuntime());
 	}
 
 	/**
@@ -106,6 +111,24 @@ public abstract class Renaming {
 
 		return new UnknownProperty(name, property.getTrueFor(),
 				rename(property.getInductiveCounterexample()), property.getRuntime());
+	}
+
+	/**
+	 * Rename inconsistent property
+	 * 
+	 * @param property
+	 *            Property to be renamed
+	 * @return Renamed version of the property, or <code>null</code> if there is
+	 *         no renaming for the property
+	 */
+	public InconsistentProperty rename(InconsistentProperty property) {
+		String name = rename(property.getName());
+		if (name == null) {
+			return null;
+		}
+
+		return new InconsistentProperty(name, property.getSource(), property.getK(),
+				property.getRuntime());
 	}
 
 	/**
@@ -154,13 +177,24 @@ public abstract class Renaming {
 	}
 
 	/**
-	 * Rename conflicts, possibly omitting some
+	 * Rename a collection of elements, possibly omitting some
 	 * 
 	 * @param es
 	 *            Strings to be renamed
 	 * @return Renamed version of the conflicts
 	 */
-	private List<String> rename(Collection<String> es) {
-		return es.stream().map(this::rename).filter(e -> e != null).collect(toList());
+	private List<String> rename(Function<String, String> f, Collection<String> es) {
+		return es.stream().map(f).filter(e -> e != null).collect(toList());
+	}
+
+	/**
+	 * Rename an IVC variable
+	 * 
+	 * @param ivc
+	 *            the string to be renamed
+	 * @return Renamed version of the ivc string
+	 */
+	public String renameIVC(String ivc) {
+		return rename(ivc);
 	}
 }

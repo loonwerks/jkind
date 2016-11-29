@@ -21,10 +21,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public class ApiUtil {
 	public static File writeLustreFile(String program) {
+		return writeTempFile("jkind-api-", ".lus", program);
+	}
+	
+	public static File writeTempFile(String fileName, String fileExt, String contents){
 		File file = null;
 		try {
-			file = File.createTempFile("jkind-api-", ".lus");
-			Util.writeToFile(program, file);
+			file = File.createTempFile(fileName, fileExt);
+			if (contents != null) {
+				Util.writeToFile(contents, file);
+			}
 			return file;
 		} catch (IOException e) {
 			throw new JKindException("Cannot write to file: " + file, e);
@@ -116,22 +122,31 @@ public class ApiUtil {
 		StringBuilder text = new StringBuilder();
 
 		while (true) {
-			if (monitor.isCanceled()) {
+			if (!process.isAlive()) {
 				return text.toString();
-			} else if (stream.available() > 0) {
+			}
+
+			checkMonitor(monitor, process);
+			while (stream.available() > 0) {
 				int c = stream.read();
 				if (c == -1) {
 					return text.toString();
 				}
 				text.append((char) c);
-			} else if (!process.isAlive()) {
-				return text.toString();
-			} else {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}
+				checkMonitor(monitor, process);
 			}
+
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private static void checkMonitor(IProgressMonitor monitor, Process process) throws IOException {
+		if (monitor.isCanceled()) {
+			process.getOutputStream().write(Util.END_OF_TEXT);
+			process.getOutputStream().flush();
 		}
 	}
 

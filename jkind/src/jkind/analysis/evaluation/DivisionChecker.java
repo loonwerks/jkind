@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Constant;
@@ -89,13 +89,13 @@ public class DivisionChecker extends AstIterVisitor {
 			int rightSignum = signum(constantEvaluator.eval(e.right));
 
 			if (rightSignum == 0) {
-				Output.error(e.location, "division by zero");
+				StdErr.error(e.location, "division by zero");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.INT_DIVIDE) {
-				Output.error(e.location, "integer division by negative numbers is disabled");
+				StdErr.error(e.location, "integer division by negative numbers is disabled");
 				throw new DivisionException();
 			} else if (rightSignum < 0 && e.op == BinaryOp.MODULUS) {
-				Output.error(e.location, "modulus by negative numbers is disabled");
+				StdErr.error(e.location, "modulus by negative numbers is disabled");
 				throw new DivisionException();
 			}
 		}

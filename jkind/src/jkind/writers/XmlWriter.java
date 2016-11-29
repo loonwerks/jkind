@@ -168,4 +168,14 @@ public class XmlWriter extends Writer {
 		out.println("  </Progress>");
 		out.flush();
 	}
+
+	@Override
+	public void writeInconsistent(String prop, String source, int k, double runtime) {
+		out.println("  <Property name=\"" + prop + "\">");
+		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
+		out.println("    <Answer source=\"" + source + "\">inconsistent</Answer>");
+		out.println("    <K>" + k + "</K>");
+		out.println("  </Property>");
+		out.flush();
+	}
 }

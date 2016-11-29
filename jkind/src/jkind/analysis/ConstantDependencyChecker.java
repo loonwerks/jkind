@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.Constant;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -27,7 +27,7 @@ public class ConstantDependencyChecker {
 
 		List<String> cycle = CycleFinder.findCycle(dependencies);
 		if (cycle != null) {
-			Output.error("cyclic constants: " + cycle);
+			StdErr.error("cyclic constants: " + cycle);
 			return false;
 		}
 		return true;

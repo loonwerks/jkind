@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.Output;
+import jkind.StdErr;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.Program;
@@ -26,7 +26,7 @@ public class NodeDependencyChecker {
 
 		List<String> cycle = CycleFinder.findCycle(dependencies);
 		if (cycle != null) {
-			Output.error("cyclic node calls: " + cycle);
+			StdErr.error("cyclic node calls: " + cycle);
 			return false;
 		}
 		return true;
