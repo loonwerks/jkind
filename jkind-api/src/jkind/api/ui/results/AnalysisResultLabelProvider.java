@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 
 public class AnalysisResultLabelProvider extends ColumnLabelProvider {
-	private final Column column;
+	protected final Column column;
 
 	public AnalysisResultLabelProvider(Column column) {
 		this.column = column;
@@ -70,7 +70,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return "";
 	}
 
-	private String getProgress(PropertyResult pr) {
+	protected String getProgress(PropertyResult pr) {
 		if (pr.getBaseProgress() == 0) {
 			return "";
 		}
@@ -78,7 +78,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return " [true for " + pr.getBaseProgress() + " steps]";
 	}
 
-	private String getFinalStatus(PropertyResult pr) {
+	protected String getFinalStatus(PropertyResult pr) {
 		if (pr.getStatus() == Status.UNKNOWN || pr.getStatus() == Status.CANCELED) {
 			return pr.getStatus().toString() + getProgress(pr);
 		} else {
@@ -86,19 +86,19 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		}
 	}
 
-	private static final Image EMPTY_IMAGE = loadImage("/icons/empty.png");
-	private static final Image VALID_IMAGE = loadImage("/icons/valid.png");
-	private static final Image INVALID_IMAGE = loadImage("/icons/invalid.png");
-	private static final Image UNKNOWN_IMAGE = loadImage("/icons/unknown.png");
-	private static final Image INCONSISTENT_IMAGE = loadImage("/icons/invalid.png");
-	private static final Image WAITING_IMAGE = loadImage("/icons/waiting.png");
-	private static final Image CANCEL_IMAGE = loadImage("/icons/cancel.png");
-	private static final Image ERROR_IMAGE = loadImage("/icons/error.png");
-	private static final Image VALID_WARNING_IMAGE = loadImage("/icons/valid-warning.png");
+	protected static final Image EMPTY_IMAGE = loadImage("/icons/empty.png");
+	protected static final Image VALID_IMAGE = loadImage("/icons/valid.png");
+	protected static final Image INVALID_IMAGE = loadImage("/icons/invalid.png");
+	protected static final Image UNKNOWN_IMAGE = loadImage("/icons/unknown.png");
+	protected static final Image INCONSISTENT_IMAGE = loadImage("/icons/invalid.png");
+	protected static final Image WAITING_IMAGE = loadImage("/icons/waiting.png");
+	protected static final Image CANCEL_IMAGE = loadImage("/icons/cancel.png");
+	protected static final Image ERROR_IMAGE = loadImage("/icons/error.png");
+	protected static final Image VALID_WARNING_IMAGE = loadImage("/icons/valid-warning.png");
 
-	private Spinner workingSpinner;
+	protected Spinner workingSpinner;
 
-	private static Image loadImage(String filename) {
+	protected static Image loadImage(String filename) {
 		try (InputStream stream = AnalysisResultLabelProvider.class.getResourceAsStream(filename)) {
 			return new Image(null, new ImageData(stream));
 		} catch (IOException e) {
@@ -121,7 +121,7 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 		return null;
 	}
 
-	private Image getStatusImage(Status status) {
+	protected Image getStatusImage(Status status) {
 		if (status == null) {
 			return EMPTY_IMAGE;
 		}
