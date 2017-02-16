@@ -20,7 +20,7 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
-import jkind.engines.ivcs.AllIvcComputerEngine;
+import jkind.engines.ivcs.AllIvcsExtractorrEngine;
 import jkind.engines.ivcs.BmcBasedConsistencyChecker;
 import jkind.engines.ivcs.ConsistencyChecker;
 import jkind.engines.ivcs.IvcReductionEngine;
@@ -245,7 +245,7 @@ public class Director extends MessageHandler {
 		}
 		
 		if (settings.allIvcs) { 
-			addEngine(new AllIvcComputerEngine(analysisSpec, settings, this));
+			addEngine(new AllIvcsExtractorrEngine(analysisSpec, settings, this));
 		} 
 	}
 

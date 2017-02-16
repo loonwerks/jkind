@@ -31,23 +31,24 @@ public class Main {
 		program = visitor.visit(program);
 		program = SubrangeFixVisitor.fix(program);
 		
-		Util.writeToFile(program.toString(), new File(filename + ".coverage"));
+		Util.writeToFile(program.toString(), new File(filename + ".exctracted"));
 		
 		//-------------- for the experiments -------------------------
-		double runtime = System.currentTimeMillis(); 
+		//double runtime = System.currentTimeMillis(); 
 		//----------------------------------------------------------
 		
 		
-		JKindResult result = runJKind(filename, program);
+		//JKindResult result = runJKind(filename, program);
 		
 		
 		//------------ for the experiments -------------------------
-		runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
+		//runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
 		// ---------------------------------------------------------
 		
 		
 		
-		CoverageReporter.writeHtml(filename, program, visitor.getLocationMap(), result, runtime);
+		//CoverageReporter.writeHtml(filename, program, visitor.getLocationMap(), result, runtime);
+		//System.exit(0); // Kills all threads
 	}
 
 	private static Program parseLustre(CharStream stream) throws Exception {
