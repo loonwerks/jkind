@@ -203,7 +203,7 @@ public class JRealizabilityApi {
 		Process process = builder.start();
 
 		String output = ApiUtil.readAll(process.getInputStream());
-		if (process.exitValue() != 0) {
+		if (process.waitFor() != 0) {
 			throw new JKindException("Error running JRealizability: " + output);
 		}
 	}
