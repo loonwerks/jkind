@@ -91,6 +91,7 @@ import jkind.lustre.parsing.LustreParser.VarDeclListContext;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
@@ -384,6 +385,52 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 	}
 
+	private UnaryOp getNonLinearOp(String cast) {
+		switch (cast) {
+		case "exp":
+			return UnaryOp.EXP;
+		case "log":
+			return UnaryOp.LOG;
+		case "sqrt":
+			return UnaryOp.SQRT;
+		case "pow":
+			return UnaryOp.POW;
+		case "sin":
+			return UnaryOp.SIN;
+		case "cos":
+			return UnaryOp.COS;
+		case "tan":
+			return UnaryOp.TAN;
+		case "asin":
+		case "arcsin":
+			return UnaryOp.ARCSIN;
+		case "acos" : 
+		case "arccos" : 
+			return UnaryOp.ARCCOS;
+		case "atan" :
+		case "arctan" : 
+			return UnaryOp.ARCTAN;
+		case "sinh" : 
+			return UnaryOp.SINH;
+		case "cosh" :
+			return UnaryOp.COSH;
+		case "tanh" :
+			return UnaryOp.TANH;
+		case "atan2" : 
+		case "arctan2" : 
+			return UnaryOp.ARCTAN2;
+		case "matan" : 
+			return UnaryOp.MATAN;
+		default:
+			throw new IllegalArgumentException("Unknown cast: " + cast);
+		}
+	}
+	
+	@Override
+	public Expr visitNonLinearExpr(@NotNull LustreParser.NonLinearExprContext ctx) { 
+		return new UnaryExpr(loc(ctx), getNonLinearOp(ctx.op.getText()), expr(ctx.expr()));
+	}
+	
 	@Override
 	public Expr visitRecordAccessExpr(RecordAccessExprContext ctx) {
 		return new RecordAccessExpr(loc(ctx), expr(ctx.expr()), ctx.ID().getText());

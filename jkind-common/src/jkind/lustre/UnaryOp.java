@@ -3,7 +3,23 @@ package jkind.lustre;
 public enum UnaryOp {
 	NEGATIVE ("-"),
 	NOT ("not"),
-	PRE ("pre");
+	PRE ("pre"), 
+	EXP("exp"),
+	LOG("log"),
+	SQRT("sqrt"),
+	POW("pow"),
+    SIN("sin"),
+    COS("cos"),
+    TAN("tan"),
+    ARCSIN("arcsin"),
+    ARCCOS("arccos"),
+    ARCTAN("arctan"),
+    SINH("sinh"),
+    COSH("cosh"),
+    TANH("tanh"),
+    ARCTAN2("arctan2"),
+    MATAN("matan"),	
+	;
 	
 	private String str;
 	

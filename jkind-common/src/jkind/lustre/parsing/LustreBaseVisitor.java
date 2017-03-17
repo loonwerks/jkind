@@ -165,6 +165,13 @@ public class LustreBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitNonLinearExpr(@NotNull LustreParser.NonLinearExprContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitRecordExpr(@NotNull LustreParser.RecordExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

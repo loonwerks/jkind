@@ -55,7 +55,9 @@ public class StaticAnalyzer {
 		if (solver != SolverOption.Z3) {
 			valid = valid && LinearChecker.check(program, Level.ERROR);
 		}
-
+		if (solver != SolverOption.DREAL) {
+			valid = valid && TrigChecker.check(program, Level.ERROR);
+		}
 		if (!valid) {
 			System.exit(ExitCodes.STATIC_ANALYSIS_ERROR);
 		}

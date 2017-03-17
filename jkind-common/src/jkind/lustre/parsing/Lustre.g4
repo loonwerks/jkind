@@ -53,6 +53,11 @@ expr: ID                                                       # idExpr
     | REAL                                                     # realExpr
     | BOOL                                                     # boolExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
+    | op=('exp' | 'log' | 'sqrt' | 'pow' | 'sin' | 'cos' | 
+         'tan' | 'asin' | 'arcsin' | 'acos' | 'arccos' | 
+         'atan' | 'arctan' | 'sinh' | 'cosh' | 'tanh' | 
+         'atan2' | 'arctan2' | 'matan' | 
+         'marctan') '(' expr ')'                               # nonLinearExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr

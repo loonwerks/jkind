@@ -10,22 +10,22 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprIterVisitor;
 
-public class LinearChecker extends ExprIterVisitor {
+public class TrigChecker extends ExprIterVisitor {
 	private final Level level;
 	private boolean passed;
 	private ConstantAnalyzer constantAnalyzer;
 
-	public LinearChecker(Level level) {
+	public TrigChecker(Level level) {
 		this.level = level;
 		this.passed = true;
 	}
 
 	public static boolean check(Program program, Level level) {
-		return new LinearChecker(level).visitProgram(program);
+		return new TrigChecker(level).visitProgram(program);
 	}
 
 	public static boolean isLinear(Program program) {
-		return new LinearChecker(Level.IGNORE).visitProgram(program);
+		return new TrigChecker(Level.IGNORE).visitProgram(program);
 	}
 
 	public static boolean isLinear(Node node) {
@@ -51,40 +51,6 @@ public class LinearChecker extends ExprIterVisitor {
 		}
 	}
 
-	@Override
-	public Void visit(BinaryExpr e) {
-		e.left.accept(this);
-		e.right.accept(this);
-
-		switch (e.op) {
-		case MULTIPLY:
-			if (!isConstant(e.left) && !isConstant(e.right)) {
-				StdErr.output(level, e.location, "non-constant multiplication");
-				passed = false;
-			}
-			break;
-
-		case DIVIDE:
-		case INT_DIVIDE:
-			if (!isConstant(e.right)) {
-				StdErr.output(level, e.location, "non-constant division");
-				passed = false;
-			}
-			break;
-
-		case MODULUS:
-			if (!isConstant(e.right)) {
-				StdErr.output(level, e.location, "non-constant modulus");
-				passed = false;
-			}
-			break;
-
-		default:
-			break;
-		}
-
-		return null;
-	}
 
 	@Override
 	public Void visit(UnaryExpr e) {
@@ -105,8 +71,10 @@ public class LinearChecker extends ExprIterVisitor {
 		case ARCTAN2:
 		case MATAN: 
 		{ 
-			StdErr.output(level, e.location, "use of trigonometric function");
-			passed = false; 
+			if (!isConstant(e.expr)) {
+				StdErr.output(level, e.location, "use of trigonometric function with non-constant argument");
+				passed = false;
+			}
 		}
 		default: break;
 		}

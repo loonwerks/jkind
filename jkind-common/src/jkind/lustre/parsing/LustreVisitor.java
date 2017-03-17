@@ -152,6 +152,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssertion(@NotNull LustreParser.AssertionContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code nonLinearExpr}
+	 * labeled alternative in {@link LustreParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNonLinearExpr(@NotNull LustreParser.NonLinearExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code recordExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
 	 * @param ctx the parse tree
