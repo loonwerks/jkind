@@ -1,13 +1,11 @@
 package jkind.analysis;
 
 import jkind.StdErr;
-import jkind.lustre.BinaryExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprIterVisitor;
 
 public class TrigChecker extends ExprIterVisitor {

@@ -1,9 +1,5 @@
 package jkind.solvers.dreal;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import jkind.interval.NumericEndpoint;
@@ -12,16 +8,17 @@ import jkind.interval.RealEndpoint;
 import jkind.lustre.Type;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
-import jkind.solvers.dreal.parser.*;
 import jkind.solvers.dreal.parser.DRealModelParser.BoolValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.InfinityValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.ModelContext;
 import jkind.solvers.dreal.parser.DRealModelParser.NumberRangeValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Number_valueContext;
+import jkind.solvers.dreal.parser.DRealModelParser.RealValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.SymbolContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Var_assignContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Var_valueContext;
 import jkind.solvers.smtlib2.Quoting;
+import jkind.util.BigFraction;
 
 public class ModelExtractor {
 	public static DRealModel getModel(ModelContext ctx, Map<String, Type> varTypes) {
@@ -49,7 +46,6 @@ public class ModelExtractor {
 			NumericEndpoint high = getNumber(nr_ctx.number_value(1));
 			return new NumericInterval(low, high);
 		} else if (ctx instanceof BoolValContext) {
-			BoolValContext bvc = (BoolValContext)ctx;
 			String value = ctx.getText();
 			if ("undef".equals(value)) {
 				return null;
@@ -73,26 +69,11 @@ public class ModelExtractor {
 			} else {
 				return RealEndpoint.POSITIVE_INFINITY;
 			}
-		} else if (ctx instanceof )
-		return null;
-	}
-	private static String parse(String string) {
-		if (string.contains(".")) {
-			BigDecimal d = new BigDecimal(string);
-			BigInteger numerator = d.unscaledValue();
-			BigInteger denominator = BigDecimal.TEN.pow(d.scale()).toBigInteger();
-
-			BigInteger gcd = numerator.gcd(denominator);
-			numerator = numerator.divide(gcd);
-			denominator = denominator.divide(gcd);
-
-			if (denominator.equals(BigInteger.ONE)) {
-				return numerator.toString();
-			} else {
-				return numerator + "/" + denominator;
-			}
+		} else if (ctx instanceof RealValContext) {
+			double val = Double.parseDouble(ctx.getText()); 
+			return new RealEndpoint(BigFraction.fromValue(val));
 		} else {
-			return string;
+			throw new IllegalArgumentException("Unknown number type in getNumber()");
 		}
 	}
 }

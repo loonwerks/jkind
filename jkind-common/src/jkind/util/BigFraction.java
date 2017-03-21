@@ -39,6 +39,137 @@ public class BigFraction implements Comparable<BigFraction> {
 		}
 	}
 
+	static final long SIGN_MASK = 0x8000000000000000L; 
+	static final long EXPONENT_MASK = 0x7ff0000000000000L; 
+	static final long MANTISSA_MASK = 0x000fffffffffffffL;
+	
+	public static int getDoubleSign(double d) {
+		long bits = Double.doubleToRawLongBits(d);
+		return ((bits & SIGN_MASK) != 0) ? 1 : 0;
+	}
+	
+	public static int getDoubleExponent(double d) {
+		long bits = Double.doubleToRawLongBits(d);
+		int rawExponentVal = (int)((bits & EXPONENT_MASK) >>> 52); 
+		/* exponent value biased by 1023 */
+		int exponentVal = rawExponentVal - 0x3ff; 
+		return exponentVal; 
+	}
+
+	 /**
+	   * Returns whether or not this double is a subnormal value.
+	   * @param d a double value
+	   * @return whether or not this double is a subnormal value
+	   */
+	  public static boolean isDoubleSubnormal(double d)
+	  {
+	    long bits = Double.doubleToRawLongBits(d);
+	    return ((bits & EXPONENT_MASK) == 0) && ((bits & MANTISSA_MASK) != 0);
+	  }
+	  
+	public static long getDoubleMantissa(double d)
+	{
+	    return Double.doubleToRawLongBits(d) & MANTISSA_MASK;
+	}
+	  /**
+	   * Constructs a BigFraction from a floating-point number.
+	 * Arbitrary-precision fraction, utilizing BigIntegers for numerator and
+	 * denominator. Fraction is always kept in lowest terms. Fraction is
+	 * immutable, and guaranteed not to have a null numerator or denominator.
+	 * Denominator will always be positive (so sign is carried by numerator,
+	 * and a zero-denominator is impossible).
+	 * 
+	 * @author Kip Robinson, <a href="https://github.com/kiprobinson">https://github.com/kiprobinson</a>
+	 */
+	
+	public static BigFraction fromValue(double d)
+	  {
+	    if(Double.isInfinite(d))
+	      throw new IllegalArgumentException("double val is infinite");
+	    if(Double.isNaN(d))
+	      throw new IllegalArgumentException("double val is NaN");
+	    
+	    //special case - math below won't work right for 0.0 or -0.0
+	    if(d == 0.0)
+	      return BigFraction.ZERO;
+	    
+	    //Per IEEE spec...
+	    final int sign = getDoubleSign(d);
+	    final int exponent = getDoubleExponent(d);
+	    final long mantissa = getDoubleMantissa(d);
+	    final boolean isSubnormal = isDoubleSubnormal(d);
+	    
+	    //Number is: (-1)^sign * 2^(exponent) * 1.mantissa
+	    //Neglecting sign bit, this gives:
+	    //           2^(exponent) * 1.mantissa
+	    //         = 2^(exponent) * (1 + mantissa/2^52)
+	    //         = 2^(exponent) * (2^52 + mantissa)/2^52
+	    // Letting tmpNumerator=(2^52 + mantissa):
+	    //         = 2^(exponent) * tmpNumerator/2^52
+	    //  
+	    //  For exponent > 52:
+	    //         = tmpNumerator * 2^(exponent - 52)
+	    //  For exponent = 52:
+	    //         = tmpNumerator
+	    //  For exponent < 52:
+	    //         = tmpNumerator / 2^(52 - exponent)
+	    //
+	    //SPECIAL CASE: Subnormals - if all exponent bits are 0 (in my code, this
+	    //would mean exponent is -0x3ff, or -1023), then the formula is:
+	    //    (-1)^sign * 2^(exponent+1) * 0.mantissa
+	    //    
+	    //Again neglecting sign bit, this gives:
+	    //           2^(exponent + 1) * 0.mantissa
+	    //         = 2^(-1022) * (mantissa/2^52)
+	    //         = mantissa / 2^1074
+	    // Letting tmpNumerator = mantissa:
+	    //         = tmpNumerator / 2^1074
+	    
+	    BigInteger tmpNumerator = BigInteger.valueOf((isSubnormal ? 0L : 0x10000000000000L) + mantissa);
+	    BigInteger tmpDenominator = BigInteger.ONE;
+	    
+	    if(exponent > 52)
+	    {
+	      //numerator * 2^(exponent - 52) === numerator << (exponent - 52)
+	      tmpNumerator = tmpNumerator.shiftLeft(exponent - 52);
+	    }
+	    else if (exponent < 52)
+	    {
+	      if(!isSubnormal)
+	      {
+	        //The gcd of (2^52 + mantissa) / 2^(52 - exponent)  must be of the form 2^y,
+	        //since the only prime factors of the denominator are 2. In base-2, it is
+	        //easy to determine how many factors of 2 a number has--it is the number of
+	        //trailing "0" bits at the end of the number. (This is the same as the number
+	        //of trailing 0's of a base-10 number indicating the number of factors of 10
+	        //the number has).
+	        int y = Math.min(tmpNumerator.getLowestSetBit(), 52 - exponent);
+	        
+	        //Now 2^y = gcd( 2^52 + mantissa, 2^(52 - exponent) ), giving:
+	        // (2^52 + mantissa) / 2^(52 - exponent)
+	        //      = ((2^52 + mantissa) / 2^y) / (2^(52 - exponent) / 2^y)
+	        //      = ((2^52 + mantissa) / 2^y) / (2^(52 - exponent - y))
+	        //      = ((2^52 + mantissa) >> y) / (1 << (52 - exponent - y))
+	        tmpNumerator = tmpNumerator.shiftRight(y);
+	        tmpDenominator = tmpDenominator.shiftLeft(52 - exponent - y);
+	      }
+	      else
+	      {
+	        //using the same logic as above, except now we are finding gcd of tmpNumerator/2^1074
+	        int y = Math.min(tmpNumerator.getLowestSetBit(), 1074);
+	        
+	        tmpNumerator = tmpNumerator.shiftRight(y);
+	        tmpDenominator = tmpDenominator.shiftLeft(1074 - y);
+	      }
+	    }
+	    //else: exponent == 52: do nothing
+	    //Set sign bit if needed
+	    if(sign != 0)
+	      tmpNumerator = tmpNumerator.negate();
+	    
+	    return new BigFraction(tmpNumerator, tmpDenominator);
+	}
+	
 	public BigFraction(BigInteger num) {
 		this(num, BigInteger.ONE);
 	}

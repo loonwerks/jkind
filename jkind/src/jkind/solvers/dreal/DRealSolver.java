@@ -13,7 +13,7 @@ import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class DRealSolver extends SmtLib2Solver {
 
-	public DRealSolver(String scratchBase, boolean linear) {
+	public DRealSolver(String scratchBase) {
 		super(scratchBase);
 	}
 

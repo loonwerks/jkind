@@ -62,7 +62,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
-				"SMT solver (default: smtinterpol, alternatives: z3, yices, yices2, cvc4, mathsat)");
+				"SMT solver (default: smtinterpol, alternatives: z3, yices, yices2, cvc4, mathsat, dreal)");
 		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
@@ -195,7 +195,9 @@ public class JKindArgumentParser extends ArgumentParser {
 
 	private void checkSettings() {
 		if (settings.reduceIvc) {
-			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
+			if (settings.solver == SolverOption.CVC4 || 
+				settings.solver == SolverOption.YICES2 || 
+				settings.solver == SolverOption.DREAL) {
 				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
 			}
@@ -208,8 +210,11 @@ public class JKindArgumentParser extends ArgumentParser {
 			}
 		}
 
-		if (!settings.boundedModelChecking && !settings.kInduction && !settings.invariantGeneration
-				&& settings.pdrMax == 0 && settings.readAdvice == null) {
+		if (!settings.boundedModelChecking && 
+			!settings.kInduction && 
+			!settings.invariantGeneration && 
+			settings.pdrMax == 0 && 
+			settings.readAdvice == null) {
 			StdErr.fatal(ExitCodes.INVALID_OPTIONS, "all proving engines disabled");
 		}
 

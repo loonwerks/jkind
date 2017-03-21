@@ -575,6 +575,26 @@ public class TypeChecker implements ExprVisitor<Type> {
 
 		case PRE:
 			return type;
+		
+		case EXP: 
+		case LOG:
+		case SQRT:
+		case POW:
+		case SIN:
+		case COS: 
+		case TAN:
+		case ARCSIN: 
+		case ARCCOS:
+		case ARCTAN:
+		case SINH: 
+		case COSH:
+		case TANH:
+		case ARCTAN2:
+		case MATAN: 
+			if (type == NamedType.REAL) {
+				return type;
+			}
+			break;
 		}
 
 		error(e, "operator '" + e.op + "' not defined on type " + simple(type));

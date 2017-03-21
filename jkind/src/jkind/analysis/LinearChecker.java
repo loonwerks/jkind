@@ -7,7 +7,6 @@ import jkind.lustre.Expr;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.ExprIterVisitor;
 
 public class LinearChecker extends ExprIterVisitor {

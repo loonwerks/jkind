@@ -12,6 +12,7 @@ import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.solvers.Solver;
 import jkind.solvers.cvc4.Cvc4Solver;
+import jkind.solvers.dreal.DRealSolver;
 import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.SmtInterpolSolver;
 import jkind.solvers.yices.YicesSolver;
@@ -33,6 +34,8 @@ public class SolverUtil {
 			return new MathSatSolver(scratchBase);
 		case SMTINTERPOL:
 			return new SmtInterpolSolver(scratchBase);
+		case DREAL:
+			return new DRealSolver(scratchBase);
 		}
 		throw new IllegalArgumentException("Unknown solver: " + solverOption);
 	}

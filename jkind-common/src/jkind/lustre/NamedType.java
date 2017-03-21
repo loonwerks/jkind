@@ -22,7 +22,7 @@ public class NamedType extends Type {
 	/*
 	 * Private constructor for built-in types
 	 */
-	private NamedType(String name, @SuppressWarnings("unused") Object unused) {
+	private NamedType(String name, Object unused) {
 		super(Location.NULL);
 		this.name = name;
 	}
