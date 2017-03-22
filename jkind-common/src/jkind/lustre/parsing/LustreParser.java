@@ -98,14 +98,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterProgram(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitProgram(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitProgram(this);
 			else return visitor.visitChildren(this);
@@ -173,14 +165,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_typedef; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterTypedef(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitTypedef(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitTypedef(this);
 			else return visitor.visitChildren(this);
@@ -223,14 +207,6 @@ public class LustreParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_constant; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterConstant(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitConstant(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitConstant(this);
@@ -323,14 +299,6 @@ public class LustreParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_node; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterNode(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitNode(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitNode(this);
@@ -460,14 +428,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_varDeclList; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterVarDeclList(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitVarDeclList(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitVarDeclList(this);
 			else return visitor.visitChildren(this);
@@ -525,14 +485,6 @@ public class LustreParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_varDeclGroup; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterVarDeclGroup(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitVarDeclGroup(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitVarDeclGroup(this);
@@ -601,14 +553,6 @@ public class LustreParser extends Parser {
 		}
 		public RecordTypeContext(TopLevelTypeContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRecordType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRecordType(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRecordType(this);
 			else return visitor.visitChildren(this);
@@ -621,14 +565,6 @@ public class LustreParser extends Parser {
 		}
 		public EnumTypeContext(TopLevelTypeContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterEnumType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitEnumType(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitEnumType(this);
 			else return visitor.visitChildren(this);
@@ -639,14 +575,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(TypeContext.class,0);
 		}
 		public PlainTypeContext(TopLevelTypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterPlainType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitPlainType(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitPlainType(this);
@@ -759,14 +687,6 @@ public class LustreParser extends Parser {
 		public TerminalNode INT() { return getToken(LustreParser.INT, 0); }
 		public ArrayTypeContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterArrayType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitArrayType(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitArrayType(this);
 			else return visitor.visitChildren(this);
@@ -774,14 +694,6 @@ public class LustreParser extends Parser {
 	}
 	public static class RealTypeContext extends TypeContext {
 		public RealTypeContext(TypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRealType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRealType(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRealType(this);
@@ -797,14 +709,6 @@ public class LustreParser extends Parser {
 		}
 		public SubrangeTypeContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterSubrangeType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitSubrangeType(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitSubrangeType(this);
 			else return visitor.visitChildren(this);
@@ -812,14 +716,6 @@ public class LustreParser extends Parser {
 	}
 	public static class IntTypeContext extends TypeContext {
 		public IntTypeContext(TypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterIntType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitIntType(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitIntType(this);
@@ -830,14 +726,6 @@ public class LustreParser extends Parser {
 		public TerminalNode ID() { return getToken(LustreParser.ID, 0); }
 		public UserTypeContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterUserType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitUserType(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitUserType(this);
 			else return visitor.visitChildren(this);
@@ -845,14 +733,6 @@ public class LustreParser extends Parser {
 	}
 	public static class BoolTypeContext extends TypeContext {
 		public BoolTypeContext(TypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterBoolType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitBoolType(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitBoolType(this);
@@ -972,14 +852,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_bound; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterBound(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitBound(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitBound(this);
 			else return visitor.visitChildren(this);
@@ -1024,14 +896,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_property; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterProperty(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitProperty(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitProperty(this);
 			else return visitor.visitChildren(this);
@@ -1069,14 +933,6 @@ public class LustreParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_realizabilityInputs; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRealizabilityInputs(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRealizabilityInputs(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRealizabilityInputs(this);
@@ -1138,14 +994,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_ivc; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterIvc(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitIvc(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitIvc(this);
 			else return visitor.visitChildren(this);
@@ -1202,14 +1050,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_main; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterMain(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitMain(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitMain(this);
 			else return visitor.visitChildren(this);
@@ -1254,14 +1094,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_assertion; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterAssertion(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitAssertion(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitAssertion(this);
 			else return visitor.visitChildren(this);
@@ -1301,14 +1133,6 @@ public class LustreParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_equation; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterEquation(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitEquation(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitEquation(this);
@@ -1375,14 +1199,6 @@ public class LustreParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_lhs; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterLhs(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitLhs(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitLhs(this);
 			else return visitor.visitChildren(this);
@@ -1448,14 +1264,6 @@ public class LustreParser extends Parser {
 		}
 		public RecordExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRecordExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRecordExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRecordExpr(this);
 			else return visitor.visitChildren(this);
@@ -1464,14 +1272,6 @@ public class LustreParser extends Parser {
 	public static class IntExprContext extends ExprContext {
 		public TerminalNode INT() { return getToken(LustreParser.INT, 0); }
 		public IntExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterIntExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitIntExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitIntExpr(this);
@@ -1487,14 +1287,6 @@ public class LustreParser extends Parser {
 		}
 		public ArrayExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterArrayExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitArrayExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitArrayExpr(this);
 			else return visitor.visitChildren(this);
@@ -1507,14 +1299,6 @@ public class LustreParser extends Parser {
 		}
 		public CastExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterCastExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitCastExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitCastExpr(this);
 			else return visitor.visitChildren(this);
@@ -1523,14 +1307,6 @@ public class LustreParser extends Parser {
 	public static class RealExprContext extends ExprContext {
 		public TerminalNode REAL() { return getToken(LustreParser.REAL, 0); }
 		public RealExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRealExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRealExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRealExpr(this);
@@ -1545,14 +1321,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public IfThenElseExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterIfThenElseExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitIfThenElseExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitIfThenElseExpr(this);
@@ -1569,14 +1337,6 @@ public class LustreParser extends Parser {
 		}
 		public BinaryExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterBinaryExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitBinaryExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitBinaryExpr(this);
 			else return visitor.visitChildren(this);
@@ -1587,14 +1347,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public PreExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterPreExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitPreExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitPreExpr(this);
@@ -1611,14 +1363,6 @@ public class LustreParser extends Parser {
 		}
 		public NodeCallExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterNodeCallExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitNodeCallExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitNodeCallExpr(this);
 			else return visitor.visitChildren(this);
@@ -1631,14 +1375,6 @@ public class LustreParser extends Parser {
 		}
 		public RecordAccessExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRecordAccessExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRecordAccessExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRecordAccessExpr(this);
 			else return visitor.visitChildren(this);
@@ -1650,14 +1386,6 @@ public class LustreParser extends Parser {
 		}
 		public NegateExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterNegateExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitNegateExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitNegateExpr(this);
 			else return visitor.visitChildren(this);
@@ -1668,14 +1396,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public NotExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterNotExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitNotExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitNotExpr(this);
@@ -1691,14 +1411,6 @@ public class LustreParser extends Parser {
 		}
 		public CondactExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterCondactExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitCondactExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitCondactExpr(this);
 			else return visitor.visitChildren(this);
@@ -1712,14 +1424,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public ArrayAccessExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterArrayAccessExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitArrayAccessExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitArrayAccessExpr(this);
@@ -1735,14 +1439,6 @@ public class LustreParser extends Parser {
 		}
 		public ArrayUpdateExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterArrayUpdateExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitArrayUpdateExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitArrayUpdateExpr(this);
 			else return visitor.visitChildren(this);
@@ -1751,14 +1447,6 @@ public class LustreParser extends Parser {
 	public static class BoolExprContext extends ExprContext {
 		public TerminalNode BOOL() { return getToken(LustreParser.BOOL, 0); }
 		public BoolExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterBoolExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitBoolExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitBoolExpr(this);
@@ -1771,14 +1459,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public NonLinearExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterNonLinearExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitNonLinearExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitNonLinearExpr(this);
@@ -1793,14 +1473,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public TupleExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterTupleExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitTupleExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitTupleExpr(this);
@@ -1817,14 +1489,6 @@ public class LustreParser extends Parser {
 		}
 		public RecordUpdateExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRecordUpdateExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRecordUpdateExpr(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRecordUpdateExpr(this);
 			else return visitor.visitChildren(this);
@@ -1833,14 +1497,6 @@ public class LustreParser extends Parser {
 	public static class IdExprContext extends ExprContext {
 		public TerminalNode ID() { return getToken(LustreParser.ID, 0); }
 		public IdExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterIdExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitIdExpr(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitIdExpr(this);
@@ -2295,14 +1951,6 @@ public class LustreParser extends Parser {
 		public TerminalNode ID() { return getToken(LustreParser.ID, 0); }
 		public BaseEIDContext(EIDContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterBaseEID(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitBaseEID(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitBaseEID(this);
 			else return visitor.visitChildren(this);
@@ -2315,14 +1963,6 @@ public class LustreParser extends Parser {
 		public TerminalNode INT() { return getToken(LustreParser.INT, 0); }
 		public ArrayEIDContext(EIDContext ctx) { copyFrom(ctx); }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterArrayEID(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitArrayEID(this);
-		}
-		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitArrayEID(this);
 			else return visitor.visitChildren(this);
@@ -2334,14 +1974,6 @@ public class LustreParser extends Parser {
 			return getRuleContext(EIDContext.class,0);
 		}
 		public RecordEIDContext(EIDContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).enterRecordEID(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof LustreListener ) ((LustreListener)listener).exitRecordEID(this);
-		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LustreVisitor ) return ((LustreVisitor<? extends T>)visitor).visitRecordEID(this);

@@ -29,6 +29,7 @@ public class DRealSolver extends SmtLib2Solver {
 
 	@Override
 	public void initialize() {
+		send("(set-logic QF_NRA)");
 	}
 
 	@Override
@@ -40,13 +41,18 @@ public class DRealSolver extends SmtLib2Solver {
 		send(new Cons("check-sat"));
 
 		String status = readFromSolver();
+		System.out.println("Status: " + status);
 		if (isSat(status)) {
+			System.out.println("SAT result: sending (get-model)");
 			send("(get-model)");
 			result = new SatResult(parseModel(readFromSolver()));
+			System.out.println("Model parsed");
 		} else if (isUnsat(status)) {
+			System.out.println("UNSAT result...");
 			result = new UnsatResult();
 		} else {
 			// Even for unknown we can sometimes get a partial model
+			System.out.println("UNKNOWN result...");
 			send("(get-model)");
 
 			String content = readFromSolver();
