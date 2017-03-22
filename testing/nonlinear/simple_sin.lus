@@ -1,0 +1,9 @@
+-- This property is nonlinear and requires z3
+-- Expected output:
+--   VALID PROPERTIES: [ok] || K = 1 || Time = 0.1
+
+node simple_sin(inp: real) returns (ok : bool);
+let
+  ok = sin(inp) < 1.002;
+  --%PROPERTY ok;
+tel;

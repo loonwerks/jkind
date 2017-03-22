@@ -2,13 +2,22 @@ package jkind.solvers.dreal;
 
 import java.util.List;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+
+import jkind.JKindException;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
+import jkind.solvers.dreal.parser.DRealModelLexer;
+import jkind.solvers.dreal.parser.DRealModelParser;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 
 public class DRealSolver extends SmtLib2Solver {
@@ -41,25 +50,25 @@ public class DRealSolver extends SmtLib2Solver {
 		send(new Cons("check-sat"));
 
 		String status = readFromSolver();
-		System.out.println("Status: " + status);
 		if (isSat(status)) {
-			System.out.println("SAT result: sending (get-model)");
 			send("(get-model)");
-			result = new SatResult(parseModel(readFromSolver()));
-			System.out.println("Model parsed");
+			String modelResult = readFromSolver();
+			result = new SatResult(parseModel(modelResult));
 		} else if (isUnsat(status)) {
-			System.out.println("UNSAT result...");
 			result = new UnsatResult();
 		} else {
 			// Even for unknown we can sometimes get a partial model
-			System.out.println("UNKNOWN result...");
 			send("(get-model)");
-
-			String content = readFromSolver();
-			if (content == null) {
+			Model m = null;
+			try {
+				m = parseModel(readFromSolver());
+			} catch(JKindException e) {
+				// O.k., not able to read the CEX.
+			}
+			if (m == null) {
 				return new UnknownResult();
 			} else {
-				result = new UnknownResult(parseModel(content));
+				result = new UnknownResult(m);
 			}
 		}
 
@@ -68,7 +77,23 @@ public class DRealSolver extends SmtLib2Solver {
 		return result;
 	}
 
+	protected Model parseModel(String string) {
+		CharStream stream = new ANTLRInputStream(string);
+		DRealModelLexer lexer = new DRealModelLexer(stream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		DRealModelParser parser = new DRealModelParser(tokens);
+		parser.removeErrorListeners();
+		parser.addErrorListener(new SolverParserErrorListener());
+		DRealModelParser.ModelContext ctx = parser.model();
 
+		if (parser.getNumberOfSyntaxErrors() > 0) {
+			throw new JKindException("Error parsing " + getSolverName() + " output: " + string);
+		}
+
+		return ModelExtractor.getModel(ctx, varTypes);
+	}
+
+	
 	@Override
 	protected List<Symbol> getUnsatCore(List<Symbol> activationLiterals) {
 		// dReal does not yet appear to support unsat-cores
