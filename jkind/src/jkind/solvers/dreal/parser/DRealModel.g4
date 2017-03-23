@@ -4,7 +4,7 @@ model: (var_assign | warning)* EOF;
 
 var_assign : symbol ':' var_value ; 
 
-warning: 'Warning:' TOEOL;
+warning: WARNING;
 
 var_value: 
      '[ ENTIRE ]' '=' '[' number_value ',' number_value ']'   # numberRangeVal
@@ -42,8 +42,8 @@ SYMBOL_OR_NUM_CHAR: (SYMBOL_CHAR | '0'..'9');
 
 QUOTED_SYMBOL: '|' (~'|'.*?) '|';
 STRING: '"' ('""' | .)*? '"';
+WARNING: 'Warning:' (~[\n\r] ~[\n\r]*) ('\r'? '\n') ; 
 WS: [ \t\n\r\f]+ -> skip;
 COMMENT: ';' (~[%\n\r] ~[\n\r]* | /* empty */) ('\r'? '\n')? -> skip; 
-TOEOL: (~[%\n\r] ~[\n\r]*) ('\r'? '\n')? ; 
 
 ERROR: .;

@@ -17,15 +17,15 @@ public class DRealModelParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__10=1, T__9=2, T__8=3, T__7=4, T__6=5, T__5=6, T__4=7, T__3=8, T__2=9, 
-		T__1=10, T__0=11, INTEGER=12, REAL=13, INFRULE=14, EXPONENT=15, NUMERAL=16, 
-		SIMPLE_SYMBOL=17, SYMBOL_CHAR=18, SYMBOL_OR_NUM_CHAR=19, QUOTED_SYMBOL=20, 
-		STRING=21, WS=22, COMMENT=23, TOEOL=24, ERROR=25;
+		T__9=1, T__8=2, T__7=3, T__6=4, T__5=5, T__4=6, T__3=7, T__2=8, T__1=9, 
+		T__0=10, INTEGER=11, REAL=12, INFRULE=13, EXPONENT=14, NUMERAL=15, SIMPLE_SYMBOL=16, 
+		SYMBOL_CHAR=17, SYMBOL_OR_NUM_CHAR=18, QUOTED_SYMBOL=19, STRING=20, WARNING=21, 
+		WS=22, COMMENT=23, ERROR=24;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'Warning:'", "'true'", "'undef'", "'Bool'", "'[ ENTIRE ]'", 
-		"':'", "'['", "','", "']'", "'='", "'false'", "INTEGER", "REAL", "INFRULE", 
-		"EXPONENT", "NUMERAL", "SIMPLE_SYMBOL", "SYMBOL_CHAR", "SYMBOL_OR_NUM_CHAR", 
-		"QUOTED_SYMBOL", "STRING", "WS", "COMMENT", "TOEOL", "ERROR"
+		"<INVALID>", "'true'", "'undef'", "'Bool'", "'[ ENTIRE ]'", "':'", "'['", 
+		"','", "']'", "'='", "'false'", "INTEGER", "REAL", "INFRULE", "EXPONENT", 
+		"NUMERAL", "SIMPLE_SYMBOL", "SYMBOL_CHAR", "SYMBOL_OR_NUM_CHAR", "QUOTED_SYMBOL", 
+		"STRING", "WARNING", "WS", "COMMENT", "ERROR"
 	};
 	public static final int
 		RULE_model = 0, RULE_var_assign = 1, RULE_warning = 2, RULE_var_value = 3, 
@@ -97,7 +97,7 @@ public class DRealModelParser extends Parser {
 			setState(18);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__10) | (1L << SIMPLE_SYMBOL) | (1L << QUOTED_SYMBOL))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << SIMPLE_SYMBOL) | (1L << QUOTED_SYMBOL) | (1L << WARNING))) != 0)) {
 				{
 				setState(16);
 				switch (_input.LA(1)) {
@@ -107,7 +107,7 @@ public class DRealModelParser extends Parser {
 					setState(14); var_assign();
 					}
 					break;
-				case T__10:
+				case WARNING:
 					{
 					setState(15); warning();
 					}
@@ -183,7 +183,7 @@ public class DRealModelParser extends Parser {
 	}
 
 	public static class WarningContext extends ParserRuleContext {
-		public TerminalNode TOEOL() { return getToken(DRealModelParser.TOEOL, 0); }
+		public TerminalNode WARNING() { return getToken(DRealModelParser.WARNING, 0); }
 		public WarningContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -209,8 +209,7 @@ public class DRealModelParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(27); match(T__10);
-			setState(28); match(TOEOL);
+			setState(27); match(WARNING);
 			}
 		}
 		catch (RecognitionException re) {
@@ -281,28 +280,28 @@ public class DRealModelParser extends Parser {
 		Var_valueContext _localctx = new Var_valueContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_var_value);
 		try {
-			setState(41);
+			setState(40);
 			switch (_input.LA(1)) {
 			case T__6:
 				_localctx = new NumberRangeValContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(30); match(T__6);
-				setState(31); match(T__1);
-				setState(32); match(T__4);
-				setState(33); number_value();
-				setState(34); match(T__3);
-				setState(35); number_value();
-				setState(36); match(T__2);
+				setState(29); match(T__6);
+				setState(30); match(T__1);
+				setState(31); match(T__4);
+				setState(32); number_value();
+				setState(33); match(T__3);
+				setState(34); number_value();
+				setState(35); match(T__2);
 				}
 				break;
 			case T__7:
 				_localctx = new BoolValContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(38); match(T__7);
-				setState(39); match(T__1);
-				setState(40); three_val_bool();
+				setState(37); match(T__7);
+				setState(38); match(T__1);
+				setState(39); three_val_bool();
 				}
 				break;
 			default:
@@ -387,27 +386,27 @@ public class DRealModelParser extends Parser {
 		Number_valueContext _localctx = new Number_valueContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_number_value);
 		try {
-			setState(46);
+			setState(45);
 			switch (_input.LA(1)) {
 			case INFRULE:
 				_localctx = new InfinityValContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(43); match(INFRULE);
+				setState(42); match(INFRULE);
 				}
 				break;
 			case REAL:
 				_localctx = new RealValContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(44); match(REAL);
+				setState(43); match(REAL);
 				}
 				break;
 			case INTEGER:
 				_localctx = new IntegerValContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(45); match(INTEGER);
+				setState(44); match(INTEGER);
 				}
 				break;
 			default:
@@ -489,27 +488,27 @@ public class DRealModelParser extends Parser {
 		Three_val_boolContext _localctx = new Three_val_boolContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_three_val_bool);
 		try {
-			setState(51);
+			setState(50);
 			switch (_input.LA(1)) {
 			case T__9:
 				_localctx = new TrueValContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(48); match(T__9);
+				setState(47); match(T__9);
 				}
 				break;
 			case T__0:
 				_localctx = new FalseValContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(49); match(T__0);
+				setState(48); match(T__0);
 				}
 				break;
 			case T__8:
 				_localctx = new UndefValContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(50); match(T__8);
+				setState(49); match(T__8);
 				}
 				break;
 			default:
@@ -556,7 +555,7 @@ public class DRealModelParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(53);
+			setState(52);
 			_la = _input.LA(1);
 			if ( !(_la==SIMPLE_SYMBOL || _la==QUOTED_SYMBOL) ) {
 			_errHandler.recoverInline(this);
@@ -576,22 +575,21 @@ public class DRealModelParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\33:\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\329\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\7\2\23\n\2\f\2\16\2"+
-		"\26\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\3\5\3\5\3\5\3\5\5\5,\n\5\3\6\3\6\3\6\5\6\61\n\6\3\7\3\7\3\7\5\7\66"+
-		"\n\7\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\3\4\2\23\23\26\269\2\24\3\2\2"+
-		"\2\4\31\3\2\2\2\6\35\3\2\2\2\b+\3\2\2\2\n\60\3\2\2\2\f\65\3\2\2\2\16\67"+
-		"\3\2\2\2\20\23\5\4\3\2\21\23\5\6\4\2\22\20\3\2\2\2\22\21\3\2\2\2\23\26"+
-		"\3\2\2\2\24\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3\2\2\2\27\30"+
-		"\7\2\2\3\30\3\3\2\2\2\31\32\5\16\b\2\32\33\7\b\2\2\33\34\5\b\5\2\34\5"+
-		"\3\2\2\2\35\36\7\3\2\2\36\37\7\32\2\2\37\7\3\2\2\2 !\7\7\2\2!\"\7\f\2"+
-		"\2\"#\7\t\2\2#$\5\n\6\2$%\7\n\2\2%&\5\n\6\2&\'\7\13\2\2\',\3\2\2\2()\7"+
-		"\6\2\2)*\7\f\2\2*,\5\f\7\2+ \3\2\2\2+(\3\2\2\2,\t\3\2\2\2-\61\7\20\2\2"+
-		".\61\7\17\2\2/\61\7\16\2\2\60-\3\2\2\2\60.\3\2\2\2\60/\3\2\2\2\61\13\3"+
-		"\2\2\2\62\66\7\4\2\2\63\66\7\r\2\2\64\66\7\5\2\2\65\62\3\2\2\2\65\63\3"+
-		"\2\2\2\65\64\3\2\2\2\66\r\3\2\2\2\678\t\2\2\28\17\3\2\2\2\7\22\24+\60"+
-		"\65";
+		"\26\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
+		"\5\3\5\3\5\3\5\5\5+\n\5\3\6\3\6\3\6\5\6\60\n\6\3\7\3\7\3\7\5\7\65\n\7"+
+		"\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\3\4\2\22\22\25\258\2\24\3\2\2\2\4"+
+		"\31\3\2\2\2\6\35\3\2\2\2\b*\3\2\2\2\n/\3\2\2\2\f\64\3\2\2\2\16\66\3\2"+
+		"\2\2\20\23\5\4\3\2\21\23\5\6\4\2\22\20\3\2\2\2\22\21\3\2\2\2\23\26\3\2"+
+		"\2\2\24\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3\2\2\2\27\30\7\2"+
+		"\2\3\30\3\3\2\2\2\31\32\5\16\b\2\32\33\7\7\2\2\33\34\5\b\5\2\34\5\3\2"+
+		"\2\2\35\36\7\27\2\2\36\7\3\2\2\2\37 \7\6\2\2 !\7\13\2\2!\"\7\b\2\2\"#"+
+		"\5\n\6\2#$\7\t\2\2$%\5\n\6\2%&\7\n\2\2&+\3\2\2\2\'(\7\5\2\2()\7\13\2\2"+
+		")+\5\f\7\2*\37\3\2\2\2*\'\3\2\2\2+\t\3\2\2\2,\60\7\17\2\2-\60\7\16\2\2"+
+		".\60\7\r\2\2/,\3\2\2\2/-\3\2\2\2/.\3\2\2\2\60\13\3\2\2\2\61\65\7\3\2\2"+
+		"\62\65\7\f\2\2\63\65\7\4\2\2\64\61\3\2\2\2\64\62\3\2\2\2\64\63\3\2\2\2"+
+		"\65\r\3\2\2\2\66\67\t\2\2\2\67\17\3\2\2\2\7\22\24*/\64";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

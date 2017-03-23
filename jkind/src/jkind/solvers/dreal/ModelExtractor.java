@@ -37,7 +37,7 @@ public class ModelExtractor {
 	}
 
 	public static void walkWarning(WarningContext ctx, DRealModel model) {
-		model.addWarning(ctx.TOEOL().getText());
+		model.addWarning(ctx.getText());
 	}
 	
 	public static void walkVarAssign(Var_assignContext ctx, DRealModel model) {
