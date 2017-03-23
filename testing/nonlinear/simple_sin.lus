@@ -4,6 +4,6 @@
 
 node simple_sin(inp: real) returns (ok : bool);
 let
-  ok = sin(inp) < 1.002;
+  ok = sin(inp) <= 1.002;
   --%PROPERTY ok;
 tel;

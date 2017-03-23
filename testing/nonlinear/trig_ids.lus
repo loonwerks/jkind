@@ -1,0 +1,18 @@
+-- This property is nonlinear and requires dreal
+-- Expected output:
+--   VALID PROPERTIES: [ok] || K = 1 || Time = 0.1
+
+node eq_delta(inp: real; actual: real; delta: real) returns (ok: bool);
+let
+   ok = ((actual - delta) <= inp) and (inp <= (actual + delta));
+tel;
+
+node simple_sin(inp: real) returns (ok : bool);
+var
+  sincosval: real; 
+let
+  assert(inp >= 0.0 and inp < 10.0);
+  sincosval = (sin(inp)*sin(inp)) + (cos(inp)*cos(inp));
+  ok = eq_delta(sincosval, 1.0, 0.01);
+  --%PROPERTY ok;
+tel;

@@ -1,0 +1,25 @@
+-- This property is nonlinear and requires z3 or dreal
+-- Expected output:
+--   z3: VALID PROPERTIES: [ok, ok2] || K = 1 || Time = 0.1
+--   dreal: VALID_PROPERTIES: [ok, ok2] || K = 1 || Time = ~13.0
+
+node eq_delta(inp: real; actual: real; delta: real) returns (ok: bool);
+let
+   ok = ((actual - delta) <= inp) and (inp <= (actual + delta));
+tel;
+
+
+
+node gauss() returns (ok : bool; ok2: bool);
+var
+  i : int;
+  sum : int;
+let
+  i = 0 -> 1 + pre i;
+  sum = i -> i + pre sum ;
+
+  ok = (i < 100) => (sum = i * (i + 1) div 2);
+  ok2 = i >= 0;
+  --%PROPERTY ok;
+  --%PROPERTY ok2;
+tel;

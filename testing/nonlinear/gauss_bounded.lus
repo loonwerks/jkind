@@ -1,0 +1,36 @@
+-- This property is nonlinear and requires z3 or dreal
+-- Expected output:
+--   z3: VALID PROPERTIES: [ok, ok2] || K = 1 || Time = 0.1
+--   dreal: VALID_PROPERTIES: [ok, ok2] || K = 1 || Time = 32.9
+--
+-- Note: dreal requires ok2, which is a lemma restricting the ranges
+-- of i and sum.  gauss_bounded_3.lus is an improved formulation that
+-- only bounds i from below.
+--
+-- This lemma requirement indicates to some degree that without the
+-- warnings from dReal on boundary values, we are unlikely to be
+-- successful on inductive properties due to the behavior of dReal on
+-- extremely large in magnitude numbers; without range restrictions,
+-- the precision of these numbers is too coarse to support proof.
+
+node eq_delta(inp: real; actual: real; delta: real) returns (ok: bool);
+let
+   ok = ((actual - delta) <= inp) and (inp <= (actual + delta));
+tel;
+
+
+
+node gauss() returns (ok : bool; ok2: bool);
+var
+  i : int;
+  sum : int;
+let
+  i = 0 -> (if (pre(i) < 100) then (1 + pre i) else pre i);
+  sum = 0 -> pre sum + (if (pre(i) < 100) then i else 0) ;
+
+  ok = sum = i * (i + 1) div 2;
+  ok2 = sum >=0 and sum <= 10000 and
+        i >= 0 and i <= 105;
+  --%PROPERTY ok;
+  --%PROPERTY ok2;
+tel;

@@ -1,0 +1,27 @@
+-- This property is nonlinear and requires z3 or dreal
+-- Expected output:
+--   z3: VALID PROPERTIES: [ok] || K = 1
+--   dreal: (nontermination).  For whatever reason, this format is
+--          particularly hard for dreal, even when we provide a hint
+--          that i >= 0.
+
+node eq_delta(inp: real; actual: real; delta: real) returns (ok: bool);
+let
+   ok = ((actual - delta) <= inp) and (inp <= (actual + delta));
+tel;
+
+
+
+node gauss() returns (ok : bool; ok2: bool);
+var
+  i : int;
+  sum : int;
+let
+  i = 0 -> (if (pre(i) < 100) then (1 + pre i) else pre i);
+  sum = 0 -> pre sum + (if (pre(i) < 100) then i else 0) ;
+
+  ok = sum = i * (i + 1) div 2;
+  ok2 = i >= 0;
+  --%PROPERTY ok;
+  --%PROPERTY ok2;
+tel;
