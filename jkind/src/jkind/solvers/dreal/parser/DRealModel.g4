@@ -1,8 +1,10 @@
 grammar DRealModel;
 
-model: (var_assign*) EOF;
+model: (var_assign | warning)* EOF;
 
 var_assign : symbol ':' var_value ; 
+
+warning: 'Warning:' TOEOL;
 
 var_value: 
      '[ ENTIRE ]' '=' '[' number_value ',' number_value ']'   # numberRangeVal
@@ -42,5 +44,6 @@ QUOTED_SYMBOL: '|' (~'|'.*?) '|';
 STRING: '"' ('""' | .)*? '"';
 WS: [ \t\n\r\f]+ -> skip;
 COMMENT: ';' (~[%\n\r] ~[\n\r]* | /* empty */) ('\r'? '\n')? -> skip; 
+TOEOL: (~[%\n\r] ~[\n\r]*) ('\r'? '\n')? ; 
 
 ERROR: .;

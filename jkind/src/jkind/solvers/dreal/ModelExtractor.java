@@ -17,6 +17,7 @@ import jkind.solvers.dreal.parser.DRealModelParser.RealValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.SymbolContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Var_assignContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Var_valueContext;
+import jkind.solvers.dreal.parser.DRealModelParser.WarningContext;
 import jkind.solvers.smtlib2.Quoting;
 import jkind.util.BigFraction;
 
@@ -26,9 +27,16 @@ public class ModelExtractor {
 		for (Var_assignContext defineCtx : ctx.var_assign()) {
 			walkVarAssign(defineCtx, model);
 		}
+		for (WarningContext warnCtx : ctx.warning()) {
+			walkWarning(warnCtx, model); 
+		}
 		return model;
 	}
 
+	public static void walkWarning(WarningContext ctx, DRealModel model) {
+		model.addWarning(ctx.TOEOL().getText());
+	}
+	
 	public static void walkVarAssign(Var_assignContext ctx, DRealModel model) {
 		String var = getId(ctx.symbol());
 		Value val = getVal(ctx.var_value());

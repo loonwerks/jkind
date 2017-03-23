@@ -38,6 +38,12 @@ public interface DRealModelVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVar_assign(@NotNull DRealModelParser.Var_assignContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link DRealModelParser#warning}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWarning(@NotNull DRealModelParser.WarningContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code infinityVal}
 	 * labeled alternative in {@link DRealModelParser#number_value}.
 	 * @param ctx the parse tree

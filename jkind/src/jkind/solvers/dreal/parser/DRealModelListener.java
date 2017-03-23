@@ -53,6 +53,16 @@ public interface DRealModelListener extends ParseTreeListener {
 	 */
 	void exitVar_assign(@NotNull DRealModelParser.Var_assignContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link DRealModelParser#warning}.
+	 * @param ctx the parse tree
+	 */
+	void enterWarning(@NotNull DRealModelParser.WarningContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DRealModelParser#warning}.
+	 * @param ctx the parse tree
+	 */
+	void exitWarning(@NotNull DRealModelParser.WarningContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code infinityVal}
 	 * labeled alternative in {@link DRealModelParser#number_value}.
 	 * @param ctx the parse tree

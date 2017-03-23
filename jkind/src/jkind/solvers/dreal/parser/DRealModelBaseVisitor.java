@@ -46,6 +46,13 @@ public class DRealModelBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitWarning(@NotNull DRealModelParser.WarningContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitInfinityVal(@NotNull DRealModelParser.InfinityValContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

@@ -65,6 +65,18 @@ public class DRealModelBaseListener implements DRealModelListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWarning(@NotNull DRealModelParser.WarningContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWarning(@NotNull DRealModelParser.WarningContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInfinityVal(@NotNull DRealModelParser.InfinityValContext ctx) { }
 	/**
 	 * {@inheritDoc}
