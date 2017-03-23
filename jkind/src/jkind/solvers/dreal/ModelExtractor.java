@@ -1,7 +1,9 @@
 package jkind.solvers.dreal;
 
+import java.math.BigInteger;
 import java.util.Map;
 
+import jkind.interval.IntEndpoint;
 import jkind.interval.NumericEndpoint;
 import jkind.interval.NumericInterval;
 import jkind.interval.RealEndpoint;
@@ -10,6 +12,7 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.solvers.dreal.parser.DRealModelParser.BoolValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.InfinityValContext;
+import jkind.solvers.dreal.parser.DRealModelParser.IntegerValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.ModelContext;
 import jkind.solvers.dreal.parser.DRealModelParser.NumberRangeValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Number_valueContext;
@@ -54,7 +57,7 @@ public class ModelExtractor {
 			NumericEndpoint high = getNumber(nr_ctx.number_value(1));
 			return new NumericInterval(low, high);
 		} else if (ctx instanceof BoolValContext) {
-			String value = ctx.getText();
+			String value = ((BoolValContext) ctx).three_val_bool().getText();
 			if ("undef".equals(value)) {
 				return null;
 			} else if ("true".equals(value)) {
@@ -80,7 +83,10 @@ public class ModelExtractor {
 		} else if (ctx instanceof RealValContext) {
 			double val = Double.parseDouble(ctx.getText()); 
 			return new RealEndpoint(BigFraction.fromValue(val));
-		} else {
+		} else if (ctx instanceof IntegerValContext) {
+			return new IntEndpoint(new BigInteger(ctx.getText()));
+		}
+		else {
 			throw new IllegalArgumentException("Unknown number type in getNumber()");
 		}
 	}
