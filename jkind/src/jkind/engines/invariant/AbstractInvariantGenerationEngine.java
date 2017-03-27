@@ -21,8 +21,7 @@ import jkind.sexp.Sexp;
 import jkind.solvers.Model;
 import jkind.solvers.ModelEvaluator;
 import jkind.solvers.Result;
-import jkind.solvers.SatResult;
-import jkind.solvers.UnknownResult;
+import jkind.solvers.UnsatResult;
 import jkind.translation.Specification;
 import jkind.util.SexpUtil;
 
@@ -77,14 +76,16 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 			Sexp query = SexpUtil.conjoinInvariants(invariant.toExprs(), k);
 			result = solver.query(query);
 
-			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
+			if (!(result instanceof UnsatResult)) {
+				Model model = getModel(result);
+				if (model == null) {
+					comment("No model - unable to continue");
+					throw new StopException();
+				}
 				invariant.refine(new ModelEvaluator(model, k));
 				comment("Finished single base step refinement");
-			} else if (result instanceof UnknownResult) {
-				throw new StopException();
 			}
-		} while (!invariant.isTrivial() && result instanceof SatResult);
+		} while (!invariant.isTrivial() && !(result instanceof UnsatResult));
 
 		solver.pop();
 	}
@@ -104,12 +105,16 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 
 			result = solver.query(getInductiveQuery(k, invariant));
 
-			if (result instanceof SatResult) {
-				Model model = ((SatResult) result).getModel();
+			if (!(result instanceof UnsatResult)) {
+				Model model = getModel(result);
+				if (model == null) {
+					comment("No model - unable to continue");
+					throw new StopException();
+				}
 				invariant.refine(new ModelEvaluator(model, k));
 				comment("Finished single inductive step refinement");
 			}
-		} while (!invariant.isTrivial() && result instanceof SatResult);
+		} while (!invariant.isTrivial() && !(result instanceof UnsatResult));
 
 		solver.pop();
 

@@ -32,6 +32,8 @@ public class JKindApi extends KindApi {
 
 	protected String jkindJar;
 	protected Map<String, String> environment = new HashMap<>();
+	protected String readAdviceFileName = null;
+	protected String writeAdviceFileName = null;
 
 	/**
 	 * Set the maximum depth for BMC and k-induction
@@ -124,6 +126,20 @@ public class JKindApi extends KindApi {
 		environment.put(key, value);
 	}
 
+	/*
+	 * Set the advice file to be read
+	 */
+	public void setReadAdviceFile(String fileName) {
+		readAdviceFileName = fileName;
+	}
+
+	/*
+	 * Set the advice file to be written
+	 */
+	public void setWriteAdviceFile(String fileName) {
+		writeAdviceFileName = fileName;
+	}
+
 	/**
 	 * Run JKind on a Lustre program
 	 * 
@@ -182,6 +198,15 @@ public class JKindApi extends KindApi {
 			args.add("-solver");
 			args.add(solver.toString());
 		}
+		String tempDir = System.getProperty("java.io.tmpdir");
+		if (readAdviceFileName != null) {
+			args.add("-read_advice");
+			args.add(new File(tempDir, readAdviceFileName).getAbsolutePath());
+		}
+		if (writeAdviceFileName != null) {
+			args.add("-write_advice");
+			args.add(new File(tempDir, writeAdviceFileName).getAbsolutePath());
+		}
 
 		args.add(lustreFile.toString());
 
@@ -215,7 +240,7 @@ public class JKindApi extends KindApi {
 		Process process = builder.start();
 
 		String output = ApiUtil.readAll(process.getInputStream());
-		if (process.exitValue() != 0) {
+		if (process.waitFor() != 0) {
 			throw new JKindException("Error running JKind: " + output);
 		}
 		return output;

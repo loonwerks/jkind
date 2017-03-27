@@ -222,7 +222,16 @@ public class XmlParseThread extends Thread {
 		if (kNode == null) {
 			return 0;
 		}
-		return Integer.parseInt(kNode.getTextContent());
+		int k = Integer.parseInt(kNode.getTextContent());
+
+		switch (backend) {
+		case JKIND:
+			return k;
+		case KIND2:
+			return k + 1;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	private String getAnswer(Node answerNode) {
@@ -306,6 +315,11 @@ public class XmlParseThread extends Thread {
 		Element intervalElement = getElement(valueElement, "Interval");
 		if (intervalElement != null) {
 			return getIntervalValue(intervalElement, type);
+		}
+
+		if (type.startsWith("array of")) {
+			type = type.replaceAll("array of ", "");
+			return Util.parseArrayValue(type, getElement(valueElement, "Array"));
 		}
 
 		return Util.parseValue(type, valueElement.getTextContent());
