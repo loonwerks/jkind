@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 public class Main {
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
-			System.err.println("Usage: jcoverage <filename.lus>");
+			System.err.println("Usage of jcoverage : <filename.lus>");
 			System.exit(-1);
 		}
 		String filename = args[0];
@@ -31,7 +31,7 @@ public class Main {
 		program = visitor.visit(program);
 		program = SubrangeFixVisitor.fix(program);
 		
-		Util.writeToFile(program.toString(), new File(filename + ".coverage"));
+		Util.writeToFile(program.toString(), new File(filename + ".exctracted"));
 		JKindResult result = runJKind(program);
 		CoverageReporter.writeHtml(filename, program, visitor.getLocationMap(), result);
 	}
@@ -53,6 +53,7 @@ public class Main {
 		api.setIvcReduction();
 		api.setSolver(SolverOption.Z3);
 		api.execute(program, result, new NullProgressMonitor());
+
 		return result;
 	}
 

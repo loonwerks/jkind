@@ -3,14 +3,16 @@ package jkind;
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
-import jkind.lustre.Node;
+import jkind.engines.ivcs.IvcUtil; 
+import jkind.lustre.Node; 
 import jkind.lustre.Program;
-import jkind.lustre.builders.ProgramBuilder;
+import jkind.lustre.builders.ProgramBuilder; 
 import jkind.translation.InlineSimpleEquations;
 import jkind.translation.Specification;
-import jkind.translation.Translate;
+import jkind.translation.Translate; 
 
 public class JKind {
+	public static final String EQUATION_NAME = "__addedEQforAsrInconsis_by_JKind__"; 
 	public static void main(String[] args) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -25,12 +27,20 @@ public class JKind {
 				}
 			}
 
-			Node main = Translate.translate(program);
-			Specification userSpec = new Specification(main, settings.slicing);
+			Node main = Translate.translate(program); 
+			if(settings.allAssigned){
+				
+				//to compare with the results of our first paper, comment the next line
+				// the next line is necessary for consistency_checker
+				//main = IvcUtil.normalizeAssertions(main);
+				
+				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
+			} 
+			Specification userSpec = new Specification(main, settings.slicing); 
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
-			int exitCode = new Director(settings, userSpec, analysisSpec).run();
-			System.exit(exitCode); // Kills all threads
+			new Director(settings, userSpec, analysisSpec).run();
+			System.exit(0); // Kills all threads
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);

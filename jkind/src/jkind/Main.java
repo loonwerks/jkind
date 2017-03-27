@@ -55,6 +55,10 @@ public class Main {
 		case "-jkind":
 			JKind.main(subArgs);
 			break;
+			
+		case "-jsupport":
+			JSupport.main(subArgs);
+			break;
 
 		case "-jlustre2kind":
 			JLustre2Kind.main(subArgs);

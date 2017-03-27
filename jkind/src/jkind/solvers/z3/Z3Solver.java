@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jkind.lustre.NamedType;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.MaxSatSolver;
+import jkind.solvers.MaxSatSolver; 
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.solvers.smtlib2.SmtLib2Solver; 
 
 public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	private final boolean linear;
@@ -83,13 +84,41 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	}
 
 	@Override
-	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+	public Result quickCheckSat(List<Symbol> activationLiterals) {
 		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver();
 		if (isSat(status)) {
 			return new SatResult();
 		} else if (isUnsat(status)) {
 			return new UnsatResult(getUnsatCore(activationLiterals));
+		} else {
+			return new UnknownResult();
+		}
+	}
+	
+	/** 
+	 * similar to quickCheckSat, but focused on 
+	 *     1- either the SAT model or unsat-core
+	 *     2- or just the return Type of Result
+	 */
+	public Result checkSat(List<Symbol> activationLiterals, boolean getModel, boolean getCore) {
+		send(new Cons("check-sat", activationLiterals));
+		String status = readFromSolver(); 
+		
+		if (isSat(status)) {
+			if(getModel){
+				send("(get-model)"); 
+				return new SatResult(parseModel(readFromSolver()));
+			}else{
+				return new SatResult();
+			}
+		} else if (isUnsat(status)) { 
+			if(getCore){
+				return new UnsatResult(getUnsatCore(activationLiterals));
+			}
+			else{
+				return new UnsatResult();
+			}
 		} else {
 			return new UnknownResult();
 		}
@@ -153,7 +182,8 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	}
 
 	@Override
-	public Result maxsatQuery(Sexp query) {
+	public Result maxsatQuery(Sexp query) { 
 		return query(query);
 	}
+ 
 }

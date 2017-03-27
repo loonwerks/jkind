@@ -1,7 +1,7 @@
 package jkind.engines;
 
 import jkind.JKindException;
-import jkind.JKindSettings;
+import jkind.JKindSettings; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;

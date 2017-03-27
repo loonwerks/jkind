@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
 import jkind.lustre.Expr;
@@ -15,6 +16,7 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.Signal;
+import jkind.util.Tuple;
 import jkind.util.Util;
 
 public class XmlWriter extends Writer {
@@ -44,31 +46,58 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		for (String prop : props) {
-			writeValid(prop, source, k, runtime, invariants, ivc);
+			writeValid(prop, source, k, runtime, invariants, ivc, allIvcs);
 		}
 	}
 
 	public void writeValid(String prop, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
-		for (Expr invariant : invariants) {
-			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+		
+		if(allIvcs.isEmpty()){
+			for (Expr invariant : invariants) {
+				out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+			}
+			for (String supp : ivc) {
+				out.println("    <Ivc>" + supp + "</Ivc>");
+			}
+		}else{
+			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
+			int count = 1;
+			 
+			for (String supp : ivc) {
+				out.println("    <MustElem>" + supp + "</MustElem>");
+			}
+			
+			for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
+				out.println("    <IvcSet number=\"" + count + "\">");
+				for (String invariant : ivcSet.secondElement()) {
+					out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+				}
+				for (String supp : ivcSet.firstElement()) {
+					out.println("    <Ivc>" + supp + "</Ivc>");
+				}
+				out.println("    </IvcSet>");
+				count++;
+			}
 		}
-		for (String supp : ivc) {
-			out.println("    <Ivc>" + supp + "</Ivc>");
-		}
+		
 		out.println("  </Property>");
 		out.flush();
 	}
 
 	private String escape(Expr invariant) {
 		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
+	}
+	
+	private String escape(String invariant) {
+		return invariant.replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	@Override
@@ -178,4 +207,32 @@ public class XmlWriter extends Writer {
 		out.println("  </Property>");
 		out.flush();
 	}
+
+	@SuppressWarnings({ "incomplete-switch", "unchecked" })
+	@Override
+	public void writeConsistencyCheckerResults(ConsistencyMessage cm) {
+		switch(cm.getStatus()){
+			case CONSISTENT: 
+				return;
+				
+			case UC: 
+				out.println("    <Inconsistencies>");  
+				for(String c : (Set<String>)cm.getConsistencyMsg()){
+					out.println("      <Inconsistency>" + c + "</Inconsistency>"); 
+				} 
+				out.println("    </Inconsistencies>");  
+				break;
+				
+			case CEX:
+				out.println("    <InconsistencyWithCounterexample>"); 
+				Counterexample cex = ((List<Counterexample>)cm.getConsistencyMsg()).get(0);
+				for (Signal<Value> signal : cex.getSignals()) {
+					writeSignal(cex.getLength(), signal);
+				}
+				out.println("    </InonsistencyCounterexample>");
+				break;
+		}
+		out.flush();
+	}
+ 
 }

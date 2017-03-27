@@ -3,7 +3,7 @@ package jkind.engines.invariant;
 import java.util.List;
 
 import jkind.JKindSettings;
-import jkind.engines.Director;
+import jkind.engines.Director; 
 import jkind.lustre.Expr;
 import jkind.translation.Specification;
 

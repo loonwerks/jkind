@@ -5,6 +5,7 @@ public class JKindSettings extends Settings {
 	public int n = Integer.MAX_VALUE;
 	public int timeout = Integer.MAX_VALUE;
 	
+	public boolean miniJkind = false;
 	public boolean excel = false;
 	public boolean xml = false;
 	public boolean xmlToStdout = false;
@@ -16,14 +17,17 @@ public class JKindSettings extends Settings {
     public int pdrMax = 1;
 	public boolean inductiveCounterexamples = false;
 	public boolean reduceIvc = false;
+	public boolean allIvcs = false;
 	public boolean smoothCounterexamples = false;
     public boolean intervalGeneralization = false;
     public boolean inlining = true;
 	public boolean slicing = true;
-	
 	public SolverOption solver = SolverOption.SMTINTERPOL;
 	public boolean scratch = false;
-
 	public String writeAdvice = null;
-	public String readAdvice = null;
+	public String readAdvice = null; 
+	public boolean allAssigned = false;
+	public boolean bmcConsistencyCheck =  false;
+	public boolean consistencyCheck =  false;
+	public String useUnsatCore = null;
 }

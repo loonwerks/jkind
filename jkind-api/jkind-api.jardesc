@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="jkind-api/jkind-api.jar"/>
+    <jar path="C:/Users/Elaheh/Documents/jkind/jkind-api.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/jkind-api/jkind-api.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+    <manifest generateManifest="true" mainClassHandleIdentifier="=jkind-api/src&lt;jkind.api.examples.coverage{Main.java[Main" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
-        <javaElement handleIdentifier="=jkind-api/src"/>
-        <javaElement handleIdentifier="=jkind-api/resources"/>
-        <javaElement handleIdentifier="=jkind-common/src"/>
+        <folder path="/jkind/dependencies"/>
+        <folder path="/jkind/.settings"/>
+        <folder path="/jkind/launch"/>
+        <javaElement handleIdentifier="=jkind-api"/>
+        <javaElement handleIdentifier="=jkind/src"/>
+        <javaElement handleIdentifier="=jkind-common"/>
     </selectedElements>
 </jardesc>

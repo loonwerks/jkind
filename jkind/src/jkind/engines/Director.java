@@ -20,6 +20,12 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
+import jkind.engines.ivcs.AllIvcsExtractorrEngine;
+import jkind.engines.ivcs.BmcBasedConsistencyChecker;
+import jkind.engines.ivcs.ConsistencyChecker;
+import jkind.engines.ivcs.IvcReductionEngine;
+import jkind.engines.ivcs.IvcUtil;
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -39,6 +45,7 @@ import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.ModelReconstructionEvaluator;
+import jkind.util.Tuple;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -52,7 +59,7 @@ public class Director extends MessageHandler {
 	private final Specification userSpec;
 	private final Specification analysisSpec;
 	private final Writer writer;
-	private final long startTime;
+    public final long startTime;
 
 	private final List<String> remainingProperties = new ArrayList<>();
 	private final List<String> validProperties = new ArrayList<>();
@@ -66,11 +73,13 @@ public class Director extends MessageHandler {
 	private Advice inputAdvice;
 	private AdviceWriter adviceWriter;
 
+	private MiniJKind miniJkind;
+
 	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec) {
 		this.settings = settings;
 		this.userSpec = userSpec;
 		this.analysisSpec = analysisSpec;
-
+		this.miniJkind = null;
 		this.writer = getWriter();
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(analysisSpec.node.properties);
@@ -86,7 +95,28 @@ public class Director extends MessageHandler {
 
 		initializeUnknowns(settings, analysisSpec.node.properties);
 	}
+	
+	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec, MiniJKind miniJkind) {
+		this.settings = settings;
+		this.userSpec = userSpec;
+		this.analysisSpec = analysisSpec;
+		this.miniJkind = miniJkind;
+		this.writer = getWriter();
+		this.startTime = System.currentTimeMillis();
+		this.remainingProperties.addAll(analysisSpec.node.properties);
 
+		if (settings.readAdvice != null) {
+			this.inputAdvice = AdviceReader.read(settings.readAdvice);
+		}
+
+		if (settings.writeAdvice != null) {
+			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
+			this.adviceWriter.addVarDecls(Util.getVarDecls(analysisSpec.node));
+		}
+
+		initializeUnknowns(settings, analysisSpec.node.properties);
+	}
+	 
 	private final Writer getWriter() {
 		try {
 			if (settings.excel) {
@@ -94,7 +124,10 @@ public class Director extends MessageHandler {
 			} else if (settings.xml) {
 				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap,
 						settings.xmlToStdout);
-			} else {
+			} else if (settings.miniJkind){
+				return new ConsoleWriter(new NodeLayout(userSpec.node), miniJkind);
+			}
+			else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
 			}
 		} catch (IOException e) {
@@ -103,7 +136,9 @@ public class Director extends MessageHandler {
 	}
 
 	public int run() {
-		printHeader();
+		if(!settings.miniJkind){
+			printHeader();
+		}
 		writer.begin();
 		addShutdownHook();
 		createAndStartEngines();
@@ -113,12 +148,11 @@ public class Director extends MessageHandler {
 			processMessages();
 			sleep(100);
 		}
-
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
-			exitCode = reportFailures();
+			exitCode = reportFailures(); 
 		}
 		return exitCode;
 	}
@@ -151,7 +185,7 @@ public class Director extends MessageHandler {
 	};
 
 	private void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+		Runtime.getRuntime().addShutdownHook(shutdownHook); 
 	}
 
 	private boolean removeShutdownHook() {
@@ -182,10 +216,6 @@ public class Director extends MessageHandler {
 			addEngine(new GraphInvariantGenerationEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.reduceIvc) {
-			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
-		}
-
 		if (settings.smoothCounterexamples) {
 			addEngine(new SmoothingEngine(analysisSpec, settings, this));
 		}
@@ -201,6 +231,22 @@ public class Director extends MessageHandler {
 		if (settings.readAdvice != null) {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
+		
+		if (settings.bmcConsistencyCheck) { 
+			addEngine(new BmcBasedConsistencyChecker(analysisSpec, settings, this));
+		} 
+		
+		if (settings.consistencyCheck) { 
+			addEngine(new ConsistencyChecker(analysisSpec, settings, this)); 
+		} 
+		
+		if (settings.reduceIvc) {
+			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
+		}
+		
+		if (settings.allIvcs) { 
+			addEngine(new AllIvcsExtractorrEngine(analysisSpec, settings, this));
+		} 
 	}
 
 	private void addEngine(Engine engine) {
@@ -242,10 +288,13 @@ public class Director extends MessageHandler {
 	private int reportFailures() {
 		int exitCode = 0;
 		for (Engine engine : engines) {
-			if (engine.getThrowable() != null) {
+			if (engine.getThrowable() != null) { 
 				StdErr.println(engine.getName() + " process failed");
 				StdErr.printStackTrace(engine.getThrowable());
-				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION; 
+				if(engine.getThrowable().toString().contains("IvcException")){
+					exitCode = ExitCodes.IVC_EXCEPTION;
+				}
 			}
 		}
 		return exitCode;
@@ -297,7 +346,21 @@ public class Director extends MessageHandler {
 		}
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc);
+		
+		if((!settings.miniJkind) && (settings.reduceIvc)){
+			Set<String> ivc = IvcUtil.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
+			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
+			if(settings.allIvcs){
+				for(Tuple<Set<String>, List<String>> item : vm.allIvcs){ 
+					allIvcs.add(new Tuple<Set<String>, List<String>>(
+							IvcUtil.trimNode(IvcUtil.findRightSide(item.firstElement(),
+									settings.allAssigned, analysisSpec.node.equations)), item.secondElement()));
+				}
+			}
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs);
+		}else{
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs);
+		}
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {
@@ -411,16 +474,34 @@ public class Director extends MessageHandler {
 			writer.writeBaseStep(bsm.properties, baseStep);
 		}
 	}
+	
+	public void handleConsistencyMessage(ConsistencyMessage cm){
+		for (Engine e : engines){
+			if(e.name.equals(ConsistencyChecker.NAME)){
+				((ConsistencyChecker)e).handleMessage(cm);
+				break;
+			}
+		}
+	}
 
 	@Override
 	protected void handleMessage(InvariantMessage im) {
 	}
 
 	public Itinerary getValidMessageItinerary() {
-		List<EngineType> destinations = new ArrayList<>();
+		List<EngineType> destinations = new ArrayList<>(); 
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}
+		if (settings.bmcConsistencyCheck) {
+			destinations.add(EngineType.BMC_BASED_CONSISTENCY_CHECKER);
+		}
+		if (settings.allIvcs) {
+			destinations.add(EngineType.IVC_REDUCTION_ALL);
+		}else if (settings.consistencyCheck){
+			destinations.add(EngineType.CONSISTENCY_CHECKER);
+		}
+
 		return new Itinerary(destinations);
 	}
 
@@ -439,12 +520,12 @@ public class Director extends MessageHandler {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
 
-	private void printSummary() {
-		if (!settings.xmlToStdout) {
+	private void printSummary() { 
+		if (!settings.xmlToStdout && !settings.miniJkind) {
 			System.out.println("    -------------------------------------");
 			System.out.println("    --^^--        SUMMARY          --^^--");
 			System.out.println("    -------------------------------------");
-			System.out.println();
+			System.out.println(); 
 			if (!validProperties.isEmpty()) {
 				System.out.println("VALID PROPERTIES: " + validProperties);
 				System.out.println();
@@ -480,5 +561,9 @@ public class Director extends MessageHandler {
 			boolean concrete) {
 		model = ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(userSpec, k, model);
+	}
+
+	public void writeConsistencyCheckerResults(ConsistencyMessage message) {
+		writer.writeConsistencyCheckerResults(message);
 	}
 }

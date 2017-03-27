@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.excel.ExcelFormatter;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -19,6 +20,7 @@ import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.results.layout.Layout;
 import jkind.results.layout.NodeLayout;
+import jkind.util.Tuple;
 
 public class ExcelWriter extends Writer {
 	private final File file;
@@ -48,9 +50,10 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
+		// doesn't write allIvcs...
 		for (String prop : props) {
 			properties.add(new ValidProperty(prop, source, k, runtime, invText, ivc));
 		}
@@ -79,4 +82,9 @@ public class ExcelWriter extends Writer {
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		properties.add(new InconsistentProperty(prop, source, k, runtime));
 	}
+
+	@Override
+	public void writeConsistencyCheckerResults(ConsistencyMessage message) { 
+	}
+ 
 }

@@ -25,6 +25,7 @@ public class JKindApi extends KindApi {
 	protected Integer pdrMax = null;
 	protected boolean inductiveCounterexamples = false;
 	protected boolean ivcReduction = false;
+	protected boolean allIvcs = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean intervalGeneralization = false;
 
@@ -92,6 +93,13 @@ public class JKindApi extends KindApi {
 	 */
 	public void setIvcReduction() {
 		ivcReduction = true;
+	}
+	
+	/**
+	 * Find all inductive validity cores for valid properties
+	 */
+	public void setAllIvcs() {
+		allIvcs = true;
 	}
 
 	/**
@@ -188,6 +196,9 @@ public class JKindApi extends KindApi {
 		if (ivcReduction) {
 			args.add("-ivc");
 		}
+		if (allIvcs) {
+			args.add("-all_ivcs");
+		}
 		if (smoothCounterexamples) {
 			args.add("-smooth");
 		}
@@ -221,9 +232,9 @@ public class JKindApi extends KindApi {
 	}
 
 	private String getOrFindJKindJar() {
-		if (jkindJar != null) {
-			return jkindJar;
-		} else {
+		if (jkindJar != null) { 
+			return jkindJar; 
+		} else {  
 			return ApiUtil.findJKindJar().toString();
 		}
 	}

@@ -1,0 +1,12 @@
+node main() returns (e1 : bool);
+	var 
+		x : int; y : int;
+	let 
+		
+		x = y;
+		y = x + 1;
+
+		e1 = (y = 7);
+
+		--%PROPERTY e1;
+	tel;

@@ -20,6 +20,7 @@ import jkind.util.Util;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class ApiUtil {
+ 
 	public static File writeLustreFile(String program) {
 		return writeTempFile("jkind-api-", ".lus", program);
 	}
@@ -35,7 +36,7 @@ public class ApiUtil {
 		} catch (IOException e) {
 			throw new JKindException("Cannot write to file: " + file, e);
 		}
-	}
+}
 
 	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile,
 			JKindResult result, IProgressMonitor monitor, DebugLogger debug) {

@@ -3,26 +3,25 @@ package jkind;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
-import java.util.List;
-
-import jkind.engines.SolverUtil;
-
+import java.util.List; 
+import jkind.engines.SolverUtil;   
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
 public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
-	private static final String INTERVAL = "interval";
-	private static final String IVC = "ivc";
+	private static final String INTERVAL = "interval"; 
 	private static final String MAIN = "main";
 	private static final String N = "n";
 	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
-	private static final String NO_K_INDUCTION = "no_k_induction";
-	private static final String NO_SLICING = "no_slicing";
+	private static final String NO_K_INDUCTION = "no_k_induction"; 
 	private static final String PDR_MAX = "pdr_max";
-	private static final String READ_ADVICE = "read_advice";
+	private static final String READ_ADVICE = "read_advice"; 
+	private static final String IVC = "ivc";
+	private static final String IVC_ALL = "all_ivcs";
+	private static final String NO_SLICING = "no_slicing"; 
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -30,6 +29,10 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
+	private static final String ALL_ASSIGNED = "all_assigned";
+	private static final String CONSISTENCY_BMC = "bmc_consistency_check";
+	private static final String CONSISTENCY = "consistency_check";
+	private static final String JSUPPORT_USE_UNSAT_CORE = "use_unsat_core";
 
 	private final JKindSettings settings;
 
@@ -49,9 +52,16 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(IVC, false,
-				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
-		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
-		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
+				"find an inductive validity core for valid properties (based on --%IVC annotated elements)"); 
+		options.addOption(IVC_ALL, false,
+				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
+		options.addOption(CONSISTENCY_BMC, false,
+				"find if the model is consistent based on BMC");
+		options.addOption(CONSISTENCY, false,
+				"find if the model is consistent");
+		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
+		 options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)"); 
+		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)"); 
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
@@ -67,6 +77,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
+		options.addOption(JSUPPORT_USE_UNSAT_CORE, true, "make JSupport use an initial IVC as input");
 		return options;
 	}
 
@@ -97,10 +108,6 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(INDUCT_CEX)) {
 			settings.inductiveCounterexamples = true;
-		}
-
-		if (line.hasOption(IVC)) {
-			settings.reduceIvc = true;
 		}
 
 		if (line.hasOption(MAIN)) {
@@ -137,6 +144,40 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(READ_ADVICE)) {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
+		}
+		
+		if (line.hasOption(CONSISTENCY_BMC)){
+			settings.bmcConsistencyCheck = true; 
+			settings.allAssigned = true;
+			settings.slicing = false;
+			settings.reduceIvc = true; 
+		}
+		
+		if (line.hasOption(IVC)) {
+			settings.reduceIvc = true;
+		}
+		
+		if (line.hasOption(CONSISTENCY)){
+			settings.consistencyCheck = true;
+			settings.bmcConsistencyCheck = false; 
+			settings.allAssigned = true;
+			settings.slicing = false;
+			
+			if(! settings.reduceIvc){
+				settings.reduceIvc = true;
+				settings.allIvcs = true;
+			}
+		}
+		
+		if (line.hasOption(IVC_ALL)) {
+			settings.reduceIvc = true;
+			settings.allIvcs = true;
+		}
+		
+		if (line.hasOption(ALL_ASSIGNED)){
+			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
+				settings.allAssigned = true;
+			} 
 		}
 
 		if (line.hasOption(TIMEOUT)) {
@@ -177,6 +218,10 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.xmlToStdout = true;
 			settings.xml = true;
 		}
+		
+		if (line.hasOption(JSUPPORT_USE_UNSAT_CORE)) {
+			settings.useUnsatCore = line.getOptionValue(JSUPPORT_USE_UNSAT_CORE);
+		}
 	}
 
 	private static SolverOption getSolverOption(String solver) {
@@ -194,10 +239,42 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
+		if (settings.bmcConsistencyCheck || settings.consistencyCheck){
+			if (settings.solver != SolverOption.Z3) {
+				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check is not supported with "
+				 						+ settings.solver);
+			}
+			if(settings.reduceIvc && settings.consistencyCheck && !settings.allIvcs){
+				StdErr.warning("-consistency_check with -ivc option will work with a single proof."
+						+ "\nin order for a complete check, use -consistency_check without -ivc");
+		
+			}
+			if (settings.excel) {
+				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "consistency check does not suppoert option: "+ EXCEL);
+			}
+		}
+		
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
+			}
+			if(! settings.allAssigned){
+				StdErr.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
+			}
+		}
+		
+		if (settings.allIvcs) { 
+			if (settings.solver != SolverOption.Z3) {
+				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
+				 						+ settings.solver);
+				 			}
+			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
+				StdErr.warning(settings.solver
+						+ " does not support unsat-cores so IVC reduction will be slow");
+			}  
+			if(!settings.allAssigned && !settings.reduceIvc){
+				StdErr.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
 			}
 		}
 
