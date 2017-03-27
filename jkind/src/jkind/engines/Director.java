@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
@@ -20,12 +19,9 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
-import jkind.engines.ivcs.AllIvcsExtractorrEngine;
-import jkind.engines.ivcs.BmcBasedConsistencyChecker;
-import jkind.engines.ivcs.ConsistencyChecker;
+import jkind.engines.ivcs.AllIvcsExtractorrEngine; 
 import jkind.engines.ivcs.IvcReductionEngine;
-import jkind.engines.ivcs.IvcUtil;
-import jkind.engines.ivcs.messages.ConsistencyMessage;
+import jkind.engines.ivcs.IvcUtil; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -231,14 +227,6 @@ public class Director extends MessageHandler {
 		if (settings.readAdvice != null) {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
-		
-		if (settings.bmcConsistencyCheck) { 
-			addEngine(new BmcBasedConsistencyChecker(analysisSpec, settings, this));
-		} 
-		
-		if (settings.consistencyCheck) { 
-			addEngine(new ConsistencyChecker(analysisSpec, settings, this)); 
-		} 
 		
 		if (settings.reduceIvc) {
 			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
@@ -475,15 +463,6 @@ public class Director extends MessageHandler {
 		}
 	}
 	
-	public void handleConsistencyMessage(ConsistencyMessage cm){
-		for (Engine e : engines){
-			if(e.name.equals(ConsistencyChecker.NAME)){
-				((ConsistencyChecker)e).handleMessage(cm);
-				break;
-			}
-		}
-	}
-
 	@Override
 	protected void handleMessage(InvariantMessage im) {
 	}
@@ -561,9 +540,5 @@ public class Director extends MessageHandler {
 			boolean concrete) {
 		model = ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(userSpec, k, model);
-	}
-
-	public void writeConsistencyCheckerResults(ConsistencyMessage message) {
-		writer.writeConsistencyCheckerResults(message);
 	}
 }

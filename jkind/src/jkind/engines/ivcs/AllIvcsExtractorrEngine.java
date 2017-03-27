@@ -1,20 +1,16 @@
 package jkind.engines.ivcs;
-import static java.util.stream.Collectors.toList; 
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+import static java.util.stream.Collectors.toList;  
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet; 
 import java.util.List; 
-import java.util.Set; 
-import jkind.ExitCodes; 
+import java.util.Set;  
 import jkind.JKindException;
 import jkind.JKindSettings; 
 import jkind.StdErr;
 import jkind.engines.Director;
 import jkind.engines.MiniJKind;
-import jkind.engines.SolverBasedEngine;
-import jkind.engines.ivcs.messages.ConsistencyMessage;
+import jkind.engines.SolverBasedEngine; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -50,11 +46,6 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	private Set<String> mayElements = new HashSet<>();  
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT; 
-	
-	// these variables are only used for the experiments
-	private double runtime;  
-	//--------------------------------------------------
-	
 
 	public AllIvcsExtractorrEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -78,10 +69,6 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	}
 	
 	private void reduce(ValidMessage vm) { 
-		
-		//----- for the experiments---------
-		runtime = System.currentTimeMillis(); 
-		//-----------------------------------
 		
 		for (String property : vm.valid) {
 			mayElements.clear();
@@ -125,13 +112,6 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		} 
 		
 		z3Solver.pop();
-		
-		//--------- for the experiments --------------
-		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-		recordRuntime();
-		//--------------------------------------------
-	
-		processMustElements(mustChckList, vm.ivc, property.toString());
 		sendValid(property.toString(), vm);
 	}
 
@@ -190,7 +170,6 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 				} 
 			} 
 			if(temp.isEmpty()){ 
-				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
 			else{ 
@@ -255,7 +234,6 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 			}
 			
 			if(temp.isEmpty()){ 
-				director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
 			else{
@@ -377,116 +355,7 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		Itinerary itinerary = vm.getNextItinerary(); 
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
-	
-	private void processMustElements (Set<String> mustChckList, Set<String> initialIvc, String prop) { 
-		Set<String> smallestSet = initialIvc; 
-		
-		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			if(item.firstElement().size() < smallestSet.size()){
-				smallestSet = item.firstElement();
-			}
-		}
-		
-		Set<String> candidates = new HashSet<>(smallestSet); 
-		candidates.removeAll(mustElements); 
-		MinimalIvcFinder minimalFinder = new MinimalIvcFinder
-				(IvcUtil.overApproximateWithIvc(spec.node, smallestSet, prop), settings.filename, prop);
-		
-		/*
-		 * for now, we don't really use this part. The output only matters for the experiments
-		 * if we're not running experiment the following line should be replaced with the next
-		 * */   
-		
-		Set<String> minimalIvc = minimalFinder.minimizeIvc(candidates, mustElements, true, TIMEOUT);
-		//Set<String> minimalIvc = minimalFinder.reduce(candidates, mustElements, false, TIMEOUT); 
-		//processIntersection(mustChckList, initialIvc, prop);
-	}
-	
-	/** we don't have a well-formed idea for this method yet. 
-	 * the following implementation puts just some pieces of code together that might be used later
-	 */
-	private void processIntersection(Set<String> mustChckList, Set<String> initialIvc, String prop) { 
-		// if the algorithm is not complete, we need to process mucstChckList instead of the following
-		Set<String> intersect = new HashSet<>();
-		intersect.addAll(initialIvc); 
-		
-		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			intersect.retainAll(item.firstElement()); 
-		}	
-		Set<String> temp = new HashSet<>();
-		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			temp.addAll(item.firstElement());
-			temp.removeAll(intersect);
-			mayElements.addAll(temp);
-			mustChckList.removeAll(temp);
-		}
-			if(!(intersect.contains(prop))){
-				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-				StdErr.println("WARNING: some inconsistent equations were found: ");
-				StdErr.println("property "+ prop + " is vacuously valid in some IVCs");
-				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-			}
-				
-			if(mustElements.size() < intersect.size()){
-				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-				StdErr.println("WARNING: IVC sets might not be truly minimal!");
-				StdErr.println("So far "+ allIvcs.size() + " IVC sets have been found.");
-				StdErr.println("Trying to minimize the sets...");
-				Set<String> diff = new HashSet<>();
-				diff.addAll(intersect);
-				diff.removeAll(mustElements);
-				List<String> extra = new ArrayList<>();
-					
-				for(String item : diff){
-					List<Symbol> seed = new ArrayList<>();
-					seed.addAll(ivcMap.valueList());
-					seed.remove(ivcMap.get(item)); 
-					ivcFinder(seed, new HashSet<>(), mustChckList, prop);
-				}
-				StdErr.println("Total #of IVC sets found: "+ allIvcs.size());
-				if(extra.size() > 0){
-					minimizeSets(extra);
-				}
-				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-			}
-			else if(mustElements.size() > intersect.size()){
-				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-				StdErr.println("WARNING: FAILED TO FIND ONE OR MORE IVCs!");
-				StdErr.println("So far "+ allIvcs.size() + " IVC sets have been found.");
-				StdErr.println("Processing must-check-list to try find more IVCs...");
-					
-				mustChckList.removeAll(mustElements); 
-				List<Symbol> seed = new ArrayList<>();
-				seed.addAll(ivcMap.valueList());
-				seed.removeAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(mustChckList)));
-				Set<String> resultOfIvcFinder = new HashSet<>();
-				if(mustChckList.size() > 0){
-					ivcFinder(seed, resultOfIvcFinder, mustChckList, prop); 				
-					if(mustChckList.size() == 0){
-						StdErr.println("ALL the must-check-list has been processed."); 
-					}else{
-						StdErr.println("must-check-list has been processed."); 
-					}
-				}else{
-						StdErr.println("must-check-list is empty. terminating the process..."); 
-				}
-					
-				StdErr.println("Total #of IVC sets found: "+ allIvcs.size());
-				StdErr.println("-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --");
-			}
-			 
-			if(mustChckList.size() > 0){
-				StdErr.println("WARNING: must-check-llist is not empty. there might be more IVCs...");
-			}
-	}
-
-	private void minimizeSets(List<String> extra) {
-		StdErr.println("WARNING: to reconstruct the proof with output invariants extra elements must be added back");
-		for(Tuple<Set<String>, List<String>> item : allIvcs){
-			item.firstElement().removeAll(extra);
-		}
-	}
-	
+ 
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 	}
@@ -514,22 +383,5 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		if (vm.getNextDestination() == EngineType.IVC_REDUCTION_ALL) {
 			reduce(vm);
 		}
-	}
-	
-	// this method is used only in our experiments
-	private void recordRuntime() {
-		String xmlFilename = settings.filename + "_runtimeAllIvcs.xml";
-		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
-			out.println("<?xml version=\"1.0\"?>");
-			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
-			out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntime>");
-			out.println("</Results>");
-			out.flush();
-			out.close();
-		} catch (Throwable t) {
-			t.printStackTrace();
-			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
-		}
-		
 	}
 }

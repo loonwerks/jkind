@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import jkind.engines.ivcs.messages.ConsistencyMessage;
 import jkind.excel.ExcelFormatter;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -82,9 +80,4 @@ public class ExcelWriter extends Writer {
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		properties.add(new InconsistentProperty(prop, source, k, runtime));
 	}
-
-	@Override
-	public void writeConsistencyCheckerResults(ConsistencyMessage message) { 
-	}
- 
 }
