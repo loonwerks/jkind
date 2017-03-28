@@ -51,7 +51,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
-		options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)");
+		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
