@@ -26,8 +26,6 @@ public class JKindSettings extends Settings {
 	public boolean scratch = false;
 	public String writeAdvice = null;
 	public String readAdvice = null; 
-	public boolean allAssigned = false;
-	public boolean bmcConsistencyCheck =  false;
-	public boolean consistencyCheck =  false;
+	public boolean allAssigned = false; 
 	public String useUnsatCore = null;
 }

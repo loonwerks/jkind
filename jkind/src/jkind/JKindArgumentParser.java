@@ -29,9 +29,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
-	private static final String ALL_ASSIGNED = "all_assigned";
-	private static final String CONSISTENCY_BMC = "bmc_consistency_check";
-	private static final String CONSISTENCY = "consistency_check";
+	private static final String ALL_ASSIGNED = "all_assigned"; 
 	private static final String JSUPPORT_USE_UNSAT_CORE = "use_unsat_core";
 
 	private final JKindSettings settings;
@@ -55,10 +53,6 @@ public class JKindArgumentParser extends ArgumentParser {
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)"); 
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
-		options.addOption(CONSISTENCY_BMC, false,
-				"find if the model is consistent based on BMC");
-		options.addOption(CONSISTENCY, false,
-				"find if the model is consistent");
 		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
 		 options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)"); 
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)"); 
@@ -144,29 +138,10 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(READ_ADVICE)) {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
-		}
-		
-		if (line.hasOption(CONSISTENCY_BMC)){
-			settings.bmcConsistencyCheck = true; 
-			settings.allAssigned = true;
-			settings.slicing = false;
-			settings.reduceIvc = true; 
-		}
+		} 
 		
 		if (line.hasOption(IVC)) {
 			settings.reduceIvc = true;
-		}
-		
-		if (line.hasOption(CONSISTENCY)){
-			settings.consistencyCheck = true;
-			settings.bmcConsistencyCheck = false; 
-			settings.allAssigned = true;
-			settings.slicing = false;
-			
-			if(! settings.reduceIvc){
-				settings.reduceIvc = true;
-				settings.allIvcs = true;
-			}
 		}
 		
 		if (line.hasOption(IVC_ALL)) {
@@ -238,21 +213,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		return null;
 	}
 
-	private void checkSettings() {
-		if (settings.bmcConsistencyCheck || settings.consistencyCheck){
-			if (settings.solver != SolverOption.Z3) {
-				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "-consistency_check is not supported with "
-				 						+ settings.solver);
-			}
-			if(settings.reduceIvc && settings.consistencyCheck && !settings.allIvcs){
-				StdErr.warning("-consistency_check with -ivc option will work with a single proof."
-						+ "\nin order for a complete check, use -consistency_check without -ivc");
-		
-			}
-			if (settings.excel) {
-				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "consistency check does not suppoert option: "+ EXCEL);
-			}
-		}
+	private void checkSettings() { 
 		
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {

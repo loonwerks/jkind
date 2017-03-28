@@ -12,7 +12,7 @@ import jkind.translation.Specification;
 import jkind.translation.Translate; 
 
 public class JKind {
-	public static final String EQUATION_NAME = "__addedEQforAsrInconsis_by_JKind__"; 
+	public static final String EQUATION_NAME = "__addedEQforAsr_by_JKind__"; 
 	public static void main(String[] args) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -30,10 +30,7 @@ public class JKind {
 			Node main = Translate.translate(program); 
 			if(settings.allAssigned){
 				
-				//to compare with the results of our first paper, comment the next line
-				// the next line is necessary for consistency_checker
 				//main = IvcUtil.normalizeAssertions(main);
-				
 				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			} 
 			Specification userSpec = new Specification(main, settings.slicing); 

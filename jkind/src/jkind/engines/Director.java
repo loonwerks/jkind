@@ -471,14 +471,9 @@ public class Director extends MessageHandler {
 		List<EngineType> destinations = new ArrayList<>(); 
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
-		}
-		if (settings.bmcConsistencyCheck) {
-			destinations.add(EngineType.BMC_BASED_CONSISTENCY_CHECKER);
-		}
+		} 
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);
-		}else if (settings.consistencyCheck){
-			destinations.add(EngineType.CONSISTENCY_CHECKER);
 		}
 
 		return new Itinerary(destinations);

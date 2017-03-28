@@ -1,5 +1,4 @@
-package jkind.engines.ivcs;
- 
+package jkind.engines.ivcs; 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -62,7 +61,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
-			if (properties.remove(property)) { 
+			if (properties.remove(property)) {
+				//----- for the experiments---------
+				runtime = System.currentTimeMillis(); 
+				//-----------------------------------
 				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 		}
@@ -217,7 +219,8 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
-		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+		runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
+
 		 
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {

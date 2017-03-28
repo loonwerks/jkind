@@ -1,5 +1,7 @@
 package jkind.engines.ivcs;
-import static java.util.stream.Collectors.toList;  
+import static java.util.stream.Collectors.toList; 
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet; 
@@ -46,6 +48,11 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	private Set<String> mayElements = new HashSet<>();  
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT; 
+	
+	// these variables are only used for the experiments
+	private double runtime;  
+	//--------------------------------------------------
+	
 
 	public AllIvcsExtractorrEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -69,6 +76,10 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	}
 	
 	private void reduce(ValidMessage vm) { 
+		
+		//----- for the experiments---------
+		runtime = System.currentTimeMillis(); 
+		//-----------------------------------
 		
 		for (String property : vm.valid) {
 			mayElements.clear();
@@ -112,6 +123,7 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		} 
 		
 		z3Solver.pop();
+		 
 		sendValid(property.toString(), vm);
 	}
 
@@ -169,7 +181,7 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 					return true;
 				} 
 			} 
-			if(temp.isEmpty()){ 
+			if(temp.isEmpty()){  
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
 			else{ 
@@ -355,7 +367,15 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		Itinerary itinerary = vm.getNextItinerary(); 
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
- 
+
+
+	private void minimizeSets(List<String> extra) {
+		StdErr.println("WARNING: to reconstruct the proof with output invariants extra elements must be added back");
+		for(Tuple<Set<String>, List<String>> item : allIvcs){
+			item.firstElement().removeAll(extra);
+		}
+	}
+	
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 	}
