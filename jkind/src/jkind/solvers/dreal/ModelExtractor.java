@@ -83,8 +83,6 @@ public class ModelExtractor {
 		} else if (ctx instanceof RealValContext) {
 			double val = Double.parseDouble(ctx.getText()); 
 			return new RealEndpoint(BigFraction.fromValue(val));
-		} else if (ctx instanceof IntegerValContext) {
-			return new IntEndpoint(new BigInteger(ctx.getText()));
 		}
 		else {
 			throw new IllegalArgumentException("Unknown number type in getNumber()");

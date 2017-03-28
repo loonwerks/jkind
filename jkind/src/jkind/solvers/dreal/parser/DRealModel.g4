@@ -14,7 +14,6 @@ var_value:
 number_value: 
    INFRULE                 # infinityVal 
   | REAL                   # realVal
-  | INTEGER                # integerVal
   ;
   
 three_val_bool: 
@@ -25,8 +24,7 @@ three_val_bool:
   
 symbol: SIMPLE_SYMBOL | QUOTED_SYMBOL ; 
 
-INTEGER: ('+' | '-')? NUMERAL ; 
-REAL: ('+' | '-')? NUMERAL '.' NUMERAL (EXPONENT)? ;
+REAL: ('+' | '-')? NUMERAL ('.' NUMERAL)? (EXPONENT)? ;
 INFRULE: ('+' | '-')? 'INFTY' ;
 EXPONENT: ('e' | 'E') ('+' | '-')? NUMERAL ; 
 
