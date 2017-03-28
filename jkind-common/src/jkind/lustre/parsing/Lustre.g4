@@ -57,7 +57,8 @@ expr: ID                                                       # idExpr
          'tan' | 'asin' | 'arcsin' | 'acos' | 'arccos' | 
          'atan' | 'arctan' | 'sinh' | 'cosh' | 'tanh' | 
          'atan2' | 'arctan2' | 'matan' | 
-         'marctan') '(' expr ')'                               # nonLinearExpr
+         'marctan') '(' expr ')'                               # nonLinearUnyExpr
+    | op=('atan2' | 'arctan2' | 'pow') '(' expr ',' expr ')'   # nonLinearBinExpr
     | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr

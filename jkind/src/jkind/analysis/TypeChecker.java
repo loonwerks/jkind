@@ -322,6 +322,15 @@ public class TypeChecker implements ExprVisitor<Type> {
 				return join;
 			}
 			break;
+		case POW:
+		case ARCTAN2:
+			{
+				Type join2 = joinTypes(left, right);
+				if (join2 == NamedType.REAL) {
+					return join2;
+				}
+				break;
+			}
 		}
 
 		error(e, "operator '" + e.op + "' not defined on types " + simple(left) + ", "
@@ -579,7 +588,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 		case EXP: 
 		case LOG:
 		case SQRT:
-		case POW:
 		case SIN:
 		case COS: 
 		case TAN:
@@ -589,7 +597,6 @@ public class TypeChecker implements ExprVisitor<Type> {
 		case SINH: 
 		case COSH:
 		case TANH:
-		case ARCTAN2:
 		case MATAN: 
 			if (type == NamedType.REAL) {
 				return type;

@@ -77,7 +77,14 @@ public class LinearChecker extends ExprIterVisitor {
 				passed = false;
 			}
 			break;
-
+		case POW:
+			StdErr.output(level, e.location, "Use of power function");
+			passed = false;
+			break;
+		case ARCTAN2:
+			StdErr.output(level, e.location, "Use of arctan2 function");
+			passed = false;
+			break;
 		default:
 			break;
 		}
@@ -91,7 +98,6 @@ public class LinearChecker extends ExprIterVisitor {
 		case EXP: 
 		case LOG:
 		case SQRT:
-		case POW:
 		case SIN:
 		case COS: 
 		case TAN:
@@ -101,7 +107,6 @@ public class LinearChecker extends ExprIterVisitor {
 		case SINH: 
 		case COSH:
 		case TANH:
-		case ARCTAN2:
 		case MATAN: 
 		{ 
 			StdErr.output(level, e.location, "use of trigonometric function");

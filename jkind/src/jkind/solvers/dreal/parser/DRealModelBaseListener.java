@@ -137,18 +137,6 @@ public class DRealModelBaseListener implements DRealModelListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntegerVal(@NotNull DRealModelParser.IntegerValContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIntegerVal(@NotNull DRealModelParser.IntegerValContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterUndefVal(@NotNull DRealModelParser.UndefValContext ctx) { }
 	/**
 	 * {@inheritDoc}

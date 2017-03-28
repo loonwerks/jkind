@@ -1,6 +1,7 @@
 package jkind.analysis;
 
 import jkind.StdErr;
+import jkind.lustre.BinaryExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -50,13 +51,26 @@ public class TrigChecker extends ExprIterVisitor {
 	}
 
 
+	@Override 
+	public Void visit(BinaryExpr e) {
+		switch (e.op){
+		case POW:
+		case ARCTAN2:
+		{
+			StdErr.output(level, e.location, "use of trigonometric or power function with non-constant argument");
+			passed = false;
+		}
+		default: break;
+		}
+		return null;
+	}
+	
 	@Override
 	public Void visit(UnaryExpr e) {
 		switch (e.op){
 		case EXP: 
 		case LOG:
 		case SQRT:
-		case POW:
 		case SIN:
 		case COS: 
 		case TAN:
@@ -66,13 +80,12 @@ public class TrigChecker extends ExprIterVisitor {
 		case SINH: 
 		case COSH:
 		case TANH:
-		case ARCTAN2:
 		case MATAN: 
 		{ 
-			if (!isConstant(e.expr)) {
+//			if (!isConstant(e.expr)) {
 				StdErr.output(level, e.location, "use of trigonometric function with non-constant argument");
 				passed = false;
-			}
+//			}
 		}
 		default: break;
 		}

@@ -17,6 +17,8 @@ public enum BinaryOp {
 	AND ("and"),
 	XOR ("xor"),
 	IMPLIES ("=>"),
+	POW("pow"),
+    ARCTAN2("arctan2"),
 	ARROW ("->");
 	
 	private String str;

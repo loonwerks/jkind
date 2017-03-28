@@ -78,13 +78,6 @@ public interface DRealModelVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFalseVal(@NotNull DRealModelParser.FalseValContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code integerVal}
-	 * labeled alternative in {@link DRealModelParser#number_value}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIntegerVal(@NotNull DRealModelParser.IntegerValContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code undefVal}
 	 * labeled alternative in {@link DRealModelParser#three_val_bool}.
 	 * @param ctx the parse tree

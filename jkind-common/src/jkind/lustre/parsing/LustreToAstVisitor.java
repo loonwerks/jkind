@@ -385,7 +385,18 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		}
 	}
 
-	private UnaryOp getNonLinearOp(String cast) {
+	private BinaryOp getNonLinearBinOp(String cast) {
+		switch (cast) {
+		case "arctan2" : 
+			return BinaryOp.ARCTAN2;
+		case "pow":
+			return BinaryOp.POW;
+		default:
+			throw new IllegalArgumentException("Unknown cast: " + cast);
+		}
+	}
+	
+	private UnaryOp getNonLinearUnyOp(String cast) {
 		switch (cast) {
 		case "exp":
 			return UnaryOp.EXP;
@@ -393,8 +404,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			return UnaryOp.LOG;
 		case "sqrt":
 			return UnaryOp.SQRT;
-		case "pow":
-			return UnaryOp.POW;
+		case "atan2" : 
 		case "sin":
 			return UnaryOp.SIN;
 		case "cos":
@@ -416,9 +426,6 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 			return UnaryOp.COSH;
 		case "tanh" :
 			return UnaryOp.TANH;
-		case "atan2" : 
-		case "arctan2" : 
-			return UnaryOp.ARCTAN2;
 		case "matan" : 
 			return UnaryOp.MATAN;
 		default:
@@ -427,10 +434,15 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 	
 	@Override
-	public Expr visitNonLinearExpr(@NotNull LustreParser.NonLinearExprContext ctx) { 
-		return new UnaryExpr(loc(ctx), getNonLinearOp(ctx.op.getText()), expr(ctx.expr()));
+	public Expr visitNonLinearUnyExpr(@NotNull LustreParser.NonLinearUnyExprContext ctx) { 
+		return new UnaryExpr(loc(ctx), getNonLinearUnyOp(ctx.op.getText()), expr(ctx.expr()));
 	}
-	
+
+	@Override
+	public Expr visitNonLinearBinExpr(@NotNull LustreParser.NonLinearBinExprContext ctx) { 
+		return new BinaryExpr(loc(ctx), expr(ctx.expr(0)), getNonLinearBinOp(ctx.op.getText()), expr(ctx.expr(1)));
+	}
+
 	@Override
 	public Expr visitRecordAccessExpr(RecordAccessExprContext ctx) {
 		return new RecordAccessExpr(loc(ctx), expr(ctx.expr()), ctx.ID().getText());

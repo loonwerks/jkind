@@ -7,7 +7,6 @@ public enum UnaryOp {
 	EXP("exp"),
 	LOG("log"),
 	SQRT("sqrt"),
-	POW("pow"),
     SIN("sin"),
     COS("cos"),
     TAN("tan"),
@@ -17,7 +16,6 @@ public enum UnaryOp {
     SINH("sinh"),
     COSH("cosh"),
     TANH("tanh"),
-    ARCTAN2("arctan2"),
     MATAN("matan"),	
 	;
 	

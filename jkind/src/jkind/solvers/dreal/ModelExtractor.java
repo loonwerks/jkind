@@ -1,9 +1,7 @@
 package jkind.solvers.dreal;
 
-import java.math.BigInteger;
 import java.util.Map;
 
-import jkind.interval.IntEndpoint;
 import jkind.interval.NumericEndpoint;
 import jkind.interval.NumericInterval;
 import jkind.interval.RealEndpoint;
@@ -12,7 +10,6 @@ import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.solvers.dreal.parser.DRealModelParser.BoolValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.InfinityValContext;
-import jkind.solvers.dreal.parser.DRealModelParser.IntegerValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.ModelContext;
 import jkind.solvers.dreal.parser.DRealModelParser.NumberRangeValContext;
 import jkind.solvers.dreal.parser.DRealModelParser.Number_valueContext;

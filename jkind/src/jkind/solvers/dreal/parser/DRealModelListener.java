@@ -121,18 +121,6 @@ public interface DRealModelListener extends ParseTreeListener {
 	 */
 	void exitFalseVal(@NotNull DRealModelParser.FalseValContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code integerVal}
-	 * labeled alternative in {@link DRealModelParser#number_value}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntegerVal(@NotNull DRealModelParser.IntegerValContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code integerVal}
-	 * labeled alternative in {@link DRealModelParser#number_value}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntegerVal(@NotNull DRealModelParser.IntegerValContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code undefVal}
 	 * labeled alternative in {@link DRealModelParser#three_val_bool}.
 	 * @param ctx the parse tree

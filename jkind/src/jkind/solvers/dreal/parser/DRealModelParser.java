@@ -18,13 +18,13 @@ public class DRealModelParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__9=1, T__8=2, T__7=3, T__6=4, T__5=5, T__4=6, T__3=7, T__2=8, T__1=9, 
-		T__0=10, INTEGER=11, REAL=12, INFRULE=13, EXPONENT=14, NUMERAL=15, SIMPLE_SYMBOL=16, 
-		SYMBOL_CHAR=17, SYMBOL_OR_NUM_CHAR=18, QUOTED_SYMBOL=19, STRING=20, WARNING=21, 
-		WS=22, COMMENT=23, ERROR=24;
+		T__0=10, REAL=11, INFRULE=12, EXPONENT=13, NUMERAL=14, SIMPLE_SYMBOL=15, 
+		SYMBOL_CHAR=16, SYMBOL_OR_NUM_CHAR=17, QUOTED_SYMBOL=18, STRING=19, WARNING=20, 
+		WS=21, COMMENT=22, ERROR=23;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'true'", "'undef'", "'Bool'", "'[ ENTIRE ]'", "':'", "'['", 
-		"','", "']'", "'='", "'false'", "INTEGER", "REAL", "INFRULE", "EXPONENT", 
-		"NUMERAL", "SIMPLE_SYMBOL", "SYMBOL_CHAR", "SYMBOL_OR_NUM_CHAR", "QUOTED_SYMBOL", 
+		"','", "']'", "'='", "'false'", "REAL", "INFRULE", "EXPONENT", "NUMERAL", 
+		"SIMPLE_SYMBOL", "SYMBOL_CHAR", "SYMBOL_OR_NUM_CHAR", "QUOTED_SYMBOL", 
 		"STRING", "WARNING", "WS", "COMMENT", "ERROR"
 	};
 	public static final int
@@ -364,29 +364,12 @@ public class DRealModelParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class IntegerValContext extends Number_valueContext {
-		public TerminalNode INTEGER() { return getToken(DRealModelParser.INTEGER, 0); }
-		public IntegerValContext(Number_valueContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DRealModelListener ) ((DRealModelListener)listener).enterIntegerVal(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DRealModelListener ) ((DRealModelListener)listener).exitIntegerVal(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DRealModelVisitor ) return ((DRealModelVisitor<? extends T>)visitor).visitIntegerVal(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 
 	public final Number_valueContext number_value() throws RecognitionException {
 		Number_valueContext _localctx = new Number_valueContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_number_value);
 		try {
-			setState(45);
+			setState(44);
 			switch (_input.LA(1)) {
 			case INFRULE:
 				_localctx = new InfinityValContext(_localctx);
@@ -400,13 +383,6 @@ public class DRealModelParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(43); match(REAL);
-				}
-				break;
-			case INTEGER:
-				_localctx = new IntegerValContext(_localctx);
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(44); match(INTEGER);
 				}
 				break;
 			default:
@@ -488,27 +464,27 @@ public class DRealModelParser extends Parser {
 		Three_val_boolContext _localctx = new Three_val_boolContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_three_val_bool);
 		try {
-			setState(50);
+			setState(49);
 			switch (_input.LA(1)) {
 			case T__9:
 				_localctx = new TrueValContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(47); match(T__9);
+				setState(46); match(T__9);
 				}
 				break;
 			case T__0:
 				_localctx = new FalseValContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(48); match(T__0);
+				setState(47); match(T__0);
 				}
 				break;
 			case T__8:
 				_localctx = new UndefValContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(49); match(T__8);
+				setState(48); match(T__8);
 				}
 				break;
 			default:
@@ -555,7 +531,7 @@ public class DRealModelParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(52);
+			setState(51);
 			_la = _input.LA(1);
 			if ( !(_la==SIMPLE_SYMBOL || _la==QUOTED_SYMBOL) ) {
 			_errHandler.recoverInline(this);
@@ -575,21 +551,21 @@ public class DRealModelParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\329\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\318\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\7\2\23\n\2\f\2\16\2"+
 		"\26\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\3\5\3\5\3\5\5\5+\n\5\3\6\3\6\3\6\5\6\60\n\6\3\7\3\7\3\7\5\7\65\n\7"+
-		"\3\b\3\b\3\b\2\2\t\2\4\6\b\n\f\16\2\3\4\2\22\22\25\258\2\24\3\2\2\2\4"+
-		"\31\3\2\2\2\6\35\3\2\2\2\b*\3\2\2\2\n/\3\2\2\2\f\64\3\2\2\2\16\66\3\2"+
-		"\2\2\20\23\5\4\3\2\21\23\5\6\4\2\22\20\3\2\2\2\22\21\3\2\2\2\23\26\3\2"+
-		"\2\2\24\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3\2\2\2\27\30\7\2"+
-		"\2\3\30\3\3\2\2\2\31\32\5\16\b\2\32\33\7\7\2\2\33\34\5\b\5\2\34\5\3\2"+
-		"\2\2\35\36\7\27\2\2\36\7\3\2\2\2\37 \7\6\2\2 !\7\13\2\2!\"\7\b\2\2\"#"+
-		"\5\n\6\2#$\7\t\2\2$%\5\n\6\2%&\7\n\2\2&+\3\2\2\2\'(\7\5\2\2()\7\13\2\2"+
-		")+\5\f\7\2*\37\3\2\2\2*\'\3\2\2\2+\t\3\2\2\2,\60\7\17\2\2-\60\7\16\2\2"+
-		".\60\7\r\2\2/,\3\2\2\2/-\3\2\2\2/.\3\2\2\2\60\13\3\2\2\2\61\65\7\3\2\2"+
-		"\62\65\7\f\2\2\63\65\7\4\2\2\64\61\3\2\2\2\64\62\3\2\2\2\64\63\3\2\2\2"+
-		"\65\r\3\2\2\2\66\67\t\2\2\2\67\17\3\2\2\2\7\22\24*/\64";
+		"\5\3\5\3\5\3\5\5\5+\n\5\3\6\3\6\5\6/\n\6\3\7\3\7\3\7\5\7\64\n\7\3\b\3"+
+		"\b\3\b\2\2\t\2\4\6\b\n\f\16\2\3\4\2\21\21\24\24\66\2\24\3\2\2\2\4\31\3"+
+		"\2\2\2\6\35\3\2\2\2\b*\3\2\2\2\n.\3\2\2\2\f\63\3\2\2\2\16\65\3\2\2\2\20"+
+		"\23\5\4\3\2\21\23\5\6\4\2\22\20\3\2\2\2\22\21\3\2\2\2\23\26\3\2\2\2\24"+
+		"\22\3\2\2\2\24\25\3\2\2\2\25\27\3\2\2\2\26\24\3\2\2\2\27\30\7\2\2\3\30"+
+		"\3\3\2\2\2\31\32\5\16\b\2\32\33\7\7\2\2\33\34\5\b\5\2\34\5\3\2\2\2\35"+
+		"\36\7\26\2\2\36\7\3\2\2\2\37 \7\6\2\2 !\7\13\2\2!\"\7\b\2\2\"#\5\n\6\2"+
+		"#$\7\t\2\2$%\5\n\6\2%&\7\n\2\2&+\3\2\2\2\'(\7\5\2\2()\7\13\2\2)+\5\f\7"+
+		"\2*\37\3\2\2\2*\'\3\2\2\2+\t\3\2\2\2,/\7\16\2\2-/\7\r\2\2.,\3\2\2\2.-"+
+		"\3\2\2\2/\13\3\2\2\2\60\64\7\3\2\2\61\64\7\f\2\2\62\64\7\4\2\2\63\60\3"+
+		"\2\2\2\63\61\3\2\2\2\63\62\3\2\2\2\64\r\3\2\2\2\65\66\t\2\2\2\66\17\3"+
+		"\2\2\2\7\22\24*.\63";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

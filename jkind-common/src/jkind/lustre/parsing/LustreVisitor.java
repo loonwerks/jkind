@@ -152,12 +152,12 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssertion(@NotNull LustreParser.AssertionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code nonLinearExpr}
+	 * Visit a parse tree produced by the {@code nonLinearUnyExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNonLinearExpr(@NotNull LustreParser.NonLinearExprContext ctx);
+	T visitNonLinearUnyExpr(@NotNull LustreParser.NonLinearUnyExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code recordExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
@@ -179,6 +179,13 @@ public interface LustreVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIntExpr(@NotNull LustreParser.IntExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code nonLinearBinExpr}
+	 * labeled alternative in {@link LustreParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNonLinearBinExpr(@NotNull LustreParser.NonLinearBinExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code arrayExpr}
 	 * labeled alternative in {@link LustreParser#expr}.
