@@ -30,7 +30,7 @@ public class JKind {
 			Node main = Translate.translate(program); 
 			if(settings.allAssigned){
 				
-				//main = IvcUtil.normalizeAssertions(main);
+				main = IvcUtil.normalizeAssertions(main);
 				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			} 
 			Specification userSpec = new Specification(main, settings.slicing); 
