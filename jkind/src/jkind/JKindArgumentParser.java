@@ -63,7 +63,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
 				"SMT solver (default: smtinterpol, alternatives: z3, yices, yices2, cvc4, mathsat)");
-		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
+		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: unbounded)");
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
