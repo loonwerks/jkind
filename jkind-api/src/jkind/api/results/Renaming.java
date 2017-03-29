@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import jkind.JKindException;
+import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.InconsistentProperty;
@@ -71,9 +73,8 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new ValidProperty(name, property.getSource(), property.getK(),
-				property.getRuntime(), property.getInvariants(), rename(this::renameIVC,
-						property.getIvc()));
+		return new ValidProperty(name, property.getSource(), property.getK(), property.getRuntime(),
+				property.getInvariants(), rename(this::renameIVC, property.getIvc()));
 	}
 
 	/**
@@ -90,8 +91,7 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new InvalidProperty(name, property.getSource(),
-				rename(property.getCounterexample()),
+		return new InvalidProperty(name, property.getSource(), rename(property.getCounterexample()),
 				rename(this::rename, property.getConflicts()), property.getRuntime());
 	}
 
@@ -163,6 +163,7 @@ public abstract class Renaming {
 	 * @return Renamed version of the signal or <code>null</code> if there is no
 	 *         renaming for it
 	 */
+	@SuppressWarnings("unchecked")
 	private <T extends Value> Signal<T> rename(Signal<T> signal) {
 		String name = rename(signal.getName());
 		if (name == null) {
@@ -171,7 +172,16 @@ public abstract class Renaming {
 
 		Signal<T> newSignal = new Signal<>(name);
 		for (Entry<Integer, T> entry : signal.getValues().entrySet()) {
-			newSignal.putValue(entry.getKey(), entry.getValue());
+			if (entry.getValue() instanceof EnumValue) {
+				EnumValue ev = (EnumValue) entry.getValue();
+				String renamedValue = rename(ev.value);
+				if (renamedValue == null) {
+					throw new JKindException("Failed when renaming enumeration value: " + ev.value);
+				}
+				newSignal.putValue(entry.getKey(), (T) new EnumValue(renamedValue));
+			} else {
+				newSignal.putValue(entry.getKey(), entry.getValue());
+			}
 		}
 		return newSignal;
 	}
