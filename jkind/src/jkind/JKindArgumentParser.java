@@ -53,9 +53,9 @@ public class JKindArgumentParser extends ArgumentParser {
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)"); 
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
-		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
-		 options.addOption(N, true, "maximum depth for bmc and k-induction (default: 200)"); 
-		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)"); 
+		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements"); 
+		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
+		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
@@ -67,7 +67,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
 		options.addOption(SOLVER, true,
 				"SMT solver (default: smtinterpol, alternatives: z3, yices, yices2, cvc4, mathsat)");
-		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: 100)");
+		options.addOption(TIMEOUT, true, "maximum runtime in seconds (default: unbounded)");
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
