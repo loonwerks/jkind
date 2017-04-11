@@ -20,8 +20,7 @@ public class JKind {
 			StaticAnalyzer.check(program, settings.solver);
 			if (!LinearChecker.isLinear(program)) {
 				if (settings.pdrMax > 0) {
-					StdErr.warning("disabling PDR due to non-linearities");
-					settings.pdrMax = 0;
+					StdErr.warning("PDR not available for some properties due to non-linearities");
 				}
 			}
 
