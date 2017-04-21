@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import jkind.JKindSettings;
-import jkind.engines.Director;
-import jkind.engines.Engine; 
+import jkind.engines.Director; 
+import jkind.engines.Engine;
+import jkind.engines.StopException; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -26,11 +27,15 @@ public class PdrEngine extends Engine {
 
 	@Override
 	protected void main() {
-		while (!done()) {
-			processMessagesAndWaitUntil(() -> done() || canSpawnSubengine());
-			if (canSpawnSubengine()) {
-				spawnSubengine();
+		try {
+			while (!done()) {
+				processMessagesAndWaitUntil(() -> done() || canSpawnSubengine());
+				if (canSpawnSubengine()) {
+					spawnSubengine();
+				}
 			}
+		} catch (StopException se) {
+			subengines.forEach((name, subengine) -> subengine.cancel());
 		}
 	}
 

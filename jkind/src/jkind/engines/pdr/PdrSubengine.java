@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import jkind.analysis.LinearChecker;
 import jkind.engines.Director;
 import jkind.engines.StopException;
 import jkind.engines.messages.InvalidMessage;
@@ -36,7 +37,8 @@ public class PdrSubengine extends Thread {
 	private final Director director;
 
 	private final List<Frame> F = new ArrayList<>();
-	private final PdrSmt Z;
+	private final String scratchBase;
+	private PdrSmt Z;
 
 	private volatile boolean cancel = false;
 
@@ -46,10 +48,9 @@ public class PdrSubengine extends Thread {
 		this.prop = prop;
 		Node single = new NodeBuilder(spec.node).clearProperties().addProperty(prop).build();
 		this.node = LustreSlicer.slice(single, spec.dependencyMap);
+		this.scratchBase = scratchBase;
 		this.parent = parent;
 		this.director = director;
-
-		this.Z = new PdrSmt(node, F, prop, scratchBase);
 	}
 
 	public void cancel() {
@@ -58,6 +59,12 @@ public class PdrSubengine extends Thread {
 
 	@Override
 	public void run() {
+		if (!LinearChecker.isLinear(this.node)) {
+			parent.reportUnknown(prop);
+			return;
+		}
+		
+		Z = new PdrSmt(node, F, prop, scratchBase);
 		Z.comment("Checking property: " + prop);
 
 		// Create F_INF and F[0]

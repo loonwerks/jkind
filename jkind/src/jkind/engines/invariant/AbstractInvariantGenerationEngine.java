@@ -35,28 +35,25 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 
 	@Override
 	public void main() {
-		try {
-			StructuredInvariant invariant = createInitialInvariant();
+		StructuredInvariant invariant = createInitialInvariant();
+		if (invariant.isTrivial()) {
+			comment("No invariants proposed");
+			return;
+		}
+
+		createVariables(-1);
+		createVariables(0);
+		for (int k = 1; k <= settings.n; k++) {
+			comment("K = " + k);
+
+			refineBaseStep(k - 1, invariant);
 			if (invariant.isTrivial()) {
-				comment("No invariants proposed");
+				comment("No invariants remaining after base step");
 				return;
 			}
 
-			createVariables(-1);
-			createVariables(0);
-			for (int k = 1; k <= settings.n; k++) {
-				comment("K = " + k);
-
-				refineBaseStep(k - 1, invariant);
-				if (invariant.isTrivial()) {
-					comment("No invariants remaining after base step");
-					return;
-				}
-
-				createVariables(k);
-				refineInductiveStep(k, invariant);
-			}
-		} catch (StopException se) {
+			createVariables(k);
+			refineInductiveStep(k, invariant);
 		}
 	}
 
