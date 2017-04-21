@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jkind.JRealizabilitySettings;
 import jkind.analysis.LinearChecker;
+import jkind.engines.StopException;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.VarDecl;
@@ -48,6 +49,7 @@ public abstract class RealizabilityEngine implements Runnable {
 		try {
 			initializeSolver();
 			main();
+		} catch (StopException se) {
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {
