@@ -138,11 +138,11 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		if(miniJkind.getPropertyStatus() == MiniJKind.UNKNOW_WITH_EXCEPTION){
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			js.pdrMax = 0;
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
-		else if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
+		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
 			
@@ -211,7 +211,7 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		if(miniJkind.getPropertyStatus() == MiniJKind.VALID){
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
 			
