@@ -236,8 +236,8 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 		for (IvcContext ctx : ctxs) {
 			List<String> ids = new ArrayList<>();
-			for (TerminalNode ictx : ctx.ID()) {
-				ids.add(ictx.getText());
+			for (EIDContext ictx : ctx.eID()) {
+				ids.add(eid(ictx));
 			}
 			return ids;
 		}
