@@ -979,9 +979,11 @@ public class LustreParser extends Parser {
 	}
 
 	public static class IvcContext extends ParserRuleContext {
-		public List<TerminalNode> ID() { return getTokens(LustreParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(LustreParser.ID, i);
+		public List<EIDContext> eID() {
+			return getRuleContexts(EIDContext.class);
+		}
+		public EIDContext eID(int i) {
+			return getRuleContext(EIDContext.class,i);
 		}
 		public IvcContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1006,7 +1008,7 @@ public class LustreParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==ID) {
 				{
-				setState(196); match(ID);
+				setState(196); eID(0);
 				setState(201);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
@@ -1014,7 +1016,7 @@ public class LustreParser extends Parser {
 					{
 					{
 					setState(197); match(T__49);
-					setState(198); match(ID);
+					setState(198); eID(0);
 					}
 					}
 					setState(203);
@@ -2133,8 +2135,8 @@ public class LustreParser extends Parser {
 		"\7\7\2\2\u00bb\u00bd\7<\2\2\u00bc\u00ba\3\2\2\2\u00bd\u00c0\3\2\2\2\u00be"+
 		"\u00bc\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf\u00c2\3\2\2\2\u00c0\u00be\3\2"+
 		"\2\2\u00c1\u00b9\3\2\2\2\u00c1\u00c2\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3"+
-		"\u00c4\7\35\2\2\u00c4\27\3\2\2\2\u00c5\u00ce\7*\2\2\u00c6\u00cb\7<\2\2"+
-		"\u00c7\u00c8\7\7\2\2\u00c8\u00ca\7<\2\2\u00c9\u00c7\3\2\2\2\u00ca\u00cd"+
+		"\u00c4\7\35\2\2\u00c4\27\3\2\2\2\u00c5\u00ce\7*\2\2\u00c6\u00cb\5$\23"+
+		"\2\u00c7\u00c8\7\7\2\2\u00c8\u00ca\5$\23\2\u00c9\u00c7\3\2\2\2\u00ca\u00cd"+
 		"\3\2\2\2\u00cb\u00c9\3\2\2\2\u00cb\u00cc\3\2\2\2\u00cc\u00cf\3\2\2\2\u00cd"+
 		"\u00cb\3\2\2\2\u00ce\u00c6\3\2\2\2\u00ce\u00cf\3\2\2\2\u00cf\u00d0\3\2"+
 		"\2\2\u00d0\u00d1\7\35\2\2\u00d1\31\3\2\2\2\u00d2\u00d4\7$\2\2\u00d3\u00d5"+

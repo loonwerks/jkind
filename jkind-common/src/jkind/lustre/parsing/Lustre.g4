@@ -38,7 +38,7 @@ property: '--%PROPERTY' eID ';';
 
 realizabilityInputs: '--%REALIZABLE' (ID (',' ID)*)? ';';
 
-ivc: '--%IVC' (ID (',' ID)*)? ';';
+ivc: '--%IVC' (eID (',' eID)*)? ';';
 
 main: '--%MAIN' ';'?;
 
