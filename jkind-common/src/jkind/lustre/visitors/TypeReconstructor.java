@@ -155,7 +155,10 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 
 		case ARROW:
 			return e.left.accept(this);
-
+		
+		case POW:
+		case ARCTAN2:
+			return e.left.accept(this);
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -260,6 +263,21 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 		case NOT:
 			return NamedType.BOOL;
 
+		case EXP:
+		case LOG:
+		case SQRT:
+		case SIN:
+		case COS:
+		case TAN:
+		case ARCSIN:
+		case ARCCOS:
+		case ARCTAN:
+		case SINH:
+		case COSH:
+		case TANH:
+		case MATAN:
+			return e.expr.accept(this);
+	
 		default:
 			throw new IllegalArgumentException();
 		}
