@@ -305,13 +305,27 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 
 	@Override
 	public Void visit(BinaryExpr e) {
-		write("(");
-		expr(e.left);
-		write(" ");
-		write(e.op);
-		write(" ");
-		expr(e.right);
-		write(")");
+		switch (e.op) {
+		case POW:
+		case ARCTAN2: {
+			write(e.op);
+			write("(");
+			expr(e.left);
+			write(",");
+			expr(e.right);
+			write(")");
+			break;
+		}
+		default: {
+			write("(");
+			expr(e.left);
+			write(" ");
+			write(e.op);
+			write(" ");
+			expr(e.right);
+			write(")");
+		}
+		}
 		return null;
 	}
 
@@ -460,13 +474,38 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 
 	@Override
 	public Void visit(UnaryExpr e) {
-		write("(");
-		write(e.op);
-		if (e.op != UnaryOp.NEGATIVE) {
-			write(" ");
+		/* Built-in non-linear ops */
+		switch (e.op) {
+		case EXP:
+		case LOG:
+		case SQRT:
+		case SIN:
+		case COS:
+		case TAN:
+		case ARCSIN:
+		case ARCCOS:
+		case ARCTAN:
+		case SINH:
+		case COSH:
+		case TANH:
+		case MATAN: {
+			write(e.op);
+			write("(");
+			write(e.expr);
+			write(")");
+			break;
 		}
-		expr(e.expr);
-		write(")");
+		default: {
+			write("(");
+			write(e.op);
+			if (e.op != UnaryOp.NEGATIVE) {
+				write(" ");
+			}
+			expr(e.expr);
+			write(")");
+		}
+		}
+		
 		return null;
 	}
 
