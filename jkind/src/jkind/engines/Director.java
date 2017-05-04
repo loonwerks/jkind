@@ -56,7 +56,7 @@ public class Director extends MessageHandler {
 	private final Specification userSpec;
 	private final Specification analysisSpec;
 	private final Writer writer;
-    public final long startTime;
+	public final long startTime;
 
 	private final List<String> remainingProperties = new ArrayList<>();
 	private final List<String> validProperties = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Director extends MessageHandler {
 
 		initializeUnknowns(settings, analysisSpec.node.properties);
 	}
-	
+
 	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec, MiniJKind miniJkind) {
 		this.settings = settings;
 		this.userSpec = userSpec;
@@ -113,7 +113,7 @@ public class Director extends MessageHandler {
 
 		initializeUnknowns(settings, analysisSpec.node.properties);
 	}
-	 
+
 	private final Writer getWriter() {
 		try {
 			if (settings.excel) {
@@ -145,7 +145,7 @@ public class Director extends MessageHandler {
 			processMessages();
 			sleep(100);
 		} 
-		
+
 		stopEngines(); 
 		processMessages();
 		int exitCode = 0;
@@ -230,11 +230,11 @@ public class Director extends MessageHandler {
 		if (settings.readAdvice != null) {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
-		
+
 		if (settings.reduceIvc) {
 			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
 		}
-		
+
 		if (settings.allIvcs) { 
 			addEngine(new AllIvcsExtractorrEngine(analysisSpec, settings, this));
 		} 
@@ -246,8 +246,10 @@ public class Director extends MessageHandler {
 	}
 
 	private void stopEngines() {
+		
 		for (Engine engine : engines) {
-			engine.receiveMessage(new StopMessage());
+			// Add code to kill thread.
+			engine.stopEngine();
 		}
 	}
 
@@ -304,7 +306,7 @@ public class Director extends MessageHandler {
 			System.out.println("==========================================");
 			System.out.println();
 			System.out.println("There are " + remainingProperties.size()
-					+ " properties to be checked.");
+			+ " properties to be checked.");
 			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
 			System.out.println();
 		}
@@ -343,7 +345,7 @@ public class Director extends MessageHandler {
 		}
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
-		
+
 		if((!settings.miniJkind) && (settings.reduceIvc)){
 			Set<String> ivc = IvcUtil.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
 			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
@@ -471,7 +473,7 @@ public class Director extends MessageHandler {
 			writer.writeBaseStep(bsm.properties, baseStep);
 		}
 	}
-	
+
 	@Override
 	protected void handleMessage(InvariantMessage im) {
 	}

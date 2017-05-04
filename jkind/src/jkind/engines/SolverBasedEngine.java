@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jkind.JKindSettings;
+import jkind.engines.messages.StopMessage;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.NamedType;
@@ -39,10 +40,7 @@ public abstract class SolverBasedEngine extends Engine {
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {
-			if (solver != null) {
-				solver.stop();
-				solver = null;
-			}
+			killEngine();
 		}
 	}
 
@@ -53,6 +51,19 @@ public abstract class SolverBasedEngine extends Engine {
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}
 
+	public synchronized void killEngine() {
+		if (solver != null) {
+			solver.stop();
+			solver = null;
+		}
+	}
+	
+	@Override
+	public void stopEngine() {
+		killEngine();
+		receiveMessage(new StopMessage());
+	}
+	
 	protected Solver getSolver() {
 		return SolverUtil.getSolver(settings.solver, getScratchBase(), spec.node);
 	}

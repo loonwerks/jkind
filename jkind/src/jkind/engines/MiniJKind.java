@@ -57,8 +57,9 @@ public class MiniJKind extends Engine {
 			{ 
 				status = UNKNOW_WITH_EXCEPTION;
 			} 
-		} catch (Throwable t) {
-			t.printStackTrace();
+		} 
+		catch (Throwable t) { 
+			t.printStackTrace(); 
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
