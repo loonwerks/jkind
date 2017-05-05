@@ -41,7 +41,7 @@ import jkind.util.LinkedBiMap;
 import jkind.util.SexpUtil;
 import jkind.util.Tuple; 
 
-public class AllIvcsExtractorrEngine extends SolverBasedEngine {
+public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
 	private final LinkedBiMap<String, Symbol> ivcMap;
 	private Z3Solver z3Solver;	   
@@ -50,7 +50,7 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT; 
 
-	public AllIvcsExtractorrEngine(Specification spec, JKindSettings settings, Director director) {
+	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
 		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
 	}

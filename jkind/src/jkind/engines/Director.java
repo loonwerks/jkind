@@ -19,7 +19,7 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
-import jkind.engines.ivcs.AllIvcsExtractorrEngine; 
+import jkind.engines.ivcs.AllIvcsExtractorEngine; 
 import jkind.engines.ivcs.IvcReductionEngine;
 import jkind.engines.ivcs.IvcUtil; 
 import jkind.engines.messages.BaseStepMessage;
@@ -241,7 +241,7 @@ public class Director extends MessageHandler {
 		}
 
 		if (settings.allIvcs) { 
-			addEngine(new AllIvcsExtractorrEngine(analysisSpec, settings, this));
+			addEngine(new AllIvcsExtractorEngine(analysisSpec, settings, this));
 		} 
 	}
 
@@ -292,7 +292,10 @@ public class Director extends MessageHandler {
 	private int reportFailures() {
 		int exitCode = 0;
 		for (Engine engine : engines) {
-			if (engine.getThrowable() != null) { 
+			// MWW: specialized for miniJKind - we kill solvers abruptly
+			// for "internal" runs.
+			if (engine.getThrowable() != null && 
+				!(settings.miniJkind && timeout())) { 
 				StdErr.println(engine.getName() + " process failed");
 				StdErr.printStackTrace(engine.getThrowable());
 				exitCode = ExitCodes.UNCAUGHT_EXCEPTION; 
