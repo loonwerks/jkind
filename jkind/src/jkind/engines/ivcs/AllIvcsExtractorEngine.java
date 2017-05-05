@@ -91,7 +91,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 	}
 	
-	private void computeAllIvcs(Expr property, ValidMessage vm) {
+	private void computeAllIvcs(Expr property, ValidMessage vm) { 
 		TIMEOUT = 30 + (int)(vm.proofTime * 5);
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>(); 

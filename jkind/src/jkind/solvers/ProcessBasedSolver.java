@@ -19,6 +19,7 @@ public abstract class ProcessBasedSolver extends Solver {
 	protected static final String DONE = "@DONE";
 
 	protected Process process;
+	protected boolean stopped;
 	protected BufferedWriter toSolver;
 	protected BufferedReader fromSolver;
 	protected PrintWriter scratch;
@@ -109,7 +110,8 @@ public abstract class ProcessBasedSolver extends Solver {
 		 * This must be synchronized since two threads (an Engine or a shutdown
 		 * hook) may try to stop the solver at the same time
 		 */
-
+		stopped = true;
+		
 		if (process != null) {
 			process.destroy();
 			process = null;
