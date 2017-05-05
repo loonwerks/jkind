@@ -226,10 +226,6 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 		
 		if (settings.allIvcs) { 
-			if (settings.solver != SolverOption.Z3) {
-				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "computing all IVCs is not supported with "
-				 						+ settings.solver);
-				 			}
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");

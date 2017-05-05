@@ -30,7 +30,7 @@ import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationReques
 
 public class SmtInterpolSolver extends Solver {
 	private final Script script;
-	private TerminationRequestImpl term;
+	private TerminationRequestImpl term = new TerminationRequestImpl();
 
 	public SmtInterpolSolver(String scratchBase) {
 		this.script = SmtInterpolUtil.getScript(scratchBase, term);
@@ -153,8 +153,11 @@ public class SmtInterpolSolver extends Solver {
 	}
 
 	@Override
-	public void stop() {
-		term.requestTermination();
+	public synchronized void stop() {
+		if (term != null) {
+			term.requestTermination();
+			term = null;
+		}
 	}
 
 	private Sort getSort(Type type) {

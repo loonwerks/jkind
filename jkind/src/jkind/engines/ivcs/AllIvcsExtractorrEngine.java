@@ -6,11 +6,13 @@ import java.util.HashSet;
 import java.util.List; 
 import java.util.Set;  
 import jkind.JKindException;
-import jkind.JKindSettings; 
+import jkind.JKindSettings;
+import jkind.SolverOption;
 import jkind.StdErr;
 import jkind.engines.Director;
 import jkind.engines.MiniJKind;
-import jkind.engines.SolverBasedEngine; 
+import jkind.engines.SolverBasedEngine;
+import jkind.engines.SolverUtil;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -29,6 +31,7 @@ import jkind.sexp.Symbol;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.Solver;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.z3.Z3Solver;
@@ -53,13 +56,17 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	}
 
 	@Override
+	protected Solver getSolver() {
+		return SolverUtil.getSolver(SolverOption.Z3, getScratchBase(), spec.node);
+	}
+
 	protected void initializeSolver() {
 		solver = getSolver();
 		solver.initialize();
 		z3Solver = (Z3Solver) solver; 
 
 		for (Symbol e : ivcMap.values()) {
-			z3Solver.define(new VarDecl(e.str, NamedType.BOOL));
+			solver.define(new VarDecl(e.str, NamedType.BOOL));
 		}
 	}
 
