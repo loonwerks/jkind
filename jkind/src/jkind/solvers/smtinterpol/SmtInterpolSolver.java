@@ -26,12 +26,14 @@ import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
+import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationRequest;
 
 public class SmtInterpolSolver extends Solver {
 	private final Script script;
+	private TerminationRequestImpl term;
 
 	public SmtInterpolSolver(String scratchBase) {
-		this.script = SmtInterpolUtil.getScript(scratchBase);
+		this.script = SmtInterpolUtil.getScript(scratchBase, term);
 	}
 
 	@Override
@@ -152,6 +154,7 @@ public class SmtInterpolSolver extends Solver {
 
 	@Override
 	public void stop() {
+		term.requestTermination();
 	}
 
 	private Sort getSort(Type type) {

@@ -34,7 +34,7 @@ public class JKind {
 			} 
 			Specification userSpec = new Specification(main, settings.slicing); 
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
-
+			
 			new Director(settings, userSpec, analysisSpec).run();
 			System.exit(0); // Kills all threads
 		} catch (Throwable t) {

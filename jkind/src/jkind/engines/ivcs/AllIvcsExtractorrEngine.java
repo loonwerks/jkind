@@ -81,7 +81,6 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 				computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 				allIvcs.clear();
 			}
-			
 		}
 	}
 	
@@ -115,16 +114,14 @@ public class AllIvcsExtractorrEngine extends SolverBasedEngine {
 	}
 
 	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
-		JKindSettings js = new JKindSettings();
-		js.reduceIvc = true; 
+		JKindSettings js = new JKindSettings(this.settings);
+		// MWW: overrides
 		js.timeout = TIMEOUT; 
+		js.miniJkind = true;
+		js.allIvcs = false;
+		js.reduceIvc = true; 
 		// optional-- could be commented later:
 		//js.scratch = true;
-		js.slicing = settings.slicing;
-		js.allAssigned = settings.allAssigned;
-		js.pdrMax = settings.pdrMax;
-		js.boundedModelChecking = settings.boundedModelChecking;
-		js.miniJkind = true;
 		
 		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed)); 
 		List<String> deactivate = new ArrayList<>();

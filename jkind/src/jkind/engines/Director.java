@@ -146,7 +146,12 @@ public class Director extends MessageHandler {
 			sleep(100);
 		} 
 
-		stopEngines(); 
+		// MWW: added code: otherwise top-level jkind shuts down 
+		// minijkind!
+		if (settings.miniJkind) {
+			stopEngines(); 
+		}
+		
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {

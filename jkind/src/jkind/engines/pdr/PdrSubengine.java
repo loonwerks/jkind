@@ -18,6 +18,7 @@ import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.LustreSlicer;
 import jkind.solvers.Model;
+import jkind.solvers.smtinterpol.TerminationRequestImpl;
 import jkind.translation.Specification;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 
@@ -41,7 +42,8 @@ public class PdrSubengine extends Thread {
 	private PdrSmt Z;
 
 	private volatile boolean cancel = false;
-
+	private TerminationRequestImpl term = new TerminationRequestImpl();
+	
 	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent,
 			Director director) {
 		super("pdr-" + prop);
@@ -54,6 +56,7 @@ public class PdrSubengine extends Thread {
 	}
 
 	public void cancel() {
+		term.requestTermination();
 		cancel = true;
 	}
 
@@ -64,7 +67,7 @@ public class PdrSubengine extends Thread {
 			return;
 		}
 		
-		Z = new PdrSmt(node, F, prop, scratchBase);
+		Z = new PdrSmt(node, F, prop, scratchBase, term);
 		Z.comment("Checking property: " + prop);
 
 		// Create F_INF and F[0]
@@ -98,7 +101,7 @@ public class PdrSubengine extends Thread {
 			return;
 		}
 	}
-
+	
 	private void blockCube(TCube s0) {
 		PriorityQueue<TCube> Q = new PriorityQueue<>();
 		Q.add(s0);

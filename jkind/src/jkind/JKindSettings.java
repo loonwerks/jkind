@@ -28,4 +28,35 @@ public class JKindSettings extends Settings {
 	public String readAdvice = null; 
 	public boolean allAssigned = false; 
 	public String useUnsatCore = null;
+	
+	public JKindSettings() { }
+	public JKindSettings(JKindSettings settings) {
+		this.n = settings.n;
+		this.timeout = settings.timeout;
+		
+		this.miniJkind = settings.miniJkind;
+		this.excel = settings.excel;
+		this.xml = settings.xml;
+		this.xmlToStdout = settings.xmlToStdout;
+
+		this.main = settings.main;
+		this.boundedModelChecking = settings.boundedModelChecking;
+		this.kInduction = settings.kInduction;
+		this.invariantGeneration = settings.invariantGeneration;
+	   	this.pdrMax = settings.pdrMax;
+		this.inductiveCounterexamples = settings.inductiveCounterexamples;
+		this.reduceIvc = settings.reduceIvc;
+		this.allIvcs = settings.allIvcs;
+		this.smoothCounterexamples = settings.smoothCounterexamples;
+		this.intervalGeneralization = settings.intervalGeneralization;
+		this.inlining = settings.inlining;
+		this.slicing = settings.slicing;
+		this.solver = settings.solver;
+		this.scratch = settings.scratch;
+		this.writeAdvice = settings.writeAdvice;
+		this.readAdvice = settings.readAdvice; 
+		this.allAssigned = settings.allAssigned; 
+		this.useUnsatCore = settings.useUnsatCore;
+		
+	}
 }

@@ -30,6 +30,7 @@ import de.uni_freiburg.informatik.ultimate.logic.QuotedObject;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
+import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationRequest;
 
 public class PdrSmt extends ScriptUser {
 	private final List<Frame> F;
@@ -48,8 +49,9 @@ public class PdrSmt extends ScriptUser {
 
 	private final NameGenerator abstractAssertions = new NameGenerator("abstract");
 
-	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase) {
-		super(SmtInterpolUtil.getScript(scratchBase));
+	public PdrSmt(Node node, List<Frame> F, String property, String scratchBase, 
+			TerminationRequest te) {
+		super(SmtInterpolUtil.getScript(scratchBase, te));
 		this.F = F;
 
 		script.setOption(":produce-interpolants", true);
@@ -429,4 +431,5 @@ public class PdrSmt extends ScriptUser {
 	private List<Term> term(List<String> variables) {
 		return variables.stream().map(this::term).collect(toList());
 	}
+
 }

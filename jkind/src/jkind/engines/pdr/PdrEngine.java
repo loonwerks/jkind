@@ -102,4 +102,12 @@ public class PdrEngine extends Engine {
 		}
 		properties.removeAll(cancel);
 	}
+	
+	@Override
+	public void stopEngine() {
+		for (PdrSubengine subengine : subengines.values()) {
+			subengine.cancel();
+		}
+		properties.clear();
+	}
 }

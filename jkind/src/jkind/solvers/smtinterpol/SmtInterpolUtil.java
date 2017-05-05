@@ -30,13 +30,14 @@ import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
 import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
+import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationRequest;
 
 public class SmtInterpolUtil {
-	public static Script getScript(String scratchBase) {
+	public static Script getScript(String scratchBase, TerminationRequest te) {
 		Logger logger = Logger.getRootLogger();
 		logger.setLevel(Level.OFF);
 
-		Script baseScript = new SMTInterpol(logger);
+		Script baseScript = new SMTInterpol(logger, te);
 		if (scratchBase == null) {
 			return baseScript;
 		}

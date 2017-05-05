@@ -38,8 +38,6 @@ public class MiniJKind extends Engine {
 		
 		if (settings.allAssigned && settings.reduceIvc){ 
 			Node newNode = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
-			
-			
 			this.director =  new Director(settings, new Specification(newNode, settings.slicing), 
 										new Specification(newNode, settings.slicing), this);
 		}else{
