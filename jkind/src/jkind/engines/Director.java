@@ -19,7 +19,7 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
-import jkind.engines.ivcs.AllIvcsExtractorrEngine; 
+import jkind.engines.ivcs.AllIvcsExtractorEngine; 
 import jkind.engines.ivcs.IvcReductionEngine;
 import jkind.engines.ivcs.IvcUtil; 
 import jkind.engines.messages.BaseStepMessage;
@@ -241,7 +241,7 @@ public class Director extends MessageHandler {
 		}
 
 		if (settings.allIvcs) { 
-			addEngine(new AllIvcsExtractorrEngine(analysisSpec, settings, this));
+			addEngine(new AllIvcsExtractorEngine(analysisSpec, settings, this));
 		} 
 	}
 
