@@ -1,10 +1,15 @@
 package jkind.engines.ivcs;
-import static java.util.stream.Collectors.toList;  
+import static java.util.stream.Collectors.toList;
+
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet; 
 import java.util.List; 
-import java.util.Set;  
+import java.util.Set;
+
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.SolverOption;
@@ -49,6 +54,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private Set<String> mayElements = new HashSet<>();  
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT; 
+	
+	// these variables are only used for the experiments
+		private double runtime;  
+	//--------------------------------------------------
+
 
 	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -76,6 +86,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	private void reduce(ValidMessage vm) { 
+		
+		//----- for the experiments---------
+				runtime = System.currentTimeMillis(); 
+		//-----------------------------------
+				
 		for (String property : vm.valid) {
 			mayElements.clear();
 			mustElements.clear(); 
@@ -117,6 +132,12 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		} 
 		
 		z3Solver.pop(); 
+		
+		//--------- for the experiments --------------
+				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+				recordRuntime();
+		//--------------------------------------------
+				
 		sendValid(property.toString(), vm);
 	}
 
@@ -388,6 +409,23 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		if (vm.getNextDestination() == EngineType.IVC_REDUCTION_ALL) {
 			reduce(vm);
 		}
+	}
+	
+	// this method is used only in our experiments
+		private void recordRuntime() {
+			String xmlFilename = settings.filename + "_runtimeAllIvcs.xml";
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+				out.println("<?xml version=\"1.0\"?>");
+				out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
+				out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntime>");
+				out.println("</Results>");
+				out.flush();
+				out.close();
+			} catch (Throwable t) {
+				t.printStackTrace();
+				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+			}
+			
 	}
 	
 }
