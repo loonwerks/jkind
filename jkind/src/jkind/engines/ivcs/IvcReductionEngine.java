@@ -1,10 +1,14 @@
-package jkind.engines.ivcs;  
+package jkind.engines.ivcs; 
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set; 
+import java.util.Set;
+
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings; 
 import jkind.engines.Director; 
@@ -30,7 +34,8 @@ import jkind.solvers.UnsatResult;
 import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.LinkedBiMap;
-import jkind.util.SexpUtil; 
+import jkind.util.SexpUtil;
+import jkind.util.Util; 
 
 public class IvcReductionEngine extends SolverBasedEngine {
 	public static final String NAME = "ivc-reduction";
@@ -62,6 +67,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) { 
+				runtime = System.currentTimeMillis();  
 				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 		}
@@ -217,7 +223,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
 			ValidMessage vm) {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
- 	 
+		 
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());

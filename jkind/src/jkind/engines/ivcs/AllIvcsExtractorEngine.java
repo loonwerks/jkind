@@ -1,10 +1,15 @@
 package jkind.engines.ivcs;
-import static java.util.stream.Collectors.toList; 
+import static java.util.stream.Collectors.toList;
+
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet; 
 import java.util.List; 
 import java.util.Set;
+
+import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
 import jkind.SolverOption;
@@ -76,7 +81,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	private void reduce(ValidMessage vm) { 
-		 
+			
 		for (String property : vm.valid) {
 			mayElements.clear();
 			mustElements.clear(); 
@@ -117,7 +122,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 		} 
 		
-		z3Solver.pop(); 		
+		z3Solver.pop(); 				
 		sendValid(property.toString(), vm);
 	}
 

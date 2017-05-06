@@ -41,7 +41,8 @@ public class MiniJKind extends Engine {
 				settings.xml = false;
 				settings.xmlToStdout = false;
 				settings.allIvcs = false;
-				settings.excel = false; 	
+				settings.excel = false; 
+				settings.miniJkind = true;
 		
 		if (settings.allAssigned && settings.reduceIvc){ 
 			Node newNode = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
