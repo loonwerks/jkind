@@ -107,7 +107,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 
-		TIMEOUT = 45 + (int)(vm.proofTime * 5);
+		TIMEOUT = 30 + (int)(vm.proofTime * 5);
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
@@ -142,14 +142,15 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
-		JKindSettings js = new JKindSettings(this.settings);
-		// MWW: overrides
+		JKindSettings js = new JKindSettings();
+		js.reduceIvc = true; 
 		js.timeout = TIMEOUT; 
-		js.miniJkind = true;
-		js.allIvcs = false;
-		js.reduceIvc = true;  
 		// optional-- could be commented later:
 		//js.scratch = true;
+		js.slicing = settings.slicing; 
+		js.pdrMax = settings.pdrMax;
+		js.boundedModelChecking = settings.boundedModelChecking;
+        js.miniJkind = true;
 		
 		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed)); 
 		List<String> deactivate = new ArrayList<>();

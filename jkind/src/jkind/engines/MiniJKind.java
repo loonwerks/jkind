@@ -33,12 +33,16 @@ public class MiniJKind extends Engine {
 	public MiniJKind(Specification spec, JKindSettings settings) {
 		super(NAME, spec, settings, null); 
 		
-		settings.xml = false;
-		settings.xmlToStdout = false;
-		
 		if (spec.node.properties.size() != 1) {
 			throw new IllegalArgumentException("MiniJKind Expects exactly one property");
 		} 
+		
+		// make sure the caller set these variables correctly
+				settings.xml = false;
+				settings.xmlToStdout = false;
+				settings.allIvcs = false;
+				settings.excel = false; 	
+		
 		if (settings.allAssigned && settings.reduceIvc){ 
 			Node newNode = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
 			this.director =  new Director(settings, new Specification(newNode, settings.slicing), 
