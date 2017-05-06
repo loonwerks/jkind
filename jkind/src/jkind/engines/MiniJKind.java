@@ -31,11 +31,14 @@ public class MiniJKind extends Engine {
 	private String status = NOT_YET_CHECKED; 
     
 	public MiniJKind(Specification spec, JKindSettings settings) {
-		super(NAME, spec, settings, null);  
+		super(NAME, spec, settings, null); 
+		
+		settings.xml = false;
+		settings.xmlToStdout = false;
+		
 		if (spec.node.properties.size() != 1) {
 			throw new IllegalArgumentException("MiniJKind Expects exactly one property");
-		}
-		
+		} 
 		if (settings.allAssigned && settings.reduceIvc){ 
 			Node newNode = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
 			this.director =  new Director(settings, new Specification(newNode, settings.slicing), 
@@ -56,15 +59,14 @@ public class MiniJKind extends Engine {
 				status = UNKNOW_WITH_EXCEPTION;
 			} 
 		} 
-		catch (Throwable t) { 
-			t.printStackTrace(); 
+		catch (Throwable t) {  
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
 	
 	public void setValidMessage(ValidMessage vm) {
 		validMessage = new ValidMessage(vm.source, vm.valid, vm.k, vm.proofTime, vm.invariants, vm.ivc, null, null);
-		status = VALID;
+		status = VALID; 
 	}
 	
 	public ValidMessage getValidMessage() {
@@ -73,7 +75,7 @@ public class MiniJKind extends Engine {
 
 	public void setInvalid(Counterexample cex) {
 		status = INVALID;
-		this.invalidModel = cex;
+		this.invalidModel = cex; 
 	}
 	
 	public Counterexample getInvalidModel() {
@@ -89,7 +91,7 @@ public class MiniJKind extends Engine {
 	}
 
 	public void setUnknown() { 
-		status = UNKNOWN;
+		status = UNKNOWN; 
 	}
 	
 	public String getPropertyStatus() {

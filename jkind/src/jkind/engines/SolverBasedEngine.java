@@ -37,7 +37,8 @@ public abstract class SolverBasedEngine extends Engine {
 			initializeSolver();
 			super.run();
 		} catch (StopException se) {
-		} catch (Throwable t) {
+		} catch (NullPointerException n){ }
+		  catch (Throwable t) {
 			throwable = t;
 		} finally {
 			killEngine();

@@ -61,7 +61,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 
 	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
-		super(NAME, spec, settings, director);
+		super(NAME, spec, settings, director); 
 		ivcMap = Lustre2Sexp.createIvcMap(spec.node.ivc); 
 	}
 
@@ -107,7 +107,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);
+		TIMEOUT = 45 + (int)(vm.proofTime * 5);
 		Sexp map;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
@@ -117,9 +117,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
-		mustElements.add(property.toString());
-		map = new Cons("and", map, ivcMap.get(property.toString()));  
- 
+		
+		mustElements.add(property.toString()); 
+		map = new Cons("and", map, ivcMap.get(property.toString())); 
 		z3Solver.push();
 
 		while(checkMapSatisfiability(map, seed, mustChckList)){
@@ -378,7 +378,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		Itinerary itinerary = vm.getNextItinerary(); 
+		Itinerary itinerary = vm.getNextItinerary();  
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
 	

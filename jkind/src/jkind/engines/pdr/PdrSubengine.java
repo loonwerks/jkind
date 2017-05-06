@@ -96,7 +96,10 @@ public class PdrSubengine extends Thread {
 		} catch (StopException | OutOfMemoryError e) {
 			parent.reportUnknown(prop);
 			return;
-		} catch (Throwable t) {
+		} catch(de.uni_freiburg.informatik.ultimate.logic.SMTLIBException ex){
+			parent.reportThrowable(ex);
+			return;
+		}catch (Throwable t) {
 			parent.reportThrowable(t);
 			return;
 		}

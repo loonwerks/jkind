@@ -113,7 +113,7 @@ public class Director extends MessageHandler {
 
 		initializeUnknowns(settings, analysisSpec.node.properties);
 	}
-
+	 
 	private final Writer getWriter() {
 		try {
 			if (settings.excel) {
@@ -132,6 +132,7 @@ public class Director extends MessageHandler {
 		}
 	}
 
+
 	public int run() {
 		if(!settings.miniJkind){
 			printHeader();
@@ -145,18 +146,17 @@ public class Director extends MessageHandler {
 			processMessages();
 			sleep(100);
 		} 
-
-		// MWW: added code: otherwise top-level jkind shuts down 
-		// minijkind!
-		if (settings.miniJkind) {
-			stopEngines(); 
-		}
 		
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
 			exitCode = reportFailures(); 
+		}
+		// MWW: added code: otherwise top-level jkind shuts down 
+		// minijkind!
+		if (settings.miniJkind) {
+			stopEngines(); 
 		}
 		return exitCode;
 	}
@@ -251,11 +251,13 @@ public class Director extends MessageHandler {
 	}
 
 	private void stopEngines() {
-		
-		for (Engine engine : engines) {
+		try{
+			for (Engine engine : engines) {
 			// Add code to kill thread.
-			engine.stopEngine();
-		}
+				engine.stopEngine();
+			}
+		}catch(Throwable t){ 
+		} 
 	}
 
 	private static void sleep(int millis) {
@@ -295,7 +297,7 @@ public class Director extends MessageHandler {
 			// MWW: specialized for miniJKind - we kill solvers abruptly
 			// for "internal" runs.
 			if (engine.getThrowable() != null && 
-				!(settings.miniJkind && timeout())) { 
+				((!settings.miniJkind) && timeout())) { 
 				StdErr.println(engine.getName() + " process failed");
 				StdErr.printStackTrace(engine.getThrowable());
 				exitCode = ExitCodes.UNCAUGHT_EXCEPTION; 
