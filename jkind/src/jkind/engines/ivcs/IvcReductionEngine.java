@@ -65,7 +65,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	}
 
 	private void reduce(ValidMessage vm) {
-		for (String property : vm.valid) {
+		for (String property : vm.valid) { 
 			if (properties.remove(property)) {
 				//----- for the experiments---------
 				runtime = System.currentTimeMillis(); 
@@ -281,7 +281,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 			out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
-			double t = 60.0 + ((runtime + proofTime) * 10);
+			double t = 30.0 + ((runtime + proofTime) * 5);
 			out.println("   <Timeout unit=\"sec\">" + t + "</Timeout>");
 			out.println("   <ProofTime unit=\"sec\">" + proofTime + "</ProofTime>");
 			out.println("   <Runtime unit=\"sec\">" + (runtime + proofTime) + "</Runtime>");
