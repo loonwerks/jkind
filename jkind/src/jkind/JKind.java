@@ -36,7 +36,7 @@ public class JKind {
 				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			} 
 			Specification userSpec = new Specification(main, settings.slicing); 
-			System.out.println(main.equations.size());
+			//System.out.println(main.equations.size());
 		 
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 			

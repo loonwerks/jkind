@@ -1,6 +1,7 @@
 package jkind.engines.ivcs;
 import static java.util.stream.Collectors.toList;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.LinkedBiMap;
 import jkind.util.SexpUtil;
-import jkind.util.Tuple; 
+import jkind.util.Tuple;
+import jkind.util.Util; 
 
 public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
@@ -181,10 +183,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			} 
 			
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
-			 
 			
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){  
 				Set<String> trimmed = IvcUtil.trimNode(curr.firstElement());
+						
 				if (trimmed.containsAll(newIvc)){
 					temp.add(curr);  
 				}
@@ -198,10 +200,18 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			if(temp.isEmpty()){ 
 				//director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
+				
+				//---------------------for experiments ------------------
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), true) ;
+				//--------------------------------------------------------
 			}
 			else{ 
 				allIvcs.removeAll(temp);
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
+			
+				//---------------------for experiments ------------------
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), false) ;
+				//--------------------------------------------------------
 			} 
 			return true;
 		}
@@ -429,5 +439,28 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 			
 	}
+		
+	// recording intermediate results for the experiments	
+		private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, boolean isNew) {
+			String xmlFilename = settings.filename + "_all_uc_minijkind.xml";  
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
+				out.println("<Results>");
+				out.println("   <NewSet>" + isNew + "</NewSet>"); 
+				out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
+				for (String s : untrimmed) {
+					out.println("   <IVC>" + s + "</IVC>");
+				}
+				for (String s : trimmed) {
+					out.println("   <TRIVC>" + s + "</TRIVC>");
+				}
+				out.println("</Results>");
+				out.flush(); 
+				out.close(); 
+			} catch (Throwable t) { 
+				t.printStackTrace();
+				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+			}
+			
+		}	
 	
 }

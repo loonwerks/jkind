@@ -38,6 +38,13 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	public void initialize() {
 		setOption("produce-models", true);
 		setOption("produce-unsat-cores", true);
+		setOption("smt.core.minimize", true);
+		setOption("sat.core.minimize", true); 
+		
+		// not sure of the following option. 
+		// I added because of the reported bugs in Z3:
+		// https://github.com/Z3Prover/z3/issues/158
+		// setOption("smt.core.validate", true); 
 	}
 
 	public void setOption(String option, boolean value) {

@@ -1,4 +1,5 @@
 package jkind.engines.ivcs; 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -227,11 +228,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
 		
 		//--------- for the experiments -------------- 
-				writeToXml(ivc, vm.proofTime); 
-				//========== for the completeness paper ============
-				// new MinimalIvcFinder(spec.node, 
-					//	 settings.filename, valid).computeMust(ivc, 
-						//		 true, (int)(60.0 + ((runtime + vm.proofTime) * 10)));
+		if(! settings.miniJkind){ 
+			writeToXml(ivc, vm.proofTime);  
+		}
 		//--------------------------------------------
 
 		 
@@ -299,5 +298,5 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 		
-}
+	}
 }

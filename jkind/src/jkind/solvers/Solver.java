@@ -13,6 +13,7 @@ import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
+import jkind.solvers.z3.Z3Solver;
 import jkind.translation.Relation;
 
 public abstract class Solver {
@@ -78,15 +79,16 @@ public abstract class Solver {
 	 */
 	protected List<Symbol> minimizeUnsatCore(List<Symbol> unsatCore) {
 		List<Symbol> result = new ArrayList<>(unsatCore);
-
-		Iterator<Symbol> iterator = result.iterator();
-		while (iterator.hasNext()) {
-			Symbol curr = iterator.next();
-			if (quickCheckSat(without(result, curr)) instanceof UnsatResult) {
-				iterator.remove();
-			}
-		}
-
+		
+        if(! (this instanceof Z3Solver)){
+        	Iterator<Symbol> iterator = result.iterator();
+        	while (iterator.hasNext()) {
+        		Symbol curr = iterator.next();
+        		if (quickCheckSat(without(result, curr)) instanceof UnsatResult) {
+        			iterator.remove();
+        		}
+        	}
+        }
 		comment("Minimal unsat core: " + result);
 		return result;
 	}

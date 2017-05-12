@@ -226,6 +226,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		}
 		
 		if (settings.allIvcs) { 
+			StdErr.warning("IVC reduction requires at least Z3 4.5");
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
