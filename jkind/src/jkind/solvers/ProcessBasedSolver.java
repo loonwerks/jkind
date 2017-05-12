@@ -95,13 +95,23 @@ public abstract class ProcessBasedSolver extends Solver {
 		return getSolverName().toUpperCase() + "_HOME";
 	}
 
+	private final Thread shutdownHook = new Thread("shutdown-hook") {
+		@Override
+		public void run() {
+			ProcessBasedSolver.this.stop();
+		}
+	};
+
 	private void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {
-			@Override
-			public void run() {
-				ProcessBasedSolver.this.stop();
-			}
-		});
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
+	}
+
+	private void removeShutdownHook() {
+		try {
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		} catch (IllegalStateException e) {
+			// Ignore, we are already shutting down
+		}
 	}
 
 	@Override
@@ -121,6 +131,8 @@ public abstract class ProcessBasedSolver extends Solver {
 			scratch.close();
 			scratch = null;
 		}
+
+		removeShutdownHook();
 	}
 
 	public void scratch(String str) {
