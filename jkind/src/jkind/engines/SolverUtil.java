@@ -40,10 +40,14 @@ public class SolverUtil {
 		throw new IllegalArgumentException("Unknown solver: " + solverOption);
 	}
 
+	public static Solver getBasicSolver(SolverOption solverOption) {
+		Node emptyNode = new NodeBuilder("empty").build();
+		return getSolver(solverOption, null, emptyNode);
+	}
+
 	public static boolean solverIsAvailable(SolverOption solverOption) {
 		try {
-			Node emptyNode = new NodeBuilder("empty").build();
-			getSolver(solverOption, null, emptyNode);
+			getBasicSolver(solverOption);
 		} catch (JKindException e) {
 			return false;
 		}
