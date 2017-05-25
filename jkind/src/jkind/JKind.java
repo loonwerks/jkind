@@ -3,6 +3,7 @@ package jkind;
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
+import jkind.engines.SolverUtil;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.builders.ProgramBuilder;
@@ -20,10 +21,11 @@ public class JKind {
 			StaticAnalyzer.check(program, settings.solver);
 			if (!LinearChecker.isLinear(program)) {
 				if (settings.pdrMax > 0) {
-					StdErr.warning("disabling PDR due to non-linearities");
-					settings.pdrMax = 0;
+					StdErr.warning("PDR not available for some properties due to non-linearities");
 				}
 			}
+
+			ensureSolverAvailable(settings.solver);
 
 			Node main = Translate.translate(program);
 			Specification userSpec = new Specification(main, settings.slicing);
@@ -48,6 +50,14 @@ public class JKind {
 		}
 
 		return new ProgramBuilder(program).setMain(main).build();
+	}
+
+	private static void ensureSolverAvailable(SolverOption solver) {
+		try {
+			SolverUtil.getBasicSolver(solver);
+		} catch (JKindException e) {
+			StdErr.fatal(ExitCodes.INVALID_OPTIONS, e.getMessage());
+		}
 	}
 
 	private static Specification getAnalysisSpec(Specification userSpec, JKindSettings settings) {

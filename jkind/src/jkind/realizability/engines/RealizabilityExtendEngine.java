@@ -41,17 +41,14 @@ public class RealizabilityExtendEngine extends RealizabilityEngine {
 
 	@Override
 	public void main() {
-		try {
-			createVariables(-1);
-			for (int k = 0; k <= settings.n; k++) {
-				comment("K = " + k);
-				processMessagesAndWait(k);
-				createVariables(k);
-				assertTransition(k);
-				checkRealizabilities(k);
-				assertProperties(k);
-			}
-		} catch (StopException se) {
+		createVariables(-1);
+		for (int k = 0; k <= settings.n; k++) {
+			comment("K = " + k);
+			processMessagesAndWait(k);
+			createVariables(k);
+			assertTransition(k);
+			checkRealizabilities(k);
+			assertProperties(k);
 		}
 	}
 

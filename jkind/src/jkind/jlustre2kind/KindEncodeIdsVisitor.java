@@ -1,4 +1,4 @@
-package jkind;
+package jkind.jlustre2kind;
 
 import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;

@@ -38,18 +38,15 @@ public class RealizabilityBaseEngine extends RealizabilityEngine {
 
 	@Override
 	public void main() {
-		try {
-			createVariables(-1);
-			for (int k = 0; k < settings.n; k++) {
-				comment("K = " + (k + 1));
-				processMessages();
-				createVariables(k);
-				assertTransition(k);
-				checkConsistency(k);
-				checkRealizable(k);
-				assertProperties(k);
-			}
-		} catch (StopException se) {
+		createVariables(-1);
+		for (int k = 0; k < settings.n; k++) {
+			comment("K = " + (k + 1));
+			processMessages();
+			createVariables(k);
+			assertTransition(k);
+			checkConsistency(k);
+			checkRealizable(k);
+			assertProperties(k);
 		}
 	}
 

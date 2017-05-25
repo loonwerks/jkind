@@ -28,6 +28,7 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.Message;
 import jkind.engines.messages.MessageHandler;
+import jkind.engines.messages.StopMessage;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
@@ -114,6 +115,7 @@ public class Director extends MessageHandler {
 			sleep(100);
 		}
 
+		stopEngines();
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {
@@ -206,6 +208,12 @@ public class Director extends MessageHandler {
 	private void addEngine(Engine engine) {
 		engines.add(engine);
 		threads.add(new Thread(engine, engine.getName()));
+	}
+
+	private void stopEngines() {
+		for (Engine engine : engines) {
+			engine.receiveMessage(new StopMessage());
+		}
 	}
 
 	private static void sleep(int millis) {

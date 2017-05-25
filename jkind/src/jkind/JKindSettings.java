@@ -13,12 +13,12 @@ public class JKindSettings extends Settings {
 	public boolean boundedModelChecking = true;
 	public boolean kInduction = true;
 	public boolean invariantGeneration = true;
-    public int pdrMax = 1;
+   	public int pdrMax = 1;
 	public boolean inductiveCounterexamples = false;
 	public boolean reduceIvc = false;
 	public boolean smoothCounterexamples = false;
-    public boolean intervalGeneralization = false;
-    public boolean inlining = true;
+	public boolean intervalGeneralization = false;
+	public boolean inlining = true;
 	public boolean slicing = true;
 	
 	public SolverOption solver = SolverOption.SMTINTERPOL;

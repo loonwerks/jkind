@@ -33,6 +33,7 @@ public abstract class Engine extends MessageHandler implements Runnable {
 	public void run() {
 		try {
 			main();
+		} catch (StopException se) {
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {

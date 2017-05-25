@@ -3,8 +3,11 @@ package jkind;
 import java.io.File;
 
 import jkind.analysis.StaticAnalyzer;
+import jkind.jlustre2kind.KindEncodeIdsVisitor;
+import jkind.jlustre2kind.ObfuscateIdsVisitor;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.RemoveEnumTypes;
@@ -32,6 +35,10 @@ public class JLustre2Kind {
 
 			if (settings.encode) {
 				main = new KindEncodeIdsVisitor().visit(main);
+			}
+			if (settings.obfuscate) {
+				main = new ObfuscateIdsVisitor().visit(main);
+				main = new NodeBuilder(main).setId("main").build();
 			}
 			if (settings.stdout) {
 				System.out.println(main.toString());

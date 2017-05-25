@@ -1,7 +1,7 @@
-*.java text
+*.java text=auto
 *.md text
 *.lus text
-*.g4 text
+*.g4 text=auto
 *.tokens text
 .project text
 .classpath text
@@ -12,7 +12,7 @@
 LICENSE text
 
 *.png binary
-*.gif binary
+*.gif binary 
 *.jar binary
 
 # Scripts are platform specific
