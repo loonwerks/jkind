@@ -1,5 +1,6 @@
 package jkind.solvers.dreal;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import jkind.interval.NumericEndpoint;
@@ -79,7 +80,7 @@ public class ModelExtractor {
 			}
 		} else if (ctx instanceof RealValContext) {
 			double val = Double.parseDouble(ctx.getText()); 
-			return new RealEndpoint(BigFraction.fromValue(val));
+			return new RealEndpoint(BigFraction.valueOf(new BigDecimal(val)));
 		}
 		else {
 			throw new IllegalArgumentException("Unknown number type in getNumber()");
