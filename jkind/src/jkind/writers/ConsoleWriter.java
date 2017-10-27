@@ -41,7 +41,7 @@ public class ConsoleWriter extends Writer {
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
 			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
 		if(miniJkind != null){
-			miniJkind.setRuntime(runtime);
+			miniJkind.setRuntime(runtime); 
 			miniJkind.setValidMessage(new ValidMessage(source, props.get(0), k, proofTime, invariants, ivc, null, null));
 		}else{
 			writeLine();

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
+import jkind.engines.MiniJKind;
 import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.ivcs.MinimalIvcFinder; 
 import jkind.lustre.Node;
@@ -17,6 +18,7 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.RemoveEnumTypes;
+import jkind.translation.Specification;
 import jkind.translation.Translate; 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,6 +57,37 @@ public class JSupport {
 			}
 			
 			inputIVC = getIVC(settings.useUnsatCore);
+			
+			
+			/* for checking must provability in the experiments
+			Node newnode = IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0));
+			JKindSettings js = new JKindSettings(); 
+			//js.noSlicing = true;   
+			js.allAssigned = false; 
+			js.timeout = TIMEOUT; 
+			MiniJKind miniJkind = new MiniJKind (new Specification(newnode, js.slicing), js);
+			miniJkind.verify();
+			if  (miniJkind.getPropertyStatus() != MiniJKind.VALID) {
+					String xmlFilename;
+				if  (miniJkind.getPropertyStatus() == MiniJKind.INVALID) {
+				 xmlFilename = settings.filename + "_falied.xml";
+				}else {
+					 xmlFilename = settings.filename + "_unknown.xml";
+				}
+				try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+					out.println("<?xml version=\"1.0\"?>");
+					out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+					out.println("  <Name>" + settings.filename+ "</Name>");
+					out.println("</Results>");
+					out.flush();
+					out.close();
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+				}
+			}
+			System.exit(0);*/
+			
 			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0)),
 					settings.filename, main.properties.get(0));
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), true, TIMEOUT);

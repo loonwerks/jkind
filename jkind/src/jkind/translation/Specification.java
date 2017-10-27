@@ -1,7 +1,11 @@
 package jkind.translation;
 
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.Map;
 
+import jkind.ExitCodes;
+import jkind.engines.ivcs.IvcUtil;
 import jkind.lustre.Node;
 import jkind.lustre.Type;
 import jkind.slicing.DependencyMap;
@@ -20,7 +24,7 @@ public class Specification {
 			this.dependencyMap = new DependencyMap(raw, raw.properties);
 		} else {
 			this.dependencyMap = DependencyMap.full(raw);
-		}
+		} 
 		this.node = LustreSlicer.slice(raw, dependencyMap);
 		this.typeMap = Util.getTypeMap(node);
 	}

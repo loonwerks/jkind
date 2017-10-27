@@ -88,13 +88,22 @@ public class IvcUtil {
 		return ret;
 	}
 	
-	public static Set<String> trimNode(Collection<String> set) {
+	//-----------------------------------------------
+	/*public static Set<String> trimNode(Collection<String> set) {
 		Set<String> ret = new HashSet<>();
 		for (String e : set) {
 			ret.add(e.replaceAll("~[0-9]+", ""));
 		}
 		return ret;
+	}*/
+	//since it caused trouble, replace it with the following until we find the bug
+	public static Set<String> trimNode(Collection<String> set) {
+		Set<String> ret = new HashSet<>(); 
+		ret.addAll(set);
+		return ret;
 	}
+	//--------------------------------------------------
+	
 	
 	public static Set<String> findRightSide(Set<String> initialIvc, boolean allAssigned, List<Equation> equations) {
 		Set<String> ivc = new HashSet<>(initialIvc);

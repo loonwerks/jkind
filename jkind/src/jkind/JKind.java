@@ -1,5 +1,8 @@
 package jkind;
 
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director; 
@@ -34,10 +37,30 @@ public class JKind {
 				
 				//main = IvcUtil.normalizeAssertions(main);
 				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
-			} 
+			}  
 			Specification userSpec = new Specification(main, settings.slicing); 
+			
+			/*
 			//System.out.println(main.equations.size());
-		 
+			//System.out.println(userSpec.node.toString());
+			 
+			String xmlFilename = settings.filename + "_NUMEQ.xml";  
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
+				out.println("<?xml version=\"1.0\"?>");
+				out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+				out.println("   <InitialNumberOfEqs>"+main.equations.size() + "</InitialNumberOfEqs>");
+				out.println("   <SlicedNumberOfEqs>" + userSpec.node.equations.size() + "</SlicedNumberOfEqs>");
+				out.println("</Results>");
+				out.flush(); 
+				out.close(); 
+			} catch (Throwable t) { 
+				t.printStackTrace();
+				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+			}
+			
+			System.exit(0);
+			*/
+			
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 			
 			new Director(settings, userSpec, analysisSpec).run();

@@ -175,8 +175,8 @@ public class Director extends MessageHandler {
 
 	private void postProcessing() {
 		writeUnknowns();
-		writer.end();
-		writeAdvice();
+		//writer.end();
+		//writeAdvice();
 		printSummary();
 	}
 
@@ -338,6 +338,11 @@ public class Director extends MessageHandler {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		if (vm.getNextDestination() != null) {
+			if(vm.getNextDestination().equals(EngineType.IVC_REDUCTION) && adviceWriter != null){
+				adviceWriter.addInvariants(vm.invariants);
+				writer.end();
+				writeAdvice();
+			}
 			return;
 		}
 

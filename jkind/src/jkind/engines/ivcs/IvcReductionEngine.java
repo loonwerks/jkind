@@ -70,6 +70,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			if (properties.remove(property)) {
 				//----- for the experiments---------
 				runtime = System.currentTimeMillis(); 
+				System.out.println("PROPERTY WAS PROVED... Start IVC reduction...");
 				//-----------------------------------
 				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
@@ -231,9 +232,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		if(! settings.miniJkind){ 
 			writeToXml(ivc, vm.proofTime);  
 		}
-		//--------------------------------------------
-
-		 
+		//-------------------------------------------- 
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());

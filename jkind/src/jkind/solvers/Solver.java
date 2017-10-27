@@ -80,7 +80,7 @@ public abstract class Solver {
 	protected List<Symbol> minimizeUnsatCore(List<Symbol> unsatCore) {
 		List<Symbol> result = new ArrayList<>(unsatCore);
 		
-        if(! (this instanceof Z3Solver)){
+        if(! (this instanceof Z3Solver)){ 
         	Iterator<Symbol> iterator = result.iterator();
         	while (iterator.hasNext()) {
         		Symbol curr = iterator.next();
@@ -88,7 +88,7 @@ public abstract class Solver {
         			iterator.remove();
         		}
         	}
-        }
+        } 
 		comment("Minimal unsat core: " + result);
 		return result;
 	}

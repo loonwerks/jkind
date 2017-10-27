@@ -56,7 +56,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private Set<String> mayElements = new HashSet<>();  
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT; 
-	
+	private int numOfGetIvcCalls = 1;
+	private int numOfTimedOuts = 0;
 	// these variables are only used for the experiments
 		private double runtime;  
 	//--------------------------------------------------
@@ -120,11 +121,12 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
 		
-		mustElements.add(property.toString()); 
-		map = new Cons("and", map, ivcMap.get(property.toString())); 
+		mustElements.add(property.toString());
+		if (ivcMap.containsValue(property.toString())){
+			map = new Cons("and", map, ivcMap.get(property.toString())); 
+		} 
 		z3Solver.push();
-
-		while(checkMapSatisfiability(map, seed, mustChckList)){
+		while(checkMapSatisfiability(map, seed, mustChckList)){ 
 			resultOfIvcFinder.clear(); 
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
@@ -150,18 +152,20 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		// optional-- could be commented later:
 		//js.scratch = true;
 		js.solver = settings.solver;
-		js.slicing = settings.slicing; 
+		js.slicing = false; 
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
         js.miniJkind = true;
-		
+        js.readAdvice = js.writeAdvice;
+        numOfGetIvcCalls ++;
 		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed)); 
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
 		
 		Node nodeSpec = IvcUtil.unassign(spec.node, deactivate, property);  
-		Specification newSpec = new Specification(nodeSpec, js.slicing);   
+		Specification newSpec = new Specification(nodeSpec, js.slicing);  
+		
 		if (settings.scratch){
 			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 		}
@@ -193,8 +197,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				// the else part can only happen 
 				//         while processing mustChckList after finding all IVC sets
 				//         if we have different instances of a node in the Lustre file
-				else if (newIvc.containsAll(trimmed)){
-					return true;
+				if (newIvc.containsAll(trimmed)){
+					throw new Error("Elaheh says this will never happen!!!");
 				} 
 			} 
 			if(temp.isEmpty()){ 
@@ -202,7 +206,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 				
 				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), true) ;
+				//writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), true) ;
 				//--------------------------------------------------------
 			}
 			else{ 
@@ -210,12 +214,15 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			
 				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), false) ;
+				//writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), false) ;
 				//--------------------------------------------------------
 			} 
 			return true;
 		}
 		else{	
+			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
+				numOfTimedOuts ++;
+			}
 			resultOfIvcFinder.addAll(deactivate); 
 			if (settings.scratch){
 				comment("Property got violated. Adding back the elements");
@@ -282,6 +289,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			return true;
 		}
 		else{
+			
+			
 			resultOfIvcFinder.addAll(deactivate); 
 			if (settings.scratch){
 				comment("Property got violated. Adding back the elements");
@@ -325,6 +334,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList) { 
 		z3Solver.push();  
+
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
@@ -430,6 +440,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				out.println("<?xml version=\"1.0\"?>");
 				out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
 				out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntime>");
+				out.println("  <NumOfGetIvcCalls>" + numOfGetIvcCalls + "</NumOfGetIvcCalls>");
+				out.println("  <NumOfTimedOuts>" + numOfTimedOuts + "</NumOfTimedOuts>");
 				out.println("</Results>");
 				out.flush();
 				out.close();
