@@ -122,7 +122,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		map = blockUp(seed);  
 		
 		mustElements.add(property.toString());
-		if (ivcMap.containsValue(property.toString())){
+		if (ivcMap.containsKey(property.toString())){
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
