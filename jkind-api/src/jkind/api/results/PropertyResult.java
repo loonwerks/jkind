@@ -45,6 +45,10 @@ public class PropertyResult extends AnalysisResult {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public boolean isInverted() {
+		return invertStatus;
+	}
 
 	public void setProperty(Property original) {
 		if (renaming == null) {
