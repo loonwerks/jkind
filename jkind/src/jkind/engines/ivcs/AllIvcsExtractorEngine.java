@@ -152,7 +152,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		// optional-- could be commented later:
 		//js.scratch = true;
 		js.solver = settings.solver;
-		js.slicing = false; 
+		js.slicing = true; 
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
         js.miniJkind = true;
@@ -171,6 +171,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
+		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			js.pdrMax = 0;
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
@@ -206,7 +207,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 				
 				//---------------------for experiments ------------------
-				//writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), true) ;
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), true) ;
 				//--------------------------------------------------------
 			}
 			else{ 
@@ -214,7 +215,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			
 				//---------------------for experiments ------------------
-				//writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), false) ;
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), false) ;
 				//--------------------------------------------------------
 			} 
 			return true;
@@ -474,5 +475,20 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 			
 		}	
+		
+		
+		// recording intermediate results for the experiments	
+		private void writeToXmlAllIvcRuns(String res) {
+			String xmlFilename = settings.filename + "_allivcs_inter_loop_runs.xml";  
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
+				out.println("<Result>" + res + "</Result>");  
+				out.flush(); 
+				out.close(); 
+			} catch (Throwable t) { 
+				t.printStackTrace();
+				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+			}
+			
+		}
 	
 }
