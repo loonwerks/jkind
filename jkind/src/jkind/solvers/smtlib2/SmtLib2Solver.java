@@ -46,7 +46,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		try {
 			toSolver.append(str);
 			toSolver.newLine();
-			toSolver.flush();
+			toSolver.flush();			
 		} catch (IOException e) {
 			throw new JKindException("Unable to write to " + getSolverName() + ", "
 					+ "probably due to internal JKind error", e);

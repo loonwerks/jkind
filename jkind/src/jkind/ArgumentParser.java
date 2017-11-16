@@ -51,6 +51,7 @@ public abstract class ArgumentParser {
 
 		String[] input = line.getArgs();
 		if (input.length != 1) {
+			System.out.println("invalid argument options");			
 			printHelp();
 			System.exit(ExitCodes.INVALID_OPTIONS);
 		}
