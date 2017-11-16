@@ -156,8 +156,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			resultOfIvcFinder.clear(); 
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){				
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
-				double time = (System.currentTimeMillis() - runtime) / 1000.0;
-				System.out.println(time);
+				markMIVC(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));				
 			}else{				
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder))); 
 			}
@@ -200,7 +199,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				map = new Cons("and", map, blockDownComplement(seed)); 
 			}
 			while(!shrinkingPool.isEmpty()) {
-				System.out.printf("Shrimkimg pool size: %d%n", shrinkingPool.size());
+				//System.out.printf("Shrimkimg pool size: %d%n", shrinkingPool.size());
 				List<Symbol> ivc = shrinkingPool.get(0);
 				shrinkingPool.remove(0);				
 				mapShrink(ivc, property.toString());
@@ -516,7 +515,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			for(List<Symbol> s: shrinkingPool) {
 				if(s.containsAll(approx)) {
 					toRemove.add(s);
-					System.out.println("a seed removed from shrinkingPool");
+					//System.out.println("a seed removed from shrinkingPool");
 				}				
 			}
 			shrinkingPool.removeAll(toRemove);
@@ -535,7 +534,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}							
 			if(!removed) //seed is a MSS
 				break;
-			System.out.println("unsat subset found during grow");
+			//System.out.println("unsat subset found during grow");
 			resultOfIvcFinder.clear();
 		}
 		map = new Cons("and", map, blockDownComplement(top));		
@@ -575,7 +574,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	//JB
 	private boolean mapShrink(List<Symbol> seed, String property) {
 		shrinks++;
-		System.out.printf("shrinking, size: %d%n", seed.size() );
+		//System.out.printf("shrinking, size: %d%n", seed.size() );
 		int shrinkedBy = 0;
 		int round = 0;
 		int ex = 0;
@@ -623,7 +622,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			
 			if(grows < maxGrows) {
 				grows++;
-				System.out.printf("Growimg from the pool of %d elements %n", growingPool.size());
+				//System.out.printf("Growimg from the pool of %d elements %n", growingPool.size());
 				//mapGrow(is, property.toString(), mustChckList);
 				GrowByElimination(is, property.toString());
 			}
