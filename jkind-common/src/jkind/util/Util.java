@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -28,6 +30,8 @@ import jkind.lustre.Equation;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.NodeCallExpr;
+import jkind.lustre.Program;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.Type;
 import jkind.lustre.TypeDef;
@@ -38,8 +42,40 @@ import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.AstIterVisitor;
 
 public class Util {
+	public static Set<Node> getAllNodeDependencies(Program program) {
+		Map<String, Node> nodeTable = getNodeTable(program.nodes);
+		Set<Node> result = new HashSet<>();
+
+		Queue<Node> todo = new ArrayDeque<>();
+		todo.add(program.getMainNode());
+
+		while (!todo.isEmpty()) {
+			Node curr = todo.remove();
+			if (result.add(curr)) {
+				for (String depName : getNodeDependenciesByName(curr)) {
+					todo.add(nodeTable.get(depName));
+				}
+			}
+		}
+
+		return result;
+	}
+
+	public static Set<String> getNodeDependenciesByName(Node node) {
+		Set<String> referenced = new HashSet<>();
+		node.accept(new AstIterVisitor() {
+			@Override
+			public Void visit(NodeCallExpr e) {
+				referenced.add(e.node);
+				return super.visit(e);
+			}
+		});
+		return referenced;
+	}
+
 	public static List<VarDecl> getVarDecls(Node node) {
 		List<VarDecl> decls = new ArrayList<>();
 		decls.addAll(node.inputs);
@@ -87,7 +123,6 @@ public class Util {
 	}
 
 	public static Value parseValue(String type, String value) {
-
 		switch (type) {
 		case "bool":
 			if (value.equals("0") || value.equals("false")) {
