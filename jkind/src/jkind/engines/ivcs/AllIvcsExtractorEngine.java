@@ -60,6 +60,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private int numOfTimedOuts = 0;
 	// these variables are only used for the experiments
 		private double runtime;  
+		private int runId = 0;;
 	//--------------------------------------------------
 
 
@@ -171,7 +172,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus());
+		runId++;
+		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			js.pdrMax = 0;
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
@@ -207,7 +209,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 				
 				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), true) ;
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(), true) ;
 				//--------------------------------------------------------
 			}
 			else{ 
@@ -215,7 +217,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			
 				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), false) ;
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(),false) ;
 				//--------------------------------------------------------
 			} 
 			return true;
@@ -454,12 +456,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 		
 	// recording intermediate results for the experiments	
-		private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, boolean isNew) {
+		private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, double d, boolean isNew) {
 			String xmlFilename = settings.filename + "_all_uc_minijkind.xml";  
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
 				out.println("<Results>");
+				out.println("   <RunID>" + runId + "</RunID>"); 
 				out.println("   <NewSet>" + isNew + "</NewSet>"); 
-				out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
+				out.println("   <Time unit=\"sec\">" + d + "</Time>");
 				for (String s : untrimmed) {
 					out.println("   <IVC>" + s + "</IVC>");
 				}
@@ -478,10 +481,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		
 		// recording intermediate results for the experiments	
-		private void writeToXmlAllIvcRuns(String res) {
+		private void writeToXmlAllIvcRuns(String res, double d) {
 			String xmlFilename = settings.filename + "_allivcs_inter_loop_runs.xml";  
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
-				out.println("<Result>" + res + "</Result>");  
+				out.println("<Run>");
+				out.println("   <RunID>" + runId + "</RunID>");  
+				out.println("   <Result>" + res + "</Result>");  
+				out.println("   <Time unit=\"sec\">" + d + "</Time>");  
+				out.println("</Run>");
 				out.flush(); 
 				out.close(); 
 			} catch (Throwable t) { 

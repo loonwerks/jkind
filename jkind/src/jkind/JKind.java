@@ -41,8 +41,8 @@ public class JKind {
 			Specification userSpec = new Specification(main, settings.slicing); 
 	
 			/*
-			//System.out.println(main.equations.size());
-			//System.out.println(userSpec.node.toString());
+			System.out.println(main.equations.size());
+			System.out.println(userSpec.node.toString());
 			 
 			String xmlFilename = settings.filename + "_NUMEQ.xml";  
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
