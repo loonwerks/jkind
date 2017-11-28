@@ -120,8 +120,16 @@ public class LustreUtil {
 		return new RealExpr(new BigDecimal(bi));
 	}
 
-	public static IntExpr integer(int iv) {
-		return new IntExpr(iv);
+	public static RealExpr real(String str) {
+		return new RealExpr(new BigDecimal(str));
+	}
+
+	public static RealExpr real(int i) {
+		return new RealExpr(new BigDecimal(i));
+	}
+
+	public static IntExpr integer(int i) {
+		return new IntExpr(i);
 	}
 
 	public static Expr TRUE = new BoolExpr(true);
@@ -145,6 +153,10 @@ public class LustreUtil {
 
 	public static Expr or(List<Expr> disjuncts) {
 		return disjuncts.stream().reduce((acc, e) -> and(acc, e)).orElse(FALSE);
+	}
+
+	public static Expr xor(List<Expr> disjuncts) {
+		return disjuncts.stream().reduce((acc, e) -> xor(acc, e)).orElse(FALSE);
 	}
 
 	public static Expr ite(Expr cond, Expr thenExpr, Expr elseExpr) {
@@ -232,12 +244,12 @@ public class LustreUtil {
 		IdExpr holds = since.createOutput("holds", BOOL);
 
 		// since: holds = b or (a and (false -> pre holds))
-		Equation equation = eq(holds, or(b,and(a,arrow(FALSE,pre(holds)))));
+		Equation equation = eq(holds, or(b, and(a, arrow(FALSE, pre(holds)))));
 		since.addEquation(equation);
 
 		return since.build();
 	}
-	
+
 	public static Node triggers() {
 		return triggers("triggers");
 	}
@@ -251,7 +263,7 @@ public class LustreUtil {
 		IdExpr holds = triggers.createOutput("holds", BOOL);
 
 		// triggers: holds = b and (a or (true -> pre holds))
-		Equation equation = eq(holds, and(b,or(a,arrow(TRUE,pre(holds)))));
+		Equation equation = eq(holds, and(b, or(a, arrow(TRUE, pre(holds)))));
 		triggers.addEquation(equation);
 
 		return triggers.build();
