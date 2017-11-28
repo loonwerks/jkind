@@ -1,5 +1,7 @@
 package jkind.lustre;
 
+import static jkind.lustre.NamedType.BOOL;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -190,11 +192,8 @@ public class LustreUtil {
 	public static Node historically(String name) {
 		NodeBuilder historically = new NodeBuilder(name);
 
-		IdExpr signal = id("signal");
-		historically.addInput(varDecl(signal.id, NamedType.BOOL));
-
-		IdExpr holds = id("holds");
-		historically.addOutput(varDecl(holds.id, NamedType.BOOL));
+		IdExpr signal = historically.createInput("signal", BOOL);
+		IdExpr holds = historically.createOutput("holds", BOOL);
 
 		// historically: holds = signal and (true -> pre holds);
 		Equation equation = eq(holds, and(signal, arrow(TRUE, pre(holds))));
@@ -210,11 +209,8 @@ public class LustreUtil {
 	public static Node once(String name) {
 		NodeBuilder once = new NodeBuilder(name);
 
-		IdExpr signal = id("signal");
-		once.addInput(varDecl(signal.id, NamedType.BOOL));
-
-		IdExpr holds = id("holds");
-		once.addOutput(varDecl(holds.id, NamedType.BOOL));
+		IdExpr signal = once.createInput("signal", BOOL);
+		IdExpr holds = once.createOutput("holds", BOOL);
 
 		// once: holds = signal or (false -> pre holds);
 		Equation equation = eq(holds, or(signal, arrow(FALSE, pre(holds))));
@@ -230,14 +226,10 @@ public class LustreUtil {
 	public static Node since(String name) {
 		NodeBuilder since = new NodeBuilder(name);
 
-		IdExpr a = id("a");
-		since.addInput(varDecl(a.id, NamedType.BOOL));
-		
-		IdExpr b = id("b");
-		since.addInput(varDecl(b.id, NamedType.BOOL));
+		IdExpr a = since.createInput("a", BOOL);
+		IdExpr b = since.createInput("b", BOOL);
 
-		IdExpr holds = id("holds");
-		since.addOutput(varDecl(holds.id, NamedType.BOOL));
+		IdExpr holds = since.createOutput("holds", BOOL);
 
 		// since: holds = b or (a and (false -> pre holds))
 		Equation equation = eq(holds, or(b,and(a,arrow(FALSE,pre(holds)))));
@@ -253,14 +245,10 @@ public class LustreUtil {
 	public static Node triggers(String name) {
 		NodeBuilder triggers = new NodeBuilder(name);
 
-		IdExpr a = id("a");
-		triggers.addInput(varDecl(a.id, NamedType.BOOL));
-		
-		IdExpr b = id("b");
-		triggers.addInput(varDecl(b.id, NamedType.BOOL));
+		IdExpr a = triggers.createInput("a", BOOL);
+		IdExpr b = triggers.createInput("b", BOOL);
 
-		IdExpr holds = id("holds");
-		triggers.addOutput(varDecl(holds.id, NamedType.BOOL));
+		IdExpr holds = triggers.createOutput("holds", BOOL);
 
 		// triggers: holds = b and (a or (true -> pre holds))
 		Equation equation = eq(holds, and(b,or(a,arrow(TRUE,pre(holds)))));

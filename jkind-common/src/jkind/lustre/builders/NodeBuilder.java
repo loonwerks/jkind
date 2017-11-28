@@ -7,8 +7,10 @@ import java.util.List;
 import jkind.lustre.Contract;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.Location;
 import jkind.lustre.Node;
+import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
@@ -56,6 +58,11 @@ public class NodeBuilder {
 		return this;
 	}
 
+	public IdExpr createInput(String name, Type type) {
+		this.inputs.add(new VarDecl(name, type));
+		return new IdExpr(name);
+	}
+
 	public NodeBuilder clearInputs() {
 		this.inputs.clear();
 		return this;
@@ -71,6 +78,11 @@ public class NodeBuilder {
 		return this;
 	}
 
+	public IdExpr createOutput(String name, Type type) {
+		this.outputs.add(new VarDecl(name, type));
+		return new IdExpr(name);
+	}
+
 	public NodeBuilder clearOutputs() {
 		this.outputs.clear();
 		return this;
@@ -84,6 +96,11 @@ public class NodeBuilder {
 	public NodeBuilder addLocals(Collection<VarDecl> locals) {
 		this.locals.addAll(locals);
 		return this;
+	}
+
+	public IdExpr createLocal(String name, Type type) {
+		this.locals.add(new VarDecl(name, type));
+		return new IdExpr(name);
 	}
 
 	public NodeBuilder clearLocals() {
