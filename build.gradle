@@ -63,6 +63,9 @@ project(':jkind-api') {
             java {
                 srcDirs += ['src']
             }
+            resources {
+                srcDirs = ['resources']
+            }
         }
     }
 
