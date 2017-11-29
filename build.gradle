@@ -84,6 +84,10 @@ project(':jkind-api') {
         compile "org.eclipse.platform:org.eclipse.jface:3.12.2"
         compile "org.eclipse.platform:org.eclipse.swt:$swt_version"
     }
+
+    jar {
+        from sourceSets.main.allSource
+    }
 }
 
 task dist(type: Zip) {
