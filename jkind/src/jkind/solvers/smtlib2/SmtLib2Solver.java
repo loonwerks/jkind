@@ -128,7 +128,8 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	protected abstract List<Symbol> getUnsatCore(List<Symbol> activationLiterals);
 
 	protected boolean isSat(String output) {
-		return output.trim().equals("sat");
+		// Only check prefix, Z3 outputs content after 'sat' for max-sat style queries
+		return output.trim().startsWith("sat");
 	}
 
 	protected boolean isUnsat(String output) {
