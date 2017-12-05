@@ -113,6 +113,11 @@ public class NodeBuilder {
 		return this;
 	}
 
+	public NodeBuilder addEquation(IdExpr var, Expr expr) {
+		this.equations.add(new Equation(var, expr));
+		return this;
+	}
+
 	public NodeBuilder addEquations(Collection<Equation> equations) {
 		this.equations.addAll(equations);
 		return this;
@@ -125,6 +130,11 @@ public class NodeBuilder {
 
 	public NodeBuilder addProperty(String property) {
 		this.properties.add(property);
+		return this;
+	}
+
+	public NodeBuilder addProperty(IdExpr property) {
+		this.properties.add(property.id);
 		return this;
 	}
 
