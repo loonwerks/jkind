@@ -152,7 +152,7 @@ public class LustreUtil {
 	}
 
 	public static Expr or(List<Expr> disjuncts) {
-		return disjuncts.stream().reduce((acc, e) -> and(acc, e)).orElse(FALSE);
+		return disjuncts.stream().reduce((acc, e) -> or(acc, e)).orElse(FALSE);
 	}
 
 	public static Expr xor(List<Expr> disjuncts) {
