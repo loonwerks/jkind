@@ -46,6 +46,7 @@ import jkind.translation.Specification;
 import jkind.util.LinkedBiMap;
 import jkind.util.SexpUtil;
 import jkind.util.Tuple; 
+import jkind.util.Util;
 
 public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
@@ -59,6 +60,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private int shrinks = 0;
 	private int satChecks = 0;
 	private int unsatChecks = 0;	
+	private int mivcs = 0;
 	//end of JB's
 	
 	private Z3Solver z3Solver;	   
@@ -136,8 +138,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 				
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);
-		Sexp map;
+		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
@@ -152,7 +153,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed, mustChckList, true)){ 
+		while(checkMapSatisfiability(seed, mustChckList, true)){ 
+			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
+			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
 			resultOfIvcFinder.clear(); 
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){				
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
@@ -190,7 +193,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed, mustChckList, true)){ 
+		while(checkMapSatisfiability(seed, mustChckList, true)){ 
+			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
+			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
 			resultOfIvcFinder.clear(); 			
 			if (ivcFinderSimple(seed, resultOfIvcFinder, property.toString())){				
 				seed = IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder);				
@@ -233,7 +238,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed, mustChckList, true)){ 
+		while(checkMapSatisfiability(seed, mustChckList, true)){ 
+			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
+			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
 			resultOfIvcFinder.clear(); 			
 			if (ivcFinderSimple(seed, resultOfIvcFinder, property.toString())){				
 				seed = IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder);				
@@ -272,7 +279,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(map, seed, mustChckList, false)){ //get minimal model of map	
+		while(checkMapSatisfiability(seed, mustChckList, false)){ //get minimal model of map	
+			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
+			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
 			//System.out.println("iteration");
 			if(!check(seed, property.toString())) { // if seed is not adequate
 				//System.out.println("the seed is not satisfiable (MIVC)");
@@ -637,7 +646,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private boolean bruteForceShrink(List<Symbol> seed, String property, Set<String> mustChckList) {
 		shrinks++;
 		//System.out.printf("shrinking, size: %d%n", seed.size() );			
-		List<Symbol> candidates = new ArrayList<Symbol>(seed);		 
+		List<Symbol> candidates = new ArrayList<Symbol>(seed);	
+		int original_size = seed.size();
 		for(Symbol c : candidates) {				
 			//System.out.printf("s %d ", round );			
 			seed.remove(c);
@@ -651,13 +661,15 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}		
 		map = new Cons("and", map, blockUp(seed));
 		markMIVC(seed);		
+		System.out.printf("shrinked by: %d %n", original_size - seed.size());
 		return true;
 	}
 	
 	//JB
 	private void markMIVC(List<Symbol> mivc) {
+		mivcs++;
 		double time = (System.currentTimeMillis() - runtime) / 1000.0;		
-		System.out.printf("MIVC found, time: %f, total SAT checks: %d, total UNSAT checks: %d ", time, satChecks, unsatChecks);
+		System.out.printf("%d MIVC found, size: %d, time: %f, total SAT checks: %d, total UNSAT checks: %d %n", mivcs, mivc.size(), time, satChecks, unsatChecks);
 	}
 
 	
@@ -755,7 +767,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(temp);
 	}
 
-	private boolean checkMapSatisfiability(Sexp map, List<Symbol> seed, Set<String> mustChckList, boolean maximal) { 
+	private boolean checkMapSatisfiability(List<Symbol> seed, Set<String> mustChckList, boolean maximal) { 
 		z3Solver.push();  
 
 		solver.assertSexp(map);
@@ -833,7 +845,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	/**
 	 * in case of sat result we would like to get a minimum sat subset of activation literals 
 	 **/
-	//TODO
 	private List<Symbol> minimizeSat(SatResult result, Set<String> mustChckList) { 
 		Set<Symbol> seed = getActiveLiteralsFromModel(result.getModel(), "true");		
 		List<Symbol> minimal = new ArrayList<Symbol>(seed);
