@@ -4,8 +4,10 @@ import static jkind.lustre.NamedType.BOOL;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import jkind.lustre.builders.NodeBuilder;
 
@@ -170,6 +172,34 @@ public class LustreUtil {
 
 	public static Expr xor(Expr... e) {
 		return xor(Arrays.asList(e));
+	}
+
+	public static Expr chainRelation(BiFunction<Expr, Expr, Expr> f, Expr... e) {
+		List<Expr> conjuncts = new ArrayList<>();
+		for (int i = 0; i < e.length - 1; i++) {
+			conjuncts.add(f.apply(e[i], e[i + 1]));
+		}
+		return and(conjuncts);
+	}
+
+	public static Expr lessEqual(Expr... e) {
+		return chainRelation(LustreUtil::lessEqual, e);
+	}
+
+	public static Expr less(Expr... e) {
+		return chainRelation(LustreUtil::less, e);
+	}
+
+	public static Expr greaterEqual(Expr... e) {
+		return chainRelation(LustreUtil::greaterEqual, e);
+	}
+
+	public static Expr greater(Expr... e) {
+		return chainRelation(LustreUtil::greater, e);
+	}
+
+	public static Expr equal(Expr... e) {
+		return chainRelation(LustreUtil::equal, e);
 	}
 
 	public static Expr ite(Expr cond, Expr thenExpr, Expr elseExpr) {
