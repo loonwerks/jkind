@@ -4,6 +4,7 @@ import static jkind.lustre.NamedType.BOOL;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import jkind.lustre.builders.NodeBuilder;
@@ -151,12 +152,24 @@ public class LustreUtil {
 		return conjuncts.stream().reduce((acc, e) -> and(acc, e)).orElse(TRUE);
 	}
 
+	public static Expr and(Expr... e) {
+		return and(Arrays.asList(e));
+	}
+
 	public static Expr or(List<Expr> disjuncts) {
 		return disjuncts.stream().reduce((acc, e) -> or(acc, e)).orElse(FALSE);
 	}
 
+	public static Expr or(Expr... e) {
+		return or(Arrays.asList(e));
+	}
+
 	public static Expr xor(List<Expr> disjuncts) {
 		return disjuncts.stream().reduce((acc, e) -> xor(acc, e)).orElse(FALSE);
+	}
+
+	public static Expr xor(Expr... e) {
+		return xor(Arrays.asList(e));
 	}
 
 	public static Expr ite(Expr cond, Expr thenExpr, Expr elseExpr) {
