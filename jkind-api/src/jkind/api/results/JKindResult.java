@@ -60,6 +60,19 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 * 
 	 * @param name
 	 *            Name of the results
+	 * @param renaming
+	 *            Renaming to apply to properties
+	 */
+	public JKindResult(String name, Renaming renaming) {
+		super(name);
+		this.renaming = renaming;
+	}
+
+	/**
+	 * Construct a JKindResult to hold the results of a run of JKind
+	 * 
+	 * @param name
+	 *            Name of the results
 	 * @param properties
 	 *            Property names to track (pre-renaming)
 	 * @param renaming
