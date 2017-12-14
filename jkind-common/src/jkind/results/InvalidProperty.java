@@ -1,5 +1,6 @@
 package jkind.results;
 
+import java.util.Collections;
 import java.util.List;
 
 import jkind.util.Util;
@@ -9,8 +10,8 @@ import jkind.util.Util;
  */
 public final class InvalidProperty extends Property {
 	private final String source;
-	private final Counterexample cex;
-	private final List<String> conflicts;
+	private Counterexample cex;
+	private List<String> conflicts;
 
 	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts,
 			double runtime) {
@@ -39,5 +40,11 @@ public final class InvalidProperty extends Property {
 	 */
 	public List<String> getConflicts() {
 		return conflicts;
+	}
+
+	@Override
+	public void discardDetails() {
+		cex = null;
+		conflicts = Collections.emptyList();
 	}
 }

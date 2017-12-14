@@ -333,6 +333,15 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 		toExcel(file, new SingletonLayout("Signals"));
 	}
 
+	/**
+	 * Discard details such as counterexamples and IVCs to save space
+	 */
+	public void discardDetails() {
+		for (PropertyResult pr : propertyResults) {
+			pr.getProperty().discardDetails();
+		}
+	}
+
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		// Status updates from immediate children are noted and propagated
