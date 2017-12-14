@@ -338,7 +338,9 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 */
 	public void discardDetails() {
 		for (PropertyResult pr : propertyResults) {
-			pr.getProperty().discardDetails();
+			if (pr.getProperty() != null) {
+				pr.getProperty().discardDetails();
+			}
 		}
 	}
 
