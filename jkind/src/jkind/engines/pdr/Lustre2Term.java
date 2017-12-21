@@ -36,7 +36,8 @@ import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	private static final String INIT = "%init";
-	
+	private static final String ASSERTIONS = "%assertions";
+
 	private final Node node;
 	private boolean pre = false;
 
@@ -48,6 +49,10 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	public Term getInit() {
 		return term(INIT);
 	}
+	
+	public Term getAssertions() {
+		return term(ASSERTIONS);
+	}
 
 	public List<VarDecl> getVariables() {
 		List<VarDecl> variables = new ArrayList<>();
@@ -55,6 +60,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 			variables.add(encode(vd));
 		}
 		variables.add(new VarDecl(INIT, NamedType.BOOL));
+		variables.add(new VarDecl(ASSERTIONS, NamedType.BOOL));
 		return variables;
 	}
 
@@ -83,9 +89,12 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 			conjuncts.add(term("=", head, body));
 		}
 
+		List<Term> assertions = new ArrayList<>();
 		for (Expr assertion : node.assertions) {
-			conjuncts.add(assertion.accept(this));
+			assertions.add(assertion.accept(this));
 		}
+		assertions.add(or(term(INIT), term(ASSERTIONS)));
+		conjuncts.add(term("=", term(prime(ASSERTIONS)), and(assertions)));
 
 		// Type constraints need to be included during interpolation, so we
 		// include them in the transition relation
@@ -107,7 +116,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	}
 
 	public Term encodeProperty(String property) {
-		return or(term(encode(property)), term(INIT));
+		return or(term(encode(property)), not(term(ASSERTIONS)), term(INIT));
 	}
 
 	private String prime(String str) {
