@@ -1,8 +1,8 @@
 package jkind.solvers;
 
-import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.IdExpr;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.Evaluator;
 import jkind.util.StreamIndex;
 
 public class ModelEvaluator extends Evaluator {

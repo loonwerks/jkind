@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.visitors.Evaluator;
 
 public class GraphInvariant implements StructuredInvariant {
 	private List<Node> nodes = new ArrayList<>();
