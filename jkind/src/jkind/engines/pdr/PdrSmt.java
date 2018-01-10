@@ -42,6 +42,7 @@ public class PdrSmt extends ScriptUser {
 	private final Term[] prime;
 
 	private final Term I;
+	private final Term A;
 	private final Term P;
 
 	private final Set<Term> predicates = new HashSet<>();
@@ -67,6 +68,7 @@ public class PdrSmt extends ScriptUser {
 		this.prime = getVariables("'");
 
 		this.I = lustre2Term.getInit();
+		this.A = lustre2Term.getAssertions();
 		defineTransitionRelation(lustre2Term.getTransition());
 		this.P = lustre2Term.encodeProperty(property);
 
@@ -103,8 +105,8 @@ public class PdrSmt extends ScriptUser {
 			ApplicationTerm at = (ApplicationTerm) v;
 			return at.getFunction().getName();
 		} else {
-			throw new IllegalArgumentException("Unexpected variable type: "
-					+ v.getClass().getSimpleName());
+			throw new IllegalArgumentException(
+					"Unexpected variable type: " + v.getClass().getSimpleName());
 		}
 	}
 
@@ -350,7 +352,7 @@ public class PdrSmt extends ScriptUser {
 		List<Term> disjuncts = new ArrayList<>();
 
 		for (Term literal : cube.getPLiterals()) {
-			if (literal != not(I)) {
+			if (literal != not(I) && literal != A) {
 				disjuncts.add(not(literal));
 			}
 		}

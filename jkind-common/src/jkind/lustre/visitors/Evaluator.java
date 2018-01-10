@@ -1,4 +1,4 @@
-package jkind.analysis.evaluation;
+package jkind.lustre.visitors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,6 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
 import jkind.lustre.values.TupleValue;
 import jkind.lustre.values.Value;
-import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
 import jkind.util.Util;
 

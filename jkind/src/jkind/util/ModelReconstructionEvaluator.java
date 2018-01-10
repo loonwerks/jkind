@@ -3,7 +3,6 @@ package jkind.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Equation;
@@ -12,6 +11,7 @@ import jkind.lustre.IdExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.Evaluator;
 import jkind.slicing.Dependency;
 import jkind.slicing.DependencySet;
 import jkind.solvers.Model;

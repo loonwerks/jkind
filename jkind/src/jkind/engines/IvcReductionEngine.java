@@ -92,11 +92,11 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		createVariables(0);
 		assertInductiveTransition(0);
 
-		while (true) {
+		while (k <= vm.k) {
 			Sexp query = SexpUtil.conjoinInvariants(irreducible, k);
 			Result result = solver.unsatQuery(candidates.keyList(), query);
 
-			if (result instanceof SatResult) {
+			if (result instanceof SatResult || result instanceof UnknownResult) {
 				/*
 				 * We haven't yet found the minimal value of k, so assert the
 				 * irreducible and conditional invariants and increase k
@@ -129,9 +129,16 @@ public class IvcReductionEngine extends SolverBasedEngine {
 					irreducible.add(candidates.remove(core));
 					solver.assertSexp(core);
 				}
-			} else if (result instanceof UnknownResult) {
-				throw new JKindException("Unknown result in invariant reducer");
 			}
+		}
+
+		if (k == vm.k + 1) {
+			/*
+			 * Failed to find the right value of k, due to UnknownResult from
+			 * solver. Give up and use what we started with.
+			 */
+			irreducible.addAll(vm.invariants);
+			k = vm.k;
 		}
 
 		solver.pop();
@@ -241,8 +248,8 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc),
-				itinerary));
+		director.broadcast(
+				new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary));
 	}
 
 	private Set<String> trimNode(Set<String> arg) {

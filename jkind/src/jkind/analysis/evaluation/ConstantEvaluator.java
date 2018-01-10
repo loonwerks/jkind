@@ -12,6 +12,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.Evaluator;
 import jkind.util.Util;
 
 public class ConstantEvaluator extends Evaluator {

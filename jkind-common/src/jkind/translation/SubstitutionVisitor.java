@@ -1,5 +1,6 @@
 package jkind.translation;
 
+import java.util.Collections;
 import java.util.Map;
 
 import jkind.lustre.Expr;
@@ -16,6 +17,10 @@ public class SubstitutionVisitor extends AstMapVisitor {
 
 	public SubstitutionVisitor(Map<String, ? extends Expr> map) {
 		this.map = map;
+	}
+
+	public SubstitutionVisitor(String name, Expr expr) {
+		this.map = Collections.singletonMap(name, expr);
 	}
 
 	@Override
