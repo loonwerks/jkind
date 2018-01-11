@@ -2,8 +2,6 @@ package jkind;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -13,6 +11,7 @@ import jkind.faultseeder.FaultReplacementLocations;
 import jkind.faultseeder.FaultSites;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
+import jkind.lustre.builders.ProgramBuilder;
 import jkind.lustre.visitors.TypeReconstructor;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
@@ -65,15 +64,14 @@ public class JFaultSeeder {
 		Program program = Main.parseLustre(settings.filename);
 		StaticAnalyzer.check(program, SolverOption.Z3);
 
-		Node main = Translate.translate(program);
-		main = RemoveEnumTypes.node(main);
-		DependencyMap dependencyMap = new DependencyMap(main, main.properties);
+		program = Translate.translate(program);
+		program = RemoveEnumTypes.program(program);
+		Node main = program.getMainNode();
+		DependencyMap dependencyMap = new DependencyMap(main, main.properties, program.functions);
 		main = LustreSlicer.slice(main, dependencyMap);
 
 		// Create the new program & get types of elements.
-		List<Node> nodeList = new ArrayList<>();
-		nodeList.add(main);
-		Program transformed = new Program(new ArrayList<>(), new ArrayList<>(), nodeList, main.id);
+		Program transformed = new ProgramBuilder(program).clearNodes().addNode(main).build();
 		TypeReconstructor typeReconstructor = new TypeReconstructor(transformed);
 		
 		// Find fault sites.

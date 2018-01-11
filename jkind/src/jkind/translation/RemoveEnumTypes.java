@@ -3,14 +3,14 @@ package jkind.translation;
 import java.math.BigInteger;
 
 import jkind.lustre.EnumType;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.SubrangeIntType;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.AstMapVisitor;
 
 public class RemoveEnumTypes extends AstMapVisitor {
-	public static Node node(Node node) {
-		return new RemoveEnumTypes().visit(node);
+	public static Program program(Program program) {
+		return new RemoveEnumTypes().visit(program);
 	}
 
 	@Override

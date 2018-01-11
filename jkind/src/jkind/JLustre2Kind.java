@@ -30,8 +30,9 @@ public class JLustre2Kind {
 			StaticAnalyzer.check(program, SolverOption.Z3);
 
 			program = Translate.translate(program);
+			program = RemoveEnumTypes.program(program);
+			
 			Node main = program.getMainNode();
-			main = RemoveEnumTypes.node(main);
 			main = LustreSlicer.slice(main, new DependencyMap(main, main.properties, program.functions));
 
 			if (settings.encode) {
