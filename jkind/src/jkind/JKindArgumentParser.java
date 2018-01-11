@@ -13,7 +13,6 @@ import org.apache.commons.cli.Options;
 public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
-	private static final String INTERVAL = "interval";
 	private static final String IVC = "ivc";
 	private static final String MAIN = "main";
 	private static final String N = "n";
@@ -47,7 +46,6 @@ public class JKindArgumentParser extends ArgumentParser {
 		Options options = super.getOptions();
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
-		options.addOption(INTERVAL, false, "generalize counterexamples using interval analysis");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
@@ -154,16 +152,6 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(SMOOTH)) {
 			settings.smoothCounterexamples = true;
-		}
-
-		if (line.hasOption(INTERVAL)) {
-			settings.intervalGeneralization = true;
-
-			/**
-			 * Reconstruction of inlined values does not yet support interval
-			 * generalization
-			 */
-			settings.inlining = false;
 		}
 
 		if (line.hasOption(SOLVER)) {

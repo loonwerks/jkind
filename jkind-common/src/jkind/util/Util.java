@@ -27,7 +27,6 @@ import java.util.TreeSet;
 import org.w3c.dom.Element;
 
 import jkind.JKindException;
-import jkind.interval.Interval;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Function;
@@ -235,15 +234,6 @@ public class Util {
 
 	public static boolean isWindows() {
 		return System.getProperty("os.name").startsWith("Windows");
-	}
-
-	public static boolean isArbitrary(Value value) {
-		if (value == null) {
-			return true;
-		} else if (value instanceof Interval) {
-			return ((Interval) value).isArbitrary();
-		}
-		return false;
 	}
 
 	public static <T, S> List<S> castList(List<T> list, Class<S> klass) {

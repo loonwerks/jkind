@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.ThreadLocalRandom;
 
-import jkind.analysis.Level;
-import jkind.analysis.LinearChecker;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
@@ -25,11 +23,11 @@ import jkind.lustre.NamedType;
 import jkind.lustre.Node;
 import jkind.lustre.NodeCallExpr;
 import jkind.lustre.RealExpr;
+import jkind.lustre.Type;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.AstMapVisitor;
 import jkind.lustre.visitors.TypeReconstructor;
-import jkind.lustre.Type;
 
 public class ComputeFaultSitesVisitor extends AstMapVisitor {
 	private final FaultSites sites = new FaultSites();
@@ -50,6 +48,7 @@ public class ComputeFaultSitesVisitor extends AstMapVisitor {
 		return sites;
 	}
 	
+	@Override
 	public Node visit(Node n) {
 		this.reconstructor.setNodeContext(n);
 		return super.visit(n);
@@ -255,10 +254,12 @@ public class ComputeFaultSitesVisitor extends AstMapVisitor {
 	}
 	
 	// TODO: For now I am leaving out variable replacement faults and node parameter faults.
+	@SuppressWarnings("unused")
 	public Expr checkReplacementRepl(FaultSites oldSites, IdExpr e) {
 		return e;
 	}
 	
+	@SuppressWarnings("unused")
 	public Expr checkNodeParameterRepl(FaultSites oldSites, NodeCallExpr e) {
 		return e;
 	}

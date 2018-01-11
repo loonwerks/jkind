@@ -26,7 +26,6 @@ public class JKindApi extends KindApi {
 	protected boolean inductiveCounterexamples = false;
 	protected boolean ivcReduction = false;
 	protected boolean smoothCounterexamples = false;
-	protected boolean intervalGeneralization = false;
 	protected boolean slicing = true;
 
 	protected SolverOption solver = null;
@@ -100,14 +99,6 @@ public class JKindApi extends KindApi {
 	 */
 	public void setSmoothCounterexamples() {
 		smoothCounterexamples = true;
-	}
-
-	/**
-	 * Post-process counterexamples using interval analysis to make them more
-	 * general
-	 */
-	public void setIntervalGeneralization() {
-		intervalGeneralization = true;
 	}
 
 	/**
@@ -198,9 +189,6 @@ public class JKindApi extends KindApi {
 		}
 		if (smoothCounterexamples) {
 			args.add("-smooth");
-		}
-		if (intervalGeneralization) {
-			args.add("-interval");
 		}
 		if (!slicing) {
 			args.add("-no_slicing");

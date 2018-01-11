@@ -113,7 +113,7 @@ public class CounterexampleFormatter {
 	}
 
 	private String getString(Value value) {
-		if (Util.isArbitrary(value)) {
+		if (value == null) {
 			return "-";
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;

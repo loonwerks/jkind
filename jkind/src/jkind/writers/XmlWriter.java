@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.interval.BoolInterval;
-import jkind.interval.NumericInterval;
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -18,7 +16,6 @@ import jkind.results.Counterexample;
 import jkind.results.FunctionTable;
 import jkind.results.FunctionTableRow;
 import jkind.results.Signal;
-import jkind.util.Util;
 
 public class XmlWriter extends Writer {
 	private final PrintWriter out;
@@ -147,7 +144,7 @@ public class XmlWriter extends Writer {
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
 		for (int i = 0; i < k; i++) {
 			Value value = signal.getValue(i);
-			if (!Util.isArbitrary(value)) {
+			if (value != null) {
 				out.println("        <Value time=\"" + i + "\">" + formatValue(value) + "</Value>");
 			}
 		}
@@ -155,21 +152,12 @@ public class XmlWriter extends Writer {
 	}
 
 	/**
-	 * pkind prints booleans as 0/1. We do the same for compatibility, but we
-	 * should eventually switch to true/false
+	 * pkind prints booleans as 0/1. We do the same for compatibility.
 	 */
 	private String formatValue(Value value) {
 		if (value instanceof BooleanValue) {
 			BooleanValue bv = (BooleanValue) value;
 			return bv.value ? "1" : "0";
-		}
-		if (value instanceof NumericInterval) {
-			NumericInterval ni = (NumericInterval) value;
-			return "<Interval low=\"" + ni.getLow() + "\" high=\"" + ni.getHigh() + "\"/>";
-		}
-		if (value instanceof BoolInterval) {
-			BoolInterval bi = (BoolInterval) value;
-			return bi.isTrue() ? "1" : "0";
 		} else {
 			return value.toString();
 		}

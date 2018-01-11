@@ -21,16 +21,9 @@ import jkind.JKindException;
 import jkind.api.Backend;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
-import jkind.interval.IntEndpoint;
-import jkind.interval.Interval;
-import jkind.interval.NumericEndpoint;
-import jkind.interval.NumericInterval;
-import jkind.interval.RealEndpoint;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
 import jkind.results.FunctionTable;
@@ -319,65 +312,12 @@ public class XmlParseThread extends Thread {
 	}
 
 	private Value getValue(Element valueElement, String type) {
-		Element intervalElement = getElement(valueElement, "Interval");
-		if (intervalElement != null) {
-			return getIntervalValue(intervalElement, type);
-		}
-
 		if (type.startsWith("array of")) {
 			type = type.replaceAll("array of ", "");
 			return Util.parseArrayValue(type, getElement(valueElement, "Array"));
 		}
 
 		return Util.parseValue(type, valueElement.getTextContent());
-	}
-
-	private Interval getIntervalValue(Element intervalElement, String type) {
-		String low = intervalElement.getAttribute("low");
-		String high = intervalElement.getAttribute("high");
-		NumericEndpoint lowEnd;
-		NumericEndpoint highEnd;
-
-		switch (type) {
-		case "int":
-			lowEnd = readIntEndpoint(low);
-			highEnd = readIntEndpoint(high);
-			break;
-
-		case "real":
-			lowEnd = readRealEndpoint(low);
-			highEnd = readRealEndpoint(high);
-			break;
-
-		default:
-			throw new JKindException("Unknown interval type in XML file: " + type);
-		}
-
-		return new NumericInterval(lowEnd, highEnd);
-	}
-
-	private IntEndpoint readIntEndpoint(String text) {
-		switch (text) {
-		case "inf":
-			return IntEndpoint.POSITIVE_INFINITY;
-		case "-inf":
-			return IntEndpoint.NEGATIVE_INFINITY;
-		default:
-			IntegerValue iv = (IntegerValue) Util.parseValue("int", text);
-			return new IntEndpoint(iv.value);
-		}
-	}
-
-	private RealEndpoint readRealEndpoint(String text) {
-		switch (text) {
-		case "inf":
-			return RealEndpoint.POSITIVE_INFINITY;
-		case "-inf":
-			return RealEndpoint.NEGATIVE_INFINITY;
-		default:
-			RealValue rv = (RealValue) Util.parseValue("real", text);
-			return new RealEndpoint(rv.value);
-		}
 	}
 
 	private FunctionTable getFunction(Element functionElement) {

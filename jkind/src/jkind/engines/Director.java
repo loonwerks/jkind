@@ -191,10 +191,6 @@ public class Director extends MessageHandler {
 			addEngine(new SmoothingEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.intervalGeneralization) {
-			addEngine(new IntervalGeneralizationEngine(analysisSpec, settings, this));
-		}
-
 		if (settings.pdrMax > 0) {
 			addEngine(new PdrEngine(analysisSpec, settings, this));
 		}
@@ -434,9 +430,6 @@ public class Director extends MessageHandler {
 		List<EngineType> destinations = new ArrayList<>();
 		if (settings.smoothCounterexamples) {
 			destinations.add(EngineType.SMOOTHING);
-		}
-		if (settings.intervalGeneralization) {
-			destinations.add(EngineType.INTERVAL_GENERALIZATION);
 		}
 		return new Itinerary(destinations);
 	}

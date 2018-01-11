@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import jkind.JKindException;
-import jkind.interval.BoolInterval;
-import jkind.interval.NumericInterval;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.EnumValue;
@@ -21,7 +19,6 @@ import jkind.results.FunctionTableRow;
 import jkind.results.Signal;
 import jkind.results.layout.Layout;
 import jkind.util.BigFraction;
-import jkind.util.Util;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Boolean;
@@ -136,7 +133,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		Value prev = null;
 		for (int i = 0; i < k; i++) {
 			Value curr = signal.getValue(i);
-			if (!Util.isArbitrary(curr)) {
+			if (curr != null) {
 				CellFormat format = curr.equals(prev) ? fadedFormat : defaultFormat;
 				writeValue(curr, i + 1, format);
 			}
@@ -157,13 +154,6 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		} else if (value instanceof EnumValue) {
 			EnumValue ev = (EnumValue) value;
 			sheet.addCell(new Label(col, row, ev.value));
-		} else if (value instanceof NumericInterval) {
-			NumericInterval ni = (NumericInterval) value;
-			String str = "[" + ni.getLow().toDouble() + ", " + ni.getHigh().toDouble() + "]";
-			sheet.addCell(new Label(col, row, str, format));
-		} else if (value instanceof BoolInterval) {
-			BoolInterval bi = (BoolInterval) value;
-			sheet.addCell(new Boolean(col, row, bi.isTrue(), format));
 		} else {
 			throw new JKindException("Unknown value type in Excel writer: " + value.getClass().getSimpleName());
 		}
