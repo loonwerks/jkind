@@ -5,7 +5,6 @@ import java.util.TreeSet;
 
 import jkind.analysis.StaticAnalyzer;
 import jkind.lustre.EnumType;
-import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.translation.Node2Excel;
 import jkind.translation.Translate;
@@ -22,10 +21,11 @@ public class JLustre2Excel {
 			Program program = Main.parseLustre(filename);
 			StaticAnalyzer.check(program, SolverOption.Z3);
 			ensureUniqueEnumValues(program);
+			ensureNoFunctions(program);
 
-			Node main = Translate.translate(program);
+			program = Translate.translate(program);
 			String outFilename = filename + ".xls";
-			new Node2Excel().convert(main, outFilename);
+			new Node2Excel().convert(program.getMainNode(), outFilename);
 			System.out.println("Wrote " + outFilename);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -44,6 +44,12 @@ public class JLustre2Excel {
 					seen.add(value);
 				}
 			}
+		}
+	}
+
+	private static void ensureNoFunctions(Program program) {
+		if (!program.functions.isEmpty()) {
+			StdErr.fatal(ExitCodes.UNSUPPORTED_FEATURE, "functions are not supported");
 		}
 	}
 }

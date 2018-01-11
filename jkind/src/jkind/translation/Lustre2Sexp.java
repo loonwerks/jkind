@@ -14,6 +14,7 @@ import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -63,7 +64,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 			Sexp body = eq.expr.accept(visitor);
 			Sexp head = eq.lhs.get(0).accept(visitor);
 			Sexp sexp = new Cons("=", head, body);
-			
+
 			String id = eq.lhs.get(0).id;
 			if (ivcMap.containsKey(id)) {
 				sexp = new Cons("=>", ivcMap.get(id), sexp);
@@ -90,7 +91,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		}
 		return ivcMap;
 	}
-	
+
 	private Symbol curr(String id) {
 		return new StreamIndex(id, index).getEncoded();
 	}
@@ -139,6 +140,19 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 	}
 
 	@Override
+	public Sexp visit(FunctionCallExpr e) {
+		if (e.args.isEmpty()) {
+			return new Symbol(SexpUtil.encodeFunction(e.function));
+		}
+
+		List<Sexp> args = new ArrayList<>();
+		for (Expr expr : e.args) {
+			args.add(expr.accept(this));
+		}
+		return new Cons(SexpUtil.encodeFunction(e.function), args);
+	}
+
+	@Override
 	public Sexp visit(BinaryExpr e) {
 		Sexp left = e.left.accept(this);
 		Sexp right = e.right.accept(this);
@@ -150,8 +164,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 
 		case ARROW:
 			if (pre) {
-				throw new IllegalArgumentException(
-						"Arrows cannot be nested under pre during translation to sexp");
+				throw new IllegalArgumentException("Arrows cannot be nested under pre during translation to sexp");
 			}
 			return new Cons("ite", INIT, left, right);
 
@@ -188,8 +201,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 
 	@Override
 	public Sexp visit(IfThenElseExpr e) {
-		return new Cons("ite", e.cond.accept(this), e.thenExpr.accept(this),
-				e.elseExpr.accept(this));
+		return new Cons("ite", e.cond.accept(this), e.thenExpr.accept(this), e.elseExpr.accept(this));
 	}
 
 	@Override
@@ -234,8 +246,7 @@ public class Lustre2Sexp implements ExprVisitor<Sexp> {
 		switch (e.op) {
 		case PRE:
 			if (pre) {
-				throw new IllegalArgumentException(
-						"Nested pres must be removed before translation to sexp");
+				throw new IllegalArgumentException("Nested pres must be removed before translation to sexp");
 			}
 			pre = true;
 			Sexp expr = e.expr.accept(this);

@@ -8,11 +8,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
 import jkind.JKindException;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.CastExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -20,20 +27,15 @@ import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.MaxSatSolver;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.yices.YicesParser.ResultContext;
 import jkind.translation.Relation;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 	private final boolean arithOnly;
@@ -71,8 +73,7 @@ public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 			toSolver.newLine();
 			toSolver.flush();
 		} catch (IOException e) {
-			throw new JKindException("Unable to write to yices, "
-					+ "probably due to internal JKind error", e);
+			throw new JKindException("Unable to write to yices, " + "probably due to internal JKind error", e);
 		}
 	}
 
@@ -87,9 +88,35 @@ public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 	}
 
 	@Override
+	public void declare(Function function) {
+		functions.add(function);
+		if (function.inputs.isEmpty()) {
+			declareNullaryFunction(function);
+		} else {
+			declareFunction(function);
+		}
+	}
+
+	private void declareNullaryFunction(Function function) {
+		String name = SexpUtil.encodeFunction(function.id);
+		Symbol type = type(function.outputs.get(0).type);
+		send("(define " + name + " :: " + type + ")");
+	}
+
+	private void declareFunction(Function function) {
+		String name = SexpUtil.encodeFunction(function.id);
+		List<Sexp> args = new ArrayList<>();
+		for (VarDecl input : function.inputs) {
+			args.add(type(input.type));
+		}
+		args.add(type(function.outputs.get(0).type));
+		
+		send("(define " + name + " :: " + new Cons("->", args) + ")");
+	}
+
+	@Override
 	public void define(Relation relation) {
-		send("(define " + relation.getName() + " :: " + type(relation) + " " + lambda(relation)
-				+ ")");
+		send("(define " + relation.getName() + " :: " + type(relation) + " " + lambda(relation) + ")");
 	}
 
 	private Sexp type(Relation relation) {
@@ -268,7 +295,7 @@ public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 		}
 
 		ParseTreeWalker walker = new ParseTreeWalker();
-		ResultExtractorListener extractor = new ResultExtractorListener(varTypes);
+		ResultExtractorListener extractor = new ResultExtractorListener(varTypes, functions);
 		walker.walk(extractor, ctx);
 
 		Result result = extractor.getResult();

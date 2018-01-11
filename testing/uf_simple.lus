@@ -1,0 +1,20 @@
+-- This file exercises simple functions
+-- Expected output:
+-- VALID PROPERTIES: [ok]
+-- INVALID PROPERTIES: [cex] (k = 1)
+
+function f(x : int) returns (y : int);
+
+node main() returns (ok, cex: bool);
+var
+  count : int;
+let
+  count = 1 + (0 -> pre count);
+  assert f(count + 1) > f(count);
+
+  ok = not (count = 20 and f(20) = 20 and f(1) = 2);
+  --%PROPERTY ok;
+
+  cex = not (count = 20 and f(20) = 20 and f(1) = 1);
+  --%PROPERTY cex;
+tel;

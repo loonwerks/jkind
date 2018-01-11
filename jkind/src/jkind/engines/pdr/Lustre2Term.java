@@ -3,6 +3,8 @@ package jkind.engines.pdr;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_freiburg.informatik.ultimate.logic.Script;
+import de.uni_freiburg.informatik.ultimate.logic.Term;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
@@ -13,6 +15,7 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -30,9 +33,8 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.solvers.smtinterpol.ScriptUser;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
-import de.uni_freiburg.informatik.ultimate.logic.Script;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	private static final String INIT = "%init";
@@ -49,7 +51,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	public Term getInit() {
 		return term(INIT);
 	}
-	
+
 	public Term getAssertions() {
 		return term(ASSERTIONS);
 	}
@@ -150,8 +152,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 		case ARROW:
 			if (pre) {
-				throw new IllegalArgumentException(
-						"Arrows cannot be nested under pre during translation to Term");
+				throw new IllegalArgumentException("Arrows cannot be nested under pre during translation to Term");
 			}
 			return ite(term(INIT), left, right);
 
@@ -179,6 +180,15 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	@Override
 	public Term visit(CondactExpr e) {
 		throw new IllegalArgumentException("Condacts must be removed before translation to Term");
+	}
+
+	@Override
+	public Term visit(FunctionCallExpr e) {
+		Term[] params = new Term[e.args.size()];
+		for (int i = 0; i < e.args.size(); i++) {
+			params[i] = e.args.get(i).accept(this);
+		}
+		return term(SexpUtil.encodeFunction(e.function), params);
 	}
 
 	@Override
@@ -232,8 +242,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		switch (e.op) {
 		case PRE:
 			if (pre) {
-				throw new IllegalArgumentException(
-						"Nested pres must be removed before translation to Term");
+				throw new IllegalArgumentException("Nested pres must be removed before translation to Term");
 			}
 			pre = true;
 			Term expr = e.expr.accept(this);

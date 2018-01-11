@@ -1,5 +1,7 @@
 package jkind.translation.compound;
 
+import static jkind.lustre.LustreUtil.not;
+
 import java.util.List;
 
 import jkind.lustre.ArrayType;
@@ -7,19 +9,18 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordType;
+import jkind.lustre.TupleType;
 import jkind.lustre.Type;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
 import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
 /**
  * Expand equalities and inequalities on records and arrays
  */
 public class FlattenCompoundComparisons extends TypeAwareAstMapVisitor {
-	public static Node node(Node node) {
-		return new FlattenCompoundComparisons().visit(node);
+	public static Program program(Program program) {
+		return new FlattenCompoundComparisons().visit(program);
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class FlattenCompoundComparisons extends TypeAwareAstMapVisitor {
 		Expr right = e.right.accept(this);
 		if (e.op == BinaryOp.EQUAL || e.op == BinaryOp.NOTEQUAL) {
 			Type type = getType(e.left);
-			if (type instanceof ArrayType || type instanceof RecordType) {
+			if (type instanceof ArrayType || type instanceof RecordType || type instanceof TupleType) {
 				List<ExprType> leftExprTypes = CompoundUtil.flattenExpr(left, type);
 				List<ExprType> rightExprTypes = CompoundUtil.flattenExpr(right, type);
 
@@ -40,7 +41,7 @@ public class FlattenCompoundComparisons extends TypeAwareAstMapVisitor {
 				if (e.op == BinaryOp.EQUAL) {
 					return equal;
 				} else {
-					return new UnaryExpr(UnaryOp.NOT, equal);
+					return not(equal);
 				}
 			}
 		}

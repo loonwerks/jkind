@@ -35,7 +35,6 @@ import jkind.engines.pdr.PdrEngine;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.NodeLayout;
-import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
@@ -332,8 +331,7 @@ public class Director extends MessageHandler {
 
 		double runtime = getRuntime();
 		for (String invalidProp : newInvalid) {
-			Model model = ModelSlicer.slice(im.model, analysisSpec.dependencyMap.get(invalidProp));
-			Counterexample cex = extractCounterexample(invalidProp, im.length, model, true);
+			Counterexample cex = extractCounterexample(invalidProp, im.length, im.model, true);
 			writer.writeInvalid(invalidProp, im.source, cex, Collections.emptyList(), runtime);
 		}
 	}
@@ -477,8 +475,7 @@ public class Director extends MessageHandler {
 
 		for (String prop : inductiveCounterexamples.keySet()) {
 			InductiveCounterexampleMessage icm = inductiveCounterexamples.get(prop);
-			Model model = ModelSlicer.slice(icm.model, analysisSpec.dependencyMap.get(prop));
-			result.put(prop, extractCounterexample(prop, icm.length, model, false));
+			result.put(prop, extractCounterexample(prop, icm.length, icm.model, false));
 		}
 
 		return result;
@@ -486,7 +483,7 @@ public class Director extends MessageHandler {
 
 	private Counterexample extractCounterexample(String property, int k, Model model,
 			boolean concrete) {
-		model = ModelReconstructionEvaluator.reconstruct(userSpec, model, property, k, concrete);
+		model = ModelReconstructionEvaluator.reconstruct(userSpec, analysisSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(userSpec, k, model);
 	}
 }

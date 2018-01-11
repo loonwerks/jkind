@@ -9,12 +9,15 @@ import java.util.List;
 import jkind.JKindException;
 import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
+import jkind.results.FunctionTableRow;
 import jkind.results.Signal;
 import jkind.results.layout.Layout;
 import jkind.util.BigFraction;
@@ -78,11 +81,9 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		}
 	}
 
-	public WritableSheet writeCounterexample(String property, Counterexample cex,
-			List<String> conflicts) {
+	public WritableSheet writeCounterexample(String property, Counterexample cex, List<String> conflicts) {
 		try {
-			sheet = workbook
-					.createSheet(ExcelUtil.trimName(property), workbook.getNumberOfSheets());
+			sheet = workbook.createSheet(ExcelUtil.trimName(property), workbook.getNumberOfSheets());
 			row = 0;
 			ExcelUtil.autosize(sheet, 1);
 
@@ -92,6 +93,16 @@ public class ExcelCounterexampleFormatter implements Closeable {
 				List<Signal<Value>> signals = cex.getCategorySignals(layout, category);
 				writeSection(category, signals, length, conflicts);
 			}
+
+			if (!cex.getFunctionTables().isEmpty()) {
+				row++;
+				sheet.addCell(new Label(0, row, "Functions", boldFormat));
+				row++;
+				for (FunctionTable table : cex.getFunctionTables()) {
+					writeFunction(table);
+				}
+			}
+
 			return sheet;
 		} catch (WriteException e) {
 			throw new JKindException("Error writing counterexample to Excel file", e);
@@ -106,8 +117,8 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		row++;
 	}
 
-	private void writeSection(String category, List<Signal<Value>> signals, int k,
-			List<String> conflicts) throws WriteException {
+	private void writeSection(String category, List<Signal<Value>> signals, int k, List<String> conflicts)
+			throws WriteException {
 		if (!signals.isEmpty()) {
 			row++;
 			sheet.addCell(new Label(0, row, category, boldFormat));
@@ -119,8 +130,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		}
 	}
 
-	private void writeSignal(Signal<Value> signal, int k, List<String> conflicts)
-			throws WriteException {
+	private void writeSignal(Signal<Value> signal, int k, List<String> conflicts) throws WriteException {
 		sheet.addCell(new Label(0, row, signal.getName(),
 				conflicts.contains(signal.getName()) ? highlightFormat : defaultFormat));
 		Value prev = null;
@@ -155,8 +165,7 @@ public class ExcelCounterexampleFormatter implements Closeable {
 			BoolInterval bi = (BoolInterval) value;
 			sheet.addCell(new Boolean(col, row, bi.isTrue(), format));
 		} else {
-			throw new JKindException("Unknown value type in Excel writer: "
-					+ value.getClass().getSimpleName());
+			throw new JKindException("Unknown value type in Excel writer: " + value.getClass().getSimpleName());
 		}
 	}
 
@@ -183,5 +192,30 @@ public class ExcelCounterexampleFormatter implements Closeable {
 		} catch (NumberFormatException e) {
 			return false;
 		}
+	}
+
+	private void writeFunction(FunctionTable table) throws WriteException {
+		if (table.getRows().isEmpty()) {
+			return;
+		}
+
+		int col = 0;
+		CellFormat headerFormat = ExcelUtil.addBottomBorder(defaultFormat);
+		for (VarDecl input : table.getInputs()) {
+			sheet.addCell(new Label(col++, row, input.id, headerFormat));
+		}
+		sheet.addCell(new Label(col++, row, table.getName(), ExcelUtil.addLeftBorder(headerFormat)));
+		row++;
+
+		for (FunctionTableRow tableRow : table.getRows()) {
+			col = 0;
+			for (Value input : tableRow.getInputs()) {
+				writeValue(input, col, defaultFormat);
+				col++;
+			}
+			writeValue(tableRow.getOutput(), col, ExcelUtil.addLeftBorder(defaultFormat));
+			row++;
+		}
+		row++;
 	}
 }

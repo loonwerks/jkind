@@ -13,6 +13,7 @@ import jkind.engines.messages.ValidMessage;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Symbol;
+import jkind.slicing.Dependency;
 import jkind.slicing.DependencySet;
 import jkind.solvers.MaxSatSolver;
 import jkind.solvers.Model;
@@ -76,7 +77,7 @@ public class SmoothingEngine extends SolverBasedEngine {
 
 	private void assertDeltaCost(int k, DependencySet relevant) {
 		for (VarDecl input : spec.node.inputs) {
-			if (relevant.contains(input.id)) {
+			if (relevant.contains(Dependency.variable(input.id))) {
 				Symbol prev = new StreamIndex(input.id, k - 1).getEncoded();
 				Symbol curr = new StreamIndex(input.id, k).getEncoded();
 				maxSatSolver.assertSoft(new Cons("=", prev, curr));

@@ -55,10 +55,10 @@ public class BmcEngine extends SolverBasedEngine {
 					properties.clear();
 					break;
 				}
-				
+
 				List<String> bad = getFalseProperties(properties, k, model);
 				properties.removeAll(bad);
-				
+
 				if (result instanceof SatResult) {
 					sendInvalid(bad, k, model);
 				} else {

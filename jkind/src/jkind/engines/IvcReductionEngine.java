@@ -49,6 +49,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		for (Symbol e : ivcMap.values()) {
 			solver.define(new VarDecl(e.str, NamedType.BOOL));
 		}
+		solver.declare(spec.functions);
 		solver.define(spec.getIvcTransitionRelation());
 		solver.define(new VarDecl(INIT.str, NamedType.BOOL));
 	}

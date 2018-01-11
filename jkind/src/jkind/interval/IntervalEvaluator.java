@@ -8,6 +8,7 @@ import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -115,6 +116,11 @@ public class IntervalEvaluator implements ExprVisitor<Interval> {
 	@Override
 	public Interval visit(NodeCallExpr e) {
 		throw new IllegalArgumentException();
+	}
+	
+	@Override
+	public Interval visit(FunctionCallExpr e) {
+		throw new IllegalArgumentException("Function calls are not supported");
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -95,6 +96,11 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 		throw new IllegalArgumentException("Arrays must be flattened before translation to formula");
 	}
 
+	@Override
+	public Void visit(FunctionCallExpr e){
+		throw new IllegalArgumentException("Functions are not supported");
+	}
+	
 	@Override
 	public Void visit(BinaryExpr e) {
 		switch (e.op) {

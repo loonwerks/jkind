@@ -72,7 +72,7 @@ public class StreamIndex {
 	}
 
 	private static boolean isEncodedStreamIndex(String var) {
-		return var.startsWith("$") && var.substring(1).contains("$");
+		return var.startsWith("$") && !SexpUtil.isEncodedFunction(var);
 	}
 
 	private static int getIndex(String indexStr) {

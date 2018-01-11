@@ -1,5 +1,8 @@
 package jkind.util;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,6 +30,7 @@ import jkind.JKindException;
 import jkind.interval.Interval;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
+import jkind.lustre.Function;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
@@ -84,28 +88,27 @@ public class Util {
 		return decls;
 	}
 
+	public static List<VarDecl> getVarDecls(Function function) {
+		List<VarDecl> decls = new ArrayList<>();
+		decls.addAll(function.inputs);
+		decls.addAll(function.outputs);
+		return decls;
+	}
+
 	public static Map<String, Type> getTypeMap(Node node) {
-		Map<String, Type> map = new HashMap<>();
-		for (VarDecl v : getVarDecls(node)) {
-			map.put(v.id, v.type);
-		}
-		return map;
+		return getVarDecls(node).stream().collect(toMap(vd -> vd.id, vd -> vd.type));
 	}
 
 	public static List<String> getIds(List<VarDecl> decls) {
-		List<String> ids = new ArrayList<>();
-		for (VarDecl decl : decls) {
-			ids.add(decl.id);
-		}
-		return ids;
+		return decls.stream().map(decl -> decl.id).collect(toList());
 	}
 
 	public static Map<String, Node> getNodeTable(List<Node> nodes) {
-		Map<String, Node> nodeTable = new HashMap<>();
-		for (Node node : nodes) {
-			nodeTable.put(node.id, node);
-		}
-		return nodeTable;
+		return nodes.stream().collect(toMap(n -> n.id, n -> n));
+	}
+
+	public static Map<String, Function> getFunctionTable(List<Function> functions) {
+		return functions.stream().collect(toMap(f -> f.id, f -> f));
 	}
 
 	/*
@@ -174,6 +177,14 @@ public class Util {
 			elements.add(elValue);
 		}
 		return new ArrayValue(elements);
+	}
+
+	public static Value promoteIfNeeded(Value value, Type type) {
+		if (value instanceof IntegerValue && type == NamedType.REAL) {
+			IntegerValue iv = (IntegerValue) value;
+			return new RealValue(new BigFraction(iv.value));
+		}
+		return value;
 	}
 
 	private static Element getElement(Element element, String name, int index) {
@@ -296,6 +307,12 @@ public class Util {
 		return Collections.unmodifiableSet(set);
 	}
 
+	public static <T> Set<T> setDifference(Collection<T> c1, Collection<T> c2) {
+		Set<T> result = new HashSet<>(c1);
+		result.removeAll(c2);
+		return result;
+	}
+
 	public static List<EnumType> getEnumTypes(List<TypeDef> types) {
 		List<EnumType> enums = new ArrayList<>();
 		for (TypeDef def : types) {
@@ -372,4 +389,8 @@ public class Util {
 	 * ASCII "End of Text" character, used by JKindApi to ask JKind to terminate
 	 */
 	public static final int END_OF_TEXT = 0x03;
+
+	public static String capitalize(String name) {
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
 }

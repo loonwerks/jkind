@@ -10,6 +10,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -55,6 +56,11 @@ public class ExprDisjunctiveVisitor implements ExprVisitor<Boolean> {
 	@Override
 	public Boolean visit(CondactExpr e) {
 		return e.clock.accept(this) || e.call.accept(this) || visitExprs(e.args);
+	}
+
+	@Override
+	public Boolean visit(FunctionCallExpr e) {
+		return visitExprs(e.args);
 	}
 
 	@Override

@@ -4,6 +4,10 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+
 import jkind.JKindException;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
@@ -12,19 +16,15 @@ import jkind.lustre.visitors.ExprConjunctiveVisitor;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.mathsat.MathSatParser.ModelContext;
 import jkind.solvers.mathsat.MathSatParser.UnsatAssumptionsContext;
 import jkind.solvers.smtlib2.SmtLib2Solver;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 public class MathSatSolver extends SmtLib2Solver {
 	public MathSatSolver(String scratchBase) {
@@ -53,7 +53,7 @@ public class MathSatSolver extends SmtLib2Solver {
 		String status = readFromSolver();
 		if (isSat(status)) {
 			send("(get-model)");
-			result = new SatResult(parseModel(readFromSolver()));
+			result = new SatResult(parseMathSatModel(readFromSolver()));
 		} else if (isUnsat(status)) {
 			result = new UnsatResult();
 		} else {
@@ -89,14 +89,12 @@ public class MathSatSolver extends SmtLib2Solver {
 		return parseUnsatAssumptions(readFromSolver());
 	}
 
-	@Override
-	protected Model parseModel(String string) {
+	protected Model parseMathSatModel(String string) {
 		MathSatParser parser = getParser(string);
 		ModelContext ctx = parser.model();
 		ensureNoParseError(parser, string);
-		return ModelExtractor.getModel(ctx, varTypes);
+		return ModelExtractor.getModel(ctx, varTypes, functions);
 	}
-
 
 	private List<Symbol> parseUnsatAssumptions(String string) {
 		MathSatParser parser = getParser(string);

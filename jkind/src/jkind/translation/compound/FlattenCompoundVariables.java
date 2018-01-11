@@ -7,14 +7,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -31,8 +30,8 @@ import jkind.util.Util;
  * Assumption: All array indices are integer literals
  */
 public class FlattenCompoundVariables extends AstMapVisitor {
-	public static Node node(Node node) {
-		return new FlattenCompoundVariables().visit(node);
+	public static Program program(Program program) {
+		return new FlattenCompoundVariables().visit(program);
 	}
 
 	private final Map<String, Type> originalTypes = new HashMap<>();
@@ -44,9 +43,9 @@ public class FlattenCompoundVariables extends AstMapVisitor {
 		addOriginalTypes(node.locals);
 
 		NodeBuilder builder = new NodeBuilder(node);
-		builder.clearInputs().addInputs(flattenVarDecls(node.inputs));
-		builder.clearOutputs().addOutputs(flattenVarDecls(node.outputs));
-		builder.clearLocals().addLocals(flattenVarDecls(node.locals));
+		builder.clearInputs().addInputs(CompoundUtil.flattenVarDecls(node.inputs));
+		builder.clearOutputs().addOutputs(CompoundUtil.flattenVarDecls(node.outputs));
+		builder.clearLocals().addLocals(CompoundUtil.flattenVarDecls(node.locals));
 		builder.clearEquations().addEquations(flattenLeftHandSide(node.equations));
 		if (node.realizabilityInputs != null) {
 			builder.setRealizabilityInputs(flattenNames(node.realizabilityInputs));
@@ -61,17 +60,6 @@ public class FlattenCompoundVariables extends AstMapVisitor {
 		for (VarDecl varDecl : varDecls) {
 			originalTypes.put(varDecl.id, varDecl.type);
 		}
-	}
-
-	private List<VarDecl> flattenVarDecls(List<VarDecl> varDecls) {
-		List<VarDecl> result = new ArrayList<>();
-		for (VarDecl varDecl : varDecls) {
-			IdExpr id = new IdExpr(varDecl.id);
-			for (ExprType et : CompoundUtil.flattenExpr(id, varDecl.type)) {
-				result.add(new VarDecl(et.expr.toString(), et.type));
-			}
-		}
-		return result;
 	}
 
 	private List<String> flattenNames(List<String> names) {
@@ -128,24 +116,11 @@ public class FlattenCompoundVariables extends AstMapVisitor {
 	}
 
 	private Expr expand(Expr expr, Type type) {
-		if (type instanceof ArrayType) {
-			ArrayType arrayType = (ArrayType) type;
-			List<Expr> elements = new ArrayList<>();
-			for (int i = 0; i < arrayType.size; i++) {
-				elements.add(expand(new ArrayAccessExpr(expr, i), arrayType.base));
+		return new Expander() {
+			@Override
+			protected Expr baseCase(Expr expr) {
+				return new IdExpr(expr.toString());
 			}
-			return new ArrayExpr(elements);
-		} else if (type instanceof RecordType) {
-			RecordType recordType = (RecordType) type;
-			Map<String, Expr> fields = new HashMap<>();
-			for (Entry<String, Type> entry : recordType.fields.entrySet()) {
-				String field = entry.getKey();
-				Type fieldType = entry.getValue();
-				fields.put(field, expand(new RecordAccessExpr(expr, field), fieldType));
-			}
-			return new RecordExpr(recordType.id, fields);
-		} else {
-			return new IdExpr(expr.toString());
-		}
+		}.expand(expr, type);
 	}
 }

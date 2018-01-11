@@ -7,6 +7,7 @@ import jkind.lustre.Constant;
 import jkind.lustre.Contract;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.TypeDef;
@@ -25,6 +26,13 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	@Override
+	public Function visit(Function e) {
+		List<VarDecl> inputs = visitVarDecls(e.inputs);
+		List<VarDecl> outputs = visitVarDecls(e.outputs);
+		return new Function(e.location, e.id, inputs, outputs);
+	}
+
+	@Override
 	public Node visit(Node e) {
 		List<VarDecl> inputs = visitVarDecls(e.inputs);
 		List<VarDecl> outputs = visitVarDecls(e.outputs);
@@ -35,8 +43,8 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<String> ivc = visitIvc(e.ivc);
 		List<String> realizabilityInputs = visitRealizabilityInputs(e.realizabilityInputs);
 		Contract contract = visit(e.contract);
-		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties,
-				assertions, realizabilityInputs, contract, ivc);
+		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties, assertions,
+				realizabilityInputs, contract, ivc);
 	}
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
@@ -62,7 +70,7 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	protected List<String> visitIvc(List<String> es) {
 		return map(this::visitIvc, es);
 	}
-	
+
 	protected String visitIvc(String e) {
 		return e;
 	}
@@ -82,8 +90,9 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	public Program visit(Program e) {
 		List<TypeDef> types = visitTypeDefs(e.types);
 		List<Constant> constants = visitConstants(e.constants);
+		List<Function> functions = visitFunctions(e.functions);
 		List<Node> nodes = visitNodes(e.nodes);
-		return new Program(e.location, types, constants, nodes, e.main);
+		return new Program(e.location, types, constants, functions, nodes, e.main);
 	}
 
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
@@ -95,6 +104,10 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 	}
 
 	protected List<Node> visitNodes(List<Node> es) {
+		return map(this::visit, es);
+	}
+
+	protected List<Function> visitFunctions(List<Function> es) {
 		return map(this::visit, es);
 	}
 

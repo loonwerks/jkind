@@ -1,11 +1,19 @@
 package jkind.lustre.parsing;
 
+import static java.util.stream.Collectors.toList;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
@@ -21,6 +29,8 @@ import jkind.lustre.Contract;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -51,6 +61,7 @@ import jkind.lustre.parsing.LustreParser.BaseEIDContext;
 import jkind.lustre.parsing.LustreParser.BinaryExprContext;
 import jkind.lustre.parsing.LustreParser.BoolExprContext;
 import jkind.lustre.parsing.LustreParser.BoolTypeContext;
+import jkind.lustre.parsing.LustreParser.CallExprContext;
 import jkind.lustre.parsing.LustreParser.CastExprContext;
 import jkind.lustre.parsing.LustreParser.CondactExprContext;
 import jkind.lustre.parsing.LustreParser.ConstantContext;
@@ -58,6 +69,7 @@ import jkind.lustre.parsing.LustreParser.EIDContext;
 import jkind.lustre.parsing.LustreParser.EnumTypeContext;
 import jkind.lustre.parsing.LustreParser.EquationContext;
 import jkind.lustre.parsing.LustreParser.ExprContext;
+import jkind.lustre.parsing.LustreParser.FunctionContext;
 import jkind.lustre.parsing.LustreParser.IdExprContext;
 import jkind.lustre.parsing.LustreParser.IfThenElseExprContext;
 import jkind.lustre.parsing.LustreParser.IntExprContext;
@@ -65,7 +77,6 @@ import jkind.lustre.parsing.LustreParser.IntTypeContext;
 import jkind.lustre.parsing.LustreParser.IvcContext;
 import jkind.lustre.parsing.LustreParser.LhsContext;
 import jkind.lustre.parsing.LustreParser.NegateExprContext;
-import jkind.lustre.parsing.LustreParser.NodeCallExprContext;
 import jkind.lustre.parsing.LustreParser.NodeContext;
 import jkind.lustre.parsing.LustreParser.NotExprContext;
 import jkind.lustre.parsing.LustreParser.PlainTypeContext;
@@ -89,18 +100,16 @@ import jkind.lustre.parsing.LustreParser.UserTypeContext;
 import jkind.lustre.parsing.LustreParser.VarDeclGroupContext;
 import jkind.lustre.parsing.LustreParser.VarDeclListContext;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	private String main;
+	private Set<String> functionNames = new HashSet<>();
 
 	public Program program(ProgramContext ctx) {
 		List<TypeDef> types = types(ctx.typedef());
 		List<Constant> constants = constants(ctx.constant());
+		List<Function> functions = functions(ctx.function());
 		List<Node> nodes = nodes(ctx.node());
-		return new Program(loc(ctx), types, constants, nodes, main);
+		return new Program(loc(ctx), types, constants, functions, nodes, main);
 	}
 
 	private List<TypeDef> types(List<TypedefContext> ctxs) {
@@ -124,12 +133,20 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 		return constants;
 	}
 
+	private List<Function> functions(List<FunctionContext> ctxs) {
+		return ctxs.stream().map(this::function).collect(toList());
+	}
+
 	private List<Node> nodes(List<NodeContext> ctxs) {
-		List<Node> nodes = new ArrayList<>();
-		for (NodeContext ctx : ctxs) {
-			nodes.add(node(ctx));
-		}
-		return nodes;
+		return ctxs.stream().map(this::node).collect(toList());
+	}
+
+	public Function function(FunctionContext ctx) {
+		String id = eid(ctx.eID());
+		List<VarDecl> inputs = varDecls(ctx.input);
+		List<VarDecl> outputs = varDecls(ctx.output);
+		functionNames.add(id);
+		return new Function(loc(ctx), id, inputs, outputs);
 	}
 
 	public Node node(NodeContext ctx) {
@@ -150,8 +167,8 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 				fatal(ctx.main(0), "node '" + main + "' already declared as --%MAIN");
 			}
 		}
-		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions,
-				realizabilityInputs, contract, ivc);
+		return new Node(loc(ctx), id, inputs, outputs, locals, equations, properties, assertions, realizabilityInputs,
+				contract, ivc);
 	}
 
 	private List<VarDecl> varDecls(VarDeclListContext listCtx) {
@@ -358,30 +375,38 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 	}
 
 	@Override
-	public NodeCallExpr visitNodeCallExpr(NodeCallExprContext ctx) {
-		String node = ctx.ID().getText();
+	public Expr visitCallExpr(CallExprContext ctx) {
+		String name = eid(ctx.eID());
 		List<Expr> args = new ArrayList<>();
 		for (ExprContext arg : ctx.expr()) {
 			args.add(expr(arg));
 		}
-		return new NodeCallExpr(loc(ctx), node, args);
+
+		if (functionNames.contains(name)) {
+			return new FunctionCallExpr(loc(ctx), name, args);
+		} else {
+			return new NodeCallExpr(loc(ctx), name, args);
+		}
 	}
 
 	@Override
 	public Expr visitCondactExpr(CondactExprContext ctx) {
 		Expr clock = expr(ctx.expr(0));
-		if (ctx.expr(1) instanceof NodeCallExprContext) {
-			NodeCallExprContext callCtx = (NodeCallExprContext) ctx.expr(1);
-			NodeCallExpr call = visitNodeCallExpr(callCtx);
-			List<Expr> args = new ArrayList<>();
-			for (int i = 2; i < ctx.expr().size(); i++) {
-				args.add(expr(ctx.expr(i)));
+		if (ctx.expr(1) instanceof CallExprContext) {
+			CallExprContext callCtx = (CallExprContext) ctx.expr(1);
+			Expr call = visitCallExpr(callCtx);
+			if (call instanceof NodeCallExpr) {
+				NodeCallExpr nodeCall = (NodeCallExpr) call;
+				List<Expr> args = new ArrayList<>();
+				for (int i = 2; i < ctx.expr().size(); i++) {
+					args.add(expr(ctx.expr(i)));
+				}
+				return new CondactExpr(loc(ctx), clock, nodeCall, args);
 			}
-			return new CondactExpr(loc(ctx), clock, call, args);
-		} else {
-			fatal(ctx, "second argument to condact must be a node call");
-			return null;
 		}
+
+		fatal(ctx, "second argument to condact must be a node call");
+		return null;
 	}
 
 	@Override
@@ -391,8 +416,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Expr visitRecordUpdateExpr(RecordUpdateExprContext ctx) {
-		return new RecordUpdateExpr(loc(ctx), expr(ctx.expr(0)), ctx.ID().getText(),
-				expr(ctx.expr(1)));
+		return new RecordUpdateExpr(loc(ctx), expr(ctx.expr(0)), ctx.ID().getText(), expr(ctx.expr(1)));
 	}
 
 	@Override
@@ -402,8 +426,7 @@ public class LustreToAstVisitor extends LustreBaseVisitor<Object> {
 
 	@Override
 	public Expr visitArrayUpdateExpr(ArrayUpdateExprContext ctx) {
-		return new ArrayUpdateExpr(loc(ctx), expr(ctx.expr(0)), expr(ctx.expr(1)),
-				expr(ctx.expr(2)));
+		return new ArrayUpdateExpr(loc(ctx), expr(ctx.expr(0)), expr(ctx.expr(1)), expr(ctx.expr(2)));
 	}
 
 	@Override

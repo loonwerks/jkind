@@ -56,8 +56,7 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(NO_INV_GEN, false, "disable invariant generation");
 		options.addOption(NO_K_INDUCTION, false, "disable k-induction");
 		options.addOption(NO_SLICING, false, "disable slicing");
-		options.addOption(PDR_MAX, true,
-				"maximum number of PDR parallel instances (0 to disable PDR)");
+		options.addOption(PDR_MAX, true, "maximum number of PDR parallel instances (0 to disable PDR)");
 		options.addOption(READ_ADVICE, true, "read advice from specified file");
 		options.addOption(SCRATCH, false, "produce files for debugging purposes");
 		options.addOption(SMOOTH, false, "smooth counterexamples (minimal changes in input values)");
@@ -118,11 +117,17 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(NO_K_INDUCTION)) {
 			settings.kInduction = false;
 		}
-		
+
 		if (line.hasOption(NO_SLICING)) {
 			settings.slicing = false;
+
+			/**
+			 * Inlining without slicing away the inlined equations creates
+			 * problems for reconstruction
+			 */
+			settings.inlining = false;
 		}
-		
+
 		if (line.hasOption(N)) {
 			settings.n = parseNonnegativeInt(line.getOptionValue(N));
 		}
@@ -196,15 +201,13 @@ public class JKindArgumentParser extends ArgumentParser {
 	private void checkSettings() {
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
-				StdErr.warning(settings.solver
-						+ " does not support unsat-cores so IVC reduction will be slow");
+				StdErr.warning(settings.solver + " does not support unsat-cores so IVC reduction will be slow");
 			}
 		}
 
 		if (settings.smoothCounterexamples) {
 			if (settings.solver != SolverOption.YICES && settings.solver != SolverOption.Z3) {
-				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with "
-						+ settings.solver);
+				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "smoothing not supported with " + settings.solver);
 			}
 		}
 
@@ -219,9 +222,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void printDectectedSolvers() {
-		String detected = SolverUtil.availableSolvers().stream().map(Object::toString)
-				.collect(joining(", "));
+		String detected = SolverUtil.availableSolvers().stream().map(Object::toString).collect(joining(", "));
 		StdErr.println("Detected solvers: " + detected);
 	}
-
 }

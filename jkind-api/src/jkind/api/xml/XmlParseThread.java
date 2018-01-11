@@ -11,6 +11,12 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import jkind.JKindException;
 import jkind.api.Backend;
 import jkind.api.results.JKindResult;
@@ -20,10 +26,14 @@ import jkind.interval.Interval;
 import jkind.interval.NumericEndpoint;
 import jkind.interval.NumericInterval;
 import jkind.interval.RealEndpoint;
+import jkind.lustre.NamedType;
+import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.values.RealValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
 import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
@@ -31,12 +41,6 @@ import jkind.results.Signal;
 import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.util.Util;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 public class XmlParseThread extends Thread {
 	private final InputStream xmlStream;
@@ -271,6 +275,9 @@ public class XmlParseThread extends Thread {
 		for (Element signalElement : getElements(cexElement, getSignalTag())) {
 			cex.addSignal(getSignal(signalElement));
 		}
+		for (Element functionElement : getElements(cexElement, "Function")) {
+			cex.addFunctionTable(getFunction(functionElement));
+		}
 		return cex;
 	}
 
@@ -371,6 +378,34 @@ public class XmlParseThread extends Thread {
 			RealValue rv = (RealValue) Util.parseValue("real", text);
 			return new RealEndpoint(rv.value);
 		}
+	}
+
+	private FunctionTable getFunction(Element functionElement) {
+		String name = functionElement.getAttribute("name");
+		List<VarDecl> inputs = new ArrayList<>();
+		for (Element inputElement : getElements(functionElement, "Input")) {
+			inputs.add(getVarDecl(inputElement));
+		}
+		VarDecl output = getVarDecl(getElement(functionElement, "Output"));
+		FunctionTable table = new FunctionTable(name, inputs, output);
+		
+		for (Element fvElement : getElements(functionElement, "FunctionValue")) {
+			List<Value> inputValues = new ArrayList<>();
+			List<Element> ivElements = getElements(fvElement, "InputValue");
+			for (int i = 0; i < inputs.size(); i++) {
+				inputValues.add(Util.parseValue(inputs.get(i).type, ivElements.get(i).getTextContent()));
+			}
+			Value outputValue = Util.parseValue(output.type, getElement(fvElement, "OutputValue").getTextContent());
+			table.addRow(inputValues, outputValue);
+		}
+
+		return table;
+	}
+
+	private VarDecl getVarDecl(Element element) {
+		String name = element.getAttribute("name");
+		Type type = NamedType.get(element.getAttribute("type"));
+		return new VarDecl(name, type);
 	}
 
 	private Element getElement(Element element, String name) {

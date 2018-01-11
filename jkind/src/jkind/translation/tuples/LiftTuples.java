@@ -4,7 +4,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.visitors.AstMapVisitor;
@@ -13,8 +13,8 @@ import jkind.lustre.visitors.AstMapVisitor;
  * Lift all tuples as far as possible
  */
 public class LiftTuples extends AstMapVisitor {
-	public static Node node(Node node) {
-		return new LiftTuples().visit(node);
+	public static Program program(Program program) {
+		return new LiftTuples().visit(program);
 	}
 
 	@Override

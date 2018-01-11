@@ -2,20 +2,22 @@ package jkind.solvers.yices;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.lustre.Function;
 import jkind.lustre.Type;
 import jkind.lustre.values.Value;
 import jkind.solvers.Model;
 import jkind.util.Util;
 
 public class YicesModel extends Model {
-	private final Map<String, String> aliases = new HashMap<>();
-	private final Map<String, Value> values = new HashMap<>();
+	protected final Map<String, String> aliases = new HashMap<>();
+	protected final Map<String, Value> values = new HashMap<>();
 
-	public YicesModel(Map<String, Type> varTypes) {
-		super(varTypes);
+	public YicesModel(Map<String, Type> varTypes, List<Function> functions) {
+		super(varTypes, functions);
 	}
 
 	public void addAlias(String from, String to) {
@@ -26,7 +28,7 @@ public class YicesModel extends Model {
 		values.put(name, value);
 	}
 
-	private String getAlias(String name) {
+	protected String getAlias(String name) {
 		String result = name;
 		while (aliases.containsKey(result)) {
 			result = aliases.get(result);
@@ -36,11 +38,15 @@ public class YicesModel extends Model {
 
 	@Override
 	public Value getValue(String name) {
+		Type type = varTypes.get(name);
+		if (type == null) {
+			throw new IllegalArgumentException("Model queried unknown variable: " + name);
+		}
 		Value value = values.get(getAlias(name));
 		if (value == null) {
-			return Util.getDefaultValue(varTypes.get(name));
+			return Util.getDefaultValue(type);
 		} else {
-			return value;
+			return Util.promoteIfNeeded(value, type);
 		}
 	}
 

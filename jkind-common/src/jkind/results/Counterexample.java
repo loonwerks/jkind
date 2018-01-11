@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import jkind.excel.ExcelCounterexampleFormatter;
 import jkind.lustre.values.BooleanValue;
@@ -16,6 +18,7 @@ import jkind.lustre.values.Value;
 import jkind.results.layout.Layout;
 import jkind.results.layout.SingletonLayout;
 import jkind.util.CounterexampleFormatter;
+import jkind.util.Util;
 
 /**
  * A JKind counterexample
@@ -23,6 +26,7 @@ import jkind.util.CounterexampleFormatter;
 public final class Counterexample {
 	private final int length;
 	private final Map<String, Signal<Value>> signals = new HashMap<>();
+	private final SortedSet<FunctionTable> functionTables = new TreeSet<>();
 
 	public Counterexample(int length) {
 		this.length = length;
@@ -37,6 +41,14 @@ public final class Counterexample {
 
 	public void addSignal(Signal<Value> signal) {
 		signals.put(signal.getName(), signal);
+	}
+
+	public void addFunctionTable(FunctionTable functionTable) {
+		this.functionTables.add(functionTable);
+	}
+
+	public List<FunctionTable> getFunctionTables() {
+		return Util.safeList(functionTables);
 	}
 
 	/**
@@ -185,6 +197,7 @@ public final class Counterexample {
 	public void toExcel(File file) {
 		toExcel(file, new SingletonLayout("Signals"));
 	}
+
 	@Override
 	public String toString() {
 		return toString(new SingletonLayout());

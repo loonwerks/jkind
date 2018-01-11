@@ -2,11 +2,11 @@ package jkind.api.examples;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
+
 import jkind.api.JKindApi;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
-
-import org.eclipse.core.runtime.NullProgressMonitor;
 
 /**
  * This example illustrates how to call the JKind API and process the results

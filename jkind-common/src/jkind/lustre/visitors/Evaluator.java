@@ -14,6 +14,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
@@ -102,6 +103,11 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 	}
 
 	@Override
+	public Value visit(FunctionCallExpr e) {
+		return null;
+	}
+
+	@Override
 	public Value visit(IfThenElseExpr e) {
 		BooleanValue cond = (BooleanValue) eval(e.cond);
 		if (cond == null) {
@@ -180,7 +186,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 		return value.applyUnaryOp(e.op);
 	}
 
-	private List<Value> visitExprs(List<Expr> es) {
+	protected List<Value> visitExprs(List<Expr> es) {
 		List<Value> values = new ArrayList<>();
 		for (Expr e : es) {
 			Value value = eval(e);

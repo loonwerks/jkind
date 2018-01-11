@@ -16,6 +16,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -40,8 +41,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(ArrayUpdateExpr e) {
-		return new ArrayUpdateExpr(e.location, e.array.accept(this), e.index.accept(this),
-				e.value.accept(this));
+		return new ArrayUpdateExpr(e.location, e.array.accept(this), e.index.accept(this), e.value.accept(this));
 	}
 
 	@Override
@@ -66,8 +66,13 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(CondactExpr e) {
-		return new CondactExpr(e.location, e.clock.accept(this),
-				(NodeCallExpr) e.call.accept(this), visitExprs(e.args));
+		return new CondactExpr(e.location, e.clock.accept(this), (NodeCallExpr) e.call.accept(this),
+				visitExprs(e.args));
+	}
+
+	@Override
+	public Expr visit(FunctionCallExpr e) {
+		return new FunctionCallExpr(e.location, e.function, visitExprs(e.args));
 	}
 
 	@Override
@@ -117,8 +122,7 @@ public class ExprMapVisitor implements ExprVisitor<Expr> {
 
 	@Override
 	public Expr visit(RecordUpdateExpr e) {
-		return new RecordUpdateExpr(e.location, e.record.accept(this), e.field,
-				e.value.accept(this));
+		return new RecordUpdateExpr(e.location, e.record.accept(this), e.field, e.value.accept(this));
 	}
 
 	@Override

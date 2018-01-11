@@ -1,5 +1,6 @@
 package jkind.solvers.smtinterpol;
 
+import static java.util.stream.Collectors.toList;
 import static jkind.lustre.LustreUtil.castInt;
 import static jkind.lustre.LustreUtil.castReal;
 import static jkind.lustre.LustreUtil.divide;
@@ -10,21 +11,24 @@ import static jkind.lustre.LustreUtil.real;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
+import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
+import de.uni_freiburg.informatik.ultimate.logic.ConstantTerm;
+import de.uni_freiburg.informatik.ultimate.logic.Rational;
+import de.uni_freiburg.informatik.ultimate.logic.Term;
 import jkind.engines.pdr.Lustre2Term;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.RealExpr;
-import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
-import de.uni_freiburg.informatik.ultimate.logic.ConstantTerm;
-import de.uni_freiburg.informatik.ultimate.logic.Rational;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
+import jkind.util.SexpUtil;
 
 public class Term2Expr {
 	public static Expr disjunction(List<Term> disjuncts) {
@@ -40,8 +44,7 @@ public class Term2Expr {
 		} else if (term instanceof ApplicationTerm) {
 			return expr((ApplicationTerm) term);
 		} else {
-			throw new IllegalArgumentException("Unhandled term type: "
-					+ term.getClass().getSimpleName());
+			throw new IllegalArgumentException("Unhandled term type: " + term.getClass().getSimpleName());
 		}
 	}
 
@@ -56,15 +59,19 @@ public class Term2Expr {
 			Rational r = (Rational) ct.getValue();
 			return divide(real(r.numerator()), real(r.denominator()));
 		} else {
-			throw new IllegalArgumentException("Unhandled constant term type: "
-					+ ct.getClass().getSimpleName());
+			throw new IllegalArgumentException("Unhandled constant term type: " + ct.getClass().getSimpleName());
 		}
 	}
 
 	private static Expr expr(ApplicationTerm at) {
 		String name = at.getFunction().getName();
 		Term[] params = at.getParameters();
-
+		
+		if (SexpUtil.isEncodedFunction(name)) {
+			List<Expr> exprParams = Arrays.stream(params).map(p -> expr(p)).collect(toList());
+			return new FunctionCallExpr(SexpUtil.decodeFunction(name), exprParams);
+		}
+		
 		if (params.length == 0) {
 			switch (name) {
 			case "true":

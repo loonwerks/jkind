@@ -12,7 +12,7 @@ functionType: '(' 'type' '(' '->' type* ')' ')';
 
 type: 'int' | 'real' | 'bool';
 
-functionValue: '(' '=' '(' ID integer ')' value ')';
+functionValue: '(' '=' '(' ID value+ ')' value ')';
 
 defaultValue: '(' 'default' value ')';
 
@@ -24,7 +24,7 @@ integer: INT                 # positiveInteger
        | '(' '-' INT ')'     # negativeInteger
        ;
        
-quotient: '(' '/' integer integer ')';
+quotient: '(' '/' numeric numeric ')';
          
 numeric: integer             # integerNumeric
        | quotient            # quotientNumeric

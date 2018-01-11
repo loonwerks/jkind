@@ -1,6 +1,6 @@
 grammar Lustre;
 
-program: (typedef | constant | node)* EOF;
+program: (typedef | constant | node | function)* EOF;
 
 typedef: 'type' ID '=' topLevelType ';';
 
@@ -13,6 +13,11 @@ node:
   'let'
     (equation | property | assertion | main | realizabilityInputs | ivc)*
   'tel' ';'?
+;
+
+function:
+  'function' eID '(' input=varDeclList? ')'
+  'returns' '(' output=varDeclList? ')' ';'
 ;
 
 varDeclList: varDeclGroup (';' varDeclGroup)*;
@@ -53,7 +58,7 @@ expr: ID                                                       # idExpr
     | REAL                                                     # realExpr
     | BOOL                                                     # boolExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
-    | ID '(' (expr (',' expr)*)? ')'                           # nodeCallExpr
+    | eID '(' (expr (',' expr)*)? ')'                          # callExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
     | expr '{' ID ':=' expr '}'                                # recordUpdateExpr

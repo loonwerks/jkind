@@ -80,7 +80,7 @@ public class KInductionEngine extends SolverBasedEngine {
 		result.removeAll(list2);
 		return result;
 	}
-	
+
 	private void checkProperties(int k) {
 		List<String> possiblyValid = new ArrayList<>(properties);
 

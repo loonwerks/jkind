@@ -1,11 +1,20 @@
 package jkind.slicing;
 
-
 public class Dependency {
 	public final String name;
+	public final DependencyType type;
 
-	public Dependency(String name) {
+	public Dependency(String name, DependencyType type) {
 		this.name = name;
+		this.type = type;
+	}
+
+	public static Dependency variable(String name) {
+		return new Dependency(name, DependencyType.VARIABLE);
+	}
+
+	public static Dependency function(String name) {
+		return new Dependency(name, DependencyType.FUNCTION);
 	}
 
 	@Override
@@ -13,6 +22,7 @@ public class Dependency {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -35,6 +45,14 @@ public class Dependency {
 		} else if (!name.equals(other.name)) {
 			return false;
 		}
+		if (type != other.type) {
+			return false;
+		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

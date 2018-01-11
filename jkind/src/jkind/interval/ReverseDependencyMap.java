@@ -29,7 +29,7 @@ public class ReverseDependencyMap {
 					map.put(dep, set);
 				}
 				for (IdExpr idExpr : eq.lhs) {
-					set.add(idExpr.id);
+					set.add(Dependency.variable(idExpr.id));
 				}
 			}
 		}
@@ -64,6 +64,6 @@ public class ReverseDependencyMap {
 	}
 
 	public DependencySet get(String id) {
-		return map.get(new Dependency(id));
+		return map.get(Dependency.variable(id));
 	}
 }

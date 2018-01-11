@@ -11,9 +11,12 @@ import jkind.interval.BoolInterval;
 import jkind.interval.NumericInterval;
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
+import jkind.results.FunctionTableRow;
 import jkind.results.Signal;
 import jkind.util.Util;
 
@@ -21,8 +24,7 @@ public class XmlWriter extends Writer {
 	private final PrintWriter out;
 	private final Map<String, Type> types;
 
-	public XmlWriter(String filename, Map<String, Type> types, boolean useStdout)
-			throws FileNotFoundException {
+	public XmlWriter(String filename, Map<String, Type> types, boolean useStdout) throws FileNotFoundException {
 		if (useStdout) {
 			this.out = new PrintWriter(System.out, true);
 		} else {
@@ -44,15 +46,14 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
+			Set<String> ivc) {
 		for (String prop : props) {
 			writeValid(prop, source, k, runtime, invariants, ivc);
 		}
 	}
 
-	public void writeValid(String prop, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants, Set<String> ivc) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
@@ -72,8 +73,7 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex,
-			List<String> conflicts, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">falsifiable</Answer>");
@@ -114,7 +114,31 @@ public class XmlWriter extends Writer {
 		for (Signal<Value> signal : cex.getSignals()) {
 			writeSignal(cex.getLength(), signal);
 		}
+		for (FunctionTable fn : cex.getFunctionTables()) {
+			writeFunction(fn);
+		}
 		out.println("    </Counterexample>");
+	}
+
+	private void writeFunction(FunctionTable table) {
+		out.println("      <Function name=\"" + table.getName() + "\">");
+		List<VarDecl> inputDecls = table.getInputs();
+		for (VarDecl inputDecl : inputDecls) {
+			out.println("        <Input name=\"" + inputDecl.id + "\" type=\"" + inputDecl.type + "\"/>");
+		}
+		VarDecl outputDecl = table.getOutput();
+		out.println("        <Output name=\"" + outputDecl.id + "\" type=\"" + outputDecl.type + "\"/>");
+
+		for (FunctionTableRow row : table.getRows()) {
+			out.println("        <FunctionValue>");
+			for (int i = 0; i < row.getInputs().size(); i++) {
+				Value input = row.getInputs().get(i);
+				out.println("          <InputValue>" + formatValue(input) + "</InputValue>");
+			}
+			out.println("          <OutputValue>" + formatValue(row.getOutput()) + "</OutputValue>");
+			out.println("        </FunctionValue>");
+		}
+		out.println("      </Function>");
 	}
 
 	private void writeSignal(int k, Signal<Value> signal) {
@@ -152,8 +176,8 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeUnknown(List<String> props, int trueFor,
-			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
+	public void writeUnknown(List<String> props, int trueFor, Map<String, Counterexample> inductiveCounterexamples,
+			double runtime) {
 		for (String prop : props) {
 			writeUnknown(prop, trueFor, inductiveCounterexamples.get(prop), runtime);
 		}
