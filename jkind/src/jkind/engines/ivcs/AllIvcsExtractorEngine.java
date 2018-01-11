@@ -155,11 +155,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		z3Solver.push();
 		while(checkMapSatisfiability(seed, mustChckList, true)){ 
 			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
-			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
+			System.out.printf("allIvcs size: %d, iteration time: %f, satChecks: %d, unsat checks: %d\n", allIvcs.size(), time, satChecks, unsatChecks);
 			resultOfIvcFinder.clear(); 
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){				
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
-				markMIVC(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));				
+				//markMIVC(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));				
 			}else{				
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder))); 
 			}
@@ -183,10 +183,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
-		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
+		shrinkingPool.add(new ArrayList<Symbol>(seed));
 		
 		mustElements.add(property.toString());
 		if (ivcMap.containsKey(property.toString())){
@@ -228,10 +228,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
-		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
+		shrinkingPool.add(new ArrayList<Symbol>(seed));
 		
 		mustElements.add(property.toString());
 		if (ivcMap.containsKey(property.toString())){
@@ -268,11 +268,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 		
-		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
-		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
+		//List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
+		shrinkingPool.add(new ArrayList<Symbol>(seed));
 			
 		mustElements.add(property.toString());
 		if (ivcMap.containsKey(property.toString())){
@@ -288,11 +288,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				map = new Cons("and", map, blockUp(seed)); //seed is an MIVC 
 				markMIVC(seed);				
 			} else {
+				//System.out.println("the seed is satisfiable (growing follows)");
 				GrowByElimination(seed, property.toString()); //seed is inadequate -> grow it to a (approximately) maximal inadequate subset and boost the map
 			}				
 			while(!shrinkingPool.isEmpty()) {
+				//System.out.println("Shrinking pool size: " + shrinkingPool.size());
 				List<Symbol> ivc = shrinkingPool.get(0);
 				shrinkingPool.remove(0);				
+				//System.out.println("Initial ivc size: " + ivc.size());
 				mapShrink(ivc, property.toString());
 			}						
 		} 
@@ -441,7 +444,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
 		
-		//writeToXmlAllIvcRuns(miniJkind.getPropertyStatus());
+		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
 			js.pdrMax = 0;						
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
@@ -490,7 +493,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		//writeToXmlAllIvcRuns(miniJkind.getPropertyStatus());
+		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			System.out.println("The weird branch");
 			//	js.pdrMax = 0;
@@ -545,8 +548,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				break;
 			//System.out.println("unsat subset found during grow");
 			resultOfIvcFinder.clear();
-		}
+		}		
 		map = new Cons("and", map, blockDownComplement(top));		
+		//System.out.println("End of grow");
 		return true;
 	}
 			
@@ -666,8 +670,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	//JB
-	private void markMIVC(List<Symbol> mivc) {
+	private void markMIVC(List<Symbol> mivc) {	
 		mivcs++;
+		Set<String> mivc_set = new HashSet<>();
+		for(Symbol s: mivc)
+			mivc_set.add(s.toString());
+				
+		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));
+		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, true) ;
 		double time = (System.currentTimeMillis() - runtime) / 1000.0;		
 		System.out.printf("%d MIVC found, size: %d, time: %f, total SAT checks: %d, total UNSAT checks: %d %n", mivcs, mivc.size(), time, satChecks, unsatChecks);
 	}
@@ -911,7 +921,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	
 	// this method is used only in our experiments
 		private void recordRuntime() {
-			String xmlFilename = settings.filename + "_runtimeAllIvcs.xml";
+			String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_runtimeAllIvcs.xml";
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 				out.println("<?xml version=\"1.0\"?>");
 				out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"); 
@@ -930,11 +940,18 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 	// recording intermediate results for the experiments	
 		private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, boolean isNew) {
-			String xmlFilename = settings.filename + "_all_uc_minijkind.xml";  
+			String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_all_uc_minijkind.xml";  
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
 				out.println("<Results>");
 				out.println("   <NewSet>" + isNew + "</NewSet>"); 
-				out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
+				
+				//JB time computation
+				double time = (System.currentTimeMillis() - runtime) / 1000.0;
+				out.println("   <UcRuntime unit=\"sec\">" + time + "</UcRuntime>");
+				
+				//original
+				//out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
+				
 				for (String s : untrimmed) {
 					out.println("   <IVC>" + s + "</IVC>");
 				}
@@ -954,7 +971,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		// recording intermediate results for the experiments	
 		private void writeToXmlAllIvcRuns(String res) {
-			String xmlFilename = settings.filename + "_allivcs_inter_loop_runs.xml";  
+			String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_allivcs_inter_loop_runs.xml";  
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
 				out.println("<Result>" + res + "</Result>");  
 				out.flush(); 
