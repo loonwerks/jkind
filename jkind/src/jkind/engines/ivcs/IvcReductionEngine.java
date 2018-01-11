@@ -70,7 +70,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			if (properties.remove(property)) {
 				//----- for the experiments---------
 				runtime = System.currentTimeMillis(); 
-				System.out.println("PROPERTY WAS PROVED... Start IVC reduction...");
+				//System.out.println("PROPERTY WAS PROVED... Start IVC reduction...");
 				//-----------------------------------
 				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}

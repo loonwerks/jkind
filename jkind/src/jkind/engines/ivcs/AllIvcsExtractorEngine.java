@@ -173,7 +173,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
 		runId++;
-		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime());
+	//	writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			js.pdrMax = 0;
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
@@ -209,7 +209,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 				
 				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(), true) ;
+				//writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(), true) ;
 				//--------------------------------------------------------
 			}
 			else{ 
@@ -217,7 +217,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			
 				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(),false) ;
+			//	writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(),false) ;
 				//--------------------------------------------------------
 			} 
 			return true;
