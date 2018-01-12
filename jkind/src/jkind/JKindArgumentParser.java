@@ -21,6 +21,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String READ_ADVICE = "read_advice"; 
 	private static final String IVC = "ivc";
 	private static final String IVC_ALL = "all_ivcs";
+	private static final String IVC_ALL_ALG = "all_ivcs_alg";
 	private static final String NO_SLICING = "no_slicing"; 
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
@@ -53,6 +54,8 @@ public class JKindArgumentParser extends ArgumentParser {
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)"); 
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
+		options.addOption(IVC_ALL_ALG, true,
+				"algorithm to be used for finding all IVCs (based on --%IVC annotated elements)");
 		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements"); 
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
@@ -147,6 +150,10 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(IVC_ALL)) {
 			settings.reduceIvc = true;
 			settings.allIvcs = true;
+		}
+		
+		if (line.hasOption(IVC_ALL_ALG)) {
+			settings.allIvcsAlgorithm = parseNonnegativeInt(line.getOptionValue(IVC_ALL_ALG));
 		}
 		
 		if (line.hasOption(ALL_ASSIGNED)){

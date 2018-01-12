@@ -19,6 +19,7 @@ public class JKindSettings extends Settings {
 	public boolean reduceIvc = false;
 	public boolean allIvcs = false;
 	public boolean smoothCounterexamples = false;
+	public int allIvcsAlgorithm = 1;
 	public boolean intervalGeneralization = false;
 	public boolean inlining = true;
 	public boolean slicing = true;
@@ -47,6 +48,7 @@ public class JKindSettings extends Settings {
 		this.inductiveCounterexamples = settings.inductiveCounterexamples;
 		this.reduceIvc = settings.reduceIvc;
 		this.allIvcs = settings.allIvcs;
+		this.allIvcsAlgorithm = settings.allIvcsAlgorithm;
 		this.smoothCounterexamples = settings.smoothCounterexamples;
 		this.intervalGeneralization = settings.intervalGeneralization;
 		this.inlining = settings.inlining;

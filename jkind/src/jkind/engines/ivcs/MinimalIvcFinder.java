@@ -1,3 +1,4 @@
+ 
 package jkind.engines.ivcs; 
 import java.io.FileOutputStream;  
 import java.io.PrintWriter; 
@@ -51,7 +52,6 @@ public class MinimalIvcFinder {
 			out.println("  <Run id=\"" + counter + "\">");
 			out.println("    <Runtime unit=\"sec\">" + miniJkind.getRuntime() + "</Runtime>");
 			out.println("    <Status>" + miniJkind.getPropertyStatus() + "</Status>");
-			out.println("    <Unassigned>" + s + "</Unassigned>");
 			out.println("  </Run>");
 			counter++ ;
 			//--------------------------------------------------
@@ -175,5 +175,5 @@ public class MinimalIvcFinder {
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
-	
+	 
 }

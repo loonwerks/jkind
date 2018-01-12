@@ -92,6 +92,7 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 
 	@Override
 	public Result quickCheckSat(List<Symbol> activationLiterals) {
+		//System.out.println(new Cons("check-sat", activationLiterals));
 		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver();
 		if (isSat(status)) {
