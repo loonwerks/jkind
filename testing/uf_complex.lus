@@ -18,7 +18,7 @@ function f8(x: int) returns (y: pair; z: nested2);
 
 function min() returns (y: int; z: int);
 
-node main(in: int; fin: real) returns (cex: bool);
+node main(in: int) returns (cex: bool);
 var
   pin: int;
   sequence: int;
