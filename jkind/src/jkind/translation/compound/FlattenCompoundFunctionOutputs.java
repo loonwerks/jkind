@@ -59,7 +59,7 @@ public class FlattenCompoundFunctionOutputs extends AstMapVisitor {
 		Function fn = originalFunctionTable.get(e.function);
 		List<Expr> args = visitExprs(e.args);
 		
-		List<Expr> exprs = new ArrayList<Expr>();
+		List<Expr> exprs = new ArrayList<>();
 		for (VarDecl output : fn.outputs) {
 			exprs.add(expand(new IdExpr(fn.id + "." + output.id), output.type, args));
 		}

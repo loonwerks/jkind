@@ -91,7 +91,7 @@ public class ResultExtractorListener extends YicesBaseListener {
 		FunctionTable table = model.getFunctionTable(name);
 
 		int n = ctx.value().size();
-		List<Value> inputs = new ArrayList<Value>();
+		List<Value> inputs = new ArrayList<>();
 		for (int i = 0; i < n - 1; i++) {
 			String type = Util.getName(table.getInputs().get(i).type);
 			inputs.add(Util.parseValue(type, ctx.value(i).getText()));

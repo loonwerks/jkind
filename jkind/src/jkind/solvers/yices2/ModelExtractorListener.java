@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
@@ -63,7 +61,7 @@ public class ModelExtractorListener extends Yices2BaseListener {
 	}
 
 	private Value value(ValueContext ctx) {
-		if (ctx.BOOL() instanceof TerminalNode) {
+		if (ctx.BOOL() != null) {
 			return BooleanValue.fromBoolean(ctx.BOOL().getText().equals("true"));
 		} else if (ctx.numeric() instanceof IntegerNumericContext) {
 			IntegerNumericContext ictx = (IntegerNumericContext) ctx.numeric();
@@ -115,7 +113,7 @@ public class ModelExtractorListener extends Yices2BaseListener {
 
 		for (FunctionValueContext valueCtx : ctx.functionValue()) {
 			int n = valueCtx.value().size() - 1;
-			List<Value> inputs = new ArrayList<Value>();
+			List<Value> inputs = new ArrayList<>();
 			for (int i = 0; i < n; i++) {
 				inputs.add(value(valueCtx.value(i)));
 			}
