@@ -18,8 +18,6 @@ import jkind.slicing.DependencySet;
 import jkind.solvers.MaxSatSolver;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
-import jkind.solvers.SatResult;
-import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
