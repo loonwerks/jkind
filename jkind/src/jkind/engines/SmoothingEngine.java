@@ -19,6 +19,8 @@ import jkind.solvers.MaxSatSolver;
 import jkind.solvers.Model;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.UnknownResult;
+import jkind.solvers.UnsatResult;
 import jkind.translation.Specification;
 import jkind.util.StreamIndex;
 
@@ -64,13 +66,16 @@ public class SmoothingEngine extends SolverBasedEngine {
 			}
 		}
 
-		Result result = maxSatSolver.maxsatQuery(new StreamIndex(property, im.length - 1)
-				.getEncoded());
-		if (!(result instanceof SatResult)) {
+		Result result = maxSatSolver.maxsatQuery(new StreamIndex(property, im.length - 1).getEncoded());
+		if (result instanceof UnsatResult) {
 			throw new JKindException("Failed to recreate counterexample in smoother");
 		}
 
-		Model smoothModel = ((SatResult) result).getModel();
+		Model smoothModel = getModel(result);
+		if (smoothModel == null) {
+			// 'unknown' result without model, skip smoothing
+			smoothModel = im.model;
+		}
 		solver.pop();
 		sendCounterexample(property, smoothModel, im);
 	}
