@@ -146,6 +146,9 @@ public class Director extends MessageHandler {
 			processMessages();
 			sleep(100);
 		} 
+		if (timeout()){
+			((AllIvcsExtractorEngine)(engines.get(aivcIndx))).getValid();
+		}
 		
 		processMessages();
 		int exitCode = 0;
@@ -206,7 +209,9 @@ public class Director extends MessageHandler {
 		createEngines();
 		threads.forEach(Thread::start);
 	}
-
+//
+	boolean aivcIdx = false;
+//
 	private void createEngines() {
 		if (settings.boundedModelChecking) {
 			addEngine(new BmcEngine(analysisSpec, settings, this));
@@ -241,12 +246,19 @@ public class Director extends MessageHandler {
 		}
 
 		if (settings.allIvcs) { 
+			aivcIdx = true;
 			addEngine(new AllIvcsExtractorEngine(analysisSpec, settings, this));
 		} 
 	}
-
+//
+	int aivcIndx;
+//
 	private void addEngine(Engine engine) {
 		engines.add(engine);
+		if(aivcIdx){
+			aivcIndx = engines.indexOf(engine);
+			aivcIdx = false;
+		}
 		threads.add(new Thread(engine, engine.getName()));
 	}
 

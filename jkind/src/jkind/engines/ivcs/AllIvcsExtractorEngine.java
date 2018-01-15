@@ -70,6 +70,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private int TIMEOUT; 
 	private int numOfGetIvcCalls = 1;
 	private int numOfTimedOuts = 0;
+	private ValidMessage gvm;
 	// these variables are only used for the experiments
 		private double runtime;  
 		private int runId = 0;;
@@ -106,6 +107,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		//----- for the experiments---------
 				runtime = System.currentTimeMillis(); 
+				// dummy
+				gvm = vm;
+				//
 		//-----------------------------------
 				
 		for (String property : vm.valid) {
@@ -138,7 +142,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 	}
 	
-	private void computeAllIvcs(Expr property, ValidMessage vm) { 				
+	private void computeAllIvcs(Expr property, ValidMessage vm) { 	
+		
 		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
@@ -377,7 +382,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 				
 				//---------------------for experiments ------------------
-				//writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(), true) ;
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(), true) ;
 				//--------------------------------------------------------
 			}
 			else{ 				
@@ -385,7 +390,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			
 				//---------------------for experiments ------------------
-			//	writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(),false) ;
+				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(),false) ;
 				//--------------------------------------------------------
 			}
 			unsatChecks++;
@@ -445,7 +450,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
-		
+		runId++;
 		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
 			js.pdrMax = 0;						
@@ -495,6 +500,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
+		runId++;
 		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus() , miniJkind.getRuntime());
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			System.out.println("The weird branch");
@@ -629,7 +635,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		shrinkingPool.removeAll(toRemove);
 		
-		int maxGrows = 80;
+		int maxGrows = 2000;
 		int grows = 0;
 		while(!growingPool.isEmpty()) {			
 			List<Symbol> is = growingPool.get(0);
@@ -893,6 +899,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
 	
+	public  void getValid(){
+		sendValid("OK", gvm);
+	}
+	
 	@Override
 	protected void handleMessage(BaseStepMessage bsm) {
 	}
@@ -952,7 +962,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				out.println("   <NewSet>" + isNew + "</NewSet>"); 
  
 				out.println("   <Time unit=\"sec\">" + d + "</Time>");
- 				
+				out.println("   <SatChecks>" + satChecks + "</SatChecks>");
+				out.println("   <UnsatChecks>" + unsatChecks + "</UnsatChecks>");
+				out.println("   <ID>" + mivcs + "</ID>");	
 				//original
 				//out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
 				
