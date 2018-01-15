@@ -686,7 +686,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				
 		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));
 		
-		double time = (System.currentTimeMillis() - runtime) / 1000.0;		
+		double time = (System.currentTimeMillis() - runtime) / 1000.0;	
+		
 		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true) ;
 		System.out.printf("%d MIVC found, size: %d, time: %f, total SAT checks: %d, total UNSAT checks: %d %n", mivcs, mivc.size(), time, satChecks, unsatChecks);
 	}
@@ -900,6 +901,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	public  void getValid(){
+		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+		recordRuntime();
 		sendValid("OK", gvm);
 	}
 	
