@@ -13,6 +13,7 @@ import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.solvers.smtlib2.SolverOutOfMemoryException;
 
 public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	private final boolean linear;
@@ -57,22 +58,26 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 			send(new Cons("check-sat"));
 		}
 
-		String status = readFromSolver();
-		if (isSat(status)) {
-			send("(get-model)");
-			result = new SatResult(parseModel(readFromSolver()));
-		} else if (isUnsat(status)) {
-			result = new UnsatResult();
-		} else {
-			// Even for unknown we can sometimes get a partial model
-			send("(get-model)");
-
-			String content = readFromSolver();
-			if (content == null) {
-				return new UnknownResult();
+		try {
+			String status = readFromSolver();
+			if (isSat(status)) {
+				send("(get-model)");
+				result = new SatResult(parseModel(readFromSolver()));
+			} else if (isUnsat(status)) {
+				result = new UnsatResult();
 			} else {
-				result = new UnknownResult(parseModel(content));
+				// Even for unknown we can sometimes get a partial model
+				send("(get-model)");
+
+				String content = readFromSolver();
+				if (content == null) {
+					return new UnknownResult();
+				} else {
+					result = new UnknownResult(parseModel(content));
+				}
 			}
+		} catch (SolverOutOfMemoryException e) {
+			return new UnknownResult();
 		}
 
 		if (!linear) {
