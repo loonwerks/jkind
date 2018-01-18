@@ -175,7 +175,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		//--------- for the experiments --------------
 				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime();
+				recordRuntime(false);
 		//--------------------------------------------
 				
 		sendValid(property.toString(), vm);
@@ -221,7 +221,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		//--------- for the experiments --------------
 				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime();
+				recordRuntime(false);
 		//--------------------------------------------
 				
 		sendValid(property.toString(), vm);
@@ -260,7 +260,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		//--------- for the experiments --------------
 				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime();
+				recordRuntime(false);
 		//--------------------------------------------
 				
 		sendValid(property.toString(), vm);
@@ -310,7 +310,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		//--------- for the experiments --------------
 				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime();
+				recordRuntime(false);
 		//--------------------------------------------
 					
 		sendValid(property.toString(), vm);
@@ -902,7 +902,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	
 	public  void getValid(){
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-		recordRuntime();
+		recordRuntime(true);
 		sendValid("OK", gvm);
 	}
 	
@@ -936,7 +936,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	// this method is used only in our experiments
-		private void recordRuntime() {
+		private void recordRuntime(boolean timedout) {
 			String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_runtimeAllIvcs.xml";
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 				out.println("<?xml version=\"1.0\"?>");
@@ -944,6 +944,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				out.println("  <AllIvcRuntime unit=\"sec\">" + runtime + "</AllIvcRuntime>");
 				out.println("  <NumOfGetIvcCalls>" + numOfGetIvcCalls + "</NumOfGetIvcCalls>");
 				out.println("  <NumOfTimedOuts>" + numOfTimedOuts + "</NumOfTimedOuts>");
+				out.println("  <Timedout>" + timedout + "</Timedout>");
 				out.println("</Results>");
 				out.flush();
 				out.close();

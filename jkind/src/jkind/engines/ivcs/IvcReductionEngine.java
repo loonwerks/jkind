@@ -274,7 +274,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	
 	//---------- for the experiments --------------
 	private void writeToXml(Set<String> ivc, double proofTime) {
-		String xmlFilename = settings.filename + "_uc.xml";  
+		String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_uc.xml";  
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(xmlFilename))) {
 			out.println("<?xml version=\"1.0\"?>");
 			out.println("<Results xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
