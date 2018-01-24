@@ -39,4 +39,14 @@ public class ObfuscateIdsVisitor extends AstMapVisitor {
 	protected String visitProperty(String e) {
 		return obfuscate(e);
 	}
+
+	@Override
+	protected String visitIvc(String e) {
+		return obfuscate(e);
+	}
+
+	@Override
+	protected String visitRealizabilityInput(String e) {
+		return obfuscate(e);
+	}
 }
