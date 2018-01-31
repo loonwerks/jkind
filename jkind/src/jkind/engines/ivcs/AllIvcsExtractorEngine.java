@@ -595,36 +595,31 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	//JB
 	private boolean mapShrink(List<Symbol> seed, String property) {
 		shrinks++;
-		//System.out.printf("shrinking, size: %d%n", seed.size() );
-		int shrinkedBy = 0;
-		int round = 0;
-		int ex = 0;
-		int unex = 0;
+		int initial_size = seed.size();
+		int initial_sat_checks = satChecks;
+		int initial_unsat_checks = unsatChecks;
+		double initial_time = (System.currentTimeMillis() - runtime) / 1000.0;
+				
 		List<Symbol> candidates = new ArrayList<Symbol>(seed);		 
-		for(Symbol c : candidates) {
-			round++;
-			//System.out.printf("s %d ", round );			
+		for(Symbol c : candidates) {			
 			seed.remove(c);
 			if(checkMap(seed) && !mustElements.contains(c.toString()) ) { // the mustElements part should be already encoded in map
-				unex++;				
+				//unex++;				
 			}
 			else {
-				ex++;
 				seed.add(c);				
 				continue;
 			}
 			if(check(seed, property)) {			
 				ArrayList<Symbol> copy = new ArrayList<Symbol>(seed);				
-				//map = new Cons("and", map, blockDown(copy)); //the blocking is performed at the end of shrinking
 				growingPool.add(copy);																
 				seed.add(c);				
-			}			
-			else {
-				shrinkedBy++;				
 			}			
 		}		
 		map = new Cons("and", map, blockUp(seed));			
 		markMIVC(seed);
+		double time = (System.currentTimeMillis() - runtime) / 1000.0;
+		writeToXmlAllShrinks(initial_size, seed.size(), satChecks - initial_sat_checks, unsatChecks - initial_unsat_checks, time - initial_time);		
 		
 		//update the shrinking pool (some seeds might be supersets of the seed)
 		List<List<Symbol>> toRemove = new ArrayList<List<Symbol>>();
@@ -635,16 +630,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		shrinkingPool.removeAll(toRemove);
 		
-		int maxGrows = 2000;
-		int grows = 0;
+		int remainingGrows = settings.allIvcsMaxGrows;
 		while(!growingPool.isEmpty()) {			
 			List<Symbol> is = growingPool.get(0);
 			growingPool.remove(0);			
 			
-			if(grows < maxGrows) {
-				grows++;
-				//System.out.printf("Growimg from the pool of %d elements %n", growingPool.size());
-				//mapGrow(is, property.toString(), mustChckList);
+			if(remainingGrows > 0) {
+				//System.out.println("growing");
+				remainingGrows--;
 				GrowByElimination(is, property.toString());
 			}
 			else {
@@ -657,11 +650,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	//JB
 	private boolean bruteForceShrink(List<Symbol> seed, String property, Set<String> mustChckList) {
 		shrinks++;
-		//System.out.printf("shrinking, size: %d%n", seed.size() );			
+		int initial_size = seed.size();
+		int initial_sat_checks = satChecks;
+		int initial_unsat_checks = unsatChecks;
+		double initial_time = (System.currentTimeMillis() - runtime) / 1000.0;
+		
 		List<Symbol> candidates = new ArrayList<Symbol>(seed);	
 		int original_size = seed.size();
-		for(Symbol c : candidates) {				
-			//System.out.printf("s %d ", round );			
+		for(Symbol c : candidates) {										
 			seed.remove(c);
 			if(mustElements.contains(c.toString()) ) { 
 				seed.add(c);				
@@ -671,6 +667,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				seed.add(c);		
 			}						
 		}		
+
+		double time = (System.currentTimeMillis() - runtime) / 1000.0;
+		writeToXmlAllShrinks(initial_size, seed.size(), satChecks - initial_sat_checks, unsatChecks - initial_unsat_checks, time - initial_time);
 		map = new Cons("and", map, blockUp(seed));
 		markMIVC(seed);		
 		System.out.printf("shrinked by: %d %n", original_size - seed.size());
@@ -988,7 +987,29 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 			
 		}	
-		
+
+		// recording intermediate results for the experiments
+		private void writeToXmlAllShrinks(int initial_size, int final_size, int sat_checks, int unsat_checks, double shrink_runtime) {
+	 		String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_all_shrinks.xml";  
+ 
+			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
+				out.println("<Result>");
+				out.println("   <ShrinkID>" + shrinks + "</ShrinkID>"); 				
+				out.println("   <InitialSize>" + initial_size + "</InitialSize>"); 
+				out.println("   <FinalSize>" + final_size + "</FinalSize>");
+				out.println("   <SatChecks>" + sat_checks + "</SatChecks>");
+				out.println("   <UnsatChecks>" + unsat_checks + "</UnsatChecks>");
+				
+				out.println("   <Runtime unit=\"sec\">" + shrink_runtime + "</Runtime>");
+				out.println("</Result>");
+				out.flush(); 
+				out.close(); 
+			} catch (Throwable t) { 
+				t.printStackTrace();
+				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+			}
+			
+		}
 		
 		// recording intermediate results for the experiments	 
 		private void writeToXmlAllIvcRuns(String res, double d) { 

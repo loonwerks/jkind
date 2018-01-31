@@ -42,6 +42,7 @@ public class MiniJKind extends Engine {
 				settings.xmlToStdout = false;
 				settings.allIvcs = false;
 				settings.allIvcsAlgorithm = 1;
+				settings.allIvcsMaxGrows = 1000;
 				settings.excel = false; 
 				settings.miniJkind = true;
  
