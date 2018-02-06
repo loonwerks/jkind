@@ -679,9 +679,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	//JB
 	private void markMIVC(List<Symbol> mivc) {	
 		mivcs++;
-		Set<String> mivc_set = new HashSet<>();
-		for(Symbol s: mivc)
-			mivc_set.add(s.toString());
+//		Set<String> mivc_set = new HashSet<>();
+//		for(Symbol s: mivc)
+//			mivc_set.add(s.toString());
+		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc);
 				
 		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));
 		
