@@ -237,7 +237,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
-		shrinkingPool.add(new ArrayList<Symbol>(seed));
+		bruteForceShrink(seed, property.toString(), mustChckList);
 		
 		mustElements.add(property.toString());
 		if (ivcMap.containsKey(property.toString())){
@@ -659,7 +659,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		int original_size = seed.size();
 		for(Symbol c : candidates) {										
 			seed.remove(c);
-			if(mustElements.contains(c.toString()) ) { 
+			if(c.toString() == property) { 
 				seed.add(c);				
 				continue;
 			}
