@@ -18,6 +18,7 @@ import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
@@ -74,7 +75,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 			}
 		}
 
-		throw new JKindException("Unable to find property " + name + " during reduction");
+		// In rare cases, PDR will not return the original property as one of
+		// the invariants. By returning a new Expr we will effectively add it as
+		// a new invariants. See https://github.com/agacek/jkind/issues/44
+		return new IdExpr(name);
 	}
 
 	private void reduceInvariants(Expr property, ValidMessage vm) {
@@ -240,8 +244,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		return result;
 	}
 
-	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc,
-			ValidMessage vm) {
+	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc, ValidMessage vm) {
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());
@@ -249,8 +252,7 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		comment("IVC: " + ivc.toString());
 
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(
-				new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary));
+		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary));
 	}
 
 	private Set<String> trimNode(Set<String> arg) {
