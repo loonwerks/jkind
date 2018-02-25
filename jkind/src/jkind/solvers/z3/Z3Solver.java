@@ -104,6 +104,48 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 		}
 	}
 	
+	public Result checkMaximal() {
+		send("(set-option :sat.phase always_true)");
+		send("(check-sat-using sat)");
+		String status = readFromSolver(); 
+		
+		if (isSat(status)) {
+			send("(get-model)"); 
+			return new SatResult(parseModel(readFromSolver()));			
+		} else if (isUnsat(status)) { 			
+			return new UnsatResult();			
+		} else {
+			return new UnknownResult();
+		}
+	}
+	
+	public Result checkValuation(List<Symbol> positiveLits, List<Symbol> negativeLits, boolean getModel) {
+		//send("(set-option :sat.phase always_true)");
+		String arg = "(check-sat ";
+		for(Symbol s: positiveLits)
+			arg += s.toString() + " ";
+		for(Symbol s: negativeLits)
+			arg += "(not " + s.toString() + ") ";
+		arg += ")";		
+		send(arg);
+	    String status = readFromSolver(); 
+		
+		if (isSat(status)) {
+			if(getModel){
+				send("(get-model)"); 
+				return new SatResult(parseModel(readFromSolver()));
+			}else{
+				return new SatResult();
+			}
+		} else if (isUnsat(status)) { 			
+			return new UnsatResult();
+			
+		} else {
+			return new UnknownResult();
+		}
+		
+	}
+	
 	/** 
 	 * similar to quickCheckSat, but focused on 
 	 *     1- either the SAT model or unsat-core
