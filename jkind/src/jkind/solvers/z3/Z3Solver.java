@@ -13,7 +13,8 @@ import jkind.solvers.Result;
 import jkind.solvers.SatResult;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
-import jkind.solvers.smtlib2.SmtLib2Solver; 
+import jkind.solvers.smtlib2.SmtLib2Solver;
+import jkind.util.SexpUtil; 
 
 public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	private final boolean linear;

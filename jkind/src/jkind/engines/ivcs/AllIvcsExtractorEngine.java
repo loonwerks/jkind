@@ -575,41 +575,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		runtimes[4] += (System.currentTimeMillis() - before );
 		return true;
 	}
-			
-	
-	private boolean checkMap2(List<Symbol> seed) {
-		long before = System.currentTimeMillis();
-		z3Solver.push();  
-		List<Sexp> lits = new ArrayList<Sexp>(seed); 		
-		Set<Symbol> temp = new HashSet<>(ivcMap.valueList());		
-		temp.removeAll(seed);
-		
-		for(Symbol s: temp) {			
-			if(mustElements.contains(s.toString())) {
-				runtimes[5] += (System.currentTimeMillis() - before );
-				return false;
-			}
-			lits.add(new Cons("not", s));
-		}
-		
-			
-		solver.assertSexp(map);
-		solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(lits)));
-		
-		Result result = z3Solver.quickCheckSat(new ArrayList<>());
-		z3Solver.pop();
-		if (result instanceof UnsatResult){
-			runtimes[5] += (System.currentTimeMillis() - before );
-			return false;
-		}
-		else if (result instanceof UnknownResult){
-			throw new JKindException("Unknown result in solving map");
-		} 
-		 			
-		runtimes[5] += (System.currentTimeMillis() - before );
-		return true;
-	}
-	
+					
 	//JB
 	private boolean checkMap(List<Symbol> seed) {
 		long before = System.currentTimeMillis();
@@ -863,35 +829,18 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 	
+
 	//JB
-	private List<Symbol> getTopUnex2(List<Symbol> seed){
-		long before = System.currentTimeMillis();
-		List<Symbol> top = new ArrayList<Symbol>(seed);
-		List<Symbol> candidates = new ArrayList<Symbol>(ivcMap.valueList());
-		candidates.removeAll(seed);
-		
-		for(Symbol c: candidates) {
-			top.add(c);
-			if(!checkMap(top))
-				top.remove(c);
-		}		
-		runtimes[10] += (System.currentTimeMillis() - before );
-		return top;
-	}
-	
 	private List<Symbol> getTopUnex(List<Symbol> seed){			
-		long before = System.currentTimeMillis();
-		
+		long before = System.currentTimeMillis();		
 		solver.push();
 		solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(seed)));
-		runtimes[18] += (System.currentTimeMillis() - before );
 		Result result = z3Solver.checkMaximal();
 		solver.pop();
 		
 		if(result instanceof SatResult) {
 			SatResult sat = (SatResult) result;
 			Set<Symbol> top = getActiveLiteralsFromModel(sat.getModel(), "true");
-			runtimes[19] += (System.currentTimeMillis() - before );
 			runtimes[10] += (System.currentTimeMillis() - before );
 			return new ArrayList<Symbol>(top);
 		}
