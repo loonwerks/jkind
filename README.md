@@ -38,9 +38,10 @@ as its underlying SMT solver. Advanced users may wish to install alternative sol
 
 Minimal IVCs enumeration (optional)
 -----------------------------------
-This branch of JKind supports online enumeration of Minimal Inductive Validity Cores (MIVCs) as described in [1]. In order to use the MIVC enumeration, run the jkind with following settings:
+This branch of JKind supports online enumeration of Minimal Inductive Validity Cores (MIVCs) as described in [1]. In order to use the MIVC enumeration, run JKind with the following settings:
 -timeout 1800 -all_ivcs -all_ivcs_alg 2 -all_assigned -solver z3
 
 In particular, -timeout limits the time for the enumeration, and -all_ivcs_alg serves for choosing the enumeration algorithm to be used. Currently, there are 4 available algorithms, see https://github.com/jar-ben/jkind/blob/newalgorithm-shrink-tracking/jkind/src/jkind/engines/ivcs/AllIvcsExtractorEngine.java for more details. The algorithm presented in [1] is run using -all_ivcs_alg 2.
+In case of any problems with the MIVC enumeration, please contact me at xbendik=at=fi.muni.cz.
 
 [1] 	Online Enumeration of All Minimal Inductive Validity Cores, Jaroslav Bendik, Elaheh Ghassabani, Michael Whalen, and Ivana Cerna. To be appeared at SEFM 2018.
