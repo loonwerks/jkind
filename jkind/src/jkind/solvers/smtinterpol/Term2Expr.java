@@ -66,17 +66,21 @@ public class Term2Expr {
 	private static Expr expr(ApplicationTerm at) {
 		String name = at.getFunction().getName();
 		Term[] params = at.getParameters();
-		
+
 		if (SexpUtil.isEncodedFunction(name)) {
 			List<Expr> exprParams = Arrays.stream(params).map(p -> expr(p)).collect(toList());
 			return new FunctionCallExpr(SexpUtil.decodeFunction(name), exprParams);
 		}
-		
+
 		if (params.length == 0) {
 			switch (name) {
 			case "true":
 				return new BoolExpr(true);
 			case "false":
+				return new BoolExpr(false);
+			case Lustre2Term.INIT:
+				// Term2Expr should only be used on terms outside the INIT
+				// state, so we can INIT is always false.
 				return new BoolExpr(false);
 			default:
 				return new IdExpr(Lustre2Term.decode(name));

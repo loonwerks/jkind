@@ -37,8 +37,8 @@ import jkind.util.SexpUtil;
 import jkind.util.Util;
 
 public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
-	private static final String INIT = "%init";
-	private static final String ASSERTIONS = "%assertions";
+	public static final String INIT = "%init";
+	public static final String ASSERTIONS = "%assertions";
 
 	private final Node node;
 	private boolean pre = false;
