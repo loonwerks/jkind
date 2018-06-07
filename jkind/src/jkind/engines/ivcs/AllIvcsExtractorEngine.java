@@ -134,7 +134,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	
 	//JB, offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 			
-		TIMEOUT = +0 + (int)(vm.proofTime * 5);		
+		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
