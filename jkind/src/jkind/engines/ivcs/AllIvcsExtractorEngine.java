@@ -51,17 +51,9 @@ import jkind.util.Util;
 public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
 	private final LinkedBiMap<String, Symbol> ivcMap;
-	
-	//JB's
 	private Sexp map;
 	private List<List<Symbol>> shrinkingPool = new ArrayList<List<Symbol>>();
 	private List<List<Symbol>> growingPool = new ArrayList<List<Symbol>>();
-	private int dimension;	
-	private int shrinks = 0;
-	private int satChecks = 0;
-	private int unsatChecks = 0;	
-	private int mivcs = 0;
-	//end of JB's
 	
 	private Z3Solver z3Solver;	   
 	private Set<String> mustElements = new HashSet<>();
@@ -74,10 +66,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	// these variables are only used for the experiments
 		private double runtime;  
 		private int runId = 0;
-		long runtimes[] = new long[25];
+		private int shrinks = 0;
+		private int satChecks = 0;
+		private int unsatChecks = 0;	
+		private int mivcs = 0;		
 	//--------------------------------------------------
-
-
 
 	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director); 
@@ -123,19 +116,15 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 			
 			if (properties.remove(property)) {				
-				System.out.printf("alg: %d %n", settings.allIvcsAlgorithm);
 				switch(settings.allIvcsAlgorithm) {
-					case 1:										
+					case 1: //offline MIVC enumeration	
+						System.out.println("Starting MIVC enumeration using the offline enumeration algorithm.");
 						computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 						break;
-					case 2: 
+					case 2: //online MIVC enumeration
+						System.out.println("Starting MIVC enumeration using the online enumeration algorithm.");
 						computeAllIvcsMapBased(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 						break;
-					case 3:
-						computeAllIvcsBottomUp(IvcUtil.getInvariantByName(property, vm.invariants), vm);
-						break;
-					case 4:
-						computeAllIvcsBruteForce(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 				} 
 				allIvcs.clear();
 			}
@@ -143,15 +132,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 	}
 	
-	private void computeAllIvcs(Expr property, ValidMessage vm) { 	
-		
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
+	//JB, offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
+	private void computeAllIvcs(Expr property, ValidMessage vm) { 			
+		TIMEOUT = +0 + (int)(vm.proofTime * 5);		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
-		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
-		
+		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
 		
@@ -160,9 +148,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(seed, mustChckList, true)){ 
-			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
-			System.out.printf("allIvcs size: %d, iteration time: %f, satChecks: %d, unsat checks: %d\n", allIvcs.size(), time, satChecks, unsatChecks);
+		while(checkMapSatisfiability(seed, mustChckList, true)){ 	
 			resultOfIvcFinder.clear(); 
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){				
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
@@ -170,26 +156,23 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}else{				
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder))); 
 			}
-		} 
-		
+		} 		
 		z3Solver.pop(); 
 		
 		//--------- for the experiments --------------
-				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime(false);
+				//runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+				//recordRuntime(false);
 		//--------------------------------------------
 				
 		sendValid(property.toString(), vm);
 	}
 
-	//JB
-	private void computeAllIvcsMapBased(Expr property, ValidMessage vm) { 
-		dimension = ivcMap.size();
+	//JB, online MIVC enumeration algorithm as described in the SEFM 2018 paper
+	private void computeAllIvcsMapBased(Expr property, ValidMessage vm) { 		
 		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
-		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
@@ -200,9 +183,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(seed, mustChckList, true)){ 
-			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
-			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
+		while(checkMapSatisfiability(seed, mustChckList, true)){ 			
 			resultOfIvcFinder.clear(); 			
 			if (ivcFinderSimple(seed, resultOfIvcFinder, property.toString())){				
 				seed = IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder);				
@@ -211,117 +192,23 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				map = new Cons("and", map, blockDownComplement(seed)); 
 			}
 			while(!shrinkingPool.isEmpty()) {
-				//System.out.printf("Shrimkimg pool size: %d%n", shrinkingPool.size());
 				List<Symbol> ivc = shrinkingPool.get(0);
 				shrinkingPool.remove(0);				
 				mapShrink(ivc, property.toString());
 			}						
-		} 
+		}
 		
 		z3Solver.pop(); 
 		
 		//--------- for the experiments --------------
-				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime(false);
+				//runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+				//recordRuntime(false);
 		//--------------------------------------------
 				
 		sendValid(property.toString(), vm);
 	}
-
-	private void computeAllIvcsBruteForce(Expr property, ValidMessage vm) { 
-		dimension = ivcMap.size();
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
-		List<Symbol> seed = new ArrayList<Symbol>(); 
-		Set<String> mustChckList = new HashSet<>(); 
-		Set<String> resultOfIvcFinder = new HashSet<>();
-		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
-		
-		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
-		map = blockUp(seed);  
-		bruteForceShrink(seed, property.toString(), mustChckList);
-		
-		mustElements.add(property.toString());
-		if (ivcMap.containsKey(property.toString())){
-			map = new Cons("and", map, ivcMap.get(property.toString())); 
-		} 
-		z3Solver.push();
-		while(checkMapSatisfiability(seed, mustChckList, true)){ 
-			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
-			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
-			resultOfIvcFinder.clear(); 			
-			if (ivcFinderSimple(seed, resultOfIvcFinder, property.toString())){				
-				seed = IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder);				
-				bruteForceShrink(seed, property.toString(), mustChckList);								
-			}else{
-				map = new Cons("and", map, blockDownComplement(seed)); 
-			}
-		} 
-		
-		z3Solver.pop(); 
-		
-		//--------- for the experiments --------------
-				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime(false);
-		//--------------------------------------------
-				
-		sendValid(property.toString(), vm);
-	}
-	
-	
-	
-	//JB
-	private void computeAllIvcsBottomUp(Expr property, ValidMessage vm) { 
-		dimension = ivcMap.size();
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
-		List<Symbol> seed = new ArrayList<Symbol>(); 
-		Set<String> mustChckList = new HashSet<>(); 		
-		//List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());  
-		
-		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
-		map = blockUp(seed);  
-		shrinkingPool.add(new ArrayList<Symbol>(seed));
 			
-		mustElements.add(property.toString());
-		if (ivcMap.containsKey(property.toString())){
-			map = new Cons("and", map, ivcMap.get(property.toString())); 
-		} 
-		z3Solver.push();
-		while(checkMapSatisfiability(seed, mustChckList, false)){ //get minimal model of map	
-			double time = (System.currentTimeMillis() - runtime) / 1000.0;			
-			System.out.printf("allIvcs size: %d, iteration time: %f %n", allIvcs.size(), time);
-			//System.out.println("iteration");
-			if(!check(seed, property.toString())) { // if seed is not adequate
-				//System.out.println("the seed is not satisfiable (MIVC)");
-				map = new Cons("and", map, blockUp(seed)); //seed is an MIVC 
-				markMIVC(seed);				
-			} else {
-				//System.out.println("the seed is satisfiable (growing follows)");
-				GrowByElimination(seed, property.toString()); //seed is inadequate -> grow it to a (approximately) maximal inadequate subset and boost the map
-			}				
-			while(!shrinkingPool.isEmpty()) {
-				//System.out.println("Shrinking pool size: " + shrinkingPool.size());
-				List<Symbol> ivc = shrinkingPool.get(0);
-				shrinkingPool.remove(0);				
-				//System.out.println("Initial ivc size: " + ivc.size());
-				mapShrink(ivc, property.toString());
-			}						
-		} 
-		
-		z3Solver.pop(); 
-		
-		//--------- for the experiments --------------
-				runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				recordRuntime(false);
-		//--------------------------------------------
-					
-		sendValid(property.toString(), vm);
-	}
-	
-	
-	
-	
 	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
-		long before = System.currentTimeMillis();
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		js.timeout = TIMEOUT; 
@@ -347,13 +234,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
- 
 		runId++;
-        writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime()); 
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
-			System.out.println("The weird branch");
+		
+		//--------- for the experiments --------------
+        	//writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime()); 
+        //--------------------------------------------
+        
+        if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			js.pdrMax = 0;
-			runtimes[1] += (System.currentTimeMillis() - before );
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
 		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){			
@@ -397,12 +285,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				//--------------------------------------------------------
 			}
 			unsatChecks++;
-			runtimes[1] += (System.currentTimeMillis() - before );
 			return true;
 		}
 		else{				
 			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-				numOfTimedOuts ++;
+				numOfTimedOuts++;
+				if(numOfTimedOuts == 1) {
+					System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+				}
 			}
 			resultOfIvcFinder.addAll(deactivate); 
 			if (settings.scratch){
@@ -426,14 +316,12 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				mustChckList.addAll(deactivate);
 			} 
 			satChecks++;
-			runtimes[1] += (System.currentTimeMillis() - before );
 			return false;
 		} 
 	}
 	
 	//JB
 	private boolean ivcFinderSimple(List<Symbol> seed, Set<String> resultOfIvcFinder, String property) {
-		long before = System.currentTimeMillis();
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		js.timeout = TIMEOUT; 
@@ -457,34 +345,37 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
 		runId++;
-		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime());
+		
+		//--------- for the experiments --------------
+			//writeToXmlAllIvcRuns(miniJkind.getPropertyStatus(), miniJkind.getRuntime());
+		//--------------------------------------------
+		
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
 			js.pdrMax = 0;		
-			runtimes[2] += (System.currentTimeMillis() - before );
 			return retryVerification(newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
 		}
 		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){											
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());	
 			unsatChecks++;
-			runtimes[2] += (System.currentTimeMillis() - before );
 			return true;
 		}
 		else{				
 			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 				numOfTimedOuts ++;
+				if(numOfTimedOuts == 1) {
+					System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+				}
 			}
 			if(deactivate.size() == 1){
 				mustElements.addAll(deactivate);
 			}
 			satChecks++;
-			runtimes[2] += (System.currentTimeMillis() - before );
 			return false;
 		} 
 	}
 	
 	//JB
 	private boolean check(List<Symbol> seed, String property) {
-		long before = System.currentTimeMillis();
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = false; 
 		js.timeout = TIMEOUT; 
@@ -511,31 +402,34 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (newSpec, js);
 		miniJkind.verify();
 		runId++;
-		writeToXmlAllIvcRuns(miniJkind.getPropertyStatus() , miniJkind.getRuntime());
+		
+		//--------- for the experiments --------------
+			//writeToXmlAllIvcRuns(miniJkind.getPropertyStatus() , miniJkind.getRuntime());
+		//--------------------------------------------
+		
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
-			System.out.println("The weird branch");
 			//	js.pdrMax = 0;
 		//	return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
 		//else 
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){			
     		unsatChecks++;
-    		runtimes[3] += (System.currentTimeMillis() - before );
 			return false;			
 		}
 		else{				
 			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-				numOfTimedOuts ++;
+				numOfTimedOuts++;
+				if(numOfTimedOuts == 1) {
+					System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+				}
 			}			
 			satChecks++;
-			runtimes[3] += (System.currentTimeMillis() - before );
 			return true;
 		} 
 	}
 		
 	//JB
 	private boolean GrowByElimination(List<Symbol> seed, String property) {
-		long before = System.currentTimeMillis();
 		List<Symbol> top = getTopUnex(seed);
 		List<Symbol> added = new ArrayList<Symbol>(top);
 		added.removeAll(seed);
@@ -548,7 +442,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			for(List<Symbol> s: shrinkingPool) {
 				if(s.containsAll(approx)) {
 					toRemove.add(s);
-					//System.out.println("a seed removed from shrinkingPool");
 				}				
 			}
 			shrinkingPool.removeAll(toRemove);
@@ -567,18 +460,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}							
 			if(!removed) //seed is a MSS
 				break;
-			//System.out.println("unsat subset found during grow");
 			resultOfIvcFinder.clear();
 		}		
 		map = new Cons("and", map, blockDownComplement(top));		
-		//System.out.println("End of grow");
-		runtimes[4] += (System.currentTimeMillis() - before );
-		return true;
+		return true;		
 	}
 					
 	//JB
 	private boolean checkMap(List<Symbol> seed) {
-		long before = System.currentTimeMillis();
 		z3Solver.push();  
 		List<Symbol> positiveLits = new ArrayList<Symbol>(seed); 		
 		List<Symbol> negatedLits = new ArrayList<>(ivcMap.valueList());		
@@ -586,7 +475,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		for(Symbol s: negatedLits) {			
 			if(mustElements.contains(s.toString())) {
-				runtimes[5] += (System.currentTimeMillis() - before );
 				return false;
 			}
 		}
@@ -596,33 +484,23 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Result result = z3Solver.checkValuation(positiveLits, negatedLits, false);
 		z3Solver.pop();
 		if (result instanceof UnsatResult){
-			runtimes[5] += (System.currentTimeMillis() - before );
 			return false;
 		}
 		else if (result instanceof UnknownResult){
 			throw new JKindException("Unknown result in solving map");
 		} 
 		 			
-		runtimes[5] += (System.currentTimeMillis() - before );
 		return true;
 	}
 	
 	//JB
 	private boolean mapShrink(List<Symbol> seed, String property) {
-		long before = System.currentTimeMillis();
 		shrinks++;
-		int initial_size = seed.size();
-		int initial_sat_checks = satChecks;
-		int initial_unsat_checks = unsatChecks;
-		double initial_time = (System.currentTimeMillis() - runtime) / 1000.0;
 				
 		List<Symbol> candidates = new ArrayList<Symbol>(seed);		 
 		for(Symbol c : candidates) {			
 			seed.remove(c);
-			if(checkMap(seed) && !mustElements.contains(c.toString()) ) { // the mustElements part should be already encoded in map
-				//unex++;				
-			}
-			else {
+			if(!checkMap(seed) || mustElements.contains(c.toString())) { 
 				seed.add(c);				
 				continue;
 			}
@@ -634,9 +512,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}		
 		map = new Cons("and", map, blockUp(seed));			
 		markMIVC(seed);
-		double time = (System.currentTimeMillis() - runtime) / 1000.0;
-		writeToXmlAllShrinks(initial_size, seed.size(), satChecks - initial_sat_checks, unsatChecks - initial_unsat_checks, time - initial_time);		
-		
+
 		//update the shrinking pool (some seeds might be supersets of the seed)
 		List<List<Symbol>> toRemove = new ArrayList<List<Symbol>>();
 		for(List<Symbol> s: shrinkingPool) {
@@ -650,9 +526,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		while(!growingPool.isEmpty()) {			
 			List<Symbol> is = growingPool.get(0);
 			growingPool.remove(0);			
-			
+
 			if(remainingGrows > 0) {
-				//System.out.println("growing");
 				remainingGrows--;
 				GrowByElimination(is, property.toString());
 			}
@@ -660,44 +535,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				map = new Cons("and", map, blockDownComplement(is));
 			}															
 		}		
-		runtimes[6] += (System.currentTimeMillis() - before );
-		return true;
-	}
-
-	//JB
-	private boolean bruteForceShrink(List<Symbol> seed, String property, Set<String> mustChckList) {
-		long before = System.currentTimeMillis();
-		shrinks++;
-		int initial_size = seed.size();
-		int initial_sat_checks = satChecks;
-		int initial_unsat_checks = unsatChecks;
-		double initial_time = (System.currentTimeMillis() - runtime) / 1000.0;
-		
-		List<Symbol> candidates = new ArrayList<Symbol>(seed);	
-		int original_size = seed.size();
-		for(Symbol c : candidates) {										
-			seed.remove(c);
-			if(c.toString() == property) { 
-				seed.add(c);				
-				continue;
-			}
-			if(check(seed, property)) {			
-				seed.add(c);		
-			}						
-		}		
-
-		double time = (System.currentTimeMillis() - runtime) / 1000.0;
-		writeToXmlAllShrinks(initial_size, seed.size(), satChecks - initial_sat_checks, unsatChecks - initial_unsat_checks, time - initial_time);
-		map = new Cons("and", map, blockUp(seed));
-		markMIVC(seed);		
-		System.out.printf("shrinked by: %d %n", original_size - seed.size());
-		runtimes[7] += (System.currentTimeMillis() - before );
 		return true;
 	}
 	
 	//JB
 	private void markMIVC(List<Symbol> mivc) {	
-		long before = System.currentTimeMillis();
 		mivcs++;
 		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc);
 				
@@ -707,7 +549,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		
 		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true) ;
 		System.out.printf("%d MIVC found, size: %d, time: %f, total SAT checks: %d, total UNSAT checks: %d %n", mivcs, mivc.size(), time, satChecks, unsatChecks);
-		runtimes[8] += (System.currentTimeMillis() - before );
 	}
 
 	
@@ -752,9 +593,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
  
 			return true;
 		}
-		else{
-			
-			
+		else{				
 			resultOfIvcFinder.addAll(deactivate); 
 			if (settings.scratch){
 				comment("Property got violated. Adding back the elements");
@@ -806,13 +645,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	private boolean checkMapSatisfiability(List<Symbol> seed, Set<String> mustChckList, boolean maximal) { 
-		long before = System.currentTimeMillis();
 		z3Solver.push();  
-
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
 		if (result instanceof UnsatResult){
-			runtimes[9] += (System.currentTimeMillis() - before );
 			return false;
 		}
 		else if (result instanceof UnknownResult){
@@ -825,14 +661,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		else
 			seed.addAll(minimizeSat(((SatResult) result), mustChckList));
 		z3Solver.pop();
-		runtimes[9] += (System.currentTimeMillis() - before );
 		return true;
 	}
 	
-
 	//JB
 	private List<Symbol> getTopUnex(List<Symbol> seed){			
-		long before = System.currentTimeMillis();		
 		solver.push();
 		solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(seed)));
 		Result result = z3Solver.checkMaximal();
@@ -841,7 +674,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		if(result instanceof SatResult) {
 			SatResult sat = (SatResult) result;
 			Set<Symbol> top = getActiveLiteralsFromModel(sat.getModel(), "true");
-			runtimes[10] += (System.currentTimeMillis() - before );
 			return new ArrayList<Symbol>(top);
 		}
 		return seed;
@@ -852,7 +684,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 **/
 	private List<Symbol> maximizeSat(SatResult result, Set<String> mustChckList) { 
-		long before = System.currentTimeMillis();
 		Set<Symbol> seed = getActiveLiteralsFromModel(result.getModel(), "true");		
 		Set<Symbol> falseLiterals = getActiveLiteralsFromModel(result.getModel(), "false");
 		Set<Symbol> temp = new HashSet<>();
@@ -884,7 +715,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				seed.remove(literal);
 			}
 		}	
-		runtimes[11] += (System.currentTimeMillis() - before );
 		return new ArrayList<>(seed); 
 	}
 
@@ -892,7 +722,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	 * in case of sat result we would like to get a minimum sat subset of activation literals 
 	 **/
 	private List<Symbol> minimizeSat(SatResult result, Set<String> mustChckList) { 
-		long before = System.currentTimeMillis();
 		Set<Symbol> seed = getActiveLiteralsFromModel(result.getModel(), "true");		
 		List<Symbol> minimal = new ArrayList<Symbol>(seed);
 		List<Symbol> toRemove = new ArrayList<Symbol>(seed);
@@ -906,7 +735,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				minimal.add(s);
 			}				
 		}
-		runtimes[12] += (System.currentTimeMillis() - before );
 		return minimal;
 	}
 	
@@ -928,8 +756,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	public  void getValid(){
-		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-		recordRuntime(true);
+		//--------- for the experiments --------------
+			//runtime = (System.currentTimeMillis() - runtime) / 1000.0;
+			//recordRuntime(true);
+		//--------------------------------------------
 		sendValid("OK", gvm);
 	}
 	
@@ -972,8 +802,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				out.println("  <NumOfGetIvcCalls>" + numOfGetIvcCalls + "</NumOfGetIvcCalls>");
 				out.println("  <NumOfTimedOuts>" + numOfTimedOuts + "</NumOfTimedOuts>");
 				out.println("  <Timedout>" + timedout + "</Timedout>");
-				for(int i = 0; i < runtimes.length; i++)
-					out.println("<Runtime" + i + ">" + (runtimes[i] / 1000) + "</Runtime" + i + ">");
 				out.println("</Results>");
 				out.flush();
 				out.close();
@@ -984,24 +812,19 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			
 	}
 		
-	// recording intermediate results for the experiments	
- 
+		//recording (minimal) IVCs found during the computation
 		private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, double d, boolean isNew) {
 	 		String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_all_uc_minijkind.xml";  
  
 			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
+				out.println("<Timeouts>" + numOfTimedOuts + "</Timeouts>");
 				out.println("<Results>");
 				out.println("   <RunID>" + runId + "</RunID>"); 
 				out.println("   <NewSet>" + isNew + "</NewSet>"); 
- 
 				out.println("   <Time unit=\"sec\">" + d + "</Time>");
 				out.println("   <SatChecks>" + satChecks + "</SatChecks>");
 				out.println("   <UnsatChecks>" + unsatChecks + "</UnsatChecks>");
-				out.println("   <ID>" + mivcs + "</ID>");	
-				//original
-				//out.println("   <UcRuntime unit=\"sec\">" + runtime + "</UcRuntime>");
-				
- 
+				out.println("   <ID>" + mivcs + "</ID>");					
 				for (String s : untrimmed) {
 					out.println("   <IVC>" + s + "</IVC>");
 				}
@@ -1028,8 +851,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				out.println("   <InitialSize>" + initial_size + "</InitialSize>"); 
 				out.println("   <FinalSize>" + final_size + "</FinalSize>");
 				out.println("   <SatChecks>" + sat_checks + "</SatChecks>");
-				out.println("   <UnsatChecks>" + unsat_checks + "</UnsatChecks>");
-				
+				out.println("   <UnsatChecks>" + unsat_checks + "</UnsatChecks>");				
 				out.println("   <Runtime unit=\"sec\">" + shrink_runtime + "</Runtime>");
 				out.println("</Result>");
 				out.flush(); 
