@@ -53,8 +53,8 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 			toSolver.newLine();
 			toSolver.flush();
 		} catch (IOException e) {
-			throw new JKindException(
-					"Unable to write to " + getSolverName() + ", " + "probably due to internal JKind error", e);
+			throw new JKindException("Unable to write to " + getSolverName() + ", "
+					+ "probably due to internal JKind error", e);
 		}
 	}
 
@@ -164,6 +164,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 				} else if (isDone(line)) {
 					break;
 				} else if (line.contains("model is not available")) {
+					flushSolver();
 					return null;
 				} else if (line.contains(" |-> ")) {
 					// Ignore Z3 optimization information
@@ -171,12 +172,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 					throw new SolverOutOfMemoryException();
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
-					while ((line = fromSolver.readLine()) != null) {
-						comment(getSolverName() + ": " + line);
-						if (isDone(line)) {
-							break;
-						}
-					}
+					flushSolver();
 					throw new JKindException(getSolverName() + " error (see scratch file for details)");
 				} else {
 					content.append(line);
@@ -192,10 +188,20 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		}
 	}
 
+	protected void flushSolver() throws IOException {
+		String line;
+		while ((line = fromSolver.readLine()) != null) {
+			comment(getSolverName() + ": " + line);
+			if (isDone(line)) {
+				return;
+			}
+		}
+	}
+
 	protected boolean isDone(String line) {
 		return line.contains(DONE);
 	}
-	
+
 	protected Model parseModel(String modelStr) {
 		return parseSmtLib2Model(modelStr, varTypes, functions);
 	}
