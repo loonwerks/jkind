@@ -43,6 +43,7 @@ public class MiniJKind extends Engine {
 				settings.allIvcs = false;
 				settings.allIvcsAlgorithm = 1;
 				settings.allIvcsMaxGrows = 1000;
+				settings.allIvcsJkindTimeout = -1;
 				settings.excel = false; 
 				settings.miniJkind = true;
  

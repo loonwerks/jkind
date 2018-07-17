@@ -134,7 +134,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	
 	//JB, offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 			
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
+		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
@@ -168,8 +168,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	//JB, online MIVC enumeration algorithm as described in the SEFM 2018 paper
-	private void computeAllIvcsMapBased(Expr property, ValidMessage vm) { 		
-		TIMEOUT = 30 + (int)(vm.proofTime * 5);		
+	private void computeAllIvcsMapBased(Expr property, ValidMessage vm) { 			
+		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
@@ -291,7 +291,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 				numOfTimedOuts++;
 				if(numOfTimedOuts == 1) {
-					System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+					System.out.println("Either a timeout occured during checking a property or minijkind gave up (UNKNOWN result). Thus, the produced MIVCs might not be minimal.");
 				}
 			}
 			resultOfIvcFinder.addAll(deactivate); 
@@ -321,7 +321,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 	
 	//JB
-	private boolean ivcFinderSimple(List<Symbol> seed, Set<String> resultOfIvcFinder, String property) {
+	private boolean ivcFinderSimple(List<Symbol> seed, Set<String> resultOfIvcFinder, String property) {	
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		js.timeout = TIMEOUT; 
@@ -363,7 +363,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 				numOfTimedOuts ++;
 				if(numOfTimedOuts == 1) {
-					System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+					System.out.println("Either a timeout occured during checking a property or minijkind gave up (UNKNOWN result). Thus, the produced MIVCs might not be minimal.");
 				}
 			}
 			if(deactivate.size() == 1){
@@ -420,7 +420,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 				numOfTimedOuts++;
 				if(numOfTimedOuts == 1) {
-					System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+					System.out.println("Either a timeout occured during checking a property or minijkind gave up (UNKNOWN result). Thus, the produced MIVCs might not be minimal.");
 				}
 			}			
 			satChecks++;

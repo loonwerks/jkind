@@ -23,6 +23,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String IVC_ALL = "all_ivcs";
 	private static final String IVC_ALL_ALG = "all_ivcs_alg";
 	private static final String IVC_ALL_MAX_GROWS = "all_ivcs_max_grows";
+	private static final String IVC_ALL_JKIND_TIMEOUT = "all_ivcs_jkind_timeout";
 	private static final String NO_SLICING = "no_slicing"; 
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
@@ -59,6 +60,8 @@ public class JKindArgumentParser extends ArgumentParser {
 				"algorithm to be used for finding all IVCs (based on --%IVC annotated elements)");
 		options.addOption(IVC_ALL_MAX_GROWS, true,
 				"maximal number of grows in the mapBased shrinking procedure (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
+		options.addOption(IVC_ALL_JKIND_TIMEOUT, true,
+				"timeout for a single call of jKind's solve method (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
 		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements"); 
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
@@ -162,6 +165,10 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(IVC_ALL_MAX_GROWS)) {
 			settings.allIvcsMaxGrows = parseNonnegativeInt(line.getOptionValue(IVC_ALL_MAX_GROWS));
 		}
+
+		if (line.hasOption(IVC_ALL_JKIND_TIMEOUT)) {
+			settings.allIvcsJkindTimeout = parseNonnegativeInt(line.getOptionValue(IVC_ALL_JKIND_TIMEOUT));
+		}		
 		
 		if (line.hasOption(ALL_ASSIGNED)){
 			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
