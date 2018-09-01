@@ -63,6 +63,13 @@ public class SexpEvaluator {
 				}
 			}
 			return BooleanValue.TRUE;
+		} else if (fn.equals("or")) {
+			for (Sexp arg : sexp.args) {
+				if (isTrue(eval(arg))) {
+					return BooleanValue.TRUE;
+				}
+			}
+			return BooleanValue.FALSE;
 		}
 
 		List<Value> args = new ArrayList<>();
