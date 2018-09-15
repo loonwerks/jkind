@@ -66,15 +66,20 @@ public class ModelReconstructionEvaluator extends Evaluator {
 		for (step = 0; step < k; step++) {
 			for (Dependency dependency : dependencies) {
 				if (dependency.type == DependencyType.VARIABLE) {
-					Value v1 = eval(new IdExpr(dependency.name));
+					try {
+						Value v1 = eval(new IdExpr(dependency.name));
 
-					// Compare computed value (v1) with solver value (v2)
-					if (!inlinedVariables.contains(dependency.name)) {
-						Value v2 = originalModel.getValue(new StreamIndex(dependency.name, step));
-						if (v2 != null && !v1.equals(v2)) {
-							throw new JKindException(
-									"Unable to reconstruct counterexample: variable value changed: " + dependency.name);
+						// Compare computed value (v1) with solver value (v2) when possible
+						if (!inlinedVariables.contains(dependency.name)) {
+							Value v2 = originalModel.getValue(new StreamIndex(dependency.name, step));
+							if (v2 != null && !v1.equals(v2)) {
+								throw new JKindException(
+										"Unable to reconstruct counterexample: variable value changed: "
+												+ dependency.name);
+							}
 						}
+					} catch (ArithmeticException ae) {
+						// Division by zero, ignore
 					}
 				}
 			}
