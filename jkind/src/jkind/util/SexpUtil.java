@@ -38,4 +38,19 @@ public class SexpUtil {
 		}
 		return SexpUtil.conjoin(conjuncts);
 	}
+	
+	public static String encodeFunction(String name) {
+		return "$$" + name;
+	}
+
+	public static String decodeFunction(String encoded) {
+		if (!isEncodedFunction(encoded)) {
+			return null;
+		}
+		return encoded.substring(2);
+	}
+
+	public static boolean isEncodedFunction(String name) {
+		return name.startsWith("$$");
+	}
 }

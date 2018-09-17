@@ -6,7 +6,7 @@ package jkind.results;
  */
 public final class UnknownProperty extends Property {
 	private final int trueFor;
-	private final Counterexample cex;
+	private Counterexample cex;
 
 	public UnknownProperty(String name, int trueFor, Counterexample cex, double runtime) {
 		super(name, runtime);
@@ -27,5 +27,10 @@ public final class UnknownProperty extends Property {
 	 */
 	public Counterexample getInductiveCounterexample() {
 		return cex;
+	}
+
+	@Override
+	public void discardDetails() {
+		cex = null;
 	}
 }

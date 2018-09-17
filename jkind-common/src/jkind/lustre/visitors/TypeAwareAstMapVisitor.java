@@ -6,7 +6,7 @@ import jkind.lustre.Program;
 import jkind.lustre.Type;
 
 public class TypeAwareAstMapVisitor extends AstMapVisitor {
-	protected TypeReconstructor typeReconstructor = new TypeReconstructor();
+	protected TypeReconstructor typeReconstructor;
 
 	protected Type getType(Expr e) {
 		return e.accept(typeReconstructor);

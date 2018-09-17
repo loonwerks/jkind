@@ -29,13 +29,13 @@ public class JKind {
 
 			ensureSolverAvailable(settings.solver);
 
-			Node main = Translate.translate(program); 
+			program = Translate.translate(program);
+			Node main = program.getMainNode();
 			if(settings.allAssigned){
-				
-				//main = IvcUtil.normalizeAssertions(main);
-				main = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
+				program = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			} 
-			Specification userSpec = new Specification(main, settings.slicing); 
+			Specification userSpec = new Specification(program, settings.slicing); 
+
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 			
 			new Director(settings, userSpec, analysisSpec).run();
@@ -70,7 +70,8 @@ public class JKind {
 	private static Specification getAnalysisSpec(Specification userSpec, JKindSettings settings) {
 		if (settings.inlining) {
 			Node inlined = InlineSimpleEquations.node(userSpec.node);
-			return new Specification(inlined, settings.slicing);
+			Program program = new ProgramBuilder().addFunctions(userSpec.functions).addNode(inlined).build();
+			return new Specification(program, settings.slicing);
 		} else {
 			return userSpec;
 		}

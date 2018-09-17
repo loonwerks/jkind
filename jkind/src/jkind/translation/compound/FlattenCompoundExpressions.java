@@ -9,7 +9,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordExpr;
 import jkind.lustre.visitors.AstMapVisitor;
@@ -24,8 +24,8 @@ import jkind.lustre.visitors.AstMapVisitor;
  * Assumption: All array updates are removed
  */
 public class FlattenCompoundExpressions extends AstMapVisitor {
-	public static Node node(Node node) {
-		return new FlattenCompoundExpressions().visit(node);
+	public static Program program(Program program) {
+		return new FlattenCompoundExpressions().visit(program);
 	}
 
 	private final Deque<Access> accesses = new ArrayDeque<>();

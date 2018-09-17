@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -17,9 +18,13 @@ import jkind.translation.Relation;
 
 public abstract class Solver {
 	public abstract void initialize();
-	
+
 	public abstract void assertSexp(Sexp sexp);
+
 	public abstract void define(VarDecl decl);
+
+	public abstract void declare(Function function);
+
 	public abstract void define(Relation relation);
 
 	/**
@@ -29,12 +34,15 @@ public abstract class Solver {
 	public abstract Result query(Sexp sexp);
 
 	public abstract void push();
+
 	public abstract void pop();
 
 	public abstract void comment(String str);
+
 	public abstract void stop();
 
 	protected final Map<String, Type> varTypes = new HashMap<>();
+	protected final List<Function> functions = new ArrayList<>();
 
 	/**
 	 * Check if the solver supports all of the operators in the expression.
@@ -45,6 +53,12 @@ public abstract class Solver {
 	 */
 	public boolean supports(Expr expr) {
 		return true;
+	}
+
+	public void declare(List<Function> functions) {
+		for (Function func : functions) {
+			declare(func);
+		}
 	}
 
 	public Symbol createActivationLiteral(String prefix, int i) {

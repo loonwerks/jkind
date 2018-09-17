@@ -1,31 +1,36 @@
 package jkind.solvers.smtlib2;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 
 import jkind.JKindException;
+import jkind.lustre.Function;
 import jkind.lustre.NamedType;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
 import jkind.sexp.Symbol;
-import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.Model;
 import jkind.solvers.ProcessBasedSolver;
 import jkind.solvers.Result;
 import jkind.solvers.SatResult;
+import jkind.solvers.SolverParserErrorListener;
 import jkind.solvers.UnknownResult;
 import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Parser.ModelContext;
 import jkind.translation.Relation;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
 
 public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	public SmtLib2Solver(String scratchBase) {
@@ -54,11 +59,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	}
 
 	public Symbol type(Type type) {
-		return new Symbol(capitalize(Util.getName(type)));
-	}
-
-	private String capitalize(String name) {
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
+		return new Symbol(Util.capitalize(Util.getName(type)));
 	}
 
 	public void declFun(String ef, NamedType t1, NamedType t2) {
@@ -72,9 +73,19 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	}
 
 	@Override
+	public void declare(Function function) {
+		functions.add(function);
+		Symbol name = new Symbol(SexpUtil.encodeFunction(function.id));
+		List<Sexp> inputTypes = function.inputs.stream().map(vd -> type(vd.type)).collect(toList());
+		Sexp inputTypesDecl = inputTypes.isEmpty() ? new Symbol("()") : new Cons(inputTypes);
+		Symbol outputType = type(function.outputs.get(0).type);
+		send(new Cons("declare-fun", name, inputTypesDecl, outputType));
+	}
+
+	@Override
 	public void define(Relation relation) {
-		send(new Cons("define-fun", new Symbol(relation.getName()), inputs(relation.getInputs()),
-				type(NamedType.BOOL), relation.getBody()));
+		send(new Cons("define-fun", new Symbol(relation.getName()), inputs(relation.getInputs()), type(NamedType.BOOL),
+				relation.getBody()));
 	}
 
 	private Sexp inputs(List<VarDecl> inputs) {
@@ -124,7 +135,7 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		} else {
 			result = new UnknownResult();
 		}
-		
+
 		pop();
 		return result;
 	}
@@ -132,13 +143,15 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 	protected abstract List<Symbol> getUnsatCore(List<Symbol> activationLiterals);
 
 	protected boolean isSat(String output) {
-		return output.trim().equals("sat");
+		// Only check prefix, Z3 outputs content after 'sat' for max-sat style
+		// queries
+		return output.trim().startsWith("sat");
 	}
 
 	protected boolean isUnsat(String output) {
 		return output.trim().equals("unsat");
 	}
-	
+
 	protected String readFromSolver() {
 		send("(echo \"" + DONE + "\")");
 
@@ -155,19 +168,16 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 				} else if (isDone(line)) {
 					break;
 				} else if (line.contains("model is not available")) {
+					flushSolver();
 					return null;
 				} else if (line.contains(" |-> ")) {
 					// Ignore Z3 optimization information
+				} else if (line.contains("out of memory")) {
+					throw new SolverOutOfMemoryException();
 				} else if (line.contains("error \"") || line.contains("Error:")) {
 					// Flush the output since errors span multiple lines
-					while ((line = fromSolver.readLine()) != null) {
-						comment(getSolverName() + ": " + line);
-						if (isDone(line)) {
-							break;
-						}
-					}
-					throw new JKindException(getSolverName()
-							+ " error (see scratch file for details)");
+					flushSolver();
+					throw new JKindException(getSolverName() + " error (see scratch file for details)");
 				} else {
 					content.append(line);
 					content.append("\n");
@@ -182,12 +192,26 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		}
 	}
 
+	protected void flushSolver() throws IOException {
+		String line;
+		while ((line = fromSolver.readLine()) != null) {
+			comment(getSolverName() + ": " + line);
+			if (isDone(line)) {
+				return;
+			}
+		}
+	}
+
 	protected boolean isDone(String line) {
 		return line.contains(DONE);
 	}
 
-	protected Model parseModel(String string) {
-		CharStream stream = new ANTLRInputStream(string);
+	protected Model parseModel(String modelStr) {
+		return parseSmtLib2Model(modelStr, varTypes, functions);
+	}
+
+	public static SmtLib2Model parseSmtLib2Model(String modelStr, Map<String, Type> varTypes, List<Function> functions) {
+		CharStream stream = new ANTLRInputStream(modelStr);
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		SmtLib2Parser parser = new SmtLib2Parser(tokens);
@@ -196,10 +220,10 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		ModelContext ctx = parser.model();
 
 		if (parser.getNumberOfSyntaxErrors() > 0) {
-			throw new JKindException("Error parsing " + getSolverName() + " output: " + string);
+			throw new JKindException("Error parsing solver output: " + modelStr);
 		}
 
-		return ModelExtractor.getModel(ctx, varTypes);
+		return ModelExtractor.getModel(ctx, varTypes, functions);
 	}
 
 	@Override

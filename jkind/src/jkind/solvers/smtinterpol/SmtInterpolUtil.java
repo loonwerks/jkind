@@ -1,43 +1,29 @@
 package jkind.solvers.smtinterpol;
 
 import java.io.FileNotFoundException;
-import java.math.BigInteger;
+import java.util.List;
 
-import jkind.JKindException;
-import jkind.lustre.EnumType;
-import jkind.lustre.NamedType;
-import jkind.lustre.SubrangeIntType;
-import jkind.lustre.Type;
-import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.IntegerValue;
-import jkind.lustre.values.RealValue;
-import jkind.lustre.values.Value;
-import jkind.sexp.Cons;
-import jkind.sexp.Sexp;
-import jkind.sexp.Symbol;
-import jkind.util.BigFraction;
-import jkind.util.Util;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import de.uni_freiburg.informatik.ultimate.logic.ApplicationTerm;
-import de.uni_freiburg.informatik.ultimate.logic.ConstantTerm;
 import de.uni_freiburg.informatik.ultimate.logic.LoggingScript;
-import de.uni_freiburg.informatik.ultimate.logic.Rational;
 import de.uni_freiburg.informatik.ultimate.logic.Script;
 import de.uni_freiburg.informatik.ultimate.logic.Sort;
 import de.uni_freiburg.informatik.ultimate.logic.Term;
 import de.uni_freiburg.informatik.ultimate.logic.TermVariable;
 import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.SMTInterpol;
-import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationRequest;
+import jkind.JKindException;
+import jkind.lustre.EnumType;
+import jkind.lustre.Function;
+import jkind.lustre.NamedType;
+import jkind.lustre.SubrangeIntType;
+import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
+import jkind.sexp.Cons;
+import jkind.sexp.Sexp;
+import jkind.sexp.Symbol;
+import jkind.util.SexpUtil;
 
 public class SmtInterpolUtil {
-	public static Script getScript(String scratchBase, TerminationRequest te) {
-		Logger logger = Logger.getRootLogger();
-		logger.setLevel(Level.OFF);
-
-		Script baseScript = new SMTInterpol(logger, te);
+	public static Script getScript(String scratchBase) {
+		Script baseScript = new SMTInterpol();
 		if (scratchBase == null) {
 			return baseScript;
 		}
@@ -113,48 +99,18 @@ public class SmtInterpolUtil {
 		return script.term(text);
 	}
 
-	public static Value getValue(Term term, Type type) {
-		if (term instanceof ApplicationTerm) {
-			return getValue((ApplicationTerm) term);
-		} else if (term instanceof ConstantTerm) {
-			return getValue((ConstantTerm) term, type);
-		} else {
-			throw new JKindException("Unhandled term type: " + term.getClass().getSimpleName());
+	public static Sort[] getSorts(Script script, List<VarDecl> vars) {
+		Sort[] sorts = new Sort[vars.size()];
+		for (int i = 0; i < vars.size(); i++) {
+			sorts[i] = getSort(script, vars.get(i).type);
 		}
+		return sorts;
 	}
 
-	private static Value getValue(ApplicationTerm at) {
-		String name = at.getFunction().getName();
-		switch (name) {
-		case "true":
-			return BooleanValue.TRUE;
-
-		case "false":
-			return BooleanValue.FALSE;
-
-		default:
-			throw new JKindException("Unhandled function in term to value conversion: " + name);
-		}
-	}
-
-	private static Value getValue(ConstantTerm ct, Type type) {
-		String typeName = Util.getName(type);
-
-		if (ct.getValue() instanceof Rational) {
-			Rational rational = (Rational) ct.getValue();
-			switch (typeName) {
-			case "int":
-				if (rational.denominator().equals(BigInteger.ONE)) {
-					return new IntegerValue(rational.numerator());
-				} else {
-					throw new JKindException("Cannot convert rational to integer: " + rational);
-				}
-
-			case "real":
-				return new RealValue(new BigFraction(rational.numerator(), rational.denominator()));
-			}
-		}
-
-		throw new JKindException("Unhandled constant in term to value conversion: " + ct);
+	public static void declareFunction(Script script, Function function) {
+		String encodedName = SexpUtil.encodeFunction(function.id);
+		Sort[] inputs = getSorts(script, function.inputs);
+		Sort output = getSort(script, function.outputs.get(0).type);
+		script.declareFun(encodedName, inputs, output);
 	}
 }

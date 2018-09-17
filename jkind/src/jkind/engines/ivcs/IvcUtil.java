@@ -12,6 +12,7 @@ import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.VarDecl;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.sexp.Symbol;
@@ -54,8 +55,8 @@ public class IvcUtil {
 		return result;
 	}
 
-	public static Node setIvcArgs(Node node, List<String> newIvc) {
-		return new NodeBuilder(node).clearIvc().addIvcs(newIvc).build();
+	public static Program setIvcArgs(Node node, List<String> newIvc) {
+		return  new Program (new NodeBuilder(node).clearIvc().addIvcs(newIvc).build());
 	}	
 	
 	public static List<VarDecl> removeVariables(List<VarDecl> varDecls, List<String> vars) {

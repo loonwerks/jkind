@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
 import jkind.lustre.values.BooleanValue;
+import jkind.lustre.visitors.Evaluator;
 
 public class Node {
 	private List<Expr> candidates;

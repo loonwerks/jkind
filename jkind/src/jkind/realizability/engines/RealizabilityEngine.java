@@ -63,6 +63,7 @@ public abstract class RealizabilityEngine implements Runnable {
 	protected void initializeSolver() {
 		solver = new Z3Solver(getScratchBase(), LinearChecker.isLinear(spec.node));
 		solver.initialize();
+		solver.declare(spec.functions);
 		solver.define(spec.getTransitionRelation());
 	}
 

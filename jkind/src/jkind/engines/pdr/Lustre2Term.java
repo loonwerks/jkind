@@ -3,6 +3,8 @@ package jkind.engines.pdr;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_freiburg.informatik.ultimate.logic.Script;
+import de.uni_freiburg.informatik.ultimate.logic.Term;
 import jkind.lustre.ArrayAccessExpr;
 import jkind.lustre.ArrayExpr;
 import jkind.lustre.ArrayUpdateExpr;
@@ -13,6 +15,7 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.EnumType;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -30,13 +33,13 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.VarDecl;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.solvers.smtinterpol.ScriptUser;
+import jkind.util.SexpUtil;
 import jkind.util.Util;
-import de.uni_freiburg.informatik.ultimate.logic.Script;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
-	private static final String INIT = "%init";
-	
+	public static final String INIT = "%init";
+	public static final String ASSERTIONS = "%assertions";
+
 	private final Node node;
 	private boolean pre = false;
 
@@ -49,12 +52,17 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		return term(INIT);
 	}
 
+	public Term getAssertions() {
+		return term(ASSERTIONS);
+	}
+
 	public List<VarDecl> getVariables() {
 		List<VarDecl> variables = new ArrayList<>();
 		for (VarDecl vd : Util.getVarDecls(node)) {
 			variables.add(encode(vd));
 		}
 		variables.add(new VarDecl(INIT, NamedType.BOOL));
+		variables.add(new VarDecl(ASSERTIONS, NamedType.BOOL));
 		return variables;
 	}
 
@@ -83,9 +91,12 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 			conjuncts.add(term("=", head, body));
 		}
 
+		List<Term> assertions = new ArrayList<>();
 		for (Expr assertion : node.assertions) {
-			conjuncts.add(assertion.accept(this));
+			assertions.add(assertion.accept(this));
 		}
+		assertions.add(or(term(INIT), term(ASSERTIONS)));
+		conjuncts.add(term("=", term(prime(ASSERTIONS)), and(assertions)));
 
 		// Type constraints need to be included during interpolation, so we
 		// include them in the transition relation
@@ -107,7 +118,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	}
 
 	public Term encodeProperty(String property) {
-		return or(term(encode(property)), term(INIT));
+		return or(term(encode(property)), not(term(ASSERTIONS)), term(INIT));
 	}
 
 	private String prime(String str) {
@@ -141,8 +152,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 
 		case ARROW:
 			if (pre) {
-				throw new IllegalArgumentException(
-						"Arrows cannot be nested under pre during translation to Term");
+				throw new IllegalArgumentException("Arrows cannot be nested under pre during translation to Term");
 			}
 			return ite(term(INIT), left, right);
 
@@ -170,6 +180,15 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 	@Override
 	public Term visit(CondactExpr e) {
 		throw new IllegalArgumentException("Condacts must be removed before translation to Term");
+	}
+
+	@Override
+	public Term visit(FunctionCallExpr e) {
+		Term[] params = new Term[e.args.size()];
+		for (int i = 0; i < e.args.size(); i++) {
+			params[i] = e.args.get(i).accept(this);
+		}
+		return term(SexpUtil.encodeFunction(e.function), params);
 	}
 
 	@Override
@@ -223,8 +242,7 @@ public class Lustre2Term extends ScriptUser implements ExprVisitor<Term> {
 		switch (e.op) {
 		case PRE:
 			if (pre) {
-				throw new IllegalArgumentException(
-						"Nested pres must be removed before translation to Term");
+				throw new IllegalArgumentException("Nested pres must be removed before translation to Term");
 			}
 			pre = true;
 			Term expr = e.expr.accept(this);

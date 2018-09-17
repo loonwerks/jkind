@@ -6,23 +6,22 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import jkind.interval.BoolInterval;
-import jkind.interval.NumericInterval;
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.BooleanValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
+import jkind.results.FunctionTableRow;
 import jkind.results.Signal;
 import jkind.util.Tuple;
-import jkind.util.Util;
 
 public class XmlWriter extends Writer {
 	private final PrintWriter out;
 	private final Map<String, Type> types;
 
-	public XmlWriter(String filename, Map<String, Type> types, boolean useStdout)
-			throws FileNotFoundException {
+	public XmlWriter(String filename, Map<String, Type> types, boolean useStdout) throws FileNotFoundException {
 		if (useStdout) {
 			this.out = new PrintWriter(System.out, true);
 		} else {
@@ -99,8 +98,7 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex,
-			List<String> conflicts, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">falsifiable</Answer>");
@@ -141,7 +139,31 @@ public class XmlWriter extends Writer {
 		for (Signal<Value> signal : cex.getSignals()) {
 			writeSignal(cex.getLength(), signal);
 		}
+		for (FunctionTable fn : cex.getFunctionTables()) {
+			writeFunction(fn);
+		}
 		out.println("    </Counterexample>");
+	}
+
+	private void writeFunction(FunctionTable table) {
+		out.println("      <Function name=\"" + table.getName() + "\">");
+		List<VarDecl> inputDecls = table.getInputs();
+		for (VarDecl inputDecl : inputDecls) {
+			out.println("        <Input name=\"" + inputDecl.id + "\" type=\"" + inputDecl.type + "\"/>");
+		}
+		VarDecl outputDecl = table.getOutput();
+		out.println("        <Output name=\"" + outputDecl.id + "\" type=\"" + outputDecl.type + "\"/>");
+
+		for (FunctionTableRow row : table.getRows()) {
+			out.println("        <FunctionValue>");
+			for (int i = 0; i < row.getInputs().size(); i++) {
+				Value input = row.getInputs().get(i);
+				out.println("          <InputValue>" + formatValue(input) + "</InputValue>");
+			}
+			out.println("          <OutputValue>" + formatValue(row.getOutput()) + "</OutputValue>");
+			out.println("        </FunctionValue>");
+		}
+		out.println("      </Function>");
 	}
 
 	private void writeSignal(int k, Signal<Value> signal) {
@@ -150,7 +172,7 @@ public class XmlWriter extends Writer {
 		out.println("      <Signal name=\"" + name + "\" type=\"" + type + "\">");
 		for (int i = 0; i < k; i++) {
 			Value value = signal.getValue(i);
-			if (!Util.isArbitrary(value)) {
+			if (value != null) {
 				out.println("        <Value time=\"" + i + "\">" + formatValue(value) + "</Value>");
 			}
 		}
@@ -158,29 +180,20 @@ public class XmlWriter extends Writer {
 	}
 
 	/**
-	 * pkind prints booleans as 0/1. We do the same for compatibility, but we
-	 * should eventually switch to true/false
+	 * pkind prints booleans as 0/1. We do the same for compatibility.
 	 */
 	private String formatValue(Value value) {
 		if (value instanceof BooleanValue) {
 			BooleanValue bv = (BooleanValue) value;
 			return bv.value ? "1" : "0";
-		}
-		if (value instanceof NumericInterval) {
-			NumericInterval ni = (NumericInterval) value;
-			return "<Interval low=\"" + ni.getLow() + "\" high=\"" + ni.getHigh() + "\"/>";
-		}
-		if (value instanceof BoolInterval) {
-			BoolInterval bi = (BoolInterval) value;
-			return bi.isTrue() ? "1" : "0";
 		} else {
 			return value.toString();
 		}
 	}
 
 	@Override
-	public void writeUnknown(List<String> props, int trueFor,
-			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
+	public void writeUnknown(List<String> props, int trueFor, Map<String, Counterexample> inductiveCounterexamples,
+			double runtime) {
 		for (String prop : props) {
 			writeUnknown(prop, trueFor, inductiveCounterexamples.get(prop), runtime);
 		}

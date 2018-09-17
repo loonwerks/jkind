@@ -54,7 +54,7 @@ public class ExtractorVisitor extends TypeAwareAstMapVisitor {
 		boolean enumsAsInts = false;
 		typeReconstructor = new TypeReconstructor(e, enumsAsInts);
 		constants = e.constants.stream().map(c -> c.id).collect(toSet());
-		return new Program(e.location, e.types, e.constants, visitNodes(e.nodes), e.main);
+		return new Program(e.location, e.types, e.constants, visitFunctions(e.functions), visitNodes(e.nodes), e.main);
 	}
 
 	@Override

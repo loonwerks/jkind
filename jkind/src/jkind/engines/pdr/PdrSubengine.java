@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import de.uni_freiburg.informatik.ultimate.logic.Term;
 import jkind.analysis.LinearChecker;
 import jkind.engines.Director;
 import jkind.engines.StopException;
@@ -14,26 +15,26 @@ import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrSmt.Option;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
 import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.LustreSlicer;
 import jkind.solvers.Model;
-import jkind.solvers.smtinterpol.TerminationRequestImpl;
 import jkind.translation.Specification;
-import de.uni_freiburg.informatik.ultimate.logic.Term;
 
 /**
- * PDR algorithm based on
- * "Efficient implementation of property directed reachability" by Niklas Een,
- * Alan Mishchenko, and Robert Brayton
+ * PDR algorithm based on "Efficient implementation of property directed
+ * reachability" by Niklas Een, Alan Mishchenko, and Robert Brayton
  * 
- * SMT extension based on
- * "IC3 Modulo Theories via Implicit Predicate Abstraction" by Alessandro
- * Cimatti, Alberto Griggio, Sergio Mover, and Stefano Tonetta
+ * SMT extension based on "IC3 Modulo Theories via Implicit Predicate
+ * Abstraction" by Alessandro Cimatti, Alberto Griggio, Sergio Mover, and
+ * Stefano Tonetta
  */
 public class PdrSubengine extends Thread {
 	private final Node node;
+	private final List<Function> functions;
 	private final String prop;
+	
 	private final PdrEngine parent;
 	private final Director director;
 
@@ -42,21 +43,19 @@ public class PdrSubengine extends Thread {
 	private PdrSmt Z;
 
 	private volatile boolean cancel = false;
-	private TerminationRequestImpl term = new TerminationRequestImpl();
-	
-	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent,
-			Director director) {
+
+	public PdrSubengine(String prop, Specification spec, String scratchBase, PdrEngine parent, Director director) {
 		super("pdr-" + prop);
 		this.prop = prop;
 		Node single = new NodeBuilder(spec.node).clearProperties().addProperty(prop).build();
 		this.node = LustreSlicer.slice(single, spec.dependencyMap);
+		this.functions = spec.functions;
 		this.scratchBase = scratchBase;
 		this.parent = parent;
 		this.director = director;
 	}
 
 	public void cancel() {
-		term.requestTermination();
 		cancel = true;
 	}
 
@@ -66,8 +65,8 @@ public class PdrSubengine extends Thread {
 			parent.reportUnknown(prop);
 			return;
 		}
-		
-		Z = new PdrSmt(node, F, prop, scratchBase, term);
+
+		Z = new PdrSmt(node, functions, F, prop, scratchBase);
 		Z.comment("Checking property: " + prop);
 
 		// Create F_INF and F[0]
@@ -96,15 +95,12 @@ public class PdrSubengine extends Thread {
 		} catch (StopException | OutOfMemoryError e) {
 			parent.reportUnknown(prop);
 			return;
-		} catch(de.uni_freiburg.informatik.ultimate.logic.SMTLIBException ex){
-			parent.reportThrowable(ex);
-			return;
-		}catch (Throwable t) {
+		} catch (Throwable t) {
 			parent.reportThrowable(t);
 			return;
 		}
 	}
-	
+
 	private void blockCube(TCube s0) {
 		PriorityQueue<TCube> Q = new PriorityQueue<>();
 		Q.add(s0);
@@ -271,3 +267,5 @@ public class PdrSubengine extends Thread {
 		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}
 }
+
+

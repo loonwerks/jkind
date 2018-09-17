@@ -36,37 +36,9 @@ public class PredicateCollector {
 				walk(sub);
 			}
 			return;
-		} else if (!hasVariables(at)) {
-			return;
 		}
 
 		predicates.add(at);
-	}
-
-	private boolean hasVariables(Term term) {
-		if (term instanceof ApplicationTerm) {
-			return hasVariables((ApplicationTerm) term);
-		}
-		return false;
-	}
-
-	private boolean hasVariables(ApplicationTerm at) {
-		if (isVariable(at)) {
-			return true;
-		}
-		
-		for (Term sub : at.getParameters()) {
-			if (hasVariables(sub)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
-	private boolean isVariable(ApplicationTerm at) {
-		String name = at.getFunction().getName();
-		return at.getParameters().length == 0 && !name.equals("true") && !name.equals("false");
 	}
 
 	private boolean booleanParamaters(ApplicationTerm at) {

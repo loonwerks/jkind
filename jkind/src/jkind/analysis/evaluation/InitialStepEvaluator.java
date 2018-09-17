@@ -14,6 +14,7 @@ import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
 import jkind.lustre.VarDecl;
 import jkind.lustre.values.Value;
+import jkind.lustre.visitors.Evaluator;
 
 /**
  * This class is used by invariant generation to suggest upper and lower bounds

@@ -1,4 +1,4 @@
-package jkind.analysis.evaluation;
+package jkind.lustre.visitors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.NodeCallExpr;
@@ -30,7 +31,6 @@ import jkind.lustre.values.RealValue;
 import jkind.lustre.values.RecordValue;
 import jkind.lustre.values.TupleValue;
 import jkind.lustre.values.Value;
-import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.BigFraction;
 import jkind.util.Util;
 
@@ -99,6 +99,11 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 
 	@Override
 	public Value visit(CondactExpr e) {
+		return null;
+	}
+
+	@Override
+	public Value visit(FunctionCallExpr e) {
 		return null;
 	}
 
@@ -181,7 +186,7 @@ public abstract class Evaluator implements ExprVisitor<Value> {
 		return value.applyUnaryOp(e.op);
 	}
 
-	private List<Value> visitExprs(List<Expr> es) {
+	protected List<Value> visitExprs(List<Expr> es) {
 		List<Value> values = new ArrayList<>();
 		for (Expr e : es) {
 			Value value = eval(e);

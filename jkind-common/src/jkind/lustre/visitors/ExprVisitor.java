@@ -7,6 +7,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -26,6 +27,7 @@ public interface ExprVisitor<T> {
 	public T visit(BoolExpr e);
 	public T visit(CastExpr e);
 	public T visit(CondactExpr e);
+	public T visit(FunctionCallExpr e);
 	public T visit(IdExpr e);
 	public T visit(IfThenElseExpr e);
 	public T visit(IntExpr e);

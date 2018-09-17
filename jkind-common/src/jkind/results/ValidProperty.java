@@ -1,6 +1,7 @@
 package jkind.results;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -12,8 +13,8 @@ import jkind.util.Util;
 public final class ValidProperty extends Property {
 	private final String source;
 	private final int k;
-	private final List<String> invariants;
-	private final Set<String> ivc;
+	private List<String> invariants;
+	private Set<String> ivc;
 
 	public ValidProperty(String name, String source, int k, double runtime,
 			List<String> invariants, Collection<String> ivc) {
@@ -51,5 +52,11 @@ public final class ValidProperty extends Property {
 	 */
 	public Set<String> getIvc() {
 		return ivc;
+	}
+
+	@Override
+	public void discardDetails() {
+		invariants = Collections.emptyList();
+		ivc = Collections.emptySet();
 	}
 }

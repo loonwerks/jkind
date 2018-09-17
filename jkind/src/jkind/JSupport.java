@@ -42,11 +42,10 @@ public class JSupport {
 				throw new IllegalArgumentException("Non-linear not supported");
 			}
 			
-			
-			Node main = Translate.translate(program);
-			main = RemoveEnumTypes.node(main);
-			DependencyMap dependencyMap = new DependencyMap(main, main.properties);
-			main = LustreSlicer.slice(main, dependencyMap);
+			program = Translate.translate(program);
+			program = RemoveEnumTypes.program(program);
+			Node main = program.getMainNode();
+			main = LustreSlicer.slice(main, new DependencyMap(main, main.properties, program.functions));
 			main = new NodeBuilder(main).clearIvc().build();
 
 			if (main.properties.size() != 1) {
@@ -55,7 +54,7 @@ public class JSupport {
 			}
 			
 			inputIVC = getIVC(settings.useUnsatCore);
-			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0)),
+			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
 					settings.filename);
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT);
 			System.exit(0);

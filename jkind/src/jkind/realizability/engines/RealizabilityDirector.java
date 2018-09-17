@@ -24,7 +24,6 @@ import jkind.realizability.writers.Writer;
 import jkind.realizability.writers.XmlWriter;
 import jkind.results.Counterexample;
 import jkind.results.layout.RealizabilityNodeLayout;
-import jkind.slicing.ModelSlicer;
 import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
@@ -159,8 +158,7 @@ public class RealizabilityDirector {
 			} else if (message instanceof UnrealizableMessage) {
 				UnrealizableMessage um = (UnrealizableMessage) message;
 				done = true;
-				Model sliced = slice(um.model, um.properties);
-				Counterexample cex = extractCounterexample(um.k, sliced);
+				Counterexample cex = extractCounterexample(um.k, um.model);
 				writer.writeUnrealizable(cex, um.properties, runtime);
 			} else if (message instanceof ExtendCounterexampleMessage) {
 				extendCounterexample = (ExtendCounterexampleMessage) message;
@@ -184,13 +182,6 @@ public class RealizabilityDirector {
 
 	private double getRuntime(long startTime) {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
-	}
-
-	private Model slice(Model model, List<String> properties) {
-		if (properties.isEmpty()) {
-			return model;
-		}
-		return ModelSlicer.slice(model, spec.dependencyMap.get(properties));
 	}
 
 	private Counterexample convertExtendCounterexample() {

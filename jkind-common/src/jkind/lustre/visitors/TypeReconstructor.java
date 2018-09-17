@@ -16,6 +16,8 @@ import jkind.lustre.CondactExpr;
 import jkind.lustre.Constant;
 import jkind.lustre.EnumType;
 import jkind.lustre.Expr;
+import jkind.lustre.Function;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -49,30 +51,20 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	private final Map<String, EnumType> enumValueTable = new HashMap<>();
 	private final Map<String, Type> variableTable = new HashMap<>();
 	private final Map<String, Node> nodeTable = new HashMap<>();
+	private final Map<String, Function> functionTable = new HashMap<>();
 	private final boolean enumsAsInts;
 
 	public TypeReconstructor(Program program) {
-		this.enumsAsInts = true;
-		populateTypeTable(program.types);
-		populateEnumValueTable(program.types);
-		populateConstantTable(program.constants);
-		nodeTable.putAll(Util.getNodeTable(program.nodes));
+		this(program, true);
 	}
-	
+
 	public TypeReconstructor(Program program, boolean enumsAsInts) {
 		this.enumsAsInts = enumsAsInts;
 		populateTypeTable(program.types);
 		populateEnumValueTable(program.types);
 		populateConstantTable(program.constants);
+		functionTable.putAll(Util.getFunctionTable(program.functions));
 		nodeTable.putAll(Util.getNodeTable(program.nodes));
-	}
-	
-	/**
-	 * This constructor is for use after enumerated values, user types,
-	 * constants, and nodes have all been inlined.
-	 */
-	public TypeReconstructor() {
-		this.enumsAsInts = true;
 	}
 
 	private void populateTypeTable(List<TypeDef> typeDefs) {
@@ -204,8 +196,18 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	@Override
 	public Type visit(NodeCallExpr e) {
 		Node node = nodeTable.get(e.node);
+		return visitCallOutputs(node.outputs);
+	}
+
+	@Override
+	public Type visit(FunctionCallExpr e) {
+		Function function = functionTable.get(e.function);
+		return visitCallOutputs(function.outputs);
+	}
+
+	private Type visitCallOutputs(List<VarDecl> outputDecls) {
 		List<Type> outputs = new ArrayList<>();
-		for (VarDecl output : node.outputs) {
+		for (VarDecl output : outputDecls) {
 			outputs.add(resolveType(output.type));
 		}
 		return TupleType.compress(outputs);

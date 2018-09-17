@@ -1,0 +1,89 @@
+-- This file exercises complex types as function inputs and outputs
+-- Expected output:
+-- INVALID PROPERTIES: [cex] (k = 3)
+
+type pair = struct { x : int; y : int };
+type nested = struct { npair : pair; y : int };
+type nested2 = struct { nest2 : nested; y : int };
+type nested_arr = struct { nestarr : int[5]; z : int };
+
+function f1(x: pair) returns (y: int);
+function f2(x: pair) returns (y: pair);
+function f3(x: int[5]) returns (y: int[5]);
+function f4(x: nested_arr) returns (y: nested_arr);
+function f5(x: int) returns (y: nested2);
+function f6(x: int) returns (y: int; z: int);
+function f7(x: int) returns (y: pair; z: int);
+function f8(x: int) returns (y: pair; z: nested2);
+
+function min() returns (y: int; z: int);
+
+node main(in: int) returns (cex: bool);
+var
+  pin: int;
+  sequence: int;
+  sumsq: int;
+  sumin: int;
+  ssize: int;
+  interesting_length: bool;
+  non_sequential: bool;
+  p : pair;
+  p2 : nested_arr;
+  p3 : pair;
+  complete: bool;
+  arr : int[5];
+  index : int;
+  min1 : int;
+  min2: int;
+  f8_y: pair;
+  f8_z: nested2;
+let
+  assert -128 <= in and in < 128;
+  
+  --- We do this to keep the solutions from being completely degenerate.
+  non_sequential = false -> (in < pre in) or (pre non_sequential);
+
+  --- Here we establish some arbitrary minimum
+  --- and say that all values are above it.  This
+  --- ensure that our sums are always increasing.
+  (min1, min2) = min();
+  assert(min1 <= in and min2 <= in);
+
+  -- Bias our input stream by the arbitrary minimum to
+  -- generate a sequence of positive values
+  pin = in - min1;
+
+  p = pair { x = pin; y = 0};
+  arr = [pin, pin, 0, 0, 0];
+  p2 = nested_arr { nestarr = arr; z = 0};
+  p3 = pair { x = sequence; y = 0};
+  f8_y = p;
+  f8_z = nested2 { nest2 = nested {npair = p3; y = 0}; y = 0};
+
+  -- This assertion ensures that our sequence values are unique
+  sequence = 0 -> (pre sequence) + 1;
+  index = 1;
+
+  assert(f1(p) = sequence);
+  assert(f2(p).x = sequence);
+  assert(f3(arr)[index] = sequence);
+  assert(f4(p2).nestarr[0] = sequence);
+  assert(f5(pin).nest2.npair.x = sequence);
+  assert(f6(pin) = (sequence, sequence));
+  assert(f7(pin) = (p3, sequence));
+  assert(f8(pin) = (f8_y, f8_z));
+  
+  -- The complete predicate ensures that the sequence is complete
+  -- by comparing the sum of the positive input value sequence with
+  -- the sum of a simple increasing sequence.
+  sumsq = (sequence -> sequence + (pre sumsq));
+  sumin = (pin -> pin + (pre sumin));
+  complete = (sumsq = sumin);
+
+  -- We want an example of an interesting length
+  ssize = 1 -> 1 + (pre ssize);
+  interesting_length = (ssize = 3);
+ 
+  cex = not (interesting_length and non_sequential and complete);
+  --%PROPERTY cex;
+tel;

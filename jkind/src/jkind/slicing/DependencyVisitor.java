@@ -1,6 +1,7 @@
 package jkind.slicing;
 
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.visitors.ExprIterVisitor;
 
@@ -10,12 +11,19 @@ public class DependencyVisitor extends ExprIterVisitor {
 		expr.accept(visitor);
 		return visitor.set;
 	}
-	
+
 	private DependencySet set = new DependencySet();
-	
+
+	@Override
+	public Void visit(FunctionCallExpr e) {
+		set.add(Dependency.function(e.function));
+		super.visit(e);
+		return null;
+	}
+
 	@Override
 	public Void visit(IdExpr e) {
-		set.add(e.id);
+		set.add(Dependency.variable(e.id));
 		return null;
 	}
 }

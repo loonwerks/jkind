@@ -12,7 +12,8 @@ import java.util.Set;
 
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage; 
-import jkind.lustre.Node;  
+import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.results.Counterexample;
 import jkind.translation.Specification;  
 
@@ -45,9 +46,9 @@ public class MiniJKind extends Engine {
 				settings.miniJkind = true;
 		
 		if (settings.allAssigned && settings.reduceIvc){ 
-			Node newNode = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
-			this.director =  new Director(settings, new Specification(newNode, settings.slicing), 
-										new Specification(newNode, settings.slicing), this);
+			Program program = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
+			this.director =  new Director(settings, new Specification(program, settings.slicing), 
+										new Specification(program, settings.slicing), this);
 		}else{
 			this.director =  new Director(settings, spec, spec, this);
 		}

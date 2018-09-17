@@ -11,9 +11,11 @@ import jkind.lustre.ArrayType;
 import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
+import jkind.lustre.IdExpr;
 import jkind.lustre.RecordAccessExpr;
 import jkind.lustre.RecordType;
 import jkind.lustre.Type;
+import jkind.lustre.VarDecl;
 
 public class CompoundUtil {
 	public static List<ExprType> flattenExpr(Expr expr, Type type) {
@@ -40,6 +42,17 @@ public class CompoundUtil {
 		List<ExprType> result = new ArrayList<>();
 		for (Entry<String, Type> entry : fields.entrySet()) {
 			result.addAll(flattenExpr(new RecordAccessExpr(expr, entry.getKey()), entry.getValue()));
+		}
+		return result;
+	}
+
+	public static List<VarDecl> flattenVarDecls(List<VarDecl> varDecls) {
+		List<VarDecl> result = new ArrayList<>();
+		for (VarDecl varDecl : varDecls) {
+			IdExpr id = new IdExpr(varDecl.id);
+			for (ExprType et : flattenExpr(id, varDecl.type)) {
+				result.add(new VarDecl(et.expr.toString(), et.type));
+			}
 		}
 		return result;
 	}

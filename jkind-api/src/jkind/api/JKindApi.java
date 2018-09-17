@@ -27,7 +27,7 @@ public class JKindApi extends KindApi {
 	protected boolean ivcReduction = false;
 	protected boolean allIvcs = false;
 	protected boolean smoothCounterexamples = false;
-	protected boolean intervalGeneralization = false;
+	protected boolean slicing = true;
 
 	protected SolverOption solver = null;
 
@@ -110,11 +110,10 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
-	 * Post-process counterexamples using interval analysis to make them more
-	 * general
+	 * Disable slicing of input model and counterexamples
 	 */
-	public void setIntervalGeneralization() {
-		intervalGeneralization = true;
+	public void disableSlicing() {
+		slicing = false;
 	}
 
 	/**
@@ -202,8 +201,8 @@ public class JKindApi extends KindApi {
 		if (smoothCounterexamples) {
 			args.add("-smooth");
 		}
-		if (intervalGeneralization) {
-			args.add("-interval");
+		if (!slicing) {
+			args.add("-no_slicing");
 		}
 		if (solver != null) {
 			args.add("-solver");

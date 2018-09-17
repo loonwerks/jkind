@@ -2,8 +2,8 @@ package jkind.engines.invariant;
 
 import java.util.List;
 
-import jkind.analysis.evaluation.Evaluator;
 import jkind.lustre.Expr;
+import jkind.lustre.visitors.Evaluator;
 
 public interface StructuredInvariant {
 	public boolean isTrivial();

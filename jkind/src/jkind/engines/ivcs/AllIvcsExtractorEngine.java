@@ -29,6 +29,7 @@ import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr; 
 import jkind.lustre.NamedType;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.VarDecl; 
 import jkind.sexp.Cons;
 import jkind.sexp.Sexp;
@@ -143,7 +144,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		deactivate.removeAll(wantedElem);
 		
 		Node nodeSpec = IvcUtil.unassign(spec.node, deactivate, property);  
-		Specification newSpec = new Specification(nodeSpec, js.slicing);   
+		Specification newSpec = new Specification(new Program(nodeSpec), js.slicing);   
 		if (settings.scratch){
 			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 		}

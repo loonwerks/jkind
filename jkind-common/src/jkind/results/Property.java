@@ -1,6 +1,5 @@
 package jkind.results;
 
-
 /**
  * Abstract class of property result from JKind
  */
@@ -26,4 +25,9 @@ public abstract class Property {
 	public double getRuntime() {
 		return runtime;
 	}
+
+	/**
+	 * Discard details such as counterexamples and IVCs to save space
+	 */
+	public abstract void discardDetails();
 }

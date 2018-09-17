@@ -3,15 +3,16 @@ import java.util.HashSet;
 import java.util.Set; 
 import jkind.JKindSettings; 
 import jkind.engines.MiniJKind;  
-import jkind.lustre.Node;  
+import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.translation.Specification;  
 
 public class MinimalIvcFinder { 
 	private Node node;  
 	private String property;
 	
-	public MinimalIvcFinder(Node node, String property){
-	    this.node = node;  
+	public MinimalIvcFinder(Program program, String property){
+	    this.node = program.getMainNode();
 	    this.property = property;
 	}
 
@@ -23,13 +24,13 @@ public class MinimalIvcFinder {
 		js.miniJkind = true; 
 		js.timeout = timeout; 
 		for (String s : candidates) {  
-			Node candidate = IvcUtil.unassign(node, s, property);
+			Program candidate = new Program(IvcUtil.unassign(node, s, property));
 	
 			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.slicing), js);
 			miniJkind.verify();
 			if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
 				minimal.remove(s);
-				node = candidate;
+				node = candidate.getMainNode();
 			}
 			miniJkind = null;
 		}
@@ -46,7 +47,7 @@ public class MinimalIvcFinder {
 		js.miniJkind = true; 
 		js.timeout = timeout; 
 		for (String s : candidates) {    
-			Node candidate = IvcUtil.unassign(node, s, property);
+			Program candidate = new Program(IvcUtil.unassign(node, s, property));
 			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.slicing), js);
 			miniJkind.verify();
 			if (miniJkind.getPropertyStatus() != MiniJKind.VALID) {

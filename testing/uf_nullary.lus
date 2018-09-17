@@ -1,0 +1,19 @@
+-- This file exercises nullary functions
+-- Expected output:
+-- VALID PROPERTIES: [ok]
+-- INVALID PROPERTIES: [cex] (k = 1)
+
+function f() returns (x, y: int);
+function g(x, y : int) returns ();
+
+node main() returns (ok, cex: bool);
+var
+  x, y : int;
+let
+  ok = (g(1, 2) = g(3, 4));
+  --%PROPERTY ok;
+
+  x, y = f();
+  cex = not (x = 5);
+  --%PROPERTY cex;
+tel;

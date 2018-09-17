@@ -2,7 +2,7 @@ grammar MathSat;
 
 model: '(' assignment* ')' EOF;
 
-assignment: '(' id body ')';
+assignment: '(' (id | fnApp) body ')';
 
 unsatAssumptions: '(' symbol* ')';
 
@@ -11,6 +11,8 @@ body: symbol                               # symbolBody
     ;
 
 fn: '-' | '/';
+
+fnApp: '(' id body+ ')';
 
 symbol: id | BOOL | INT;
 

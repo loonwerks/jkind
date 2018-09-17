@@ -2,10 +2,9 @@ package jkind.sexp;
 
 import java.math.BigInteger;
 
-
 public abstract class Sexp {
 	protected abstract void toBuilder(StringBuilder sb);
-	
+
 	public static Sexp fromInt(int i) {
 		if (i >= 0) {
 			return new Symbol(Integer.toString(i));

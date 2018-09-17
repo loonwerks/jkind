@@ -1,8 +1,9 @@
 package jkind.engines;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jkind.JKindException;
 import jkind.SolverOption;
@@ -52,8 +53,6 @@ public class SolverUtil {
 	}
 
 	public static List<SolverOption> availableSolvers() {
-		return Arrays.stream(SolverOption.values()).filter(x -> solverIsAvailable(x))
-				.collect(Collectors.toList());
+		return Arrays.stream(SolverOption.values()).filter(x -> solverIsAvailable(x)).collect(toList());
 	}
-
 }

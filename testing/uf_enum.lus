@@ -1,0 +1,17 @@
+-- This file exercises enumeration inputs to functions
+-- Expected output:
+-- VALID PROPERTIES: [ok]
+-- INVALID PROPERTIES: [cex] (k = 1)
+
+type color = enum { RED, GREEN, BLUE };
+
+function f(c : color) returns (x : int);
+
+node main(in : color) returns (ok, cex: bool);
+let
+  cex = not (f(RED) > f(GREEN) and f(GREEN) > f(BLUE));
+  --%PROPERTY cex;
+
+  ok = (f(in) = f(RED) or f(in) = f(GREEN) or f(in) = f(BLUE));
+  --%PROPERTY ok;
+tel;

@@ -19,7 +19,6 @@ public class JKindSettings extends Settings {
 	public boolean reduceIvc = false;
 	public boolean allIvcs = false;
 	public boolean smoothCounterexamples = false;
-	public boolean intervalGeneralization = false;
 	public boolean inlining = true;
 	public boolean slicing = true;
 	public SolverOption solver = SolverOption.SMTINTERPOL;
@@ -48,7 +47,6 @@ public class JKindSettings extends Settings {
 		this.reduceIvc = settings.reduceIvc;
 		this.allIvcs = settings.allIvcs;
 		this.smoothCounterexamples = settings.smoothCounterexamples;
-		this.intervalGeneralization = settings.intervalGeneralization;
 		this.inlining = settings.inlining;
 		this.slicing = settings.slicing;
 		this.solver = settings.solver;

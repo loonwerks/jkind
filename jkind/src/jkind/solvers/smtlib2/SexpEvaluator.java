@@ -2,6 +2,7 @@ package jkind.solvers.smtlib2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
@@ -17,10 +18,14 @@ import jkind.util.BigFraction;
 import jkind.util.Util;
 
 public class SexpEvaluator {
-	private Model model;
+	private final Function<String, Value> lookupSymbol;
+
+	public SexpEvaluator(Function<String, Value> lookupSymbol) {
+		this.lookupSymbol = lookupSymbol;
+	}
 
 	public SexpEvaluator(Model model) {
-		this.model = model;
+		this.lookupSymbol = model::getValue;
 	}
 
 	public Value eval(Sexp sexp) {
@@ -38,8 +43,8 @@ public class SexpEvaluator {
 			return BooleanValue.TRUE;
 		} else if (sym.equals("false")) {
 			return BooleanValue.FALSE;
-		} else if (!Character.isDigit(sym.charAt(0))) {
-			return model.getValue(sym);
+		} else if (!Character.isDigit(sym.charAt(0)) && sym.charAt(0) != '-') {
+			return lookupSymbol.apply(sym);
 		} else if (sym.contains("/")) {
 			return Util.parseValue("real", sym);
 		} else {
@@ -58,6 +63,13 @@ public class SexpEvaluator {
 				}
 			}
 			return BooleanValue.TRUE;
+		} else if (fn.equals("or")) {
+			for (Sexp arg : sexp.args) {
+				if (isTrue(eval(arg))) {
+					return BooleanValue.TRUE;
+				}
+			}
+			return BooleanValue.FALSE;
 		}
 
 		List<Value> args = new ArrayList<>();

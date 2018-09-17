@@ -8,9 +8,12 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import jkind.JKindException;
+import jkind.lustre.VarDecl;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
 import jkind.results.Counterexample;
+import jkind.results.FunctionTable;
+import jkind.results.FunctionTableRow;
 import jkind.results.InconsistentProperty;
 import jkind.results.InvalidProperty;
 import jkind.results.Property;
@@ -109,8 +112,8 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new UnknownProperty(name, property.getTrueFor(),
-				rename(property.getInductiveCounterexample()), property.getRuntime());
+		return new UnknownProperty(name, property.getTrueFor(), rename(property.getInductiveCounterexample()),
+				property.getRuntime());
 	}
 
 	/**
@@ -127,8 +130,7 @@ public abstract class Renaming {
 			return null;
 		}
 
-		return new InconsistentProperty(name, property.getSource(), property.getK(),
-				property.getRuntime());
+		return new InconsistentProperty(name, property.getSource(), property.getK(), property.getRuntime());
 	}
 
 	/**
@@ -144,13 +146,71 @@ public abstract class Renaming {
 		}
 
 		Counterexample result = new Counterexample(cex.getLength());
+
 		for (Signal<Value> signal : cex.getSignals()) {
 			Signal<Value> newSignal = rename(signal);
 			if (newSignal != null) {
 				result.addSignal(newSignal);
 			}
 		}
+
+		for (FunctionTable table : cex.getFunctionTables()) {
+			FunctionTable newTable = rename(table);
+			if (newTable != null) {
+				result.addFunctionTable(newTable);
+			}
+		}
+
 		return result;
+	}
+
+	protected FunctionTable rename(FunctionTable table) {
+		String name = rename(table.getName());
+		if (name == null) {
+			return null;
+		}
+
+		List<VarDecl> inputs = table.getInputs().stream().map(this::rename).collect(toList());
+		if (inputs.contains(null)) {
+			return null;
+		}
+
+		VarDecl output = rename(table.getOutput());
+		if (output == null) {
+			return null;
+		}
+
+		FunctionTable result = new FunctionTable(name, inputs, output);
+
+		for (FunctionTableRow row : table.getRows()) {
+			List<Value> inputValues = row.getInputs().stream().map(this::rename).collect(toList());
+			Value outputValue = rename(row.getOutput());
+			result.addRow(inputValues, outputValue);
+		}
+
+		return result;
+	}
+
+	private VarDecl rename(VarDecl vd) {
+		String id = rename(vd.id);
+		if (id == null) {
+			return null;
+		} else {
+			return new VarDecl(id, vd.type);
+		}
+	}
+
+	private Value rename(Value value) {
+		if (value instanceof EnumValue) {
+			EnumValue ev = (EnumValue) value;
+			String renamedValue = rename(ev.value);
+			if (renamedValue == null) {
+				throw new JKindException("Failed when renaming enumeration value: " + ev.value);
+			}
+			return new EnumValue(renamedValue);
+		} else {
+			return value;
+		}
 	}
 
 	/**
@@ -172,16 +232,7 @@ public abstract class Renaming {
 
 		Signal<T> newSignal = new Signal<>(name);
 		for (Entry<Integer, T> entry : signal.getValues().entrySet()) {
-			if (entry.getValue() instanceof EnumValue) {
-				EnumValue ev = (EnumValue) entry.getValue();
-				String renamedValue = rename(ev.value);
-				if (renamedValue == null) {
-					throw new JKindException("Failed when renaming enumeration value: " + ev.value);
-				}
-				newSignal.putValue(entry.getKey(), (T) new EnumValue(renamedValue));
-			} else {
-				newSignal.putValue(entry.getKey(), entry.getValue());
-			}
+			newSignal.putValue(entry.getKey(), (T) rename(entry.getValue()));
 		}
 		return newSignal;
 	}

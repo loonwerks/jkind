@@ -1,0 +1,121 @@
+buildscript {
+    ext {
+        osgi_platform = 'win32.win32.x86_64'
+        swt_version = '3.105.3'
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+
+    repositories {
+       flatDir {
+           dirs '../jkind-common/dependencies'
+       }
+    }
+
+    dependencies {
+        compile name: 'antlr-runtime-4.4'
+        compile name: 'jxl'
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ['../jkind-common/src']
+            }
+        }
+    }
+}
+
+project(':jkind') {
+    repositories {
+       flatDir {
+           dirs 'dependencies'
+       }
+    }
+
+    dependencies {
+        compile name: 'commons-cli-1.2'
+        compile name: 'smtinterpol'
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs += ['src']
+            }
+        }
+    }
+
+    jar {
+        manifest {
+            attributes 'Main-Class': 'jkind.Main'
+        }
+    
+        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    }
+}
+
+project(':jkind-api') {
+    sourceSets {
+        main {
+            java {
+                srcDirs += ['src']
+            }
+            resources {
+                srcDirs = ['resources']
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                // The maven property ${osgi.platform} is not handled by Gradle
+                // so we replace the dependency, using the osgi platform from the project settings
+                substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.$osgi_platform:$swt_version")
+            }
+        }
+    }
+
+    dependencies {
+        compile "org.eclipse.platform:org.eclipse.jface:3.12.2"
+        compile "org.eclipse.platform:org.eclipse.swt:$swt_version"
+    }
+
+    jar {
+        from sourceSets.main.allSource
+    }
+}
+
+task dist(type: Zip) {
+    dependsOn 'jkind-api:jar', 'jkind:jar'
+    from ('scripts') {
+        include '*'
+        exclude '*.bat'
+        fileMode 0755
+        into 'jkind'
+    }
+    from ('scripts') {
+        include '*.bat'
+        into 'jkind'
+    }
+    from ('jkind/build/libs') {
+         include 'jkind.jar'
+         into 'jkind'
+    }
+    from ('jkind-api/build/libs') {
+         include 'jkind-api.jar'
+         into 'jkind'
+    }
+    baseName = 'jkind'
+}
+ 
+artifacts {
+    archives dist
+}

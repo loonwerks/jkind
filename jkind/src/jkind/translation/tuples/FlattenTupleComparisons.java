@@ -4,7 +4,7 @@ import jkind.lustre.BinaryExpr;
 import jkind.lustre.BinaryOp;
 import jkind.lustre.Expr;
 import jkind.lustre.LustreUtil;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.UnaryExpr;
 import jkind.lustre.UnaryOp;
@@ -16,8 +16,8 @@ import jkind.lustre.visitors.AstMapVisitor;
  * Assumption: All tuple expressions have been lifted as far as possible.
  */
 public class FlattenTupleComparisons extends AstMapVisitor {
-	public static Node node(Node node) {
-		return new FlattenTupleComparisons().visit(node);
+	public static Program program(Program program) {
+		return new FlattenTupleComparisons().visit(program);
 	}
 
 	@Override

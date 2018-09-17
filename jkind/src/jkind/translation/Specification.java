@@ -1,8 +1,11 @@
 package jkind.translation;
 
+import java.util.List;
 import java.util.Map;
 
+import jkind.lustre.Function;
 import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.Type;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
@@ -10,23 +13,26 @@ import jkind.util.Util;
 
 public class Specification {
 	public final Node node;
+	public final List<Function> functions;
 	public final DependencyMap dependencyMap;
 	public final Map<String, Type> typeMap;
 	private Relation transitionRelation;
 	private Relation ivcTransitionRelation;
 
-	public Specification(Node raw, boolean slicing) {
+	public Specification(Program program, boolean slicing) {
+		Node main = program.getMainNode();
 		if (slicing) {
-			this.dependencyMap = new DependencyMap(raw, raw.properties);
+			this.dependencyMap = new DependencyMap(main, main.properties, program.functions);
 		} else {
-			this.dependencyMap = DependencyMap.full(raw);
+			this.dependencyMap = DependencyMap.full(main, program.functions);
 		}
-		this.node = LustreSlicer.slice(raw, dependencyMap);
+		this.node = LustreSlicer.slice(main, dependencyMap);
+		this.functions = Util.safeList(program.functions);
 		this.typeMap = Util.getTypeMap(node);
 	}
 
-	public Specification(Node raw) {
-		this(raw, true);
+	public Specification(Program program) {
+		this(program, false);
 	}
 
 	public Relation getTransitionRelation() {

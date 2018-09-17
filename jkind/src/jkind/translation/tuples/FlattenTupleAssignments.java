@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jkind.lustre.Equation;
-import jkind.lustre.Node;
+import jkind.lustre.Program;
 import jkind.lustre.TupleExpr;
 import jkind.lustre.visitors.AstMapVisitor;
 
@@ -15,8 +15,8 @@ import jkind.lustre.visitors.AstMapVisitor;
  * Assumption: All tuple expressions have been lifted as far as possible.
  */
 public class FlattenTupleAssignments extends AstMapVisitor {
-	public static Node node(Node node) {
-		return new FlattenTupleAssignments().visit(node);
+	public static Program program(Program program) {
+		return new FlattenTupleAssignments().visit(program);
 	}
 
 	@Override

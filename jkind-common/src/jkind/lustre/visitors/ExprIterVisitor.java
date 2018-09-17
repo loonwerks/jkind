@@ -10,6 +10,7 @@ import jkind.lustre.BoolExpr;
 import jkind.lustre.CastExpr;
 import jkind.lustre.CondactExpr;
 import jkind.lustre.Expr;
+import jkind.lustre.FunctionCallExpr;
 import jkind.lustre.IdExpr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
@@ -70,6 +71,12 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
+	public Void visit(FunctionCallExpr e) {
+		visitExprs(e.args);
+		return null;
+	}
+
+	@Override
 	public Void visit(IdExpr e) {
 		return null;
 	}
@@ -116,13 +123,13 @@ public class ExprIterVisitor implements ExprVisitor<Void> {
 		e.value.accept(this);
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(TupleExpr e) {
 		visitExprs(e.elements);
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(UnaryExpr e) {
 		e.expr.accept(this);
