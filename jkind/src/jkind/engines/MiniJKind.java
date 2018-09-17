@@ -31,7 +31,7 @@ public class MiniJKind extends Engine {
 	private double runtime;
 	private String status = NOT_YET_CHECKED; 
     
-	public MiniJKind(Specification spec, JKindSettings settings) {
+	public MiniJKind(Program program, Specification spec, JKindSettings settings) {
 		super(NAME, spec, settings, null); 
 		
 		if (spec.node.properties.size() != 1) {
@@ -42,13 +42,19 @@ public class MiniJKind extends Engine {
 				settings.xml = false;
 				settings.xmlToStdout = false;
 				settings.allIvcs = false;
+				settings.allIvcsAlgorithm = 1;
+				settings.allIvcsMaxGrows = 1000;
+				settings.allIvcsJkindTimeout = -1;
 				settings.excel = false; 
 				settings.miniJkind = true;
-		
+ 
 		if (settings.allAssigned && settings.reduceIvc){ 
-			Program program = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
+			program = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
 			this.director =  new Director(settings, new Specification(program, settings.slicing), 
 										new Specification(program, settings.slicing), this);
+		}else if (!settings.allAssigned && settings.reduceIvc){ 
+			this.director =  new Director(settings, new Specification(program, settings.slicing), 
+					new Specification(program, settings.slicing), this); 
 		}else{
 			this.director =  new Director(settings, spec, spec, this);
 		}
@@ -71,11 +77,11 @@ public class MiniJKind extends Engine {
 	}
 	
 	public void setValidMessage(ValidMessage vm) {
+		status = VALID;
 		validMessage = new ValidMessage(vm.source, vm.valid, vm.k, vm.proofTime, vm.invariants, vm.ivc, null, null);
-		status = VALID; 
 	}
 	
-	public ValidMessage getValidMessage() {
+	public ValidMessage getValidMessage() { 
 		return validMessage;
 	}
 
@@ -104,7 +110,7 @@ public class MiniJKind extends Engine {
 		return status;
 	}
 	
-	public Set<String> getPropertyIvc() {
+	public Set<String> getPropertyIvc() { 
 		return validMessage.ivc;
 	}
 	

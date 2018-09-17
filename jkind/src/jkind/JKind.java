@@ -1,5 +1,8 @@
 package jkind;
 
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director; 
@@ -35,7 +38,6 @@ public class JKind {
 				program = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			} 
 			Specification userSpec = new Specification(program, settings.slicing); 
-
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 			
 			new Director(settings, userSpec, analysisSpec).run();

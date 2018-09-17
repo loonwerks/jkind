@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
+import jkind.engines.MiniJKind;
 import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.ivcs.MinimalIvcFinder; 
 import jkind.lustre.Node;
@@ -17,6 +18,7 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.slicing.DependencyMap;
 import jkind.slicing.LustreSlicer;
 import jkind.translation.RemoveEnumTypes;
+import jkind.translation.Specification;
 import jkind.translation.Translate; 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,9 +56,13 @@ public class JSupport {
 			}
 			
 			inputIVC = getIVC(settings.useUnsatCore);
+
 			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
 					settings.filename);
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT);
+			//-------------- computing MUST ---------------------
+			//MinimalIvcFinder minimalFinder = new MinimalIvcFinder(main, settings.filename, main.properties.get(0));
+			//minimalFinder.computeMust(inputIVC, true, TIMEOUT);
 			System.exit(0);
 		 	
 			}catch (Throwable t) {

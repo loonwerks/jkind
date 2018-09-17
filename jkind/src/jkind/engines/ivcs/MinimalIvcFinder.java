@@ -25,8 +25,7 @@ public class MinimalIvcFinder {
 		js.timeout = timeout; 
 		for (String s : candidates) {  
 			Program candidate = new Program(IvcUtil.unassign(node, s, property));
-	
-			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.slicing), js);
+			MiniJKind miniJkind = new MiniJKind (candidate, new Specification(candidate, js.slicing), js);
 			miniJkind.verify();
 			if (miniJkind.getPropertyStatus() == MiniJKind.VALID) {
 				minimal.remove(s);
@@ -48,7 +47,7 @@ public class MinimalIvcFinder {
 		js.timeout = timeout; 
 		for (String s : candidates) {    
 			Program candidate = new Program(IvcUtil.unassign(node, s, property));
-			MiniJKind miniJkind = new MiniJKind (new Specification(candidate, js.slicing), js);
+			MiniJKind miniJkind = new MiniJKind (candidate, new Specification(candidate, js.slicing), js);
 			miniJkind.verify();
 			if (miniJkind.getPropertyStatus() != MiniJKind.VALID) {
 				must.add(s);

@@ -1,14 +1,10 @@
-package jkind.engines.ivcs; 
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
+package jkind.engines.ivcs;  
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings; 
 import jkind.engines.Director; 
@@ -21,8 +17,7 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage; 
-import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
+import jkind.lustre.Expr; 
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
@@ -66,25 +61,12 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	}
 
 	private void reduce(ValidMessage vm) {
-		for (String property : vm.valid) {
-			if (properties.remove(property)) {
-				runtime = System.currentTimeMillis();  
-				reduceInvariants(getInvariantByName(property, vm.invariants), vm);
+		for (String property : vm.valid) { 
+			if (properties.remove(property)) { 
+				runtime = System.currentTimeMillis();   
+				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 		}
-	}
-
-	private Expr getInvariantByName(String name, List<Expr> invariants) {
-		for (Expr invariant : invariants) {
-			if (invariant.toString().equals(name)) {
-				return invariant;
-			}
-		}
-
-		// In rare cases, PDR will not return the original property as one of
-		// the invariants. By returning a new Expr we will effectively add it as
-		// a new invariants. See https://github.com/agacek/jkind/issues/44
-		return new IdExpr(name);
 	}
 
 	private void reduceInvariants(Expr property, ValidMessage vm) {
@@ -252,7 +234,6 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc, ValidMessage vm) {
 		runtime = (System.currentTimeMillis() - runtime) / 1000.0; 
-		 
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());
@@ -292,4 +273,3 @@ public class IvcReductionEngine extends SolverBasedEngine {
 		}
 	}
 }
-

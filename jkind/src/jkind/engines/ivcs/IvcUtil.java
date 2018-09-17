@@ -1,4 +1,4 @@
-package jkind.engines.ivcs;
+ package jkind.engines.ivcs;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +57,7 @@ public class IvcUtil {
 
 	public static Program setIvcArgs(Node node, List<String> newIvc) {
 		return  new Program (new NodeBuilder(node).clearIvc().addIvcs(newIvc).build());
-	}	
+	}
 	
 	public static List<VarDecl> removeVariables(List<VarDecl> varDecls, List<String> vars) {
 		List<VarDecl> result = new ArrayList<>(varDecls);
@@ -89,13 +89,22 @@ public class IvcUtil {
 		return ret;
 	}
 	
-	public static Set<String> trimNode(Collection<String> set) {
+	//-----------------------------------------------
+	/*public static Set<String> trimNode(Collection<String> set) {
 		Set<String> ret = new HashSet<>();
 		for (String e : set) {
 			ret.add(e.replaceAll("~[0-9]+", ""));
 		}
 		return ret;
+	}*/
+	//since it caused trouble, replace it with the following until we find the bug
+	public static Set<String> trimNode(Collection<String> set) {
+		Set<String> ret = new HashSet<>(); 
+		ret.addAll(set);
+		return ret;
 	}
+	//--------------------------------------------------
+	
 	
 	public static Set<String> findRightSide(Set<String> initialIvc, boolean allAssigned, List<Equation> equations) {
 		Set<String> ivc = new HashSet<>(initialIvc);
@@ -184,4 +193,6 @@ public class IvcUtil {
 		}  
 		return unassign(node, deactivate, property);
 	}
-}
+} 
+
+	
