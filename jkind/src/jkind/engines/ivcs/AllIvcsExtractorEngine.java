@@ -59,9 +59,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private Set<String> mayElements = new HashSet<>();  
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT;  
-	private int numOfTimedOuts = 0;
+	private boolean timedoutLoop = false;
 	private ValidMessage gvm;
-		private double runtime;  
+	private double runtime;  
 
 	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director); 
@@ -107,7 +107,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 						break;
 					case 2: //online MIVC enumeration
 						System.out.println("Starting MIVC enumeration using the online enumeration algorithm.");
-						computeAllIvcsMapBased(IvcUtil.getInvariantByName(property, vm.invariants), vm);
+						computeAllIvcsOnline(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 						break;
 				} 
 				allIvcs.clear();
@@ -115,8 +115,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				
 		}
 	}
-	
-	//JB, offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
+	/**
+	 * offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
+	 **/	
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 			
 		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
 		List<Symbol> seed = new ArrayList<Symbol>(); 
@@ -146,12 +147,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		sendValid(property.toString(), vm);
 	}
 
-	//JB, online MIVC enumeration algorithm as described in the SEFM 2018 paper
-	private void computeAllIvcsMapBased(Expr property, ValidMessage vm) { 			
+	/**
+	 * JB, online MIVC enumeration algorithm as described in the SEFM 2018 paper
+	 **/
+	private void computeAllIvcsOnline(Expr property, ValidMessage vm) { 			
 		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
-		Set<String> resultOfIvcFinder = new HashSet<>();
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
@@ -163,9 +165,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		} 
 		z3Solver.push();
 		while(checkMapSatisfiability(seed, mustChckList, true)){ 			
-			resultOfIvcFinder.clear(); 			
-			if (ivcFinderSimple(seed, resultOfIvcFinder, property.toString())){				
-				seed = IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder);				
+			if (ivcFinderSimple(seed, property.toString(), true )){							
 				mapShrink(seed, property.toString());				
 			}else{
 				map = new Cons("and", map, blockDownComplement(seed)); 
@@ -177,13 +177,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}						
 		}
 		
-		z3Solver.pop(); 
-		
-		//--------- for the experiments --------------
-				//runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-				//recordRuntime(false);
-		//--------------------------------------------
-				
+		z3Solver.pop(); 				
 		sendValid(property.toString(), vm);
 	}
 			
@@ -212,6 +206,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
 		miniJkind.verify();
         
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
+			timedoutLoop  = true;
+		}		
         if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
 			js.pdrMax = 0;
 			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
@@ -221,7 +218,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			mustChckList.removeAll(deactivate);
 			
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
-			Set<String> newIvc = IvcUtil.trimNode(resultOfIvcFinder);			
+			Set<String> newIvc = IvcUtil.trimNode(resultOfIvcFinder);
+			
 			if (settings.scratch){
 				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			} 
@@ -236,17 +234,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				// the else part can only happen 
 				//         while processing mustChckList after finding all IVC sets
 				//         if we have different instances of a node in the Lustre file
-				if (newIvc.containsAll(trimmed)){					
-					throw new Error("Elaheh says this will never happen!!!");
-				} 
+				else if (newIvc.containsAll(trimmed)){
+					return true;
+				}
 			} 			
 			if(temp.isEmpty()){ 				
 				//director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
-				
-				//---------------------for experiments ------------------
-				writeToXmlAllIvcs(newIvc, miniJkind.getPropertyIvc(), miniJkind.getRuntime(), true) ;
-				//--------------------------------------------------------
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));				
 			}
 			else{ 				
 				allIvcs.removeAll(temp);
@@ -255,12 +249,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			return true;
 		}
 		else{				
-			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-				numOfTimedOuts++;
-				if(numOfTimedOuts == 1) {
-					System.out.println("Either a timeout occured during checking a property or minijkind gave up (UNKNOWN result). Thus, the produced MIVCs might not be minimal.");
-				}
-			}
 			resultOfIvcFinder.addAll(deactivate); 
 			if (settings.scratch){
 				comment("Property got violated. Adding back the elements");
@@ -286,13 +274,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		} 
 	}
 	
-	//JB
-	private boolean ivcFinderSimple(List<Symbol> seed, Set<String> resultOfIvcFinder, String property) {	
+	private boolean ivcFinderSimple(List<Symbol> seed, String property, boolean reduceSeed) {	
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true; 
 		js.timeout = TIMEOUT; 
-		// optional-- could be commented later:
-		//js.scratch = true;
 		js.solver = settings.solver;
 		js.slicing = true; 
 		js.pdrMax = settings.pdrMax;
@@ -309,113 +294,63 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
 		miniJkind.verify(); 
-		
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
-			js.pdrMax = 0;		
-			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
+
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
+			timedoutLoop  = true;
 		}
-		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){											
-			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());	 
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
+//			js.pdrMax = 0;		
+//			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
+		}
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){			
+			if(reduceSeed) {
+				seed = IvcUtil.getIvcLiterals(ivcMap, miniJkind.getPropertyIvc());
+			} 
 			return true;
 		}
 		else{				
-			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-				numOfTimedOuts ++;
-				if(numOfTimedOuts == 1) {
-					System.out.println("Either a timeout occured during checking a property or minijkind gave up (UNKNOWN result). Thus, the produced MIVCs might not be minimal.");
-				}
-			}
 			if(deactivate.size() == 1){
 				mustElements.addAll(deactivate);
 			} 
 			return false;
 		} 
 	}
-	
-	//JB
-	private boolean check(List<Symbol> seed, String property) {
-		JKindSettings js = new JKindSettings();
-		js.reduceIvc = false; 
-		js.timeout = TIMEOUT; 
-		// optional-- could be commented later:
-		//js.scratch = true;
-		js.solver = settings.solver;
-		js.slicing = true; 
-		js.pdrMax = settings.pdrMax;
-		js.boundedModelChecking = settings.boundedModelChecking;
-        js.miniJkind = true;
-        js.readAdvice = js.writeAdvice; 
-		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed)); 
-		List<String> deactivate = new ArrayList<>();
-		deactivate.addAll(ivcMap.keyList());
-		deactivate.removeAll(wantedElem);
-		
-		Program nodeSpec = new Program(IvcUtil.unassign(spec.node, deactivate, property));  
-		Specification newSpec = new Specification(nodeSpec, js.slicing);  
-		
-		if (settings.scratch){
-			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
-		}
-		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
-		miniJkind.verify(); 
-		
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
-			//	js.pdrMax = 0;
-		//	return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
-		} 
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){	 
-			return false;			
-		}
-		else{				
-			if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-				numOfTimedOuts++;
-				if(numOfTimedOuts == 1) {
-					System.out.println("Either a timeout occured during checking a property or minijkind gave up (UNKNOWN result). Thus, the produced MIVCs might not be minimal.");
-				}
-			}			 
-			return true;
-		} 
-	}
-		
-	//JB
+			
 	private boolean GrowByElimination(List<Symbol> seed, String property) {
 		List<Symbol> top = getTopUnex(seed);
+		List<Symbol> approx = new ArrayList<Symbol>(top);
 		List<Symbol> added = new ArrayList<Symbol>(top);
 		added.removeAll(seed);
 		
-		Set<String> resultOfIvcFinder = new HashSet<>();
-		while (ivcFinderSimple(top, resultOfIvcFinder, property.toString())){		
-			List<Symbol> approx = new ArrayList<Symbol>(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
-			
+		while (ivcFinderSimple(approx, property.toString(), true)){					
 			List<List<Symbol>> toRemove = new ArrayList<List<Symbol>>();
 			for(List<Symbol> s: shrinkingPool) {
 				if(s.containsAll(approx)) {
 					toRemove.add(s);
 				}				
 			}
-			shrinkingPool.removeAll(toRemove);
-			
+			shrinkingPool.removeAll(toRemove);			
 			map = new Cons("and", map, blockUp(approx));
 			shrinkingPool.add(approx);
 
-			boolean removed = false;
+			boolean reduced = false;
 			for(Symbol s: approx) {
 				if(added.contains(s)) {
 					added.remove(s);
 					top.remove(s);
-					removed = true;
+					reduced = true;
 					break;
 				}
 			}							
-			if(!removed) //seed is a MSS
+			if(!reduced) {
 				break;
-			resultOfIvcFinder.clear();
+			}
+			approx = new ArrayList<Symbol>(top);
 		}		
 		map = new Cons("and", map, blockDownComplement(top));		
 		return true;		
 	}
 					
-	//JB
 	private boolean checkMap(List<Symbol> seed) {
 		z3Solver.push();  
 		List<Symbol> positiveLits = new ArrayList<Symbol>(seed); 		
@@ -442,17 +377,16 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 	
-	//JB
 	private boolean mapShrink(List<Symbol> seed, String property) {
-
 		List<Symbol> candidates = new ArrayList<Symbol>(seed);		 
 		for(Symbol c : candidates) {			
 			seed.remove(c);
-			if(!checkMap(seed) || mustElements.contains(c.toString())) { 
+			if(mustElements.contains(c.toString()) || !checkMap(seed)) { 
 				seed.add(c);				
 				continue;
 			}
-			if(check(seed, property)) {			
+			
+			if(!ivcFinderSimple(seed, property, false)) {
 				ArrayList<Symbol> copy = new ArrayList<Symbol>(seed);				
 				growingPool.add(copy);																
 				seed.add(c);				
@@ -461,7 +395,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		map = new Cons("and", map, blockUp(seed));			
 		markMIVC(seed);
 
-		//update the shrinking pool (some seeds might be supersets of the seed)
 		List<List<Symbol>> toRemove = new ArrayList<List<Symbol>>();
 		for(List<Symbol> s: shrinkingPool) {
 			if(s.containsAll(seed)) {
@@ -486,14 +419,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 	
-	//JB
 	private void markMIVC(List<Symbol> mivc) {	 
-		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc);
-				
-		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));
-		
-		double time = (System.currentTimeMillis() - runtime) / 1000.0;	
-		
+		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc);			
+		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));		
+		double time = (System.currentTimeMillis() - runtime) / 1000.0;			
 		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true) ;
 	}
 
@@ -506,6 +435,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (program, newSpec, js);
 		miniJkind.verify();
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
+			timedoutLoop  = true;
+		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
@@ -573,7 +505,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 	
-	//JB -- this is not blockDown!!! It should be implemented as the function blockDownComplement
 	private Sexp blockDown(Collection<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
 		for(Symbol literal : list){
@@ -582,11 +513,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return SexpUtil.disjoin(ret);
 	}
 	
-	//JB
 	private Sexp blockDownComplement(Collection<Symbol> list) {
 		List<Sexp> temp = new ArrayList<>(ivcMap.valueList());		
-		temp.removeAll(list);
-		
+		temp.removeAll(list);		
 		return SexpUtil.disjoin(temp);
 	}
 
@@ -610,7 +539,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 	
-	//JB
 	private List<Symbol> getTopUnex(List<Symbol> seed){			
 		solver.push();
 		solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(seed)));
@@ -698,14 +626,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private void sendValid(String valid, ValidMessage vm) {
 		Itinerary itinerary = vm.getNextItinerary();  
+		if(timedoutLoop){
+			mustElements.add("::AIVCtimedoutLoop::");
+		}
+		
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
 	
 	public  void getValid(){
-		//--------- for the experiments --------------
-			//runtime = (System.currentTimeMillis() - runtime) / 1000.0;
-			//recordRuntime(true);
-		//--------------------------------------------
 		sendValid("OK", gvm);
 	}
 	
@@ -738,29 +666,30 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		} 
 	}
 		
-		//recording (minimal) IVCs found during the computation
-		private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, double d, boolean isNew) {
-	 		String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_all_uc_minijkind.xml";  
+	/*
+	 * recording (minimal) IVCs found during the computation
+	 **/
+	private void writeToXmlAllIvcs(Set<String> trimmed, Set<String> untrimmed, double d, boolean isNew) {
+		String xmlFilename = settings.filename + "_alg" + settings.allIvcsAlgorithm + "_all_uc_minijkind.xml";  
  
-			try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
-				out.println("<Timeouts>" + numOfTimedOuts + "</Timeouts>");
-				out.println("<Results>");  
-				out.println("   <NewSet>" + isNew + "</NewSet>"); 
-				out.println("   <Time unit=\"sec\">" + d + "</Time>"); 					
-				for (String s : untrimmed) {
-					out.println("   <IVC>" + s + "</IVC>");
-				}
-				for (String s : trimmed) {
-					out.println("   <TRIVC>" + s + "</TRIVC>");
-				}
-				out.println("</Results>");
-				out.flush(); 
-				out.close(); 
-			} catch (Throwable t) { 
-				t.printStackTrace();
-				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		try (PrintWriter out = new PrintWriter(new FileOutputStream(new File(xmlFilename), true))) { 
+			out.println("<Results>");  
+			out.println("   <NewSet>" + isNew + "</NewSet>"); 
+			out.println("   <Time unit=\"sec\">" + d + "</Time>"); 					
+			for (String s : untrimmed) {
+				out.println("   <IVC>" + s + "</IVC>");
 			}
+			for (String s : trimmed) {
+				out.println("   <TRIVC>" + s + "</TRIVC>");
+			}
+			out.println("</Results>");
+			out.flush(); 
+			out.close(); 
+		} catch (Throwable t) { 
+			t.printStackTrace();
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		}
 			
-		}	
+	}	
 	
 }
