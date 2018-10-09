@@ -119,7 +119,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	 * offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
 	 **/	
 	private void computeAllIvcs(Expr property, ValidMessage vm) { 			
-		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
+		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
 		Set<String> mustChckList = new HashSet<>(); 
 		Set<String> resultOfIvcFinder = new HashSet<>();
@@ -153,7 +153,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private void computeAllIvcsOnline(Expr property, ValidMessage vm) { 			
 		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;		
 		List<Symbol> seed = new ArrayList<Symbol>(); 
-		Set<String> mustChckList = new HashSet<>(); 
 		
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);  
@@ -164,21 +163,25 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			map = new Cons("and", map, ivcMap.get(property.toString())); 
 		} 
 		z3Solver.push();
-		while(checkMapSatisfiability(seed, mustChckList, true)){ 			
+		
+		seed = getMaximalUnexplored(new ArrayList<Symbol>());		
+		while(!seed.isEmpty()){				
 			if (ivcFinderSimple(seed, property.toString(), true )){							
-				mapShrink(seed, property.toString());				
+				mapShrink(seed, property.toString());			
 			}else{
-				map = new Cons("and", map, blockDownComplement(seed)); 
+				map = new Cons("and", map, blockDownComplement(seed));
 			}
 			while(!shrinkingPool.isEmpty()) {
 				List<Symbol> ivc = shrinkingPool.get(0);
 				shrinkingPool.remove(0);				
 				mapShrink(ivc, property.toString());
-			}						
+			}		
+			seed = getMaximalUnexplored(new ArrayList<Symbol>());
 		}
 		
 		z3Solver.pop(); 				
 		sendValid(property.toString(), vm);
+
 	}
 			
 	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
@@ -214,7 +217,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
 		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){			
-			mayElements.addAll(deactivate); //JB why? the deactivate elements are not contained in the ivc
+			mayElements.addAll(deactivate); 
 			mustChckList.removeAll(deactivate);
 			
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
@@ -298,9 +301,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 			timedoutLoop  = true;
 		}
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
-//			js.pdrMax = 0;		
-//			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){	
+			//js.pdrMax = 0;		
+			//return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
 		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){			
 			if(reduceSeed) {
@@ -316,8 +319,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		} 
 	}
 			
-	private boolean GrowByElimination(List<Symbol> seed, String property) {
-		List<Symbol> top = getTopUnex(seed);
+	private boolean Grow(List<Symbol> seed, String property) {
+		List<Symbol> top = getMaximalUnexplored(seed);
 		List<Symbol> approx = new ArrayList<Symbol>(top);
 		List<Symbol> added = new ArrayList<Symbol>(top);
 		added.removeAll(seed);
@@ -348,10 +351,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			approx = new ArrayList<Symbol>(top);
 		}		
 		map = new Cons("and", map, blockDownComplement(top));		
+					
 		return true;		
 	}
 					
-	private boolean checkMap(List<Symbol> seed) {
+	private boolean isUnexplored(List<Symbol> seed) {
 		z3Solver.push();  
 		List<Symbol> positiveLits = new ArrayList<Symbol>(seed); 		
 		List<Symbol> negatedLits = new ArrayList<>(ivcMap.valueList());		
@@ -381,7 +385,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		List<Symbol> candidates = new ArrayList<Symbol>(seed);		 
 		for(Symbol c : candidates) {			
 			seed.remove(c);
-			if(mustElements.contains(c.toString()) || !checkMap(seed)) { 
+			if(mustElements.contains(c.toString()) || !isUnexplored(seed)) { 
 				seed.add(c);				
 				continue;
 			}
@@ -410,7 +414,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 			if(remainingGrows > 0) {
 				remainingGrows--;
-				GrowByElimination(is, property.toString());
+				Grow(is, property.toString());
 			}
 			else {
 				map = new Cons("and", map, blockDownComplement(is));
@@ -531,29 +535,42 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		} 
 		 
 		seed.clear();
-		if(maximal)
+		if(maximal) {
 			seed.addAll(maximizeSat(((SatResult) result), mustChckList)); 
-		else
-			seed.addAll(minimizeSat(((SatResult) result), mustChckList));
+		}
+		else {
+			SatResult sat = (SatResult) result;
+			seed.addAll(getActiveLiteralsFromModel(sat.getModel(), "true"));
+		}
 		z3Solver.pop();
 		return true;
 	}
 	
-	private List<Symbol> getTopUnex(List<Symbol> seed){			
-		solver.push();
-		solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(seed)));
+	private List<Symbol> getMaximalUnexplored(List<Symbol> seed){			
+		z3Solver.push();
+		solver.assertSexp(map);
+		if(!seed.isEmpty()){
+			solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(seed)));
+		}
 		Result result = z3Solver.checkMaximal();
-		solver.pop();
+		z3Solver.pop();
 		
-		if(result instanceof SatResult) {
-			SatResult sat = (SatResult) result;
-			Set<Symbol> top = getActiveLiteralsFromModel(sat.getModel(), "true");
+		if(result instanceof SatResult) {			
+			SatResult sat = (SatResult) result;			
+			List<Symbol> top = getCompletePositiveModel(sat.getModel());			
 			return new ArrayList<Symbol>(top);
 		}
-		return seed;
+		return new ArrayList<Symbol>();
 	}
 	
+	private List<Symbol> getCompletePositiveModel(Model model){		
+		Set<Symbol> negative_literals = getActiveLiteralsFromModel(model, "false");
+		List<Symbol> top = new ArrayList<>(ivcMap.valueList());
+		top.removeAll(negative_literals);
+		return top;
+	}
 	
+		
 	/**
 	 * in case of sat result we would like to get a maximum sat subset of activation literals 
 	 **/
@@ -590,30 +607,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 		}	
 		return new ArrayList<>(seed); 
-	}
-
-	/**
-	 * in case of sat result we would like to get a minimum sat subset of activation literals 
-	 **/
-	private List<Symbol> minimizeSat(SatResult result, Set<String> mustChckList) { 
-		Set<Symbol> seed = getActiveLiteralsFromModel(result.getModel(), "true");		
-		List<Symbol> minimal = new ArrayList<Symbol>(seed);
-		List<Symbol> toRemove = new ArrayList<Symbol>(seed);
-		for(String m: mustElements) {
-			toRemove.remove(ivcMap.get(m)); // ensure that must elements are not removed, especially the property must remain
-		}		
+	}	
 		
-		for(Symbol s: toRemove) {
-			minimal.remove(s);
-			if(!checkMap(minimal)) {
-				minimal.add(s);
-			}				
-		}
-		return minimal;
-	}
-	
-	
-	
 	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
 		Set<Symbol> seed = new HashSet<>();
 		for (String var : model.getVariableNames()) { 
