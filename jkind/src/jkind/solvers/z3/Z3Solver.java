@@ -121,6 +121,22 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 			return new UnknownResult();
 		}
 	}
+
+	public Result checkMinimal() {
+		send("(set-option :sat.phase always_false)");
+		send("(check-sat-using sat)");
+		String status = readFromSolver(); 
+		
+		if (isSat(status)) {
+			send("(get-model)"); 
+			return new SatResult(parseModel(readFromSolver()));			
+		} else if (isUnsat(status)) { 			
+			return new UnsatResult();			
+		} else {
+			return new UnknownResult();
+		}
+	}
+	
 	
 	public Result checkValuation(List<Symbol> positiveLits, List<Symbol> negativeLits, boolean getModel) {
 		//send("(set-option :sat.phase always_true)");
