@@ -58,6 +58,12 @@ public class ConsoleWriter extends Writer {
 					int counter = 1;
 					System.out.println("\nINDUCTIVE VALIDITY CORES:\n");
 					if (!ivc.isEmpty()) {
+						if(ivc.contains("::AIVCtimedoutLoop::")){
+							ivc.remove("::AIVCtimedoutLoop::");
+							System.out.println("...................................................................");
+							System.out.println("A timeout occured during checking a property. Thus, the produced MIVCs might not be minimal.");
+							System.out.println("...................................................................");
+						}
 						System.out.println("MUST ELEMENTS FOR THE PROPERTY:");
 						for (String e : Util.safeStringSortedSet(ivc)) {
 							System.out.println("  " + e);

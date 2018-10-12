@@ -67,7 +67,12 @@ public class XmlWriter extends Writer {
 		}else{
 			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
 			int count = 1;
-			 
+			if(ivc.contains("::AIVCtimedoutLoop::")){
+				ivc.remove("::AIVCtimedoutLoop::");
+				out.println("    <TimedoutLoop>" + "yes" + "</TimedoutLoop>");
+			}else {
+				out.println("    <TimedoutLoop>" + "no" + "</TimedoutLoop>");
+			} 
 			for (String supp : ivc) {
 				out.println("    <MustElem>" + supp + "</MustElem>");
 			}

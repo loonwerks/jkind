@@ -61,7 +61,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private int TIMEOUT;  
 	private int numOfTimedOuts = 0;
 	private ValidMessage gvm;
-		private double runtime;  
+	private double runtime;  
+	private boolean timedoutLoop = false; 
 
 	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director); 
@@ -211,8 +212,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
 		miniJkind.verify();
-        
-        if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
+
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
+			timedoutLoop  = true;
+		}
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
 			js.pdrMax = 0;
 			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
@@ -310,7 +314,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
 		miniJkind.verify(); 
 		
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){			
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){			
 			js.pdrMax = 0;		
 			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
 		}
@@ -359,7 +363,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
 		miniJkind.verify(); 
 		
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOW_WITH_EXCEPTION)){
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
 			//	js.pdrMax = 0;
 		//	return retryVerification(newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		} 
@@ -506,6 +510,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		MiniJKind miniJkind = new MiniJKind (program, newSpec, js);
 		miniJkind.verify();
+		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
+			timedoutLoop  = true;
+		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
@@ -697,7 +704,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
-		Itinerary itinerary = vm.getNextItinerary();  
+		Itinerary itinerary = vm.getNextItinerary();
+		if(timedoutLoop){
+			mustElements.add("::AIVCtimedoutLoop::");
+		}
+		
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs)); 
 	}
 	
