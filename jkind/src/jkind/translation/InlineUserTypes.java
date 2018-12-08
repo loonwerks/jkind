@@ -27,6 +27,6 @@ public class InlineUserTypes extends AstMapVisitor {
 
 	@Override
 	public VarDecl visit(VarDecl e) {
-		return new VarDecl(e.id, Util.resolveType(e.type, types));
+		return new VarDecl(e.id, Util.resolveType(e.type, types), e.type.toString()); // Adding the original type before inlining
 	}
 }

@@ -7,6 +7,7 @@ import jkind.lustre.visitors.AstVisitor;
 public class VarDecl extends Ast {
 	public final String id;
 	public final Type type;
+	public String originalType;
 
 	public VarDecl(Location location, String id, Type type) {
 		super(location);
@@ -18,6 +19,11 @@ public class VarDecl extends Ast {
 	
 	public VarDecl(String id, Type type) {
 		this(Location.NULL, id, type);
+	}
+	
+	public VarDecl(String id, Type type, String originalType) {
+		this(Location.NULL, id, type);
+		this.originalType = originalType; // Adding the original type before inlining
 	}
 	
 	@Override

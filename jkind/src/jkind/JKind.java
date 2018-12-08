@@ -1,5 +1,6 @@
 package jkind;
 
+import java.util.ArrayList;
 import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
@@ -27,8 +28,14 @@ public class JKind {
 
 			ensureSolverAvailable(settings.solver);
 
-			program = Translate.translate(program);
-			Specification userSpec = new Specification(program, settings.slicing);
+			/*
+			 * We want to keep the original types before inlining
+			 * We keep a copy of it and put the constants with their original type into
+			 * the new program
+			 */
+			Program transProgram = Translate.translate(program); // In transProgram the constants are missing
+			Program newProgram = new Program(transProgram.location, transProgram.types, program.constants, transProgram.functions, transProgram.nodes, transProgram.main); // Adding the constants and types
+			Specification userSpec = new Specification(newProgram, settings.slicing); // userSpec with constants and types
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
 			int exitCode = new Director(settings, userSpec, analysisSpec).run();
@@ -64,7 +71,8 @@ public class JKind {
 		if (settings.inlining) {
 			Node inlined = InlineSimpleEquations.node(userSpec.node);
 			Program program = new ProgramBuilder().addFunctions(userSpec.functions).addNode(inlined).build();
-			return new Specification(program, settings.slicing);
+			Program finalProgram = new Program(program.location, program.types, new ArrayList<>(userSpec.constants), program.functions, program.nodes, program.main);
+			return new Specification(finalProgram, settings.slicing);
 		} else {
 			return userSpec;
 		}

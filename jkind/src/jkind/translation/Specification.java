@@ -2,7 +2,7 @@ package jkind.translation;
 
 import java.util.List;
 import java.util.Map;
-
+import jkind.lustre.Constant;
 import jkind.lustre.Function;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -18,7 +18,8 @@ public class Specification {
 	public final Map<String, Type> typeMap;
 	private Relation transitionRelation;
 	private Relation ivcTransitionRelation;
-
+	public final List<Constant> constants; // Storing the constants with their original types
+	
 	public Specification(Program program, boolean slicing) {
 		Node main = program.getMainNode();
 		if (slicing) {
@@ -29,6 +30,7 @@ public class Specification {
 		this.node = LustreSlicer.slice(main, dependencyMap);
 		this.functions = Util.safeList(program.functions);
 		this.typeMap = Util.getTypeMap(node);
+		this.constants = program.constants; // Getting the constants
 	}
 
 	public Specification(Program program) {

@@ -13,6 +13,7 @@ import org.apache.commons.cli.Options;
 public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
+	private static final String INV_GEN_LEVEL = "inv_gen_level";
 	private static final String IVC = "ivc";
 	private static final String MAIN = "main";
 	private static final String N = "n";
@@ -46,6 +47,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		Options options = super.getOptions();
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
+		options.addOption(INV_GEN_LEVEL, true,
+				"invariant generator level for more and more invariants (default: 0, alternatives: 1, 2, 3)");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
@@ -96,6 +99,50 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.inductiveCounterexamples = true;
 		}
 
+		if (line.hasOption(INV_GEN_LEVEL)) {
+			if (parseNonnegativeInt(line.getOptionValue(INV_GEN_LEVEL)) == 0) { // LEVEL 0
+				settings.boolCandidates = true;
+				settings.subrangeCandidates = true;
+				settings.enumCandidates = true;
+				settings.initCandidates = true;
+				settings.typedIntConstCandidates = false;
+				settings.typedIntIntCandidates = false;
+				settings.allIntConstCandidates = false;
+				settings.allIntIntCandidates = false;
+				settings.combinatorialCandidates = false;
+			} else if (parseNonnegativeInt(line.getOptionValue(INV_GEN_LEVEL)) == 1) { // LEVEL 1
+				settings.boolCandidates = true;
+				settings.subrangeCandidates = true;
+				settings.enumCandidates = true;
+				settings.initCandidates = true;
+				settings.typedIntConstCandidates = true;
+				settings.typedIntIntCandidates = true;
+				settings.allIntConstCandidates = false;
+				settings.allIntIntCandidates = false;
+				settings.combinatorialCandidates = false;
+			} else if (parseNonnegativeInt(line.getOptionValue(INV_GEN_LEVEL)) == 2) { // LEVEL 2
+				settings.boolCandidates = true;
+				settings.subrangeCandidates = true;
+				settings.enumCandidates = true;
+				settings.initCandidates = true;
+				settings.typedIntConstCandidates = true;
+				settings.typedIntIntCandidates = true;
+				settings.allIntConstCandidates = true;
+				settings.allIntIntCandidates = true;
+				settings.combinatorialCandidates = false;
+			} else { // LEVEL 3
+				settings.boolCandidates = true;
+				settings.subrangeCandidates = true;
+				settings.enumCandidates = true;
+				settings.initCandidates = true;
+				settings.typedIntConstCandidates = true;
+				settings.typedIntIntCandidates = true;
+				settings.allIntConstCandidates = true;
+				settings.allIntIntCandidates = true;
+				settings.combinatorialCandidates = true;
+			}
+		}
+
 		if (line.hasOption(IVC)) {
 			settings.reduceIvc = true;
 		}
@@ -133,9 +180,11 @@ public class JKindArgumentParser extends ArgumentParser {
 		if (line.hasOption(PDR_MAX)) {
 			settings.pdrMax = parseNonnegativeInt(line.getOptionValue(PDR_MAX));
 		} else {
-			int available = Runtime.getRuntime().availableProcessors();
-			int heuristic = (available - 4) / 2;
-			settings.pdrMax = Math.max(1, heuristic);
+			if (settings.pdrMax != 0) { // If pdrMax = 0, PDR is disabled
+				int available = Runtime.getRuntime().availableProcessors();
+				int heuristic = (available - 4) / 2;
+				settings.pdrMax = Math.max(1, heuristic);
+			}
 		}
 
 		if (line.hasOption(READ_ADVICE)) {

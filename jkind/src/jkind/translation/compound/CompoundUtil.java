@@ -51,7 +51,7 @@ public class CompoundUtil {
 		for (VarDecl varDecl : varDecls) {
 			IdExpr id = new IdExpr(varDecl.id);
 			for (ExprType et : flattenExpr(id, varDecl.type)) {
-				result.add(new VarDecl(et.expr.toString(), et.type));
+				result.add(new VarDecl(et.expr.toString(), et.type, varDecl.originalType)); // Adding the original type before inlining
 			}
 		}
 		return result;

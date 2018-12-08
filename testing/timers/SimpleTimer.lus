@@ -1,0 +1,105 @@
+-------------------------------------------------
+-- Proving properties with time on a submodel  --
+-- Example provided by Vassil Todorov          --
+-- You can modify the time steps for C1 and C2 --
+-------------------------------------------------
+
+type t1 = int;
+type t2 = int;
+type t3 = int;
+type t4 = int;
+type t5 = enum {ct5_1, ct5_2, ct5_3, ct5_4};
+type t6 = enum {ct6_1, ct6_2, ct6_3, ct6_4, ct6_5, ct6_6, ct6_7, ct6_8, ct6_9};
+type t7 = enum {ct7_1, ct7_2, ct7_3};
+
+const C1 : t1 = 2400; -- time steps for the code
+const C2 : t1 = 2400; -- time steps for the property Prop_2
+const C3 : t3 = 144; -- threshold for the code
+const C4 : t3 = 143; -- threshold for the property: 144 or 143
+const C5 : t2 = 255;
+const C6 : t2 = 40;
+const C7 : t2 = 254;
+const C8 : bool = false;
+const C9 : bool = true;
+const C10 : bool = false;
+
+node N1 (V1, V2: bool) returns (V3: bool);
+let
+	V3 = (not V1) or V2;
+tel
+
+node N2 (V4: bool; V5: t1) returns (V6: bool);
+var
+	L1: t1;
+let
+	L1 = if V4 then (1 ->  if ((pre L1) < V5) then (pre L1) + 1 else V5) else 0;
+	V6 = (L1 = V5);
+tel
+
+node N3 (V4, V7: bool; V5: t1) returns (V6: bool);
+let
+	V6 = N1(N2(V4, V5), V7);
+tel
+
+node N4 (V8, V9, V10: bool) returns (V11: bool);
+let
+	V11 = V10 -> ((not V9) and (V8 or (false -> pre V11)));
+tel
+
+node N5 (V12, V13: bool; V14: t2; V15: t5; V16, V17, V18, V19: bool) returns (V20: bool);
+let
+	V20 = (V12 = true) and (V13 = false) and (V14 = C5 or C6 <= V14 and V14 <= C7) and (V15 = ct5_1) and (V16 = false) and (V17 = false) and (V18 = false) and (C8 = false or C8 = true and V19 = false);
+tel
+
+node N6 (V21: t6; V22: t7) returns (V23: bool);
+let
+	V23 = C9 and (not C10) and (V21 = ct6_1 or V21 = ct6_2 or V21 = ct6_3) and (V22 = ct7_1);
+tel
+
+node N7 (V24: t3; V13, V17, V25: bool; V21: t6; V22: t7; V15: t5; V18, V12, V19: bool; V14: t2) returns (V20, V16, V23: bool);
+let
+	V20 = N5(V12, V13, V14, V15, V16, V17, V18, V19) and N6(V21, V22);
+	V23 = N6(V21, V22);
+	V16 = N9(V12, V25, V24);
+tel
+
+node N8 (V26: t1; V27: bool) returns (V28: bool);
+var
+	V29: t1;
+let
+	V28 = (V29 = V26);
+	V29 = (if V27 then 1 else 0) -> (if V27 then (if ((0 -> pre V29) <= V26) then (1 + (0 -> pre V29)) else (0 -> pre V29)) else 0);
+tel
+
+node N9 (V12, V25: bool; V24: t3) returns (V16: bool);
+let
+	V16 = N4(N8(C1, V12 and (not V25) and (V24 < C3)), N8(C1, V25), false);
+tel
+
+node Prop_1 (V20, V13, V16, V17: bool; V15: t5; V18, V23, V12, V19: bool;  V14: t2) returns (V30: bool);
+let
+	V30 = N1(((V12 and not V13 and (V14 = C5 or C6 <= V14 and V14 <= C7) and (V15 = ct5_1) and (not V16) and (not V17) and (not V18) and (not C8 or C8 and not V19)) and V23), V20);
+tel
+
+node Prop_2 (V24: t3; V25, V12, V16: bool) returns (V30: bool);
+let
+	V30 = N3((V12 and (not V25) and (V24 < C4)), V16, C2);
+tel
+
+node Prop_3 (V21: t6; V22: t7; V23: bool) returns (V30: bool);
+let
+	V30 = N1((C9 and (not C10) and (V21 = ct6_1 or V21 = ct6_2 or V21 = ct6_3) and (V22 = ct7_1)), V23);
+tel
+
+node Main (V24: t3; V13, V17, V25: bool; V21: t6; V22: t7; V15: t5; V18, V12, V19: bool;  V14: t2) returns (V20, N9, V23, P1, P2, P3: bool);
+let
+	V20, N9, V23 = N7(V24, V13, V17, V25, V21, V22, V15, V18, V12, V19, V14);
+	P1 = Prop_1(V20, V13, N9, V17, V15, V18, V23, V12, V19, V14);
+	P2 = Prop_2(V24, V25, V12, N9);
+	P3 = Prop_3(V21, V22, V23);
+
+    --%MAIN;
+	-- %PROPERTY P1;   
+	--%PROPERTY P2; -- Property using long-running timer
+	-- %PROPERTY P3;
+tel

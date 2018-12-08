@@ -1,0 +1,1120 @@
+---------------------------------------------------
+-- Proving properties with time on complex model --
+-- Example provided by Vassil Todorov            --
+-- You can modify the time steps for C15 and C16 --
+---------------------------------------------------
+
+type t1 = enum {ct1_1, ct1_2, ct1_3, ct1_4, ct1_5, ct1_6, ct1_7, ct1_8, ct1_9};
+type t2 = enum {ct2_1, ct2_2, ct2_3, ct2_4, ct2_5, ct2_6, ct2_7, ct2_8};
+type t3 = enum {ct3_1, ct3_2, ct3_3};
+type t4 = enum {ct4_1, ct4_2, ct4_3, ct4_4};
+type t5 = enum {ct5_1, ct5_2, ct5_3, ct5_4, ct5_5, ct5_6, ct5_7};
+type t6 = enum {ct6_1, ct6_2, ct6_3, ct6_4, ct6_5, ct6_6, ct6_7};
+type t7 = int;
+type t8 = int;
+type t9 = int;
+type t10 = int;
+const C1 : t8 = 40;
+const C2 : t8 = 254;
+const C3 : t9 = 143; -- threshold 144 or 143 for property Prop_5 and Prop_6
+const C4 : t9 = 144;
+const C5: t10 = 2;
+const C6: t10 = 2;
+const C7 : int = 1000;
+const C8 : int = 50;
+const C9 : bool = false;
+const C10 : bool = false;
+const C11 : bool = true;
+const C12 : t8 = 255;
+const C13 : t8 = 254;
+const C14 : t8 = 40;
+const C15 : t7 = 2400; -- time steps for code
+const C16 : t7 = 2400; -- time steps for property Prop_5 and Prop_6
+
+node N44 (V63: bool; V64: bool; V65: bool) returns (V66: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; 
+let
+	L2 = (L1) -> (L8);
+	L3 = (false) -> pre L2;
+	L4 = V63;
+	L5 = V64;
+	V66 = L2;
+	L1 = V65;
+	L6 = L4 or L3;
+	L7 =  not L5;
+	L8 = L7 and L6;
+tel
+
+node N45 (V67: t8; V68: t8; V69: t8) returns (V70: t8);
+var
+    L1: bool; L2: t8; L3: t8; L4: t8; L5: bool; L6: t8; L7: t8; 
+let
+    L1 = L6 >= L4;
+    L5 = L6 <= L3;
+    L6 = V67;
+    L7 = if L1 then (L4) else (L2);
+    L2 = if L5 then (L3) else (L6);
+    L3 = V68;
+    L4 = V69;
+    V70 = L7;
+tel
+
+node N46 (V71: t7; V72: bool) returns (V73: bool);
+var
+    L1: bool; L2: t7; L3: bool; L4: t7; L5: t7; L6: t7; L7: t7; L8: t7; L9: t7; L10: t7; L11: t7; L12: t7; L13: bool; L14: t7; L15: t7; 
+let
+	L1 = L9 = L15;
+	V73 = L1;
+	L2 = if L3 then (L4) else (L8);
+	L3 = V72;
+	L4 = if L13 then (L7) else (L5);
+	L5 = 0 -> pre L9;
+	L7 = L6 + L5;
+	L6 = 1;
+	L8 = 0;
+	L9 = (L10) -> (L2);
+	L10 = if L3 then (L11) else (L12);
+	L11 = 1;
+	L12 = 0;
+	L13 = L5 <= L14;
+	L14 = V71;
+	L15 = V71;
+tel
+
+node N47 (V74: bool; V75: t7) returns (V76: bool);
+var
+    cnt: t7; L1: bool; L2: t7; L5: t7; L9: t7; L10: t7; L11: t7; L12: bool; L13: bool; L14: bool; L15: t7; 
+let
+	L1 = V74;
+	L2 = V75;
+	V76 = L13;
+	L5 = (0) -> (pre cnt);
+	L9 = if L1 then (L5 + 1) else (0);
+	cnt = L15;
+	L10 = V75;
+	L11 = cnt;
+	L12 = L11 >= L10;
+	L13 = L12 and L1;
+	L14 = L9 < L2;
+	L15 = if L14 then (L9) else (L2);
+tel
+
+node N48 (V74: bool; V77: bool; V75: t7) returns (V76: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; 
+let
+	L1 = N49(L2, L4);
+	L2 = N47(L3, V75);
+	V76 = L1;
+	L3 = V74;
+	L4 = V77;
+tel
+
+node N49 (V78: bool; V79: bool) returns (V80: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; 
+let
+	L1 = V78;
+	L2 = V79;
+	V80 = L3;
+	L3 = L4 or L2;
+	L4 =  not L1;
+tel
+
+node N1 (V1: bool; V2: bool; V3: t8; V4: t4; V5: bool; V6: bool; V7: bool; V8: bool) returns (V9: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; L9: bool; 
+let
+    V9 = L9;
+    L1 = V2 = false;
+    L2 = (V3 = C12 or (C1 <= V3 and V3 <= C2));
+    L3 = V1 = true;
+    L4 = V4 = ct4_1;
+    L5 = V5 = false;
+    L6 = V6 = false;
+    L7 = V7 = false;
+    L8 = (C9 = false or (C9 = true and V8 = false));
+    L9 = (L3 and L1 and L2 and L4 and L5 and L6 and L7 and L8);
+tel
+
+node N2 (V10: t9; V2: bool; V6: bool; V11: bool; V12: t1; V13: t3; V4: t4; V7: bool; V1: bool; V8: bool; V3: t8) returns (V9: bool; V5: bool; V14: bool);
+var
+    L1: bool; L2: bool; L3: t9; L4: t8; L5: bool; L6: bool; L7: t4; L8: bool; L9: bool; L10: t3; L11: t1; L12: bool; L13: bool; L14: bool; L15: bool; L16: bool; 
+let
+    L1 = V11;
+    L2 = V1;
+    L3 = V10;
+    L4 = V3;
+    L5 = V8;
+    L6 = V7;
+    L7 = V4;
+    L8 = V6;
+    L9 = V2;
+    V5 = L16;
+    L10 = V13;
+    L11 = V12;
+    L12 = N1(L14, L9, L4, L7, L16, L8, L6, L5);
+    L13 = N7(L11, L10);
+    L14 = V1;
+    V14 = L13;
+    L15 = (L12 and L13);
+    V9 = L15;
+    L16 = N6(L2, L1, L3);
+tel
+
+node N3 (V10: t9; V15: bool; V2: bool; V16: bool; V6: bool; V11: bool; V17: bool; V12: t1; V13: t3; V4: t4; V7: bool; V18: bool; V1: bool; V8: bool; V19: t5; V20: bool; V3: t8; V21: bool; V22: bool; V23: bool; V24: bool; V25: bool; V26: bool) returns (V27: t8; V28: bool; V29: bool; V30: t2; V5: bool);
+var
+    V31: bool; V32: bool; V33: bool; V34: bool; V35: bool; V36: bool; V37: bool; V38: bool; V39: bool; V40: bool; V41: bool; V42: bool; V43: t8; V44: bool; V45: bool; V14: bool; V46: bool; V47: t8; V48: t2; V49: bool; L42: bool; L43: bool; L44: bool; L45: bool; L46: bool; L47: bool; L48: t4; L49: bool; L50: bool; L51: bool; L52: bool; L53: t5; L54: bool; L55: t8; L56: bool; L57: bool; L58: bool; L59: bool; L60: bool; L61: bool; L62: t9; L63: bool; L64: bool; L65: bool; L66: t1; L67: t3; L68: t4; L69: bool; L70: bool; L71: bool; L72: t8; L73: bool; L74: t8; L75: bool; L76: bool; L77: bool; L78: bool; L79: bool; L80: bool; L81: t8; L82: t8; L83: bool; L84: bool; L85: bool; L86: bool; L87: bool; L88: bool; L89: bool; L90: bool; L91: bool; L92: bool; L93: bool; L94: bool; L95: bool; L96: t2; L97: t2; L98: bool; L99: bool;
+    V50: t6;
+    V51: bool;
+let
+    V50 = ct6_1 -> 
+        if (pre V50 = ct6_1) and V41 then ct6_2
+        else if (pre V50 = ct6_1) and V42 then ct6_3
+        else if (pre V50 = ct6_2) and (V39 or not V14) then ct6_1
+        else if (pre V50 = ct6_2) and V40 then ct6_7
+        else if (pre V50 = ct6_2) and V36 then ct6_4
+        else if (pre V50 = ct6_2) and V38 then ct6_3
+        else if (pre V50 = ct6_2) and V37 then ct6_5
+        else if (pre V50 = ct6_3) and (not V1 or not V14) then ct6_1
+        else if (pre V50 = ct6_3) and V35 then ct6_2
+        else if (pre V50 = ct6_3) and V45 then ct6_7
+        else if (pre V50 = ct6_3) and V31 then ct6_5
+        else if (pre V50 = ct6_3) and V32 then ct6_4
+        else if (pre V50 = ct6_3) and V34 then ct6_6
+        else if (pre V50 = ct6_4) and (not V1 or not V14) then ct6_1
+        else if (pre V50 = ct6_4) and V35 then ct6_2
+        else if (pre V50 = ct6_4) and V45 then ct6_7
+        else if (pre V50 = ct6_4) and V34 then ct6_6
+        else if (pre V50 = ct6_4) and V33 then ct6_3
+        else if (pre V50 = ct6_4) and V31 then ct6_5
+        else if (pre V50 = ct6_5) and (not V1 or not V14) then ct6_1
+        else if (pre V50 = ct6_5) and V35 then ct6_2
+        else if (pre V50 = ct6_5) and V45 then ct6_7
+        else if (pre V50 = ct6_5) and V33 then ct6_3
+        else if (pre V50 = ct6_5) and V34 then ct6_6
+        else if (pre V50 = ct6_5) and V32 then ct6_4
+        else if (pre V50 = ct6_6) and (not V1 or not V14) then ct6_1
+        else if (pre V50 = ct6_6) and V35 then ct6_2
+        else if (pre V50 = ct6_6) and V45 then ct6_7
+        else if (pre V50 = ct6_6) and V32 then ct6_4
+        else if (pre V50 = ct6_6) and V33 then ct6_3
+        else if (pre V50 = ct6_6) and V31 then ct6_5
+        else if (pre V50 = ct6_7) and (not V1 or not V14) then ct6_1
+        else ct6_1;
+    (V43, V44, V48) = 
+        if (V50 = ct6_1) then N8()
+        else if (V50 = ct6_2) then N9(C12 -> pre V43)
+        else if (V50 = ct6_3) then N11(V1, V22, V23, C12 -> pre V43, V3)
+        else if (V50 = ct6_4) then N13(V1, V23, V22, C12 -> pre V43)
+        else if (V50 = ct6_5) then N15(V1, V23, V22, C12 -> pre V43)
+        else if (V50 = ct6_6) then N14(V1, V3, V22, V23, C12 -> pre V43)
+        else if (V50 = ct6_7) then N10()
+        else N8();
+    V29 = if (V50 = ct6_1) then false else (false -> pre V29);
+    V27 = L74;
+    V30 = L97;
+    V41 = L83;
+    V40 = L95;
+    V45 = L94;
+    V39 = L93;
+    V42 = L92;
+    V38 = L91;
+    V37 = L90;
+    V36 = L89;
+    V35 = L88;
+    V34 = L87;
+    V33 = L86;
+    V32 = L85;
+    V31 = L84;
+    L42, L46, L73 = N2(L62, L63, L64, L65, L66, L67, L68, L69, L70, L71, L72);
+    L43 = V15;
+    L44 = V2;
+    L45 = V16;
+    L47 = V17;
+    L48 = V4;
+    L49 = V7;
+    L50 = V18;
+    L51 = V1;
+    L52 = V8;
+    L53 = V19;
+    L54 = V20;
+    L55 = V3;
+    L56 = V21;
+    L57 = V22;
+    L58 = V23;
+    L59 = V24;
+    L60 = V25;
+    L61 = V26;
+    L62 = V10;
+    L63 = V2;
+    L64 = V6;
+    L65 = V11;
+    L66 = V12;
+    L67 = V13;
+    L68 = V4;
+    L69 = V7;
+    L70 = V1;
+    L71 = V8;
+    L72 = V3;
+    V14 = L73;
+    L74 = V43;
+    L75 = true;
+    L76 = true;
+    L77 = false;
+    V46 = L79;
+    L79 = (false -> (pre L78));
+    V28 = L78;
+    L78 = V44;
+    L80 = V46;
+    L81 = (255 -> (pre L74));
+    V47 = L81;
+    L82 = V47;
+    V51 = (L73 and not (false -> (pre L73)));
+    L83, L95, L94, L93, L92, L91, L90, L89, L88, L87, L86, L85, L84 = N4(L42, L43, L75, L76, L82, L80, L44, L45, L46, L77, L47, L96, L48, L49, L50, L51, L52, L53, L54, L55, L56, L57, L58, L59, L60, L61, L98, V51);
+    L96 = (ct2_7 -> (pre L97));
+    L97 = V48;
+    V5 = L46;
+    L98 = V49;
+    V49 = L99;
+    L99 = false;
+tel
+
+node N4 (V9: bool; V15: bool; V52: bool; V53: bool; V54: t8; V28: bool; V2: bool; V16: bool; V55: bool; V6: bool; V17: bool; V30: t2; V4: t4; V7: bool; V18: bool; V1: bool; V8: bool; V19: t5; V20: bool; V3: t8; V21: bool; V22: bool; V23: bool; V24: bool; V25: bool; V26: bool; V49: bool; V51: bool) 
+    returns (V41: bool; V40: bool; V45: bool; V39: bool; V42: bool; V38: bool; V37: bool; V36: bool; V35: bool; V34: bool; V33: bool; V32: bool; V31: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: t8; L6: bool; L7: t8; L8: bool; L9: bool; L10: bool; L11: bool; L12: bool; L13: bool; L14: bool; L15: bool; L16: bool; L17: bool; L18: t8; L19: t8; L20: bool; L21: t8; L22: bool; L23: bool; L24: bool; L25: bool; L26: bool; L27: bool; L28: t8; L29: t4; L30: bool; L31: t8; L32: bool; L33: bool; L34: t8; L35: bool; L36: t4; L37: t8; L38: t8; L39: bool; L40: bool; L41: bool; L42: bool; L43: t8; L44: bool; L45: bool; L46: t8; L47: t8; L48: t8; L49: bool; L50: t4; L51: bool; L52: bool; L53: bool; L54: bool; L55: t5; L56: bool; L57: t8; L58: t8; L59: bool; L60: bool; L61: bool; L62: bool; L63: bool; L64: bool; L65: t8; L66: t8; L67: bool; L68: bool; L69: bool; L70: bool; L71: bool; L72: bool; L73: bool; L74: bool; L75: bool; L76: bool; L77: bool; L78: bool; L79: bool; L80: t8; L81: t5; L82: bool; L83: t4; L84: t8; L85: bool; L86: bool; L87: bool; L88: bool; L89: bool; L90: t4; L91: bool; L92: bool; L93: bool; L94: bool; L95: bool; L96: bool; L97: bool; L98: bool; L99: bool; L100: bool; L101: t2; L102: bool; L103: bool; V56: bool; V57: bool; V58: bool; V59: bool;
+let
+    V56 = if V51 then false else (V1 and not (false -> (pre V1)));
+    V57 = if V51 then false else (V21 and not (false -> (pre V21)));
+    V58 = if V51 then false else (V23 and not (false -> (pre V23)));
+    V59 = if V51 then false else (V22 and not (false -> (pre V22)));
+    L73 = V9;
+    L72 = N26(L49, L31, L21);
+    L71 = V9;
+    L70 = V28;
+    L69 = V17;
+    L68 = V9;
+    V34 = L2;
+    L67 = N27(L101, L66, L4, L37);
+    L66 = V54;
+    L65 = V3;
+    L64 = V25;
+    V33 = L72;
+    L63 = N28(L61, L18, L48, L36);
+    L62 = V57;
+    V41 = L59;
+    V42 = L11;
+    V32 = L67;
+    L61 = V1;
+    L60 = V58;
+    V40 = L56;
+    L59 = N16(V1, L10, L39, L43);
+    L58 = V3;
+    V31 = L63;
+    L57 = V54;
+    V39 = L15;
+    L56 = N17(L102, L55, L42, L70, L29, L58, L33, L64, L25, L54, L9, L41, L69, L53);
+    L55 = V19;
+    L54 = V18;
+    L53 = V2;
+    L52 = V57;
+    L51 = V58;
+    L50 = V4;
+    L49 = V1;
+    L48 = V54;
+    L47 = V54;
+    L46 = V3;
+    L45 = V1;
+    L44 = V53;
+    L43 = V54;
+    L42 = V16;
+    L41 = V15;
+    L40 = V58;
+    L39 = V9;
+    L38 = V54;
+    L37 = V3;
+    L36 = V4;
+    L35 = V57;
+    L34 = V3;
+    L33 = V24;
+    V38 = L20;
+    L32 = V1;
+    L31 = V54;
+    V37 = L17;
+    L30 = V1;
+    L29 = V4;
+    L28 = V54;
+    V36 = L12;
+    L27 = V1;
+    L26 = V57;
+    L25 = V26;
+    L24 = V59;
+    L23 = V53;
+    L22 = V1;
+    L21 = V3;
+    L20 = N21(L30, L71, L44, L60, L16, L47, L35, L65);
+    L19 = V54;
+    L18 = V3;
+    L17 = N22(L27, L57, L46, L1, L26);
+    L16 = V59;
+    L15 = N19(L8, L68, L52, L40, L24, L7, L28, L13, L99, L14);
+    L14 = V8;
+    L13 = V53;
+    L12 = N23(L32, L62, L19, L100, L3, L34);
+    L11 = N20(L45, L73, L23, L51, L6);
+    L10 = V56;
+    L9 = V20;
+    L8 = V1;
+    L7 = V3;
+    L6 = V59;
+    L5 = V3;
+    L4 = V1;
+    L3 = V9;
+    L2 = N25(L22, L50, L5, L38);
+    L1 = V9;
+    L89 = V26;
+    L88 = V2;
+    L87 = V15;
+    V45 = L75;
+    L86 = V18;
+    L85 = V16;
+    L84 = V54;
+    L83 = V4;
+    L82 = V17;
+    L81 = V19;
+    L80 = V3;
+    L79 = V20;
+    L78 = V1;
+    L77 = V25;
+    L76 = V28;
+    L75 = N18(L78, L81, L85, L84, L76, L83, L80, L74, L77, L89, L86, L79, L87, L82, L88, L103);
+    L74 = V24;
+    L98 = V6;
+    L97 = V57;
+    L96 = V1;
+    L95 = N24(L96, L97, L91, L90, L94, L93, L98, L92);
+    L94 = V7;
+    V35 = L95;
+    L93 = V55;
+    L92 = V8;
+    L91 = V2;
+    L90 = V4;
+    L99 = V52;
+    L100 = V52;
+    L101 = V30;
+    L102 = V1;
+    L103 = V49;
+tel
+
+node N5 (V1: bool; V28: bool; V4: t4) returns (V29: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; L9: bool; 
+let
+    L1 = V1;
+    L2 = V28 = false;
+    L3 = (V4 = ct4_2 or V4 = ct4_3);
+    L5 = V28 = true;
+    L4 = V4 = ct4_1;
+    L6 = (L2 and L3);
+    L7 = (L5 and L4);
+    L8 = (L6 or L7);
+    L9 = (L1 and L8);
+    V29 = L9;
+tel
+
+node N6 (V1, V11: bool; V10: t9) returns (V5: bool);
+var
+	L1, L4, L5, L6, L7, L8, L14, L21: bool;
+	L2, L3: t9;
+	L11, L18: t7;
+let
+	L1 = V1;
+	L2 = V10;
+	L3 = C4;
+	L4 =  not V11;
+	L5 = L2 < L3;
+	L6 = L1 and L4 and L5;
+	V5 = L7;
+	L7 = N44(L14, L21, false);
+	L8 = V11;
+	L11 = C15;
+	L14 = N46(L11, L6);
+	L18 = C15;
+	L21 = N46(L18, L8);
+tel
+
+node N7 (V12: t1; V13: t3) returns (V14: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; 
+let
+    L5 = (V12 = ct1_1 or V12 = ct1_2 or V12 = ct1_3);
+    V14 = L4;
+    L4 = (L3 and L2 and L5 and L1);
+    L3 = C11;
+    L2 = not C10;
+    L1 = V13 = ct3_1;
+tel
+
+node N8 () returns (V60: t8; V28: bool; V30: t2);
+var
+    L1: t8; L3: bool; L4: t2; 
+let
+    V60 = L1;
+    V28 = L3;
+    L1 = C12;
+    L3 = false;
+    V30 = L4;
+    L4 = ct2_7;
+tel
+
+node N9 (V43: t8) returns (V60: t8; V28: bool; V30: t2);
+var
+    L1: t2; L2: bool; L3: t8; 
+let
+    V30 = L1;
+    L1 = ct2_1;
+    L2 = false;
+    V28 = L2;
+    V60 = L3;
+    L3 = V43;
+tel
+
+node N10 () returns (V60: t8; V28: bool; V30: t2);
+var
+    L1: bool; L2: t8; L3: t2; 
+let
+    L3 = ct2_8;
+    L2 = C12;
+    V30 = L3;
+    L1 = false;
+    V28 = L1;
+    V60 = L2;
+tel
+
+node N11 (V1: bool; V22: bool; V23: bool; V43: t8; V3: t8) returns (V60: t8; V28: bool; V30: t2);
+var
+    L1: bool; L2: t2; L3: t8; L4: bool; L5: bool; L6: bool; L7: t8; L8: t8; 
+let
+    V28 = L1;
+    L1 = true;
+    L2 = ct2_3;
+    V30 = L2;
+    L3 = N12(L4, L5, L6, L7, L8);
+    L4 = V1;
+    L5 = V22;
+    L6 = V23;
+    L7 = V43;
+    L8 = V3;
+    V60 = L3;
+tel
+
+node N12 (V1: bool; V22: bool; V23: bool; V43: t8; V3: t8) returns (V60: t8);
+var
+    V61: bool; V62: bool; L1: bool; L2: bool; L3: t8; L4: t8; L5: t8; L6: t8; L7: t8; L8: t8; L9: t8; L10: t8; L11: t8; L12: bool; L13: t8; L14: t8; L15: bool; L16: t8; L17: bool; 
+let
+    V61 = L1;
+    L2 = (V22 and not (false -> (pre V22)));
+    L1 = (V23 and not (false -> (pre V23)));
+    V62 = L2;
+    L17 = (V1 and (V61 or V62));
+    L16 = V43;
+    L15 = (V1 and V62 and V43 <> C12);
+    L14 = V43;
+    L13 = if L15 then (L5) else (L6);
+    L12 = (V1 and V61 and V43 <> C12);
+    L11 = 1;
+    L10 = (L14 + L11);
+    L9 = 1;
+    L8 = V43;
+    L7 = if L12 then (L10) else (L13);
+    L6 = if L17 then (L4) else (L16);
+    V60 = L3;
+    L5 = L8 - L9;
+    L4 = V3;
+    L3 = N45(L7, C14, C13);
+tel
+
+node N13 (V1: bool; V23: bool; V22: bool; V43: t8) returns (V60: t8; V28: bool; V30: t2);
+var
+    V62: bool; V61: bool; L1: t2; L2: bool; L3: bool; L4: bool; L5: t8; L6: t8; L7: t8; L8: t8; L9: t8; L10: bool; L11: t8; L12: t8; L13: t8; L14: t8; L15: bool; L16: t8; 
+let
+    L2 = true;
+    V28 = L2;
+    L1 = ct2_2;
+    V30 = L1;
+    L4 = (V22 and not (true -> (pre V22)));
+    V61 = L3;
+    V62 = L4;
+    L3 = (V23 and not (true -> (pre V23)));
+    L16 = N45(L5, C14, C13);
+    L15 = (V1 and V61 and V43 <> C12);
+    V60 = L16;
+    L14 = V43;
+    L13 = (L14 + L12);
+    L12 = 1;
+    L11 = if L10 then (L6) else (L8);
+    L10 = (V1 and V62 and V43 <> C12);
+    L9 = V43;
+    L8 = V43;
+    L7 = 1;
+    L6 = L9 - L7;
+    L5 = if L15 then (L13) else (L11);
+tel
+
+node N14 (V1: bool; V3: t8; V22: bool; V23: bool; V43: t8) returns (V60: t8; V28: bool; V30: t2);
+var
+    V61: bool; V62: bool; L1: t2; L2: bool; L3: bool; L4: bool; L5: t8; L6: bool; L7: t8; L8: t8; 
+let
+    L2 = true;
+    L1 = ct2_5;
+    V30 = L1;
+    V28 = L2;
+    L4 = (V22 and not (true -> (pre V22)));
+    V62 = L4;
+    V61 = L3;
+    L3 = (V23 and not (true -> (pre V23)));
+    L5 = if L6 then (L7) else (L8);
+    L6 = (V1 and (V61 or V62));
+    L7 = V3;
+    L8 = V43;
+    V60 = L5;
+tel
+
+node N15 (V1: bool; V23: bool; V22: bool; V43: t8) returns (V60: t8; V28: bool; V30: t2);
+var
+    V62: bool; V61: bool; L1: t2; L2: bool; L3: bool; L4: bool; L5: t8; L6: t8; L7: t8; L8: bool; L9: t8; L10: bool; L11: t8; L12: t8; L13: t8; L14: t8; L15: t8; L16: t8; 
+let
+    L2 = true;
+    V28 = L2;
+    V30 = L1;
+    L1 = ct2_4;
+    L4 = (V22 and not (true -> (pre V22)));
+    V61 = L3;
+    V62 = L4;
+    L3 = (V23 and not (true -> (pre V23)));
+    V60 = L5;
+    L16 = 1;
+    L15 = (L14 + L16);
+    L14 = V43;
+    L13 = V43;
+    L12 = 1;
+    L11 = L6 - L12;
+    L10 = (V1 and V62 and V43 <> C12);
+    L9 = if L8 then (L15) else (L7);
+    L8 = (V1 and V61 and V43 <> C12);
+    L7 = if L10 then (L11) else (L13);
+    L6 = V43;
+    L5 = N45(L9, C14, C13);
+tel
+
+node N16 (V1: bool; V56: bool; V9: bool; V60: t8) returns (V83: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; 
+let
+    L1 = V56;
+    V83 = L6;
+    L5 = V9;
+    L4 = V1;
+    L3 = (L4 and L5 and L2);
+    L2 = V60 <> C12;
+    L6 = (L1 or L3);
+tel
+
+node N17 (V1: bool; V19: t5; V16: bool; V28: bool; V4: t4; V3: t8; V24: bool; V25: bool; V26: bool; V18: bool; V20: bool; V15: bool; V17: bool; V2: bool) returns (V81: bool);
+var
+    V29: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: t4; L6: bool; L7: bool; L8: bool; L9: bool; L10: bool; L11: bool; L12: bool; L13: bool; L14: bool; L15: bool; 
+let
+    L1 = V1;
+    L2 = N5(L3, L4, L5);
+    V29 = L2;
+    L3 = V1;
+    L4 = V28;
+    L5 = V4;
+    L6 = V19 <> ct5_5;
+    L7 = V16;
+    L8 = V29;
+    L9 = V3 = C12;
+    L10 = (V24 or V25 or V26);
+    L11 = V18;
+    L12 = V20;
+    L13 = (L7 or L8 or L9 or L10 or L11 or L12 or L15);
+    L14 = (L1 and L6 and L13);
+    V81 = L14;
+    L15 = (V15 or V17 or V2);
+tel
+
+node N18 (V1: bool; V19: t5; V16: bool; V60: t8; V28: bool; V4: t4; V3: t8; V24: bool; V25: bool; V26: bool; V18: bool; V20: bool; V15: bool; V17: bool; V2: bool; V49: bool) returns (V81: bool);
+var
+    V29: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: t4; L6: bool; L7: bool; L8: bool; L9: bool; L10: bool; L11: bool; L12: bool; L13: bool; L14: bool; L15: bool; L16: bool; 
+let
+    L1 = V1;
+    L2 = N5(L3, L4, L5);
+    V29 = L2;
+    L3 = V1;
+    L4 = V28;
+    L5 = V4;
+    L6 = V19 <> ct5_5;
+    L7 = V16;
+    L8 = V60 = C12;
+    L9 = V29;
+    L10 = V3 = C12;
+    L11 = (V24 or V25 or V26);
+    L12 = V18;
+    L13 = V20;
+    L14 = (L7 or L8 or L9 or L10 or L11 or L12 or L13 or L16);
+    L15 = (L1 and L6 and L14);
+    V81 = L15;
+    L16 = (V15 or V17 or V2);
+tel
+
+node N19 (V1: bool; V9: bool; V21: bool; V23: bool; V22: bool; V3: t8; V60: t8; V53: bool; V52: bool; V8: bool) returns (V82: bool);
+var
+    V84: bool; V61: bool; V62: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; L9: bool; L10: bool; L11: bool; L12: bool; L13: bool; L14: bool; L15: bool; L16: bool; L17: bool; L18: bool; L19: bool; L20: bool; L21: bool; L22: bool; L23: bool; L24: bool; L25: bool; L26: bool; L27: bool; L28: bool; L29: bool; L30: bool; 
+let
+    V82 = L7;
+    L1 = V21;
+    L2 = not V9;
+    L3 = V23;
+    L4 = V22;
+    L5 = V1;
+    L6 = (L5 and L2 and L24);
+    L7 = (L30 or L6 or L9 or L11 or L15 or L18 or L26);
+    L10 = V1;
+    L9 = (L24 and L10 and L8);
+    L8 = V3 < C1;
+    L11 = (L12 and L13 and L14 and L21);
+    L12 = V1;
+    L13 = V9;
+    L14 = V60 = C12;
+    L15 = (L16 and L17 and L23);
+    L16 = V1;
+    L17 = not V53;
+    L18 = (L19 and L20 and L22);
+    L19 = V1;
+    L20 = not V52;
+    V84 = L1;
+    V62 = L4;
+    V61 = L3;
+    L21 = V84;
+    L22 = V84;
+    L23 = (V61 or V62);
+    L24 = (V84 or V61 or V62);
+    L25 = C9;
+    L26 = (L25 and L27 and L28 and L29);
+    L27 = V1;
+    L28 = V8;
+    L29 = V84;
+    L30 = not V1;
+tel
+
+node N20 (V1: bool; V9: bool; V53: bool; V23: bool; V22: bool) returns (V85: bool);
+var
+    V61: bool; V62: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; 
+let
+    L1 = V1;
+    V85 = L7;
+    L2 = V9;
+    L3 = V53;
+    L4 = (V61 or V62);
+    L6 = V22;
+    L5 = V23;
+    V62 = L6;
+    V61 = L5;
+    L7 = (L1 and L2 and L3 and L4);
+tel
+
+node N21 (V1: bool; V9: bool; V53: bool; V23: bool; V22: bool; V60: t8; V21: bool; V3: t8) returns (V86: bool);
+var
+    V84: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; L9: bool; L10: bool; L11: bool; L12: bool; L13: bool; 
+let
+    L1 = V1;
+    V86 = L13;
+    L2 = V9;
+    L3 = V84;
+    L4 = (V60 - 2 <= V3 and V3 <= (V60 + 3));
+    V84 = L5;
+    L5 = V21;
+    L6 = (L1 and L2 and L3 and L4);
+    L7 = N20(L8, L9, L10, L11, L12);
+    L8 = V1;
+    L9 = V9;
+    L10 = V53;
+    L11 = V23;
+    L12 = V22;
+    L13 = (L7 or L6);
+tel
+
+node N22 (V1: bool; V94: t8; V3: t8; V9: bool; V21: bool) returns (V87: bool);
+var
+    V84: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; 
+let
+    L5 = V3 > (V94 + 3);
+    L4 = (L1 and L3 and L6 and L5);
+    L3 = V9;
+    V84 = L2;
+    L2 = V21;
+    L1 = V1;
+    L6 = V84;
+    V87 = L4;
+tel
+
+node N23 (V1: bool; V21: bool; V60: t8; V52: bool; V9: bool; V3: t8) returns (V88: bool);
+var
+    V84: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; 
+let
+    L7 = V21;
+    L6 = V52;
+    L5 = V1;
+    L4 = V60 <> C12;
+    L3 = V84;
+    L2 = (L5 and L1 and L6 and L4 and L3 and L8);
+    V84 = L7;
+    L1 = V9;
+    V88 = L2;
+    L8 = V3 < V60 - 2;
+tel
+
+node N24 (V1: bool; V21: bool; V2: bool; V4: t4; V7: bool; V5: bool; V6: bool; V8: bool) returns (V89: bool);
+var
+    V84: bool; L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; L9: bool; L10: bool; L11: bool; 
+let
+    L1 = V84;
+    V89 = L8;
+    V84 = L2;
+    L2 = V21;
+    L3 = V2;
+    L4 = V4 = ct4_4;
+    L5 = V5;
+    L6 = V6;
+    L7 = V1;
+    L8 = (L7 and L11);
+    L9 = (C9 and V8);
+    L10 = V7;
+    L11 = (L1 or L3 or L4 or L10 or L5 or L6 or L9);
+tel
+
+node N25 (V1: bool; V4: t4; V3: t8; V60: t8) returns (V90: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; 
+let
+    V90 = L2;
+    L4 = V4 = ct4_2;
+    L3 = (V60 <> 255 and (V60 + 3) < V3 and V3 <= C2);
+    L2 = (L1 and L3 and L4);
+    L1 = V1;
+tel
+
+node N26 (V1: bool; V60: t8; V3: t8) returns (V91: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    L3 = (V60 <> 255 and V60 - 2 <= V3 and V3 <= (V60 + 3));
+    L2 = V1;
+    L1 = (L2 and L3);
+    V91 = L1;
+tel
+
+node N27 (V30: t2; V60: t8; V1: bool; V3: t8) returns (V92: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; 
+let
+    L1 = V1;
+    V92 = L3;
+    L2 = (V60 <> 255 and V3 < V60 - 2);
+    L3 = (L1 and L4 and L2);
+    L4 = (V30 = ct2_3 or V30 = ct2_3 or V30 = ct2_3);
+tel
+
+node N28 (V1: bool; V3: t8; V94: t8; V4: t4) returns (V93: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; 
+let
+    L3 = V1;
+    L2 = (L3 and L1 and L4);
+    L1 = (V94 <> 255 and (V94 + 3) < V3 and V3 <= C2);
+    V93 = L2;
+    L4 = (V4 = ct4_3 or V4 = ct4_1);
+tel
+
+node N29 (V12: t1; V30: t2; V13: t3; V1: bool; V21: bool; V28: bool; V27: t8) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; 
+let
+    V95 = L1;
+    L1 = N49(L5, L7);
+    L2 = V1 and V21 and V13 = ct3_1;
+    L4 = (ct2_7 -> (pre V30)) <> ct2_7;
+    L3 = (ct2_7 -> (pre V30)) <> ct2_1;
+    L5 = L2 and L3 and L4 and L6;
+    L6 = V12 = ct1_1 or V12 = ct1_2 or V12 = ct1_3;
+    L7 = not V28 and V27 <> 255 or V30 = ct2_8;
+tel
+
+node N30 (V28: bool; V4: t4) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L1;
+    L1 = N49(L2, L3);
+    L2 = V4 = ct4_4;
+    L3 = not V28;
+tel
+
+node N31 (V28: bool; V12: t1) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L1;
+    L1 = N48(L2, L3, 2);
+    L2 = V12 = ct1_5;
+    L3 = not V28;
+tel
+
+node N32 (V28: bool; V13: t3) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L1;
+    L1 = N48(L2, L3, 2);
+    L2 = V13 = ct3_2;
+    L3 = not V28;
+tel
+
+node N33 (V10: t9; V28: bool; V11: bool; V1: bool; V5: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; 
+let
+    L2 = N48(L3, L6, C16);
+    L1 = V1;
+    V95 = L2;
+    L3 = L1 and L4 and L5;
+    L4 = not V11;
+    L5 = V10 < C3;
+    L6 = not V28;
+tel
+
+node N34 (V5: bool; V28: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L2;
+    L1 = not V28;
+    L2 = N49(L3, L1);
+    L3 = V5;
+tel
+
+node N35 (V10: t9; V11: bool; V1: bool; V5: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: t7;
+let
+    L2 = N48(L3, L6, L7);
+    L1 = V1;
+    V95 = L2;
+    L3 = L1 and L4 and L5;
+    L4 = not V11;
+    L5 = V10 < C3;
+    L6 = V5;
+    L7 = C16;
+tel
+
+node N36 (V28: bool; V30: t2) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L1;
+    L1 = N49(L2, L3);
+    L2 = V30 = ct2_8;
+    L3 = not V28;
+tel
+
+node N37 (V28: bool; V1: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L1;
+    L1 = N49(L2, L3);
+    L2 = not V1;
+    L3 = not V28;
+tel
+
+node N38 (V28: bool; V30: t2; V7: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; L4: bool; L5: bool; L6: bool; L7: bool; L8: bool; 
+let
+    V95 = L1;
+    L4 = V7;
+    L3 = V30 = ct2_1;
+    L2 = L5 and L7;
+    L1 = N49(L4, L2);
+    L5 = L3 or L6 or L8;
+    L6 = V30 = ct2_7;
+    L7 = not V28;
+    L8 = V30 = ct2_8;
+tel
+
+node N39 (V28: bool; V2: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L1;
+    L1 = N49(L2, L3);
+    L2 = V2;
+    L3 = not V28;
+tel
+
+node N40 (V28: bool; V8: bool) returns (V95: bool);
+var
+    L1: bool; L2: bool; L3: bool; 
+let
+    V95 = L2;
+    L1 = not V28;
+    L2 = N49(L3, L1);
+    L3 = C9 and V8;
+tel
+
+node N41 (V28: bool; V3: t8) returns (V95: bool);
+var
+    L1: bool; L2: t8; L3: bool; L4: t8; L5: bool; 
+let
+    V95 = L5;
+    L1 = not V28;
+    L2 = V3;
+    L3 = L2 < L4;
+    L4 = C1;
+    L5 = N49(L3, L1);
+tel
+
+node N42 (V28: bool; V3: t8; V19: t5) returns (V95: bool);
+var
+    L1: bool; L2: t8; L3: bool; L4: t8; L5: bool; L6: bool; L7: bool; 
+let
+    V95 = L5;
+    L1 = not V28;
+    L2 = V3;
+    L3 = L2 = L4;
+    L4 = C12;
+    L5 = N49(L7, L1);
+    L6 = V19 <> ct5_5;
+    L7 = L3 and L6;
+tel
+
+node Main (V10: t9; V15: bool; V2: bool; V16: bool; V6: bool; V11: bool; V17: bool; V12: t1; V13: t3; V4: t4; V7: bool; V18: bool; V1: bool; V8: bool; V19: t5; V20: bool; V3: t8; V21: bool; V22: bool; V23: bool; V24: bool; V25: bool; V26: bool) returns (V27: t8; V28: bool; V29: bool; V30: t2; Prop1: bool; Prop4: bool; Prop2: bool; Prop5: bool; Prop6: bool; Prop7: bool; Prop9: bool; Prop3: bool; Prop11: bool; Prop8: bool; Prop12: bool; Prop13: bool; Prop14: bool; Prop10: bool; V5: bool);
+var
+    L1: t2; L2: bool; L3: bool; L4: t8; L5: t9; L6: bool; L7: bool; L8: bool; L9: bool; L10: bool; L11: bool; L12: t1; L13: t3; L14: t4; L15: bool; L16: bool; L17: bool; L18: bool; L19: t5; L20: bool; L21: t8; L22: bool; L23: bool; L24: bool; L25: bool; L26: bool; L27: bool; L28: bool; L29: t2; L30: bool; L31: bool; L32: t2; L33: bool; L34: bool; L35: t3; L36: bool; L37: t9; L38: bool; L39: bool; L40: bool; L41: bool; L42: t1; L43: bool; L44: bool; L45: bool; L46: bool; L47: t8; L48: bool; L49: bool; L50: bool; L51: bool; L52: bool; L53: t8; L54: bool; L55: bool; L56: bool; L57: bool; L58: bool; L59: bool; L60: bool; L61: bool; L62: t4; L63: bool; L64: t2; L65: bool; L66: t3; L67: t1; L68: bool; L69: bool; L70: bool; L71: bool; L72: bool; L73: bool; L74: bool; L75: bool; L76: t9; L77: bool; L78: bool; L79: bool; L80: t8; L81: t5; L82: bool; 
+let
+    L4, L3, L2, L1, L71 = N3(L5, L6, L7, L8, L9, L10, L11, L12, L13, L14, L15, L16, L17, L18, L19, L20, L21, L22, L23, L24, L25, L26, L27);
+    L5 = V10;
+    L6 = V15;
+    L7 = V2;
+    L8 = V16;
+    L9 = V6;
+    L10 = V11;
+    L11 = V17;
+    L12 = V12;
+    L13 = V13;
+    L14 = V4;
+    L15 = V7;
+    L16 = V18;
+    L17 = V1;
+    L18 = V8;
+    L19 = V19;
+    L20 = V20;
+    L21 = V3;
+    L22 = V21;
+    L23 = V22;
+    L24 = V23;
+    L25 = V24;
+    L26 = V25;
+    L27 = V26;
+    V27 = L4;
+    V28 = L3;
+    V29 = L2;
+    V30 = L1;
+    L28 = N38(L30, L29, L31);
+    L29 = V30;
+    L30 = V28;
+    Prop10 = L28;
+    L31 = V7;
+    L32 = V30;
+    L33 = V1;
+    Prop1 = L68;
+    L34 = N32(L43, L35);
+    L35 = V13;
+    Prop4 = L34;
+    L36 = N33(L37, L38, L39, L40, L82);
+    L37 = V10;
+    L38 = V28;
+    L39 = V11;
+    L40 = V1;
+    Prop5 = L36;
+    L41 = N31(L44, L42);
+    L42 = V12;
+    Prop2 = L41;
+    L43 = V28;
+    L44 = V28;
+    L45 = N41(L46, L47);
+    L46 = V28;
+    L47 = V3;
+    Prop13 = L45;
+    L48 = N37(L50, L49);
+    L49 = V1;
+    L50 = V28;
+    Prop9 = L48;
+    L51 = N42(L52, L53, L81);
+    L52 = V28;
+    L53 = V3;
+    Prop14 = L51;
+    L54 = N30(L58, L62);
+    L55 = N39(L59, L63);
+    L56 = N36(L60, L64);
+    L57 = N40(L61, L65);
+    L58 = V28;
+    L59 = V28;
+    L60 = V28;
+    L61 = V28;
+    L62 = V4;
+    L63 = V2;
+    L64 = V30;
+    L65 = V8;
+    Prop3 = L54;
+    Prop11 = L55;
+    Prop8 = L56;
+    Prop12 = L57;
+    L66 = V13;
+    L67 = V12;
+    L68 = N29(L67, L32, L66, L33, L69, L70, L80);
+    L69 = V21;
+    L70 = V28;
+    V5 = L71;
+    L72 = N34(L74, L73);
+    L73 = V28;
+    L74 = V5;
+    Prop7 = L72;
+    L75 = N35(L76, L77, L78, L79);
+    Prop6 = L75;
+    L76 = V10;
+    L77 = V11;
+    L78 = V1;
+    L79 = V5;
+    L80 = V27;
+    L81 = V19;
+    L82 = V5;
+        
+    --%MAIN;
+    -- %PROPERTY Prop1;
+    -- %PROPERTY Prop2;
+    -- %PROPERTY Prop3;
+    -- %PROPERTY Prop4;
+    --%PROPERTY Prop5; -- High level property on the entire model
+    -- %PROPERTY Prop6; -- Low level property on a part of the model
+    -- %PROPERTY Prop7;
+    -- %PROPERTY Prop8;
+    -- %PROPERTY Prop9;
+    -- %PROPERTY Prop10;
+    -- %PROPERTY Prop11;
+    -- %PROPERTY Prop12;
+    -- %PROPERTY Prop13;
+    -- %PROPERTY Prop14;
+tel

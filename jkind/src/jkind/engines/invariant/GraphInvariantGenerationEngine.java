@@ -17,7 +17,7 @@ public class GraphInvariantGenerationEngine extends AbstractInvariantGenerationE
 
 	@Override
 	protected GraphInvariant createInitialInvariant() {
-		List<Expr> candidates = new CandidateGenerator(spec).generate();
+		List<Expr> candidates = new CandidateGenerator(spec, settings).generate();
 		comment("Proposed " + candidates.size() + " candidates");
 		return new GraphInvariant(candidates);
 	}

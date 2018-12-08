@@ -25,4 +25,32 @@ public class JKindSettings extends Settings {
 
 	public String writeAdvice = null;
 	public String readAdvice = null;
+
+	// INVGEN options
+	
+	// LEVEL 0 (default JKind level)
+	// Boolean candidates generation, default true
+	public boolean boolCandidates = true;
+	// Integer subrange candidates generation, default true
+	public boolean subrangeCandidates = true;
+	// ENUM candidates generation, default true
+	public boolean enumCandidates = true;
+	// Integer with init values candidates generation, default true
+	public boolean initCandidates = true;
+	
+	// LEVEL 1
+	// Adds additional candidates of INT and CONST having the same type, default false
+	public boolean typedIntConstCandidates = false;
+	// Adds additional candidates of INT and INT having the same type, default false
+	public boolean typedIntIntCandidates = false;
+	
+	// LEVEL 2
+	// Adds additional candidates of INT and CONST no matter their type, default false
+	public boolean allIntConstCandidates = false;
+	// Adds additional candidates of INT and INT no matter their type, default false
+	public boolean allIntIntCandidates = false;
+	
+	// LEVEL 3
+	// Adds also non combinatorial candidates, default false
+	public boolean combinatorialCandidates = false;
 }

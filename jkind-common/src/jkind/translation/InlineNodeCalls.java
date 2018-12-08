@@ -102,7 +102,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		Map<String, IdExpr> translation = new HashMap<>();
 		for (VarDecl decl : Util.getVarDecls(node)) {
 			String id = prefix + decl.id;
-			newLocals.add(new VarDecl(id, decl.type));
+			newLocals.add(new VarDecl(id, decl.type, decl.originalType)); // Adding the original type before inlining
 			translation.put(decl.id, new IdExpr(id));
 		}
 		return translation;
