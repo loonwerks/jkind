@@ -27,6 +27,8 @@ public class JKindApi extends KindApi {
 	protected boolean ivcReduction = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean slicing = true;
+	
+	protected List<String> vmArgs = new ArrayList<>();
 
 	protected SolverOption solver = null;
 
@@ -106,6 +108,13 @@ public class JKindApi extends KindApi {
 	 */
 	public void disableSlicing() {
 		slicing = false;
+	}
+	
+	/**
+	 * Set VM args
+	 */
+	public void setVmArgs(List<String> args) {
+		vmArgs = new ArrayList<>(args);
 	}
 
 	/**
@@ -216,7 +225,16 @@ public class JKindApi extends KindApi {
 	}
 
 	protected String[] getJKindCommand() {
-		return new String[] { ApiUtil.getJavaPath(), "-jar", getOrFindJKindJar(), "-jkind" };
+		List<String> args = new ArrayList<>();
+		args.add(ApiUtil.getJavaPath());
+		args.addAll(vmArgs);
+		args.add("-jar");
+		args.add(getOrFindJKindJar());
+		args.add("-jkind");
+		
+		String[] rv = new String[args.size()];
+		rv = args.toArray(rv);
+		return rv;
 	}
 
 	private String getOrFindJKindJar() {

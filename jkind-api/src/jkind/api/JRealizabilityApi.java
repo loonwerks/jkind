@@ -22,6 +22,8 @@ public class JRealizabilityApi {
 	private boolean extendCounterexample = false;
 	private boolean reduce = false;
 	private DebugLogger debug = new DebugLogger();
+	
+	private List<String> vmArgs = new ArrayList<>();
 
 	private String jkindJar;
 	private Map<String, String> environment = new HashMap<>();
@@ -101,6 +103,13 @@ public class JRealizabilityApi {
 	public void setEnvironment(String key, String value) {
 		environment.put(key, value);
 	}
+	
+	/**
+	 * Set VM args
+	 */
+	public void setVmArgs(List<String> args) {
+		vmArgs = new ArrayList<>(args);
+	}	
 
 	/**
 	 * Run JRealizability on a Lustre program
@@ -180,8 +189,17 @@ public class JRealizabilityApi {
 		return builder;
 	}
 
-	private String[] getJRealizabilityCommand() {
-		return new String[] { ApiUtil.getJavaPath(), "-jar", getOrFindJKindJar(), "-jrealizability" };
+	protected String[] getJRealizabilityCommand() {
+		List<String> args = new ArrayList<>();
+		args.add(ApiUtil.getJavaPath());
+		args.addAll(vmArgs);
+		args.add("-jar");
+		args.add(getOrFindJKindJar());
+		args.add("-jrealizability");
+		
+		String[] rv = new String[args.size()];
+		rv = args.toArray(rv);
+		return rv;
 	}
 
 	private String getOrFindJKindJar() {
