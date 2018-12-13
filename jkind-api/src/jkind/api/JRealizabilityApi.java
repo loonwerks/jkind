@@ -198,8 +198,7 @@ public class JRealizabilityApi {
 		args.add(getOrFindJKindJar());
 		args.add("-jrealizability");
 		
-		String[] rv = args.toArray(new String[args.size()]);
-		return rv;
+		return args.toArray(new String[args.size()]);
 	}
 
 	private String getOrFindJKindJar() {

@@ -233,8 +233,7 @@ public class JKindApi extends KindApi {
 		args.add(getOrFindJKindJar());
 		args.add("-jkind");
 		
-		String[] rv = args.toArray(new String[args.size()]);
-		return rv;
+		return args.toArray(new String[args.size()]);
 	}
 
 	private String getOrFindJKindJar() {
