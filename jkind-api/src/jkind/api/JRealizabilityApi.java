@@ -3,6 +3,7 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class JRealizabilityApi {
 	private boolean reduce = false;
 	private DebugLogger debug = new DebugLogger();
 	
-	private List<String> vmArgs = new ArrayList<>();
+	private List<String> vmArgs = Collections.emptyList();
 
 	private String jkindJar;
 	private Map<String, String> environment = new HashMap<>();
@@ -197,8 +198,7 @@ public class JRealizabilityApi {
 		args.add(getOrFindJKindJar());
 		args.add("-jrealizability");
 		
-		String[] rv = new String[args.size()];
-		rv = args.toArray(rv);
+		String[] rv = args.toArray(new String[args.size()]);
 		return rv;
 	}
 

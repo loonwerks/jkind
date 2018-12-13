@@ -3,6 +3,7 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class JKindApi extends KindApi {
 	protected boolean smoothCounterexamples = false;
 	protected boolean slicing = true;
 	
-	protected List<String> vmArgs = new ArrayList<>();
+	protected List<String> vmArgs = Collections.emptyList();
 
 	protected SolverOption solver = null;
 
@@ -232,8 +233,7 @@ public class JKindApi extends KindApi {
 		args.add(getOrFindJKindJar());
 		args.add("-jkind");
 		
-		String[] rv = new String[args.size()];
-		rv = args.toArray(rv);
+		String[] rv = args.toArray(new String[args.size()]);
 		return rv;
 	}
 
