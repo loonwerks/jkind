@@ -37,13 +37,32 @@ public class ArrayValue extends Value {
 	}
 
 	private boolean validIndex(BigInteger index) {
-		return BigInteger.ZERO.compareTo(index) <= 0
-				&& index.compareTo(BigInteger.valueOf(elements.size())) < 0;
+		return BigInteger.ZERO.compareTo(index) <= 0 && index.compareTo(BigInteger.valueOf(elements.size())) < 0;
 	}
 
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
-		return null;
+
+		if (right instanceof UnknownValue) {
+			return UnknownValue.UNKNOWN;
+		}
+
+		if (!(right instanceof ArrayValue)) {
+			return null;
+		}
+
+		ArrayValue other = (ArrayValue) right;
+
+		switch (op) {
+		case EQUAL:
+			return BooleanValue.fromBoolean(equals(other));
+
+		case NOTEQUAL:
+			return BooleanValue.fromBoolean(!equals(other));
+
+		default:
+			return null;
+		}
 	}
 
 	@Override

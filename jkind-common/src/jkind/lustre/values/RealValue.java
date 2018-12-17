@@ -9,13 +9,18 @@ import jkind.util.BigFraction;
  */
 public class RealValue extends Value implements Comparable<RealValue> {
 	public final BigFraction value;
-	
+
 	public RealValue(BigFraction value) {
 		this.value = value;
 	}
 
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
+
+		if (right instanceof UnknownValue) {
+			return UnknownValue.UNKNOWN;
+		}
+
 		if (!(right instanceof RealValue)) {
 			return null;
 		}
@@ -66,7 +71,7 @@ public class RealValue extends Value implements Comparable<RealValue> {
 	public String toString() {
 		return value.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return value.hashCode();

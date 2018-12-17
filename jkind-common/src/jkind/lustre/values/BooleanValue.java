@@ -22,6 +22,23 @@ public class BooleanValue extends Value {
 
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
+
+		if (right instanceof UnknownValue) {
+			switch (op) {
+			case OR:
+				return value ? fromBoolean(true) : UnknownValue.UNKNOWN;
+
+			case AND:
+				return !value ? fromBoolean(false) : UnknownValue.UNKNOWN;
+
+			case IMPLIES:
+				return !value ? fromBoolean(true) : UnknownValue.UNKNOWN;
+
+			default:
+				return UnknownValue.UNKNOWN;
+			}
+		}
+
 		if (!(right instanceof BooleanValue)) {
 			return null;
 		}
@@ -54,7 +71,7 @@ public class BooleanValue extends Value {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return Boolean.toString(value);
