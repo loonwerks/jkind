@@ -16,7 +16,27 @@ public class EnumValue extends Value implements Comparable<EnumValue> {
 
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
-		return null;
+
+		if (right instanceof UnknownValue) {
+			return UnknownValue.UNKNOWN;
+		}
+
+		if (!(right instanceof EnumValue)) {
+			return null;
+		}
+
+		EnumValue other = (EnumValue) right;
+
+		switch (op) {
+		case EQUAL:
+			return BooleanValue.fromBoolean(equals(other));
+
+		case NOTEQUAL:
+			return BooleanValue.fromBoolean(!equals(other));
+
+		default:
+			return null;
+		}
 	}
 
 	@Override

@@ -19,7 +19,27 @@ public class TupleValue extends Value {
 
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
-		return null;
+
+		if (right instanceof UnknownValue) {
+			return UnknownValue.UNKNOWN;
+		}
+
+		if (!(right instanceof TupleValue)) {
+			return null;
+		}
+
+		TupleValue other = (TupleValue) right;
+
+		switch (op) {
+		case EQUAL:
+			return BooleanValue.fromBoolean(equals(other));
+
+		case NOTEQUAL:
+			return BooleanValue.fromBoolean(!equals(other));
+
+		default:
+			return null;
+		}
 	}
 
 	@Override

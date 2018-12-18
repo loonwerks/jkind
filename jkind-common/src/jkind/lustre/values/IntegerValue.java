@@ -21,6 +21,11 @@ public class IntegerValue extends Value {
 
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
+
+		if (right instanceof UnknownValue) {
+			return UnknownValue.UNKNOWN;
+		}
+
 		if (!(right instanceof IntegerValue)) {
 			return null;
 		}
