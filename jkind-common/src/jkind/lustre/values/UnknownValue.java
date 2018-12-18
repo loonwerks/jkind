@@ -67,6 +67,6 @@ public class UnknownValue extends Value {
 
 	@Override
 	public String toString() {
-		return "unknown";
+		return "?";
 	}
 }
