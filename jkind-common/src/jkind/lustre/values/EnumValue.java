@@ -21,7 +21,7 @@ public class EnumValue extends Value implements Comparable<EnumValue> {
 			return UnknownValue.UNKNOWN;
 		}
 
-		if (!(right instanceof RecordValue)) {
+		if (!(right instanceof EnumValue)) {
 			return null;
 		}
 

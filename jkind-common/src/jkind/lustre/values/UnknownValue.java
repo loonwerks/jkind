@@ -8,7 +8,7 @@ import jkind.lustre.values.Value;
 public class UnknownValue extends Value {
 
 	public static final Value UNKNOWN = new UnknownValue();
-	
+
 	@Override
 	public Value applyBinaryOp(BinaryOp op, Value right) {
 		switch (op) {
@@ -27,26 +27,26 @@ public class UnknownValue extends Value {
 		case XOR:
 		case IMPLIES:
 			return UNKNOWN;
-			
+
 		case OR:
-			if(right instanceof BooleanValue) {
+			if (right instanceof BooleanValue) {
 				BooleanValue v = (BooleanValue) right;
-				if(v.value) {
+				if (v.value) {
 					return BooleanValue.TRUE;
 				}
 			}
 			return UNKNOWN;
-			
+
 		case AND:
-			if(right instanceof BooleanValue) {
+			if (right instanceof BooleanValue) {
 				BooleanValue v = (BooleanValue) right;
-				if(!v.value) {
+				if (!v.value) {
 					return BooleanValue.FALSE;
 				}
 			}
 			return UNKNOWN;
-			
-		case ARROW:	
+
+		case ARROW:
 		default:
 			return null;
 		}
@@ -54,19 +54,19 @@ public class UnknownValue extends Value {
 
 	@Override
 	public Value applyUnaryOp(UnaryOp op) {
-		switch(op) {
-			case NEGATIVE:
-			case NOT:
-				return UNKNOWN;
-				
-			default:
-				return null;
+		switch (op) {
+		case NEGATIVE:
+		case NOT:
+			return UNKNOWN;
+
+		default:
+			return null;
 		}
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
-		return "U";
+		return "unknown";
 	}
 }

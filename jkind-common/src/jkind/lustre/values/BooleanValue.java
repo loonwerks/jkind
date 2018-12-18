@@ -26,13 +26,13 @@ public class BooleanValue extends Value {
 		if (right instanceof UnknownValue) {
 			switch (op) {
 			case OR:
-				return value ? fromBoolean(true) : UnknownValue.UNKNOWN;
+				return value ? BooleanValue.TRUE : UnknownValue.UNKNOWN;
 
 			case AND:
-				return !value ? fromBoolean(false) : UnknownValue.UNKNOWN;
+				return !value ? BooleanValue.FALSE : UnknownValue.UNKNOWN;
 
 			case IMPLIES:
-				return !value ? fromBoolean(true) : UnknownValue.UNKNOWN;
+				return !value ? BooleanValue.TRUE : UnknownValue.UNKNOWN;
 
 			default:
 				return UnknownValue.UNKNOWN;
