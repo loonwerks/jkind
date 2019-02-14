@@ -118,4 +118,5 @@ task dist(type: Zip) {
  
 artifacts {
     archives dist
+    archives sourcesJar
 }
