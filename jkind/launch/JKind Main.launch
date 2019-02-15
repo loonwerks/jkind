@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="jkind.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-jkind -all_ivcs -all_assigned -solver z3 -xml  &quot;C:\Users\Elaheh\Desktop\tes.lus&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-jkind -all_ivcs -all_assigned -all_ivcs_alg 2 -all_ivcs_jkind_timeout 50 -solver z3  &quot;C:\Project_Files\JKind_MIVC_JB\C0123_w_fault.lus&quot;"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jkind"/>
 <stringAttribute key="yk-options" value="&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;"/>
 </launchConfiguration>

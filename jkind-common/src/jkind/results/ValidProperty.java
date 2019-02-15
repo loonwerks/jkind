@@ -15,14 +15,19 @@ public final class ValidProperty extends Property {
 	private final int k;
 	private List<String> invariants;
 	private Set<String> ivc;
+	private final Set<List<String>> ivcSets;
+	private final Set<List<String>> invarantSets;
 
 	public ValidProperty(String name, String source, int k, double runtime,
-			List<String> invariants, Collection<String> ivc) {
+			List<String> invariants, Collection<String> ivc, Set<List<String>> invariantSets,
+			Set<List<String>> ivcSets) {
 		super(name, runtime);
 		this.source = source;
 		this.k = k;
 		this.invariants = Util.safeList(invariants);
 		this.ivc = Util.safeStringSortedSet(ivc);
+		this.invarantSets = Util.safeStringSortedSets(invariantSets);
+		this.ivcSets = Util.safeStringSortedSets(ivcSets);
 	}
 
 	/**
@@ -52,6 +57,22 @@ public final class ValidProperty extends Property {
 	 */
 	public Set<String> getIvc() {
 		return ivc;
+	}
+
+	/**
+	 * Invariants used to prove property, only available if
+	 * JKindApi.setIvcReduction()
+	 */
+	public Set<List<String>> getInvariantSets() {
+		return invarantSets;
+	}
+
+	/**
+	 * Inductive validity core, only available if JKindApi.setIvcReduction()
+	 */
+
+	public Set<List<String>> getIvcSets() {
+		return ivcSets;
 	}
 
 	@Override

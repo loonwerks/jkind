@@ -5,8 +5,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,7 +62,7 @@ public class XmlParseThread extends Thread {
 		 * the XML file which causes the buffer to fill. Instead, we read the
 		 * XML file ourselves and give relevant pieces of it to the parser as
 		 * they are ready.
-		 * 
+		 *
 		 * The downside is we assume the <Property ...> and </Property> tags are
 		 * on their own lines.
 		 */
@@ -178,14 +180,33 @@ public class XmlParseThread extends Thread {
 		int k = getK(getElement(propertyElement, "K"));
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
 		String source = getSource(getElement(propertyElement, "Answer"));
+		int numOfIVCs = getNumOfIVCs(getElement(propertyElement, "NumberOfIVCs"));
 		List<String> invariants = getStringList(getElements(propertyElement, "Invariant"));
 		List<String> ivc = getStringList(getElements(propertyElement, "Ivc"));
+		Set<List<String>> invarantSets = new HashSet<List<String>>();
+		Set<List<String>> ivcSets = new HashSet<List<String>>();
 		List<String> conflicts = getConflicts(getElement(propertyElement, "Conflicts"));
 		Counterexample cex = getCounterexample(getElement(propertyElement, "Counterexample"), k);
 
+		if (numOfIVCs == 0) {
+			List<String> curInvariants = getStringList(getElements(propertyElement, "Invariant"));
+			List<String> curIvc = getStringList(getElements(propertyElement, "Ivc"));
+			invarantSets.add(curInvariants);
+			ivcSets.add(curIvc);
+		} else {
+			for (int i = 0; i < numOfIVCs; i++) {
+				Element ivcSetElem = (Element) propertyElement.getElementsByTagName("IvcSet").item(i);
+
+				List<String> curInvariants = getStringList(getElements(ivcSetElem, "Invariant"));
+				List<String> curIvc = getStringList(getElements(ivcSetElem, "Ivc"));
+				invarantSets.add(curInvariants);
+				ivcSets.add(curIvc);
+			}
+		}
+
 		switch (answer) {
 		case "valid":
-			return new ValidProperty(name, source, k, runtime, invariants, ivc);
+			return new ValidProperty(name, source, k, runtime, invariants, ivc, invarantSets, ivcSets);
 
 		case "falsifiable":
 			return new InvalidProperty(name, source, cex, conflicts, runtime);
@@ -229,6 +250,15 @@ public class XmlParseThread extends Thread {
 		default:
 			throw new IllegalArgumentException();
 		}
+	}
+
+	private int getNumOfIVCs(Node numOfIVCNode) {
+		if (numOfIVCNode == null) {
+			return 0;
+		}
+		int num = Integer.parseInt(numOfIVCNode.getTextContent());
+		return num;
+
 	}
 
 	private String getAnswer(Node answerNode) {
@@ -328,7 +358,7 @@ public class XmlParseThread extends Thread {
 		}
 		VarDecl output = getVarDecl(getElement(functionElement, "Output"));
 		FunctionTable table = new FunctionTable(name, inputs, output);
-		
+
 		for (Element fvElement : getElements(functionElement, "FunctionValue")) {
 			List<Value> inputValues = new ArrayList<>();
 			List<Element> ivElements = getElements(fvElement, "InputValue");
