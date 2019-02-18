@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import jkind.ExitCodes;
 import jkind.JKindException;
 import jkind.JKindSettings;
@@ -19,9 +20,9 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
-import jkind.engines.ivcs.AllIvcsExtractorEngine; 
+import jkind.engines.ivcs.AllIvcsExtractorEngine;
 import jkind.engines.ivcs.IvcReductionEngine;
-import jkind.engines.ivcs.IvcUtil; 
+import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -30,7 +31,6 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.Message;
 import jkind.engines.messages.MessageHandler;
-import jkind.engines.messages.StopMessage;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
@@ -112,7 +112,7 @@ public class Director extends MessageHandler {
 
 		initializeUnknowns(settings, analysisSpec.node.properties);
 	}
-	 
+
 	private final Writer getWriter() {
 		try {
 			if (settings.excel) {
@@ -144,21 +144,21 @@ public class Director extends MessageHandler {
 				&& !exitRequested()) {
 			processMessages();
 			sleep(100);
-		} 
-		if (timeout()){
+		}
+		if (timeout() && aivcIdx) {
 			((AllIvcsExtractorEngine)(engines.get(aivcIndx))).getValid();
 		}
-		
+
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
-			exitCode = reportFailures(); 
+			exitCode = reportFailures();
 		}
-		// MWW: added code: otherwise top-level jkind shuts down 
+		// MWW: added code: otherwise top-level jkind shuts down
 		// minijkind!
 		if (settings.miniJkind) {
-			stopEngines(); 
+			stopEngines();
 		}
 		return exitCode;
 	}
@@ -191,7 +191,7 @@ public class Director extends MessageHandler {
 	};
 
 	private void addShutdownHook() {
-		Runtime.getRuntime().addShutdownHook(shutdownHook); 
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 
 	private boolean removeShutdownHook() {
@@ -240,10 +240,10 @@ public class Director extends MessageHandler {
 			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.allIvcs) { 
+		if (settings.allIvcs) {
 			aivcIdx = true;
 			addEngine(new AllIvcsExtractorEngine(analysisSpec, settings, this));
-		} 
+		}
 	}
 //
 	int aivcIndx;
@@ -263,8 +263,8 @@ public class Director extends MessageHandler {
 			// Add code to kill thread.
 				engine.stopEngine();
 			}
-		}catch(Throwable t){ 
-		} 
+		}catch(Throwable t){
+		}
 	}
 
 	private static void sleep(int millis) {
@@ -303,11 +303,11 @@ public class Director extends MessageHandler {
 		for (Engine engine : engines) {
 			// MWW: specialized for miniJKind - we kill solvers abruptly
 			// for "internal" runs.
-			if (engine.getThrowable() != null && 
-				((!settings.miniJkind) && timeout())) { 
+			if (engine.getThrowable() != null &&
+				((!settings.miniJkind) && timeout())) {
 				StdErr.println(engine.getName() + " process failed");
 				StdErr.printStackTrace(engine.getThrowable());
-				exitCode = ExitCodes.UNCAUGHT_EXCEPTION; 
+				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
 				if(engine.getThrowable().toString().contains("IvcException")){
 					exitCode = ExitCodes.IVC_EXCEPTION;
 				}
@@ -372,7 +372,7 @@ public class Director extends MessageHandler {
 			Set<String> ivc = IvcUtil.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
 			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
 			if(settings.allIvcs){
-				for(Tuple<Set<String>, List<String>> item : vm.allIvcs){ 
+				for(Tuple<Set<String>, List<String>> item : vm.allIvcs){
 					allIvcs.add(new Tuple<Set<String>, List<String>>(
 							IvcUtil.trimNode(IvcUtil.findRightSide(item.firstElement(),
 									settings.allAssigned, analysisSpec.node.equations)), item.secondElement()));
@@ -500,10 +500,10 @@ public class Director extends MessageHandler {
 	}
 
 	public Itinerary getValidMessageItinerary() {
-		List<EngineType> destinations = new ArrayList<>(); 
+		List<EngineType> destinations = new ArrayList<>();
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
-		} 
+		}
 		if (settings.allIvcs) {
 			destinations.add(EngineType.IVC_REDUCTION_ALL);
 		}
@@ -523,12 +523,12 @@ public class Director extends MessageHandler {
 		return (System.currentTimeMillis() - startTime) / 1000.0;
 	}
 
-	private void printSummary() { 
+	private void printSummary() {
 		if (!settings.xmlToStdout && !settings.miniJkind) {
 			System.out.println("    -------------------------------------");
 			System.out.println("    --^^--        SUMMARY          --^^--");
 			System.out.println("    -------------------------------------");
-			System.out.println(); 
+			System.out.println();
 			if (!validProperties.isEmpty()) {
 				System.out.println("VALID PROPERTIES: " + validProperties);
 				System.out.println();

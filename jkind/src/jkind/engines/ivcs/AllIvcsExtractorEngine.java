@@ -100,6 +100,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				return;
 			}
 
+			if (vm.ivc.isEmpty()) {
+				System.out.println("The high level property " + property
+						+ " can be proved without using any of the --%IVC annotated low level properties.");
+				sendValid(property.toString(), vm);
+				return;
+			}
+
 			if (properties.remove(property)) {
 				switch(settings.allIvcsAlgorithm) {
 					case 1: //offline MIVC enumeration
@@ -143,7 +150,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
 			}
 		}
-
+		System.out.println("MIVC enumeration completed.");
 		z3Solver.pop();
 		sendValid(property.toString(), vm);
 	}
@@ -208,17 +215,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
 		}
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
-		// System.out.println("@@@@started minijkind verify");
 		miniJkind.verify();
-		// System.out.println("@@@@finished minijkind verify");
 
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 			timedoutLoop  = true;
-			// System.out.println("timeout");
 		}
         if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
 			js.pdrMax = 0;
-			// System.out.println("timeout with exception");
 			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
 		}
 		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
@@ -301,17 +304,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Specification newSpec = new Specification(nodeSpec, js.slicing);
 
 		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
-		// System.out.println("@@@@started minijkind verify");
 		miniJkind.verify();
-		// System.out.println("@@@@finished minijkind verify");
 
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 			timedoutLoop  = true;
-			// System.out.println("timeout");
 		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
-			// System.out.println("timeout with exception");
-			//js.pdrMax = 0;
+			js.pdrMax = 0;
 			//return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
 		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
@@ -433,7 +432,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	private void markMIVC(List<Symbol> mivc) {
-		// System.out.println("$$$$$$found IVC in markMIVC with size " + mivc.size());
 		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc);
 		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));
 		double time = (System.currentTimeMillis() - runtime) / 1000.0;
@@ -448,9 +446,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			comment("Result was UNKNOWN; Resend the request with pdrMax = 0 ...");
 		}
 		MiniJKind miniJkind = new MiniJKind (program, newSpec, js);
-		// System.out.println("@@@@started minijkind verify");
 		miniJkind.verify();
-		// System.out.println("@@@@finished minijkind verify");
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
 			timedoutLoop  = true;
 		}
