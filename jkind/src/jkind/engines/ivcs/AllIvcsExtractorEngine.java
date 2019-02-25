@@ -51,7 +51,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
 	private final LinkedBiMap<String, Symbol> ivcMap;
 	private Sexp map;
-	private List<List<Symbol>> shrinkingPool = new ArrayList<List<Symbol>>();
+	private List<SeedPair> shrinkingPool = new ArrayList<SeedPair>();
 	private List<List<Symbol>> growingPool = new ArrayList<List<Symbol>>();
 
 	private Z3Solver z3Solver;
@@ -62,6 +62,21 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private boolean timedoutLoop = false;
 	private ValidMessage gvm;
 	private double runtime;
+
+	private class SeedPair {
+		public List<Symbol> properties;
+		public List<String> invariants;
+
+		public SeedPair(List<Symbol> p, List<String> i) {
+			properties = new ArrayList<Symbol>(p);
+			invariants = new ArrayList<String>(i);
+		}
+
+		public SeedPair(List<Symbol> p) {
+			properties = new ArrayList<Symbol>(p);
+			invariants = new ArrayList<String>();
+		}
+	}
 
 	public AllIvcsExtractorEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -106,7 +121,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				sendValid(property.toString(), vm);
 				return;
 			}
-
+			System.out.println("Proving the high level property " + property
+					+ " might require to use some of the --%IVC annotated low level properties.");
 			if (properties.remove(property)) {
 				switch(settings.allIvcsAlgorithm) {
 					case 1: //offline MIVC enumeration
@@ -150,6 +166,13 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
 			}
 		}
+
+		// it is possible that the resultant MIVC is empty (not a bug! this is expected behavior)
+		if (allIvcs.size() == 1 && allIvcs.iterator().next().firstElement().size() == 0) {
+			System.out.println("The high level property " + property
+					+ " can be proved without using any of the --%IVC annotated low level properties.");
+			allIvcs.clear();
+		}
 		System.out.println("MIVC enumeration completed.");
 		z3Solver.pop();
 		sendValid(property.toString(), vm);
@@ -161,10 +184,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private void computeAllIvcsOnline(Expr property, ValidMessage vm) {
 		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
 		List<Symbol> seed = new ArrayList<Symbol>();
-
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
-		shrinkingPool.add(new ArrayList<Symbol>(seed));
+		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());
+		shrinkingPool.add(new SeedPair(new ArrayList<Symbol>(seed), inv));
 
 		mustElements.add(property.toString());
 		if (ivcMap.containsKey(property.toString())){
@@ -174,19 +197,27 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 		seed = getMaximalUnexplored(new ArrayList<Symbol>());
 		while(!seed.isEmpty()){
-			if (ivcFinderSimple(seed, property.toString(), true )){
-				mapShrink(seed, property.toString());
+			SeedPair seedPair = new SeedPair(seed);
+			if (ivcFinderSimple(seedPair, property.toString(), true)) {
+				mapShrink(seedPair, property.toString());
 			}else{
 				map = new Cons("and", map, blockDownComplement(seed));
 			}
 			while(!shrinkingPool.isEmpty()) {
-				List<Symbol> ivc = shrinkingPool.get(0);
+				SeedPair ivc = shrinkingPool.get(0);
 				shrinkingPool.remove(0);
 				mapShrink(ivc, property.toString());
 			}
 			seed = getMaximalUnexplored(new ArrayList<Symbol>());
 		}
 
+		// it is possible that the resultant MIVC is empty (not a bug! this is expected behavior)
+		if (allIvcs.size() == 1 && allIvcs.iterator().next().firstElement().size() == 0) {
+			System.out.println("The high level property " + property
+					+ " can be proved without using any of the --%IVC annotated low level properties.");
+			allIvcs.clear();
+		}
+		System.out.println("MIVC enumeration completed.");
 		z3Solver.pop();
 		sendValid(property.toString(), vm);
 
@@ -285,7 +316,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 	}
 
-	private boolean ivcFinderSimple(List<Symbol> seed, String property, boolean reduceSeed) {
+	private boolean ivcFinderSimple(SeedPair seed, String property, boolean reduceSeed) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true;
 		js.timeout = TIMEOUT;
@@ -295,7 +326,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		js.boundedModelChecking = settings.boundedModelChecking;
         js.miniJkind = true;
         js.readAdvice = js.writeAdvice;
-		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed));
+		Set<String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<>(seed.properties));
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
@@ -314,8 +345,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			//return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
 		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
+			seed.invariants = miniJkind.getPropertyInvariants();
 			if(reduceSeed) {
-				seed = IvcUtil.getIvcLiterals(ivcMap, miniJkind.getPropertyIvc());
+				seed.properties = IvcUtil.getIvcLiterals(ivcMap, miniJkind.getPropertyIvc());
 			}
 			return true;
 		}
@@ -329,23 +361,23 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private boolean Grow(List<Symbol> seed, String property) {
 		List<Symbol> top = getMaximalUnexplored(seed);
-		List<Symbol> approx = new ArrayList<Symbol>(top);
+		SeedPair approx = new SeedPair(top);
 		List<Symbol> added = new ArrayList<Symbol>(top);
 		added.removeAll(seed);
 
 		while (ivcFinderSimple(approx, property.toString(), true)){
-			List<List<Symbol>> toRemove = new ArrayList<List<Symbol>>();
-			for(List<Symbol> s: shrinkingPool) {
-				if(s.containsAll(approx)) {
+			List<SeedPair> toRemove = new ArrayList<SeedPair>();
+			for (SeedPair s : shrinkingPool) {
+				if (s.properties.containsAll(approx.properties)) {
 					toRemove.add(s);
 				}
 			}
 			shrinkingPool.removeAll(toRemove);
-			map = new Cons("and", map, blockUp(approx));
+			map = new Cons("and", map, blockUp(approx.properties));
 			shrinkingPool.add(approx);
 
 			boolean reduced = false;
-			for(Symbol s: approx) {
+			for (Symbol s : approx.properties) {
 				if(added.contains(s)) {
 					added.remove(s);
 					top.remove(s);
@@ -356,10 +388,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			if(!reduced) {
 				break;
 			}
-			approx = new ArrayList<Symbol>(top);
+			approx = new SeedPair(top);
 		}
 		map = new Cons("and", map, blockDownComplement(top));
-
 		return true;
 	}
 
@@ -389,27 +420,27 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 
-	private boolean mapShrink(List<Symbol> seed, String property) {
-		List<Symbol> candidates = new ArrayList<Symbol>(seed);
+	private boolean mapShrink(SeedPair seed, String property) {
+		List<Symbol> candidates = new ArrayList<Symbol>(seed.properties);
 		for(Symbol c : candidates) {
-			seed.remove(c);
-			if(mustElements.contains(c.toString()) || !isUnexplored(seed)) {
-				seed.add(c);
+			seed.properties.remove(c);
+			if (mustElements.contains(c.toString()) || !isUnexplored(seed.properties)) {
+				seed.properties.add(c);
 				continue;
 			}
 
 			if(!ivcFinderSimple(seed, property, false)) {
-				ArrayList<Symbol> copy = new ArrayList<Symbol>(seed);
+				ArrayList<Symbol> copy = new ArrayList<Symbol>(seed.properties);
 				growingPool.add(copy);
-				seed.add(c);
+				seed.properties.add(c);
 			}
 		}
-		map = new Cons("and", map, blockUp(seed));
+		map = new Cons("and", map, blockUp(seed.properties));
 		markMIVC(seed);
 
-		List<List<Symbol>> toRemove = new ArrayList<List<Symbol>>();
-		for(List<Symbol> s: shrinkingPool) {
-			if(s.containsAll(seed)) {
+		List<SeedPair> toRemove = new ArrayList<SeedPair>();
+		for (SeedPair s : shrinkingPool) {
+			if (s.properties.containsAll(seed.properties)) {
 				toRemove.add(s);
 			}
 		}
@@ -431,9 +462,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 
-	private void markMIVC(List<Symbol> mivc) {
-		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc);
-		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, new ArrayList<String>() ));
+	private void markMIVC(SeedPair mivc) {
+		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc.properties);
+		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, mivc.invariants));
 		double time = (System.currentTimeMillis() - runtime) / 1000.0;
 		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true) ;
 	}
