@@ -181,6 +181,7 @@ public class XmlParseThread extends Thread {
 		String answer = getAnswer(getElement(propertyElement, "Answer"));
 		String source = getSource(getElement(propertyElement, "Answer"));
 		int numOfIVCs = getNumOfIVCs(getElement(propertyElement, "NumberOfIVCs"));
+		boolean mivcTimedOut = getTimedOutInfo(getElement(propertyElement, "TimedoutLoop"));
 		List<String> invariants = getStringList(getElements(propertyElement, "Invariant"));
 		List<String> ivc = getStringList(getElements(propertyElement, "Ivc"));
 		Set<List<String>> invarantSets = new HashSet<List<String>>();
@@ -206,7 +207,7 @@ public class XmlParseThread extends Thread {
 
 		switch (answer) {
 		case "valid":
-			return new ValidProperty(name, source, k, runtime, invariants, ivc, invarantSets, ivcSets);
+			return new ValidProperty(name, source, k, runtime, invariants, ivc, invarantSets, ivcSets, mivcTimedOut);
 
 		case "falsifiable":
 			return new InvalidProperty(name, source, cex, conflicts, runtime);
@@ -258,6 +259,19 @@ public class XmlParseThread extends Thread {
 		}
 		int num = Integer.parseInt(numOfIVCNode.getTextContent());
 		return num;
+
+	}
+
+	private boolean getTimedOutInfo(Node timedOutLoopNode) {
+		if (timedOutLoopNode == null) {
+			return false;
+		}
+		String timedOutInfo = timedOutLoopNode.getTextContent();
+		if (timedOutInfo.equals("yes")) {
+			return true;
+		} else {
+			return false;
+		}
 
 	}
 

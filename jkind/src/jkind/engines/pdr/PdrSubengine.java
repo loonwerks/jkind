@@ -25,7 +25,7 @@ import jkind.translation.Specification;
 /**
  * PDR algorithm based on "Efficient implementation of property directed
  * reachability" by Niklas Een, Alan Mishchenko, and Robert Brayton
- * 
+ *
  * SMT extension based on "IC3 Modulo Theories via Implicit Predicate
  * Abstraction" by Alessandro Cimatti, Alberto Griggio, Sergio Mover, and
  * Stefano Tonetta
@@ -34,7 +34,7 @@ public class PdrSubengine extends Thread {
 	private final Node node;
 	private final List<Function> functions;
 	private final String prop;
-	
+
 	private final PdrEngine parent;
 	private final Director director;
 
@@ -250,7 +250,8 @@ public class PdrSubengine extends Thread {
 
 	private void sendValidAndInvariants(List<Expr> invariants) {
 		Itinerary itinerary = director.getValidMessageItinerary();
-		director.broadcast(new ValidMessage(parent.getName(), prop, 1, getRuntime(), invariants, null, itinerary, null));
+		director.broadcast(
+				new ValidMessage(parent.getName(), prop, 1, getRuntime(), invariants, null, itinerary, null, false));
 		director.broadcast(new InvariantMessage(invariants));
 	}
 
@@ -262,7 +263,7 @@ public class PdrSubengine extends Thread {
 	private void sendInvariant(Expr invariant) {
 		director.broadcast(new InvariantMessage(invariant));
 	}
-	
+
 	private double getRuntime() {
 		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}

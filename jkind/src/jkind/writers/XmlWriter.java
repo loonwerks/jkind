@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -44,7 +45,8 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs,
+			boolean mivcTimedOut) {
 		for (String prop : props) {
 			writeValid(prop, source, k, runtime, invariants, ivc, allIvcs);
 		}
@@ -56,7 +58,7 @@ public class XmlWriter extends Writer {
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
-		
+
 		if(allIvcs.isEmpty()){
 			for (Expr invariant : invariants) {
 				out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
@@ -72,11 +74,11 @@ public class XmlWriter extends Writer {
 				out.println("    <TimedoutLoop>" + "yes" + "</TimedoutLoop>");
 			}else {
 				out.println("    <TimedoutLoop>" + "no" + "</TimedoutLoop>");
-			} 
+			}
 			for (String supp : ivc) {
 				out.println("    <MustElem>" + supp + "</MustElem>");
 			}
-			
+
 			for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
 				out.println("    <IvcSet number=\"" + count + "\">");
 				for (String invariant : ivcSet.secondElement()) {
@@ -89,7 +91,7 @@ public class XmlWriter extends Writer {
 				count++;
 			}
 		}
-		
+
 		out.println("  </Property>");
 		out.flush();
 	}
@@ -97,7 +99,7 @@ public class XmlWriter extends Writer {
 	private String escape(Expr invariant) {
 		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
 	}
-	
+
 	private String escape(String invariant) {
 		return invariant.replace("<", "&lt;").replace(">", "&gt;");
 	}

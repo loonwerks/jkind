@@ -7,18 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import jkind.JKindException;
 import jkind.SolverOption;
 import jkind.api.results.JKindResult;
-
-import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * The primary interface to JKind.
  */
 public class JKindApi extends KindApi {
 	protected Integer n = null;
-
+	protected Integer allIvcsJkindTimeout = null;
 	protected boolean boundedModelChecking = true;
 	protected boolean kInduction = true;
 	protected boolean invariantGeneration = true;
@@ -38,7 +38,7 @@ public class JKindApi extends KindApi {
 
 	/**
 	 * Set the maximum depth for BMC and k-induction
-	 * 
+	 *
 	 * @param n
 	 *            A non-negative integer
 	 */
@@ -63,7 +63,7 @@ public class JKindApi extends KindApi {
 
 	/**
 	 * Set the maximum number of PDR instances to run
-	 * 
+	 *
 	 * @param pdrMax
 	 *            A non-negative integer
 	 */
@@ -94,12 +94,22 @@ public class JKindApi extends KindApi {
 	public void setIvcReduction() {
 		ivcReduction = true;
 	}
-	
+
 	/**
 	 * Find all inductive validity cores for valid properties
 	 */
 	public void setAllIvcs() {
 		allIvcs = true;
+	}
+
+	/**
+	 * Find timeout for jkind mivc engine
+	 */
+	public void setAllIvcsJkindTimeout(int n) {
+		if (n < 0) {
+			throw new JKindException("all_ivcs_jkind_timeout must be positive");
+		}
+		this.allIvcsJkindTimeout = n;
 	}
 
 	/**
@@ -149,7 +159,7 @@ public class JKindApi extends KindApi {
 
 	/**
 	 * Run JKind on a Lustre program
-	 * 
+	 *
 	 * @param lustreFile
 	 *            File containing Lustre program
 	 * @param result
@@ -198,6 +208,11 @@ public class JKindApi extends KindApi {
 		if (allIvcs) {
 			args.add("-all_ivcs");
 		}
+		if (allIvcsJkindTimeout != null) {
+			args.add("-all_ivcs_jkind_timeout");
+			args.add(allIvcsJkindTimeout.toString());
+		}
+
 		if (smoothCounterexamples) {
 			args.add("-smooth");
 		}
@@ -231,9 +246,9 @@ public class JKindApi extends KindApi {
 	}
 
 	private String getOrFindJKindJar() {
-		if (jkindJar != null) { 
-			return jkindJar; 
-		} else {  
+		if (jkindJar != null) {
+			return jkindJar;
+		} else {
 			return ApiUtil.findJKindJar().toString();
 		}
 	}

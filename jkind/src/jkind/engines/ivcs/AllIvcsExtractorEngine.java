@@ -659,12 +659,15 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, ValidMessage vm) {
+		boolean mivcTimedOut = false;
 		Itinerary itinerary = vm.getNextItinerary();
 		if(timedoutLoop){
 			mustElements.add("::AIVCtimedoutLoop::");
+			mivcTimedOut = true;
 		}
 
-		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary, allIvcs));
+		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary,
+				allIvcs, mivcTimedOut));
 	}
 
 	public  void getValid(){

@@ -17,9 +17,10 @@ public class ValidMessage extends Message {
 	public final double proofTime;
 	public final List<Expr> invariants;
 	private final Itinerary itinerary;
+	public final boolean mivcTimedOut;
 
 	public ValidMessage(String source, List<String> valid, int k, double proofTime, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs) {
+			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs, boolean mivcTimedOut) {
 		this.source = source;
 		this.valid = Util.safeList(valid);
 		this.k = k;
@@ -28,11 +29,12 @@ public class ValidMessage extends Message {
 		this.ivc = Util.safeSet(ivc);
 		this.allIvcs = Util.safeList(allIvcs);
 		this.proofTime = proofTime;
+		this.mivcTimedOut = mivcTimedOut;
 	}
 
 	public ValidMessage(String source, String valid, int k, double proofTime, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs) {
-		this(source, Collections.singletonList(valid), k, proofTime, invariants, ivc, itinerary, allIvcs);
+			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs, boolean mivcTimedOut) {
+		this(source, Collections.singletonList(valid), k, proofTime, invariants, ivc, itinerary, allIvcs, mivcTimedOut);
 	}
 
 	public EngineType getNextDestination() {

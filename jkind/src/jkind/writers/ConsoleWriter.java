@@ -1,10 +1,12 @@
 package jkind.writers;
 
 import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import jkind.engines.MiniJKind; 
+
+import jkind.engines.MiniJKind;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
@@ -19,7 +21,7 @@ public class ConsoleWriter extends Writer {
 		super();
 		this.layout = layout;
 	}
-	
+
 	public ConsoleWriter(Layout layout, MiniJKind miniJkind) {
 		this(layout);
 		this.miniJkind = miniJkind;
@@ -39,10 +41,12 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs,
+			boolean mivcTimedOut) {
 		if(miniJkind != null){
-			miniJkind.setRuntime(runtime); 
-			miniJkind.setValidMessage(new ValidMessage(source, props.get(0), k, proofTime, invariants, ivc, null, null));
+			miniJkind.setRuntime(runtime);
+			miniJkind.setValidMessage(
+					new ValidMessage(source, props.get(0), k, proofTime, invariants, ivc, null, null, mivcTimedOut));
 		}else{
 			writeLine();
 			System.out.println("VALID PROPERTIES: " + props + " || " + source + " || K = " + k
@@ -100,7 +104,7 @@ public class ConsoleWriter extends Writer {
 	public void writeInvalid(String prop, String source, Counterexample cex,
 			List<String> conflicts, double runtime) {
 		if(miniJkind != null){
-			miniJkind.setRuntime(runtime); 
+			miniJkind.setRuntime(runtime);
 			miniJkind.setInvalid(cex);
 		}else{
 			writeLine();
@@ -146,5 +150,5 @@ public class ConsoleWriter extends Writer {
 	public void writeInconsistent(String prop, String source, int k, double runtime) {
 		throw new UnsupportedOperationException();
 	}
-	 
+
 }

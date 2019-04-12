@@ -82,7 +82,7 @@ public abstract class Renaming {
 		return new ValidProperty(name, property.getSource(), property.getK(), property.getRuntime(),
 				property.getInvariants(), rename(this::renameIVC, property.getIvc()),
 				property.getInvariantSets(),
-				rename(this::renameIVC, property.getIvcSets()));
+				rename(this::renameIVC, property.getIvcSets()), property.getMivcTimedOut());
 	}
 
 	/**

@@ -55,7 +55,8 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
+			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs,
+			boolean mivcTimedOut) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		// doesn't write allIvcs...
 		for (String prop : props) {
@@ -76,7 +77,8 @@ public class ExcelWriter extends Writer {
 					ivcSets.add(curIvc);
 				}
 			}
-			properties.add(new ValidProperty(prop, source, k, runtime, invText, ivc, invariantSets, ivcSets));
+			properties.add(
+					new ValidProperty(prop, source, k, runtime, invText, ivc, invariantSets, ivcSets, mivcTimedOut));
 		}
 	}
 

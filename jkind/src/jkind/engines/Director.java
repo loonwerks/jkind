@@ -378,9 +378,11 @@ public class Director extends MessageHandler {
 									settings.allAssigned, analysisSpec.node.equations)), item.secondElement()));
 				}
 			}
-			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs);
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs,
+					vm.mivcTimedOut);
 		}else{
-			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs);
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs,
+					vm.mivcTimedOut);
 		}
 	}
 
