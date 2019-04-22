@@ -1,0 +1,55 @@
+type signal = enum{START_SIG, LAUNCH_SIG, EMPTY_SIG};
+
+node start_bt_val(sig: signal; start_bt:bool; launch_bt:bool; reset_flag:bool) returns (start_bt_out: bool);
+	let
+		start_bt_out = false -> if(reset_flag) then
+                                false
+                            else if(not(pre start_bt) and (not (pre launch_bt))) and (sig = START_SIG) then
+                                  true
+                                else
+                                  pre start_bt;
+	tel;
+
+
+node launch_bt_val(sig: signal; start_bt:bool; launch_bt:bool; reset_flag:bool) returns (launch_bt_out: bool);
+	let
+		launch_bt_out = false -> if(reset_flag) then
+                              false
+                            else if((pre start_bt) and (not (pre launch_bt ))) and (sig = LAUNCH_SIG) then
+                                  true
+                                else
+                              	 pre launch_bt;
+	tel;
+
+
+	-- the Y operator for yesterday which is the dual of the X operator:
+	node Y(in: bool) returns (out: bool); let out = false -> pre in; tel;
+
+	-- the Z operator which is the same as Y except for being true at initial step:
+	node Z(in: bool) returns (out: bool); let out = true -> pre in; tel;
+
+	-- the H operator for history which is the dual of the G operator:
+	node H(in: bool) returns (out: bool); let out = in -> (in and pre out); tel;
+
+	-- the O operator for once which is the dual of the F operator:
+	node O(in: bool) returns (out: bool);	let out = in -> (in or pre out); tel;
+
+	-- the S operator for since which is the dual of the U operator:
+	node S(p, q: bool) returns (out: bool);	let out = q or (false -> (p and pre out)); tel;
+
+node main(sig: signal) returns (ignition: bool);
+var
+	start_bt: bool;
+	launch_bt: bool;
+  reset_flag: bool;
+	p1: bool;
+let
+	start_bt = start_bt_val(sig, false-> pre(start_bt), false-> pre(launch_bt), false -> pre reset_flag);
+	launch_bt = launch_bt_val(sig, false-> pre(start_bt), false-> pre(launch_bt), false -> pre reset_flag);
+  ignition = false -> pre(launch_bt) and (launch_bt);
+  reset_flag = false -> ignition;
+
+	p1 = launch_bt => start_bt;
+	--%PROPERTY p1;
+
+tel;
