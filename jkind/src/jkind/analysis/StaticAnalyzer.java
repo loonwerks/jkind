@@ -55,8 +55,17 @@ public class StaticAnalyzer {
 		valid = valid && propertiesBoolean(program);
 		valid = valid && ivcUnique(program);
 		valid = valid && ivcLocalOrOutput(program);
-		if (solver != SolverOption.Z3) {
-			valid = valid && LinearChecker.check(program, Level.ERROR);
+		
+		switch(solver) {
+			case SMTINTERPOL:
+			case YICES:
+			case CVC4:
+			case MATHSAT:
+				valid = valid && LinearChecker.check(program, Level.ERROR);
+				break;
+				
+			default:
+				break;
 		}
 
 		if (!valid) {
