@@ -27,6 +27,11 @@ import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
+	
+	public static void check(Program program, SolverOption solver) {
+		check(program, solver, new Settings());
+	}
+	
 	public static void check(Program program, SolverOption solver, Settings settings) {
 		checkErrors(program, solver, settings);
 		checkSolverLimitations(program, solver);

@@ -19,7 +19,7 @@ public class JLustre2Excel {
 			String filename = args[0];
 
 			Program program = Main.parseLustre(filename);
-			StaticAnalyzer.check(program, SolverOption.Z3, NullSettings.instance());
+			StaticAnalyzer.check(program, SolverOption.Z3);
 			ensureUniqueEnumValues(program);
 			ensureNoFunctions(program);
 
