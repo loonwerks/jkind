@@ -17,7 +17,7 @@ import jkind.solvers.smtlib2.SmtLib2Solver;
 import jkind.solvers.yices2.Yices2Parser.ModelContext;
 
 public class Yices2Solver extends SmtLib2Solver {
-	private boolean linear;
+	private final boolean linear;
 
 	public Yices2Solver(String scratchBase, boolean linear) {
 		super(scratchBase);
