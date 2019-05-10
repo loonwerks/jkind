@@ -43,7 +43,7 @@ public class Yices2Solver extends SmtLib2Solver {
 	public void initialize() {
 		send("(set-option :produce-models true)");
 		send("(set-option :produce-unsat-cores true)");
-		if(linear) {
+		if (linear) {
 			send("(set-logic QF_UFLIRA)");
 		} else {
 			send("(set-logic QF_UFNIRA)");
@@ -59,9 +59,9 @@ public class Yices2Solver extends SmtLib2Solver {
 				unsatCore.add(new Symbol(s.substring(1)));
 			}
 		}
-		return unsatCore;		
+		return unsatCore;
 	}
-	
+
 	private String readCore() {
 		String line = "";
 		try {
@@ -72,7 +72,7 @@ public class Yices2Solver extends SmtLib2Solver {
 		}
 		return line.substring(1, line.length() - 1);
 	}
-	
+
 	@Override
 	protected Model parseModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);
