@@ -42,8 +42,8 @@ public class Yices2Solver extends SmtLib2Solver {
 	@Override
 	public void initialize() {
 		send("(set-option :produce-models true)");
-		send("(set-option :produce-unsat-cores true)");
 		if (linear) {
+			send("(set-option :produce-unsat-cores true)");
 			send("(set-logic QF_UFLIRA)");
 		} else {
 			send("(set-logic QF_UFNIRA)");

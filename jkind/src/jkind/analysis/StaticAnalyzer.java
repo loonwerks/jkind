@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.ExitCodes;
+import jkind.JKindSettings;
+import jkind.Settings;
 import jkind.SolverOption;
 import jkind.StdErr;
 import jkind.analysis.evaluation.DivisionChecker;
@@ -25,13 +27,13 @@ import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
-	public static void check(Program program, SolverOption solver) {
-		checkErrors(program, solver);
+	public static void check(Program program, SolverOption solver, Settings settings) {
+		checkErrors(program, solver, settings);
 		checkSolverLimitations(program, solver);
 		checkWarnings(program, solver);
 	}
 
-	private static void checkErrors(Program program, SolverOption solver) {
+	private static void checkErrors(Program program, SolverOption solver, Settings settings) {
 		boolean valid = true;
 		valid = valid && hasMainNode(program);
 		valid = valid && typesUnique(program);
@@ -59,6 +61,12 @@ public class StaticAnalyzer {
 		switch(solver) {
 			case Z3:
 			case YICES2:
+				if (settings instanceof JKindSettings) {
+					JKindSettings jkindSettings = (JKindSettings) settings;
+					if(jkindSettings.reduceIvc && !LinearChecker.check(program, Level.IGNORE)) {
+						StdErr.warning(jkindSettings.solver + " does not support unsat-cores for nonlinear logic so IVC reduction will be slow");
+					}
+				}
 				break;
 		
 			default:

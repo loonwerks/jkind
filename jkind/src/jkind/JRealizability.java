@@ -19,7 +19,7 @@ public class JRealizability {
 			String filename = settings.filename;
 			Program program = Main.parseLustre(filename);
 
-			StaticAnalyzer.check(program, SolverOption.Z3);
+			StaticAnalyzer.check(program, SolverOption.Z3, settings);
 			realizabilitySpecificChecks(program);
 
 			program = Translate.translate(program);
