@@ -29,7 +29,7 @@ public class SolverUtil {
 		case Z3:
 			return new Z3Solver(scratchBase, LinearChecker.isLinear(node));
 		case YICES2:
-			return new Yices2Solver(scratchBase);
+			return new Yices2Solver(scratchBase, LinearChecker.isLinear(node));
 		case MATHSAT:
 			return new MathSatSolver(scratchBase);
 		case SMTINTERPOL:
