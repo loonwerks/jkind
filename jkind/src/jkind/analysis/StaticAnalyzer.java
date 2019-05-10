@@ -57,14 +57,12 @@ public class StaticAnalyzer {
 		valid = valid && ivcLocalOrOutput(program);
 		
 		switch(solver) {
-			case SMTINTERPOL:
-			case YICES:
-			case CVC4:
-			case MATHSAT:
-				valid = valid && LinearChecker.check(program, Level.ERROR);
+			case Z3:
+			case YICES2:
 				break;
-				
+		
 			default:
+				valid = valid && LinearChecker.check(program, Level.ERROR);
 				break;
 		}
 
