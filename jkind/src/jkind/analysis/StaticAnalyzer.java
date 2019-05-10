@@ -60,6 +60,8 @@ public class StaticAnalyzer {
 		
 		switch(solver) {
 			case Z3:
+				break;
+				
 			case YICES2:
 				if (settings instanceof JKindSettings) {
 					JKindSettings jkindSettings = (JKindSettings) settings;
