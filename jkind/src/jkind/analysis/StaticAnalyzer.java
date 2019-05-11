@@ -77,9 +77,9 @@ public class StaticAnalyzer {
 				}
 				break;
 
-		default:
-			valid = valid && LinearChecker.check(program, Level.ERROR);
-			break;
+			default:
+				valid = valid && LinearChecker.check(program, Level.ERROR);
+				break;
 		}
 
 		if (!valid) {
