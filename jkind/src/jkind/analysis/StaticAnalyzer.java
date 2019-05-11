@@ -27,11 +27,11 @@ import jkind.lustre.VarDecl;
 import jkind.util.Util;
 
 public class StaticAnalyzer {
-	
+
 	public static void check(Program program, SolverOption solver) {
 		check(program, solver, new Settings());
 	}
-	
+
 	public static void check(Program program, SolverOption solver, Settings settings) {
 		checkErrors(program, solver, settings);
 		checkSolverLimitations(program, solver);
@@ -62,23 +62,24 @@ public class StaticAnalyzer {
 		valid = valid && propertiesBoolean(program);
 		valid = valid && ivcUnique(program);
 		valid = valid && ivcLocalOrOutput(program);
-		
-		switch(solver) {
+
+		switch (solver) {
 			case Z3:
 				break;
-				
+	
 			case YICES2:
 				if (settings instanceof JKindSettings) {
-					JKindSettings jkindSettings = (JKindSettings) settings;
-					if(jkindSettings.reduceIvc && !LinearChecker.check(program, Level.IGNORE)) {
-						StdErr.warning(jkindSettings.solver + " does not support unsat-cores for nonlinear logic so IVC reduction will be slow");
+					JKindSettings jKindSettings = (JKindSettings) settings;
+					if (jKindSettings.reduceIvc && !LinearChecker.check(program, Level.IGNORE)) {
+						StdErr.warning(jKindSettings.solver
+								+ " does not support unsat-cores for nonlinear logic so IVC reduction will be slow");
 					}
 				}
 				break;
-		
-			default:
-				valid = valid && LinearChecker.check(program, Level.ERROR);
-				break;
+
+		default:
+			valid = valid && LinearChecker.check(program, Level.ERROR);
+			break;
 		}
 
 		if (!valid) {
