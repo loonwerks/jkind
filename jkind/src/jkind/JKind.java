@@ -18,7 +18,7 @@ public class JKind {
 			Program program = Main.parseLustre(settings.filename);
 			program = setMainNode(program, settings.main);
 
-			StaticAnalyzer.check(program, settings.solver);
+			StaticAnalyzer.check(program, settings.solver, settings);
 			if (!LinearChecker.isLinear(program)) {
 				if (settings.pdrMax > 0) {
 					StdErr.warning("PDR not available for some properties due to non-linearities");
