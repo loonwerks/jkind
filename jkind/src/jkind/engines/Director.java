@@ -118,12 +118,10 @@ public class Director extends MessageHandler {
 			if (settings.excel) {
 				return new ExcelWriter(settings.filename + ".xls", userSpec.node);
 			} else if (settings.xml) {
-				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap,
-						settings.xmlToStdout);
-			} else if (settings.miniJkind){
+				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap, settings.xmlToStdout);
+			} else if (settings.miniJkind) {
 				return new ConsoleWriter(new NodeLayout(userSpec.node), miniJkind);
-			}
-			else {
+			} else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
 			}
 		} catch (IOException e) {
@@ -131,9 +129,8 @@ public class Director extends MessageHandler {
 		}
 	}
 
-
 	public int run() {
-		if(!settings.miniJkind){
+		if (!settings.miniJkind) {
 			printHeader();
 		}
 		writer.begin();
@@ -146,7 +143,7 @@ public class Director extends MessageHandler {
 			sleep(100);
 		}
 		if (timeout() && aivcIdx) {
-			((AllIvcsExtractorEngine)(engines.get(aivcIndx))).getValid();
+			((AllIvcsExtractorEngine) (engines.get(aivcIndx))).getValid();
 		}
 
 		processMessages();
@@ -160,6 +157,7 @@ public class Director extends MessageHandler {
 		if (settings.miniJkind) {
 			stopEngines();
 		}
+
 		return exitCode;
 	}
 
@@ -177,8 +175,8 @@ public class Director extends MessageHandler {
 
 	private void postProcessing() {
 		writeUnknowns();
-		//writer.end();
-		//writeAdvice();
+		// writer.end();
+		// writeAdvice();
 		printSummary();
 	}
 
@@ -208,8 +206,10 @@ public class Director extends MessageHandler {
 		createEngines();
 		threads.forEach(Thread::start);
 	}
+
 //
 	boolean aivcIdx = false;
+
 //
 	private void createEngines() {
 		if (settings.boundedModelChecking) {
@@ -245,12 +245,14 @@ public class Director extends MessageHandler {
 			addEngine(new AllIvcsExtractorEngine(analysisSpec, settings, this));
 		}
 	}
+
 //
 	int aivcIndx;
+
 //
 	private void addEngine(Engine engine) {
 		engines.add(engine);
-		if(aivcIdx){
+		if (aivcIdx) {
 			aivcIndx = engines.indexOf(engine);
 			aivcIdx = false;
 		}
@@ -258,12 +260,12 @@ public class Director extends MessageHandler {
 	}
 
 	private void stopEngines() {
-		try{
+		try {
 			for (Engine engine : engines) {
-			// Add code to kill thread.
+				// Add code to kill thread.
 				engine.stopEngine();
 			}
-		}catch(Throwable t){
+		} catch (Throwable t) {
 		}
 	}
 
@@ -293,8 +295,7 @@ public class Director extends MessageHandler {
 
 	private void writeUnknowns() {
 		if (!remainingProperties.isEmpty()) {
-			writer.writeUnknown(remainingProperties, baseStep, convertInductiveCounterexamples(),
-					getRuntime());
+			writer.writeUnknown(remainingProperties, baseStep, convertInductiveCounterexamples(), getRuntime());
 		}
 	}
 
@@ -303,13 +304,22 @@ public class Director extends MessageHandler {
 		for (Engine engine : engines) {
 			// MWW: specialized for miniJKind - we kill solvers abruptly
 			// for "internal" runs.
-			if (engine.getThrowable() != null &&
-				((!settings.miniJkind) && timeout())) {
+			boolean engine_throwable = (engine.getThrowable() != null);
+			boolean no_minijkind = (!settings.miniJkind);
+			boolean timeout = timeout();
+
+			if (engine_throwable) {
 				StdErr.println(engine.getName() + " process failed");
 				StdErr.printStackTrace(engine.getThrowable());
 				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
-				if(engine.getThrowable().toString().contains("IvcException")){
+				if (engine.getThrowable().toString().contains("IvcException")) {
 					exitCode = ExitCodes.IVC_EXCEPTION;
+				}
+				if (!no_minijkind) {
+					StdErr.println("failed during miniJKind run");
+				}
+				if (timeout) {
+					StdErr.println("timeout occurred");
 				}
 			}
 		}
@@ -322,8 +332,7 @@ public class Director extends MessageHandler {
 			System.out.println("  JKind " + Main.VERSION);
 			System.out.println("==========================================");
 			System.out.println();
-			System.out.println("There are " + remainingProperties.size()
-			+ " properties to be checked.");
+			System.out.println("There are " + remainingProperties.size() + " properties to be checked.");
 			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
 			System.out.println();
 		}
@@ -345,7 +354,7 @@ public class Director extends MessageHandler {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		if (vm.getNextDestination() != null) {
-			if(vm.getNextDestination().equals(EngineType.IVC_REDUCTION) && adviceWriter != null){
+			if (vm.getNextDestination().equals(EngineType.IVC_REDUCTION) && adviceWriter != null) {
 				adviceWriter.addInvariants(vm.invariants);
 				writer.end();
 				writeAdvice();
@@ -368,19 +377,20 @@ public class Director extends MessageHandler {
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
 
-		if((!settings.miniJkind) && (settings.reduceIvc)){
-			Set<String> ivc = IvcUtil.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
+		if ((!settings.miniJkind) && (settings.reduceIvc)) {
+			Set<String> ivc = IvcUtil
+					.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
 			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
-			if(settings.allIvcs){
-				for(Tuple<Set<String>, List<String>> item : vm.allIvcs){
-					allIvcs.add(new Tuple<Set<String>, List<String>>(
-							IvcUtil.trimNode(IvcUtil.findRightSide(item.firstElement(),
-									settings.allAssigned, analysisSpec.node.equations)), item.secondElement()));
+			if (settings.allIvcs) {
+				for (Tuple<Set<String>, List<String>> item : vm.allIvcs) {
+					allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.trimNode(IvcUtil
+							.findRightSide(item.firstElement(), settings.allAssigned, analysisSpec.node.equations)),
+							item.secondElement()));
 				}
 			}
 			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs,
 					vm.mivcTimedOut);
-		}else{
+		} else {
 			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs,
 					vm.mivcTimedOut);
 		}
@@ -455,15 +465,13 @@ public class Director extends MessageHandler {
 			int baseStep = entry.getKey();
 			List<String> unknowns = entry.getValue();
 			remainingProperties.removeAll(unknowns);
-			writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(),
-					getRuntime());
+			writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(), getRuntime());
 			broadcast(new UnknownMessage(NAME, unknowns));
 		}
 	}
 
 	private Map<Integer, List<String>> getCompletelyUnknownByBaseStep(UnknownMessage um) {
-		return um.unknown.stream().filter(this::isCompletelyUnknown)
-				.collect(Collectors.groupingBy(bmcUnknowns::get));
+		return um.unknown.stream().filter(this::isCompletelyUnknown).collect(Collectors.groupingBy(bmcUnknowns::get));
 	}
 
 	private void markUnknowns(UnknownMessage um) {
@@ -485,8 +493,7 @@ public class Director extends MessageHandler {
 	}
 
 	public boolean isCompletelyUnknown(String prop) {
-		return bmcUnknowns.containsKey(prop) && kInductionUnknowns.contains(prop)
-				&& pdrUnknowns.contains(prop);
+		return bmcUnknowns.containsKey(prop) && kInductionUnknowns.contains(prop) && pdrUnknowns.contains(prop);
 	}
 
 	@Override
@@ -561,8 +568,7 @@ public class Director extends MessageHandler {
 		return result;
 	}
 
-	private Counterexample extractCounterexample(String property, int k, Model model,
-			boolean concrete) {
+	private Counterexample extractCounterexample(String property, int k, Model model, boolean concrete) {
 		model = ModelReconstructionEvaluator.reconstruct(userSpec, analysisSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(userSpec, k, model);
 	}
