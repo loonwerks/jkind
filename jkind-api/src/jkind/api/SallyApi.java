@@ -119,7 +119,7 @@ public class SallyApi extends KindApi {
 		List<String> args = new ArrayList<>();
 		args.add("--xml");
 		if (timeout != null) {
-        args.add("--timeout=" + timeout.toString());
+			args.add("--timeout=" + timeout.toString());
 		}
 		return args;
 	}
