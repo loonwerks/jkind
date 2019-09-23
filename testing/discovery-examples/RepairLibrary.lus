@@ -1,0 +1,22 @@
+
+--This is the repair library of nodes that could be used in the repair.
+
+
+
+
+node discoverAndOperand(in1:bool; in2:bool; in3:bool; myHole:intHole) returns (out:bool);
+
+let
+	out = if(myHole = 0)
+	      then in1 and in2
+	      else if(myHole=1)
+	           then in1 and in3
+	           else if (myHole=2)
+	                 then in2 and in3
+	                 else if(myHole=3)
+	                      then in1 and in3
+	                      else in1 and in2 and in3;
+tel;
+
+
+

@@ -9,7 +9,8 @@ import jkind.lustre.parsing.LustreParseUtil;
 public class Main {
 
     static String folderName = "/Users/sohahussein/git/jkind/testing/discovery-examples/";
-    static String tFileName = folderName + "PadModelReset.lus";
+    //static String tFileName = folderName + "PadModelReset.lus";
+    static String tFileName = folderName + "RepairLibrary.lus";
     static String rFileName = folderName + "SimplePadReset.runPadSteps(IZZZZZ)V#27_0.txt";
 
 
@@ -25,6 +26,9 @@ public class Main {
 
         Program program = LustreParseUtil.program(programStr);
         System.out.println("here is the program read\n" + program.toString());
+
+        System.out.println("classpath is:" + System.getProperty("java.class.path"));
+
 
     }
 }

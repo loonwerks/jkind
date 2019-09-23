@@ -33,6 +33,8 @@ type: 'int'                                              # intType
     | 'subrange' '[' bound ',' bound ']' 'of' 'int'      # subrangeType
     | 'bool'                                             # boolType
     | 'real'                                             # realType
+    | 'inthole'                                          # intHoleType
+    | 'boolhole'                                         # boolHoleType
     | type '[' INT ']'                                   # arrayType
     | ID                                                 # userType
     ;
