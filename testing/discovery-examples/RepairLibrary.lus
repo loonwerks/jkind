@@ -4,7 +4,7 @@
 
 
 
-node discoverAndOperand(in1:bool; in2:bool; in3:bool; myHole:intHole) returns (out:bool);
+repair node discoverAndOperand(in1:bool; in2:bool; in3:bool) [myHole:intHole] returns (out:bool);
 
 let
 	out = if(myHole = 0)

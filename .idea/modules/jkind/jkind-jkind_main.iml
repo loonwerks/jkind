@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":jkind:main" external.linked.project.path="$MODULE_DIR$/../../../jkind" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="jkind" external.system.module.type="sourceSet" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <perl5 />
+    <output url="file://$MODULE_DIR$/../../../jkind/out/production/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../jkind-common/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../../jkind-common/src" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../jkind/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../../jkind/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../jkind/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: :antlr-runtime-4.7.2:" level="project" />
+    <orderEntry type="library" name="Gradle: :jxl:" level="project" />
+    <orderEntry type="library" name="Gradle: :commons-cli-1.2:" level="project" />
+    <orderEntry type="library" name="Gradle: :smtinterpol:" level="project" />
+  </component>
+</module>

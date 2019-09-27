@@ -15,7 +15,7 @@ allprojects {
     }
 
     dependencies {
-        compile name: 'antlr-runtime-4.4'
+        compile name: 'antlr-runtime-4.7.2'
         compile name: 'jxl'
     }
 

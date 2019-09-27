@@ -1,6 +1,6 @@
 grammar Lustre;
 
-program: (typedef | constant | node | function)* EOF;
+program: (typedef | constant | node | repairnode | function)* EOF;
 
 typedef: 'type' ID '=' topLevelType ';';
 
@@ -13,6 +13,15 @@ node:
   'let'
     (equation | property | assertion | main | realizabilityInputs | ivc)*
   'tel' ';'?
+;
+
+repairnode:
+     'repair node' ID '(' input=varDeclList? ')' '[' input=varDeclList? ']'
+      'returns' '(' output=varDeclList? ')' ';'
+      ('var' local=varDeclList ';')?
+      'let'
+        (equation | assertion )*
+      'tel' ';'?
 ;
 
 function:
@@ -33,8 +42,6 @@ type: 'int'                                              # intType
     | 'subrange' '[' bound ',' bound ']' 'of' 'int'      # subrangeType
     | 'bool'                                             # boolType
     | 'real'                                             # realType
-    | 'inthole'                                          # intHoleType
-    | 'boolhole'                                         # boolHoleType
     | type '[' INT ']'                                   # arrayType
     | ID                                                 # userType
     ;
@@ -61,6 +68,7 @@ expr: ID                                                       # idExpr
     | BOOL                                                     # boolExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
     | eID '(' (expr (',' expr)*)? ')'                          # callExpr
+    | 'repair' '('expr ',' ID '(' (expr (',' expr)*)? ')'')'   # repairExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
     | expr '{' ID ':=' expr '}'                                # recordUpdateExpr
