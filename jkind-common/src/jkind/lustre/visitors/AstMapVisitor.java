@@ -2,16 +2,7 @@ package jkind.lustre.visitors;
 
 import java.util.List;
 
-import jkind.lustre.Ast;
-import jkind.lustre.Constant;
-import jkind.lustre.Contract;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.Node;
-import jkind.lustre.Program;
-import jkind.lustre.TypeDef;
-import jkind.lustre.VarDecl;
+import jkind.lustre.*;
 
 public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Expr> {
 	@Override
@@ -46,6 +37,20 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		return new Node(e.location, e.id, inputs, outputs, locals, equations, properties, assertions,
 				realizabilityInputs, contract, ivc);
 	}
+
+
+	@Override
+	public RepairNode visit(RepairNode e) {
+		List<VarDecl> inputs = visitVarDecls(e.inputs);
+		List<VarDecl> holeinputs = visitVarDecls(e.holeinputs);
+		List<VarDecl> outputs = visitVarDecls(e.outputs);
+		List<VarDecl> locals = visitVarDecls(e.locals);
+		List<Equation> equations = visitEquations(e.equations);
+		List<Expr> assertions = visitAssertions(e.assertions);
+		Contract contract = visit(e.contract);
+		return new RepairNode(e.location, e.id, inputs, holeinputs, outputs, locals, equations, assertions, contract);
+	}
+
 
 	protected List<VarDecl> visitVarDecls(List<VarDecl> es) {
 		return map(this::visit, es);
@@ -92,7 +97,8 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		List<Constant> constants = visitConstants(e.constants);
 		List<Function> functions = visitFunctions(e.functions);
 		List<Node> nodes = visitNodes(e.nodes);
-		return new Program(e.location, types, constants, functions, nodes, e.main);
+		List<RepairNode> repairNodes = visitRepairNodes(e.repairNodes);
+		return new Program(e.location, types, constants, functions, nodes, repairNodes, e.main);
 	}
 
 	protected List<TypeDef> visitTypeDefs(List<TypeDef> es) {
@@ -107,6 +113,9 @@ public class AstMapVisitor extends ExprMapVisitor implements AstVisitor<Ast, Exp
 		return map(this::visit, es);
 	}
 
+	protected List<RepairNode> visitRepairNodes(List<RepairNode> es) {
+		return map(this::visit, es);
+	}
 	protected List<Function> visitFunctions(List<Function> es) {
 		return map(this::visit, es);
 	}

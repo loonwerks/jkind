@@ -6,38 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
-import jkind.lustre.ArrayUpdateExpr;
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.CastExpr;
-import jkind.lustre.CondactExpr;
-import jkind.lustre.Constant;
-import jkind.lustre.Contract;
-import jkind.lustre.EnumType;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.FunctionCallExpr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
-import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.Program;
-import jkind.lustre.RealExpr;
-import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
-import jkind.lustre.RecordType;
-import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.TupleExpr;
-import jkind.lustre.Type;
-import jkind.lustre.TypeDef;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
-import jkind.lustre.VarDecl;
+import jkind.lustre.*;
 
 public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 	private StringBuilder sb = new StringBuilder();
@@ -91,6 +60,15 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			iterator.next().accept(this);
 			newline();
 			if (iterator.hasNext()) {
+				newline();
+			}
+		}
+
+		Iterator<RepairNode> repairNodeIterator = program.repairNodes.iterator();
+		while (repairNodeIterator.hasNext()) {
+			repairNodeIterator.next().accept(this);
+			newline();
+			if (repairNodeIterator.hasNext()) {
 				newline();
 			}
 		}
@@ -238,6 +216,63 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 		write("tel;");
 		return null;
 	}
+
+
+	@Override
+	public Void visit(RepairNode repairNode) {
+		write("node ");
+		write(repairNode.id);
+		write("(");
+		newline();
+		varDecls(repairNode.inputs);
+		write("[");
+		varDecls(repairNode.holeinputs);
+		write("]");
+		newline();
+		write(") returns (");
+		newline();
+		varDecls(repairNode.outputs);
+		newline();
+		write(");");
+		newline();
+
+		if (repairNode.contract != null) {
+			repairNode.contract.accept(this);
+		}
+
+		if (!repairNode.locals.isEmpty()) {
+			write("var");
+			newline();
+			varDecls(repairNode.locals);
+			write(";");
+			newline();
+		}
+		write("let");
+		newline();
+
+		if (repairNode.id.equals(main)) {
+			assert false; //that can't happen
+			write("  --%MAIN;");
+			newline();
+		}
+
+		for (Equation equation : repairNode.equations) {
+			write("  ");
+			equation.accept(this);
+			newline();
+			newline();
+		}
+
+		for (Expr assertion : repairNode.assertions) {
+			assertion(assertion);
+			newline();
+		}
+
+		write("tel;");
+		return null;
+	}
+
+
 
 	private void varDecls(List<VarDecl> varDecls) {
 		Iterator<VarDecl> iterator = varDecls.iterator();
@@ -432,6 +467,16 @@ public class PrettyPrintVisitor implements AstVisitor<Void, Void> {
 			}
 		}
 		write(")");
+		return null;
+	}
+
+	@Override
+	public Void visit(RepairExpr e) {
+		write("repair( ");
+		expr(e.origExpr);
+		write(" , ");
+		expr(e.repairNode);
+		write(" ) ");
 		return null;
 	}
 

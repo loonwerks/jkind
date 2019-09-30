@@ -3,13 +3,7 @@ package jkind.analysis.evaluation;
 import java.util.HashMap;
 import java.util.Map;
 
-import jkind.lustre.Constant;
-import jkind.lustre.EnumType;
-import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.Program;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.UnaryOp;
+import jkind.lustre.*;
 import jkind.lustre.values.EnumValue;
 import jkind.lustre.values.Value;
 import jkind.lustre.visitors.Evaluator;

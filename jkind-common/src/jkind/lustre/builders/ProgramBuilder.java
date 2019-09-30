@@ -4,17 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jkind.lustre.Constant;
-import jkind.lustre.Function;
-import jkind.lustre.Location;
-import jkind.lustre.Node;
-import jkind.lustre.Program;
-import jkind.lustre.TypeDef;
+import jkind.lustre.*;
 
 public class ProgramBuilder {
 	private List<TypeDef> types = new ArrayList<>();
 	private List<Constant> constants = new ArrayList<>();
 	private List<Node> nodes = new ArrayList<>();
+	private List<RepairNode> repairNodes = new ArrayList<>();
 	private List<Function> functions = new ArrayList<>();
 	private String main;
 
@@ -64,6 +60,11 @@ public class ProgramBuilder {
 		return this;
 	}
 
+	public ProgramBuilder addRepairNode(RepairNode repairNode) {
+		this.repairNodes.add(repairNode);
+		return this;
+	}
+
 	public ProgramBuilder addNodes(Collection<Node> nodes) {
 		this.nodes.addAll(nodes);
 		return this;
@@ -95,6 +96,6 @@ public class ProgramBuilder {
 	}
 
 	public Program build() {
-		return new Program(Location.NULL, types, constants, functions, nodes, main);
+		return new Program(Location.NULL, types, constants, functions, nodes, repairNodes, main);
 	}
 }

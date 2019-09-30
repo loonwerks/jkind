@@ -2,25 +2,7 @@ package jkind.lustre.visitors;
 
 import java.util.Collection;
 
-import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
-import jkind.lustre.ArrayUpdateExpr;
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.CastExpr;
-import jkind.lustre.CondactExpr;
-import jkind.lustre.Expr;
-import jkind.lustre.FunctionCallExpr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.RealExpr;
-import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
-import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.TupleExpr;
-import jkind.lustre.UnaryExpr;
+import jkind.lustre.*;
 
 public class ExprDisjunctiveVisitor implements ExprVisitor<Boolean> {
 	@Override
@@ -82,6 +64,12 @@ public class ExprDisjunctiveVisitor implements ExprVisitor<Boolean> {
 	public Boolean visit(NodeCallExpr e) {
 		return visitExprs(e.args);
 	}
+
+	@Override
+	public Boolean visit(RepairExpr e) {
+		throw new IllegalArgumentException("Repair expression cannot appear here, it must be resolved first.");
+	}
+
 
 	@Override
 	public Boolean visit(RealExpr e) {

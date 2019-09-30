@@ -4,25 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
-import jkind.lustre.ArrayUpdateExpr;
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.CastExpr;
-import jkind.lustre.CondactExpr;
-import jkind.lustre.FunctionCallExpr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.RealExpr;
-import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
-import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.TupleExpr;
-import jkind.lustre.UnaryExpr;
+import jkind.lustre.*;
 import jkind.lustre.visitors.ExprVisitor;
 import jxl.CellReferenceHelper;
 
@@ -225,6 +207,12 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	public Void visit(NodeCallExpr e) {
 		throw new IllegalArgumentException(
 				"Node calls must be inlined before translation to formula");
+	}
+
+	@Override
+	public Void visit(RepairExpr e) {
+		throw new IllegalArgumentException(
+				"Repair expressions must be resolved before translation to formula");
 	}
 
 	@Override

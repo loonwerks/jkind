@@ -1,22 +1,20 @@
-
---This is the repair library of nodes that could be used in the repair.
-
-
-
-
-repair node discoverAndOperand(in1:bool; in2:bool; in3:bool) [myHole:intHole] returns (out:bool);
+repair node discover_binary_op(a:bool; b:bool) [hole1: boolHole] returns (out: bool);
 
 let
-	out = if(myHole = 0)
-	      then in1 and in2
-	      else if(myHole=1)
-	           then in1 and in3
-	           else if (myHole=2)
-	                 then in2 and in3
-	                 else if(myHole=3)
-	                      then in1 and in3
-	                      else in1 and in2 and in3;
+    out = if (hole1 = 0) then a and b
+           else if(hole1=1) then a or b
+           else if(hole1 =2) then a xor b
+           else a => b;
+
 tel;
 
 
+node main(a: bool; b:bool; c:bool; threshold :int; out: bool) returns (p1: bool);
 
+let
+
+    p1 = true -> out => ((repair((a and b), discover_binary_op(a,b)) or (b and c) or (a and c)) and (threshold > 5));
+
+  --%PROPERTY p1;
+
+tel;

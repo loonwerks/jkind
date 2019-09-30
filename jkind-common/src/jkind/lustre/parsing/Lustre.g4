@@ -16,12 +16,12 @@ node:
 ;
 
 repairnode:
-     'repair node' ID '(' input=varDeclList? ')' '[' input=varDeclList? ']'
-      'returns' '(' output=varDeclList? ')' ';'
+     'repair node' ID '(' input=varDeclList ')' '[' holeinput=varDeclList ']'
+      'returns' '(' output=varDeclList ')' ';'
       ('var' local=varDeclList ';')?
       'let'
         (equation | assertion )*
-      'tel' ';'?
+      'tel' ';'
 ;
 
 function:
@@ -68,7 +68,7 @@ expr: ID                                                       # idExpr
     | BOOL                                                     # boolExpr
     | op=('real' | 'floor') '(' expr ')'                       # castExpr
     | eID '(' (expr (',' expr)*)? ')'                          # callExpr
-    | 'repair' '('expr ',' ID '(' (expr (',' expr)*)? ')'')'   # repairExpr
+    | 'repair' '('expr ',' expr ')'                            # repairExpr
     | 'condact' '(' expr (',' expr)+ ')'                       # condactExpr
     | expr '.' ID                                              # recordAccessExpr
     | expr '{' ID ':=' expr '}'                                # recordUpdateExpr

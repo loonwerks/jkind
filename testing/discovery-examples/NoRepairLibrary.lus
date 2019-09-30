@@ -1,0 +1,15 @@
+
+--This is the repair library of nodes that could be used in the repair.
+
+
+
+
+node discoverAndOperand(in1:bool; in2:bool; in3:bool) returns (out:bool);
+
+let
+	out = false -> in1 and in3 and in2;
+
+tel;
+
+
+

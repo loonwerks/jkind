@@ -9,41 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jkind.StdErr;
-import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
-import jkind.lustre.ArrayType;
-import jkind.lustre.ArrayUpdateExpr;
-import jkind.lustre.Ast;
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.CastExpr;
-import jkind.lustre.CondactExpr;
-import jkind.lustre.Constant;
-import jkind.lustre.EnumType;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.FunctionCallExpr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.Location;
-import jkind.lustre.NamedType;
-import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.Program;
-import jkind.lustre.RealExpr;
-import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
-import jkind.lustre.RecordType;
-import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.SubrangeIntType;
-import jkind.lustre.TupleExpr;
-import jkind.lustre.TupleType;
-import jkind.lustre.Type;
-import jkind.lustre.TypeDef;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.VarDecl;
+import jkind.lustre.*;
 import jkind.lustre.visitors.ExprVisitor;
 import jkind.util.Util;
 
@@ -460,6 +426,11 @@ public class TypeChecker implements ExprVisitor<Type> {
 	@Override
 	public Type visit(NodeCallExpr e) {
 		return compressTypes(visitNodeCallExpr(e));
+	}
+
+	@Override
+	public Type visit(RepairExpr e) {
+		return e.origExpr.accept(this);
 	}
 
 	private List<Type> visitNodeCallExpr(NodeCallExpr e) {

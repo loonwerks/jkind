@@ -2,15 +2,7 @@ package jkind.lustre.visitors;
 
 import java.util.List;
 
-import jkind.lustre.Constant;
-import jkind.lustre.Contract;
-import jkind.lustre.Equation;
-import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.Node;
-import jkind.lustre.Program;
-import jkind.lustre.TypeDef;
-import jkind.lustre.VarDecl;
+import jkind.lustre.*;
 
 public class AstIterVisitor extends ExprIterVisitor implements AstVisitor<Void, Void> {
 	@Override
@@ -42,6 +34,18 @@ public class AstIterVisitor extends ExprIterVisitor implements AstVisitor<Void, 
 		return null;
 	}
 
+	@Override
+	public Void visit(RepairNode e) {
+		visitVarDecls(e.inputs);
+		visitVarDecls(e.holeinputs);
+		visitVarDecls(e.outputs);
+		visitVarDecls(e.locals);
+		visitEquations(e.equations);
+		visitAssertions(e.assertions);
+		return null;
+	}
+
+
 	protected void visitVarDecls(List<VarDecl> es) {
 		for (VarDecl e : es) {
 			visit(e);
@@ -64,6 +68,7 @@ public class AstIterVisitor extends ExprIterVisitor implements AstVisitor<Void, 
 		visitConstants(e.constants);
 		visitFunctions(e.functions);
 		visitNodes(e.nodes);
+		visitRepairNodes(e.repairNodes);
 		return null;
 	}
 
@@ -91,6 +96,11 @@ public class AstIterVisitor extends ExprIterVisitor implements AstVisitor<Void, 
 		}
 	}
 
+	protected void visitRepairNodes(List<RepairNode> es) {
+		for (RepairNode e : es) {
+			visit(e);
+		}
+	}
 	@Override
 	public Void visit(TypeDef e) {
 		return null;

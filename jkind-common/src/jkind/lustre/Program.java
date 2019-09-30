@@ -11,15 +11,18 @@ public class Program extends Ast {
 	public final List<Constant> constants;
 	public final List<Function> functions;
 	public final List<Node> nodes;
+	public final List<RepairNode> repairNodes;
 	public final String main;
 
 	public Program(Location location, List<TypeDef> types, List<Constant> constants, List<Function> functions,
-			List<Node> nodes, String main) {
+			List<Node> nodes, List<RepairNode> repairNodes, String main) {
 		super(location);
 		this.types = Util.safeList(types);
 		this.constants = Util.safeList(constants);
 		this.functions = Util.safeList(functions);
 		this.nodes = Util.safeList(nodes);
+		this.repairNodes = Util.safeList(repairNodes);
+
 		if (main == null && nodes != null && nodes.size() > 0) {
 			this.main = nodes.get(nodes.size() - 1).id;
 		} else {
@@ -28,7 +31,7 @@ public class Program extends Ast {
 	}
 
 	public Program(Node... nodes) {
-		this(Location.NULL, null, null, null, Arrays.asList(nodes), null);
+		this(Location.NULL, null, null, null, Arrays.asList(nodes),null, null);
 	}
 
 	public Node getMainNode() {

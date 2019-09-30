@@ -5,38 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jkind.lustre.ArrayAccessExpr;
-import jkind.lustre.ArrayExpr;
-import jkind.lustre.ArrayType;
-import jkind.lustre.ArrayUpdateExpr;
-import jkind.lustre.BinaryExpr;
-import jkind.lustre.BoolExpr;
-import jkind.lustre.CastExpr;
-import jkind.lustre.CondactExpr;
-import jkind.lustre.Constant;
-import jkind.lustre.EnumType;
-import jkind.lustre.Expr;
-import jkind.lustre.Function;
-import jkind.lustre.FunctionCallExpr;
-import jkind.lustre.IdExpr;
-import jkind.lustre.IfThenElseExpr;
-import jkind.lustre.IntExpr;
-import jkind.lustre.NamedType;
-import jkind.lustre.Node;
-import jkind.lustre.NodeCallExpr;
-import jkind.lustre.Program;
-import jkind.lustre.RealExpr;
-import jkind.lustre.RecordAccessExpr;
-import jkind.lustre.RecordExpr;
-import jkind.lustre.RecordType;
-import jkind.lustre.RecordUpdateExpr;
-import jkind.lustre.SubrangeIntType;
-import jkind.lustre.TupleExpr;
-import jkind.lustre.TupleType;
-import jkind.lustre.Type;
-import jkind.lustre.TypeDef;
-import jkind.lustre.UnaryExpr;
-import jkind.lustre.VarDecl;
+import jkind.lustre.*;
 import jkind.util.Util;
 
 /**
@@ -197,6 +166,11 @@ public class TypeReconstructor implements ExprVisitor<Type> {
 	public Type visit(NodeCallExpr e) {
 		Node node = nodeTable.get(e.node);
 		return visitCallOutputs(node.outputs);
+	}
+
+	@Override
+	public Type visit(RepairExpr e) {
+		return e.origExpr.accept(this);
 	}
 
 	@Override
