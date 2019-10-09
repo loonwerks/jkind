@@ -230,7 +230,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private void checkSettings() { 
 		
 		if (settings.reduceIvc) {
-			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
+			if (settings.solver == SolverOption.CVC4) {
 				StdErr.warning(settings.solver + " does not support unsat-cores so IVC reduction will be slow");
 			}
 			if(! settings.allAssigned){

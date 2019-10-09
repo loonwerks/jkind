@@ -15,10 +15,8 @@ import jkind.lustre.Expr;
 import jkind.lustre.IfThenElseExpr;
 import jkind.lustre.IntExpr;
 import jkind.lustre.Program;
-import jkind.lustre.Type;
 import jkind.lustre.values.IntegerValue;
 import jkind.lustre.visitors.TypeAwareAstMapVisitor;
-import jkind.translation.DefaultValueVisitor;
 
 /**
  * Replace all non-constant array indices using if-then-else expressions.
@@ -53,17 +51,13 @@ public class RemoveNonConstantArrayIndices extends TypeAwareAstMapVisitor {
 
 	private Expr expandArrayAccess(Expr array, Expr index) {
 		ArrayType arrayType = (ArrayType) getType(array);
-		Expr result = getDefaultValue(arrayType.base);
+		Expr result = new ArrayAccessExpr(array, arrayType.size - 1);
 		for (int i = arrayType.size - 1; i >= 0; i--) {
 			Expr cond = new BinaryExpr(index, BinaryOp.EQUAL, new IntExpr(i));
 			Expr thenExpr = new ArrayAccessExpr(array, i);
 			result = new IfThenElseExpr(cond, thenExpr, result);
 		}
 		return result;
-	}
-
-	private Expr getDefaultValue(Type type) {
-		return type.accept(new DefaultValueVisitor());
 	}
 
 	@Override

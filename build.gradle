@@ -114,6 +114,10 @@ task dist(type: Zip) {
          into 'jkind'
     }
     baseName = 'jkind'
+    def mainText = file('jkind/src/jkind/Main.java').text
+    def match = mainText =~ /VERSION = "(.*)";/
+    version = match[0][1]
+    assert version ==~ /[0-9.]+/
 }
  
 artifacts {

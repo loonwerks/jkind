@@ -27,7 +27,7 @@ public class JLustre2Kind {
 			String outFilename = filename.substring(0, filename.length() - 4) + ".kind.lus";
 
 			Program program = Main.parseLustre(filename);
-			StaticAnalyzer.check(program, SolverOption.Z3);
+			StaticAnalyzer.check(program, SolverOption.Z3, settings);
 
 			program = Translate.translate(program);
 			program = RemoveEnumTypes.program(program);

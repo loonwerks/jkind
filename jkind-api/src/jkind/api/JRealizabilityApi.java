@@ -3,6 +3,7 @@ package jkind.api;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class JRealizabilityApi {
 	private boolean extendCounterexample = false;
 	private boolean reduce = false;
 	private DebugLogger debug = new DebugLogger();
+	
+	private List<String> vmArgs = Collections.emptyList();
 
 	private String jkindJar;
 	private Map<String, String> environment = new HashMap<>();
@@ -101,6 +104,13 @@ public class JRealizabilityApi {
 	public void setEnvironment(String key, String value) {
 		environment.put(key, value);
 	}
+	
+	/**
+	 * Set VM args
+	 */
+	public void setVmArgs(List<String> args) {
+		vmArgs = new ArrayList<>(args);
+	}	
 
 	/**
 	 * Run JRealizability on a Lustre program
@@ -180,8 +190,15 @@ public class JRealizabilityApi {
 		return builder;
 	}
 
-	private String[] getJRealizabilityCommand() {
-		return new String[] { ApiUtil.getJavaPath(), "-jar", getOrFindJKindJar(), "-jrealizability" };
+	protected String[] getJRealizabilityCommand() {
+		List<String> args = new ArrayList<>();
+		args.add(ApiUtil.getJavaPath());
+		args.addAll(vmArgs);
+		args.add("-jar");
+		args.add(getOrFindJKindJar());
+		args.add("-jrealizability");
+		
+		return args.toArray(new String[args.size()]);
 	}
 
 	private String getOrFindJKindJar() {
