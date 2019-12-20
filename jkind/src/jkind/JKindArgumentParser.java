@@ -3,10 +3,12 @@ package jkind;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
-import java.util.List; 
-import jkind.engines.SolverUtil;   
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+
+import jkind.engines.SolverUtil;
 
 public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
@@ -15,15 +17,15 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String N = "n";
 	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
-	private static final String NO_K_INDUCTION = "no_k_induction"; 
+	private static final String NO_K_INDUCTION = "no_k_induction";
 	private static final String PDR_MAX = "pdr_max";
-	private static final String READ_ADVICE = "read_advice"; 
+	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
 	private static final String IVC_ALL = "all_ivcs";
 	private static final String IVC_ALL_ALG = "all_ivcs_alg";
 	private static final String IVC_ALL_MAX_GROWS = "all_ivcs_max_grows";
 	private static final String IVC_ALL_JKIND_TIMEOUT = "all_ivcs_jkind_timeout";
-	private static final String NO_SLICING = "no_slicing"; 
+	private static final String NO_SLICING = "no_slicing";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -31,7 +33,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
-	private static final String ALL_ASSIGNED = "all_assigned"; 
+	private static final String ALL_ASSIGNED = "all_assigned";
 	private static final String JSUPPORT_USE_UNSAT_CORE = "use_unsat_core";
 
 	private final JKindSettings settings;
@@ -51,16 +53,16 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(EXCEL, false, "generate results in Excel format");
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(IVC, false,
-				"find an inductive validity core for valid properties (based on --%IVC annotated elements)"); 
+				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(IVC_ALL_ALG, true,
 				"algorithm to be used for finding all IVCs (based on --%IVC annotated elements)");
 		options.addOption(IVC_ALL_MAX_GROWS, true,
 				"maximal number of grows in the mapBased shrinking procedure (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
-		options.addOption(IVC_ALL_JKIND_TIMEOUT, true,
-				"timeout for a single call of jKind's solve method (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
-		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements"); 
+//		options.addOption(IVC_ALL_JKIND_TIMEOUT, true,
+//				"timeout for a single call of jKind's solve method (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
+		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
@@ -150,37 +152,34 @@ public class JKindArgumentParser extends ArgumentParser {
 
 		if (line.hasOption(READ_ADVICE)) {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
-		} 
-		
+		}
+
 		if (line.hasOption(IVC)) {
 			settings.reduceIvc = true;
 		}
-		
+
 		if (line.hasOption(IVC_ALL)) {
 			settings.reduceIvc = true;
 			settings.allIvcs = true;
 		}
-		
+
 		if (line.hasOption(IVC_ALL_ALG)) {
 			settings.allIvcsAlgorithm = parseNonnegativeInt(line.getOptionValue(IVC_ALL_ALG));
 		}
-		
+
 		if (line.hasOption(IVC_ALL_MAX_GROWS)) {
 			settings.allIvcsMaxGrows = parseNonnegativeInt(line.getOptionValue(IVC_ALL_MAX_GROWS));
 		}
 
-		if (line.hasOption(IVC_ALL_JKIND_TIMEOUT)) {
-			settings.allIvcsJkindTimeout = parseNonnegativeInt(line.getOptionValue(IVC_ALL_JKIND_TIMEOUT));
-		}		
-		
 		if (line.hasOption(ALL_ASSIGNED)){
 			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
 				settings.allAssigned = true;
-			} 
+			}
 		}
 
 		if (line.hasOption(TIMEOUT)) {
 			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
+			settings.allIvcsJkindTimeout = settings.timeout;
 		}
 
 		if (line.hasOption(SCRATCH)) {
@@ -207,7 +206,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.xmlToStdout = true;
 			settings.xml = true;
 		}
-		
+
 		if (line.hasOption(JSUPPORT_USE_UNSAT_CORE)) {
 			settings.useUnsatCore = line.getOptionValue(JSUPPORT_USE_UNSAT_CORE);
 		}
@@ -227,8 +226,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		return null;
 	}
 
-	private void checkSettings() { 
-		
+	private void checkSettings() {
+
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4) {
 				StdErr.warning(settings.solver + " does not support unsat-cores so IVC reduction will be slow");
@@ -237,13 +236,13 @@ public class JKindArgumentParser extends ArgumentParser {
 				StdErr.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
 			}
 		}
-		
-		if (settings.allIvcs) { 
+
+		if (settings.allIvcs) {
 			StdErr.warning("IVC reduction requires at least Z3 4.5");
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
-			}  
+			}
 			if(!settings.allAssigned && !settings.reduceIvc){
 				StdErr.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
 			}

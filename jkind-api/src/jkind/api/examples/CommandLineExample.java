@@ -53,7 +53,7 @@ public class CommandLineExample {
 		api.setPdrMax(2);
 		api.setN(200);
 		api.setAllIvcs();
-		api.setAllIvcsJkindTimeout(30);
+
 		api.setSolver(SolverOption.Z3);
 		// api.setAllIvcsJkindTimeout(100);
 		// test multiple ivc jkind - this is going to replace the single ivc jkind

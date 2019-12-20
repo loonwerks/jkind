@@ -234,7 +234,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
         js.miniJkind = true;
-        js.readAdvice = js.writeAdvice;
+		js.readAdvice = settings.readAdvice;
+		js.writeAdvice = settings.writeAdvice;
 		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed));
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
@@ -325,7 +326,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
         js.miniJkind = true;
-        js.readAdvice = js.writeAdvice;
+		js.readAdvice = settings.readAdvice;
+		js.writeAdvice = settings.writeAdvice;
 		Set<String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<>(seed.properties));
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());

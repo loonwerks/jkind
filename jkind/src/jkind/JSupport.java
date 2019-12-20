@@ -1,25 +1,12 @@
 package jkind;
- 
-import java.io.FileNotFoundException; 
-import java.io.IOException; 
-import java.util.ArrayList;
-import java.util.HashSet; 
-import java.util.List;
-import java.util.Set; 
 
-import jkind.analysis.LinearChecker;
-import jkind.analysis.StaticAnalyzer;
-import jkind.engines.MiniJKind;
-import jkind.engines.ivcs.IvcUtil;
-import jkind.engines.ivcs.MinimalIvcFinder; 
-import jkind.lustre.Node;
-import jkind.lustre.Program; 
-import jkind.lustre.builders.NodeBuilder;
-import jkind.slicing.DependencyMap;
-import jkind.slicing.LustreSlicer;
-import jkind.translation.RemoveEnumTypes;
-import jkind.translation.Specification;
-import jkind.translation.Translate; 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,6 +17,18 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import jkind.analysis.LinearChecker;
+import jkind.analysis.StaticAnalyzer;
+import jkind.engines.ivcs.IvcUtil;
+import jkind.engines.ivcs.MinimalIvcFinder;
+import jkind.lustre.Node;
+import jkind.lustre.Program;
+import jkind.lustre.builders.NodeBuilder;
+import jkind.slicing.DependencyMap;
+import jkind.slicing.LustreSlicer;
+import jkind.translation.RemoveEnumTypes;
+import jkind.translation.Translate;
+
 
 public class JSupport {
 	private static Set<String> inputIVC;
@@ -38,12 +37,12 @@ public class JSupport {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
 			Program program = Main.parseLustre(settings.filename);
-			
+
 			StaticAnalyzer.check(program, settings.solver);
 			if (!LinearChecker.isLinear(program)) {
 				throw new IllegalArgumentException("Non-linear not supported");
 			}
-			
+
 			program = Translate.translate(program);
 			program = RemoveEnumTypes.program(program);
 			Node main = program.getMainNode();
@@ -54,24 +53,24 @@ public class JSupport {
 				throw new IllegalArgumentException("Expected exactly one property, but found "
 						+ main.properties.size());
 			}
-			
+
 			inputIVC = getIVC(settings.useUnsatCore);
 
 			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
 					settings.filename);
-			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT);
+			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT, settings);
 			//-------------- computing MUST ---------------------
 			//MinimalIvcFinder minimalFinder = new MinimalIvcFinder(main, settings.filename, main.properties.get(0));
 			//minimalFinder.computeMust(inputIVC, true, TIMEOUT);
 			System.exit(0);
-		 	
+
 			}catch (Throwable t) {
 				t.printStackTrace();
 				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 			}
 	}
-	
-	private static Set<String> getIVC(String file){  
+
+	private static Set<String> getIVC(String file){
 		List<String> support = null;
 		try{
 			DocumentBuilder builder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder();
@@ -83,10 +82,10 @@ public class JSupport {
         }
 
 		catch(FileNotFoundException e) {
-            System.out.println("Unable to open file '" +  file + "'");                
+            System.out.println("Unable to open file '" +  file + "'");
         }
         catch(IOException e) {
-            System.out.println("Error reading file '"  + file + "'");  
+            System.out.println("Error reading file '"  + file + "'");
         } catch (SAXException e) {
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
@@ -94,7 +93,7 @@ public class JSupport {
 		}
 		return new HashSet<>(support);
 	}
-	
+
 	private static List<String> getStringList(List<Element> elements) {
 		List<String> result = new ArrayList<>();
 		for (Element e : elements) {
@@ -111,7 +110,6 @@ public class JSupport {
 		}
 		return elements;
 	}
-	
+
 }
 
-	
