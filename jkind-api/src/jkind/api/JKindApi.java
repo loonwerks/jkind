@@ -19,7 +19,6 @@ import jkind.api.results.JKindResult;
  */
 public class JKindApi extends KindApi {
 	protected Integer n = null;
-	protected Integer allIvcsJkindTimeout = null;
 	protected boolean boundedModelChecking = true;
 	protected boolean kInduction = true;
 	protected boolean invariantGeneration = true;

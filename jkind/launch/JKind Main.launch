@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="jkind.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-jkind -n 200 -pdr_max 2 -all_ivcs -timeout 500 -all_ivcs_alg 2  -solver z3  &quot;C:\Janet\Advice_file_from_Lucas\test.lus&quot;"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-jkind -n 200 -pdr_max 2  -use_unsat_core  1 -all_ivcs_alg 2  -solver z3  &quot;C:\Janet\Advice_file_from_Lucas\test.lus&quot;"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jkind"/>
 <stringAttribute key="yk-options" value="&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;"/>
 </launchConfiguration>

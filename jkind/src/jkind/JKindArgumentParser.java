@@ -56,13 +56,6 @@ public class JKindArgumentParser extends ArgumentParser {
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
 		options.addOption(IVC_ALL, false,
 				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
-		options.addOption(IVC_ALL_ALG, true,
-				"algorithm to be used for finding all IVCs (based on --%IVC annotated elements)");
-		options.addOption(IVC_ALL_MAX_GROWS, true,
-				"maximal number of grows in the mapBased shrinking procedure (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
-//		options.addOption(IVC_ALL_JKIND_TIMEOUT, true,
-//				"timeout for a single call of jKind's solve method (in MIVC enumeration algorithms) (based on --%IVC annotated elements)");
-		options.addOption(ALL_ASSIGNED, false, "mark all equations as --%IVC elements");
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
@@ -79,7 +72,6 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(WRITE_ADVICE, true, "write advice to specified file");
 		options.addOption(XML, false, "generate results in XML format");
 		options.addOption(XML_TO_STDOUT, false, "generate results in XML format on stardard out");
-		options.addOption(JSUPPORT_USE_UNSAT_CORE, true, "make JSupport use an initial IVC as input");
 		return options;
 	}
 
@@ -163,20 +155,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.allIvcs = true;
 		}
 
-		if (line.hasOption(IVC_ALL_ALG)) {
-			settings.allIvcsAlgorithm = parseNonnegativeInt(line.getOptionValue(IVC_ALL_ALG));
-		}
-
-		if (line.hasOption(IVC_ALL_MAX_GROWS)) {
-			settings.allIvcsMaxGrows = parseNonnegativeInt(line.getOptionValue(IVC_ALL_MAX_GROWS));
-		}
-
-		if (line.hasOption(ALL_ASSIGNED)){
-			if (line.hasOption(IVC) || line.hasOption(IVC_ALL)) {
-				settings.allAssigned = true;
-			}
-		}
-
 		if (line.hasOption(TIMEOUT)) {
 			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
 			settings.allIvcsJkindTimeout = settings.timeout;
@@ -207,9 +185,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.xml = true;
 		}
 
-		if (line.hasOption(JSUPPORT_USE_UNSAT_CORE)) {
-			settings.useUnsatCore = line.getOptionValue(JSUPPORT_USE_UNSAT_CORE);
-		}
 	}
 
 	private static SolverOption getSolverOption(String solver) {
