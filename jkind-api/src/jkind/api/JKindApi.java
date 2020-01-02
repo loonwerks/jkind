@@ -29,7 +29,7 @@ public class JKindApi extends KindApi {
 	protected boolean allIvcs = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean slicing = true;
-	
+
 	protected List<String> vmArgs = Collections.emptyList();
 
 	protected SolverOption solver = null;
@@ -106,16 +106,6 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
-	 * Find timeout for jkind mivc engine
-	 */
-	public void setAllIvcsJkindTimeout(int n) {
-		if (n < 0) {
-			throw new JKindException("all_ivcs_jkind_timeout must be positive");
-		}
-		this.allIvcsJkindTimeout = n;
-	}
-
-	/**
 	 * Post-process counterexamples to have minimal input value changes
 	 */
 	public void setSmoothCounterexamples() {
@@ -128,7 +118,7 @@ public class JKindApi extends KindApi {
 	public void disableSlicing() {
 		slicing = false;
 	}
-	
+
 	/**
 	 * Set VM args
 	 */
@@ -218,10 +208,6 @@ public class JKindApi extends KindApi {
 		if (allIvcs) {
 			args.add("-all_ivcs");
 		}
-		if (allIvcsJkindTimeout != null) {
-			args.add("-all_ivcs_jkind_timeout");
-			args.add(allIvcsJkindTimeout.toString());
-		}
 
 		if (smoothCounterexamples) {
 			args.add("-smooth");
@@ -258,7 +244,7 @@ public class JKindApi extends KindApi {
 		args.add("-jar");
 		args.add(getOrFindJKindJar());
 		args.add("-jkind");
-		
+
 		return args.toArray(new String[args.size()]);
 	}
 

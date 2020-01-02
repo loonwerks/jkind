@@ -175,8 +175,8 @@ public class Director extends MessageHandler {
 
 	private void postProcessing() {
 		writeUnknowns();
-		 writer.end();
-		 writeAdvice();
+		writer.end();
+		writeAdvice();
 		printSummary();
 	}
 
