@@ -22,9 +22,6 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String READ_ADVICE = "read_advice";
 	private static final String IVC = "ivc";
 	private static final String IVC_ALL = "all_ivcs";
-	private static final String IVC_ALL_ALG = "all_ivcs_alg";
-	private static final String IVC_ALL_MAX_GROWS = "all_ivcs_max_grows";
-	private static final String IVC_ALL_JKIND_TIMEOUT = "all_ivcs_jkind_timeout";
 	private static final String NO_SLICING = "no_slicing";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
@@ -33,8 +30,6 @@ public class JKindArgumentParser extends ArgumentParser {
 	private static final String WRITE_ADVICE = "write_advice";
 	private static final String XML = "xml";
 	private static final String XML_TO_STDOUT = "xml_to_stdout";
-	private static final String ALL_ASSIGNED = "all_assigned";
-	private static final String JSUPPORT_USE_UNSAT_CORE = "use_unsat_core";
 
 	private final JKindSettings settings;
 
@@ -207,9 +202,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			if (settings.solver == SolverOption.CVC4) {
 				StdErr.warning(settings.solver + " does not support unsat-cores so IVC reduction will be slow");
 			}
-			if(! settings.allAssigned){
-				StdErr.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
-			}
 		}
 
 		if (settings.allIvcs) {
@@ -217,9 +209,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				StdErr.warning(settings.solver
 						+ " does not support unsat-cores so IVC reduction will be slow");
-			}
-			if(!settings.allAssigned && !settings.reduceIvc){
-				StdErr.warning("-all_assigned option is inactive: use this option to mark all equations as --%IVC elements");
 			}
 		}
 
