@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 
-import jkind.SolverOption;
 import jkind.api.JKindApi;
 import jkind.api.results.JKindResult;
 import jkind.api.results.PropertyResult;
@@ -42,24 +41,7 @@ public class CommandLineExample {
 		 * This triggers the actual execution of analysis. Options can be set on
 		 * the JKindApi object if desired.
 		 */
-//		new JKindApi().execute(file, result, monitor);
-
-		JKindApi api = new JKindApi();
-		// -all_ivcs -all_assigned -solver z3
-		// arguments to test the single ivc option in mivc jkind
-		// api.setTimeout(10);
-		// api.setIvcReduction();
-		// arguments to test the all ivc option in mivc jkind
-		api.setPdrMax(2);
-		api.setN(200);
-		api.setAllIvcs();
-
-		api.setSolver(SolverOption.Z3);
-		// api.setAllIvcsJkindTimeout(100);
-		// test multiple ivc jkind - this is going to replace the single ivc jkind
-		// so no need to test single ivc jkind here
-		api.setJKindJar("C:\\Project_Files\\MIVC_JKind_Test\\JKind_MIVC_JL5\\jkind.jar");
-		api.execute(file, result, monitor);
+		new JKindApi().execute(file, result, monitor);
 
 		/*
 		 * Process some of the results
