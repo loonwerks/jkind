@@ -38,7 +38,6 @@ public class MinimalIvcFinder {
 			miniJkind = null;
 		}
 		minimal.addAll(mustElements);
-		minimal = IvcUtil.trimNode(minimal);
 		return minimal;
 	}
 

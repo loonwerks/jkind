@@ -376,13 +376,12 @@ public class Director extends MessageHandler {
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
 
 		if ((!settings.miniJkind) && (settings.reduceIvc)) {
-			Set<String> ivc = IvcUtil
-					.trimNode(IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations));
+			Set<String> ivc = IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations);
 			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
 			if (settings.allIvcs) {
 				for (Tuple<Set<String>, List<String>> item : vm.allIvcs) {
-					allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.trimNode(IvcUtil
-							.findRightSide(item.firstElement(), settings.allAssigned, analysisSpec.node.equations)),
+					allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.findRightSide(item.firstElement(),
+							settings.allAssigned, analysisSpec.node.equations),
 							item.secondElement()));
 				}
 			}

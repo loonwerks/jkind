@@ -261,7 +261,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			mustChckList.removeAll(deactivate);
 
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
-			Set<String> newIvc = IvcUtil.trimNode(resultOfIvcFinder);
+			Set<String> newIvc = resultOfIvcFinder;
 
 			if (settings.scratch){
 				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
@@ -270,7 +270,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
 
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){
-				Set<String> trimmed = IvcUtil.trimNode(curr.firstElement());
+				Set<String> trimmed = curr.firstElement();
 				if (trimmed.containsAll(newIvc)){
 					temp.add(curr);
 				}
@@ -488,7 +488,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			mustChckList.removeAll(deactivate);
 
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
-			Set<String> newIvc = IvcUtil.trimNode(resultOfIvcFinder);
+			Set<String> newIvc = resultOfIvcFinder;
 
 			if (settings.scratch){
 				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
@@ -496,7 +496,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
 			for(Tuple<Set<String>, List<String>> curr: allIvcs){
-				Set<String> trimmed = IvcUtil.trimNode(curr.firstElement());
+				Set<String> trimmed = curr.firstElement();
 				if (trimmed.containsAll(newIvc)){
 					temp.add(curr);
 				}

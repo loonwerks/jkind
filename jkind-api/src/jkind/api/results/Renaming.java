@@ -250,7 +250,20 @@ public abstract class Renaming {
 	 * @return Renamed version of the conflicts
 	 */
 	private List<String> rename(Function<String, String> f, Collection<String> es) {
-		return es.stream().map(f).filter(e -> e != null).collect(toList());
+		List<String> updatedOrigList = new ArrayList<String>();
+		for (String curOrigStr : es) {
+			String updatedName = curOrigStr;
+			if (curOrigStr.contains(".")) {
+				String nodeName = curOrigStr.substring(0, curOrigStr.lastIndexOf('.'));
+				String elemName = curOrigStr.substring(curOrigStr.lastIndexOf('.'), curOrigStr.length());
+				nodeName = nodeName.replaceAll("~([0-9]+)$", "");
+				updatedName = nodeName + elemName;
+			}
+			updatedOrigList.add(updatedName);
+		}
+		List<String> renamedList = updatedOrigList.stream().map(f).filter(e -> e != null).collect(toList());
+
+		return renamedList;
 	}
 
 	private Set<List<String>> rename(Function<String, String> f, Set<List<String>> es) {
