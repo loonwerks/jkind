@@ -38,7 +38,7 @@ public class Kind2Api extends KindApi {
 		Kind2ArraysPrettyPrintVisitor kind2Printer = new Kind2ArraysPrettyPrintVisitor();
 		program.accept(kind2Printer);
 		execute(kind2Printer.toString(), result, monitor);
-}
+	}
 
 	/**
 	 * Run Kind2 on a Lustre program
