@@ -27,10 +27,9 @@ public class JKindApi extends KindApi {
 	protected boolean inductiveCounterexamples = false;
 	protected boolean ivcReduction = false;
 	protected boolean smoothCounterexamples = false;
-	protected boolean slicing = true;
-	
-	protected List<String> vmArgs = Collections.emptyList();
 
+	protected boolean slicing = true;
+	protected List<String> vmArgs = Collections.emptyList();
 	protected SolverOption solver = null;
 
 	protected String jkindJar;
@@ -119,6 +118,13 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
+	 * Disable slicing of input model and counterexamples
+	 */
+	public void disableSlicing() {
+		slicing = false;
+	}
+
+	/**
 	 * Provide a fixed JKind jar file to use
 	 */
 	public void setJKindJar(String jkindJar) {
@@ -199,6 +205,9 @@ public class JKindApi extends KindApi {
 		}
 		if (smoothCounterexamples) {
 			args.add("-smooth");
+		}
+		if (!slicing) {
+			args.add("-no_slicing");
 		}
 		if (!slicing) {
 			args.add("-no_slicing");
