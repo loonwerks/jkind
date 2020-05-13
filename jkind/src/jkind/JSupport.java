@@ -59,9 +59,6 @@ public class JSupport {
 			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
 					settings.filename);
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT, settings);
-			//-------------- computing MUST ---------------------
-			//MinimalIvcFinder minimalFinder = new MinimalIvcFinder(main, settings.filename, main.properties.get(0));
-			//minimalFinder.computeMust(inputIVC, true, TIMEOUT);
 			System.exit(0);
 
 			}catch (Throwable t) {
