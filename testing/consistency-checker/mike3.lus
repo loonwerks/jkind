@@ -1,0 +1,11 @@
+node foo(in1: int) returns (out1: int);
+var
+   delta : int; 
+   e : bool;
+let
+   out1 = 0 -> in1 + 1; 
+   delta = in1 ;
+   assert(out1 > 100 => in1 > out1); 
+   e = out1 <= 100;
+   --%PROPERTY e;
+tel;

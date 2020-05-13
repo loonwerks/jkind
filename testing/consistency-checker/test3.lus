@@ -1,0 +1,6 @@
+node main(x : int) returns (OK : bool);
+let
+assert x > 0;
+OK = (x > 0);
+--%PROPERTY OK;
+tel;

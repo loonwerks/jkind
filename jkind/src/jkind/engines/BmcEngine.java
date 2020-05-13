@@ -1,9 +1,8 @@
 package jkind.engines;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import jkind.JKindSettings;
+import java.util.List; 
+import jkind.JKindSettings; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;

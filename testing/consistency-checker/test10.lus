@@ -1,0 +1,16 @@
+node main(x : int) returns (e1 : bool);
+	var 
+	  y : int;
+	  e : bool;
+	let 
+		 
+		y = (if (x > 0) then pre (x) + 2 else pre(x) - 2);
+		e = (x = 2) -> (x > 0);
+		assert e;
+		e1 = pre (x) < y;
+
+		--%PROPERTY e1;
+	tel;
+	
+	
+	

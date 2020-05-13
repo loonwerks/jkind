@@ -1,9 +1,8 @@
 package jkind.translation;
 
-import java.util.List;
-import java.util.Map;
-
-import jkind.lustre.Function;
+import java.util.List;  
+import java.util.Map; 
+import jkind.lustre.Function; 
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.Type;

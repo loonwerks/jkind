@@ -53,6 +53,10 @@ public class LinkedBiMap<K, V> implements Map<K, V> {
 	public V get(Object key) {
 		return map.get(key);
 	}
+	
+	public K getKey(V value) {
+		return inverse.get(value);
+	}
 
 	@Override
 	public boolean isEmpty() {

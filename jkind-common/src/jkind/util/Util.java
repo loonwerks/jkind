@@ -297,6 +297,19 @@ public class Util {
 		return Collections.unmodifiableSet(set);
 	}
 
+	public static Set<List<String>> safeStringSortedSets(Set<List<String>> original) {
+		Set<List<String>> set = new HashSet<>(new TreeSet<>(new StringNaturalOrdering()));
+		for (Collection<String> currentSetOriginal : original) {
+			TreeSet<String> individualSet = new TreeSet<>(new StringNaturalOrdering());
+			individualSet.addAll(currentSetOriginal);
+			// List<String> curList = new ArrayList<String>(individualSet);
+			set.add(safeList(individualSet));
+			// set.add(individualSet);
+		}
+
+		return Collections.unmodifiableSet(set);
+	}
+
 	public static <T> Set<T> setDifference(Collection<T> c1, Collection<T> c2) {
 		Set<T> result = new HashSet<>(c1);
 		result.removeAll(c2);

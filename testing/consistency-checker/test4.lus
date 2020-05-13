@@ -1,0 +1,18 @@
+node main() returns (e1 : bool);
+	var 
+		counter1 : int;
+		counter2 : int;
+		e2: bool;
+		e3 : bool;
+	let
+		counter1 = 0 -> 1 + pre counter1;
+		counter2 = 100 -> (pre counter2 - counter1);
+
+		e1 = (counter2 > counter1);
+		 
+		e2 = (counter2 <> 9); 
+		
+		e3 = (counter2 <= 100);
+
+		--%PROPERTY e3;
+tel;

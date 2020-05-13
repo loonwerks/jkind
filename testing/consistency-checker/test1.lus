@@ -1,0 +1,12 @@
+node main() returns (e1 : bool);
+	var 	
+		counter : int;
+		counter2 : int;
+	let
+		counter = 3 -> 1 + pre counter;	
+		counter2 = 0 -> 1 + pre counter2;
+
+		e1 = counter > counter2;
+		  
+		--%PROPERTY e1;
+	tel;

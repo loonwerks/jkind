@@ -1,0 +1,46 @@
+node top(
+  x : int;
+  y : int;
+  z : int
+) returns (
+  OK : bool
+);
+var
+  e1: bool;
+  e2: bool;
+  e3: bool; 
+  e4: bool;
+  e5: bool;
+  e6: bool;
+  e7: bool;
+  e8: bool;
+let
+  OK = ((y - x - z) > 3);
+
+  e1 = ((x - 2) > 0);
+  assert(e1);
+  
+  e2 = ((x - y) = 1);
+  assert(e2);
+  
+  e3 = (y > 0);
+  assert(e3);
+  
+  e4 = ((x + y) > 0); 
+  assert(e4);
+
+  e5 = ((y - 3) > 0);
+  assert(e5);
+
+  e6 = ((z + 3) < 0);
+  assert(e6);
+
+  e7 = ((y - z) > 0);
+  assert(e7);
+
+  e8 = ((z + x) < 0);
+  assert(e8);  
+
+  --%PROPERTY OK;
+
+tel;

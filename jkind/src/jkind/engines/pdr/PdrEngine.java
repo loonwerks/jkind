@@ -4,11 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import jkind.JKindSettings;
-import jkind.engines.Director;
+import jkind.engines.Director; 
 import jkind.engines.Engine;
-import jkind.engines.StopException;
+import jkind.engines.StopException; 
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.InductiveCounterexampleMessage;
 import jkind.engines.messages.InvalidMessage;
@@ -102,5 +101,13 @@ public class PdrEngine extends Engine {
 			}
 		}
 		properties.removeAll(cancel);
+	}
+	
+	@Override
+	public void stopEngine() {
+		for (PdrSubengine subengine : subengines.values()) {
+			subengine.cancel();
+		}
+		properties.clear();
 	}
 }

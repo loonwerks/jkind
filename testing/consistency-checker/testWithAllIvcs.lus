@@ -1,0 +1,31 @@
+
+node main(
+
+) returns (
+  e1 : bool
+);
+var
+  e2 : bool;
+  counter : int;
+  e : bool;
+  
+let
+  counter = (0 -> (1 + (pre counter)));
+
+  e1 = (counter < 11);
+
+  e2 = (counter <> 10);
+  
+  assert (counter > 11);
+  
+  assert(counter > 10 => pre(counter) > counter);
+
+  e = ((((true and true) and (counter = (0 -> (1 + (pre counter))))) and e1) and e2);
+
+  assert e2;
+
+  --%PROPERTY e;
+
+  --%IVC e2, counter, e, e1;
+
+tel;
