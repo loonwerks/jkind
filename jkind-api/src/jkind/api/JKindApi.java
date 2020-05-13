@@ -19,6 +19,7 @@ import jkind.api.results.JKindResult;
  */
 public class JKindApi extends KindApi {
 	protected Integer n = null;
+
 	protected boolean boundedModelChecking = true;
 	protected boolean kInduction = true;
 	protected boolean invariantGeneration = true;
@@ -30,7 +31,6 @@ public class JKindApi extends KindApi {
 	protected boolean slicing = true;
 
 	protected List<String> vmArgs = Collections.emptyList();
-
 	protected SolverOption solver = null;
 
 	protected String jkindJar;
