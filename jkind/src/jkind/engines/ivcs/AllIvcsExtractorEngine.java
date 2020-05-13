@@ -161,7 +161,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			resultOfIvcFinder.clear();
 			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
-				//markMIVC(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			}else{
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
 			}
@@ -227,8 +226,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true;
 		js.timeout = TIMEOUT;
-		// optional-- could be commented later:
-		//js.scratch = true;
 		js.solver = settings.solver;
 		js.slicing = true;
 		js.pdrMax = settings.pdrMax;
@@ -282,7 +279,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				}
 			}
 			if(temp.isEmpty()){
-				//director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
 			else{
@@ -344,7 +340,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
 			js.pdrMax = 0;
-			//return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, new HashSet<>(), deactivate);
 		}
 		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
 			seed.invariants = miniJkind.getPropertyInvariants();
@@ -506,7 +501,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 
 			if(temp.isEmpty()){
-				//director.handleConsistencyMessage(new ConsistencyMessage(miniJkind.getValidMessage()));
 				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
 			}
 			else{
