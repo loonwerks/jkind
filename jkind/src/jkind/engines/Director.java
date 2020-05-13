@@ -152,8 +152,8 @@ public class Director extends MessageHandler {
 			postProcessing();
 			exitCode = reportFailures();
 		}
-		// MWW: added code: otherwise top-level jkind shuts down
-		// minijkind!
+
+		// Needed for minijkind; other cases the top-level jkind shuts down
 		if (settings.miniJkind) {
 			stopEngines();
 		}
@@ -207,10 +207,9 @@ public class Director extends MessageHandler {
 		threads.forEach(Thread::start);
 	}
 
-//
+	// all IVCs
 	boolean aivcIdx = false;
 
-//
 	private void createEngines() {
 		if (settings.boundedModelChecking) {
 			addEngine(new BmcEngine(analysisSpec, settings, this));
@@ -246,10 +245,9 @@ public class Director extends MessageHandler {
 		}
 	}
 
-//
+	// All IVCs engine index
 	int aivcIndx;
 
-//
 	private void addEngine(Engine engine) {
 		engines.add(engine);
 		if (aivcIdx) {
