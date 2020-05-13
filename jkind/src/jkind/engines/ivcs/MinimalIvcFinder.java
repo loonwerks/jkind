@@ -21,7 +21,6 @@ public class MinimalIvcFinder {
 			JKindSettings settings) {
 		Set<String> minimal = new HashSet<>(candidates);
 		JKindSettings js = new JKindSettings();
-		//js.noSlicing = true;
 		js.allAssigned = false;
 		js.miniJkind = true;
 		js.timeout = timeout;
@@ -41,23 +40,4 @@ public class MinimalIvcFinder {
 		return minimal;
 	}
 
-//	public Set<String> computeMust(Set<String> candidates, int timeout) {
-//		Set<String> must = new HashSet<>();
-//		JKindSettings js = new JKindSettings();
-//		//js.noSlicing = true;
-//		js.allAssigned = false;
-//		js.miniJkind = true;
-//		js.timeout = timeout;
-//		for (String s : candidates) {
-//			Program candidate = new Program(IvcUtil.unassign(node, s, property));
-//			MiniJKind miniJkind = new MiniJKind (candidate, new Specification(candidate, js.slicing), js);
-//			miniJkind.verify();
-//			if (miniJkind.getPropertyStatus() != MiniJKind.VALID) {
-//				must.add(s);
-//			}
-//			miniJkind = null;
-//		}
-//		must = IvcUtil.trimNode(must);
-//		return must;
-//	}
 }
