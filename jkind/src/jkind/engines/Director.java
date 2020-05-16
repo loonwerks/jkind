@@ -92,8 +92,7 @@ public class Director extends MessageHandler {
 			if (settings.excel) {
 				return new ExcelWriter(settings.filename + ".xls", userSpec.node);
 			} else if (settings.xml) {
-				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap,
-						settings.xmlToStdout);
+				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap, settings.xmlToStdout);
 			} else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
 			}
@@ -108,8 +107,7 @@ public class Director extends MessageHandler {
 		addShutdownHook();
 		createAndStartEngines();
 
-		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()
-				&& !exitRequested()) {
+		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed() && !exitRequested()) {
 			processMessages();
 			sleep(100);
 		}
@@ -237,8 +235,7 @@ public class Director extends MessageHandler {
 
 	private void writeUnknowns() {
 		if (!remainingProperties.isEmpty()) {
-			writer.writeUnknown(remainingProperties, baseStep, convertInductiveCounterexamples(),
-					getRuntime());
+			writer.writeUnknown(remainingProperties, baseStep, convertInductiveCounterexamples(), getRuntime());
 		}
 	}
 
@@ -260,8 +257,7 @@ public class Director extends MessageHandler {
 			System.out.println("  JKind " + Main.VERSION);
 			System.out.println("==========================================");
 			System.out.println();
-			System.out.println("There are " + remainingProperties.size()
-					+ " properties to be checked.");
+			System.out.println("There are " + remainingProperties.size() + " properties to be checked.");
 			System.out.println("PROPERTIES TO BE CHECKED: " + remainingProperties);
 			System.out.println();
 		}
@@ -372,15 +368,13 @@ public class Director extends MessageHandler {
 			int baseStep = entry.getKey();
 			List<String> unknowns = entry.getValue();
 			remainingProperties.removeAll(unknowns);
-			writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(),
-					getRuntime());
+			writer.writeUnknown(um.unknown, baseStep, convertInductiveCounterexamples(), getRuntime());
 			broadcast(new UnknownMessage(NAME, unknowns));
 		}
 	}
 
 	private Map<Integer, List<String>> getCompletelyUnknownByBaseStep(UnknownMessage um) {
-		return um.unknown.stream().filter(this::isCompletelyUnknown)
-				.collect(Collectors.groupingBy(bmcUnknowns::get));
+		return um.unknown.stream().filter(this::isCompletelyUnknown).collect(Collectors.groupingBy(bmcUnknowns::get));
 	}
 
 	private void markUnknowns(UnknownMessage um) {
@@ -402,8 +396,7 @@ public class Director extends MessageHandler {
 	}
 
 	public boolean isCompletelyUnknown(String prop) {
-		return bmcUnknowns.containsKey(prop) && kInductionUnknowns.contains(prop)
-				&& pdrUnknowns.contains(prop);
+		return bmcUnknowns.containsKey(prop) && kInductionUnknowns.contains(prop) && pdrUnknowns.contains(prop);
 	}
 
 	@Override
@@ -474,8 +467,7 @@ public class Director extends MessageHandler {
 		return result;
 	}
 
-	private Counterexample extractCounterexample(String property, int k, Model model,
-			boolean concrete) {
+	private Counterexample extractCounterexample(String property, int k, Model model, boolean concrete) {
 		model = ModelReconstructionEvaluator.reconstruct(userSpec, analysisSpec, model, property, k, concrete);
 		return CounterexampleExtractor.extract(userSpec, k, model);
 	}

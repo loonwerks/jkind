@@ -28,8 +28,8 @@ import jkind.util.SexpUtil;
 public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
 	private final InvariantSet provenInvariants = new InvariantSet();
 
-	public AbstractInvariantGenerationEngine(String name, Specification spec,
-			JKindSettings settings, Director director) {
+	public AbstractInvariantGenerationEngine(String name, Specification spec, JKindSettings settings,
+			Director director) {
 		super(name, spec, settings, director);
 	}
 

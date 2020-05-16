@@ -20,11 +20,11 @@ public class CondactExpr extends Expr {
 		this.call = call;
 		this.args = Util.safeList(args);
 	}
-	
+
 	public CondactExpr(Expr clock, NodeCallExpr call, List<Expr> args) {
 		this(Location.NULL, clock, call, args);
 	}
-	
+
 	public CondactExpr(Expr clock, NodeCallExpr call, Expr... args) {
 		this(Location.NULL, clock, call, Arrays.asList(args));
 	}

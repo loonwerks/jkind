@@ -21,8 +21,8 @@ public class RealizabilityNodeLayout implements Layout {
 	private static final String NODE_OUTPUTS = "Node Outputs";
 	private static final String NODE_LOCALS = "Node Locals";
 	private static final String NODE_INLINED = "Node Inlined";
-	private static final String[] CATEGORIES = { REALIZABILITY_INPUTS, REALIZABILITY_OUTPUTS,
-			NODE_OUTPUTS, NODE_LOCALS, NODE_INLINED };
+	private static final String[] CATEGORIES = { REALIZABILITY_INPUTS, REALIZABILITY_OUTPUTS, NODE_OUTPUTS, NODE_LOCALS,
+			NODE_INLINED };
 
 	private final Set<String> realizabilityInputs;
 	private final Set<String> realizabilityOutputs;

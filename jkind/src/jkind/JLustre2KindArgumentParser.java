@@ -41,7 +41,7 @@ public class JLustre2KindArgumentParser extends ArgumentParser {
 		if (line.hasOption(ENCODE)) {
 			settings.encode = true;
 		}
-		
+
 		if (line.hasOption(OBFUSCATE)) {
 			settings.obfuscate = true;
 		}

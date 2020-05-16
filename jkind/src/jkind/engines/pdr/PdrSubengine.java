@@ -34,7 +34,7 @@ public class PdrSubengine extends Thread {
 	private final Node node;
 	private final List<Function> functions;
 	private final String prop;
-	
+
 	private final PdrEngine parent;
 	private final Director director;
 

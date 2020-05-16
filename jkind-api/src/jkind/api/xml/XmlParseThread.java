@@ -328,7 +328,7 @@ public class XmlParseThread extends Thread {
 		}
 		VarDecl output = getVarDecl(getElement(functionElement, "Output"));
 		FunctionTable table = new FunctionTable(name, inputs, output);
-		
+
 		for (Element fvElement : getElements(functionElement, "FunctionValue")) {
 			List<Value> inputValues = new ArrayList<>();
 			List<Element> ivElements = getElements(fvElement, "InputValue");

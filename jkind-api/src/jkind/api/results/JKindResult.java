@@ -113,8 +113,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 	 * @param renaming
 	 *            Renaming to apply to properties
 	 */
-	public JKindResult(String name, List<String> properties, List<Boolean> invertStatus,
-			Renaming renaming) {
+	public JKindResult(String name, List<String> properties, List<Boolean> invertStatus, Renaming renaming) {
 		super(name);
 		this.renaming = renaming;
 		addProperties(properties, invertStatus);
@@ -151,8 +150,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 		PropertyResult propertyResult = new PropertyResult(property, renaming, invertStatus);
 		propertyResults.add(propertyResult);
 		propertyResult.setParent(this);
-		pcs.fireIndexedPropertyChange("propertyResults", propertyResults.size() - 1, null,
-				propertyResult);
+		pcs.fireIndexedPropertyChange("propertyResults", propertyResults.size() - 1, null, propertyResult);
 		addStatus(propertyResult.getStatus());
 		propertyResult.addPropertyChangeListener(this);
 		return propertyResult;
@@ -353,8 +351,7 @@ public class JKindResult extends AnalysisResult implements PropertyChangeListene
 			pcs.firePropertyChange("status", evt.getOldValue(), evt.getNewValue());
 		}
 
-		if ("multiStatus".equals(evt.getPropertyName())
-				&& propertyResults.contains(evt.getSource())) {
+		if ("multiStatus".equals(evt.getPropertyName()) && propertyResults.contains(evt.getSource())) {
 			multiStatus.remove((MultiStatus) evt.getOldValue());
 			multiStatus.add((MultiStatus) evt.getNewValue());
 			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());

@@ -28,9 +28,9 @@ public class JKindApi extends KindApi {
 	protected boolean ivcReduction = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean slicing = true;
-	
+
 	protected List<String> vmArgs = Collections.emptyList();
-	
+
 	protected SolverOption solver = null;
 
 	protected String jkindJar;
@@ -110,7 +110,7 @@ public class JKindApi extends KindApi {
 	public void disableSlicing() {
 		slicing = false;
 	}
-	
+
 	/**
 	 * Set VM args
 	 */
@@ -232,7 +232,7 @@ public class JKindApi extends KindApi {
 		args.add("-jar");
 		args.add(getOrFindJKindJar());
 		args.add("-jkind");
-		
+
 		return args.toArray(new String[args.size()]);
 	}
 

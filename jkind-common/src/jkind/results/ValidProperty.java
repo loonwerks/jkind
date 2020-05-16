@@ -16,8 +16,8 @@ public final class ValidProperty extends Property {
 	private List<String> invariants;
 	private Set<String> ivc;
 
-	public ValidProperty(String name, String source, int k, double runtime,
-			List<String> invariants, Collection<String> ivc) {
+	public ValidProperty(String name, String source, int k, double runtime, List<String> invariants,
+			Collection<String> ivc) {
 		super(name, runtime);
 		this.source = source;
 		this.k = k;

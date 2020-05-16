@@ -116,11 +116,11 @@ public class DependencyMap {
 		for (VarDecl vd : Util.getVarDecls(node)) {
 			set.add(Dependency.variable(vd.id));
 		}
-		
+
 		for (Function fn : functions) {
 			set.add(Dependency.function(fn.id));
 		}
-		
+
 		for (VarDecl vd : Util.getVarDecls(node)) {
 			result.map.put(Dependency.variable(vd.id), set);
 		}

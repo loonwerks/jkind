@@ -13,7 +13,7 @@ public class RealExpr extends Expr {
 		Assert.isNotNull(value);
 		this.value = value;
 	}
-	
+
 	public RealExpr(BigDecimal value) {
 		this(Location.NULL, value);
 	}

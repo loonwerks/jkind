@@ -41,7 +41,7 @@ public class CounterexampleStepLabelProvider extends ColumnLabelProvider {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -50,7 +50,7 @@ public class CounterexampleStepLabelProvider extends ColumnLabelProvider {
 		if (element instanceof CategoryHeader) {
 			return Display.getCurrent().getSystemColor(CategoryHeader.BACKGROUND_COLOR);
 		}
-		
+
 		return null;
 	}
 }

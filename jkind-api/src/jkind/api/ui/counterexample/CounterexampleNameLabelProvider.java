@@ -17,22 +17,22 @@ public class CounterexampleNameLabelProvider extends ColumnLabelProvider {
 
 		return "";
 	}
-	
+
 	@Override
 	public Color getForeground(Object element) {
 		if (element instanceof CategoryHeader) {
 			return Display.getCurrent().getSystemColor(CategoryHeader.FOREGROUND_COLOR);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public Color getBackground(Object element) {
 		if (element instanceof CategoryHeader) {
 			return Display.getCurrent().getSystemColor(CategoryHeader.BACKGROUND_COLOR);
 		}
-		
+
 		return null;
 	}
 }

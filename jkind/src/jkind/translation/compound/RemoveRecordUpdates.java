@@ -31,7 +31,7 @@ public class RemoveRecordUpdates extends TypeAwareAstMapVisitor {
 	public static Program program(Program program) {
 		return new RemoveRecordUpdates().visit(program);
 	}
-	
+
 	@Override
 	public Expr visit(RecordUpdateExpr e) {
 		Expr record = e.record.accept(this);

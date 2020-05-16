@@ -12,7 +12,7 @@ public class LustreParseException extends JKindException {
 		super(text);
 		this.loc = loc;
 	}
-	
+
 	public Location getLocation() {
 		return loc;
 	}

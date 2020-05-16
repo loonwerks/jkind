@@ -48,8 +48,8 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
+			Set<String> ivc) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		for (String prop : props) {
 			properties.add(new ValidProperty(prop, source, k, runtime, invText, ivc));
@@ -57,17 +57,15 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex,
-			List<String> conflicts, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		properties.add(new InvalidProperty(prop, source, cex, conflicts, runtime));
 	}
 
 	@Override
-	public void writeUnknown(List<String> props, int trueFor,
-			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
+	public void writeUnknown(List<String> props, int trueFor, Map<String, Counterexample> inductiveCounterexamples,
+			double runtime) {
 		for (String prop : props) {
-			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop),
-					runtime));
+			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop), runtime));
 		}
 	}
 

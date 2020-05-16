@@ -27,18 +27,13 @@ public class FaultReplacementLocations {
 	public HashSet<Integer> constantOp = new HashSet<>();
 	public HashSet<Integer> nodeCallParameter = new HashSet<>();
 	public HashSet<Integer> variableReplacement = new HashSet<>();
-	
+
 	@Override
 	public String toString() {
-		return "arithmetic faults: " + arithmeticOp + 
-				"\nincrement faults: " + incrementOp + 
-				"\nrelational faults: " + relationalOp + 
-				"\nequality faults: " + equalityOp + 
-				"\nboolean faults: " + booleanOp + 
-				"\nnegation faults: " + negationOp + 
-				"\ndelay faults:" + delayOp + 
-				"\nconstant faults: " + constantOp + 
-				"\nnodeCallParameter faults: " + nodeCallParameter + 
-				"\nvariableReplacement faults: " + variableReplacement;
+		return "arithmetic faults: " + arithmeticOp + "\nincrement faults: " + incrementOp + "\nrelational faults: "
+				+ relationalOp + "\nequality faults: " + equalityOp + "\nboolean faults: " + booleanOp
+				+ "\nnegation faults: " + negationOp + "\ndelay faults:" + delayOp + "\nconstant faults: " + constantOp
+				+ "\nnodeCallParameter faults: " + nodeCallParameter + "\nvariableReplacement faults: "
+				+ variableReplacement;
 	}
-} 
+}

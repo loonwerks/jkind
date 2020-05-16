@@ -19,8 +19,8 @@ public class Kind2WebExample {
 		URI uri = new URI(args[0]);
 		String filename = args[1];
 
-		try (LineInputStream lines = new LineInputStream(new Kind2WebInputStream(uri,
-				getKindArgs(), getLustre(filename)))) {
+		try (LineInputStream lines = new LineInputStream(
+				new Kind2WebInputStream(uri, getKindArgs(), getLustre(filename)))) {
 			String line;
 			while ((line = lines.readLine()) != null) {
 				System.out.print(line);

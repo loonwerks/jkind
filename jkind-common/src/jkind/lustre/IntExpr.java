@@ -13,15 +13,15 @@ public class IntExpr extends Expr {
 		Assert.isNotNull(value);
 		this.value = value;
 	}
-	
+
 	public IntExpr(BigInteger value) {
 		this(Location.NULL, value);
 	}
-	
+
 	public IntExpr(int value) {
 		this(Location.NULL, BigInteger.valueOf(value));
 	}
-	
+
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

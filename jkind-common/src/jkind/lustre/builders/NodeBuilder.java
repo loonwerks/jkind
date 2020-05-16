@@ -189,7 +189,7 @@ public class NodeBuilder {
 	}
 
 	public Node build() {
-		return new Node(Location.NULL, id, inputs, outputs, locals, equations, properties,
-				assertions, realizabilityInputs, contract, ivc);
+		return new Node(Location.NULL, id, inputs, outputs, locals, equations, properties, assertions,
+				realizabilityInputs, contract, ivc);
 	}
 }

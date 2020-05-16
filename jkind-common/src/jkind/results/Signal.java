@@ -61,13 +61,13 @@ public final class Signal<T extends Value> implements Comparable<Signal<T>> {
 			if (klass.isInstance(value)) {
 				castSignal.putValue(step, klass.cast(value));
 			} else {
-				throw new JKindException("Cannot cast " + value.getClass().getSimpleName() + " to "
-						+ klass.getSimpleName());
+				throw new JKindException(
+						"Cannot cast " + value.getClass().getSimpleName() + " to " + klass.getSimpleName());
 			}
 		}
 		return castSignal;
 	}
-	
+
 	public Signal<T> rename(String newName) {
 		Signal<T> copy = new Signal<>(newName);
 		copy.values.putAll(values);

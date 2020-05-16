@@ -15,9 +15,9 @@ public class CurrIdExtractorVisitor extends ExprIterVisitor {
 		expr.accept(visitor);
 		return visitor.set;
 	}
-	
+
 	private Set<String> set = new HashSet<>();
-	
+
 	@Override
 	public Void visit(UnaryExpr e) {
 		if (e.op == UnaryOp.PRE) {
@@ -26,7 +26,7 @@ public class CurrIdExtractorVisitor extends ExprIterVisitor {
 			return super.visit(e);
 		}
 	}
-	
+
 	@Override
 	public Void visit(IdExpr e) {
 		set.add(e.id);

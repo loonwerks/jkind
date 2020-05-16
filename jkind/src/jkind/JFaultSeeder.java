@@ -25,21 +25,21 @@ public class JFaultSeeder {
 	 * TODO: MWW - this is currently a hack, but good enough to do what we want for
 	 * the Jaroslav paper. It should be extended.
 	 */
-	
+
 	/*
-		 private static void calcFaultRatios(JFaultSeederSettings settings, FaultSites fs) { 
-		 		int totalFaults = fs.totalFaults(); 
-		 		double doubleTotalFaults = totalFaults; 
-		 		double arithPct = fs.arithmeticOp / doubleTotalFaults; 
-		 		double relationalPct = fs.relationalOp / doubleTotalFaults; 
-		 		double equalityPct = fs.equalityOp / doubleTotalFaults; 
-		 		double booleanPct = fs.booleanOp / doubleTotalFaults; 
-		 		double negationPct = fs.negationOp / doubleTotalFaults;
-		 		double delayPct = fs.delayOp / doubleTotalFaults; 
-		 		double constantPct = fs.constantOp / doubleTotalFaults; 
-		 		double nodeCallPct = fs.nodeCallParameter / doubleTotalFaults; 
-		 		double variableReplacementPct = fs.variableReplacement / doubleTotalFaults; 
-		 }
+	 * private static void calcFaultRatios(JFaultSeederSettings settings, FaultSites fs) {
+	 * int totalFaults = fs.totalFaults();
+	 * double doubleTotalFaults = totalFaults;
+	 * double arithPct = fs.arithmeticOp / doubleTotalFaults;
+	 * double relationalPct = fs.relationalOp / doubleTotalFaults;
+	 * double equalityPct = fs.equalityOp / doubleTotalFaults;
+	 * double booleanPct = fs.booleanOp / doubleTotalFaults;
+	 * double negationPct = fs.negationOp / doubleTotalFaults;
+	 * double delayPct = fs.delayOp / doubleTotalFaults;
+	 * double constantPct = fs.constantOp / doubleTotalFaults;
+	 * double nodeCallPct = fs.nodeCallParameter / doubleTotalFaults;
+	 * double variableReplacementPct = fs.variableReplacement / doubleTotalFaults;
+	 * }
 	 */
 
 	private final JFaultSeederSettings settings;
@@ -151,15 +151,15 @@ public class JFaultSeeder {
 	}
 
 	/*
-	 * public int arithmeticOp = 0; 
-	 * public int incrementOp = 0; 
-	 * public int relationalOp = 0; 
-	 * public int equalityOp = 0; 
-	 * public int booleanOp = 0; 
-	 * public int negationOp = 0; 
-	 * public int delayOp = 0; 
-	 * public int constantOp = 0; 
-	 * public int nodeCallParameter = 0; 
+	 * public int arithmeticOp = 0;
+	 * public int incrementOp = 0;
+	 * public int relationalOp = 0;
+	 * public int equalityOp = 0;
+	 * public int booleanOp = 0;
+	 * public int negationOp = 0;
+	 * public int delayOp = 0;
+	 * public int constantOp = 0;
+	 * public int nodeCallParameter = 0;
 	 * public int variableReplacement = 0;
 	 */
 	public void createMutantFiles(TypeReconstructor typeReconstructor, String fileNameRoot, Program program,

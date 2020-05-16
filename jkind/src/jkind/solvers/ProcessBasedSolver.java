@@ -31,8 +31,7 @@ public abstract class ProcessBasedSolver extends Solver {
 		try {
 			process = processBuilder.start();
 		} catch (IOException e) {
-			throw new JKindException("Unable to start solver by executing: "
-					+ processBuilder.command().get(0), e);
+			throw new JKindException("Unable to start solver by executing: " + processBuilder.command().get(0), e);
 		}
 		addShutdownHook();
 		toSolver = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));

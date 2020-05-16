@@ -26,7 +26,7 @@ public class CompositeAnalysisResult extends AnalysisResult implements PropertyC
 		multiStatus.add(other);
 		pcs.firePropertyChange("multiStatus", null, other);
 	}
-	
+
 	public List<AnalysisResult> getChildren() {
 		return Collections.unmodifiableList(children);
 	}
@@ -43,14 +43,14 @@ public class CompositeAnalysisResult extends AnalysisResult implements PropertyC
 			multiStatus.add((Status) evt.getNewValue());
 			pcs.firePropertyChange("status", evt.getOldValue(), evt.getNewValue());
 		}
-		
+
 		if ("multiStatus".equals(evt.getPropertyName()) && children.contains(evt.getSource())) {
 			multiStatus.remove((MultiStatus) evt.getOldValue());
 			multiStatus.add((MultiStatus) evt.getNewValue());
 			pcs.firePropertyChange("multiStatus", evt.getOldValue(), evt.getNewValue());
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return name + children;

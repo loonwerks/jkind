@@ -43,14 +43,14 @@ public class CounterexampleExtractor {
 			List<VarDecl> inputs = table.getInputs();
 			VarDecl output = table.getOutput();
 			FunctionTable newTable = new FunctionTable(table.getName(), inputs, output);
-			
+
 			for (FunctionTableRow row : table.getRows()) {
 				List<Value> newInputValues = new ArrayList<>();
 				for (int i = 0; i < inputs.size(); i++) {
 					newInputValues.add(convert(inputs.get(i).type, row.getInputs().get(i)));
 				}
 				Value newOutputValue = convert(output.type, row.getOutput());
-				
+
 				newTable.addRow(newInputValues, newOutputValue);
 			}
 			cex.addFunctionTable(newTable);

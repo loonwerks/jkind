@@ -47,8 +47,7 @@ public class BigFraction implements Comparable<BigFraction> {
 		if (value.scale() >= 0) {
 			return new BigFraction(value.unscaledValue(), BigInteger.valueOf(10).pow(value.scale()));
 		} else {
-			return new BigFraction(value.unscaledValue().multiply(
-					BigInteger.valueOf(10).pow(-value.scale())));
+			return new BigFraction(value.unscaledValue().multiply(BigInteger.valueOf(10).pow(-value.scale())));
 		}
 	}
 
@@ -61,8 +60,7 @@ public class BigFraction implements Comparable<BigFraction> {
 	}
 
 	public BigFraction add(BigFraction val) {
-		return new BigFraction(num.multiply(val.denom).add(val.num.multiply(denom)),
-				denom.multiply(val.denom));
+		return new BigFraction(num.multiply(val.denom).add(val.num.multiply(denom)), denom.multiply(val.denom));
 	}
 
 	public BigFraction add(BigInteger val) {
@@ -70,8 +68,7 @@ public class BigFraction implements Comparable<BigFraction> {
 	}
 
 	public BigFraction subtract(BigFraction val) {
-		return new BigFraction(num.multiply(val.denom).subtract(val.num.multiply(denom)),
-				denom.multiply(val.denom));
+		return new BigFraction(num.multiply(val.denom).subtract(val.num.multiply(denom)), denom.multiply(val.denom));
 	}
 
 	public BigFraction subtract(BigInteger val) {

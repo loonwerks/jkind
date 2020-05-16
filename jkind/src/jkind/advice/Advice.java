@@ -67,8 +67,7 @@ public class Advice {
 		} else if (type instanceof SubrangeIntType) {
 			return NamedType.INT.name;
 		} else {
-			throw new IllegalArgumentException("Unexpected type: "
-					+ type.getClass().getSimpleName());
+			throw new IllegalArgumentException("Unexpected type: " + type.getClass().getSimpleName());
 		}
 	}
 }

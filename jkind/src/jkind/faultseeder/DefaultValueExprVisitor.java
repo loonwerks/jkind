@@ -30,7 +30,7 @@ public class DefaultValueExprVisitor implements TypeVisitor<Expr> {
 	public Expr visit(NamedType e) {
 		switch (e.name) {
 		case "bool":
-			return new BoolExpr(false); 
+			return new BoolExpr(false);
 		case "int":
 			return new IntExpr(BigInteger.ZERO);
 		case "real":

@@ -10,7 +10,7 @@ import jkind.lustre.visitors.AstIterVisitor;
 
 public class ValidIdChecker extends AstIterVisitor {
 	private boolean passed = true;
-	
+
 	public static boolean check(Program program) {
 		ValidIdChecker checker = new ValidIdChecker();
 		checker.visit(program);
@@ -41,7 +41,7 @@ public class ValidIdChecker extends AstIterVisitor {
 	private void check(Location location, String id) {
 		if (id.contains("~") || id.contains("[") || id.contains("]") || id.contains(".")) {
 			StdErr.error(location, "Invalid id: " + id);
-			passed  = false;
+			passed = false;
 		}
 	}
 }

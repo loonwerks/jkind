@@ -35,10 +35,10 @@ public class TCube implements Comparable<TCube> {
 		assert (frame != FRAME_INF);
 		assert (other.frame != FRAME_NULL);
 		assert (other.frame != FRAME_INF);
-		
+
 		return frame - other.frame;
 	}
-	
+
 	@Override
 	public String toString() {
 		return frame + ": " + cube;

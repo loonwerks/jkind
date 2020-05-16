@@ -7,7 +7,7 @@ public class SatResult extends Result {
 		super();
 		this.model = model;
 	}
-	
+
 	public SatResult() {
 		this(null);
 	}

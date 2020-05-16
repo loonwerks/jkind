@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class AnalysisResultTree extends AnalysisResultColumnViewer {
 	private TreeViewer treeViewer;
-	
+
 	public AnalysisResultTree(Composite parent) {
 		super(parent);
 	}
@@ -22,7 +22,7 @@ public class AnalysisResultTree extends AnalysisResultColumnViewer {
 		createColumns();
 		return treeViewer;
 	}
-	
+
 	private void createColumns() {
 		TreeViewerColumn propertyColumn = new TreeViewerColumn(treeViewer, SWT.None);
 		propertyColumn.getColumn().setText("Property");
@@ -32,13 +32,13 @@ public class AnalysisResultTree extends AnalysisResultColumnViewer {
 		TreeViewerColumn resultColumn = new TreeViewerColumn(treeViewer, SWT.None);
 		resultColumn.getColumn().setText("Result");
 		resultColumn.setLabelProvider(new AnalysisResultLabelProvider(Column.RESULT));
-		
+
 		TreeColumnLayout layout = new TreeColumnLayout();
 		composite.setLayout(layout);
 		layout.setColumnData(propertyColumn.getColumn(), new ColumnWeightData(2));
 		layout.setColumnData(resultColumn.getColumn(), new ColumnWeightData(1));
 	}
-	
+
 	@Override
 	public TreeViewer getViewer() {
 		return treeViewer;

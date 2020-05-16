@@ -25,8 +25,7 @@ import jkind.util.Util;
 public abstract class SolverBasedEngine extends Engine {
 	protected Solver solver;
 
-	public SolverBasedEngine(String name, Specification spec, JKindSettings settings,
-			Director director) {
+	public SolverBasedEngine(String name, Specification spec, JKindSettings settings, Director director) {
 		super(name, spec, settings, director);
 	}
 

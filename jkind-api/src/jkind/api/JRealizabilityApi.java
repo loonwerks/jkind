@@ -23,7 +23,7 @@ public class JRealizabilityApi {
 	private boolean extendCounterexample = false;
 	private boolean reduce = false;
 	private DebugLogger debug = new DebugLogger();
-	
+
 	private List<String> vmArgs = Collections.emptyList();
 
 	private String jkindJar;
@@ -104,13 +104,13 @@ public class JRealizabilityApi {
 	public void setEnvironment(String key, String value) {
 		environment.put(key, value);
 	}
-	
+
 	/**
 	 * Set VM args
 	 */
 	public void setVmArgs(List<String> args) {
 		vmArgs = new ArrayList<>(args);
-	}	
+	}
 
 	/**
 	 * Run JRealizability on a Lustre program
@@ -197,7 +197,7 @@ public class JRealizabilityApi {
 		args.add("-jar");
 		args.add(getOrFindJKindJar());
 		args.add("-jrealizability");
-		
+
 		return args.toArray(new String[args.size()]);
 	}
 

@@ -35,7 +35,7 @@ public class YicesArithOnlyCheck extends AstIterVisitor {
 		arithOnly = false;
 		return null;
 	}
-	
+
 	@Override
 	public Void visit(FunctionCallExpr e) {
 		arithOnly = false;

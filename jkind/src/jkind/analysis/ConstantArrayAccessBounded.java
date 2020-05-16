@@ -66,8 +66,7 @@ public class ConstantArrayAccessBounded extends ExprIterVisitor {
 		if (isConstant(indexExpr)) {
 			BigInteger index = evalIndex(indexExpr);
 			ArrayType arrayType = getArrayType(arrayExpr);
-			if (index.compareTo(BigInteger.ZERO) < 0
-					|| index.compareTo(BigInteger.valueOf(arrayType.size)) >= 0) {
+			if (index.compareTo(BigInteger.ZERO) < 0 || index.compareTo(BigInteger.valueOf(arrayType.size)) >= 0) {
 				StdErr.error(location, "index " + index + " out of range");
 				passed = false;
 			}

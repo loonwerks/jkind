@@ -20,7 +20,7 @@ public class AdviceEncoder {
 	public static Advice decode(InputStream is) throws Exception {
 		Program program = Main.parseLustre(new ANTLRInputStream(is));
 		Node main = program.getMainNode();
-		
+
 		Advice advice = new Advice();
 		advice.addVarDecls(main.locals);
 		advice.addInvariants(main.assertions);

@@ -17,11 +17,11 @@ public class FunctionCallExpr extends Expr {
 		this.function = function;
 		this.args = Util.safeList(args);
 	}
-	
+
 	public FunctionCallExpr(String node, List<Expr> args) {
 		this(Location.NULL, node, args);
 	}
-	
+
 	public FunctionCallExpr(String node, Expr... args) {
 		this(Location.NULL, node, Arrays.asList(args));
 	}
