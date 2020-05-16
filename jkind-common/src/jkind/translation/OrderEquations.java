@@ -42,8 +42,7 @@ public class OrderEquations {
 	private static void ensureAllSingleAssignment(Node node) {
 		for (Equation eq : node.equations) {
 			if (eq.lhs.size() != 1) {
-				throw new JKindException(
-						"OrderEquations expected single variable assignment, but found: " + eq.lhs);
+				throw new JKindException("OrderEquations expected single variable assignment, but found: " + eq.lhs);
 			}
 		}
 	}

@@ -15,7 +15,7 @@ public class Quoting {
 	public static Symbol quoteSymbol(Symbol symb) {
 		return new Symbol("|" + symb.str + "|");
 	}
-	
+
 	public static Sexp quoteSexp(Sexp sexp) {
 		if (sexp instanceof Cons) {
 			Cons cons = (Cons) sexp;

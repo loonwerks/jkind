@@ -5,11 +5,11 @@ import de.uni_freiburg.informatik.ultimate.smtinterpol.smtlib2.TerminationReques
 public class TerminationRequestImpl implements TerminationRequest {
 
 	private boolean requestTermination = false;
-	
+
 	public void requestTermination() {
 		this.requestTermination = true;
 	}
-	
+
 	@Override
 	public boolean isTerminationRequested() {
 		// TODO Auto-generated method stub

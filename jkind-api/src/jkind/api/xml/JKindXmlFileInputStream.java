@@ -24,7 +24,7 @@ public class JKindXmlFileInputStream extends InputStream {
 		if (!getStream()) {
 			return -1;
 		}
-		
+
 		int c;
 		try {
 			while ((c = stream.read()) == -1 && !done) {
@@ -36,7 +36,7 @@ public class JKindXmlFileInputStream extends InputStream {
 
 		return c;
 	}
-	
+
 	private boolean getStream() {
 		if (stream == null) {
 			try {

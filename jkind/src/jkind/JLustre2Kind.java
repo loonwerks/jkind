@@ -31,19 +31,19 @@ public class JLustre2Kind {
 
 			program = Translate.translate(program);
 			program = RemoveEnumTypes.program(program);
-			
+
 			Node main = program.getMainNode();
 			main = LustreSlicer.slice(main, new DependencyMap(main, main.properties, program.functions));
 
 			if (settings.encode) {
 				main = new KindEncodeIdsVisitor().visit(main);
 			}
-			
+
 			if (settings.obfuscate) {
 				main = new ObfuscateIdsVisitor().visit(main);
 				main = new NodeBuilder(main).setId("main").build();
 			}
-			
+
 			program = new ProgramBuilder(program).clearNodes().addNode(main).build();
 			if (settings.stdout) {
 				System.out.println(program.toString());

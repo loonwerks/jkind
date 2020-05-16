@@ -64,22 +64,22 @@ public class StaticAnalyzer {
 		valid = valid && ivcLocalOrOutput(program);
 
 		switch (solver) {
-			case Z3:
-				break;
-	
-			case YICES2:
-				if (settings instanceof JKindSettings) {
-					JKindSettings jKindSettings = (JKindSettings) settings;
-					if (jKindSettings.reduceIvc && !LinearChecker.check(program, Level.IGNORE)) {
-						StdErr.warning(jKindSettings.solver
-								+ " does not support unsat-cores for nonlinear logic so IVC reduction will be slow");
-					}
-				}
-				break;
+		case Z3:
+			break;
 
-			default:
-				valid = valid && LinearChecker.check(program, Level.ERROR);
-				break;
+		case YICES2:
+			if (settings instanceof JKindSettings) {
+				JKindSettings jKindSettings = (JKindSettings) settings;
+				if (jKindSettings.reduceIvc && !LinearChecker.check(program, Level.IGNORE)) {
+					StdErr.warning(jKindSettings.solver
+							+ " does not support unsat-cores for nonlinear logic so IVC reduction will be slow");
+				}
+			}
+			break;
+
+		default:
+			valid = valid && LinearChecker.check(program, Level.ERROR);
+			break;
 		}
 
 		if (!valid) {

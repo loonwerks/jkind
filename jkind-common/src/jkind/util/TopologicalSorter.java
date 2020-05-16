@@ -15,7 +15,7 @@ public class TopologicalSorter<T> {
 		valueMap.put(id, value);
 		dependencyMap.put(id, dependencies);
 	}
-	
+
 	public List<T> getSortedValues() {
 		List<T> result = new ArrayList<>();
 		for (String id : getSortedIds()) {

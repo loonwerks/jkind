@@ -37,7 +37,7 @@ public class CounterexampleContentProvider implements ITreeContentProvider {
 			if (!signals.isEmpty()) {
 				if (first) {
 					first = false;
-				} else {						
+				} else {
 					result.add(new Spacer());
 				}
 				result.add(new CategoryHeader(category));

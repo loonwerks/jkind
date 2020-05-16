@@ -22,8 +22,8 @@ import jkind.lustre.Program;
 import jkind.results.ValidProperty;
 
 public class CoverageReporter {
-	public static void writeHtml(String filename, Program program,
-			Map<String, ELocation> locationMap, JKindResult result) throws Exception {
+	public static void writeHtml(String filename, Program program, Map<String, ELocation> locationMap,
+			JKindResult result) throws Exception {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename + ".html"))) {
 			writer.write("<html>\n");
 			writeHeader(writer);
@@ -31,8 +31,7 @@ public class CoverageReporter {
 
 			for (PropertyResult pr : result.getPropertyResults()) {
 				if (!(pr.getProperty() instanceof ValidProperty)) {
-					writer.write("<p class='not-valid'>" + pr.getProperty().getName()
-							+ " is invalid/unknown</p>\n");
+					writer.write("<p class='not-valid'>" + pr.getProperty().getName() + " is invalid/unknown</p>\n");
 				}
 			}
 
@@ -41,13 +40,12 @@ public class CoverageReporter {
 					ValidProperty vp = (ValidProperty) pr.getProperty();
 					List<String> allIvcs = getAllIvcs(program);
 
-					List<ELocation> locations = getUnusedLocations(locationMap, allIvcs,
-							vp.getIvc());
+					List<ELocation> locations = getUnusedLocations(locationMap, allIvcs, vp.getIvc());
 
 					int total = allIvcs.size();
 					int covered = total - locations.size();
-					String stats = String.format("%s: %.1f%% (%d of %d covered)", vp.getName(),
-							100.0 * covered / total, covered, total);
+					String stats = String.format("%s: %.1f%% (%d of %d covered)", vp.getName(), 100.0 * covered / total,
+							covered, total);
 					writer.write("<div class='valid'>\n");
 					writer.write("<div class='stats'>" + stats + "</div>\n");
 					displayLocations(writer, filename, locations);
@@ -60,8 +58,8 @@ public class CoverageReporter {
 		}
 	}
 
-	private static List<ELocation> getUnusedLocations(Map<String, ELocation> locationMap,
-			List<String> allIvcs, Set<String> usedIvcs) {
+	private static List<ELocation> getUnusedLocations(Map<String, ELocation> locationMap, List<String> allIvcs,
+			Set<String> usedIvcs) {
 		Set<String> baseUsedIvcs = new HashSet<>();
 		Pattern pattern = Pattern.compile(".*(" + ExtractorVisitor.PREFIX + "\\d+).*");
 		for (String ivc : usedIvcs) {
@@ -101,8 +99,8 @@ public class CoverageReporter {
 		writer.write("</head>\n");
 	}
 
-	private static void displayLocations(BufferedWriter writer, String filename,
-			List<ELocation> locations) throws Exception {
+	private static void displayLocations(BufferedWriter writer, String filename, List<ELocation> locations)
+			throws Exception {
 		int i = 0;
 
 		writer.write("<div class='lustre'>");

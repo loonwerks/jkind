@@ -14,7 +14,7 @@ public class FlattenCompoundTypes {
 		program = RemoveArrayUpdates.program(program);
 		program = RemoveRecordUpdates.program(program);
 		program = FlattenCompoundFunctionOutputs.program(program);
- 		program = FlattenCompoundFunctionInputs.program(program);
+		program = FlattenCompoundFunctionInputs.program(program);
 		program = FlattenTuples.program(program);
 		program = FlattenCompoundComparisons.program(program);
 		program = FlattenCompoundVariables.program(program);

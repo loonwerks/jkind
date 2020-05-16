@@ -49,7 +49,8 @@ public class AnalysisResultLabelProvider extends ColumnLabelProvider {
 							+ Util.secondsToTime(pr.getElapsed()) + ")";
 				case INCONSISTENT:
 					InconsistentProperty ic = (InconsistentProperty) pr.getProperty();
-					return getFinalStatus(pr) + " (" + ic.getK() + " steps, " + Util.secondsToTime(pr.getElapsed()) + ")";
+					return getFinalStatus(pr) + " (" + ic.getK() + " steps, " + Util.secondsToTime(pr.getElapsed())
+							+ ")";
 				default:
 					return getFinalStatus(pr) + " (" + Util.secondsToTime(pr.getElapsed()) + ")";
 				}

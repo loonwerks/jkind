@@ -1,6 +1,5 @@
 package jkind;
 
-
 public class Assert {
 	public static void isNotNull(Object o) {
 		if (o == null) {

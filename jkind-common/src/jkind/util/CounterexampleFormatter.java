@@ -163,7 +163,7 @@ public class CounterexampleFormatter {
 				text.append(String.format(format, cell));
 			}
 			text.append(NEWLINE);
-			
+
 			if (row == 0 && headerLine) {
 				String header = text.toString().replaceAll("\\s+$", "");
 				text.append(makeHeaderLine(header));

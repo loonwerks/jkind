@@ -137,8 +137,7 @@ public class Director extends MessageHandler {
 		addShutdownHook();
 		createAndStartEngines();
 
-		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed()
-				&& !exitRequested()) {
+		while (!timeout() && propertiesRemaining() && someThreadAlive() && !someEngineFailed() && !exitRequested()) {
 			processMessages();
 			sleep(100);
 		}
@@ -379,8 +378,7 @@ public class Director extends MessageHandler {
 			if (settings.allIvcs) {
 				for (Tuple<Set<String>, List<String>> item : vm.allIvcs) {
 					allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.findRightSide(item.firstElement(),
-							settings.allAssigned, analysisSpec.node.equations),
-							item.secondElement()));
+							settings.allAssigned, analysisSpec.node.equations), item.secondElement()));
 				}
 			}
 			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs,

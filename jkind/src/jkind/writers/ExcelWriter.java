@@ -62,9 +62,9 @@ public class ExcelWriter extends Writer {
 		for (String prop : props) {
 			Set<List<String>> invariantSets = new HashSet<List<String>>();
 			Set<List<String>> ivcSets = new HashSet<List<String>>();
-			//The following are similar from the process in XmlWriter
+			// The following are similar from the process in XmlWriter
 			if (!allIvcs.isEmpty()) {
-				for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
+				for (Tuple<Set<String>, List<String>> ivcSet : allIvcs) {
 					List<String> curInvariant = new ArrayList<String>();
 					List<String> curIvc = new ArrayList<String>();
 					for (String invariant : ivcSet.secondElement()) {
@@ -83,17 +83,15 @@ public class ExcelWriter extends Writer {
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex,
-			List<String> conflicts, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		properties.add(new InvalidProperty(prop, source, cex, conflicts, runtime));
 	}
 
 	@Override
-	public void writeUnknown(List<String> props, int trueFor,
-			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
+	public void writeUnknown(List<String> props, int trueFor, Map<String, Counterexample> inductiveCounterexamples,
+			double runtime) {
 		for (String prop : props) {
-			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop),
-					runtime));
+			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop), runtime));
 		}
 	}
 

@@ -26,8 +26,7 @@ import jkind.util.Util;
 public abstract class SolverBasedEngine extends Engine {
 	protected Solver solver;
 
-	public SolverBasedEngine(String name, Specification spec, JKindSettings settings,
-			Director director) {
+	public SolverBasedEngine(String name, Specification spec, JKindSettings settings, Director director) {
 		super(name, spec, settings, director);
 	}
 
@@ -37,8 +36,8 @@ public abstract class SolverBasedEngine extends Engine {
 			initializeSolver();
 			super.run();
 		} catch (StopException se) {
-		} catch (NullPointerException n){ }
-		  catch (Throwable t) {
+		} catch (NullPointerException n) {
+		} catch (Throwable t) {
 			throwable = t;
 		} finally {
 			killEngine();
@@ -59,13 +58,13 @@ public abstract class SolverBasedEngine extends Engine {
 			solver = null;
 		}
 	}
-	
+
 	@Override
 	public void stopEngine() {
 		killEngine();
 		receiveMessage(new StopMessage());
 	}
-	
+
 	protected Solver getSolver() {
 		return SolverUtil.getSolver(settings.solver, getScratchBase(), spec.node);
 	}

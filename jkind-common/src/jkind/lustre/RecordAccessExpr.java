@@ -6,7 +6,7 @@ import jkind.lustre.visitors.ExprVisitor;
 public class RecordAccessExpr extends Expr {
 	public final Expr record;
 	public final String field;
-	
+
 	public RecordAccessExpr(Location location, Expr record, String field) {
 		super(location);
 		Assert.isNotNull(record);
@@ -14,7 +14,7 @@ public class RecordAccessExpr extends Expr {
 		this.record = record;
 		this.field = field;
 	}
-	
+
 	public RecordAccessExpr(Expr record, String field) {
 		this(Location.NULL, record, field);
 	}

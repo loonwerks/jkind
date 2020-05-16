@@ -110,7 +110,7 @@ public class YicesSolver extends ProcessBasedSolver implements MaxSatSolver {
 			args.add(type(input.type));
 		}
 		args.add(type(function.outputs.get(0).type));
-		
+
 		send("(define " + name + " :: " + new Cons("->", args) + ")");
 	}
 

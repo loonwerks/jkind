@@ -64,7 +64,7 @@ public class CounterexampleTreeViewer {
 		stepCol.setLabelProvider(new CounterexampleStepLabelProvider(i));
 		layout.setColumnData(stepCol.getColumn(), new ColumnWeightData(1, 50));
 	}
-	
+
 	public TreeViewer getTreeViewer() {
 		return treeViewer;
 	}

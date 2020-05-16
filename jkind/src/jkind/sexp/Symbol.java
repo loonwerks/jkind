@@ -1,6 +1,5 @@
 package jkind.sexp;
 
-
 public class Symbol extends Sexp {
 	public final String str;
 

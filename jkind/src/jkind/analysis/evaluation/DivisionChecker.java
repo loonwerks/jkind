@@ -36,7 +36,7 @@ public class DivisionChecker extends AstIterVisitor {
 			if (enumeratedValues.contains(e.id)) {
 				return new EnumValue(e.id);
 			}
-			
+
 			Value value = super.visit(e);
 			if (value == null && constantDefinitions.containsKey(e.id)) {
 				// Check constants on the fly

@@ -69,8 +69,7 @@ public class JRealizability {
 		List<String> inputs = Util.getIds(main.inputs);
 		for (String ri : main.realizabilityInputs) {
 			if (!inputs.contains(ri)) {
-				StdErr.error("in node '" + main.id + "' realizability input '" + ri
-						+ "' must be a node input");
+				StdErr.error("in node '" + main.id + "' realizability input '" + ri + "' must be a node input");
 				pass = false;
 			}
 		}
@@ -82,8 +81,7 @@ public class JRealizability {
 		Set<String> seen = new HashSet<>();
 		for (String ri : main.realizabilityInputs) {
 			if (!seen.add(ri)) {
-				StdErr.error("in node '" + main.id + "' realizability input '" + ri
-						+ "' listed multiple times");
+				StdErr.error("in node '" + main.id + "' realizability input '" + ri + "' listed multiple times");
 				unique = false;
 			}
 		}

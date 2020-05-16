@@ -1,4 +1,5 @@
 package jkind.engines;
+
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import jkind.translation.Specification;
 
 public class MiniJKind extends Engine {
 	public static final String NAME = "mini-jkind";
-    private  Director director;
+	private Director director;
 	public static final String UNKNOWN = "UNKNOWN";
 	public static final String UNKNOWN_WITH_EXCEPTION = "UNKNOW_WITH_EXCEPTION";
 	public static final String INVALID = "INVALID";
@@ -31,7 +32,6 @@ public class MiniJKind extends Engine {
 	private double runtime;
 	private String status = NOT_YET_CHECKED;
 
-
 	public MiniJKind(Program program, Specification spec, JKindSettings settings) {
 
 		super(NAME, spec, settings, null);
@@ -41,24 +41,24 @@ public class MiniJKind extends Engine {
 		}
 
 		// make sure the caller set these variables correctly
-				settings.xml = false;
-				settings.xmlToStdout = false;
-				settings.allIvcs = false;
-				settings.allIvcsAlgorithm = 1;
-				settings.allIvcsMaxGrows = 1000;
-				settings.allIvcsJkindTimeout = -1;
-				settings.excel = false;
-				settings.miniJkind = true;
+		settings.xml = false;
+		settings.xmlToStdout = false;
+		settings.allIvcs = false;
+		settings.allIvcsAlgorithm = 1;
+		settings.allIvcsMaxGrows = 1000;
+		settings.allIvcsJkindTimeout = -1;
+		settings.excel = false;
+		settings.miniJkind = true;
 
-		if (settings.allAssigned && settings.reduceIvc){
+		if (settings.allAssigned && settings.reduceIvc) {
 			program = IvcUtil.setIvcArgs(spec.node, IvcUtil.getAllAssigned(spec.node));
-			this.director =  new Director(settings, new Specification(program, settings.slicing),
-										new Specification(program, settings.slicing), this);
-		}else if (!settings.allAssigned && settings.reduceIvc){
-			this.director =  new Director(settings, new Specification(program, settings.slicing),
+			this.director = new Director(settings, new Specification(program, settings.slicing),
 					new Specification(program, settings.slicing), this);
-		}else{
-			this.director =  new Director(settings, spec, spec, this);
+		} else if (!settings.allAssigned && settings.reduceIvc) {
+			this.director = new Director(settings, new Specification(program, settings.slicing),
+					new Specification(program, settings.slicing), this);
+		} else {
+			this.director = new Director(settings, spec, spec, this);
 		}
 
 		settings.miniJkind = true;
@@ -68,12 +68,10 @@ public class MiniJKind extends Engine {
 		try {
 			int ret = director.run();
 
-			if(ret == ExitCodes.IVC_EXCEPTION)
-			{
+			if (ret == ExitCodes.IVC_EXCEPTION) {
 				status = UNKNOWN_WITH_EXCEPTION;
 			}
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
 		}
 	}
@@ -97,11 +95,11 @@ public class MiniJKind extends Engine {
 		return invalidModel;
 	}
 
-	public double getRuntime(){
+	public double getRuntime() {
 		return runtime;
 	}
 
-	public void setRuntime(double rt){
+	public void setRuntime(double rt) {
 		runtime = rt;
 	}
 

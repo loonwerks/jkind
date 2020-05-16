@@ -14,6 +14,7 @@ import jkind.translation.Translate;
 
 public class JKind {
 	public static final String EQUATION_NAME = "__addedEQforAsr_by_JKind__";
+
 	public static void main(String[] args) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -31,7 +32,7 @@ public class JKind {
 
 			program = Translate.translate(program);
 			Node main = program.getMainNode();
-			if(settings.allAssigned){
+			if (settings.allAssigned) {
 				program = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
 			}
 			Specification userSpec = new Specification(program, settings.slicing);

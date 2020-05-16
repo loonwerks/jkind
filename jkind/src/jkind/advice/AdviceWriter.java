@@ -24,8 +24,7 @@ public class AdviceWriter {
 			OutputStream stream = new GZIPOutputStream(new FileOutputStream(outputFilename));
 			this.out = new BufferedWriter(new OutputStreamWriter(stream));
 		} catch (IOException e) {
-			StdErr.fatal(ExitCodes.INVALID_OPTIONS,
-					"unable to open advice file for writing: " + e.getMessage());
+			StdErr.fatal(ExitCodes.INVALID_OPTIONS, "unable to open advice file for writing: " + e.getMessage());
 		}
 	}
 

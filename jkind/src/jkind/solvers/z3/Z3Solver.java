@@ -137,24 +137,23 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 		}
 	}
 
-
 	public Result checkValuation(List<Symbol> positiveLits, List<Symbol> negativeLits, boolean getModel) {
 		String arg = "(check-sat ";
-		for(Symbol s: positiveLits) {
+		for (Symbol s : positiveLits) {
 			arg += s.toString() + " ";
 		}
-		for(Symbol s: negativeLits) {
+		for (Symbol s : negativeLits) {
 			arg += "(not " + s.toString() + ") ";
 		}
 		arg += ")";
 		send(arg);
-	    String status = readFromSolver();
+		String status = readFromSolver();
 
 		if (isSat(status)) {
-			if(getModel){
+			if (getModel) {
 				send("(get-model)");
 				return new SatResult(parseModel(readFromSolver()));
-			}else{
+			} else {
 				return new SatResult();
 			}
 		} else if (isUnsat(status)) {
@@ -176,17 +175,16 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 		String status = readFromSolver();
 
 		if (isSat(status)) {
-			if(getModel){
+			if (getModel) {
 				send("(get-model)");
 				return new SatResult(parseModel(readFromSolver()));
-			}else{
+			} else {
 				return new SatResult();
 			}
 		} else if (isUnsat(status)) {
-			if(getCore){
+			if (getCore) {
 				return new UnsatResult(getUnsatCore(activationLiterals));
-			}
-			else{
+			} else {
 				return new UnsatResult();
 			}
 		} else {

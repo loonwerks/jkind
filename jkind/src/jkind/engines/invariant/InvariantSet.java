@@ -13,13 +13,13 @@ import jkind.lustre.Expr;
 public class InvariantSet {
 	private final List<Expr> invariants = new ArrayList<>();
 	private final Set<String> uniqueRepresentations = new HashSet<>();
-	
+
 	public void add(Expr invariant) {
 		if (uniqueRepresentations.add(invariant.toString())) {
 			invariants.add(invariant);
 		}
 	}
-	
+
 	public void addAll(Collection<Expr> invariants) {
 		invariants.forEach(this::add);
 	}

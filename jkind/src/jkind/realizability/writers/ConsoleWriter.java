@@ -38,8 +38,8 @@ public class ConsoleWriter extends Writer {
 	public void writeUnrealizable(Counterexample cex, List<String> conflicts, double runtime) {
 		writeLine();
 		String details = conflicts.isEmpty() ? "" : ": " + conflicts;
-		System.out.println("UNREALIZABLE" + details + " || K = " + cex.getLength() + " || Time = "
-				+ Util.secondsToTime(runtime));
+		System.out.println(
+				"UNREALIZABLE" + details + " || K = " + cex.getLength() + " || Time = " + Util.secondsToTime(runtime));
 		if (layout != null) {
 			System.out.println(cex.toString(layout));
 		}
@@ -50,8 +50,7 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void writeUnknown(int trueFor, Counterexample cex, double runtime) {
 		writeLine();
-		System.out.println("UNKNOWN || True for " + trueFor + " steps" + " || Time = "
-				+ Util.secondsToTime(runtime));
+		System.out.println("UNKNOWN || True for " + trueFor + " steps" + " || Time = " + Util.secondsToTime(runtime));
 		writeLine();
 		System.out.println();
 		if (cex != null && layout != null) {
@@ -66,14 +65,13 @@ public class ConsoleWriter extends Writer {
 	@Override
 	public void writeInconsistent(int k, double runtime) {
 		writeLine();
-		System.out.println("INCONSISTENT || System inconsistent at " + k + " steps" + " || Time = "
-				+ Util.secondsToTime(runtime));
+		System.out.println(
+				"INCONSISTENT || System inconsistent at " + k + " steps" + " || Time = " + Util.secondsToTime(runtime));
 		writeLine();
 		System.out.println();
 	}
 
 	private void writeLine() {
-		System.out
-				.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 }

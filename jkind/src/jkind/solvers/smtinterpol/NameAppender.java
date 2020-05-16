@@ -17,7 +17,7 @@ public class NameAppender {
 		if (t instanceof ApplicationTerm) {
 			return append((ApplicationTerm) t);
 		}
-		
+
 		throw new IllegalArgumentException("Unknown term: " + t.getClass().getSimpleName());
 	}
 

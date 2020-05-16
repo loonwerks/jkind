@@ -53,7 +53,7 @@ public abstract class Engine extends MessageHandler implements Runnable {
 	public void stopEngine() {
 		receiveMessage(new StopMessage());
 	}
-	
+
 	protected String getScratchBase() {
 		if (settings.scratch) {
 			return settings.filename + "." + name;

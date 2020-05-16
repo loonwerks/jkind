@@ -13,12 +13,12 @@ public class ContainsSubrange implements TypeVisitor<Boolean> {
 	public static boolean check(Type type) {
 		return type.accept(new ContainsSubrange());
 	}
-	
+
 	@Override
 	public Boolean visit(ArrayType e) {
 		return e.base.accept(this);
 	}
-	
+
 	@Override
 	public Boolean visit(EnumType e) {
 		return false;

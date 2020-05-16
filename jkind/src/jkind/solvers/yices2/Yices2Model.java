@@ -17,7 +17,7 @@ public class Yices2Model extends YicesModel {
 	public Yices2Model(Map<String, Type> varTypes, List<Function> functions) {
 		super(varTypes, functions);
 	}
-	
+
 	public void setFunctionDefaultValue(String name, Value value) {
 		functionDefaultValue.put(name, value);
 	}
@@ -25,13 +25,13 @@ public class Yices2Model extends YicesModel {
 	@Override
 	public Value evaluateFunction(String name, List<Value> inputs) {
 		name = getAlias(name);
-		
+
 		FunctionTable table = functionTables.get(name);
 		Value value = table.lookup(inputs);
 		if (value == null) {
 			value = functionDefaultValue.get(name);
 		}
-		
+
 		return Util.promoteIfNeeded(value, table.getOutput().type);
 	}
 }

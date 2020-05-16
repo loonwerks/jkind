@@ -1,4 +1,5 @@
 package jkind.engines.ivcs;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;

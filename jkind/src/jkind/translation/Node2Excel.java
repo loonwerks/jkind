@@ -62,8 +62,7 @@ public class Node2Excel {
 			String id = eq.lhs.get(0).id;
 			int row = rowAssignments.get(id);
 			for (int col = 1; col <= LENGTH; col++) {
-				Expr2FormulaVisitor visitor = new Expr2FormulaVisitor(id, col, rowAssignments,
-						intToEnum, enumToInt);
+				Expr2FormulaVisitor visitor = new Expr2FormulaVisitor(id, col, rowAssignments, intToEnum, enumToInt);
 				eq.expr.accept(visitor);
 				String formula = visitor.toString();
 				if (!formula.isEmpty()) {

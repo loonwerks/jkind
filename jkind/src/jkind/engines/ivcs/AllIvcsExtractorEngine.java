@@ -1,4 +1,5 @@
 package jkind.engines.ivcs;
+
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
@@ -110,7 +111,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			mayElements.clear();
 			mustElements.clear();
 			if (spec.node.ivc.isEmpty()) {
-				StdErr.warning(NAME + ": --%IVC option has no argument for property  "+ property.toString());
+				StdErr.warning(NAME + ": --%IVC option has no argument for property  " + property.toString());
 				sendValid(property.toString(), vm);
 				return;
 			}
@@ -124,26 +125,27 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			System.out.println("Proving the high level property " + property
 					+ " might require to use some of the --%IVC annotated low level properties.");
 			if (properties.remove(property)) {
-				switch(settings.allIvcsAlgorithm) {
-					case 1: //offline MIVC enumeration
-						System.out.println("Starting MIVC enumeration using the offline enumeration algorithm.");
-						computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
-						break;
-					case 2: //online MIVC enumeration
-						System.out.println("Starting MIVC enumeration using the online enumeration algorithm.");
-						computeAllIvcsOnline(IvcUtil.getInvariantByName(property, vm.invariants), vm);
-						break;
+				switch (settings.allIvcsAlgorithm) {
+				case 1: // offline MIVC enumeration
+					System.out.println("Starting MIVC enumeration using the offline enumeration algorithm.");
+					computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
+					break;
+				case 2: // online MIVC enumeration
+					System.out.println("Starting MIVC enumeration using the online enumeration algorithm.");
+					computeAllIvcsOnline(IvcUtil.getInvariantByName(property, vm.invariants), vm);
+					break;
 				}
 				allIvcs.clear();
 			}
 
 		}
 	}
+
 	/**
 	 * offline MIVC enumeration algorithm as described in the FMCAD 2017 paper
 	 **/
 	private void computeAllIvcs(Expr property, ValidMessage vm) {
-		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
+		TIMEOUT = (settings.allIvcsJkindTimeout < 0) ? (30 + (int) (vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
 		List<Symbol> seed = new ArrayList<Symbol>();
 		Set<String> mustChckList = new HashSet<>();
 		Set<String> resultOfIvcFinder = new HashSet<>();
@@ -153,15 +155,15 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		map = blockUp(seed);
 
 		mustElements.add(property.toString());
-		if (ivcMap.containsKey(property.toString())){
+		if (ivcMap.containsKey(property.toString())) {
 			map = new Cons("and", map, ivcMap.get(property.toString()));
 		}
 		z3Solver.push();
-		while(checkMapSatisfiability(seed, mustChckList, true)){
+		while (checkMapSatisfiability(seed, mustChckList, true)) {
 			resultOfIvcFinder.clear();
-			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())){
+			if (ivcFinder(seed, resultOfIvcFinder, mustChckList, property.toString())) {
 				map = new Cons("and", map, blockUp(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
-			}else{
+			} else {
 				map = new Cons("and", map, blockDown(IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder)));
 			}
 		}
@@ -181,7 +183,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	 * JB, online MIVC enumeration algorithm as described in the SEFM 2018 paper
 	 **/
 	private void computeAllIvcsOnline(Expr property, ValidMessage vm) {
-		TIMEOUT = (settings.allIvcsJkindTimeout < 0)? (30 + (int)(vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
+		TIMEOUT = (settings.allIvcsJkindTimeout < 0) ? (30 + (int) (vm.proofTime * 5)) : settings.allIvcsJkindTimeout;
 		List<Symbol> seed = new ArrayList<Symbol>();
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
@@ -189,20 +191,20 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		shrinkingPool.add(new SeedPair(new ArrayList<Symbol>(seed), inv));
 
 		mustElements.add(property.toString());
-		if (ivcMap.containsKey(property.toString())){
+		if (ivcMap.containsKey(property.toString())) {
 			map = new Cons("and", map, ivcMap.get(property.toString()));
 		}
 		z3Solver.push();
 
 		seed = getMaximalUnexplored(new ArrayList<Symbol>());
-		while(!seed.isEmpty()){
+		while (!seed.isEmpty()) {
 			SeedPair seedPair = new SeedPair(seed);
 			if (ivcFinderSimple(seedPair, property.toString(), true)) {
 				mapShrink(seedPair, property.toString());
-			}else{
+			} else {
 				map = new Cons("and", map, blockDownComplement(seed));
 			}
-			while(!shrinkingPool.isEmpty()) {
+			while (!shrinkingPool.isEmpty()) {
 				SeedPair ivc = shrinkingPool.get(0);
 				shrinkingPool.remove(0);
 				mapShrink(ivc, property.toString());
@@ -222,7 +224,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	}
 
-	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList, String property) {
+	private boolean ivcFinder(List<Symbol> seed, Set<String> resultOfIvcFinder, Set<String> mustChckList,
+			String property) {
 		JKindSettings js = new JKindSettings();
 		js.reduceIvc = true;
 		js.timeout = TIMEOUT;
@@ -230,81 +233,80 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		js.slicing = true;
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
-        js.miniJkind = true;
+		js.miniJkind = true;
 		js.readAdvice = settings.readAdvice;
 		js.writeAdvice = settings.writeAdvice;
-		Set <String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<> (seed));
+		Set<String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<>(seed));
 		List<String> deactivate = new ArrayList<>();
 		deactivate.addAll(ivcMap.keyList());
 		deactivate.removeAll(wantedElem);
 
 		Program nodeSpec = new Program(IvcUtil.unassign(spec.node, deactivate, property));
 		Specification newSpec = new Specification(nodeSpec, js.slicing);
-		if (settings.scratch){
-			comment("Sending a request for a new IVC while deactivating "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
+		if (settings.scratch) {
+			comment("Sending a request for a new IVC while deactivating " + IvcUtil.getIvcLiterals(ivcMap, deactivate));
 		}
-		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
+		MiniJKind miniJkind = new MiniJKind(nodeSpec, newSpec, js);
 		miniJkind.verify();
 
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-			timedoutLoop  = true;
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)) {
+			timedoutLoop = true;
 		}
-        if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)) {
 			js.pdrMax = 0;
 			return retryVerification(nodeSpec, newSpec, property, js, resultOfIvcFinder, mustChckList, deactivate);
-		}
-		else if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
+		} else if (miniJkind.getPropertyStatus().equals(MiniJKind.VALID)) {
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
 
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
 			Set<String> newIvc = resultOfIvcFinder;
 
-			if (settings.scratch){
-				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
+			if (settings.scratch) {
+				comment("New IVC set found: " + IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			}
 
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
 
-			for(Tuple<Set<String>, List<String>> curr: allIvcs){
+			for (Tuple<Set<String>, List<String>> curr : allIvcs) {
 				Set<String> trimmed = curr.firstElement();
-				if (trimmed.containsAll(newIvc)){
+				if (trimmed.containsAll(newIvc)) {
 					temp.add(curr);
 				}
 				// the else part can only happen
-				//         while processing mustChckList after finding all IVC sets
-				//         if we have different instances of a node in the Lustre file
-				else if (newIvc.containsAll(trimmed)){
+				// while processing mustChckList after finding all IVC sets
+				// if we have different instances of a node in the Lustre file
+				else if (newIvc.containsAll(trimmed)) {
 					return true;
 				}
 			}
-			if(temp.isEmpty()){
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
-			}
-			else{
+			if (temp.isEmpty()) {
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+						miniJkind.getPropertyInvariants()));
+			} else {
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+						miniJkind.getPropertyInvariants()));
 			}
 			return true;
-		}
-		else{
+		} else {
 			resultOfIvcFinder.addAll(deactivate);
-			if (settings.scratch){
+			if (settings.scratch) {
 				comment("Property got violated. Adding back the elements");
 			}
 
-			if(deactivate.size() == 1){
+			if (deactivate.size() == 1) {
 				mustElements.addAll(deactivate);
 				mustChckList.removeAll(deactivate);
-				if (settings.scratch){
-					comment("One MUST element was found: "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
+				if (settings.scratch) {
+					comment("One MUST element was found: " + IvcUtil.getIvcLiterals(ivcMap, deactivate));
 				}
-			}
-			else{
+			} else {
 				deactivate.removeAll(mustElements);
 				deactivate.removeAll(mayElements);
-				if (settings.scratch){
-					comment(IvcUtil.getIvcLiterals(ivcMap, deactivate) + " could be MUST elements; added to the check list...");
+				if (settings.scratch) {
+					comment(IvcUtil.getIvcLiterals(ivcMap, deactivate)
+							+ " could be MUST elements; added to the check list...");
 				}
 
 				mustChckList.addAll(deactivate);
@@ -321,7 +323,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		js.slicing = true;
 		js.pdrMax = settings.pdrMax;
 		js.boundedModelChecking = settings.boundedModelChecking;
-        js.miniJkind = true;
+		js.miniJkind = true;
 		js.readAdvice = settings.readAdvice;
 		js.writeAdvice = settings.writeAdvice;
 		Set<String> wantedElem = IvcUtil.getIvcNames(ivcMap, new ArrayList<>(seed.properties));
@@ -332,24 +334,23 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Program nodeSpec = new Program(IvcUtil.unassign(spec.node, deactivate, property));
 		Specification newSpec = new Specification(nodeSpec, js.slicing);
 
-		MiniJKind miniJkind = new MiniJKind (nodeSpec, newSpec, js);
+		MiniJKind miniJkind = new MiniJKind(nodeSpec, newSpec, js);
 		miniJkind.verify();
 
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-			timedoutLoop  = true;
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)) {
+			timedoutLoop = true;
 		}
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)){
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN_WITH_EXCEPTION)) {
 			js.pdrMax = 0;
 		}
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.VALID)) {
 			seed.invariants = miniJkind.getPropertyInvariants();
-			if(reduceSeed) {
+			if (reduceSeed) {
 				seed.properties = IvcUtil.getIvcLiterals(ivcMap, miniJkind.getPropertyIvc());
 			}
 			return true;
-		}
-		else{
-			if(deactivate.size() == 1){
+		} else {
+			if (deactivate.size() == 1) {
 				mustElements.addAll(deactivate);
 			}
 			return false;
@@ -362,7 +363,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		List<Symbol> added = new ArrayList<Symbol>(top);
 		added.removeAll(seed);
 
-		while (ivcFinderSimple(approx, property.toString(), true)){
+		while (ivcFinderSimple(approx, property.toString(), true)) {
 			List<SeedPair> toRemove = new ArrayList<SeedPair>();
 			for (SeedPair s : shrinkingPool) {
 				if (s.properties.containsAll(approx.properties)) {
@@ -375,14 +376,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 			boolean reduced = false;
 			for (Symbol s : approx.properties) {
-				if(added.contains(s)) {
+				if (added.contains(s)) {
 					added.remove(s);
 					top.remove(s);
 					reduced = true;
 					break;
 				}
 			}
-			if(!reduced) {
+			if (!reduced) {
 				break;
 			}
 			approx = new SeedPair(top);
@@ -397,8 +398,8 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		List<Symbol> negatedLits = new ArrayList<>(ivcMap.valueList());
 		negatedLits.removeAll(seed);
 
-		for(Symbol s: negatedLits) {
-			if(mustElements.contains(s.toString())) {
+		for (Symbol s : negatedLits) {
+			if (mustElements.contains(s.toString())) {
 				return false;
 			}
 		}
@@ -407,10 +408,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 		Result result = z3Solver.checkValuation(positiveLits, negatedLits, false);
 		z3Solver.pop();
-		if (result instanceof UnsatResult){
+		if (result instanceof UnsatResult) {
 			return false;
-		}
-		else if (result instanceof UnknownResult){
+		} else if (result instanceof UnknownResult) {
 			throw new JKindException("Unknown result in solving map");
 		}
 
@@ -419,14 +419,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private boolean mapShrink(SeedPair seed, String property) {
 		List<Symbol> candidates = new ArrayList<Symbol>(seed.properties);
-		for(Symbol c : candidates) {
+		for (Symbol c : candidates) {
 			seed.properties.remove(c);
 			if (mustElements.contains(c.toString()) || !isUnexplored(seed.properties)) {
 				seed.properties.add(c);
 				continue;
 			}
 
-			if(!ivcFinderSimple(seed, property, false)) {
+			if (!ivcFinderSimple(seed, property, false)) {
 				ArrayList<Symbol> copy = new ArrayList<Symbol>(seed.properties);
 				growingPool.add(copy);
 				seed.properties.add(c);
@@ -444,15 +444,14 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		shrinkingPool.removeAll(toRemove);
 
 		int remainingGrows = settings.allIvcsMaxGrows;
-		while(!growingPool.isEmpty()) {
+		while (!growingPool.isEmpty()) {
 			List<Symbol> is = growingPool.get(0);
 			growingPool.remove(0);
 
-			if(remainingGrows > 0) {
+			if (remainingGrows > 0) {
 				remainingGrows--;
 				Grow(is, property.toString());
-			}
-			else {
+			} else {
 				map = new Cons("and", map, blockDownComplement(is));
 			}
 		}
@@ -463,71 +462,68 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc.properties);
 		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, mivc.invariants));
 		double time = (System.currentTimeMillis() - runtime) / 1000.0;
-		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true) ;
+		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true);
 	}
 
-
-
-	private boolean retryVerification(Program program, Specification newSpec, String prop, JKindSettings js, Set<String> resultOfIvcFinder,
-			Set<String> mustChckList, List<String> deactivate) {
-		if (settings.scratch){
+	private boolean retryVerification(Program program, Specification newSpec, String prop, JKindSettings js,
+			Set<String> resultOfIvcFinder, Set<String> mustChckList, List<String> deactivate) {
+		if (settings.scratch) {
 			comment("Result was UNKNOWN; Resend the request with pdrMax = 0 ...");
 		}
-		MiniJKind miniJkind = new MiniJKind (program, newSpec, js);
+		MiniJKind miniJkind = new MiniJKind(program, newSpec, js);
 		miniJkind.verify();
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)){
-			timedoutLoop  = true;
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.UNKNOWN)) {
+			timedoutLoop = true;
 		}
-		if(miniJkind.getPropertyStatus().equals(MiniJKind.VALID)){
+		if (miniJkind.getPropertyStatus().equals(MiniJKind.VALID)) {
 			mayElements.addAll(deactivate);
 			mustChckList.removeAll(deactivate);
 
 			resultOfIvcFinder.addAll(miniJkind.getPropertyIvc());
 			Set<String> newIvc = resultOfIvcFinder;
 
-			if (settings.scratch){
-				comment("New IVC set found: "+ IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
+			if (settings.scratch) {
+				comment("New IVC set found: " + IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			}
 
 			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
-			for(Tuple<Set<String>, List<String>> curr: allIvcs){
+			for (Tuple<Set<String>, List<String>> curr : allIvcs) {
 				Set<String> trimmed = curr.firstElement();
-				if (trimmed.containsAll(newIvc)){
+				if (trimmed.containsAll(newIvc)) {
 					temp.add(curr);
-				}
-				else if (newIvc.containsAll(trimmed)){
+				} else if (newIvc.containsAll(trimmed)) {
 					return true;
 				}
 			}
 
-			if(temp.isEmpty()){
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
-			}
-			else{
+			if (temp.isEmpty()) {
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+						miniJkind.getPropertyInvariants()));
+			} else {
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(), miniJkind.getPropertyInvariants()));
+				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+						miniJkind.getPropertyInvariants()));
 			}
 
 			return true;
-		}
-		else{
+		} else {
 			resultOfIvcFinder.addAll(deactivate);
-			if (settings.scratch){
+			if (settings.scratch) {
 				comment("Property got violated. Adding back the elements");
 			}
 
-			if(deactivate.size() == 1){
+			if (deactivate.size() == 1) {
 				mustElements.addAll(deactivate);
 				mustChckList.removeAll(deactivate);
-				if (settings.scratch){
-					comment("One MUST element was found: "+ IvcUtil.getIvcLiterals(ivcMap, deactivate));
+				if (settings.scratch) {
+					comment("One MUST element was found: " + IvcUtil.getIvcLiterals(ivcMap, deactivate));
 				}
-			}
-			else{
+			} else {
 				deactivate.removeAll(mustElements);
 				deactivate.removeAll(mayElements);
-				if (settings.scratch){
-					comment(IvcUtil.getIvcLiterals(ivcMap, deactivate) + " could be MUST elements; added to the check list...");
+				if (settings.scratch) {
+					comment(IvcUtil.getIvcLiterals(ivcMap, deactivate)
+							+ " could be MUST elements; added to the check list...");
 				}
 
 				mustChckList.addAll(deactivate);
@@ -538,7 +534,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private Sexp blockUp(Collection<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
-		for(Symbol literal : list){
+		for (Symbol literal : list) {
 			ret.add(new Cons("not", literal));
 		}
 		return SexpUtil.disjoin(ret);
@@ -546,7 +542,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private Sexp blockDown(Collection<Symbol> list) {
 		List<Sexp> ret = new ArrayList<>();
-		for(Symbol literal : list){
+		for (Symbol literal : list) {
 			ret.add(literal);
 		}
 		return SexpUtil.disjoin(ret);
@@ -562,18 +558,16 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		z3Solver.push();
 		solver.assertSexp(map);
 		Result result = z3Solver.checkSat(new ArrayList<>(), true, false);
-		if (result instanceof UnsatResult){
+		if (result instanceof UnsatResult) {
 			return false;
-		}
-		else if (result instanceof UnknownResult){
+		} else if (result instanceof UnknownResult) {
 			throw new JKindException("Unknown result in solving map");
 		}
 
 		seed.clear();
-		if(maximal) {
+		if (maximal) {
 			seed.addAll(maximizeSat(((SatResult) result), mustChckList));
-		}
-		else {
+		} else {
 			SatResult sat = (SatResult) result;
 			seed.addAll(getActiveLiteralsFromModel(sat.getModel(), "true"));
 		}
@@ -581,16 +575,16 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return true;
 	}
 
-	private List<Symbol> getMaximalUnexplored(List<Symbol> seed){
+	private List<Symbol> getMaximalUnexplored(List<Symbol> seed) {
 		z3Solver.push();
 		solver.assertSexp(map);
-		if(!seed.isEmpty()){
+		if (!seed.isEmpty()) {
 			solver.assertSexp(new Cons("and", map, SexpUtil.conjoin(seed)));
 		}
 		Result result = z3Solver.checkMaximal();
 		z3Solver.pop();
 
-		if(result instanceof SatResult) {
+		if (result instanceof SatResult) {
 			SatResult sat = (SatResult) result;
 			List<Symbol> top = getCompletePositiveModel(sat.getModel());
 			return new ArrayList<Symbol>(top);
@@ -598,13 +592,12 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		return new ArrayList<Symbol>();
 	}
 
-	private List<Symbol> getCompletePositiveModel(Model model){
+	private List<Symbol> getCompletePositiveModel(Model model) {
 		Set<Symbol> negative_literals = getActiveLiteralsFromModel(model, "false");
 		List<Symbol> top = new ArrayList<>(ivcMap.valueList());
 		top.removeAll(negative_literals);
 		return top;
 	}
-
 
 	/**
 	 * in case of sat result we would like to get a maximum sat subset of activation literals
@@ -619,25 +612,25 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		temp.removeAll(falseLiterals);
 		temp.removeAll(seed);
 
-		for(Symbol literal : literalList){
-			if(! seed.contains(literal)){
+		for (Symbol literal : literalList) {
+			if (!seed.contains(literal)) {
 				seed.add(literal);
-				if(z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult){
+				if (z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult) {
 					seed.remove(literal);
 				}
 			}
 		}
-		for(Symbol literal : falseLiterals){
-			if(! seed.contains(literal)){
+		for (Symbol literal : falseLiterals) {
+			if (!seed.contains(literal)) {
 				seed.add(literal);
-				if(z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult){
+				if (z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult) {
 					seed.remove(literal);
 				}
 			}
 		}
-		for(Symbol literal : temp){
+		for (Symbol literal : temp) {
 			seed.add(literal);
-			if(z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult){
+			if (z3Solver.quickCheckSat(new ArrayList<>(seed)) instanceof UnsatResult) {
 				seed.remove(literal);
 			}
 		}
@@ -647,7 +640,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private Set<Symbol> getActiveLiteralsFromModel(Model model, String val) {
 		Set<Symbol> seed = new HashSet<>();
 		for (String var : model.getVariableNames()) {
-			if(model.getValue(var).toString() == val){
+			if (model.getValue(var).toString() == val) {
 				seed.add(new Symbol(var));
 			}
 		}
@@ -657,7 +650,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private void sendValid(String valid, ValidMessage vm) {
 		boolean mivcTimedOut = false;
 		Itinerary itinerary = vm.getNextItinerary();
-		if(timedoutLoop){
+		if (timedoutLoop) {
 			mustElements.add("::AIVCtimedoutLoop::");
 			mivcTimedOut = true;
 		}
@@ -666,7 +659,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				allIvcs, mivcTimedOut));
 	}
 
-	public  void getValid(){
+	public void getValid() {
 		sendValid("OK", gvm);
 	}
 

@@ -268,5 +268,3 @@ public class PdrSubengine extends Thread {
 		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}
 }
-
-

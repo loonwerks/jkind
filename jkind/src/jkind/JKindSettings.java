@@ -1,6 +1,5 @@
 package jkind;
 
-
 public class JKindSettings extends Settings {
 	public int n = Integer.MAX_VALUE;
 	public int timeout = Integer.MAX_VALUE;
@@ -14,7 +13,7 @@ public class JKindSettings extends Settings {
 	public boolean boundedModelChecking = true;
 	public boolean kInduction = true;
 	public boolean invariantGeneration = true;
-   	public int pdrMax = 1;
+	public int pdrMax = 1;
 	public boolean inductiveCounterexamples = false;
 	public boolean reduceIvc = false;
 	public boolean allIvcs = false;
@@ -31,5 +30,6 @@ public class JKindSettings extends Settings {
 	public boolean allAssigned = false;
 	public String useUnsatCore = null;
 
-	public JKindSettings() { }
+	public JKindSettings() {
+	}
 }

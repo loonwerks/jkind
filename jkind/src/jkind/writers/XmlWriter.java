@@ -52,34 +52,34 @@ public class XmlWriter extends Writer {
 		}
 	}
 
-	public void writeValid(String prop, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs) {
+	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants, Set<String> ivc,
+			List<Tuple<Set<String>, List<String>>> allIvcs) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
 
-		if(allIvcs.isEmpty()){
+		if (allIvcs.isEmpty()) {
 			for (Expr invariant : invariants) {
 				out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 			}
 			for (String supp : ivc) {
 				out.println("    <Ivc>" + supp + "</Ivc>");
 			}
-		}else{
+		} else {
 			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
 			int count = 1;
-			if(ivc.contains("::AIVCtimedoutLoop::")){
+			if (ivc.contains("::AIVCtimedoutLoop::")) {
 				ivc.remove("::AIVCtimedoutLoop::");
 				out.println("    <TimedoutLoop>" + "yes" + "</TimedoutLoop>");
-			}else {
+			} else {
 				out.println("    <TimedoutLoop>" + "no" + "</TimedoutLoop>");
 			}
 			for (String supp : ivc) {
 				out.println("    <MustElem>" + supp + "</MustElem>");
 			}
 
-			for(Tuple<Set<String>, List<String>> ivcSet : allIvcs){
+			for (Tuple<Set<String>, List<String>> ivcSet : allIvcs) {
 				out.println("    <IvcSet number=\"" + count + "\">");
 				for (String invariant : ivcSet.secondElement()) {
 					out.println("    <Invariant>" + escape(invariant) + "</Invariant>");

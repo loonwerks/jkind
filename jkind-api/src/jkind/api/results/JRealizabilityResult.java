@@ -23,7 +23,7 @@ public class JRealizabilityResult extends JKindResult {
 	public JRealizabilityResult(String name) {
 		super(name, Collections.singletonList(Util.REALIZABLE));
 	}
-	
+
 	/**
 	 * Construct a JRealizabilityResult to hold the results of a run of JRealizability
 	 * 
@@ -35,8 +35,7 @@ public class JRealizabilityResult extends JKindResult {
 	public JRealizabilityResult(String name, Renaming renaming) {
 		super(name, Collections.singletonList(Util.REALIZABLE), renaming);
 	}
-	
-	
+
 	/**
 	 * Get the PropertyResult for realizability
 	 */

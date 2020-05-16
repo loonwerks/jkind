@@ -38,7 +38,7 @@ public class SexpUtil {
 		}
 		return SexpUtil.conjoin(conjuncts);
 	}
-	
+
 	public static String encodeFunction(String name) {
 		return "$$" + name;
 	}

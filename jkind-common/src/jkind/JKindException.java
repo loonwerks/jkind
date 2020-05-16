@@ -9,7 +9,7 @@ public class JKindException extends RuntimeException {
 	public JKindException(String message) {
 		super(message);
 	}
-	
+
 	public JKindException(String message, Throwable t) {
 		super(message, t);
 	}

@@ -108,8 +108,7 @@ public class RemoveCondacts {
 	}
 
 	private Node createCondactNode(String id) {
-		return nodeTable.computeIfAbsent(id + "~condact",
-				condactId -> createTimedNode(id, condactId, true));
+		return nodeTable.computeIfAbsent(id + "~condact", condactId -> createTimedNode(id, condactId, true));
 	}
 
 	private Node createTimedNode(String id, String condactId, boolean clockOutputs) {
@@ -160,17 +159,14 @@ public class RemoveCondacts {
 			@Override
 			public Expr visit(UnaryExpr e) {
 				if (e.op == UnaryOp.PRE) {
-					return cache.computeIfAbsent(
-							e.expr.toString(),
-							ignore -> {
-								String state = "~state" + counter++;
-								Type type = e.expr.accept(typeReconstructor);
-								stateLocals.add(new VarDecl(state, type));
-								// state = if clock then expr else pre state
-								stateEquations.add(eq(id(state),
-										ite(CLOCK, e.expr.accept(this), pre(id(state)))));
-								return pre(id(state));
-							});
+					return cache.computeIfAbsent(e.expr.toString(), ignore -> {
+						String state = "~state" + counter++;
+						Type type = e.expr.accept(typeReconstructor);
+						stateLocals.add(new VarDecl(state, type));
+						// state = if clock then expr else pre state
+						stateEquations.add(eq(id(state), ite(CLOCK, e.expr.accept(this), pre(id(state)))));
+						return pre(id(state));
+					});
 				} else {
 					return super.visit(e);
 				}
@@ -247,8 +243,7 @@ public class RemoveCondacts {
 	}
 
 	private Node createClockedNode(String id) {
-		return nodeTable.computeIfAbsent(id + "~clocked",
-				clockedId -> createTimedNode(id, clockedId, false));
+		return nodeTable.computeIfAbsent(id + "~clocked", clockedId -> createTimedNode(id, clockedId, false));
 	}
 
 	private Node clockProperties(Node node) {

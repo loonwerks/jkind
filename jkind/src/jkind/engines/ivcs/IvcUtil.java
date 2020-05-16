@@ -1,4 +1,4 @@
- package jkind.engines.ivcs;
+package jkind.engines.ivcs;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,16 +27,15 @@ public class IvcUtil {
 		List<Equation> equations = new ArrayList<>(node.equations);
 		List<Expr> assertions = new ArrayList<>(node.assertions);
 
-
 		Iterator<Expr> iter = assertions.iterator();
 		int id = 0;
 		List<IdExpr> newAssertions = new ArrayList<>();
 
 		while (iter.hasNext()) {
 			Expr asr = iter.next();
-			if (! (asr instanceof IdExpr)) {
+			if (!(asr instanceof IdExpr)) {
 				newAssertions.add(defineNewEquation(asr, locals, equations, JKind.EQUATION_NAME + id));
-				id ++;
+				id++;
 				iter.remove();
 			}
 		}
@@ -57,7 +56,7 @@ public class IvcUtil {
 	}
 
 	public static Program setIvcArgs(Node node, List<String> newIvc) {
-		return  new Program (new NodeBuilder(node).clearIvc().addIvcs(newIvc).build());
+		return new Program(new NodeBuilder(node).clearIvc().addIvcs(newIvc).build());
 	}
 
 	public static List<VarDecl> removeVariables(List<VarDecl> varDecls, List<String> vars) {
@@ -82,7 +81,8 @@ public class IvcUtil {
 		return result;
 	}
 
-	public static IdExpr defineNewEquation(Expr rightSide, List<VarDecl> locals, List<Equation> equations, String newVar) {
+	public static IdExpr defineNewEquation(Expr rightSide, List<VarDecl> locals, List<Equation> equations,
+			String newVar) {
 		locals.add(new VarDecl(newVar, NamedType.BOOL));
 		IdExpr ret = new IdExpr(newVar);
 		equations.add(new Equation(ret, rightSide));
@@ -92,14 +92,14 @@ public class IvcUtil {
 
 	public static Set<String> findRightSide(Set<String> initialIvc, boolean allAssigned, List<Equation> equations) {
 		Set<String> ivc = new HashSet<>(initialIvc);
-		if(allAssigned){
+		if (allAssigned) {
 			Set<String> itr = new HashSet<>(ivc);
-			for(String core : itr){
-				if(core.contains(JKind.EQUATION_NAME)){
-					for (Equation eq : equations){
-						if(core.equals(eq.lhs.get(0).id)){
+			for (String core : itr) {
+				if (core.contains(JKind.EQUATION_NAME)) {
+					for (Equation eq : equations) {
+						if (core.equals(eq.lhs.get(0).id)) {
 							ivc.remove(core);
-							ivc.add("assert "+ eq.expr.toString());
+							ivc.add("assert " + eq.expr.toString());
 						}
 					}
 				}
@@ -146,7 +146,7 @@ public class IvcUtil {
 	public static Node unassign(Node node, List<String> deactivate, String property) {
 		List<VarDecl> inputs = new ArrayList<>(node.inputs);
 
-		for(String v : deactivate){
+		for (String v : deactivate) {
 			inputs.add(new VarDecl(v, Util.getTypeMap(node).get(v)));
 		}
 
@@ -174,13 +174,11 @@ public class IvcUtil {
 
 	public static Node overApproximateWithIvc(Node node, Set<String> ivc, String property) {
 		List<String> deactivate = new ArrayList<>();
-		for(Equation eq : node.equations){
-			if(! ivc.contains(eq.lhs.get(0).id)) {
+		for (Equation eq : node.equations) {
+			if (!ivc.contains(eq.lhs.get(0).id)) {
 				deactivate.add(eq.lhs.get(0).id);
 			}
 		}
 		return unassign(node, deactivate, property);
 	}
 }
-
-

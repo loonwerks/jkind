@@ -14,7 +14,6 @@ import jkind.lustre.SubrangeIntType;
 import jkind.lustre.TupleType;
 import jkind.lustre.Type;
 
-
 public class TypeMapVisitor implements TypeVisitor<Type> {
 	@Override
 	public Type visit(ArrayType e) {
@@ -25,7 +24,7 @@ public class TypeMapVisitor implements TypeVisitor<Type> {
 	public Type visit(NamedType e) {
 		return e;
 	}
-	
+
 	@Override
 	public Type visit(EnumType e) {
 		return e;
@@ -43,12 +42,12 @@ public class TypeMapVisitor implements TypeVisitor<Type> {
 	@Override
 	public Type visit(TupleType e) {
 		List<Type> types = new ArrayList<>();
-		for(Type t : e.types) {
+		for (Type t : e.types) {
 			types.add(t.accept(this));
 		}
 		return new TupleType(types);
 	}
-	
+
 	@Override
 	public Type visit(SubrangeIntType e) {
 		return e;

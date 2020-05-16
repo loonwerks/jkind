@@ -69,8 +69,7 @@ public class RealizabilityDirector {
 
 		long startTime = System.currentTimeMillis();
 		long timeout = startTime + ((long) settings.timeout) * 1000;
-		while (System.currentTimeMillis() < timeout && !done && someThreadAlive()
-				&& !someEngineFailed()) {
+		while (System.currentTimeMillis() < timeout && !done && someThreadAlive() && !someEngineFailed()) {
 			processMessages(startTime);
 			try {
 				Thread.sleep(100);
@@ -174,8 +173,7 @@ public class RealizabilityDirector {
 				done = true;
 				writer.writeInconsistent(im.k, runtime);
 			} else {
-				throw new JKindException("Unknown message type in director: "
-						+ message.getClass().getCanonicalName());
+				throw new JKindException("Unknown message type in director: " + message.getClass().getCanonicalName());
 			}
 		}
 	}

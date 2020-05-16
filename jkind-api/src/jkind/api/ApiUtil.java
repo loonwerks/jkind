@@ -37,8 +37,8 @@ public class ApiUtil {
 		}
 	}
 
-	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile,
-			JKindResult result, IProgressMonitor monitor, DebugLogger debug) {
+	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile, JKindResult result,
+			IProgressMonitor monitor, DebugLogger debug) {
 		File xmlFile = null;
 		try {
 			xmlFile = getXmlFile(lustreFile);
@@ -68,9 +68,8 @@ public class ApiUtil {
 		return new File(lustreFile.toString() + ".xml");
 	}
 
-	private static void callJKind(Function<File, ProcessBuilder> runCommand, File lustreFile,
-			File xmlFile, JKindResult result, IProgressMonitor monitor, DebugLogger debug)
-			throws IOException, InterruptedException {
+	private static void callJKind(Function<File, ProcessBuilder> runCommand, File lustreFile, File xmlFile,
+			JKindResult result, IProgressMonitor monitor, DebugLogger debug) throws IOException, InterruptedException {
 		ProcessBuilder builder = runCommand.apply(lustreFile);
 		debug.println("JKind command: " + ApiUtil.getQuotedCommand(builder.command()));
 		Process process = null;
@@ -106,8 +105,8 @@ public class ApiUtil {
 				monitor.done();
 
 				if (code != 0 && !monitor.isCanceled()) {
-					throw new JKindException("Abnormal termination, exit code " + code
-							+ System.lineSeparator() + result.getText());
+					throw new JKindException(
+							"Abnormal termination, exit code " + code + System.lineSeparator() + result.getText());
 				}
 			}
 
@@ -207,8 +206,7 @@ public class ApiUtil {
 	}
 
 	public static String getQuotedCommand(List<String> pieces) {
-		return pieces.stream().map(p -> p.contains(" ") ? "\"" + p + "\"" : p)
-				.collect(joining(" "));
+		return pieces.stream().map(p -> p.contains(" ") ? "\"" + p + "\"" : p).collect(joining(" "));
 	}
 
 	public static void addEnvironment(ProcessBuilder builder, Map<String, String> environment) {

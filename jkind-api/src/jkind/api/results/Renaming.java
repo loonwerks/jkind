@@ -80,8 +80,7 @@ public abstract class Renaming {
 		}
 
 		return new ValidProperty(name, property.getSource(), property.getK(), property.getRuntime(),
-				property.getInvariants(), rename(this::renameIVC, property.getIvc()),
-				property.getInvariantSets(),
+				property.getInvariants(), rename(this::renameIVC, property.getIvc()), property.getInvariantSets(),
 				rename(this::renameIVC, property.getIvcSets()), property.getMivcTimedOut());
 	}
 
@@ -268,7 +267,7 @@ public abstract class Renaming {
 
 	private Set<List<String>> rename(Function<String, String> f, Set<List<String>> es) {
 		Set<List<String>> set = new HashSet<List<String>>();
-		for(List<String> curOrigList: es) {
+		for (List<String> curOrigList : es) {
 			List<String> updatedOrigList = new ArrayList<String>();
 			for (String curOrigStr : curOrigList) {
 				String updatedName = curOrigStr;

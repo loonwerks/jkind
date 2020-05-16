@@ -93,8 +93,7 @@ public class JLustre2ExcelApi {
 		try {
 			process = pb.start();
 			String output = ApiUtil.readOutput(process, new NullProgressMonitor());
-			debug.println("JLustre2Excel output",
-					debug.saveFile("jlustre2excel-output-", ".txt", output));
+			debug.println("JLustre2Excel output", debug.saveFile("jlustre2excel-output-", ".txt", output));
 			return new File(lustreFile.getPath() + ".xls");
 		} catch (IOException e) {
 			throw new JKindException("Error running JLustre2Excel", e);

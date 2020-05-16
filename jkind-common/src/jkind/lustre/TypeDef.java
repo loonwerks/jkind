@@ -14,11 +14,11 @@ public class TypeDef extends Ast {
 		this.id = id;
 		this.type = type;
 	}
-	
+
 	public TypeDef(String id, Type type) {
 		this(Location.NULL, id, type);
 	}
-	
+
 	@Override
 	public <T, S extends T> T accept(AstVisitor<T, S> visitor) {
 		return visitor.visit(this);

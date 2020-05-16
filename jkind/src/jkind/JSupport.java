@@ -29,10 +29,10 @@ import jkind.slicing.LustreSlicer;
 import jkind.translation.RemoveEnumTypes;
 import jkind.translation.Translate;
 
-
 public class JSupport {
 	private static Set<String> inputIVC;
 	private static int TIMEOUT;
+
 	public static void main(String args[]) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -50,40 +50,40 @@ public class JSupport {
 			main = new NodeBuilder(main).clearIvc().build();
 
 			if (main.properties.size() != 1) {
-				throw new IllegalArgumentException("Expected exactly one property, but found "
-						+ main.properties.size());
+				throw new IllegalArgumentException(
+						"Expected exactly one property, but found " + main.properties.size());
 			}
 
 			inputIVC = getIVC(settings.useUnsatCore);
 
-			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
+			MinimalIvcFinder minimalFinder = new MinimalIvcFinder(
+					new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
 					settings.filename);
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT, settings);
 			System.exit(0);
 
-			}catch (Throwable t) {
-				t.printStackTrace();
-				System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
-			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);
+		}
 	}
 
-	private static Set<String> getIVC(String file){
+	private static Set<String> getIVC(String file) {
 		List<String> support = null;
-		try{
+		try {
 			DocumentBuilder builder = (DocumentBuilderFactory.newInstance()).newDocumentBuilder();
 			Document doc = builder.parse(new InputSource(file));
-			Element progressElement =  doc.getDocumentElement();
+			Element progressElement = doc.getDocumentElement();
 			support = getStringList(getElements(progressElement, "IVC"));
 			double d = Double.parseDouble(getStringList(getElements(progressElement, "Timeout")).get(0));
-			TIMEOUT = (int)d;
-        }
+			TIMEOUT = (int) d;
+		}
 
-		catch(FileNotFoundException e) {
-            System.out.println("Unable to open file '" +  file + "'");
-        }
-        catch(IOException e) {
-            System.out.println("Error reading file '"  + file + "'");
-        } catch (SAXException e) {
+		catch (FileNotFoundException e) {
+			System.out.println("Unable to open file '" + file + "'");
+		} catch (IOException e) {
+			System.out.println("Error reading file '" + file + "'");
+		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
@@ -109,4 +109,3 @@ public class JSupport {
 	}
 
 }
-

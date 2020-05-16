@@ -32,8 +32,8 @@ public class ValidMessage extends Message {
 		this.mivcTimedOut = mivcTimedOut;
 	}
 
-	public ValidMessage(String source, String valid, int k, double proofTime, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs, boolean mivcTimedOut) {
+	public ValidMessage(String source, String valid, int k, double proofTime, List<Expr> invariants, Set<String> ivc,
+			Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs, boolean mivcTimedOut) {
 		this(source, Collections.singletonList(valid), k, proofTime, invariants, ivc, itinerary, allIvcs, mivcTimedOut);
 	}
 

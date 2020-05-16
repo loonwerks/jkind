@@ -43,7 +43,7 @@ public class LustreSlicer extends AstMapVisitor {
 	@Override
 	protected List<Equation> visitEquations(List<Equation> equations) {
 		List<Equation> sliced = new ArrayList<>();
-		
+
 		for (Equation eq : equations) {
 			if (containsAny(keep, eq.lhs)) {
 				sliced.add(eq);

@@ -19,7 +19,7 @@ public class RecordExpr extends Expr {
 		this.id = id;
 		this.fields = Util.safeStringSortedMap(fields);
 	}
-	
+
 	public RecordExpr(String id, Map<String, Expr> fields) {
 		this(Location.NULL, id, fields);
 	}

@@ -19,9 +19,8 @@ public final class ValidProperty extends Property {
 	private final Set<List<String>> invarantSets;
 	private final boolean mivcTimedOut;
 
-	public ValidProperty(String name, String source, int k, double runtime,
-			List<String> invariants, Collection<String> ivc, Set<List<String>> invariantSets,
-			Set<List<String>> ivcSets, boolean mivcTimedOut) {
+	public ValidProperty(String name, String source, int k, double runtime, List<String> invariants,
+			Collection<String> ivc, Set<List<String>> invariantSets, Set<List<String>> ivcSets, boolean mivcTimedOut) {
 		super(name, runtime);
 		this.source = source;
 		this.k = k;

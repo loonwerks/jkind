@@ -35,7 +35,7 @@ public class Cvc4Solver extends SmtLib2Solver {
 		// CVC4 does not yet support unsat-cores
 		return activationLiterals;
 	}
-	
+
 	@Override
 	protected void send(String str) {
 		scratch(str);
@@ -47,8 +47,8 @@ public class Cvc4Solver extends SmtLib2Solver {
 			toSolver.newLine();
 			toSolver.flush();
 		} catch (IOException e) {
-			throw new JKindException("Unable to write to " + getSolverName() + ", "
-					+ "probably due to internal JKind error", e);
+			throw new JKindException(
+					"Unable to write to " + getSolverName() + ", " + "probably due to internal JKind error", e);
 		}
 	}
 }
