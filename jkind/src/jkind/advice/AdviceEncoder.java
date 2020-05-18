@@ -2,12 +2,12 @@ package jkind.advice;
 
 import java.io.InputStream;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+
 import jkind.Main;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.builders.NodeBuilder;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
 
 public class AdviceEncoder {
 	public static String encode(Advice advice) {

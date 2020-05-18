@@ -5,23 +5,24 @@ import static java.util.stream.Collectors.joining;
 import java.util.Arrays;
 import java.util.List;
 
-import jkind.engines.SolverUtil;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+
+import jkind.engines.SolverUtil;
 
 public class JKindArgumentParser extends ArgumentParser {
 	private static final String EXCEL = "excel";
 	private static final String INDUCT_CEX = "induct_cex";
-	private static final String IVC = "ivc";
 	private static final String MAIN = "main";
 	private static final String N = "n";
 	private static final String NO_BMC = "no_bmc";
 	private static final String NO_INV_GEN = "no_inv_gen";
 	private static final String NO_K_INDUCTION = "no_k_induction";
-	private static final String NO_SLICING = "no_slicing";
 	private static final String PDR_MAX = "pdr_max";
 	private static final String READ_ADVICE = "read_advice";
+	private static final String IVC = "ivc";
+	private static final String IVC_ALL = "all_ivcs";
+	private static final String NO_SLICING = "no_slicing";
 	private static final String SCRATCH = "scratch";
 	private static final String SMOOTH = "smooth";
 	private static final String SOLVER = "solver";
@@ -48,6 +49,8 @@ public class JKindArgumentParser extends ArgumentParser {
 		options.addOption(INDUCT_CEX, false, "generate inductive counterexamples");
 		options.addOption(IVC, false,
 				"find an inductive validity core for valid properties (based on --%IVC annotated elements)");
+		options.addOption(IVC_ALL, false,
+				"find all inductive validity cores for valid properties (based on --%IVC annotated elements)");
 		options.addOption(MAIN, true, "specify main node (overrides --%MAIN)");
 		options.addOption(N, true, "maximum depth for bmc and k-induction (default: unbounded)");
 		options.addOption(NO_BMC, false, "disable bounded model checking");
@@ -96,10 +99,6 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.inductiveCounterexamples = true;
 		}
 
-		if (line.hasOption(IVC)) {
-			settings.reduceIvc = true;
-		}
-
 		if (line.hasOption(MAIN)) {
 			settings.main = line.getOptionValue(MAIN);
 		}
@@ -142,8 +141,18 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.readAdvice = line.getOptionValue(READ_ADVICE);
 		}
 
+		if (line.hasOption(IVC)) {
+			settings.reduceIvc = true;
+		}
+
+		if (line.hasOption(IVC_ALL)) {
+			settings.reduceIvc = true;
+			settings.allIvcs = true;
+		}
+
 		if (line.hasOption(TIMEOUT)) {
 			settings.timeout = parseNonnegativeInt(line.getOptionValue(TIMEOUT));
+			settings.allIvcsJkindTimeout = settings.timeout;
 		}
 
 		if (line.hasOption(SCRATCH)) {
@@ -170,6 +179,7 @@ public class JKindArgumentParser extends ArgumentParser {
 			settings.xmlToStdout = true;
 			settings.xml = true;
 		}
+
 	}
 
 	private static SolverOption getSolverOption(String solver) {
@@ -187,8 +197,16 @@ public class JKindArgumentParser extends ArgumentParser {
 	}
 
 	private void checkSettings() {
+
 		if (settings.reduceIvc) {
 			if (settings.solver == SolverOption.CVC4) {
+				StdErr.warning(settings.solver + " does not support unsat-cores so IVC reduction will be slow");
+			}
+		}
+
+		if (settings.allIvcs) {
+			StdErr.warning("IVC reduction requires at least Z3 4.5");
+			if (settings.solver == SolverOption.CVC4 || settings.solver == SolverOption.YICES2) {
 				StdErr.warning(settings.solver + " does not support unsat-cores so IVC reduction will be slow");
 			}
 		}

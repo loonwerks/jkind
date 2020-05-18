@@ -20,6 +20,9 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
+import jkind.engines.ivcs.AllIvcsExtractorEngine;
+import jkind.engines.ivcs.IvcReductionEngine;
+import jkind.engines.ivcs.IvcUtil;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -28,7 +31,6 @@ import jkind.engines.messages.InvariantMessage;
 import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.Message;
 import jkind.engines.messages.MessageHandler;
-import jkind.engines.messages.StopMessage;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.engines.pdr.PdrEngine;
@@ -39,6 +41,7 @@ import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.ModelReconstructionEvaluator;
+import jkind.util.Tuple;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -52,7 +55,7 @@ public class Director extends MessageHandler {
 	private final Specification userSpec;
 	private final Specification analysisSpec;
 	private final Writer writer;
-	private final long startTime;
+	public final long startTime;
 
 	private final List<String> remainingProperties = new ArrayList<>();
 	private final List<String> validProperties = new ArrayList<>();
@@ -66,11 +69,34 @@ public class Director extends MessageHandler {
 	private Advice inputAdvice;
 	private AdviceWriter adviceWriter;
 
+	private MiniJKind miniJkind;
+
 	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec) {
 		this.settings = settings;
 		this.userSpec = userSpec;
 		this.analysisSpec = analysisSpec;
+		this.miniJkind = null;
+		this.writer = getWriter();
+		this.startTime = System.currentTimeMillis();
+		this.remainingProperties.addAll(analysisSpec.node.properties);
 
+		if (settings.readAdvice != null) {
+			this.inputAdvice = AdviceReader.read(settings.readAdvice);
+		}
+
+		if (settings.writeAdvice != null) {
+			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
+			this.adviceWriter.addVarDecls(Util.getVarDecls(analysisSpec.node));
+		}
+
+		initializeUnknowns(settings, analysisSpec.node.properties);
+	}
+
+	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec, MiniJKind miniJkind) {
+		this.settings = settings;
+		this.userSpec = userSpec;
+		this.analysisSpec = analysisSpec;
+		this.miniJkind = miniJkind;
 		this.writer = getWriter();
 		this.startTime = System.currentTimeMillis();
 		this.remainingProperties.addAll(analysisSpec.node.properties);
@@ -93,6 +119,8 @@ public class Director extends MessageHandler {
 				return new ExcelWriter(settings.filename + ".xls", userSpec.node);
 			} else if (settings.xml) {
 				return new XmlWriter(settings.filename + ".xml", userSpec.typeMap, settings.xmlToStdout);
+			} else if (settings.miniJkind) {
+				return new ConsoleWriter(new NodeLayout(userSpec.node), miniJkind);
 			} else {
 				return new ConsoleWriter(new NodeLayout(userSpec.node));
 			}
@@ -102,7 +130,9 @@ public class Director extends MessageHandler {
 	}
 
 	public int run() {
-		printHeader();
+		if (!settings.miniJkind) {
+			printHeader();
+		}
 		writer.begin();
 		addShutdownHook();
 		createAndStartEngines();
@@ -111,14 +141,22 @@ public class Director extends MessageHandler {
 			processMessages();
 			sleep(100);
 		}
+		if (timeout() && aivcIdx) {
+			((AllIvcsExtractorEngine) (engines.get(aivcIndx))).getValid();
+		}
 
-		stopEngines();
 		processMessages();
 		int exitCode = 0;
 		if (removeShutdownHook()) {
 			postProcessing();
 			exitCode = reportFailures();
 		}
+
+		// Needed for minijkind; other cases the top-level jkind shuts down
+		if (settings.miniJkind) {
+			stopEngines();
+		}
+
 		return exitCode;
 	}
 
@@ -168,6 +206,9 @@ public class Director extends MessageHandler {
 		threads.forEach(Thread::start);
 	}
 
+	// all IVCs
+	boolean aivcIdx = false;
+
 	private void createEngines() {
 		if (settings.boundedModelChecking) {
 			addEngine(new BmcEngine(analysisSpec, settings, this));
@@ -181,10 +222,6 @@ public class Director extends MessageHandler {
 			addEngine(new GraphInvariantGenerationEngine(analysisSpec, settings, this));
 		}
 
-		if (settings.reduceIvc) {
-			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
-		}
-
 		if (settings.smoothCounterexamples) {
 			addEngine(new SmoothingEngine(analysisSpec, settings, this));
 		}
@@ -196,16 +233,36 @@ public class Director extends MessageHandler {
 		if (settings.readAdvice != null) {
 			addEngine(new AdviceEngine(analysisSpec, settings, this, inputAdvice));
 		}
+
+		if (settings.reduceIvc) {
+			addEngine(new IvcReductionEngine(analysisSpec, settings, this));
+		}
+
+		if (settings.allIvcs) {
+			aivcIdx = true;
+			addEngine(new AllIvcsExtractorEngine(analysisSpec, settings, this));
+		}
 	}
+
+	// All IVCs engine index
+	int aivcIndx;
 
 	private void addEngine(Engine engine) {
 		engines.add(engine);
+		if (aivcIdx) {
+			aivcIndx = engines.indexOf(engine);
+			aivcIdx = false;
+		}
 		threads.add(new Thread(engine, engine.getName()));
 	}
 
 	private void stopEngines() {
-		for (Engine engine : engines) {
-			engine.receiveMessage(new StopMessage());
+		try {
+			for (Engine engine : engines) {
+				// Add code to kill thread.
+				engine.stopEngine();
+			}
+		} catch (Throwable t) {
 		}
 	}
 
@@ -242,10 +299,25 @@ public class Director extends MessageHandler {
 	private int reportFailures() {
 		int exitCode = 0;
 		for (Engine engine : engines) {
-			if (engine.getThrowable() != null) {
+			// MWW: specialized for miniJKind - we kill solvers abruptly
+			// for "internal" runs.
+			boolean engine_throwable = (engine.getThrowable() != null);
+			boolean no_minijkind = (!settings.miniJkind);
+			boolean timeout = timeout();
+
+			if (engine_throwable) {
 				StdErr.println(engine.getName() + " process failed");
 				StdErr.printStackTrace(engine.getThrowable());
 				exitCode = ExitCodes.UNCAUGHT_EXCEPTION;
+				if (engine.getThrowable().toString().contains("IvcException")) {
+					exitCode = ExitCodes.IVC_EXCEPTION;
+				}
+				if (!no_minijkind) {
+					StdErr.println("failed during miniJKind run");
+				}
+				if (timeout) {
+					StdErr.println("timeout occurred");
+				}
 			}
 		}
 		return exitCode;
@@ -279,6 +351,9 @@ public class Director extends MessageHandler {
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		if (vm.getNextDestination() != null) {
+			if (vm.getNextDestination().equals(EngineType.IVC_REDUCTION) && adviceWriter != null) {
+				adviceWriter.addInvariants(vm.invariants);
+			}
 			return;
 		}
 
@@ -296,7 +371,22 @@ public class Director extends MessageHandler {
 		}
 
 		List<Expr> invariants = settings.reduceIvc ? vm.invariants : Collections.emptyList();
-		writer.writeValid(newValid, vm.source, vm.k, getRuntime(), invariants, vm.ivc);
+
+		if ((!settings.miniJkind) && (settings.reduceIvc)) {
+			Set<String> ivc = IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations);
+			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
+			if (settings.allIvcs) {
+				for (Tuple<Set<String>, List<String>> item : vm.allIvcs) {
+					allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.findRightSide(item.firstElement(),
+							settings.allAssigned, analysisSpec.node.equations), item.secondElement()));
+				}
+			}
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs,
+					vm.mivcTimedOut);
+		} else {
+			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, vm.ivc, vm.allIvcs,
+					vm.mivcTimedOut);
+		}
 	}
 
 	private List<String> intersect(List<String> list1, List<String> list2) {
@@ -416,6 +506,10 @@ public class Director extends MessageHandler {
 		if (settings.reduceIvc) {
 			destinations.add(EngineType.IVC_REDUCTION);
 		}
+		if (settings.allIvcs) {
+			destinations.add(EngineType.IVC_REDUCTION_ALL);
+		}
+
 		return new Itinerary(destinations);
 	}
 
@@ -432,7 +526,7 @@ public class Director extends MessageHandler {
 	}
 
 	private void printSummary() {
-		if (!settings.xmlToStdout) {
+		if (!settings.xmlToStdout && !settings.miniJkind) {
 			System.out.println("    -------------------------------------");
 			System.out.println("    --^^--        SUMMARY          --^^--");
 			System.out.println("    -------------------------------------");

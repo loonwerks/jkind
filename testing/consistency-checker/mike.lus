@@ -1,0 +1,11 @@
+node main(in : real) returns (prop : bool);
+	var 
+	  out : real;
+	let 
+		assert(in > 0.0 and in > pre(in)); 
+		out = 1.0 -> pre(out) + in;
+		prop = out >= 1.0;
+		--%PROPERTY prop;
+	tel;
+	
+	

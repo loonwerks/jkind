@@ -1,4 +1,4 @@
-package jkind.engines;
+package jkind.engines.ivcs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +9,8 @@ import java.util.Set;
 
 import jkind.JKindException;
 import jkind.JKindSettings;
+import jkind.engines.Director;
+import jkind.engines.SolverBasedEngine;
 import jkind.engines.messages.BaseStepMessage;
 import jkind.engines.messages.EngineType;
 import jkind.engines.messages.InductiveCounterexampleMessage;
@@ -18,7 +20,6 @@ import jkind.engines.messages.Itinerary;
 import jkind.engines.messages.UnknownMessage;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
-import jkind.lustre.IdExpr;
 import jkind.lustre.NamedType;
 import jkind.lustre.VarDecl;
 import jkind.sexp.Cons;
@@ -36,6 +37,7 @@ import jkind.util.SexpUtil;
 public class IvcReductionEngine extends SolverBasedEngine {
 	public static final String NAME = "ivc-reduction";
 	private final LinkedBiMap<String, Symbol> ivcMap;
+	private double runtime;
 
 	public IvcReductionEngine(Specification spec, JKindSettings settings, Director director) {
 		super(NAME, spec, settings, director);
@@ -63,22 +65,10 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	private void reduce(ValidMessage vm) {
 		for (String property : vm.valid) {
 			if (properties.remove(property)) {
-				reduceInvariants(getInvariantByName(property, vm.invariants), vm);
+				runtime = System.currentTimeMillis();
+				reduceInvariants(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 			}
 		}
-	}
-
-	private Expr getInvariantByName(String name, List<Expr> invariants) {
-		for (Expr invariant : invariants) {
-			if (invariant.toString().equals(name)) {
-				return invariant;
-			}
-		}
-
-		// In rare cases, PDR will not return the original property as one of
-		// the invariants. By returning a new Expr we will effectively add it as
-		// a new invariants. See https://github.com/agacek/jkind/issues/44
-		return new IdExpr(name);
 	}
 
 	private void reduceInvariants(Expr property, ValidMessage vm) {
@@ -187,9 +177,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	/**
 	 * Base step query for IVC reduction. Examples for k = 1, 2, 3:
-	 * 
+	 *
 	 * %init => P(0)
-	 * 
+	 *
 	 * %init => (P(0) and (T(0, 1) => P(1)))
 	 *
 	 * %init => (P(0) and (T(0, 1) => (P(1) and (T(1, 2) => P(2)))))
@@ -205,9 +195,9 @@ public class IvcReductionEngine extends SolverBasedEngine {
 
 	/**
 	 * Inductive step query for IVC reduction. Examples for k = 1, 2, 3:
-	 * 
+	 *
 	 * (P(0) and T(0, 1)) => P(1)
-	 * 
+	 *
 	 * (P(0) and T(0, 1) and P(1) and T(1, 2)) => P(2)
 	 *
 	 * (P(0) and T(0, 1) and P(1) and T(1, 2) and P(2) and T(2, 3)) => P(3)
@@ -245,22 +235,16 @@ public class IvcReductionEngine extends SolverBasedEngine {
 	}
 
 	private void sendValid(String valid, int k, List<Expr> invariants, Set<String> ivc, ValidMessage vm) {
+		runtime = (System.currentTimeMillis() - runtime) / 1000.0;
 		comment("Sending " + valid + " at k = " + k + " with invariants: ");
 		for (Expr invariant : invariants) {
 			comment(invariant.toString());
 		}
 		comment("IVC: " + ivc.toString());
-
 		Itinerary itinerary = vm.getNextItinerary();
-		director.broadcast(new ValidMessage(vm.source, valid, k, invariants, trimNode(ivc), itinerary));
-	}
-
-	private Set<String> trimNode(Set<String> arg) {
-		Set<String> ivc = new HashSet<>();
-		for (String e : arg) {
-			ivc.add(e.replaceAll("~[0-9]+", ""));
-		}
-		return ivc;
+		ValidMessage nvm = new ValidMessage(vm.source, valid, k, vm.proofTime + runtime, invariants, ivc, itinerary,
+				null, false);
+		director.broadcast(nvm);
 	}
 
 	@Override

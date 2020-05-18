@@ -62,6 +62,10 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		return new Symbol(Util.capitalize(Util.getName(type)));
 	}
 
+	public void declFun(String ef, NamedType t1, NamedType t2) {
+		send(new Cons("declare-fun", new Symbol(ef), new Symbol("(" + type(t1) + ")"), type(t2)));
+	}
+
 	@Override
 	public void define(VarDecl decl) {
 		varTypes.put(decl.id, decl.type);

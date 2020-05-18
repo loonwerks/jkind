@@ -4,6 +4,7 @@ import jkind.analysis.LinearChecker;
 import jkind.analysis.StaticAnalyzer;
 import jkind.engines.Director;
 import jkind.engines.SolverUtil;
+import jkind.engines.ivcs.IvcUtil;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
 import jkind.lustre.builders.ProgramBuilder;
@@ -12,6 +13,8 @@ import jkind.translation.Specification;
 import jkind.translation.Translate;
 
 public class JKind {
+	public static final String EQUATION_NAME = "__addedEQforAsr_by_JKind__";
+
 	public static void main(String[] args) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
@@ -28,6 +31,10 @@ public class JKind {
 			ensureSolverAvailable(settings.solver);
 
 			program = Translate.translate(program);
+			Node main = program.getMainNode();
+			if (settings.allAssigned) {
+				program = IvcUtil.setIvcArgs(main, IvcUtil.getAllAssigned(main));
+			}
 			Specification userSpec = new Specification(program, settings.slicing);
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 
