@@ -267,12 +267,7 @@ public class XmlParseThread extends Thread {
 			return false;
 		}
 		String timedOutInfo = timedOutLoopNode.getTextContent();
-		if (timedOutInfo.equals("yes")) {
-			return true;
-		} else {
-			return false;
-		}
-
+		return timedOutInfo.equals("yes");
 	}
 
 	private String getAnswer(Node answerNode) {
