@@ -302,9 +302,7 @@ public class Util {
 		for (Collection<String> currentSetOriginal : original) {
 			TreeSet<String> individualSet = new TreeSet<>(new StringNaturalOrdering());
 			individualSet.addAll(currentSetOriginal);
-			// List<String> curList = new ArrayList<String>(individualSet);
 			set.add(safeList(individualSet));
-			// set.add(individualSet);
 		}
 
 		return Collections.unmodifiableSet(set);
