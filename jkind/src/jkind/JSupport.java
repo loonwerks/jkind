@@ -60,7 +60,6 @@ public class JSupport {
 					new Program(IvcUtil.overApproximateWithIvc(main, inputIVC, main.properties.get(0))),
 					settings.filename);
 			minimalFinder.minimizeIvc(inputIVC, new HashSet<>(), TIMEOUT, settings);
-			System.exit(0);
 
 		} catch (Throwable t) {
 			t.printStackTrace();
