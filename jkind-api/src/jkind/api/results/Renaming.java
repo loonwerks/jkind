@@ -253,10 +253,7 @@ public abstract class Renaming {
 		for (String curOrigStr : es) {
 			String updatedName = curOrigStr;
 			if (curOrigStr.contains(".")) {
-				String nodeName = curOrigStr.substring(0, curOrigStr.lastIndexOf('.'));
-				String elemName = curOrigStr.substring(curOrigStr.lastIndexOf('.'), curOrigStr.length());
-				nodeName = nodeName.replaceAll("~([0-9]+)$", "");
-				updatedName = nodeName + elemName;
+				updatedName = updatedNodeElemName(curOrigStr);
 			}
 			updatedOrigList.add(updatedName);
 		}
@@ -272,10 +269,7 @@ public abstract class Renaming {
 			for (String curOrigStr : curOrigList) {
 				String updatedName = curOrigStr;
 				if (curOrigStr.contains(".")) {
-					String nodeName = curOrigStr.substring(0, curOrigStr.lastIndexOf('.'));
-					String elemName = curOrigStr.substring(curOrigStr.lastIndexOf('.'), curOrigStr.length());
-					nodeName = nodeName.replaceAll("~([0-9]+)$", "");
-					updatedName = nodeName + elemName;
+					updatedName = updatedNodeElemName(curOrigStr);
 				}
 				updatedOrigList.add(updatedName);
 			}
@@ -283,6 +277,15 @@ public abstract class Renaming {
 			set.add(renamedList);
 		}
 		return set;
+	}
+
+	private String updatedNodeElemName(String curOrigStr) {
+		String updatedName;
+		String nodeName = curOrigStr.substring(0, curOrigStr.lastIndexOf('.'));
+		String elemName = curOrigStr.substring(curOrigStr.lastIndexOf('.'), curOrigStr.length());
+		nodeName = nodeName.replaceAll("~([0-9]+)$", "");
+		updatedName = nodeName + elemName;
+		return updatedName;
 	}
 
 	/**
