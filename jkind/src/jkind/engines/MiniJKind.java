@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Set;
 
+import jkind.AllIvcsAlgorithm;
 import jkind.ExitCodes;
 import jkind.JKindSettings;
 import jkind.engines.ivcs.IvcUtil;
@@ -44,7 +45,7 @@ public class MiniJKind extends Engine {
 		settings.xml = false;
 		settings.xmlToStdout = false;
 		settings.allIvcs = false;
-		settings.allIvcsAlgorithm = 1;
+		settings.allIvcsAlgorithm = AllIvcsAlgorithm.OFFLINE_MIVC_ENUM_ALG;
 		settings.allIvcsMaxGrows = 1000;
 		settings.allIvcsJkindTimeout = -1;
 		settings.excel = false;

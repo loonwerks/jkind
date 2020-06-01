@@ -18,7 +18,7 @@ public class JKindSettings extends Settings {
 	public boolean reduceIvc = false;
 	public boolean allIvcs = false;
 	public boolean smoothCounterexamples = false;
-	public int allIvcsAlgorithm = 1;
+	public AllIvcsAlgorithm allIvcsAlgorithm = AllIvcsAlgorithm.OFFLINE_MIVC_ENUM_ALG;
 	public int allIvcsMaxGrows = 1000;
 	public int allIvcsJkindTimeout = -1; // if set to -1, a timeout will be computed based on the first call of the jkind's solve method
 	public boolean inlining = true;

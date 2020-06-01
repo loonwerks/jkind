@@ -126,11 +126,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 					+ " might require to use some of the --%IVC annotated low level properties.");
 			if (properties.remove(property)) {
 				switch (settings.allIvcsAlgorithm) {
-				case 1: // offline MIVC enumeration
+				case OFFLINE_MIVC_ENUM_ALG: // offline MIVC enumeration
 					System.out.println("Starting MIVC enumeration using the offline enumeration algorithm.");
 					computeAllIvcs(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 					break;
-				case 2: // online MIVC enumeration
+				case ONLINE_MIVC_ENUM_ALG: // online MIVC enumeration
 					System.out.println("Starting MIVC enumeration using the online enumeration algorithm.");
 					computeAllIvcsOnline(IvcUtil.getInvariantByName(property, vm.invariants), vm);
 					break;
