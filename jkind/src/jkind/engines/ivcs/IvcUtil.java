@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import jkind.JKind;
 import jkind.lustre.Equation;
 import jkind.lustre.Expr;
 import jkind.lustre.IdExpr;
@@ -21,6 +20,7 @@ import jkind.util.LinkedBiMap;
 import jkind.util.Util;
 
 public class IvcUtil {
+	public static final String EQUATION_NAME = "__addedEQforAsr_by_JKind__";
 
 	public static Node normalizeAssertions(Node node) {
 		List<VarDecl> locals = new ArrayList<>(node.locals);
@@ -34,7 +34,7 @@ public class IvcUtil {
 		while (iter.hasNext()) {
 			Expr asr = iter.next();
 			if (!(asr instanceof IdExpr)) {
-				newAssertions.add(defineNewEquation(asr, locals, equations, JKind.EQUATION_NAME + id));
+				newAssertions.add(defineNewEquation(asr, locals, equations, EQUATION_NAME + id));
 				id++;
 				iter.remove();
 			}
@@ -95,7 +95,7 @@ public class IvcUtil {
 		if (allAssigned) {
 			Set<String> itr = new HashSet<>(ivc);
 			for (String core : itr) {
-				if (core.contains(JKind.EQUATION_NAME)) {
+				if (core.contains(EQUATION_NAME)) {
 					for (Equation eq : equations) {
 						if (core.equals(eq.lhs.get(0).id)) {
 							ivc.remove(core);

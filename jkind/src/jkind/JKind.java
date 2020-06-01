@@ -13,8 +13,6 @@ import jkind.translation.Specification;
 import jkind.translation.Translate;
 
 public class JKind {
-	public static final String EQUATION_NAME = "__addedEQforAsr_by_JKind__";
-
 	public static void main(String[] args) {
 		try {
 			JKindSettings settings = JKindArgumentParser.parse(args);
