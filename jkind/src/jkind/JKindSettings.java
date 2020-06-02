@@ -28,7 +28,6 @@ public class JKindSettings extends Settings {
 	public String writeAdvice = null;
 	public String readAdvice = null;
 	public boolean allAssigned = false;
-	public String useUnsatCore = null;
 
 	public JKindSettings() {
 	}
