@@ -20,6 +20,7 @@ import jkind.advice.Advice;
 import jkind.advice.AdviceReader;
 import jkind.advice.AdviceWriter;
 import jkind.engines.invariant.GraphInvariantGenerationEngine;
+import jkind.engines.ivcs.AllIVCs;
 import jkind.engines.ivcs.AllIvcsExtractorEngine;
 import jkind.engines.ivcs.IvcReductionEngine;
 import jkind.engines.ivcs.IvcUtil;
@@ -41,7 +42,6 @@ import jkind.solvers.Model;
 import jkind.translation.Specification;
 import jkind.util.CounterexampleExtractor;
 import jkind.util.ModelReconstructionEvaluator;
-import jkind.util.Tuple;
 import jkind.util.Util;
 import jkind.writers.ConsoleWriter;
 import jkind.writers.ExcelWriter;
@@ -343,11 +343,11 @@ public class Director extends MessageHandler {
 
 		if ((!settings.miniJkind) && (settings.reduceIvc)) {
 			Set<String> ivc = IvcUtil.findRightSide(vm.ivc, settings.allAssigned, analysisSpec.node.equations);
-			List<Tuple<Set<String>, List<String>>> allIvcs = new ArrayList<>();
+			List<AllIVCs> allIvcs = new ArrayList<>();
 			if (settings.allIvcs) {
-				for (Tuple<Set<String>, List<String>> item : vm.allIvcs) {
-					allIvcs.add(new Tuple<Set<String>, List<String>>(IvcUtil.findRightSide(item.firstElement(),
-							settings.allAssigned, analysisSpec.node.equations), item.secondElement()));
+				for (AllIVCs item : vm.allIvcs) {
+					allIvcs.add(new AllIVCs(IvcUtil.findRightSide(item.getAllIVCSet(), settings.allAssigned,
+							analysisSpec.node.equations), item.allIVCList()));
 				}
 			}
 			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs,

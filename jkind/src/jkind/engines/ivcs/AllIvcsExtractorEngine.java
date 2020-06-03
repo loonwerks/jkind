@@ -46,7 +46,6 @@ import jkind.translation.Lustre2Sexp;
 import jkind.translation.Specification;
 import jkind.util.LinkedBiMap;
 import jkind.util.SexpUtil;
-import jkind.util.Tuple;
 
 public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	public static final String NAME = "all-ivc-computer";
@@ -58,7 +57,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	private Z3Solver z3Solver;
 	private Set<String> mustElements = new HashSet<>();
 	private Set<String> mayElements = new HashSet<>();
-	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
+	Set<AllIVCs> allIvcs = new HashSet<>();
 	private int TIMEOUT;
 	private boolean timedoutLoop = false;
 	private double runtime;
@@ -149,7 +148,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		Set<String> mustChckList = new HashSet<>();
 		Set<String> resultOfIvcFinder = new HashSet<>();
 		List<String> inv = vm.invariants.stream().map(Object::toString).collect(toList());
-		allIvcs.add(new Tuple<Set<String>, List<String>>(vm.ivc, inv));
+		allIvcs.add(new AllIVCs(vm.ivc, inv));
 		seed.addAll(IvcUtil.getIvcLiterals(ivcMap, new ArrayList<>(vm.ivc)));
 		map = blockUp(seed);
 
@@ -168,7 +167,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 
 		// it is possible that the resultant MIVC is empty (not a bug! this is expected behavior)
-		if (allIvcs.size() == 1 && allIvcs.iterator().next().firstElement().size() == 0) {
+		if (allIvcs.size() == 1 && allIvcs.iterator().next().getAllIVCSet().size() == 0) {
 			System.out.println("The high level property " + property
 					+ " can be proved without using any of the --%IVC annotated low level properties.");
 			allIvcs.clear();
@@ -212,7 +211,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 		}
 
 		// it is possible that the resultant MIVC is empty (not a bug! this is expected behavior)
-		if (allIvcs.size() == 1 && allIvcs.iterator().next().firstElement().size() == 0) {
+		if (allIvcs.size() == 1 && allIvcs.iterator().next().getAllIVCSet().size() == 0) {
 			System.out.println("The high level property " + property
 					+ " can be proved without using any of the --%IVC annotated low level properties.");
 			allIvcs.clear();
@@ -265,10 +264,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				comment("New IVC set found: " + IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			}
 
-			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
+			Set<AllIVCs> temp = new HashSet<>();
 
-			for (Tuple<Set<String>, List<String>> curr : allIvcs) {
-				Set<String> trimmed = curr.firstElement();
+			for (AllIVCs curr : allIvcs) {
+				Set<String> trimmed = curr.getAllIVCSet();
 				if (trimmed.containsAll(newIvc)) {
 					temp.add(curr);
 				}
@@ -280,11 +279,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				}
 			}
 			if (temp.isEmpty()) {
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+				allIvcs.add(new AllIVCs(miniJkind.getPropertyIvc(),
 						miniJkind.getPropertyInvariants()));
 			} else {
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+				allIvcs.add(new AllIVCs(miniJkind.getPropertyIvc(),
 						miniJkind.getPropertyInvariants()));
 			}
 			return true;
@@ -459,7 +458,7 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 
 	private void markMIVC(SeedPair mivc) {
 		Set<String> mivc_set = IvcUtil.getIvcNames(ivcMap, mivc.properties);
-		allIvcs.add(new Tuple<Set<String>, List<String>>(mivc_set, mivc.invariants));
+		allIvcs.add(new AllIVCs(mivc_set, mivc.invariants));
 		double time = (System.currentTimeMillis() - runtime) / 1000.0;
 		writeToXmlAllIvcs(new HashSet<String>(), mivc_set, time, true);
 	}
@@ -485,9 +484,9 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 				comment("New IVC set found: " + IvcUtil.getIvcLiterals(ivcMap, resultOfIvcFinder));
 			}
 
-			Set<Tuple<Set<String>, List<String>>> temp = new HashSet<>();
-			for (Tuple<Set<String>, List<String>> curr : allIvcs) {
-				Set<String> trimmed = curr.firstElement();
+			Set<AllIVCs> temp = new HashSet<>();
+			for (AllIVCs curr : allIvcs) {
+				Set<String> trimmed = curr.getAllIVCSet();
 				if (trimmed.containsAll(newIvc)) {
 					temp.add(curr);
 				} else if (newIvc.containsAll(trimmed)) {
@@ -496,11 +495,11 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			}
 
 			if (temp.isEmpty()) {
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+				allIvcs.add(new AllIVCs(miniJkind.getPropertyIvc(),
 						miniJkind.getPropertyInvariants()));
 			} else {
 				allIvcs.removeAll(temp);
-				allIvcs.add(new Tuple<Set<String>, List<String>>(miniJkind.getPropertyIvc(),
+				allIvcs.add(new AllIVCs(miniJkind.getPropertyIvc(),
 						miniJkind.getPropertyInvariants()));
 			}
 

@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import jkind.engines.MiniJKind;
+import jkind.engines.ivcs.AllIVCs;
 import jkind.engines.messages.ValidMessage;
 import jkind.lustre.Expr;
 import jkind.results.Counterexample;
 import jkind.results.layout.Layout;
-import jkind.util.Tuple;
 import jkind.util.Util;
 
 public class ConsoleWriter extends Writer {
@@ -42,7 +42,7 @@ public class ConsoleWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs,
+			List<Expr> invariants, Set<String> ivc, List<AllIVCs> allIvcs,
 			boolean mivcTimedOut) {
 		if (miniJkind != null) {
 			miniJkind.setRuntime(runtime);
@@ -77,15 +77,15 @@ public class ConsoleWriter extends Writer {
 				}
 				System.out.println("\n" + allIvcs.size() + " INDUCTIVE VALIDITY CORES WERE FOUND:");
 				System.out.println("============================");
-				for (Tuple<Set<String>, List<String>> t : allIvcs) {
+				for (AllIVCs t : allIvcs) {
 					System.out.println("IVC  #" + counter + ":");
 					counter++;
 					System.out.println("INVARIANTS:");
-					for (String inv : t.secondElement()) {
+					for (String inv : t.allIVCList()) {
 						System.out.println("  " + inv);
 					}
 					System.out.println("INDUCTIVE VALIDITY CORE:");
-					for (String core : t.firstElement()) {
+					for (String core : t.getAllIVCSet()) {
 						System.out.println("  " + core);
 					}
 					System.out.println("============================");

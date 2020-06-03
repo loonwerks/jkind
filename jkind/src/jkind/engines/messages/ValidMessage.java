@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import jkind.engines.ivcs.AllIVCs;
 import jkind.lustre.Expr;
-import jkind.util.Tuple;
 import jkind.util.Util;
 
 public class ValidMessage extends Message {
 	public final String source;
 	public final List<String> valid;
 	public final Set<String> ivc;
-	public final List<Tuple<Set<String>, List<String>>> allIvcs;
+	public final List<AllIVCs> allIvcs;
 	public final int k;
 	public final double proofTime;
 	public final List<Expr> invariants;
@@ -20,7 +20,7 @@ public class ValidMessage extends Message {
 	public final boolean mivcTimedOut;
 
 	public ValidMessage(String source, List<String> valid, int k, double proofTime, List<Expr> invariants,
-			Set<String> ivc, Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs, boolean mivcTimedOut) {
+			Set<String> ivc, Itinerary itinerary, Set<AllIVCs> allIvcs, boolean mivcTimedOut) {
 		this.source = source;
 		this.valid = Util.safeList(valid);
 		this.k = k;
@@ -33,7 +33,7 @@ public class ValidMessage extends Message {
 	}
 
 	public ValidMessage(String source, String valid, int k, double proofTime, List<Expr> invariants, Set<String> ivc,
-			Itinerary itinerary, Set<Tuple<Set<String>, List<String>>> allIvcs, boolean mivcTimedOut) {
+			Itinerary itinerary, Set<AllIVCs> allIvcs, boolean mivcTimedOut) {
 		this(source, Collections.singletonList(valid), k, proofTime, invariants, ivc, itinerary, allIvcs, mivcTimedOut);
 	}
 

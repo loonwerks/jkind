@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.ivcs.AllIVCs;
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -16,7 +17,6 @@ import jkind.results.Counterexample;
 import jkind.results.FunctionTable;
 import jkind.results.FunctionTableRow;
 import jkind.results.Signal;
-import jkind.util.Tuple;
 
 public class XmlWriter extends Writer {
 	private final PrintWriter out;
@@ -45,7 +45,7 @@ public class XmlWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs,
+			List<Expr> invariants, Set<String> ivc, List<AllIVCs> allIvcs,
 			boolean mivcTimedOut) {
 		for (String prop : props) {
 			writeValid(prop, source, k, runtime, invariants, ivc, allIvcs);
@@ -53,7 +53,7 @@ public class XmlWriter extends Writer {
 	}
 
 	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants, Set<String> ivc,
-			List<Tuple<Set<String>, List<String>>> allIvcs) {
+			List<AllIVCs> allIvcs) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
@@ -82,12 +82,12 @@ public class XmlWriter extends Writer {
 				out.println("    <MustElem>" + supp + "</MustElem>");
 			}
 
-			for (Tuple<Set<String>, List<String>> ivcSet : allIvcs) {
+			for (AllIVCs ivcSet : allIvcs) {
 				out.println("    <IvcSet number=\"" + count + "\">");
-				for (String invariant : ivcSet.secondElement()) {
+				for (String invariant : ivcSet.allIVCList()) {
 					out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 				}
-				for (String supp : ivcSet.firstElement()) {
+				for (String supp : ivcSet.getAllIVCSet()) {
 					out.println("    <Ivc>" + supp + "</Ivc>");
 				}
 				out.println("    </IvcSet>");

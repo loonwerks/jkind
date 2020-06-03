@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.ivcs.AllIVCs;
 import jkind.excel.ExcelFormatter;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -20,7 +21,6 @@ import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.results.layout.Layout;
 import jkind.results.layout.NodeLayout;
-import jkind.util.Tuple;
 
 public class ExcelWriter extends Writer {
 	private final File file;
@@ -55,7 +55,7 @@ public class ExcelWriter extends Writer {
 
 	@Override
 	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
-			List<Expr> invariants, Set<String> ivc, List<Tuple<Set<String>, List<String>>> allIvcs,
+			List<Expr> invariants, Set<String> ivc, List<AllIVCs> allIvcs,
 			boolean mivcTimedOut) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
 		// doesn't write allIvcs...
@@ -64,13 +64,13 @@ public class ExcelWriter extends Writer {
 			Set<List<String>> ivcSets = new HashSet<List<String>>();
 			// The following are similar from the process in XmlWriter
 			if (!allIvcs.isEmpty()) {
-				for (Tuple<Set<String>, List<String>> ivcSet : allIvcs) {
+				for (AllIVCs ivcSet : allIvcs) {
 					List<String> curInvariant = new ArrayList<String>();
 					List<String> curIvc = new ArrayList<String>();
-					for (String invariant : ivcSet.secondElement()) {
+					for (String invariant : ivcSet.allIVCList()) {
 						curInvariant.add(escape(invariant));
 					}
-					for (String supp : ivcSet.firstElement()) {
+					for (String supp : ivcSet.getAllIVCSet()) {
 						curIvc.add(supp);
 					}
 					invariantSets.add(curInvariant);
