@@ -81,7 +81,7 @@ public class ConsoleWriter extends Writer {
 					System.out.println("IVC  #" + counter + ":");
 					counter++;
 					System.out.println("INVARIANTS:");
-					for (String inv : t.allIVCList()) {
+					for (String inv : t.getAllIVCList()) {
 						System.out.println("  " + inv);
 					}
 					System.out.println("INDUCTIVE VALIDITY CORE:");

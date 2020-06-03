@@ -67,7 +67,7 @@ public class ExcelWriter extends Writer {
 				for (AllIVCs ivcSet : allIvcs) {
 					List<String> curInvariant = new ArrayList<String>();
 					List<String> curIvc = new ArrayList<String>();
-					for (String invariant : ivcSet.allIVCList()) {
+					for (String invariant : ivcSet.getAllIVCList()) {
 						curInvariant.add(escape(invariant));
 					}
 					for (String supp : ivcSet.getAllIVCSet()) {

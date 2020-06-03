@@ -84,7 +84,7 @@ public class XmlWriter extends Writer {
 
 			for (AllIVCs ivcSet : allIvcs) {
 				out.println("    <IvcSet number=\"" + count + "\">");
-				for (String invariant : ivcSet.allIVCList()) {
+				for (String invariant : ivcSet.getAllIVCList()) {
 					out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
 				}
 				for (String supp : ivcSet.getAllIVCSet()) {

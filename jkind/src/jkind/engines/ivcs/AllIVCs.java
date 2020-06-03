@@ -18,7 +18,7 @@ public class AllIVCs {
 		return allIVCSet;
 	}
 
-	public List<String> allIVCList() {
+	public List<String> getAllIVCList() {
 		return allIVCList;
 	}
 }

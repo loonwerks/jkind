@@ -347,7 +347,7 @@ public class Director extends MessageHandler {
 			if (settings.allIvcs) {
 				for (AllIVCs item : vm.allIvcs) {
 					allIvcs.add(new AllIVCs(IvcUtil.findRightSide(item.getAllIVCSet(), settings.allAssigned,
-							analysisSpec.node.equations), item.allIVCList()));
+							analysisSpec.node.equations), item.getAllIVCList()));
 				}
 			}
 			writer.writeValid(newValid, vm.source, vm.k, vm.proofTime, getRuntime(), invariants, ivc, allIvcs,
