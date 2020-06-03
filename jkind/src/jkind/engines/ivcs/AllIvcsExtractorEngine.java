@@ -61,7 +61,6 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 	Set<Tuple<Set<String>, List<String>>> allIvcs = new HashSet<>();
 	private int TIMEOUT;
 	private boolean timedoutLoop = false;
-	private ValidMessage gvm;
 	private double runtime;
 
 	private class SeedPair {
