@@ -655,12 +655,10 @@ public class AllIvcsExtractorEngine extends SolverBasedEngine {
 			mivcTimedOut = true;
 		}
 
+		// In the all ivc elements, if any of the inner loops times out, the timeout information is encoded in the must elements
+		// and passed to the ivc field of the ValidMessage object, sending it out to the writers
 		director.broadcast(new ValidMessage(vm.source, valid, vm.k, vm.proofTime, null, mustElements, itinerary,
 				allIvcs, mivcTimedOut));
-	}
-
-	public void getValid() {
-		sendValid("OK", gvm);
 	}
 
 	@Override

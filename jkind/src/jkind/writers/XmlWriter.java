@@ -69,6 +69,9 @@ public class XmlWriter extends Writer {
 		} else {
 			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
 			int count = 1;
+
+			// In the all ivc elements, if any of the inner loops times out, the timeout information is encoded in
+			// the ivc field of the ValidMessage object
 			if (ivc.contains("::AIVCtimedoutLoop::")) {
 				ivc.remove("::AIVCtimedoutLoop::");
 				out.println("    <TimedoutLoop>" + "yes" + "</TimedoutLoop>");
