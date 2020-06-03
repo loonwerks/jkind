@@ -72,24 +72,7 @@ public class Director extends MessageHandler {
 	private MiniJKind miniJkind;
 
 	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec) {
-		this.settings = settings;
-		this.userSpec = userSpec;
-		this.analysisSpec = analysisSpec;
-		this.miniJkind = null;
-		this.writer = getWriter();
-		this.startTime = System.currentTimeMillis();
-		this.remainingProperties.addAll(analysisSpec.node.properties);
-
-		if (settings.readAdvice != null) {
-			this.inputAdvice = AdviceReader.read(settings.readAdvice);
-		}
-
-		if (settings.writeAdvice != null) {
-			this.adviceWriter = new AdviceWriter(settings.writeAdvice);
-			this.adviceWriter.addVarDecls(Util.getVarDecls(analysisSpec.node));
-		}
-
-		initializeUnknowns(settings, analysisSpec.node.properties);
+		this(settings, userSpec, analysisSpec, null);
 	}
 
 	public Director(JKindSettings settings, Specification userSpec, Specification analysisSpec, MiniJKind miniJkind) {
