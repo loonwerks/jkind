@@ -14,11 +14,11 @@ public class UnaryExpr extends Expr {
 		this.op = op;
 		this.expr = expr;
 	}
-	
+
 	public UnaryExpr(UnaryOp op, Expr expr) {
 		this(Location.NULL, op, expr);
 	}
-	
+
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

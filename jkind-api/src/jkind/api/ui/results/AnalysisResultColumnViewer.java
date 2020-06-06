@@ -23,11 +23,11 @@ public abstract class AnalysisResultColumnViewer {
 	 * Subclasses may use this method to initialize themselves.
 	 */
 	protected abstract ColumnViewer createViewer();
-	
+
 	public static enum Column {
 		PROPERTY, RESULT
 	}
-	
+
 	public void update(Object element) {
 		viewer.update(element, null);
 	}
@@ -39,15 +39,15 @@ public abstract class AnalysisResultColumnViewer {
 	public void setLayoutData(Object layoutData) {
 		composite.setLayoutData(layoutData);
 	}
-	
+
 	public Composite getComposite() {
 		return composite;
 	}
-	
+
 	public ColumnViewer getViewer() {
 		return viewer;
 	}
-	
+
 	public Control getControl() {
 		return viewer.getControl();
 	}

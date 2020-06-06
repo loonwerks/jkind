@@ -109,8 +109,7 @@ public class ExcelFormatter implements Closeable {
 		} else if (property instanceof InconsistentProperty) {
 			write((InconsistentProperty) property);
 		} else {
-			throw new IllegalArgumentException(
-					"Unknown property type: " + property.getClass().getSimpleName());
+			throw new IllegalArgumentException("Unknown property type: " + property.getClass().getSimpleName());
 		}
 	}
 
@@ -127,8 +126,7 @@ public class ExcelFormatter implements Closeable {
 			summarySheet.addCell(new Label(1, summaryRow, "Valid"));
 		} else {
 			WritableSheet validSheet = writeValidSheet(name, invariants, ivc);
-			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", validSheet, 0,
-					0);
+			WritableHyperlink link = new WritableHyperlink(1, summaryRow, "Valid", validSheet, 0, 0);
 			summarySheet.addHyperlink(link);
 		}
 
@@ -140,8 +138,7 @@ public class ExcelFormatter implements Closeable {
 
 	private WritableSheet writeValidSheet(String property, List<String> invariants, Set<String> ivc)
 			throws WriteException {
-		currSheet = workbook.createSheet(ExcelUtil.trimName(property),
-				workbook.getNumberOfSheets());
+		currSheet = workbook.createSheet(ExcelUtil.trimName(property), workbook.getNumberOfSheets());
 		currRow = 0;
 
 		if (!invariants.isEmpty()) {
@@ -195,16 +192,14 @@ public class ExcelFormatter implements Closeable {
 			summarySheet.addCell(new Label(1, summaryRow, "Unknown"));
 		} else {
 			WritableSheet cexSheet = writeCounterexample(name, cex, Collections.emptyList());
-			summarySheet
-					.addHyperlink(new WritableHyperlink(1, summaryRow, "Unknown", cexSheet, 0, 0));
+			summarySheet.addHyperlink(new WritableHyperlink(1, summaryRow, "Unknown", cexSheet, 0, 0));
 		}
 		summarySheet.addCell(new Number(4, summaryRow, runtime));
 		summarySheet.addCell(new Number(5, summaryRow, trueFor));
 		summaryRow++;
 	}
 
-	private WritableSheet writeCounterexample(String name, Counterexample cex,
-			List<String> conflicts) {
+	private WritableSheet writeCounterexample(String name, Counterexample cex, List<String> conflicts) {
 		return cexFormatter.writeCounterexample(name, cex, conflicts);
 	}
 

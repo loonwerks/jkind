@@ -14,7 +14,7 @@ public class LineInputStream implements AutoCloseable {
 
 	public String readLine() throws IOException {
 		StringBuilder buffer = new StringBuilder();
-		
+
 		int c;
 		while ((c = source.read()) != -1) {
 			buffer.append((char) c);
@@ -22,7 +22,7 @@ public class LineInputStream implements AutoCloseable {
 				return buffer.toString();
 			}
 		}
-		
+
 		if (buffer.length() == 0) {
 			source.close();
 			return null;

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.ivcs.AllIVCs;
 import jkind.lustre.Expr;
 import jkind.lustre.Type;
 import jkind.lustre.VarDecl;
@@ -43,30 +44,67 @@ public class XmlWriter extends Writer {
 	}
 
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime, List<Expr> invariants,
-			Set<String> ivc) {
+	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
+			List<Expr> invariants, Set<String> ivc, List<AllIVCs> allIvcs,
+			boolean mivcTimedOut) {
 		for (String prop : props) {
-			writeValid(prop, source, k, runtime, invariants, ivc);
+			writeValid(prop, source, k, runtime, invariants, ivc, allIvcs);
 		}
 	}
 
-	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(String prop, String source, int k, double runtime, List<Expr> invariants, Set<String> ivc,
+			List<AllIVCs> allIvcs) {
 		out.println("  <Property name=\"" + prop + "\">");
 		out.println("    <Runtime unit=\"sec\">" + runtime + "</Runtime>");
 		out.println("    <Answer source=\"" + source + "\">valid</Answer>");
 		out.println("    <K>" + k + "</K>");
-		for (Expr invariant : invariants) {
-			out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+
+		if (allIvcs.isEmpty()) {
+			for (Expr invariant : invariants) {
+				out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+			}
+			for (String supp : ivc) {
+				out.println("    <Ivc>" + supp + "</Ivc>");
+			}
+		} else {
+			out.println("    <NumberOfIVCs>" + allIvcs.size() + "</NumberOfIVCs>");
+			int count = 1;
+
+			// In the all ivc elements, if any of the inner loops times out, the timeout information is encoded in
+			// the ivc field of the ValidMessage object
+			if (ivc.contains("::AIVCtimedoutLoop::")) {
+				ivc.remove("::AIVCtimedoutLoop::");
+				out.println("    <TimedoutLoop>" + "yes" + "</TimedoutLoop>");
+			} else {
+				out.println("    <TimedoutLoop>" + "no" + "</TimedoutLoop>");
+			}
+			for (String supp : ivc) {
+				out.println("    <MustElem>" + supp + "</MustElem>");
+			}
+
+			for (AllIVCs ivcSet : allIvcs) {
+				out.println("    <IvcSet number=\"" + count + "\">");
+				for (String invariant : ivcSet.getAllIVCList()) {
+					out.println("    <Invariant>" + escape(invariant) + "</Invariant>");
+				}
+				for (String supp : ivcSet.getAllIVCSet()) {
+					out.println("    <Ivc>" + supp + "</Ivc>");
+				}
+				out.println("    </IvcSet>");
+				count++;
+			}
 		}
-		for (String supp : ivc) {
-			out.println("    <Ivc>" + supp + "</Ivc>");
-		}
+
 		out.println("  </Property>");
 		out.flush();
 	}
 
 	private String escape(Expr invariant) {
 		return invariant.toString().replace("<", "&lt;").replace(">", "&gt;");
+	}
+
+	private String escape(String invariant) {
+		return invariant.replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	@Override

@@ -13,8 +13,7 @@ public final class InvalidProperty extends Property {
 	private Counterexample cex;
 	private List<String> conflicts;
 
-	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts,
-			double runtime) {
+	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		super(name, runtime);
 		this.source = source;
 		this.conflicts = Util.safeList(conflicts);
@@ -34,7 +33,7 @@ public final class InvalidProperty extends Property {
 	public Counterexample getCounterexample() {
 		return cex;
 	}
-	
+
 	/**
 	 * Conflicts (used in realizability analysis)
 	 */

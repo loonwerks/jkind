@@ -12,7 +12,7 @@ public class ArrayExpr extends Expr {
 		super(loc);
 		this.elements = Util.safeList(elements);
 	}
-	
+
 	public ArrayExpr(List<Expr> elements) {
 		this(Location.NULL, elements);
 	}

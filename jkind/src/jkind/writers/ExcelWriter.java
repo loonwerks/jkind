@@ -4,10 +4,12 @@ import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jkind.engines.ivcs.AllIVCs;
 import jkind.excel.ExcelFormatter;
 import jkind.lustre.Expr;
 import jkind.lustre.Node;
@@ -47,27 +49,49 @@ public class ExcelWriter extends Writer {
 		formatter.close();
 	}
 
+	private String escape(String invariant) {
+		return invariant.replace("<", "&lt;").replace(">", "&gt;");
+	}
+
 	@Override
-	public void writeValid(List<String> props, String source, int k, double runtime,
-			List<Expr> invariants, Set<String> ivc) {
+	public void writeValid(List<String> props, String source, int k, double proofTime, double runtime,
+			List<Expr> invariants, Set<String> ivc, List<AllIVCs> allIvcs,
+			boolean mivcTimedOut) {
 		List<String> invText = invariants.stream().map(Expr::toString).collect(toList());
+		// doesn't write allIvcs...
 		for (String prop : props) {
-			properties.add(new ValidProperty(prop, source, k, runtime, invText, ivc));
+			Set<List<String>> invariantSets = new HashSet<List<String>>();
+			Set<List<String>> ivcSets = new HashSet<List<String>>();
+			// The following are similar from the process in XmlWriter
+			if (!allIvcs.isEmpty()) {
+				for (AllIVCs ivcSet : allIvcs) {
+					List<String> curInvariant = new ArrayList<String>();
+					List<String> curIvc = new ArrayList<String>();
+					for (String invariant : ivcSet.getAllIVCList()) {
+						curInvariant.add(escape(invariant));
+					}
+					for (String supp : ivcSet.getAllIVCSet()) {
+						curIvc.add(supp);
+					}
+					invariantSets.add(curInvariant);
+					ivcSets.add(curIvc);
+				}
+			}
+			properties.add(
+					new ValidProperty(prop, source, k, runtime, invText, ivc, invariantSets, ivcSets, mivcTimedOut));
 		}
 	}
 
 	@Override
-	public void writeInvalid(String prop, String source, Counterexample cex,
-			List<String> conflicts, double runtime) {
+	public void writeInvalid(String prop, String source, Counterexample cex, List<String> conflicts, double runtime) {
 		properties.add(new InvalidProperty(prop, source, cex, conflicts, runtime));
 	}
 
 	@Override
-	public void writeUnknown(List<String> props, int trueFor,
-			Map<String, Counterexample> inductiveCounterexamples, double runtime) {
+	public void writeUnknown(List<String> props, int trueFor, Map<String, Counterexample> inductiveCounterexamples,
+			double runtime) {
 		for (String prop : props) {
-			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop),
-					runtime));
+			properties.add(new UnknownProperty(prop, trueFor, inductiveCounterexamples.get(prop), runtime));
 		}
 	}
 

@@ -17,11 +17,11 @@ public class NodeCallExpr extends Expr {
 		this.node = node;
 		this.args = Util.safeList(args);
 	}
-	
+
 	public NodeCallExpr(String node, List<Expr> args) {
 		this(Location.NULL, node, args);
 	}
-	
+
 	public NodeCallExpr(String node, Expr... args) {
 		this(Location.NULL, node, Arrays.asList(args));
 	}

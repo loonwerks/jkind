@@ -1,0 +1,13 @@
+node main(x : int) returns (e1 : bool);
+	var 
+	  y : int;
+	  e : bool;
+	let 
+		 
+		y = x + 1;
+		e = (x + 6) < y;
+		assert e;
+		e1 = pre (x) + 5 < y;
+
+		--%PROPERTY e1;
+	tel;

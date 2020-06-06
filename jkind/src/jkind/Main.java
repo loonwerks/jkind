@@ -9,6 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+
 import jkind.lustre.ArrayType;
 import jkind.lustre.Node;
 import jkind.lustre.Program;
@@ -23,10 +27,6 @@ import jkind.lustre.parsing.LustreToAstVisitor;
 import jkind.lustre.parsing.StdErrErrorListener;
 import jkind.lustre.parsing.ValidIdChecker;
 import jkind.util.Util;
-
-import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
  * This class serves as a single entry point for all JKind-based command line

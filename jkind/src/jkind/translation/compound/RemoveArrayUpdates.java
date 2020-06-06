@@ -22,7 +22,7 @@ public class RemoveArrayUpdates extends TypeAwareAstMapVisitor {
 	public static Program program(Program program) {
 		return new RemoveArrayUpdates().visit(program);
 	}
-	
+
 	@Override
 	public Expr visit(ArrayUpdateExpr e) {
 		Expr array = e.array.accept(this);

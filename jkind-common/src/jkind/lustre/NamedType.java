@@ -18,7 +18,7 @@ public class NamedType extends Type {
 	public NamedType(String name) {
 		this(Location.NULL, name);
 	}
-	
+
 	/*
 	 * Private constructor for built-in types
 	 */
@@ -26,7 +26,7 @@ public class NamedType extends Type {
 		super(Location.NULL);
 		this.name = name;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
@@ -39,7 +39,7 @@ public class NamedType extends Type {
 	public boolean isBuiltin() {
 		return this == REAL || this == BOOL || this == INT;
 	}
-	
+
 	public static NamedType get(String name) {
 		switch (name) {
 		case "int":

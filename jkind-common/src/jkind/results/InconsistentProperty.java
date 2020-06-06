@@ -1,6 +1,5 @@
 package jkind.results;
 
-
 /**
  * An inconsistent property
  */

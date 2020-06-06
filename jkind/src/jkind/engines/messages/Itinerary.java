@@ -10,7 +10,7 @@ public class Itinerary {
 	public Itinerary(List<EngineType> destinations) {
 		this.destinations = Util.safeList(destinations);
 	}
-	
+
 	public EngineType getNextDestination() {
 		if (destinations.isEmpty()) {
 			return null;
@@ -18,7 +18,7 @@ public class Itinerary {
 			return destinations.get(0);
 		}
 	}
-	
+
 	public Itinerary getNextItinerary() {
 		return new Itinerary(destinations.subList(1, destinations.size()));
 	}

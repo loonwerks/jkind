@@ -34,8 +34,8 @@ public abstract class RealizabilityEngine implements Runnable {
 	// make it volatile
 	protected volatile Throwable throwable;
 
-	public RealizabilityEngine(String name, Specification spec,
-			JRealizabilitySettings settings, RealizabilityDirector director) {
+	public RealizabilityEngine(String name, Specification spec, JRealizabilitySettings settings,
+			RealizabilityDirector director) {
 		this.name = name;
 		this.spec = spec;
 		this.settings = settings;

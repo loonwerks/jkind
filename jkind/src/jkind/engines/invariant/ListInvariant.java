@@ -9,7 +9,7 @@ import jkind.lustre.visitors.Evaluator;
 
 public class ListInvariant implements StructuredInvariant {
 	private final List<Expr> exprs = new ArrayList<>();
-	
+
 	public ListInvariant(List<Expr> exprs) {
 		this.exprs.addAll(exprs);
 	}

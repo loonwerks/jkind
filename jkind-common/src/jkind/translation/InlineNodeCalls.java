@@ -108,8 +108,7 @@ public class InlineNodeCalls extends ExprMapVisitor {
 		return translation;
 	}
 
-	private void createInputEquations(List<VarDecl> inputs, List<Expr> args,
-			Map<String, IdExpr> translation) {
+	private void createInputEquations(List<VarDecl> inputs, List<Expr> args, Map<String, IdExpr> translation) {
 		for (int i = 0; i < inputs.size(); i++) {
 			IdExpr idExpr = translation.get(inputs.get(i).id);
 			Expr arg = args.get(i);

@@ -16,7 +16,7 @@ public class AdviceEngine extends AbstractInvariantGenerationEngine {
 
 	public AdviceEngine(Specification spec, JKindSettings settings, Director director, Advice advice) {
 		super(NAME, spec, settings, director);
-		
+
 		advice.prune(spec.node);
 		this.potentialInvariants = advice.getInvariants();
 	}

@@ -28,6 +28,7 @@ public class JKind {
 			ensureSolverAvailable(settings.solver);
 
 			program = Translate.translate(program);
+			Node main = program.getMainNode();
 			Specification userSpec = new Specification(program, settings.slicing);
 			Specification analysisSpec = getAnalysisSpec(userSpec, settings);
 

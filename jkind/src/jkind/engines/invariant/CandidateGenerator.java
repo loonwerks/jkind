@@ -88,8 +88,7 @@ public class CandidateGenerator {
 
 	private void addSubrangeCandidates(String id, SubrangeIntType subrange) {
 		IdExpr idExpr = new IdExpr(id);
-		for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r
-				.add(BigInteger.ONE)) {
+		for (BigInteger r = subrange.low; r.compareTo(subrange.high) <= 0; r = r.add(BigInteger.ONE)) {
 			candidates.add(new BinaryExpr(idExpr, BinaryOp.EQUAL, new IntExpr(r)));
 		}
 	}

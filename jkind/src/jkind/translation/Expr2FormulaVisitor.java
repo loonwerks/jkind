@@ -97,10 +97,10 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 	}
 
 	@Override
-	public Void visit(FunctionCallExpr e){
+	public Void visit(FunctionCallExpr e) {
 		throw new IllegalArgumentException("Functions are not supported");
 	}
-	
+
 	@Override
 	public Void visit(BinaryExpr e) {
 		switch (e.op) {
@@ -223,8 +223,7 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(NodeCallExpr e) {
-		throw new IllegalArgumentException(
-				"Node calls must be inlined before translation to formula");
+		throw new IllegalArgumentException("Node calls must be inlined before translation to formula");
 	}
 
 	@Override
@@ -235,20 +234,17 @@ public class Expr2FormulaVisitor implements ExprVisitor<Void> {
 
 	@Override
 	public Void visit(RecordAccessExpr e) {
-		throw new IllegalArgumentException(
-				"Records must be flattened before translation to formula");
+		throw new IllegalArgumentException("Records must be flattened before translation to formula");
 	}
 
 	@Override
 	public Void visit(RecordExpr e) {
-		throw new IllegalArgumentException(
-				"Records must be flattened before translation to formula");
+		throw new IllegalArgumentException("Records must be flattened before translation to formula");
 	}
 
 	@Override
 	public Void visit(RecordUpdateExpr e) {
-		throw new IllegalArgumentException(
-				"Records must be flattened before translation to formula");
+		throw new IllegalArgumentException("Records must be flattened before translation to formula");
 	}
 
 	@Override

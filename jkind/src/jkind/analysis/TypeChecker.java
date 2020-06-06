@@ -467,7 +467,7 @@ public class TypeChecker implements ExprVisitor<Type> {
 		if (node != null) {
 			return visitCallExpr(e, e.args, node.inputs, node.outputs);
 		}
-		
+
 		error(e, "unknown node " + e.node);
 		return null;
 	}

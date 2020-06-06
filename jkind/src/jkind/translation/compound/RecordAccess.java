@@ -6,7 +6,7 @@ public class RecordAccess implements Access {
 	public RecordAccess(String field) {
 		this.field = field;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "." + field;

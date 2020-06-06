@@ -4,7 +4,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
 import jkind.JKindException;
 import jkind.engines.StopException;
 

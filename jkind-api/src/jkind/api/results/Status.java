@@ -23,7 +23,7 @@ public enum Status {
 		case WAITING:
 			return "Waiting";
 		case VALID_REFINED:
-		    return "Valid (refined)";
+			return "Valid (refined)";
 		default:
 			return "";
 		}

@@ -28,8 +28,8 @@ import jkind.util.SexpUtil;
 public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngine {
 	private final InvariantSet provenInvariants = new InvariantSet();
 
-	public AbstractInvariantGenerationEngine(String name, Specification spec,
-			JKindSettings settings, Director director) {
+	public AbstractInvariantGenerationEngine(String name, Specification spec, JKindSettings settings,
+			Director director) {
 		super(name, spec, settings, director);
 	}
 
@@ -161,7 +161,8 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 		if (!valid.isEmpty()) {
 			Itinerary itinerary = director.getValidMessageItinerary();
 			List<Expr> invariants = provenInvariants.getInvariants();
-			director.broadcast(new ValidMessage(getName(), valid, k, invariants, null, itinerary));
+			director.broadcast(
+					new ValidMessage(getName(), valid, k, getRuntime(), invariants, null, itinerary, null, false));
 		}
 	}
 
@@ -199,5 +200,9 @@ public abstract class AbstractInvariantGenerationEngine extends SolverBasedEngin
 	@Override
 	protected void handleMessage(ValidMessage vm) {
 		properties.removeAll(vm.valid);
+	}
+
+	private double getRuntime() {
+		return (System.currentTimeMillis() - director.startTime) / 1000.0;
 	}
 }

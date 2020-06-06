@@ -20,7 +20,7 @@ public class EnumType extends Type {
 	public EnumType(String id, List<String> values) {
 		this(Location.NULL, id, values);
 	}
-	
+
 	public String getValue(int i) {
 		return values.get(i);
 	}

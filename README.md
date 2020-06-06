@@ -35,3 +35,19 @@ as its underlying SMT solver. Advanced users may wish to install alternative sol
 [Yices 2](http://yices.csl.sri.com/index.shtml),
 [CVC4](http://cvc4.cs.nyu.edu/web/), or
 [MathSAT](http://mathsat.fbk.eu/).
+
+Minimal IVCs enumeration (optional)
+-----------------------------------
+JKind supports enumeration of All Minimal Inductive Validity Cores (All-MIVCs) to provide a full enumeration of all minimal set of model elements necessary for the inductive proofs of a safety property. 
+Both the offline enumeration (as described in [1]) and the online enumeration (as described in [2]) have been implemented, and the offline enumeration is the algorithm made available for general use. 
+To use the MIVC enumeration, run JKind with the following arguments: 
+```
+-all_ivcs -solver z3
+```
+In addition, use the -timeout argument to limit the time for the enumeration, e.g., 
+```
+-timeout 1800
+```
+
+[1] E. Ghassabani, M. W. Whalen, and A. Gacek. Efficient generation of all minimal inductive validity cores. 2017 Formal Methods in Computer Aided Design (FMCAD), pages 31–38, 2017.
+[2] J. Bendik, E. Ghassabani, M. Whalen, and I. Cerna. Online enumeration of all minimal inductive validity cores. In International Conference on Software Engineering and Formal Methods, pages 189–204. Springer, 2018.

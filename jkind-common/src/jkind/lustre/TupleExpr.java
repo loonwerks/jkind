@@ -15,7 +15,7 @@ public class TupleExpr extends Expr {
 		}
 		this.elements = Util.safeList(elements);
 	}
-	
+
 	public TupleExpr(List<? extends Expr> elements) {
 		this(Location.NULL, elements);
 	}
@@ -26,7 +26,7 @@ public class TupleExpr extends Expr {
 		}
 		return new TupleExpr(exprs);
 	}
-	
+
 	@Override
 	public <T> T accept(ExprVisitor<T> visitor) {
 		return visitor.visit(this);

@@ -53,13 +53,17 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 			toSolver.newLine();
 			toSolver.flush();
 		} catch (IOException e) {
-			throw new JKindException("Unable to write to " + getSolverName() + ", "
-					+ "probably due to internal JKind error", e);
+			throw new JKindException(
+					"Unable to write to " + getSolverName() + ", " + "probably due to internal JKind error", e);
 		}
 	}
 
 	public Symbol type(Type type) {
 		return new Symbol(Util.capitalize(Util.getName(type)));
+	}
+
+	public void declFun(String ef, NamedType t1, NamedType t2) {
+		send(new Cons("declare-fun", new Symbol(ef), new Symbol("(" + type(t1) + ")"), type(t2)));
 	}
 
 	@Override
@@ -206,7 +210,8 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 		return parseSmtLib2Model(modelStr, varTypes, functions);
 	}
 
-	public static SmtLib2Model parseSmtLib2Model(String modelStr, Map<String, Type> varTypes, List<Function> functions) {
+	public static SmtLib2Model parseSmtLib2Model(String modelStr, Map<String, Type> varTypes,
+			List<Function> functions) {
 		CharStream stream = new ANTLRInputStream(modelStr);
 		SmtLib2Lexer lexer = new SmtLib2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

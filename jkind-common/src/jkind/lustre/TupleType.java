@@ -23,7 +23,7 @@ public class TupleType extends Type {
 		}
 		return new TupleType(types);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringJoiner text = new StringJoiner(", ", "(", ")");

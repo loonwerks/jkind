@@ -13,8 +13,7 @@ public class InvalidMessage extends Message {
 	public final Model model;
 	private final Itinerary itinerary;
 
-	public InvalidMessage(String source, List<String> invalid, int length, Model model,
-			Itinerary itinerary) {
+	public InvalidMessage(String source, List<String> invalid, int length, Model model, Itinerary itinerary) {
 		this.source = source;
 		this.invalid = Util.safeList(invalid);
 		this.length = length;
@@ -22,8 +21,7 @@ public class InvalidMessage extends Message {
 		this.itinerary = itinerary;
 	}
 
-	public InvalidMessage(String source, String invalid, int length, Model model,
-			Itinerary itinerary) {
+	public InvalidMessage(String source, String invalid, int length, Model model, Itinerary itinerary) {
 		this(source, Collections.singletonList(invalid), length, model, itinerary);
 	}
 

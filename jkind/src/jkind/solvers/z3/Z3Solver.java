@@ -38,6 +38,13 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	public void initialize() {
 		setOption("produce-models", true);
 		setOption("produce-unsat-cores", true);
+		setOption("smt.core.minimize", true);
+		setOption("sat.core.minimize", true);
+
+		// The following option can be added
+		// when the reported bugs in Z3 resurfaces:
+		// https://github.com/Z3Prover/z3/issues/158
+		// setOption("smt.core.validate", true);
 	}
 
 	public void setOption(String option, boolean value) {
@@ -88,13 +95,98 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	}
 
 	@Override
-	protected Result quickCheckSat(List<Symbol> activationLiterals) {
+	public Result quickCheckSat(List<Symbol> activationLiterals) {
 		send(new Cons("check-sat", activationLiterals));
 		String status = readFromSolver();
 		if (isSat(status)) {
 			return new SatResult();
 		} else if (isUnsat(status)) {
 			return new UnsatResult(getUnsatCore(activationLiterals));
+		} else {
+			return new UnknownResult();
+		}
+	}
+
+	public Result checkMaximal() {
+		send("(set-option :sat.phase always_true)");
+		send("(check-sat-using sat)");
+		String status = readFromSolver();
+
+		if (isSat(status)) {
+			send("(get-model)");
+			return new SatResult(parseModel(readFromSolver()));
+		} else if (isUnsat(status)) {
+			return new UnsatResult();
+		} else {
+			return new UnknownResult();
+		}
+	}
+
+	public Result checkMinimal() {
+		send("(set-option :sat.phase always_false)");
+		send("(check-sat-using sat)");
+		String status = readFromSolver();
+
+		if (isSat(status)) {
+			send("(get-model)");
+			return new SatResult(parseModel(readFromSolver()));
+		} else if (isUnsat(status)) {
+			return new UnsatResult();
+		} else {
+			return new UnknownResult();
+		}
+	}
+
+	public Result checkValuation(List<Symbol> positiveLits, List<Symbol> negativeLits, boolean getModel) {
+		String arg = "(check-sat ";
+		for (Symbol s : positiveLits) {
+			arg += s.toString() + " ";
+		}
+		for (Symbol s : negativeLits) {
+			arg += "(not " + s.toString() + ") ";
+		}
+		arg += ")";
+		send(arg);
+		String status = readFromSolver();
+
+		if (isSat(status)) {
+			if (getModel) {
+				send("(get-model)");
+				return new SatResult(parseModel(readFromSolver()));
+			} else {
+				return new SatResult();
+			}
+		} else if (isUnsat(status)) {
+			return new UnsatResult();
+
+		} else {
+			return new UnknownResult();
+		}
+
+	}
+
+	/**
+	 * similar to quickCheckSat, but focused on
+	 *     1- either the SAT model or unsat-core
+	 *     2- or just the return Type of Result
+	 */
+	public Result checkSat(List<Symbol> activationLiterals, boolean getModel, boolean getCore) {
+		send(new Cons("check-sat", activationLiterals));
+		String status = readFromSolver();
+
+		if (isSat(status)) {
+			if (getModel) {
+				send("(get-model)");
+				return new SatResult(parseModel(readFromSolver()));
+			} else {
+				return new SatResult();
+			}
+		} else if (isUnsat(status)) {
+			if (getCore) {
+				return new UnsatResult(getUnsatCore(activationLiterals));
+			} else {
+				return new UnsatResult();
+			}
 		} else {
 			return new UnknownResult();
 		}
@@ -161,4 +253,5 @@ public class Z3Solver extends SmtLib2Solver implements MaxSatSolver {
 	public Result maxsatQuery(Sexp query) {
 		return query(query);
 	}
+
 }

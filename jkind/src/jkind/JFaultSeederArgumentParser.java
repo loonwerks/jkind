@@ -25,7 +25,8 @@ public class JFaultSeederArgumentParser extends ArgumentParser {
 	@Override
 	protected Options getOptions() {
 		Options options = super.getOptions();
-		options.addOption(TOTAL_FAULTS, true, "total faults to emit per file (used with Proportional and Adjusted strategies)");
+		options.addOption(TOTAL_FAULTS, true,
+				"total faults to emit per file (used with Proportional and Adjusted strategies)");
 		options.addOption(SINGLE_FILE, false, "add all faults to one file (default is one fault per file)");
 		options.addOption(STRATEGY, true, "strategy for fault construction.  One of: {manual, proportional, adjusted}");
 		options.addOption(STATS, false, "provide statistics for the number of possible faults");
@@ -47,21 +48,27 @@ public class JFaultSeederArgumentParser extends ArgumentParser {
 		if (line.hasOption(TOTAL_FAULTS)) {
 			settings.totalFaults = parseNonnegativeInt(line.getOptionValue(TOTAL_FAULTS));
 		}
-		
+
 		if (line.hasOption(SINGLE_FILE)) {
 			settings.faultPerFile = true;
 		}
 
 		if (line.hasOption(STRATEGY)) {
-			switch(line.getOptionValue(STRATEGY).toLowerCase()) {
-			case "manual": settings.strategy = JFaultSeederSettings.Strategy.Manual; break;
-			case "adjusted": settings.strategy = JFaultSeederSettings.Strategy.Adjusted; break;
-			case "proportional": settings.strategy = JFaultSeederSettings.Strategy.Proportional; break;
-			default: 
+			switch (line.getOptionValue(STRATEGY).toLowerCase()) {
+			case "manual":
+				settings.strategy = JFaultSeederSettings.Strategy.Manual;
+				break;
+			case "adjusted":
+				settings.strategy = JFaultSeederSettings.Strategy.Adjusted;
+				break;
+			case "proportional":
+				settings.strategy = JFaultSeederSettings.Strategy.Proportional;
+				break;
+			default:
 				StdErr.fatal(ExitCodes.INVALID_OPTIONS, "Unknown strategy");
 			}
 		}
-		
+
 		if (line.hasOption(STATS)) {
 			settings.stats = true;
 		}

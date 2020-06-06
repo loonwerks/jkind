@@ -2,7 +2,6 @@ package jkind.translation;
 
 import java.util.List;
 import java.util.Map;
-
 import jkind.lustre.Function;
 import jkind.lustre.Node;
 import jkind.lustre.Program;

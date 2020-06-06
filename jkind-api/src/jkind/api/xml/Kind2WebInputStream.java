@@ -79,8 +79,7 @@ public class Kind2WebInputStream extends InputStream {
 		String CRLF = "\r\n"; // Line separator required by multipart/form-data.
 		conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-		try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(conn.getOutputStream(),
-				"UTF-8"), true)) {
+		try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(conn.getOutputStream(), "UTF-8"), true)) {
 			// kind param
 			writer.append("--" + boundary).append(CRLF);
 			writer.append("Content-Disposition: form-data; name=\"kind\"").append(CRLF);
@@ -95,8 +94,7 @@ public class Kind2WebInputStream extends InputStream {
 
 			// file param
 			writer.append("--" + boundary).append(CRLF);
-			writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"upload.lus\"")
-					.append(CRLF);
+			writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"upload.lus\"").append(CRLF);
 			writer.append("Content-Type: text/plain; charset=UTF-8").append(CRLF);
 			writer.append(CRLF).flush();
 			writer.append(lustre);

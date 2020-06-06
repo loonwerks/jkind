@@ -17,7 +17,7 @@ public class Relation {
 		this.inputs = inputs;
 		this.body = body;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

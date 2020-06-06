@@ -1,0 +1,20 @@
+
+node main(
+
+) returns (
+  e1 : bool
+);
+var 
+  counter : int; 
+let
+  counter = (0 -> (1 + (pre counter)));
+
+  e1 = (counter < 11);
+
+  assert (counter <> 10); 
+
+  assert (counter > 2);
+  assert (counter < 2);
+  --%PROPERTY e1; 
+
+tel;

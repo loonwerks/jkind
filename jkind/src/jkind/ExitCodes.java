@@ -9,4 +9,5 @@ public class ExitCodes {
 	public static final int STATIC_ANALYSIS_ERROR = -6;
 	public static final int UNSUPPORTED_FEATURE = -7;
 	public static final int UNCAUGHT_EXCEPTION = -8;
+	public static final int IVC_EXCEPTION = -9;
 }

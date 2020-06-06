@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import jkind.JKindException;
 import jkind.SolverOption;
 import jkind.api.results.JKindResult;
-
-import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * The primary interface to JKind.
@@ -26,11 +26,11 @@ public class JKindApi extends KindApi {
 	protected Integer pdrMax = null;
 	protected boolean inductiveCounterexamples = false;
 	protected boolean ivcReduction = false;
+	protected boolean allIvcs = false;
 	protected boolean smoothCounterexamples = false;
 	protected boolean slicing = true;
-	
+
 	protected List<String> vmArgs = Collections.emptyList();
-	
 	protected SolverOption solver = null;
 
 	protected String jkindJar;
@@ -40,7 +40,7 @@ public class JKindApi extends KindApi {
 
 	/**
 	 * Set the maximum depth for BMC and k-induction
-	 * 
+	 *
 	 * @param n
 	 *            A non-negative integer
 	 */
@@ -65,7 +65,7 @@ public class JKindApi extends KindApi {
 
 	/**
 	 * Set the maximum number of PDR instances to run
-	 * 
+	 *
 	 * @param pdrMax
 	 *            A non-negative integer
 	 */
@@ -98,6 +98,13 @@ public class JKindApi extends KindApi {
 	}
 
 	/**
+	 * Find all inductive validity cores for valid properties
+	 */
+	public void setAllIvcs() {
+		allIvcs = true;
+	}
+
+	/**
 	 * Post-process counterexamples to have minimal input value changes
 	 */
 	public void setSmoothCounterexamples() {
@@ -110,7 +117,7 @@ public class JKindApi extends KindApi {
 	public void disableSlicing() {
 		slicing = false;
 	}
-	
+
 	/**
 	 * Set VM args
 	 */
@@ -151,7 +158,7 @@ public class JKindApi extends KindApi {
 
 	/**
 	 * Run JKind on a Lustre program
-	 * 
+	 *
 	 * @param lustreFile
 	 *            File containing Lustre program
 	 * @param result
@@ -197,6 +204,10 @@ public class JKindApi extends KindApi {
 		if (ivcReduction) {
 			args.add("-ivc");
 		}
+		if (allIvcs) {
+			args.add("-all_ivcs");
+		}
+
 		if (smoothCounterexamples) {
 			args.add("-smooth");
 		}
@@ -232,7 +243,7 @@ public class JKindApi extends KindApi {
 		args.add("-jar");
 		args.add(getOrFindJKindJar());
 		args.add("-jkind");
-		
+
 		return args.toArray(new String[args.size()]);
 	}
 

@@ -16,15 +16,15 @@ public class SignalGroup {
 		this.parent = parent;
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public List<Signal<Value>> getSignals() {
 		return Collections.unmodifiableList(signals);
 	}
-	
+
 	public void addSignal(Signal<Value> signal) {
 		signals.add(signal);
 	}
@@ -32,7 +32,7 @@ public class SignalGroup {
 	public boolean isSingleton() {
 		return signals.size() == 1 && signals.get(0).getName().equals("");
 	}
-	
+
 	public SignalGroup getParent() {
 		return parent;
 	}

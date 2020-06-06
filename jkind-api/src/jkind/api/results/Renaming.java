@@ -2,9 +2,12 @@ package jkind.api.results;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 
 import jkind.JKindException;
@@ -23,7 +26,7 @@ import jkind.results.ValidProperty;
 
 /**
  * A class for renaming and removing variables from analysis results
- * 
+ *
  * @see MapRenaming
  */
 public abstract class Renaming {
@@ -31,7 +34,7 @@ public abstract class Renaming {
 	 * Returns the new name for a given name, or null if the original name
 	 * should be hidden. This method should always return the same result when
 	 * given the same input.
-	 * 
+	 *
 	 * @param original
 	 *            Original variable name
 	 * @return the new variable name or null if variable should be hidden
@@ -40,7 +43,7 @@ public abstract class Renaming {
 
 	/**
 	 * Rename property and signals (if present), possibly omitting some
-	 * 
+	 *
 	 * @param property
 	 *            Property to be renamed
 	 * @return Renamed version of the property, or <code>null</code> if there is
@@ -62,9 +65,9 @@ public abstract class Renaming {
 
 	/**
 	 * Rename valid property and signals (if present), possibly omitting some
-	 * 
+	 *
 	 * Note: Invariants (if present) will not be renamed
-	 * 
+	 *
 	 * @param property
 	 *            Property to be renamed
 	 * @return Renamed version of the property, or <code>null</code> if there is
@@ -77,12 +80,13 @@ public abstract class Renaming {
 		}
 
 		return new ValidProperty(name, property.getSource(), property.getK(), property.getRuntime(),
-				property.getInvariants(), rename(this::renameIVC, property.getIvc()));
+				property.getInvariants(), rename(this::renameIVC, property.getIvc()), property.getInvariantSets(),
+				rename(this::renameIVC, property.getIvcSets()), property.getMivcTimedOut());
 	}
 
 	/**
 	 * Rename invalid property and signals (if present), possibly omitting some
-	 * 
+	 *
 	 * @param property
 	 *            Property to be renamed
 	 * @return Renamed version of the property, or <code>null</code> if there is
@@ -100,7 +104,7 @@ public abstract class Renaming {
 
 	/**
 	 * Rename unknown property and signals (if present), possibly omitting some
-	 * 
+	 *
 	 * @param property
 	 *            Property to be renamed
 	 * @return Renamed version of the property, or <code>null</code> if there is
@@ -118,7 +122,7 @@ public abstract class Renaming {
 
 	/**
 	 * Rename inconsistent property
-	 * 
+	 *
 	 * @param property
 	 *            Property to be renamed
 	 * @return Renamed version of the property, or <code>null</code> if there is
@@ -135,7 +139,7 @@ public abstract class Renaming {
 
 	/**
 	 * Rename signals in a counterexample, possibly omitting some
-	 * 
+	 *
 	 * @param cex
 	 *            Counterexample to be renamed
 	 * @return Renamed version of the counterexample
@@ -215,9 +219,9 @@ public abstract class Renaming {
 
 	/**
 	 * Rename signal
-	 * 
+	 *
 	 * @param <T>
-	 * 
+	 *
 	 * @param signal
 	 *            The signal to be renamed
 	 * @return Renamed version of the signal or <code>null</code> if there is no
@@ -239,18 +243,54 @@ public abstract class Renaming {
 
 	/**
 	 * Rename a collection of elements, possibly omitting some
-	 * 
+	 *
 	 * @param es
 	 *            Strings to be renamed
 	 * @return Renamed version of the conflicts
 	 */
 	private List<String> rename(Function<String, String> f, Collection<String> es) {
-		return es.stream().map(f).filter(e -> e != null).collect(toList());
+		List<String> updatedOrigList = new ArrayList<String>();
+		for (String curOrigStr : es) {
+			String updatedName = curOrigStr;
+			if (curOrigStr.contains(".")) {
+				updatedName = updatedNodeElemName(curOrigStr);
+			}
+			updatedOrigList.add(updatedName);
+		}
+		List<String> renamedList = updatedOrigList.stream().map(f).filter(e -> e != null).collect(toList());
+
+		return renamedList;
+	}
+
+	private Set<List<String>> rename(Function<String, String> f, Set<List<String>> es) {
+		Set<List<String>> set = new HashSet<List<String>>();
+		for (List<String> curOrigList : es) {
+			List<String> updatedOrigList = new ArrayList<String>();
+			for (String curOrigStr : curOrigList) {
+				String updatedName = curOrigStr;
+				if (curOrigStr.contains(".")) {
+					updatedName = updatedNodeElemName(curOrigStr);
+				}
+				updatedOrigList.add(updatedName);
+			}
+			List<String> renamedList = updatedOrigList.stream().map(f).filter(e -> e != null).collect(toList());
+			set.add(renamedList);
+		}
+		return set;
+	}
+
+	private String updatedNodeElemName(String curOrigStr) {
+		String updatedName;
+		String nodeName = curOrigStr.substring(0, curOrigStr.lastIndexOf('.'));
+		String elemName = curOrigStr.substring(curOrigStr.lastIndexOf('.'), curOrigStr.length());
+		nodeName = nodeName.replaceAll("~([0-9]+)$", "");
+		updatedName = nodeName + elemName;
+		return updatedName;
 	}
 
 	/**
 	 * Rename an IVC variable
-	 * 
+	 *
 	 * @param ivc
 	 *            the string to be renamed
 	 * @return Renamed version of the ivc string
