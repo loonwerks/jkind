@@ -1,9 +1,7 @@
-buildscript {
-    ext {
-        osgi_platform = 'win32.win32.x86_64'
-        swt_version = '3.105.3'
-    }
-}
+def mainText = file('jkind/src/jkind/Main.java').text
+def match = mainText =~ /VERSION = "(.*)";/
+version = match[0][1]
+assert version ==~ /[0-9.]+/
 
 allprojects {
     apply plugin: 'java'
@@ -45,56 +43,29 @@ project(':jkind') {
             java {
                 srcDirs += ['src']
             }
+            resources {
+                srcDirs += ['resources']
+            }
         }
     }
 
+    version = match[0][1]
+    assert version ==~ /[0-9.]+/
     jar {
         manifest {
-            attributes 'Main-Class': 'jkind.Main'
+            attributes 'Main-Class': 'jkind.Main',
+                'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
+                'Bundle-License': 'https://github.com/loonwerks/jkind/blob/master/LICENSE',
+                'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind',
+                'Bundle-Version': version
         }
     
         from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     }
 }
 
-project(':jkind-api') {
-    sourceSets {
-        main {
-            java {
-                srcDirs += ['src']
-            }
-            resources {
-                srcDirs = ['resources']
-            }
-        }
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    configurations.all {
-        resolutionStrategy {
-            dependencySubstitution {
-                // The maven property ${osgi.platform} is not handled by Gradle
-                // so we replace the dependency, using the osgi platform from the project settings
-                substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.$osgi_platform:$swt_version")
-            }
-        }
-    }
-
-    dependencies {
-        compile "org.eclipse.platform:org.eclipse.jface:3.12.2"
-        compile "org.eclipse.platform:org.eclipse.swt:$swt_version"
-    }
-
-    jar {
-        from sourceSets.main.allSource
-    }
-}
-
 task dist(type: Zip) {
-    dependsOn 'jkind-api:jar', 'jkind:jar'
+    dependsOn 'jkind:jar'
     from ('scripts') {
         include '*'
         exclude '*.bat'
@@ -109,15 +80,7 @@ task dist(type: Zip) {
          include 'jkind.jar'
          into 'jkind'
     }
-    from ('jkind-api/build/libs') {
-         include 'jkind-api.jar'
-         into 'jkind'
-    }
     baseName = 'jkind'
-    def mainText = file('jkind/src/jkind/Main.java').text
-    def match = mainText =~ /VERSION = "(.*)";/
-    version = match[0][1]
-    assert version ==~ /[0-9.]+/
 }
  
 artifacts {
