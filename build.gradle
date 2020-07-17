@@ -57,6 +57,7 @@ project(':jkind') {
                 'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind',
                 'Bundle-Version': jkind_version
         }
+        from sourceSets.main.allSource
     
         from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     }
