@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>jkind-jkind</name>
-	<comment></comment>
+	<name>jkind</name>
+	<comment>Project jkind created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -20,11 +20,4 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>jkind-common-src</name>
-			<type>2</type>
-			<location>/home/kfhoech/git/jkind/jkind-common/src</location>
-		</link>
-	</linkedResources>
 </projectDescription>
