@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
@@ -127,9 +128,9 @@ public class Util {
 	public static Value parseValue(String type, String value) {
 		switch (type) {
 		case "bool":
-			if (value.equals("0") || value.equals("false")) {
+			if (value.equals("0") || value.equals("false") || value.equals("False")) {
 				return BooleanValue.FALSE;
-			} else if (value.equals("1") || value.equals("true")) {
+			} else if (value.equals("1") || value.equals("true") || value.equals("True")) {
 				return BooleanValue.TRUE;
 			}
 			break;
@@ -138,6 +139,12 @@ public class Util {
 			return new IntegerValue(new BigInteger(value));
 
 		case "real":
+			
+			// Sally returns real values with decimal points
+			if(value.contains(".")) {
+				return new RealValue(BigFraction.valueOf(new BigDecimal(value.toString())));
+			}
+			
 			String[] strs = value.split("/");
 			if (strs.length <= 2) {
 				BigInteger num = new BigInteger(strs[0]);

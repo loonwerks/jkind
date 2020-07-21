@@ -12,12 +12,19 @@ public final class InvalidProperty extends Property {
 	private final String source;
 	private Counterexample cex;
 	private List<String> conflicts;
+	private String report;
 
-	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts, double runtime) {
+	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts, double runtime, String report) {
 		super(name, runtime);
 		this.source = source;
 		this.conflicts = Util.safeList(conflicts);
 		this.cex = cex;
+		this.report = report;
+	}
+
+	public InvalidProperty(String name, String source, Counterexample cex, List<String> conflicts,
+			double runtime) {
+		this(name, source, cex, conflicts, runtime, "Empty report");
 	}
 
 	/**
@@ -39,6 +46,13 @@ public final class InvalidProperty extends Property {
 	 */
 	public List<String> getConflicts() {
 		return conflicts;
+	}
+
+	/**
+	 * Report (used only by Sally)
+	 */
+	public String getReport() {
+		return report;
 	}
 
 	@Override

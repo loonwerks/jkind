@@ -2,8 +2,6 @@ package jkind.lustre.values;
 
 import jkind.lustre.BinaryOp;
 import jkind.lustre.UnaryOp;
-import jkind.lustre.values.BooleanValue;
-import jkind.lustre.values.Value;
 
 public class UnknownValue extends Value {
 
