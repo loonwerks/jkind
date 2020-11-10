@@ -1,13 +1,13 @@
 node main(in : real) returns (prop : bool);
-	var 
-	  out : real;
-	  val : real;
-	let 
-		out = 10.0 -> 2.0 + pre (in);
-		assert (in < 0.0 and pre(in) > -5.0 );
-		
-		val = xout + pre (in);
-		assert (val > pre(out));
-		prop = out + val >= 0.0;
-		--%PROPERTY prop;
+var 
+  out : real;
+  val : real;
+let 
+	out = 10.0 -> 2.0 + pre (in);
+	assert (in < 0.0 and pre(in) > -5.0 );
+	
+	val = out + pre (in);
+	assert (val > pre(out));
+	prop = out + val >= 0.0;
+	--%PROPERTY prop;
 tel;
