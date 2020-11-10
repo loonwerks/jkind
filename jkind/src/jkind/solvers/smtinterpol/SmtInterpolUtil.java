@@ -1,6 +1,6 @@
 package jkind.solvers.smtinterpol;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import de.uni_freiburg.informatik.ultimate.logic.LoggingScript;
@@ -31,7 +31,7 @@ public class SmtInterpolUtil {
 		String filename = scratchBase + ".smt2";
 		try {
 			return new LoggingScript(baseScript, filename, true);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			throw new JKindException("Unable to open scratch file: " + filename, e);
 		}
 	}
