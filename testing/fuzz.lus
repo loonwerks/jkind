@@ -1,0 +1,492 @@
+--benchmark to exercise JKind issue #59
+
+function st0.y(
+
+) returns (
+  y : int
+);
+
+function seq0.y(
+
+) returns (
+  y : int
+);
+
+
+node main(
+  length : int;
+  msg.buff[0] : int;
+  msg.buff[1] : int;
+  msg.buff[2] : int;
+  msg.buff[3] : int;
+  msg.buff[4] : int;
+  msg.buff[5] : int;
+  msg.buff[6] : int;
+  msg.buff[7] : int;
+  msg.buff[8] : int;
+  msg.buff[9] : int;
+  msg.buff[10] : int;
+  msg.buff[11] : int;
+  msg.buff[12] : int;
+  msg.buff[13] : int;
+  msg.buff[14] : int;
+  msg.buff[15] : int;
+  msg.cmd : int;
+  msg.magic0 : int;
+  msg.magic1 : int;
+  msg.seq : int
+) returns (
+  ___time : int
+);
+var
+  asciix_buff : bool;
+  magic0x_ok : bool;
+  magic1x_ok : bool;
+  seqx_ok : bool;
+  cmdx_hello : bool;
+  cmdx_reset : bool;
+  cmdx_data : bool;
+  cmdx_file : bool;
+  cmdx_keep : bool;
+  cmdx_disco : bool;
+  st : int;
+  nexxtx_st : int;
+  seq : int;
+  nexxtx_seq : int;
+  stx_reset : bool;
+  st0 : bool;
+  st0x_lengthx_ok : bool;
+  st0x_cmdx_ok : bool;
+  st0x_ok : bool;
+  st0x_prex_ok : bool;
+  fuzzx_st0x_ok : bool;
+  fuzzx_st0x_off0 : bool;
+  fuzzx_st0x_off1 : bool;
+  fuzzx_st0x_off2 : bool;
+  fuzzx_st0x_off3 : bool;
+  fuzzx_st0x_off4 : bool;
+  fuzzx_st0x_off5 : bool;
+  fuzzx_st0x_off6 : bool;
+  st1 : bool;
+  st1x_lengthx_ok : bool;
+  st1x_cmdx_ok : bool;
+  st1x_ok : bool;
+  st1x_prex_ok : bool;
+  fuzzx_st1x_ok : bool;
+  fuzzx_st1x_off0 : bool;
+  fuzzx_st1x_off1 : bool;
+  fuzzx_st1x_off2 : bool;
+  fuzzx_st1x_off3 : bool;
+  fuzzx_st1x_off4 : bool;
+  fuzzx_st1x_off5 : bool;
+  fuzzx_st1x_off6 : bool;
+  st2 : bool;
+  st2x_lengthx_ok : bool;
+  st2x_cmdx_ok : bool;
+  st2x_ok : bool;
+  st2x_prex_ok : bool;
+  fuzzx_st2x_ok : bool;
+  fuzzx_st2x_off0 : bool;
+  fuzzx_st2x_off1 : bool;
+  fuzzx_st2x_off2 : bool;
+  fuzzx_st2x_off3 : bool;
+  fuzzx_st2x_off4 : bool;
+  fuzzx_st2x_off5 : bool;
+  fuzzx_st2x_off6 : bool;
+  st3 : bool;
+  st3x_lengthx_ok : bool;
+  st3x_cmdx_ok : bool;
+  st3x_ok : bool;
+  st3x_prex_ok : bool;
+  fuzzx_st3x_ok : bool;
+  fuzzx_st3x_off0 : bool;
+  fuzzx_st3x_off1 : bool;
+  fuzzx_st3x_off2 : bool;
+  fuzzx_st3x_off3 : bool;
+  fuzzx_st3x_off4 : bool;
+  fuzzx_st3x_off5 : bool;
+  fuzzx_st3x_off6 : bool;
+  INITIALLY~0.in : bool;
+  INITIALLY~0.out : bool;
+  FUZZ~0.in : bool;
+  FUZZ~0.out : bool;
+  FUZZ~1.in : bool;
+  FUZZ~1.out : bool;
+  FUZZ~2.in : bool;
+  FUZZ~2.out : bool;
+  FUZZ~3.in : bool;
+  FUZZ~3.out : bool;
+  FUZZ~4.in : bool;
+  FUZZ~4.out : bool;
+  FUZZ~5.in : bool;
+  FUZZ~5.out : bool;
+  FUZZ~6.in : bool;
+  FUZZ~6.out : bool;
+  FUZZ~7.in : bool;
+  FUZZ~7.out : bool;
+  FUZZ~8.in : bool;
+  FUZZ~8.out : bool;
+  FUZZ~9.in : bool;
+  FUZZ~9.out : bool;
+  FUZZ~10.in : bool;
+  FUZZ~10.out : bool;
+  FUZZ~11.in : bool;
+  FUZZ~11.out : bool;
+  FUZZ~12.in : bool;
+  FUZZ~12.out : bool;
+  FUZZ~13.in : bool;
+  FUZZ~13.out : bool;
+  FUZZ~14.in : bool;
+  FUZZ~14.out : bool;
+  FUZZ~15.in : bool;
+  FUZZ~15.out : bool;
+  FUZZ~16.in : bool;
+  FUZZ~16.out : bool;
+  FUZZ~17.in : bool;
+  FUZZ~17.out : bool;
+  FUZZ~18.in : bool;
+  FUZZ~18.out : bool;
+  FUZZ~19.in : bool;
+  FUZZ~19.out : bool;
+  FUZZ~20.in : bool;
+  FUZZ~20.out : bool;
+  FUZZ~21.in : bool;
+  FUZZ~21.out : bool;
+  FUZZ~22.in : bool;
+  FUZZ~22.out : bool;
+  FUZZ~23.in : bool;
+  FUZZ~23.out : bool;
+  FUZZ~24.in : bool;
+  FUZZ~24.out : bool;
+  FUZZ~25.in : bool;
+  FUZZ~25.out : bool;
+  FUZZ~26.in : bool;
+  FUZZ~26.out : bool;
+  FUZZ~27.in : bool;
+  FUZZ~27.out : bool;
+  FUZZ~28.in : bool;
+  FUZZ~28.out : bool;
+  FUZZ~29.in : bool;
+  FUZZ~29.out : bool;
+  FUZZ~30.in : bool;
+  FUZZ~30.out : bool;
+  FUZZ~31.in : bool;
+  FUZZ~31.out : bool;
+  ___fuzzProperty : bool;
+let
+  --%MAIN;
+  asciix_buff = (((((((((((((((((65 <= msg.buff[0]) and (msg.buff[0] <= 123)) and ((65 <= msg.buff[1]) and (msg.buff[1] <= 123))) and ((65 <= msg.buff[2]) and (msg.buff[2] <= 123))) and ((65 <= msg.buff[3]) and (msg.buff[3] <= 123))) and ((65 <= msg.buff[4]) and (msg.buff[4] <= 123))) and ((65 <= msg.buff[5]) and (msg.buff[5] <= 123))) and ((65 <= msg.buff[6]) and (msg.buff[6] <= 123))) and ((65 <= msg.buff[7]) and (msg.buff[7] <= 123))) and ((65 <= msg.buff[8]) and (msg.buff[8] <= 123))) and ((65 <= msg.buff[9]) and (msg.buff[9] <= 123))) and ((65 <= msg.buff[10]) and (msg.buff[10] <= 123))) and ((65 <= msg.buff[11]) and (msg.buff[11] <= 123))) and ((65 <= msg.buff[12]) and (msg.buff[12] <= 123))) and ((65 <= msg.buff[13]) and (msg.buff[13] <= 123))) and ((65 <= msg.buff[14]) and (msg.buff[14] <= 123))) and ((65 <= msg.buff[15]) and (msg.buff[15] <= 123)));
+
+  magic0x_ok = (msg.magic0 = 170);
+
+  magic1x_ok = (msg.magic1 = 187);
+
+  seqx_ok = (msg.seq = seq);
+
+  cmdx_hello = (msg.cmd = 1);
+
+  cmdx_reset = (msg.cmd = 2);
+
+  cmdx_data = (msg.cmd = 3);
+
+  cmdx_file = (((msg.cmd = 4) and (length > (6 + 4))) and asciix_buff);
+
+  cmdx_keep = (msg.cmd = 5);
+
+  cmdx_disco = (msg.cmd = 7);
+
+  nexxtx_st = (if cmdx_reset then 0 else (if (st0 and st0x_ok) then (if cmdx_hello then 1 else 0) else (if (st1 and st1x_ok) then (if cmdx_data then 2 else 1) else (if (st2 and st2x_ok) then (if cmdx_file then 3 else 2) else (if (st3 and st3x_ok) then (if cmdx_disco then 4 else 3) else 0)))));
+
+  st = (st0.y() -> (pre nexxtx_st));
+
+  nexxtx_seq = (if cmdx_reset then 0 else (if (st0 and st0x_ok) then (1 + seq) else (if (st1 and st1x_ok) then (1 + seq) else (if (st2 and st2x_ok) then (1 + seq) else (if (st3 and st3x_ok) then (1 + seq) else 0)))));
+
+  seq = (seq0.y() -> (pre nexxtx_seq));
+
+  stx_reset = INITIALLY~0.out;
+
+  st0 = (st = 0);
+
+  st0x_lengthx_ok = (length = 4);
+
+  st0x_cmdx_ok = ((cmdx_hello or cmdx_reset) or cmdx_keep);
+
+  st0x_ok = ((((magic0x_ok and magic1x_ok) and seqx_ok) and st0x_cmdx_ok) and st0x_lengthx_ok);
+
+  st0x_prex_ok = (stx_reset and st0);
+
+  fuzzx_st0x_ok = FUZZ~0.out;
+
+  fuzzx_st0x_off0 = FUZZ~1.out;
+
+  fuzzx_st0x_off1 = FUZZ~2.out;
+
+  fuzzx_st0x_off2 = FUZZ~3.out;
+
+  fuzzx_st0x_off3 = FUZZ~4.out;
+
+  fuzzx_st0x_off4 = FUZZ~5.out;
+
+  fuzzx_st0x_off5 = FUZZ~6.out;
+
+  fuzzx_st0x_off6 = FUZZ~7.out;
+
+  st1 = (st = 1);
+
+  st1x_lengthx_ok = (length = 4);
+
+  st1x_cmdx_ok = ((cmdx_data or cmdx_reset) or cmdx_keep);
+
+  st1x_ok = ((((magic0x_ok and magic1x_ok) and seqx_ok) and st1x_cmdx_ok) and st1x_lengthx_ok);
+
+  st1x_prex_ok = (stx_reset and st1);
+
+  fuzzx_st1x_ok = FUZZ~8.out;
+
+  fuzzx_st1x_off0 = FUZZ~9.out;
+
+  fuzzx_st1x_off1 = FUZZ~10.out;
+
+  fuzzx_st1x_off2 = FUZZ~11.out;
+
+  fuzzx_st1x_off3 = FUZZ~12.out;
+
+  fuzzx_st1x_off4 = FUZZ~13.out;
+
+  fuzzx_st1x_off5 = FUZZ~14.out;
+
+  fuzzx_st1x_off6 = FUZZ~15.out;
+
+  st2 = (st = 2);
+
+  st2x_lengthx_ok = (length >= 4);
+
+  st2x_cmdx_ok = ((cmdx_file or cmdx_reset) or cmdx_keep);
+
+  st2x_ok = ((((magic0x_ok and magic1x_ok) and seqx_ok) and st2x_cmdx_ok) and st2x_lengthx_ok);
+
+  st2x_prex_ok = (stx_reset and st2);
+
+  fuzzx_st2x_ok = FUZZ~16.out;
+
+  fuzzx_st2x_off0 = FUZZ~17.out;
+
+  fuzzx_st2x_off1 = FUZZ~18.out;
+
+  fuzzx_st2x_off2 = FUZZ~19.out;
+
+  fuzzx_st2x_off3 = FUZZ~20.out;
+
+  fuzzx_st2x_off4 = FUZZ~21.out;
+
+  fuzzx_st2x_off5 = FUZZ~22.out;
+
+  fuzzx_st2x_off6 = FUZZ~23.out;
+
+  st3 = (st = 3);
+
+  st3x_lengthx_ok = (length = 4);
+
+  st3x_cmdx_ok = ((cmdx_disco or cmdx_reset) or cmdx_keep);
+
+  st3x_ok = ((((magic0x_ok and magic1x_ok) and seqx_ok) and st3x_cmdx_ok) and st3x_lengthx_ok);
+
+  st3x_prex_ok = (stx_reset and st3);
+
+  fuzzx_st3x_ok = FUZZ~24.out;
+
+  fuzzx_st3x_off0 = FUZZ~25.out;
+
+  fuzzx_st3x_off1 = FUZZ~26.out;
+
+  fuzzx_st3x_off2 = FUZZ~27.out;
+
+  fuzzx_st3x_off3 = FUZZ~28.out;
+
+  fuzzx_st3x_off4 = FUZZ~29.out;
+
+  fuzzx_st3x_off5 = FUZZ~30.out;
+
+  fuzzx_st3x_off6 = FUZZ~31.out;
+
+  INITIALLY~0.in = (((magic0x_ok and magic1x_ok) and (length = 4)) and cmdx_reset);
+
+  INITIALLY~0.out = (false -> ((pre INITIALLY~0.out) or (pre INITIALLY~0.in)));
+
+  FUZZ~0.in = (st0x_prex_ok and st0x_ok);
+
+  FUZZ~0.out = FUZZ~0.in;
+
+  FUZZ~1.in = st0x_prex_ok;
+
+  FUZZ~1.out = FUZZ~1.in;
+
+  FUZZ~2.in = ((((st0x_prex_ok and magic1x_ok) and seqx_ok) and st0x_cmdx_ok) and st0x_lengthx_ok);
+
+  FUZZ~2.out = FUZZ~2.in;
+
+  FUZZ~3.in = ((((st0x_prex_ok and magic0x_ok) and seqx_ok) and st0x_cmdx_ok) and st0x_lengthx_ok);
+
+  FUZZ~3.out = FUZZ~3.in;
+
+  FUZZ~4.in = ((((st0x_prex_ok and magic0x_ok) and magic1x_ok) and st0x_cmdx_ok) and st0x_lengthx_ok);
+
+  FUZZ~4.out = FUZZ~4.in;
+
+  FUZZ~5.in = (((((st0x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st0x_cmdx_ok) and st0x_lengthx_ok);
+
+  FUZZ~5.out = FUZZ~5.in;
+
+  FUZZ~6.in = ((((st0x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st0x_lengthx_ok);
+
+  FUZZ~6.out = FUZZ~6.in;
+
+  FUZZ~7.in = ((((st0x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st0x_cmdx_ok);
+
+  FUZZ~7.out = FUZZ~7.in;
+
+  FUZZ~8.in = (st1x_prex_ok and st1x_ok);
+
+  FUZZ~8.out = FUZZ~8.in;
+
+  FUZZ~9.in = st1x_prex_ok;
+
+  FUZZ~9.out = FUZZ~9.in;
+
+  FUZZ~10.in = ((((st1x_prex_ok and magic1x_ok) and seqx_ok) and st1x_cmdx_ok) and st1x_lengthx_ok);
+
+  FUZZ~10.out = FUZZ~10.in;
+
+  FUZZ~11.in = ((((st1x_prex_ok and magic0x_ok) and seqx_ok) and st1x_cmdx_ok) and st1x_lengthx_ok);
+
+  FUZZ~11.out = FUZZ~11.in;
+
+  FUZZ~12.in = ((((st1x_prex_ok and magic0x_ok) and magic1x_ok) and st1x_cmdx_ok) and st1x_lengthx_ok);
+
+  FUZZ~12.out = FUZZ~12.in;
+
+  FUZZ~13.in = (((((st1x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st1x_cmdx_ok) and st1x_lengthx_ok);
+
+  FUZZ~13.out = FUZZ~13.in;
+
+  FUZZ~14.in = ((((st1x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st1x_lengthx_ok);
+
+  FUZZ~14.out = FUZZ~14.in;
+
+  FUZZ~15.in = ((((st1x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st1x_cmdx_ok);
+
+  FUZZ~15.out = FUZZ~15.in;
+
+  FUZZ~16.in = (st2x_prex_ok and st2x_ok);
+
+  FUZZ~16.out = FUZZ~16.in;
+
+  FUZZ~17.in = st2x_prex_ok;
+
+  FUZZ~17.out = FUZZ~17.in;
+
+  FUZZ~18.in = ((((st2x_prex_ok and magic1x_ok) and seqx_ok) and st2x_cmdx_ok) and st2x_lengthx_ok);
+
+  FUZZ~18.out = FUZZ~18.in;
+
+  FUZZ~19.in = ((((st2x_prex_ok and magic0x_ok) and seqx_ok) and st2x_cmdx_ok) and st2x_lengthx_ok);
+
+  FUZZ~19.out = FUZZ~19.in;
+
+  FUZZ~20.in = ((((st2x_prex_ok and magic0x_ok) and magic1x_ok) and st2x_cmdx_ok) and st2x_lengthx_ok);
+
+  FUZZ~20.out = FUZZ~20.in;
+
+  FUZZ~21.in = (((((st2x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st2x_cmdx_ok) and st2x_lengthx_ok);
+
+  FUZZ~21.out = FUZZ~21.in;
+
+  FUZZ~22.in = ((((st2x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st2x_lengthx_ok);
+
+  FUZZ~22.out = FUZZ~22.in;
+
+  FUZZ~23.in = ((((st2x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st2x_cmdx_ok);
+
+  FUZZ~23.out = FUZZ~23.in;
+
+  FUZZ~24.in = (st3x_prex_ok and st3x_ok);
+
+  FUZZ~24.out = FUZZ~24.in;
+
+  FUZZ~25.in = st3x_prex_ok;
+
+  FUZZ~25.out = FUZZ~25.in;
+
+  FUZZ~26.in = ((((st3x_prex_ok and magic1x_ok) and seqx_ok) and st3x_cmdx_ok) and st3x_lengthx_ok);
+
+  FUZZ~26.out = FUZZ~26.in;
+
+  FUZZ~27.in = ((((st3x_prex_ok and magic0x_ok) and seqx_ok) and st3x_cmdx_ok) and st3x_lengthx_ok);
+
+  FUZZ~27.out = FUZZ~27.in;
+
+  FUZZ~28.in = ((((st3x_prex_ok and magic0x_ok) and magic1x_ok) and st3x_cmdx_ok) and st3x_lengthx_ok);
+
+  FUZZ~28.out = FUZZ~28.in;
+
+  FUZZ~29.in = (((((st3x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st3x_cmdx_ok) and st3x_lengthx_ok);
+
+  FUZZ~29.out = FUZZ~29.in;
+
+  FUZZ~30.in = ((((st3x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st3x_lengthx_ok);
+
+  FUZZ~30.out = FUZZ~30.in;
+
+  FUZZ~31.in = ((((st3x_prex_ok and magic0x_ok) and magic1x_ok) and seqx_ok) and st3x_cmdx_ok);
+
+  FUZZ~31.out = FUZZ~31.in;
+
+  ___time = (0 -> ((pre ___time) + 1));
+
+  ___fuzzProperty = (true => false);
+
+  assert ((0 <= length) and (length <= 20));
+
+  assert ((0 <= msg.magic0) and (msg.magic0 < 256));
+
+  assert ((0 <= msg.magic1) and (msg.magic1 < 256));
+
+  assert ((0 <= msg.seq) and (msg.seq < 256));
+
+  assert ((0 <= msg.cmd) and (msg.cmd < 256));
+
+  assert ((0 <= msg.buff[0]) and (msg.buff[0] < 256));
+
+  assert ((0 <= msg.buff[1]) and (msg.buff[1] < 256));
+
+  assert ((0 <= msg.buff[2]) and (msg.buff[2] < 256));
+
+  assert ((0 <= msg.buff[3]) and (msg.buff[3] < 256));
+
+  assert ((0 <= msg.buff[4]) and (msg.buff[4] < 256));
+
+  assert ((0 <= msg.buff[5]) and (msg.buff[5] < 256));
+
+  assert ((0 <= msg.buff[6]) and (msg.buff[6] < 256));
+
+  assert ((0 <= msg.buff[7]) and (msg.buff[7] < 256));
+
+  assert ((0 <= msg.buff[8]) and (msg.buff[8] < 256));
+
+  assert ((0 <= msg.buff[9]) and (msg.buff[9] < 256));
+
+  assert ((0 <= msg.buff[10]) and (msg.buff[10] < 256));
+
+  assert ((0 <= msg.buff[11]) and (msg.buff[11] < 256));
+
+  assert ((0 <= msg.buff[12]) and (msg.buff[12] < 256));
+
+  assert ((0 <= msg.buff[13]) and (msg.buff[13] < 256));
+
+  assert ((0 <= msg.buff[14]) and (msg.buff[14] < 256));
+
+  assert ((0 <= msg.buff[15]) and (msg.buff[15] < 256));
+
+  --%PROPERTY ___fuzzProperty;
+
+tel;

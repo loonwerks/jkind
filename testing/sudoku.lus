@@ -1,0 +1,600 @@
+type USER_digit = int;
+
+node initially(
+  signal : bool
+) returns (
+  holds : bool
+);
+let
+  holds = (signal -> true);
+
+tel;
+
+node historically(
+  signal : bool
+) returns (
+  holds : bool
+);
+let
+  holds = (signal and (true -> (pre holds)));
+
+tel;
+
+node once(
+  signal : bool
+) returns (
+  holds : bool
+);
+let
+  holds = (signal or (false -> (pre holds)));
+
+tel;
+
+node since(
+  a : bool;
+  b : bool
+) returns (
+  holds : bool
+);
+let
+  holds = (b or (a and (false -> (pre holds))));
+
+tel;
+
+node triggers(
+  a : bool;
+  b : bool
+) returns (
+  holds : bool
+);
+let
+  holds = (b and (a or (false -> (pre holds))));
+
+tel;
+
+node responds(
+  a : bool;
+  b : bool;
+  n : int
+) returns (
+  holds : bool
+);
+var
+  latch : int;
+  i : int;
+  pre_state : int;
+  state : int;
+let
+  latch = (n -> (pre latch));
+
+  pre_state = (0 -> (pre state));
+
+  state = (if (pre_state = 0) then (if ((not b) or (a and b)) then 0 else 1) else (if (pre_state = 1) then (if ((not a) and (i < latch)) then 1 else (if (a and b) then 1 else (if ((not a) and (i >= latch)) then 2 else 0))) else 2));
+
+  i = (if (pre_state = 0) then 0 else (if (pre_state = 1) then (if (not a) then ((pre i) + 1) else (if (a and b) then 0 else (pre i))) else (pre i)));
+
+  holds = ((state = 0) or (state = 1));
+
+tel;
+
+node precedes(
+  a : bool;
+  b : bool
+) returns (
+  holds : bool
+);
+var
+  state : int;
+  pre_state : int;
+let
+  pre_state = (0 -> (pre state));
+
+  state = (if (pre_state = 0) then (if ((a and b) or ((not a) and (not b))) then 0 else (if (a and (not b)) then 1 else 2)) else (if (pre_state = 1) then (if b then 0 else 1) else 2));
+
+  holds = ((state = 0) or (state = 1));
+
+tel;
+
+node count(
+  a : bool
+) returns (
+  c : int
+);
+let
+  c = ((0 -> (pre c)) + (if a then 1 else 0));
+
+tel;
+
+node ccount(
+  a : bool
+) returns (
+  c : int
+);
+let
+  c = (if a then ((0 -> (pre c)) + 1) else 0);
+
+tel;
+
+node btoi(
+  a : bool
+) returns (
+  c : int
+);
+let
+  c = (if a then 1 else 0);
+
+tel;
+
+node fmod(
+  a : real;
+  b : real
+) returns (
+  x : real
+);
+let
+  x = (a - (b * real(floor((a / b)))));
+
+tel;
+
+node USER_set_holds(
+  USER_d1 : USER_digit;
+  USER_d2 : USER_digit;
+  USER_d3 : USER_digit;
+  USER_d4 : USER_digit;
+  USER_d5 : USER_digit;
+  USER_d6 : USER_digit;
+  USER_d7 : USER_digit;
+  USER_d8 : USER_digit;
+  USER_d9 : USER_digit
+) returns (
+  USER_holds : bool
+);
+let
+  USER_holds = ((((((((USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 1) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 2)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 3)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 4)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 5)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 6)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 7)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 8)) and USER_predicate(USER_d1, USER_d2, USER_d3, USER_d4, USER_d5, USER_d6, USER_d7, USER_d8, USER_d9, 9));
+
+tel;
+
+node USER_predicate(
+  USER_d1 : USER_digit;
+  USER_d2 : USER_digit;
+  USER_d3 : USER_digit;
+  USER_d4 : USER_digit;
+  USER_d5 : USER_digit;
+  USER_d6 : USER_digit;
+  USER_d7 : USER_digit;
+  USER_d8 : USER_digit;
+  USER_d9 : USER_digit;
+  USER_v : USER_digit
+) returns (
+  USER_holds : bool
+);
+let
+  USER_holds = (((((((((btoi((USER_d1 = USER_v)) + btoi((USER_d2 = USER_v))) + btoi((USER_d3 = USER_v))) + btoi((USER_d4 = USER_v))) + btoi((USER_d5 = USER_v))) + btoi((USER_d6 = USER_v))) + btoi((USER_d7 = USER_v))) + btoi((USER_d8 = USER_v))) + btoi((USER_d9 = USER_v))) = 1);
+
+tel;
+
+node USER_sudoku(
+  USER_d11 : USER_digit;
+  USER_d12 : USER_digit;
+  USER_d13 : USER_digit;
+  USER_d14 : USER_digit;
+  USER_d15 : USER_digit;
+  USER_d16 : USER_digit;
+  USER_d17 : USER_digit;
+  USER_d18 : USER_digit;
+  USER_d19 : USER_digit;
+  USER_d21 : USER_digit;
+  USER_d22 : USER_digit;
+  USER_d23 : USER_digit;
+  USER_d24 : USER_digit;
+  USER_d25 : USER_digit;
+  USER_d26 : USER_digit;
+  USER_d27 : USER_digit;
+  USER_d28 : USER_digit;
+  USER_d29 : USER_digit;
+  USER_d31 : USER_digit;
+  USER_d32 : USER_digit;
+  USER_d33 : USER_digit;
+  USER_d34 : USER_digit;
+  USER_d35 : USER_digit;
+  USER_d36 : USER_digit;
+  USER_d37 : USER_digit;
+  USER_d38 : USER_digit;
+  USER_d39 : USER_digit;
+  USER_d41 : USER_digit;
+  USER_d42 : USER_digit;
+  USER_d43 : USER_digit;
+  USER_d44 : USER_digit;
+  USER_d45 : USER_digit;
+  USER_d46 : USER_digit;
+  USER_d47 : USER_digit;
+  USER_d48 : USER_digit;
+  USER_d49 : USER_digit;
+  USER_d51 : USER_digit;
+  USER_d52 : USER_digit;
+  USER_d53 : USER_digit;
+  USER_d54 : USER_digit;
+  USER_d55 : USER_digit;
+  USER_d56 : USER_digit;
+  USER_d57 : USER_digit;
+  USER_d58 : USER_digit;
+  USER_d59 : USER_digit;
+  USER_d61 : USER_digit;
+  USER_d62 : USER_digit;
+  USER_d63 : USER_digit;
+  USER_d64 : USER_digit;
+  USER_d65 : USER_digit;
+  USER_d66 : USER_digit;
+  USER_d67 : USER_digit;
+  USER_d68 : USER_digit;
+  USER_d69 : USER_digit;
+  USER_d71 : USER_digit;
+  USER_d72 : USER_digit;
+  USER_d73 : USER_digit;
+  USER_d74 : USER_digit;
+  USER_d75 : USER_digit;
+  USER_d76 : USER_digit;
+  USER_d77 : USER_digit;
+  USER_d78 : USER_digit;
+  USER_d79 : USER_digit;
+  USER_d81 : USER_digit;
+  USER_d82 : USER_digit;
+  USER_d83 : USER_digit;
+  USER_d84 : USER_digit;
+  USER_d85 : USER_digit;
+  USER_d86 : USER_digit;
+  USER_d87 : USER_digit;
+  USER_d88 : USER_digit;
+  USER_d89 : USER_digit;
+  USER_d91 : USER_digit;
+  USER_d92 : USER_digit;
+  USER_d93 : USER_digit;
+  USER_d94 : USER_digit;
+  USER_d95 : USER_digit;
+  USER_d96 : USER_digit;
+  USER_d97 : USER_digit;
+  USER_d98 : USER_digit;
+  USER_d99 : USER_digit
+) returns (
+  constraints : bool
+);
+var
+  USER_d11_satisfies_predicate : bool;
+  USER_d12_satisfies_predicate : bool;
+  USER_d13_satisfies_predicate : bool;
+  USER_d14_satisfies_predicate : bool;
+  USER_d15_satisfies_predicate : bool;
+  USER_d16_satisfies_predicate : bool;
+  USER_d17_satisfies_predicate : bool;
+  USER_d18_satisfies_predicate : bool;
+  USER_d19_satisfies_predicate : bool;
+  USER_d21_satisfies_predicate : bool;
+  USER_d22_satisfies_predicate : bool;
+  USER_d23_satisfies_predicate : bool;
+  USER_d24_satisfies_predicate : bool;
+  USER_d25_satisfies_predicate : bool;
+  USER_d26_satisfies_predicate : bool;
+  USER_d27_satisfies_predicate : bool;
+  USER_d28_satisfies_predicate : bool;
+  USER_d29_satisfies_predicate : bool;
+  USER_d31_satisfies_predicate : bool;
+  USER_d32_satisfies_predicate : bool;
+  USER_d33_satisfies_predicate : bool;
+  USER_d34_satisfies_predicate : bool;
+  USER_d35_satisfies_predicate : bool;
+  USER_d36_satisfies_predicate : bool;
+  USER_d37_satisfies_predicate : bool;
+  USER_d38_satisfies_predicate : bool;
+  USER_d39_satisfies_predicate : bool;
+  USER_d41_satisfies_predicate : bool;
+  USER_d42_satisfies_predicate : bool;
+  USER_d43_satisfies_predicate : bool;
+  USER_d44_satisfies_predicate : bool;
+  USER_d45_satisfies_predicate : bool;
+  USER_d46_satisfies_predicate : bool;
+  USER_d47_satisfies_predicate : bool;
+  USER_d48_satisfies_predicate : bool;
+  USER_d49_satisfies_predicate : bool;
+  USER_d51_satisfies_predicate : bool;
+  USER_d52_satisfies_predicate : bool;
+  USER_d53_satisfies_predicate : bool;
+  USER_d54_satisfies_predicate : bool;
+  USER_d55_satisfies_predicate : bool;
+  USER_d56_satisfies_predicate : bool;
+  USER_d57_satisfies_predicate : bool;
+  USER_d58_satisfies_predicate : bool;
+  USER_d59_satisfies_predicate : bool;
+  USER_d61_satisfies_predicate : bool;
+  USER_d62_satisfies_predicate : bool;
+  USER_d63_satisfies_predicate : bool;
+  USER_d64_satisfies_predicate : bool;
+  USER_d65_satisfies_predicate : bool;
+  USER_d66_satisfies_predicate : bool;
+  USER_d67_satisfies_predicate : bool;
+  USER_d68_satisfies_predicate : bool;
+  USER_d69_satisfies_predicate : bool;
+  USER_d71_satisfies_predicate : bool;
+  USER_d72_satisfies_predicate : bool;
+  USER_d73_satisfies_predicate : bool;
+  USER_d74_satisfies_predicate : bool;
+  USER_d75_satisfies_predicate : bool;
+  USER_d76_satisfies_predicate : bool;
+  USER_d77_satisfies_predicate : bool;
+  USER_d78_satisfies_predicate : bool;
+  USER_d79_satisfies_predicate : bool;
+  USER_d81_satisfies_predicate : bool;
+  USER_d82_satisfies_predicate : bool;
+  USER_d83_satisfies_predicate : bool;
+  USER_d84_satisfies_predicate : bool;
+  USER_d85_satisfies_predicate : bool;
+  USER_d86_satisfies_predicate : bool;
+  USER_d87_satisfies_predicate : bool;
+  USER_d88_satisfies_predicate : bool;
+  USER_d89_satisfies_predicate : bool;
+  USER_d91_satisfies_predicate : bool;
+  USER_d92_satisfies_predicate : bool;
+  USER_d93_satisfies_predicate : bool;
+  USER_d94_satisfies_predicate : bool;
+  USER_d95_satisfies_predicate : bool;
+  USER_d96_satisfies_predicate : bool;
+  USER_d97_satisfies_predicate : bool;
+  USER_d98_satisfies_predicate : bool;
+  USER_d99_satisfies_predicate : bool;
+  USER_r1 : bool;
+  USER_r2 : bool;
+  USER_r3 : bool;
+  USER_r4 : bool;
+  USER_r5 : bool;
+  USER_r6 : bool;
+  USER_r7 : bool;
+  USER_r8 : bool;
+  USER_r9 : bool;
+  USER_c1 : bool;
+  USER_c2 : bool;
+  USER_c3 : bool;
+  USER_c4 : bool;
+  USER_c5 : bool;
+  USER_c6 : bool;
+  USER_c7 : bool;
+  USER_c8 : bool;
+  USER_c9 : bool;
+  USER_ss1 : bool;
+  USER_ss2 : bool;
+  USER_ss3 : bool;
+  USER_ss4 : bool;
+  USER_ss5 : bool;
+  USER_ss6 : bool;
+  USER_ss7 : bool;
+  USER_ss8 : bool;
+  USER_ss9 : bool;
+  USER_hard1 : bool;
+  counter : int;
+let
+  --%MAIN;
+  counter = (1 -> ((pre counter) + 1));
+
+  USER_d11_satisfies_predicate = ((USER_d11 >= 1) and (USER_d11 <= 9));
+
+  USER_d12_satisfies_predicate = ((USER_d12 >= 1) and (USER_d12 <= 9));
+
+  USER_d13_satisfies_predicate = ((USER_d13 >= 1) and (USER_d13 <= 9));
+
+  USER_d14_satisfies_predicate = ((USER_d14 >= 1) and (USER_d14 <= 9));
+
+  USER_d15_satisfies_predicate = ((USER_d15 >= 1) and (USER_d15 <= 9));
+
+  USER_d16_satisfies_predicate = ((USER_d16 >= 1) and (USER_d16 <= 9));
+
+  USER_d17_satisfies_predicate = ((USER_d17 >= 1) and (USER_d17 <= 9));
+
+  USER_d18_satisfies_predicate = ((USER_d18 >= 1) and (USER_d18 <= 9));
+
+  USER_d19_satisfies_predicate = ((USER_d19 >= 1) and (USER_d19 <= 9));
+
+  USER_d21_satisfies_predicate = ((USER_d21 >= 1) and (USER_d21 <= 9));
+
+  USER_d22_satisfies_predicate = ((USER_d22 >= 1) and (USER_d22 <= 9));
+
+  USER_d23_satisfies_predicate = ((USER_d23 >= 1) and (USER_d23 <= 9));
+
+  USER_d24_satisfies_predicate = ((USER_d24 >= 1) and (USER_d24 <= 9));
+
+  USER_d25_satisfies_predicate = ((USER_d25 >= 1) and (USER_d25 <= 9));
+
+  USER_d26_satisfies_predicate = ((USER_d26 >= 1) and (USER_d26 <= 9));
+
+  USER_d27_satisfies_predicate = ((USER_d27 >= 1) and (USER_d27 <= 9));
+
+  USER_d28_satisfies_predicate = ((USER_d28 >= 1) and (USER_d28 <= 9));
+
+  USER_d29_satisfies_predicate = ((USER_d29 >= 1) and (USER_d29 <= 9));
+
+  USER_d31_satisfies_predicate = ((USER_d31 >= 1) and (USER_d31 <= 9));
+
+  USER_d32_satisfies_predicate = ((USER_d32 >= 1) and (USER_d32 <= 9));
+
+  USER_d33_satisfies_predicate = ((USER_d33 >= 1) and (USER_d33 <= 9));
+
+  USER_d34_satisfies_predicate = ((USER_d34 >= 1) and (USER_d34 <= 9));
+
+  USER_d35_satisfies_predicate = ((USER_d35 >= 1) and (USER_d35 <= 9));
+
+  USER_d36_satisfies_predicate = ((USER_d36 >= 1) and (USER_d36 <= 9));
+
+  USER_d37_satisfies_predicate = ((USER_d37 >= 1) and (USER_d37 <= 9));
+
+  USER_d38_satisfies_predicate = ((USER_d38 >= 1) and (USER_d38 <= 9));
+
+  USER_d39_satisfies_predicate = ((USER_d39 >= 1) and (USER_d39 <= 9));
+
+  USER_d41_satisfies_predicate = ((USER_d41 >= 1) and (USER_d41 <= 9));
+
+  USER_d42_satisfies_predicate = ((USER_d42 >= 1) and (USER_d42 <= 9));
+
+  USER_d43_satisfies_predicate = ((USER_d43 >= 1) and (USER_d43 <= 9));
+
+  USER_d44_satisfies_predicate = ((USER_d44 >= 1) and (USER_d44 <= 9));
+
+  USER_d45_satisfies_predicate = ((USER_d45 >= 1) and (USER_d45 <= 9));
+
+  USER_d46_satisfies_predicate = ((USER_d46 >= 1) and (USER_d46 <= 9));
+
+  USER_d47_satisfies_predicate = ((USER_d47 >= 1) and (USER_d47 <= 9));
+
+  USER_d48_satisfies_predicate = ((USER_d48 >= 1) and (USER_d48 <= 9));
+
+  USER_d49_satisfies_predicate = ((USER_d49 >= 1) and (USER_d49 <= 9));
+
+  USER_d51_satisfies_predicate = ((USER_d51 >= 1) and (USER_d51 <= 9));
+
+  USER_d52_satisfies_predicate = ((USER_d52 >= 1) and (USER_d52 <= 9));
+
+  USER_d53_satisfies_predicate = ((USER_d53 >= 1) and (USER_d53 <= 9));
+
+  USER_d54_satisfies_predicate = ((USER_d54 >= 1) and (USER_d54 <= 9));
+
+  USER_d55_satisfies_predicate = ((USER_d55 >= 1) and (USER_d55 <= 9));
+
+  USER_d56_satisfies_predicate = ((USER_d56 >= 1) and (USER_d56 <= 9));
+
+  USER_d57_satisfies_predicate = ((USER_d57 >= 1) and (USER_d57 <= 9));
+
+  USER_d58_satisfies_predicate = ((USER_d58 >= 1) and (USER_d58 <= 9));
+
+  USER_d59_satisfies_predicate = ((USER_d59 >= 1) and (USER_d59 <= 9));
+
+  USER_d61_satisfies_predicate = ((USER_d61 >= 1) and (USER_d61 <= 9));
+
+  USER_d62_satisfies_predicate = ((USER_d62 >= 1) and (USER_d62 <= 9));
+
+  USER_d63_satisfies_predicate = ((USER_d63 >= 1) and (USER_d63 <= 9));
+
+  USER_d64_satisfies_predicate = ((USER_d64 >= 1) and (USER_d64 <= 9));
+
+  USER_d65_satisfies_predicate = ((USER_d65 >= 1) and (USER_d65 <= 9));
+
+  USER_d66_satisfies_predicate = ((USER_d66 >= 1) and (USER_d66 <= 9));
+
+  USER_d67_satisfies_predicate = ((USER_d67 >= 1) and (USER_d67 <= 9));
+
+  USER_d68_satisfies_predicate = ((USER_d68 >= 1) and (USER_d68 <= 9));
+
+  USER_d69_satisfies_predicate = ((USER_d69 >= 1) and (USER_d69 <= 9));
+
+  USER_d71_satisfies_predicate = ((USER_d71 >= 1) and (USER_d71 <= 9));
+
+  USER_d72_satisfies_predicate = ((USER_d72 >= 1) and (USER_d72 <= 9));
+
+  USER_d73_satisfies_predicate = ((USER_d73 >= 1) and (USER_d73 <= 9));
+
+  USER_d74_satisfies_predicate = ((USER_d74 >= 1) and (USER_d74 <= 9));
+
+  USER_d75_satisfies_predicate = ((USER_d75 >= 1) and (USER_d75 <= 9));
+
+  USER_d76_satisfies_predicate = ((USER_d76 >= 1) and (USER_d76 <= 9));
+
+  USER_d77_satisfies_predicate = ((USER_d77 >= 1) and (USER_d77 <= 9));
+
+  USER_d78_satisfies_predicate = ((USER_d78 >= 1) and (USER_d78 <= 9));
+
+  USER_d79_satisfies_predicate = ((USER_d79 >= 1) and (USER_d79 <= 9));
+
+  USER_d81_satisfies_predicate = ((USER_d81 >= 1) and (USER_d81 <= 9));
+
+  USER_d82_satisfies_predicate = ((USER_d82 >= 1) and (USER_d82 <= 9));
+
+  USER_d83_satisfies_predicate = ((USER_d83 >= 1) and (USER_d83 <= 9));
+
+  USER_d84_satisfies_predicate = ((USER_d84 >= 1) and (USER_d84 <= 9));
+
+  USER_d85_satisfies_predicate = ((USER_d85 >= 1) and (USER_d85 <= 9));
+
+  USER_d86_satisfies_predicate = ((USER_d86 >= 1) and (USER_d86 <= 9));
+
+  USER_d87_satisfies_predicate = ((USER_d87 >= 1) and (USER_d87 <= 9));
+
+  USER_d88_satisfies_predicate = ((USER_d88 >= 1) and (USER_d88 <= 9));
+
+  USER_d89_satisfies_predicate = ((USER_d89 >= 1) and (USER_d89 <= 9));
+
+  USER_d91_satisfies_predicate = ((USER_d91 >= 1) and (USER_d91 <= 9));
+
+  USER_d92_satisfies_predicate = ((USER_d92 >= 1) and (USER_d92 <= 9));
+
+  USER_d93_satisfies_predicate = ((USER_d93 >= 1) and (USER_d93 <= 9));
+
+  USER_d94_satisfies_predicate = ((USER_d94 >= 1) and (USER_d94 <= 9));
+
+  USER_d95_satisfies_predicate = ((USER_d95 >= 1) and (USER_d95 <= 9));
+
+  USER_d96_satisfies_predicate = ((USER_d96 >= 1) and (USER_d96 <= 9));
+
+  USER_d97_satisfies_predicate = ((USER_d97 >= 1) and (USER_d97 <= 9));
+
+  USER_d98_satisfies_predicate = ((USER_d98 >= 1) and (USER_d98 <= 9));
+
+  USER_d99_satisfies_predicate = ((USER_d99 >= 1) and (USER_d99 <= 9));
+
+  USER_r1 = USER_set_holds(USER_d11, USER_d12, USER_d13, USER_d14, USER_d15, USER_d16, USER_d17, USER_d18, USER_d19);
+
+  USER_r2 = USER_set_holds(USER_d21, USER_d22, USER_d23, USER_d24, USER_d25, USER_d26, USER_d27, USER_d28, USER_d29);
+
+  USER_r3 = USER_set_holds(USER_d31, USER_d32, USER_d33, USER_d34, USER_d35, USER_d36, USER_d37, USER_d38, USER_d39);
+
+  USER_r4 = USER_set_holds(USER_d41, USER_d42, USER_d43, USER_d44, USER_d45, USER_d46, USER_d47, USER_d48, USER_d49);
+
+  USER_r5 = USER_set_holds(USER_d51, USER_d52, USER_d53, USER_d54, USER_d55, USER_d56, USER_d57, USER_d58, USER_d59);
+
+  USER_r6 = USER_set_holds(USER_d61, USER_d62, USER_d63, USER_d64, USER_d65, USER_d66, USER_d67, USER_d68, USER_d69);
+
+  USER_r7 = USER_set_holds(USER_d71, USER_d72, USER_d73, USER_d74, USER_d75, USER_d76, USER_d77, USER_d78, USER_d79);
+
+  USER_r8 = USER_set_holds(USER_d81, USER_d82, USER_d83, USER_d84, USER_d85, USER_d86, USER_d87, USER_d88, USER_d89);
+
+  USER_r9 = USER_set_holds(USER_d91, USER_d92, USER_d93, USER_d94, USER_d95, USER_d96, USER_d97, USER_d98, USER_d99);
+
+  USER_c1 = USER_set_holds(USER_d11, USER_d21, USER_d31, USER_d41, USER_d51, USER_d61, USER_d71, USER_d81, USER_d91);
+
+  USER_c2 = USER_set_holds(USER_d12, USER_d22, USER_d32, USER_d42, USER_d52, USER_d62, USER_d72, USER_d82, USER_d92);
+
+  USER_c3 = USER_set_holds(USER_d13, USER_d23, USER_d33, USER_d43, USER_d53, USER_d63, USER_d73, USER_d83, USER_d93);
+
+  USER_c4 = USER_set_holds(USER_d14, USER_d24, USER_d34, USER_d44, USER_d54, USER_d64, USER_d74, USER_d84, USER_d94);
+
+  USER_c5 = USER_set_holds(USER_d15, USER_d25, USER_d35, USER_d45, USER_d55, USER_d65, USER_d75, USER_d85, USER_d95);
+
+  USER_c6 = USER_set_holds(USER_d16, USER_d26, USER_d36, USER_d46, USER_d56, USER_d66, USER_d76, USER_d86, USER_d96);
+
+  USER_c7 = USER_set_holds(USER_d17, USER_d27, USER_d37, USER_d47, USER_d57, USER_d67, USER_d77, USER_d87, USER_d97);
+
+  USER_c8 = USER_set_holds(USER_d18, USER_d28, USER_d38, USER_d48, USER_d58, USER_d68, USER_d78, USER_d88, USER_d98);
+
+  USER_c9 = USER_set_holds(USER_d19, USER_d29, USER_d39, USER_d49, USER_d59, USER_d69, USER_d79, USER_d89, USER_d99);
+
+  USER_ss1 = USER_set_holds(USER_d11, USER_d12, USER_d13, USER_d21, USER_d22, USER_d23, USER_d31, USER_d32, USER_d33);
+
+  USER_ss2 = USER_set_holds(USER_d14, USER_d15, USER_d16, USER_d24, USER_d25, USER_d26, USER_d34, USER_d35, USER_d36);
+
+  USER_ss3 = USER_set_holds(USER_d17, USER_d18, USER_d19, USER_d27, USER_d28, USER_d29, USER_d37, USER_d38, USER_d39);
+
+  USER_ss4 = USER_set_holds(USER_d41, USER_d42, USER_d43, USER_d51, USER_d52, USER_d53, USER_d61, USER_d62, USER_d63);
+
+  USER_ss5 = USER_set_holds(USER_d44, USER_d45, USER_d46, USER_d54, USER_d55, USER_d56, USER_d64, USER_d65, USER_d66);
+
+  USER_ss6 = USER_set_holds(USER_d47, USER_d48, USER_d49, USER_d57, USER_d58, USER_d59, USER_d67, USER_d68, USER_d69);
+
+  USER_ss7 = USER_set_holds(USER_d71, USER_d72, USER_d73, USER_d81, USER_d82, USER_d83, USER_d91, USER_d92, USER_d93);
+
+  USER_ss8 = USER_set_holds(USER_d74, USER_d75, USER_d76, USER_d84, USER_d85, USER_d86, USER_d94, USER_d95, USER_d96);
+
+  USER_ss9 = USER_set_holds(USER_d77, USER_d78, USER_d79, USER_d87, USER_d88, USER_d89, USER_d97, USER_d98, USER_d99);
+
+  USER_hard1 = (constraints => (not (((((((((((((((((USER_d16 = 6) and (USER_d22 = 5)) and (USER_d23 = 9)) and (USER_d29 = 8)) and (USER_d31 = 2)) and (USER_d36 = 8)) and (USER_d42 = 4)) and (USER_d43 = 5)) and (USER_d53 = 3)) and (USER_d63 = 6)) and (USER_d66 = 3)) and (USER_d68 = 5)) and (USER_d69 = 4)) and (USER_d74 = 3)) and (USER_d75 = 2)) and (USER_d76 = 5)) and (USER_d79 = 6))));
+
+  constraints = historically((USER_r1 and (USER_r2 and (USER_r3 and (USER_r4 and (USER_r5 and (USER_r6 and (USER_r7 and (USER_r8 and (USER_r9 and (USER_c1 and (USER_c2 and (USER_c3 and (USER_c4 and (USER_c5 and (USER_c6 and (USER_c7 and (USER_c8 and (USER_c9 and (USER_ss1 and (USER_ss2 and (USER_ss3 and (USER_ss4 and (USER_ss5 and (USER_ss6 and (USER_ss7 and (USER_ss8 and USER_ss9)))))))))))))))))))))))))));
+
+  assert (USER_d11_satisfies_predicate and (USER_d12_satisfies_predicate and (USER_d13_satisfies_predicate and (USER_d14_satisfies_predicate and (USER_d15_satisfies_predicate and (USER_d16_satisfies_predicate and (USER_d17_satisfies_predicate and (USER_d18_satisfies_predicate and (USER_d19_satisfies_predicate and (USER_d21_satisfies_predicate and (USER_d22_satisfies_predicate and (USER_d23_satisfies_predicate and (USER_d24_satisfies_predicate and (USER_d25_satisfies_predicate and (USER_d26_satisfies_predicate and (USER_d27_satisfies_predicate and (USER_d28_satisfies_predicate and (USER_d29_satisfies_predicate and (USER_d31_satisfies_predicate and (USER_d32_satisfies_predicate and (USER_d33_satisfies_predicate and (USER_d34_satisfies_predicate and (USER_d35_satisfies_predicate and (USER_d36_satisfies_predicate and (USER_d37_satisfies_predicate and (USER_d38_satisfies_predicate and (USER_d39_satisfies_predicate and (USER_d41_satisfies_predicate and (USER_d42_satisfies_predicate and (USER_d43_satisfies_predicate and (USER_d44_satisfies_predicate and (USER_d45_satisfies_predicate and (USER_d46_satisfies_predicate and (USER_d47_satisfies_predicate and (USER_d48_satisfies_predicate and (USER_d49_satisfies_predicate and (USER_d51_satisfies_predicate and (USER_d52_satisfies_predicate and (USER_d53_satisfies_predicate and (USER_d54_satisfies_predicate and (USER_d55_satisfies_predicate and (USER_d56_satisfies_predicate and (USER_d57_satisfies_predicate and (USER_d58_satisfies_predicate and (USER_d59_satisfies_predicate and (USER_d61_satisfies_predicate and (USER_d62_satisfies_predicate and (USER_d63_satisfies_predicate and (USER_d64_satisfies_predicate and (USER_d65_satisfies_predicate and (USER_d66_satisfies_predicate and (USER_d67_satisfies_predicate and (USER_d68_satisfies_predicate and (USER_d69_satisfies_predicate and (USER_d71_satisfies_predicate and (USER_d72_satisfies_predicate and (USER_d73_satisfies_predicate and (USER_d74_satisfies_predicate and (USER_d75_satisfies_predicate and (USER_d76_satisfies_predicate and (USER_d77_satisfies_predicate and (USER_d78_satisfies_predicate and (USER_d79_satisfies_predicate and (USER_d81_satisfies_predicate and (USER_d82_satisfies_predicate and (USER_d83_satisfies_predicate and (USER_d84_satisfies_predicate and (USER_d85_satisfies_predicate and (USER_d86_satisfies_predicate and (USER_d87_satisfies_predicate and (USER_d88_satisfies_predicate and (USER_d89_satisfies_predicate and (USER_d91_satisfies_predicate and (USER_d92_satisfies_predicate and (USER_d93_satisfies_predicate and (USER_d94_satisfies_predicate and (USER_d95_satisfies_predicate and (USER_d96_satisfies_predicate and (USER_d97_satisfies_predicate and (USER_d98_satisfies_predicate and USER_d99_satisfies_predicate))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
+
+  --%PROPERTY USER_hard1;
+
+tel;
