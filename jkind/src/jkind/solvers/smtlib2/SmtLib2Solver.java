@@ -163,10 +163,6 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 				comment(getSolverName() + ": " + line);
 				if (line == null) {
 					throw new JKindException(getSolverName() + " terminated unexpectedly");
-				} else if (line.contains("define-fun " + Relation.T + " ")) {
-					//TODO: we were doing nothing here but this seems wrong now in 4.8.9.
-					content.append(line);
-					content.append("\n");
 				} else if (isDone(line)) {
 					break;
 				} else if (line.contains("model is not available")) {

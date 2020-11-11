@@ -10,9 +10,12 @@ type: 'Bool' | 'Int' | 'Real';
 
 body: symbol                               # symbolBody
     | '(' fn body* ')'                     # consBody
+    | '(' 'let' '(' binding* ')' body ')'  # letBody
     ;
 
-fn: '=' | '-' | '/' | 'and' | 'or' | 'ite' | 'not' | '>=' | '<=' | '<' | '>';
+binding: '(' id body ')';
+
+fn: '=' | '+' | '*' | '-' | '/' | 'and' | 'or' | 'ite' | 'not' | '>=' | '<=' | '<' | '>';
 
 symbol: id | BOOL | INT | REAL;
 

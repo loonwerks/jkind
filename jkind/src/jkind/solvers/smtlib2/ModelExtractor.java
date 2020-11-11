@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import jkind.lustre.Function;
 import jkind.lustre.Type;
 import jkind.sexp.Cons;
@@ -21,12 +24,27 @@ import jkind.solvers.smtlib2.SmtLib2Parser.SymbolBodyContext;
 import jkind.solvers.smtlib2.SmtLib2Parser.TypeContext;
 
 public class ModelExtractor {
+
+	public static final String TRANSITION_RELATION_FN_NAME = "T";
+	
 	public static SmtLib2Model getModel(ModelContext ctx, Map<String, Type> varTypes, List<Function> functions) {
 		SmtLib2Model model = new SmtLib2Model(varTypes, functions);
 		for (DefineContext defineCtx : ctx.define()) {
-			walkDefine(defineCtx, model);
+			if(!isTransitionRelation(defineCtx)) {
+				walkDefine(defineCtx, model);	
+			}
+			
 		}
 		return model;
+	}
+
+	private static boolean isTransitionRelation(DefineContext defineCtx) {
+		ParseTree x = defineCtx.id().children.get(0);
+		if(x instanceof TerminalNode) {
+			TerminalNode tn = (TerminalNode) x;	
+			return (tn.getText().equals(TRANSITION_RELATION_FN_NAME));
+		}
+		return false;
 	}
 
 	public static void walkDefine(DefineContext ctx, SmtLib2Model model) {
