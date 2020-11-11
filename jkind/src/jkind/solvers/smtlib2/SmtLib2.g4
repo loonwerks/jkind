@@ -15,7 +15,14 @@ body: symbol                               # symbolBody
 
 binding: '(' id body ')';
 
-fn: '=' | '+' | '*' | '-' | '/' | 'and' | 'or' | 'ite' | 'not' | '>=' | '<=' | '<' | '>';
+fn: 
+	'=' 
+  | '+' | '*' | '-' | '/' | 'div' | 'mod' 
+  | 'and' | 'or' | 'not' | '=>' 
+  | 'ite' | 
+  | '>=' | '<=' | '<' | '>' 
+  | 'to_real' | 'to_int'
+;
 
 symbol: id | BOOL | INT | REAL;
 

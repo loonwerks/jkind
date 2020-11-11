@@ -17,15 +17,15 @@ public class SmtLib2Parser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__21=1, T__20=2, T__19=3, T__18=4, T__17=5, T__16=6, T__15=7, T__14=8, 
-		T__13=9, T__12=10, T__11=11, T__10=12, T__9=13, T__8=14, T__7=15, T__6=16, 
-		T__5=17, T__4=18, T__3=19, T__2=20, T__1=21, T__0=22, BOOL=23, INT=24, 
-		REAL=25, ID=26, WS=27, ERROR=28;
+		T__26=1, T__25=2, T__24=3, T__23=4, T__22=5, T__21=6, T__20=7, T__19=8, 
+		T__18=9, T__17=10, T__16=11, T__15=12, T__14=13, T__13=14, T__12=15, T__11=16, 
+		T__10=17, T__9=18, T__8=19, T__7=20, T__6=21, T__5=22, T__4=23, T__3=24, 
+		T__2=25, T__1=26, T__0=27, BOOL=28, INT=29, REAL=30, ID=31, WS=32, ERROR=33;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'/'", "'Real'", "'model'", "'Int'", "'Bool'", "'>='", "'|'", 
-		"'<'", "'='", "'>'", "'or'", "'<='", "'let'", "'('", "')'", "'and'", "'*'", 
-		"'ite'", "'+'", "'define-fun'", "'not'", "'-'", "BOOL", "INT", "REAL", 
-		"ID", "WS", "ERROR"
+		"<INVALID>", "'/'", "'to_real'", "'Bool'", "'='", "'<='", "'('", "'*'", 
+		"'to_int'", "'ite'", "'define-fun'", "'Real'", "'model'", "'Int'", "'mod'", 
+		"'>='", "'|'", "'<'", "'>'", "'or'", "'=>'", "'let'", "'div'", "')'", 
+		"'and'", "'+'", "'not'", "'-'", "BOOL", "INT", "REAL", "ID", "WS", "ERROR"
 	};
 	public static final int
 		RULE_model = 0, RULE_define = 1, RULE_arg = 2, RULE_type = 3, RULE_body = 4, 
@@ -75,12 +75,12 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(20); match(T__8);
-			setState(21); match(T__19);
+			setState(20); match(T__21);
+			setState(21); match(T__15);
 			setState(25);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__8) {
+			while (_la==T__21) {
 				{
 				{
 				setState(22); define();
@@ -90,7 +90,7 @@ public class SmtLib2Parser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(28); match(T__7);
+			setState(28); match(T__4);
 			setState(29); match(EOF);
 			}
 		}
@@ -134,14 +134,14 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(31); match(T__8);
-			setState(32); match(T__2);
+			setState(31); match(T__21);
+			setState(32); match(T__17);
 			setState(33); id();
-			setState(34); match(T__8);
+			setState(34); match(T__21);
 			setState(38);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==T__8) {
+			while (_la==T__21) {
 				{
 				{
 				setState(35); arg();
@@ -151,10 +151,10 @@ public class SmtLib2Parser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(41); match(T__7);
+			setState(41); match(T__4);
 			setState(42); type();
 			setState(43); body();
-			setState(44); match(T__7);
+			setState(44); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -187,10 +187,10 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(46); match(T__8);
+			setState(46); match(T__21);
 			setState(47); id();
 			setState(48); type();
-			setState(49); match(T__7);
+			setState(49); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -220,7 +220,7 @@ public class SmtLib2Parser extends Parser {
 			{
 			setState(51);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__20) | (1L << T__18) | (1L << T__17))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__24) | (1L << T__16) | (1L << T__14))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			consume();
@@ -297,12 +297,12 @@ public class SmtLib2Parser extends Parser {
 				_localctx = new ConsBodyContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(54); match(T__8);
+				setState(54); match(T__21);
 				setState(55); fn();
 				setState(59);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__15) | (1L << T__8) | (1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) {
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__11) | (1L << BOOL) | (1L << INT) | (1L << REAL) | (1L << ID))) != 0)) {
 					{
 					{
 					setState(56); body();
@@ -312,20 +312,20 @@ public class SmtLib2Parser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(62); match(T__7);
+				setState(62); match(T__4);
 				}
 				break;
 			case 3:
 				_localctx = new LetBodyContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(64); match(T__8);
-				setState(65); match(T__9);
-				setState(66); match(T__8);
+				setState(64); match(T__21);
+				setState(65); match(T__6);
+				setState(66); match(T__21);
 				setState(70);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==T__8) {
+				while (_la==T__21) {
 					{
 					{
 					setState(67); binding();
@@ -335,9 +335,9 @@ public class SmtLib2Parser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(73); match(T__7);
+				setState(73); match(T__4);
 				setState(74); body();
-				setState(75); match(T__7);
+				setState(75); match(T__4);
 				}
 				break;
 			}
@@ -372,10 +372,10 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(79); match(T__8);
+			setState(79); match(T__21);
 			setState(80); id();
 			setState(81); body();
-			setState(82); match(T__7);
+			setState(82); match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -399,16 +399,130 @@ public class SmtLib2Parser extends Parser {
 	public final FnContext fn() throws RecognitionException {
 		FnContext _localctx = new FnContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_fn);
-		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(84);
-			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__16) | (1L << T__14) | (1L << T__13) | (1L << T__12) | (1L << T__11) | (1L << T__10) | (1L << T__6) | (1L << T__5) | (1L << T__4) | (1L << T__3) | (1L << T__1) | (1L << T__0))) != 0)) ) {
-			_errHandler.recoverInline(this);
-			}
-			consume();
+			setState(103);
+			switch (_input.LA(1)) {
+			case T__23:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(84); match(T__23);
+				}
+				break;
+			case T__2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(85); match(T__2);
+				}
+				break;
+			case T__20:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(86); match(T__20);
+				}
+				break;
+			case T__0:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(87); match(T__0);
+				}
+				break;
+			case T__26:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(88); match(T__26);
+				}
+				break;
+			case T__5:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(89); match(T__5);
+				}
+				break;
+			case T__13:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(90); match(T__13);
+				}
+				break;
+			case T__3:
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(91); match(T__3);
+				}
+				break;
+			case T__8:
+				enterOuterAlt(_localctx, 9);
+				{
+				setState(92); match(T__8);
+				}
+				break;
+			case T__1:
+				enterOuterAlt(_localctx, 10);
+				{
+				setState(93); match(T__1);
+				}
+				break;
+			case T__7:
+				enterOuterAlt(_localctx, 11);
+				{
+				setState(94); match(T__7);
+				}
+				break;
+			case T__18:
+				enterOuterAlt(_localctx, 12);
+				{
+				setState(95); match(T__18);
+				}
+				break;
+			case T__21:
+			case T__11:
+			case T__4:
+			case BOOL:
+			case INT:
+			case REAL:
+			case ID:
+				enterOuterAlt(_localctx, 13);
+				{
+				}
+				break;
+			case T__12:
+				enterOuterAlt(_localctx, 14);
+				{
+				setState(97); match(T__12);
+				}
+				break;
+			case T__22:
+				enterOuterAlt(_localctx, 15);
+				{
+				setState(98); match(T__22);
+				}
+				break;
+			case T__10:
+				enterOuterAlt(_localctx, 16);
+				{
+				setState(99); match(T__10);
+				}
+				break;
+			case T__9:
+				enterOuterAlt(_localctx, 17);
+				{
+				setState(100); match(T__9);
+				}
+				break;
+			case T__25:
+				enterOuterAlt(_localctx, 18);
+				{
+				setState(101); match(T__25);
+				}
+				break;
+			case T__19:
+				enterOuterAlt(_localctx, 19);
+				{
+				setState(102); match(T__19);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -439,31 +553,31 @@ public class SmtLib2Parser extends Parser {
 		SymbolContext _localctx = new SymbolContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_symbol);
 		try {
-			setState(90);
+			setState(109);
 			switch (_input.LA(1)) {
-			case T__15:
+			case T__11:
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(86); id();
+				setState(105); id();
 				}
 				break;
 			case BOOL:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(87); match(BOOL);
+				setState(106); match(BOOL);
 				}
 				break;
 			case INT:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(88); match(INT);
+				setState(107); match(INT);
 				}
 				break;
 			case REAL:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(89); match(REAL);
+				setState(108); match(REAL);
 				}
 				break;
 			default:
@@ -496,18 +610,18 @@ public class SmtLib2Parser extends Parser {
 		IdContext _localctx = new IdContext(_ctx, getState());
 		enterRule(_localctx, 16, RULE_id);
 		try {
-			setState(94);
+			setState(113);
 			switch (_input.LA(1)) {
-			case T__15:
+			case T__11:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(92); qid();
+				setState(111); qid();
 				}
 				break;
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(93); match(ID);
+				setState(112); match(ID);
 				}
 				break;
 			default:
@@ -539,9 +653,9 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(96); match(T__15);
-			setState(97); match(ID);
-			setState(98); match(T__15);
+			setState(115); match(T__11);
+			setState(116); match(ID);
+			setState(117); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -556,31 +670,37 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\36g\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
-		"\2\3\2\3\2\7\2\32\n\2\f\2\16\2\35\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3"+
-		"\7\3\'\n\3\f\3\16\3*\13\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5"+
-		"\3\5\3\6\3\6\3\6\3\6\7\6<\n\6\f\6\16\6?\13\6\3\6\3\6\3\6\3\6\3\6\3\6\7"+
-		"\6G\n\6\f\6\16\6J\13\6\3\6\3\6\3\6\3\6\5\6P\n\6\3\7\3\7\3\7\3\7\3\7\3"+
-		"\b\3\b\3\t\3\t\3\t\3\t\5\t]\n\t\3\n\3\n\5\na\n\n\3\13\3\13\3\13\3\13\3"+
-		"\13\2\2\f\2\4\6\b\n\f\16\20\22\24\2\4\4\2\4\4\6\7\7\2\3\3\b\b\n\16\22"+
-		"\25\27\30f\2\26\3\2\2\2\4!\3\2\2\2\6\60\3\2\2\2\b\65\3\2\2\2\nO\3\2\2"+
-		"\2\fQ\3\2\2\2\16V\3\2\2\2\20\\\3\2\2\2\22`\3\2\2\2\24b\3\2\2\2\26\27\7"+
-		"\20\2\2\27\33\7\5\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\35\3\2\2\2\33\31"+
-		"\3\2\2\2\33\34\3\2\2\2\34\36\3\2\2\2\35\33\3\2\2\2\36\37\7\21\2\2\37 "+
-		"\7\2\2\3 \3\3\2\2\2!\"\7\20\2\2\"#\7\26\2\2#$\5\22\n\2$(\7\20\2\2%\'\5"+
-		"\6\4\2&%\3\2\2\2\'*\3\2\2\2(&\3\2\2\2()\3\2\2\2)+\3\2\2\2*(\3\2\2\2+,"+
-		"\7\21\2\2,-\5\b\5\2-.\5\n\6\2./\7\21\2\2/\5\3\2\2\2\60\61\7\20\2\2\61"+
-		"\62\5\22\n\2\62\63\5\b\5\2\63\64\7\21\2\2\64\7\3\2\2\2\65\66\t\2\2\2\66"+
-		"\t\3\2\2\2\67P\5\20\t\289\7\20\2\29=\5\16\b\2:<\5\n\6\2;:\3\2\2\2<?\3"+
-		"\2\2\2=;\3\2\2\2=>\3\2\2\2>@\3\2\2\2?=\3\2\2\2@A\7\21\2\2AP\3\2\2\2BC"+
-		"\7\20\2\2CD\7\17\2\2DH\7\20\2\2EG\5\f\7\2FE\3\2\2\2GJ\3\2\2\2HF\3\2\2"+
-		"\2HI\3\2\2\2IK\3\2\2\2JH\3\2\2\2KL\7\21\2\2LM\5\n\6\2MN\7\21\2\2NP\3\2"+
-		"\2\2O\67\3\2\2\2O8\3\2\2\2OB\3\2\2\2P\13\3\2\2\2QR\7\20\2\2RS\5\22\n\2"+
-		"ST\5\n\6\2TU\7\21\2\2U\r\3\2\2\2VW\t\3\2\2W\17\3\2\2\2X]\5\22\n\2Y]\7"+
-		"\31\2\2Z]\7\32\2\2[]\7\33\2\2\\X\3\2\2\2\\Y\3\2\2\2\\Z\3\2\2\2\\[\3\2"+
-		"\2\2]\21\3\2\2\2^a\5\24\13\2_a\7\34\2\2`^\3\2\2\2`_\3\2\2\2a\23\3\2\2"+
-		"\2bc\7\t\2\2cd\7\34\2\2de\7\t\2\2e\25\3\2\2\2\t\33(=HO\\`";
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3#z\4\2\t\2\4\3\t\3"+
+		"\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3\2"+
+		"\3\2\3\2\7\2\32\n\2\f\2\16\2\35\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\7"+
+		"\3\'\n\3\f\3\16\3*\13\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3"+
+		"\5\3\6\3\6\3\6\3\6\7\6<\n\6\f\6\16\6?\13\6\3\6\3\6\3\6\3\6\3\6\3\6\7\6"+
+		"G\n\6\f\6\16\6J\13\6\3\6\3\6\3\6\3\6\5\6P\n\6\3\7\3\7\3\7\3\7\3\7\3\b"+
+		"\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3"+
+		"\b\5\bj\n\b\3\t\3\t\3\t\3\t\5\tp\n\t\3\n\3\n\5\nt\n\n\3\13\3\13\3\13\3"+
+		"\13\3\13\2\2\f\2\4\6\b\n\f\16\20\22\24\2\3\5\2\5\5\r\r\17\17\u008b\2\26"+
+		"\3\2\2\2\4!\3\2\2\2\6\60\3\2\2\2\b\65\3\2\2\2\nO\3\2\2\2\fQ\3\2\2\2\16"+
+		"i\3\2\2\2\20o\3\2\2\2\22s\3\2\2\2\24u\3\2\2\2\26\27\7\b\2\2\27\33\7\16"+
+		"\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\35\3\2\2\2\33\31\3\2\2\2\33\34\3\2"+
+		"\2\2\34\36\3\2\2\2\35\33\3\2\2\2\36\37\7\31\2\2\37 \7\2\2\3 \3\3\2\2\2"+
+		"!\"\7\b\2\2\"#\7\f\2\2#$\5\22\n\2$(\7\b\2\2%\'\5\6\4\2&%\3\2\2\2\'*\3"+
+		"\2\2\2(&\3\2\2\2()\3\2\2\2)+\3\2\2\2*(\3\2\2\2+,\7\31\2\2,-\5\b\5\2-."+
+		"\5\n\6\2./\7\31\2\2/\5\3\2\2\2\60\61\7\b\2\2\61\62\5\22\n\2\62\63\5\b"+
+		"\5\2\63\64\7\31\2\2\64\7\3\2\2\2\65\66\t\2\2\2\66\t\3\2\2\2\67P\5\20\t"+
+		"\289\7\b\2\29=\5\16\b\2:<\5\n\6\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2"+
+		"\2\2>@\3\2\2\2?=\3\2\2\2@A\7\31\2\2AP\3\2\2\2BC\7\b\2\2CD\7\27\2\2DH\7"+
+		"\b\2\2EG\5\f\7\2FE\3\2\2\2GJ\3\2\2\2HF\3\2\2\2HI\3\2\2\2IK\3\2\2\2JH\3"+
+		"\2\2\2KL\7\31\2\2LM\5\n\6\2MN\7\31\2\2NP\3\2\2\2O\67\3\2\2\2O8\3\2\2\2"+
+		"OB\3\2\2\2P\13\3\2\2\2QR\7\b\2\2RS\5\22\n\2ST\5\n\6\2TU\7\31\2\2U\r\3"+
+		"\2\2\2Vj\7\6\2\2Wj\7\33\2\2Xj\7\t\2\2Yj\7\35\2\2Zj\7\3\2\2[j\7\30\2\2"+
+		"\\j\7\20\2\2]j\7\32\2\2^j\7\25\2\2_j\7\34\2\2`j\7\26\2\2aj\7\13\2\2bj"+
+		"\3\2\2\2cj\7\21\2\2dj\7\7\2\2ej\7\23\2\2fj\7\24\2\2gj\7\4\2\2hj\7\n\2"+
+		"\2iV\3\2\2\2iW\3\2\2\2iX\3\2\2\2iY\3\2\2\2iZ\3\2\2\2i[\3\2\2\2i\\\3\2"+
+		"\2\2i]\3\2\2\2i^\3\2\2\2i_\3\2\2\2i`\3\2\2\2ia\3\2\2\2ib\3\2\2\2ic\3\2"+
+		"\2\2id\3\2\2\2ie\3\2\2\2if\3\2\2\2ig\3\2\2\2ih\3\2\2\2j\17\3\2\2\2kp\5"+
+		"\22\n\2lp\7\36\2\2mp\7\37\2\2np\7 \2\2ok\3\2\2\2ol\3\2\2\2om\3\2\2\2o"+
+		"n\3\2\2\2p\21\3\2\2\2qt\5\24\13\2rt\7!\2\2sq\3\2\2\2sr\3\2\2\2t\23\3\2"+
+		"\2\2uv\7\22\2\2vw\7!\2\2wx\7\22\2\2x\25\3\2\2\2\n\33(=HOios";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
