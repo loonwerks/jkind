@@ -107,8 +107,21 @@ public class RemoveCondacts {
 		});
 	}
 
+	/*
+	 * This used to be implemented with the computeIfAbsent method but this creates
+	 * concurrent modification exceptions. 
+	 * 
+	 * The code below implements the computeIfAbsent check but omits the concurrent 
+	 * modification check. We're not modifying the mapping between keys and variables
+	 * during traversal so we're comfortable with this arrangement for now.
+	 */
 	private Node createCondactNode(String id) {
-		return nodeTable.computeIfAbsent(id + "~condact", condactId -> createTimedNode(id, condactId, true));
+	   String condactId = id + "~condact";
+	   if (nodeTable.containsKey(condactId)) {
+	       return nodeTable.get(condactId);
+	   } else {
+	       return createTimedNode(id, condactId, true);
+	   }
 	}
 
 	private Node createTimedNode(String id, String condactId, boolean clockOutputs) {
@@ -242,10 +255,23 @@ public class RemoveCondacts {
 		});
 	}
 
+	/*
+	 * This used to be implemented with the computeIfAbsent method but this creates
+	 * concurrent modification exceptions. 
+	 * 
+	 * The code below implements the computeIfAbsent check but omits the concurrent 
+	 * modification check. We're not modifying the mapping between keys and variables
+	 * during traversal so we're comfortable with this arrangement for now.
+	 */
 	private Node createClockedNode(String id) {
-		return nodeTable.computeIfAbsent(id + "~clocked", clockedId -> createTimedNode(id, clockedId, false));
+	   String clockedId = id + "~clocked";
+	   if (nodeTable.containsKey(clockedId)) {
+	       return nodeTable.get(clockedId);
+	   } else {
+	       return createTimedNode(id, clockedId, false);
+	   }
 	}
-
+	
 	private Node clockProperties(Node node) {
 		NodeBuilder builder = new NodeBuilder(node);
 		builder.clearProperties();
