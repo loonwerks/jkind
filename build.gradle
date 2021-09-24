@@ -1,7 +1,7 @@
 def mainText = file('jkind/src/jkind/Main.java').text
 def match = mainText =~ /VERSION = "(.*)";/
 def jkind_version = match[0][1]
-assert jkind_version ==~ /[0-9.]+/
+assert jkind_version ==~ /[0-9.\-]+/
 
 allprojects {
     apply plugin: 'java'
@@ -63,8 +63,32 @@ project(':jkind') {
     }
 }
 
+project(':jkind-api') {
+    sourceSets {
+        main {
+            java {
+                srcDirs += ['src']
+            }
+            resources {
+                srcDirs = ['resources']
+            }
+        }
+    }
+
+    jar {
+        manifest {
+            attributes 'Main-Class': 'jkind.Main',
+                'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
+                'Bundle-License': 'https://github.com/loonwerks/jkind/blob/master/LICENSE',
+                'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind-api',
+                'Bundle-Version': jkind_version
+        }
+        from sourceSets.main.allSource
+    }
+}
+
 task dist(type: Zip) {
-    dependsOn 'jkind:jar'
+    dependsOn 'jkind-api:jar', 'jkind:jar'
     from ('scripts') {
         include '*'
         exclude '*.bat'
@@ -77,6 +101,10 @@ task dist(type: Zip) {
     }
     from ('jkind/build/libs') {
          include 'jkind.jar'
+         into 'jkind'
+    }
+    from ('jkind-api/build/libs') {
+         include 'jkind-api.jar'
          into 'jkind'
     }
     baseName = 'jkind'
