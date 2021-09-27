@@ -38,12 +38,16 @@ import jkind.util.Util;
  * runnable JARs allow only a single entry point.
  */
 public class Main {
-	public static final String VERSION = "4.4.2";
+
+	public static final String getVersion() {
+		Package p = Main.class.getPackage();
+		return ((p != null) ? p.getImplementationVersion() : "UNKNOWN");
+	}
 
 	public static void main(String[] args) {
 		String availableEntryPoints = "Available entry points: -jkind, -jlustre2kind, -jlustre2excel, -jrealizability, -benchmark";
 		if (args.length == 0) {
-			StdErr.println("JKind Suite " + VERSION);
+			StdErr.println("JKind Suite " + getVersion());
 			StdErr.println(availableEntryPoints);
 			System.exit(0);
 		}

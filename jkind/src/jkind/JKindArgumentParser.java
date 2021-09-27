@@ -80,7 +80,7 @@ public class JKindArgumentParser extends ArgumentParser {
 	@Override
 	protected void parseCommandLine(CommandLine line) {
 		if (line.hasOption(VERSION)) {
-			StdErr.println(name + " " + Main.VERSION);
+			StdErr.println(name + " " + Main.getVersion());
 			printDectectedSolvers();
 			System.exit(0);
 		}
