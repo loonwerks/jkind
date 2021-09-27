@@ -1,10 +1,22 @@
 def mainText = file('jkind/src/jkind/Main.java').text
 def match = mainText =~ /VERSION = "(.*)";/
 def jkind_version = match[0][1]
-assert jkind_version ==~ /[0-9.]+/
+assert jkind_version ==~ /[0-9.\-]+/
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.amazonaws:aws-java-sdk-core:1.11.5'
+    }
+}
 
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    group = 'com.collins.trustedsystems.jkind'
 
     repositories {
        flatDir {
@@ -61,6 +73,33 @@ project(':jkind') {
     
         from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     }
+
+    ext {
+        awsCredentials = new com.amazonaws.auth.profile.ProfileCredentialsProvider().credentials
+    }
+
+    publishing {
+        repositories {
+            maven {
+                url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                credentials(AwsCredentials) {
+                    accessKey awsCredentials.AWSAccessKeyId
+                    secretKey awsCredentials.AWSSecretKey
+                }
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId 'com.collins.trustedsystems.jkind'
+                version jkind_version
+                from components.java
+            }
+        }
+    }
+	String fooString = "awsCredentials.AWSAccessKeyId = ${awsCredentials.AWSAccessKeyId}, awsCredentials.AWSSecretKey = ${awsCredentials.AWSSecretKey}"
+	project.logger.lifecycle(fooString)
+	//String barString = "credentials.accessKey = ${credentials.accessKey}"
+	//project.logger.lifecycle(barString)
 }
 
 task dist(type: Zip) {
