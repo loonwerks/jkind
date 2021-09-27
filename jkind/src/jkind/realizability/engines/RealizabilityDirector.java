@@ -122,7 +122,7 @@ public class RealizabilityDirector {
 
 	private void printHeader() {
 		System.out.println("==========================================");
-		System.out.println("  JRealizability " + Main.VERSION);
+		System.out.println("  JRealizability " + Main.getVersion());
 		System.out.println("==========================================");
 		System.out.println();
 	}

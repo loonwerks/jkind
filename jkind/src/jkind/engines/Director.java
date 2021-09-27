@@ -295,7 +295,7 @@ public class Director extends MessageHandler {
 	private void printHeader() {
 		if (!settings.xmlToStdout) {
 			System.out.println("==========================================");
-			System.out.println("  JKind " + Main.VERSION);
+			System.out.println("  JKind " + Main.getVersion());
 			System.out.println("==========================================");
 			System.out.println();
 			System.out.println("There are " + remainingProperties.size() + " properties to be checked.");

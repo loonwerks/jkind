@@ -1,6 +1,21 @@
-def mainText = file('jkind/src/jkind/Main.java').text
-def match = mainText =~ /VERSION = "(.*)";/
+import java.text.SimpleDateFormat;
+
+def jkind_version_base = '4.4.3-SNAPSHOT'
+//def mainText = file('jkind/src/jkind/Main.java').text
+//def match = mainText =~ /VERSION = "(.*)";/
+//def jkind_version = match[0][1]
+
+def buildTime() {
+    def df = new SimpleDateFormat("yyyyMMddHHmm");
+    df.setTimeZone(TimeZone.getTimeZone("UTC"))
+    return df.format(new Date())
+}
+
+def match = jkind_version_base =~ /([0-9]+\.[0-9]\.[0-9]+).*/
 def jkind_version = match[0][1]
+if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
+    jkind_version = jkind_version + "-" + buildTime()
+}
 assert jkind_version ==~ /[0-9.\-]+/
 
 allprojects {
@@ -55,7 +70,8 @@ project(':jkind') {
                 'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
                 'Bundle-License': 'https://github.com/loonwerks/jkind/blob/master/LICENSE',
                 'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind',
-                'Bundle-Version': jkind_version
+                'Bundle-Version': jkind_version,
+                'Implementation-Version': jkind_version
         }
         from sourceSets.main.allSource
     
@@ -81,7 +97,8 @@ project(':jkind-api') {
                 'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
                 'Bundle-License': 'https://github.com/loonwerks/jkind/blob/master/LICENSE',
                 'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind-api',
-                'Bundle-Version': jkind_version
+                'Bundle-Version': jkind_version,
+                'Implementation-Version': jkind_version
         }
         from sourceSets.main.allSource
     }
