@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - ./gradlew clean jar dist
+      - ./gradlew clean jar dist publish
   post_build:
     commands:
       - echo Build completed on `date`
