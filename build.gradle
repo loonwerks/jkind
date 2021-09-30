@@ -94,12 +94,19 @@ project(':jkind') {
     publishing {
         repositories {
             maven {
-                url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
-                credentials(AwsCredentials) {
-                    accessKey awsCredentials.AWSAccessKeyId
-                    secretKey awsCredentials.AWSSecretKey
+                url 'https://rc-517734263030.d.codeartifact.us-east-2.amazonaws.com/maven/ca-trustedsystems-codeartifact-public-us-east-2/'
+                credentials {
+                    username "aws"
+                    password System.env.CODEARTIFACT_AUTH_TOKEN
                 }
             }
+//            maven {
+//                url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+//                credentials(AwsCredentials) {
+//                    accessKey awsCredentials.AWSAccessKeyId
+//                    secretKey awsCredentials.AWSSecretKey
+//                }
+//            }
         }
         publications {
             mavenJava(MavenPublication) {
