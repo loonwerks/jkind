@@ -104,11 +104,9 @@ project(':jkind') {
             // }
             maven {
                 url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
-                // credentials(AwsCredentials) {
-                // accessKey awsCredentials.AWSAccessKeyId
-                // secretKey awsCredentials.AWSSecretKey
-                // }
-                credentials {
+                credentials(AwsCredentials) {
+                    // accessKey awsCredentials.AWSAccessKeyId
+                    // secretKey awsCredentials.AWSSecretKey
                     accessKey = awsAccessKeyId
                     secretKey = awsSecretAccessKey
                 }
