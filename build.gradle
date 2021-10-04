@@ -88,9 +88,9 @@ project(':jkind') {
     }
 
     ext {
-        // awsCredentials = new com.amazonaws.auth.profile.ProfileCredentialsProvider().credentials
-        awsAccessKeyId = System.env.AWS_ACCESS_KEY_ID ?: findProperty("aws_access_key_id")
-        awsSecretAccessKey = System.env.AWS_SECRET_ACCESS_KEY ?: findProperty("aws_secret_access_key")
+        awsCredentials = new com.amazonaws.auth.profile.ProfileCredentialsProvider().credentials
+        // awsAccessKeyId = System.env.AWS_ACCESS_KEY_ID ?: findProperty("aws_access_key_id")
+        // awsSecretAccessKey = System.env.AWS_SECRET_ACCESS_KEY ?: findProperty("aws_secret_access_key")
     }
 
     publishing {
@@ -105,10 +105,10 @@ project(':jkind') {
             maven {
                 url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
                 credentials(AwsCredentials) {
-                    // accessKey awsCredentials.AWSAccessKeyId
-                    // secretKey awsCredentials.AWSSecretKey
-                    accessKey = awsAccessKeyId
-                    secretKey = awsSecretAccessKey
+                    accessKey awsCredentials.AWSAccessKeyId
+                    secretKey awsCredentials.AWSSecretKey
+                    // accessKey = awsAccessKeyId
+                    // secretKey = awsSecretAccessKey
                 }
             }
         }
@@ -120,8 +120,8 @@ project(':jkind') {
             }
         }
     }
-	//String fooString = "awsCredentials.AWSAccessKeyId = ${awsCredentials.AWSAccessKeyId}, awsCredentials.AWSSecretKey = ${awsCredentials.AWSSecretKey}"
-	//project.logger.lifecycle(fooString)
+	String fooString = "awsCredentials.AWSAccessKeyId = ${awsCredentials.AWSAccessKeyId}, awsCredentials.AWSSecretKey = REDACTED"
+	project.logger.lifecycle(fooString)
 	//String barString = "credentials.accessKey = ${credentials.accessKey}"
 	//project.logger.lifecycle(barString)
 }
