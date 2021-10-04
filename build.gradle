@@ -30,15 +30,8 @@ allprojects {
 
     group = 'com.collins.trustedsystems.jkind'
 
-    repositories {
-       flatDir {
-           dirs '../jkind-common/dependencies'
-       }
-    }
-
     dependencies {
-        compile name: 'antlr-runtime-4.4'
-        compile name: 'jxl'
+        implementation files('../jkind-common/dependencies/antlr-runtime-4.4.jar', '../jkind-common/dependencies/jxl.jar')
     }
 
     sourceSets {
@@ -58,8 +51,7 @@ project(':jkind') {
     }
 
     dependencies {
-        compile name: 'commons-cli-1.2'
-        compile name: 'smtinterpol'
+        implementation files('dependencies/commons-cli-1.2.jar', 'dependencies/smtinterpol.jar')
     }
 
     sourceSets {
@@ -83,8 +75,10 @@ project(':jkind') {
                 'Implementation-Version': jkind_version
         }
         from sourceSets.main.allSource
-    
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+
+        dependsOn configurations.runtimeClasspath
+        from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+        //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     }
 
     ext {
@@ -95,20 +89,17 @@ project(':jkind') {
 
     publishing {
         repositories {
-            // maven {
-            //     url 'https://rc-517734263030.d.codeartifact.us-east-2.amazonaws.com/maven/ca-trustedsystems-codeartifact-public-us-east-2/'
-            //     credentials {
-            //         username "aws"
-            //         password System.env.CODEARTIFACT_AUTH_TOKEN
-            //     }
-            // }
             maven {
-                url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)")) {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                } else if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/snapshots/"
+                } else {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/staging/"
+                }
                 credentials(AwsCredentials) {
                     accessKey awsCredentials.AWSAccessKeyId
                     secretKey awsCredentials.AWSSecretKey
-                    // accessKey = awsAccessKeyId
-                    // secretKey = awsSecretAccessKey
                 }
             }
         }
@@ -120,10 +111,8 @@ project(':jkind') {
             }
         }
     }
-	String fooString = "awsCredentials.AWSAccessKeyId = ${awsCredentials.AWSAccessKeyId}, awsCredentials.AWSSecretKey = REDACTED"
-	project.logger.lifecycle(fooString)
-	//String barString = "credentials.accessKey = ${credentials.accessKey}"
-	//project.logger.lifecycle(barString)
+    String fooString = "awsCredentials.AWSAccessKeyId = ${awsCredentials.AWSAccessKeyId}, awsCredentials.AWSSecretKey = REDACTED"
+    project.logger.lifecycle(fooString)
 }
 
 project(':jkind-api') {
