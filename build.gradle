@@ -87,26 +87,32 @@ project(':jkind') {
         from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     }
 
-    // ext {
-    //     awsCredentials = new com.amazonaws.auth.profile.ProfileCredentialsProvider().credentials
-    // }
+    ext {
+        // awsCredentials = new com.amazonaws.auth.profile.ProfileCredentialsProvider().credentials
+        awsAccessKeyId = System.env.AWS_ACCESS_KEY_ID ?: findProperty("aws_access_key_id")
+        awsSecretAccessKey = System.env.AWS_SECRET_ACCESS_KEY ?: findProperty("aws_secret_access_key")
+    }
 
     publishing {
         repositories {
-            maven {
-                url 'https://rc-517734263030.d.codeartifact.us-east-2.amazonaws.com/maven/ca-trustedsystems-codeartifact-public-us-east-2/'
-                credentials {
-                    username "aws"
-                    password System.env.CODEARTIFACT_AUTH_TOKEN
-                }
-            }
             // maven {
-            //     url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
-            //     credentials(AwsCredentials) {
-            //         accessKey awsCredentials.AWSAccessKeyId
-            //         secretKey awsCredentials.AWSSecretKey
+            //     url 'https://rc-517734263030.d.codeartifact.us-east-2.amazonaws.com/maven/ca-trustedsystems-codeartifact-public-us-east-2/'
+            //     credentials {
+            //         username "aws"
+            //         password System.env.CODEARTIFACT_AUTH_TOKEN
             //     }
             // }
+            maven {
+                url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                // credentials(AwsCredentials) {
+                // accessKey awsCredentials.AWSAccessKeyId
+                // secretKey awsCredentials.AWSSecretKey
+                // }
+                credentials {
+                    accessKey = awsAccessKeyId
+                    secretKey = awsSecretAccessKey
+                }
+            }
         }
         publications {
             mavenJava(MavenPublication) {
