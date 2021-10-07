@@ -41,6 +41,23 @@ allprojects {
             }
         }
     }
+
+    publishing {
+        repositories {
+            maven {
+                if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)")) {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                } else if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/snapshots/"
+                } else {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/staging/"
+                }
+                authentication {
+                    awsIm(AwsImAuthentication)
+                }
+            }
+        }
+    }
 }
 
 project(':jkind') {
@@ -81,20 +98,6 @@ project(':jkind') {
     }
 
     publishing {
-        repositories {
-            maven {
-                if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)")) {
-                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
-                } else if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
-                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/snapshots/"
-                } else {
-                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/staging/"
-                }
-                authentication {
-                    awsIm(AwsImAuthentication)
-                }
-            }
-        }
         publications {
             mavenJava(MavenPublication) {
                 artifactId 'com.collins.trustedsystems.jkind'
@@ -127,6 +130,16 @@ project(':jkind-api') {
                 'Implementation-Version': jkind_version
         }
         from sourceSets.main.allSource
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId 'com.collins.trustedsystems.jkind-api'
+                version jkind_version
+                from components.java
+            }
+        }
     }
 }
 
