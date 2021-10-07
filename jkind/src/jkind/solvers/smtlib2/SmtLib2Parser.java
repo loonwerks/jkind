@@ -20,12 +20,14 @@ public class SmtLib2Parser extends Parser {
 		T__26=1, T__25=2, T__24=3, T__23=4, T__22=5, T__21=6, T__20=7, T__19=8, 
 		T__18=9, T__17=10, T__16=11, T__15=12, T__14=13, T__13=14, T__12=15, T__11=16, 
 		T__10=17, T__9=18, T__8=19, T__7=20, T__6=21, T__5=22, T__4=23, T__3=24, 
-		T__2=25, T__1=26, T__0=27, BOOL=28, INT=29, REAL=30, ID=31, WS=32, ERROR=33;
+		T__2=25, T__1=26, T__0=27, BOOL=28, INT=29, REAL=30, ID=31, DIV0=32, WS=33, 
+		ERROR=34;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'/'", "'to_real'", "'Bool'", "'='", "'<='", "'('", "'*'", 
 		"'to_int'", "'ite'", "'define-fun'", "'Real'", "'model'", "'Int'", "'mod'", 
 		"'>='", "'|'", "'<'", "'>'", "'or'", "'=>'", "'let'", "'div'", "')'", 
-		"'and'", "'+'", "'not'", "'-'", "BOOL", "INT", "REAL", "ID", "WS", "ERROR"
+		"'and'", "'+'", "'not'", "'-'", "BOOL", "INT", "REAL", "ID", "'/0'", "WS", 
+		"ERROR"
 	};
 	public static final int
 		RULE_model = 0, RULE_define = 1, RULE_arg = 2, RULE_type = 3, RULE_body = 4, 
@@ -390,6 +392,7 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static class FnContext extends ParserRuleContext {
+		public TerminalNode DIV0() { return getToken(SmtLib2Parser.DIV0, 0); }
 		public FnContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -400,7 +403,7 @@ public class SmtLib2Parser extends Parser {
 		FnContext _localctx = new FnContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_fn);
 		try {
-			setState(103);
+			setState(104);
 			switch (_input.LA(1)) {
 			case T__23:
 				enterOuterAlt(_localctx, 1);
@@ -432,46 +435,52 @@ public class SmtLib2Parser extends Parser {
 				setState(88); match(T__26);
 				}
 				break;
-			case T__5:
+			case DIV0:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(89); match(T__5);
+				setState(89); match(DIV0);
+				}
+				break;
+			case T__5:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(90); match(T__5);
 				}
 				break;
 			case T__13:
-				enterOuterAlt(_localctx, 7);
+				enterOuterAlt(_localctx, 8);
 				{
-				setState(90); match(T__13);
+				setState(91); match(T__13);
 				}
 				break;
 			case T__3:
-				enterOuterAlt(_localctx, 8);
+				enterOuterAlt(_localctx, 9);
 				{
-				setState(91); match(T__3);
+				setState(92); match(T__3);
 				}
 				break;
 			case T__8:
-				enterOuterAlt(_localctx, 9);
+				enterOuterAlt(_localctx, 10);
 				{
-				setState(92); match(T__8);
+				setState(93); match(T__8);
 				}
 				break;
 			case T__1:
-				enterOuterAlt(_localctx, 10);
+				enterOuterAlt(_localctx, 11);
 				{
-				setState(93); match(T__1);
+				setState(94); match(T__1);
 				}
 				break;
 			case T__7:
-				enterOuterAlt(_localctx, 11);
+				enterOuterAlt(_localctx, 12);
 				{
-				setState(94); match(T__7);
+				setState(95); match(T__7);
 				}
 				break;
 			case T__18:
-				enterOuterAlt(_localctx, 12);
+				enterOuterAlt(_localctx, 13);
 				{
-				setState(95); match(T__18);
+				setState(96); match(T__18);
 				}
 				break;
 			case T__21:
@@ -481,44 +490,44 @@ public class SmtLib2Parser extends Parser {
 			case INT:
 			case REAL:
 			case ID:
-				enterOuterAlt(_localctx, 13);
+				enterOuterAlt(_localctx, 14);
 				{
 				}
 				break;
 			case T__12:
-				enterOuterAlt(_localctx, 14);
+				enterOuterAlt(_localctx, 15);
 				{
-				setState(97); match(T__12);
+				setState(98); match(T__12);
 				}
 				break;
 			case T__22:
-				enterOuterAlt(_localctx, 15);
+				enterOuterAlt(_localctx, 16);
 				{
-				setState(98); match(T__22);
+				setState(99); match(T__22);
 				}
 				break;
 			case T__10:
-				enterOuterAlt(_localctx, 16);
+				enterOuterAlt(_localctx, 17);
 				{
-				setState(99); match(T__10);
+				setState(100); match(T__10);
 				}
 				break;
 			case T__9:
-				enterOuterAlt(_localctx, 17);
+				enterOuterAlt(_localctx, 18);
 				{
-				setState(100); match(T__9);
+				setState(101); match(T__9);
 				}
 				break;
 			case T__25:
-				enterOuterAlt(_localctx, 18);
+				enterOuterAlt(_localctx, 19);
 				{
-				setState(101); match(T__25);
+				setState(102); match(T__25);
 				}
 				break;
 			case T__19:
-				enterOuterAlt(_localctx, 19);
+				enterOuterAlt(_localctx, 20);
 				{
-				setState(102); match(T__19);
+				setState(103); match(T__19);
 				}
 				break;
 			default:
@@ -553,31 +562,31 @@ public class SmtLib2Parser extends Parser {
 		SymbolContext _localctx = new SymbolContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_symbol);
 		try {
-			setState(109);
+			setState(110);
 			switch (_input.LA(1)) {
 			case T__11:
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(105); id();
+				setState(106); id();
 				}
 				break;
 			case BOOL:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(106); match(BOOL);
+				setState(107); match(BOOL);
 				}
 				break;
 			case INT:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(107); match(INT);
+				setState(108); match(INT);
 				}
 				break;
 			case REAL:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(108); match(REAL);
+				setState(109); match(REAL);
 				}
 				break;
 			default:
@@ -610,18 +619,18 @@ public class SmtLib2Parser extends Parser {
 		IdContext _localctx = new IdContext(_ctx, getState());
 		enterRule(_localctx, 16, RULE_id);
 		try {
-			setState(113);
+			setState(114);
 			switch (_input.LA(1)) {
 			case T__11:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(111); qid();
+				setState(112); qid();
 				}
 				break;
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(112); match(ID);
+				setState(113); match(ID);
 				}
 				break;
 			default:
@@ -653,9 +662,9 @@ public class SmtLib2Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(115); match(T__11);
-			setState(116); match(ID);
-			setState(117); match(T__11);
+			setState(116); match(T__11);
+			setState(117); match(ID);
+			setState(118); match(T__11);
 			}
 		}
 		catch (RecognitionException re) {
@@ -670,37 +679,38 @@ public class SmtLib2Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3#z\4\2\t\2\4\3\t\3"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3${\4\2\t\2\4\3\t\3"+
 		"\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3\2"+
 		"\3\2\3\2\7\2\32\n\2\f\2\16\2\35\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\7"+
 		"\3\'\n\3\f\3\16\3*\13\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3"+
 		"\5\3\6\3\6\3\6\3\6\7\6<\n\6\f\6\16\6?\13\6\3\6\3\6\3\6\3\6\3\6\3\6\7\6"+
 		"G\n\6\f\6\16\6J\13\6\3\6\3\6\3\6\3\6\5\6P\n\6\3\7\3\7\3\7\3\7\3\7\3\b"+
 		"\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3"+
-		"\b\5\bj\n\b\3\t\3\t\3\t\3\t\5\tp\n\t\3\n\3\n\5\nt\n\n\3\13\3\13\3\13\3"+
-		"\13\3\13\2\2\f\2\4\6\b\n\f\16\20\22\24\2\3\5\2\5\5\r\r\17\17\u008b\2\26"+
-		"\3\2\2\2\4!\3\2\2\2\6\60\3\2\2\2\b\65\3\2\2\2\nO\3\2\2\2\fQ\3\2\2\2\16"+
-		"i\3\2\2\2\20o\3\2\2\2\22s\3\2\2\2\24u\3\2\2\2\26\27\7\b\2\2\27\33\7\16"+
-		"\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\35\3\2\2\2\33\31\3\2\2\2\33\34\3\2"+
-		"\2\2\34\36\3\2\2\2\35\33\3\2\2\2\36\37\7\31\2\2\37 \7\2\2\3 \3\3\2\2\2"+
-		"!\"\7\b\2\2\"#\7\f\2\2#$\5\22\n\2$(\7\b\2\2%\'\5\6\4\2&%\3\2\2\2\'*\3"+
-		"\2\2\2(&\3\2\2\2()\3\2\2\2)+\3\2\2\2*(\3\2\2\2+,\7\31\2\2,-\5\b\5\2-."+
-		"\5\n\6\2./\7\31\2\2/\5\3\2\2\2\60\61\7\b\2\2\61\62\5\22\n\2\62\63\5\b"+
-		"\5\2\63\64\7\31\2\2\64\7\3\2\2\2\65\66\t\2\2\2\66\t\3\2\2\2\67P\5\20\t"+
-		"\289\7\b\2\29=\5\16\b\2:<\5\n\6\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2"+
-		"\2\2>@\3\2\2\2?=\3\2\2\2@A\7\31\2\2AP\3\2\2\2BC\7\b\2\2CD\7\27\2\2DH\7"+
-		"\b\2\2EG\5\f\7\2FE\3\2\2\2GJ\3\2\2\2HF\3\2\2\2HI\3\2\2\2IK\3\2\2\2JH\3"+
-		"\2\2\2KL\7\31\2\2LM\5\n\6\2MN\7\31\2\2NP\3\2\2\2O\67\3\2\2\2O8\3\2\2\2"+
-		"OB\3\2\2\2P\13\3\2\2\2QR\7\b\2\2RS\5\22\n\2ST\5\n\6\2TU\7\31\2\2U\r\3"+
-		"\2\2\2Vj\7\6\2\2Wj\7\33\2\2Xj\7\t\2\2Yj\7\35\2\2Zj\7\3\2\2[j\7\30\2\2"+
-		"\\j\7\20\2\2]j\7\32\2\2^j\7\25\2\2_j\7\34\2\2`j\7\26\2\2aj\7\13\2\2bj"+
-		"\3\2\2\2cj\7\21\2\2dj\7\7\2\2ej\7\23\2\2fj\7\24\2\2gj\7\4\2\2hj\7\n\2"+
-		"\2iV\3\2\2\2iW\3\2\2\2iX\3\2\2\2iY\3\2\2\2iZ\3\2\2\2i[\3\2\2\2i\\\3\2"+
-		"\2\2i]\3\2\2\2i^\3\2\2\2i_\3\2\2\2i`\3\2\2\2ia\3\2\2\2ib\3\2\2\2ic\3\2"+
-		"\2\2id\3\2\2\2ie\3\2\2\2if\3\2\2\2ig\3\2\2\2ih\3\2\2\2j\17\3\2\2\2kp\5"+
-		"\22\n\2lp\7\36\2\2mp\7\37\2\2np\7 \2\2ok\3\2\2\2ol\3\2\2\2om\3\2\2\2o"+
-		"n\3\2\2\2p\21\3\2\2\2qt\5\24\13\2rt\7!\2\2sq\3\2\2\2sr\3\2\2\2t\23\3\2"+
-		"\2\2uv\7\22\2\2vw\7!\2\2wx\7\22\2\2x\25\3\2\2\2\n\33(=HOios";
+		"\b\3\b\5\bk\n\b\3\t\3\t\3\t\3\t\5\tq\n\t\3\n\3\n\5\nu\n\n\3\13\3\13\3"+
+		"\13\3\13\3\13\2\2\f\2\4\6\b\n\f\16\20\22\24\2\3\5\2\5\5\r\r\17\17\u008d"+
+		"\2\26\3\2\2\2\4!\3\2\2\2\6\60\3\2\2\2\b\65\3\2\2\2\nO\3\2\2\2\fQ\3\2\2"+
+		"\2\16j\3\2\2\2\20p\3\2\2\2\22t\3\2\2\2\24v\3\2\2\2\26\27\7\b\2\2\27\33"+
+		"\7\16\2\2\30\32\5\4\3\2\31\30\3\2\2\2\32\35\3\2\2\2\33\31\3\2\2\2\33\34"+
+		"\3\2\2\2\34\36\3\2\2\2\35\33\3\2\2\2\36\37\7\31\2\2\37 \7\2\2\3 \3\3\2"+
+		"\2\2!\"\7\b\2\2\"#\7\f\2\2#$\5\22\n\2$(\7\b\2\2%\'\5\6\4\2&%\3\2\2\2\'"+
+		"*\3\2\2\2(&\3\2\2\2()\3\2\2\2)+\3\2\2\2*(\3\2\2\2+,\7\31\2\2,-\5\b\5\2"+
+		"-.\5\n\6\2./\7\31\2\2/\5\3\2\2\2\60\61\7\b\2\2\61\62\5\22\n\2\62\63\5"+
+		"\b\5\2\63\64\7\31\2\2\64\7\3\2\2\2\65\66\t\2\2\2\66\t\3\2\2\2\67P\5\20"+
+		"\t\289\7\b\2\29=\5\16\b\2:<\5\n\6\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3"+
+		"\2\2\2>@\3\2\2\2?=\3\2\2\2@A\7\31\2\2AP\3\2\2\2BC\7\b\2\2CD\7\27\2\2D"+
+		"H\7\b\2\2EG\5\f\7\2FE\3\2\2\2GJ\3\2\2\2HF\3\2\2\2HI\3\2\2\2IK\3\2\2\2"+
+		"JH\3\2\2\2KL\7\31\2\2LM\5\n\6\2MN\7\31\2\2NP\3\2\2\2O\67\3\2\2\2O8\3\2"+
+		"\2\2OB\3\2\2\2P\13\3\2\2\2QR\7\b\2\2RS\5\22\n\2ST\5\n\6\2TU\7\31\2\2U"+
+		"\r\3\2\2\2Vk\7\6\2\2Wk\7\33\2\2Xk\7\t\2\2Yk\7\35\2\2Zk\7\3\2\2[k\7\"\2"+
+		"\2\\k\7\30\2\2]k\7\20\2\2^k\7\32\2\2_k\7\25\2\2`k\7\34\2\2ak\7\26\2\2"+
+		"bk\7\13\2\2ck\3\2\2\2dk\7\21\2\2ek\7\7\2\2fk\7\23\2\2gk\7\24\2\2hk\7\4"+
+		"\2\2ik\7\n\2\2jV\3\2\2\2jW\3\2\2\2jX\3\2\2\2jY\3\2\2\2jZ\3\2\2\2j[\3\2"+
+		"\2\2j\\\3\2\2\2j]\3\2\2\2j^\3\2\2\2j_\3\2\2\2j`\3\2\2\2ja\3\2\2\2jb\3"+
+		"\2\2\2jc\3\2\2\2jd\3\2\2\2je\3\2\2\2jf\3\2\2\2jg\3\2\2\2jh\3\2\2\2ji\3"+
+		"\2\2\2k\17\3\2\2\2lq\5\22\n\2mq\7\36\2\2nq\7\37\2\2oq\7 \2\2pl\3\2\2\2"+
+		"pm\3\2\2\2pn\3\2\2\2po\3\2\2\2q\21\3\2\2\2ru\5\24\13\2su\7!\2\2tr\3\2"+
+		"\2\2ts\3\2\2\2u\23\3\2\2\2vw\7\22\2\2wx\7!\2\2xy\7\22\2\2y\25\3\2\2\2"+
+		"\n\33(=HOjpt";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

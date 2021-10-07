@@ -17,7 +17,7 @@ binding: '(' id body ')';
 
 fn: 
 	'=' 
-  | '+' | '*' | '-' | '/' | 'div' | 'mod' 
+  | '+' | '*' | '-' | '/' | DIV0 | 'div' | 'mod' 
   | 'and' | 'or' | 'not' | '=>' 
   | 'ite' | 
   | '>=' | '<=' | '<' | '>' 
@@ -37,7 +37,8 @@ fragment SYMBOL: [a-zA-Z_@$#%!.^~\[\]'-];
 
 INT: DIGIT+;
 REAL: DIGIT+ '.' DIGIT+;
-ID: SYMBOL (SYMBOL | DIGIT)*;
+ID: (SYMBOL (SYMBOL | DIGIT)*) | DIV0;
+DIV0: '/0';
 
 WS: [ \t\n\r\f]+ -> skip;
 
