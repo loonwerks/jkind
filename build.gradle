@@ -8,6 +8,7 @@ def buildTime() {
     return df.format(new Date())
 }
 
+// Compute version number to be included in manifest, code, and publishing
 def match = jkind_version_base =~ /([0-9]+\.[0-9]\.[0-9]+).*/
 def jkind_version = match[0][1]
 if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
