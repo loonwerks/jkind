@@ -78,14 +78,7 @@ project(':jkind') {
 
         dependsOn configurations.runtimeClasspath
         from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
-        //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     }
-
-    // ext {
-        // awsCredentials = new com.amazonaws.auth.profile.ProfileCredentialsProvider().credentials
-        // awsAccessKeyId = System.env.AWS_ACCESS_KEY_ID ?: findProperty("aws_access_key_id")
-        // awsSecretAccessKey = System.env.AWS_SECRET_ACCESS_KEY ?: findProperty("aws_secret_access_key")
-    // }
 
     publishing {
         repositories {
@@ -97,10 +90,6 @@ project(':jkind') {
                 } else {
                     url "s3://ca-trustedsystems-dev-us-east-1/mvn/staging/"
                 }
-                // credentials(AwsCredentials) {
-                    // accessKey awsCredentials.AWSAccessKeyId
-                    // secretKey awsCredentials.AWSSecretKey
-                // }
                 authentication {
                     awsIm(AwsImAuthentication)
                 }
@@ -114,8 +103,6 @@ project(':jkind') {
             }
         }
     }
-    // String fooString = "awsCredentials.AWSAccessKeyId = ${awsCredentials.AWSAccessKeyId}, awsCredentials.AWSSecretKey = REDACTED"
-    // project.logger.lifecycle(fooString)
 }
 
 project(':jkind-api') {
