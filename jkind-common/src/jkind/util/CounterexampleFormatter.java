@@ -117,7 +117,10 @@ public class CounterexampleFormatter {
 			return "-";
 		} else if (value instanceof RealValue) {
 			RealValue rv = (RealValue) value;
-			String text = rv.value.toTruncatedDecimal(DECIMAL_DIGITS, TRUNCATE_SUFFIX);
+			boolean negative = (rv.value.signum() == -1);
+			BigFraction normalized = new BigFraction(rv.value.getNumerator().abs(), rv.value.getDenominator());
+			String text = normalized.toTruncatedDecimal(DECIMAL_DIGITS, TRUNCATE_SUFFIX);
+			text = negative ? ("-" + text) : text;
 			if (text.contains(TRUNCATE_SUFFIX)) {
 				truncated = true;
 			}
