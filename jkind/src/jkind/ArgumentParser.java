@@ -39,7 +39,7 @@ public abstract class ArgumentParser {
 
 	protected void parseCommandLine(CommandLine line) {
 		if (line.hasOption(VERSION)) {
-			StdErr.println(name + " " + Main.VERSION);
+			StdErr.println(name + " " + Main.getVersion());
 			System.exit(0);
 		}
 

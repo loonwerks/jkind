@@ -1,26 +1,61 @@
-def mainText = file('jkind/src/jkind/Main.java').text
-def match = mainText =~ /VERSION = "(.*)";/
+import java.text.SimpleDateFormat;
+
+def jkind_version_base = '4.4.4-SNAPSHOT'
+
+def buildTime() {
+    def df = new SimpleDateFormat("yyyyMMddHHmm");
+    df.setTimeZone(TimeZone.getTimeZone("UTC"))
+    return df.format(new Date())
+}
+
+// Compute version number to be included in manifest, code, and publishing
+def match = jkind_version_base =~ /([0-9]+\.[0-9]\.[0-9]+).*/
 def jkind_version = match[0][1]
-assert jkind_version ==~ /[0-9.]+/
+if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
+    jkind_version = jkind_version + "-" + buildTime()
+}
+assert jkind_version ==~ /[0-9.\-]+/
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.amazonaws:aws-java-sdk-core:1.11.5'
+    }
+}
 
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
 
-    repositories {
-       flatDir {
-           dirs '../jkind-common/dependencies'
-       }
-    }
+    group = 'com.collins.trustedsystems.jkind'
 
     dependencies {
-        compile name: 'antlr-runtime-4.4'
-        compile name: 'jxl'
+        implementation files('../jkind-common/dependencies/antlr-runtime-4.4.jar', '../jkind-common/dependencies/jxl.jar')
     }
 
     sourceSets {
         main {
             java {
                 srcDirs = ['../jkind-common/src']
+            }
+        }
+    }
+
+    publishing {
+        repositories {
+            maven {
+                if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)")) {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                } else if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/snapshots/"
+                } else {
+                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/staging/"
+                }
+                authentication {
+                    awsIm(AwsImAuthentication)
+                }
             }
         }
     }
@@ -34,8 +69,7 @@ project(':jkind') {
     }
 
     dependencies {
-        compile name: 'commons-cli-1.2'
-        compile name: 'smtinterpol'
+        implementation files('dependencies/commons-cli-1.2.jar', 'dependencies/smtinterpol.jar')
     }
 
     sourceSets {
@@ -55,16 +89,63 @@ project(':jkind') {
                 'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
                 'Bundle-License': 'https://github.com/loonwerks/jkind/blob/master/LICENSE',
                 'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind',
-                'Bundle-Version': jkind_version
+                'Bundle-Version': jkind_version,
+                'Implementation-Version': jkind_version
         }
         from sourceSets.main.allSource
-    
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+
+        dependsOn configurations.runtimeClasspath
+        from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId 'com.collins.trustedsystems.jkind'
+                version jkind_version
+                from components.java
+            }
+        }
+    }
+}
+
+project(':jkind-api') {
+    sourceSets {
+        main {
+            java {
+                srcDirs += ['src']
+            }
+            resources {
+                srcDirs = ['resources']
+            }
+        }
+    }
+
+    jar {
+        manifest {
+            attributes 'Main-Class': 'jkind.Main',
+                'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
+                'Bundle-License': 'https://github.com/loonwerks/jkind/blob/master/LICENSE',
+                'Bundle-SymbolicName': 'com.collins.trustedsystems.jkind-api',
+                'Bundle-Version': jkind_version,
+                'Implementation-Version': jkind_version
+        }
+        from sourceSets.main.allSource
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId 'com.collins.trustedsystems.jkind-api'
+                version jkind_version
+                from components.java
+            }
+        }
     }
 }
 
 task dist(type: Zip) {
-    dependsOn 'jkind:jar'
+    dependsOn 'jkind-api:jar', 'jkind:jar'
     from ('scripts') {
         include '*'
         exclude '*.bat'
@@ -77,6 +158,10 @@ task dist(type: Zip) {
     }
     from ('jkind/build/libs') {
          include 'jkind.jar'
+         into 'jkind'
+    }
+    from ('jkind-api/build/libs') {
+         include 'jkind-api.jar'
          into 'jkind'
     }
     baseName = 'jkind'
