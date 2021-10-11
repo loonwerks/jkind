@@ -1,0 +1,21 @@
+-- this model exercises an error using JKind with Z3 versions >= 4.8.9
+-- the Z3 solver emits a function /0 which broke the SMTLib parser
+-- for JKind verisons 4.4.2 and below
+
+node main() returns ();
+
+var
+	a : real;
+	b : real;
+	div_test : real;
+	phi1 : bool;
+
+let
+
+	b = 2.0 -> pre(b) + 0.01;
+	a = 0.0 -> pre(a) + 0.01;
+	div_test = a/b;
+	
+	phi1 = (div_test <= a);
+    --%PROPERTY phi1;
+tel;
