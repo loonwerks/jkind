@@ -110,7 +110,15 @@ project(':jkind') {
 }
 
 project(':jkind-api') {
-    sourceSets {
+    repositories {
+        mavenCentral()
+    }
+
+     dependencies {
+        implementation 'org.eclipse.platform:org.eclipse.core.runtime:3.20.100'
+    }
+
+     sourceSets {
         main {
             java {
                 srcDirs += ['src']
