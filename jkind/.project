@@ -24,7 +24,13 @@
 		<link>
 			<name>jkind-common-src</name>
 			<type>2</type>
-			<location>/home/kfhoech/git/jkind/jkind-common/src</location>
+			<location>JKIND_COMMON_SRC_LOC</location>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>JKIND_COMMON_SRC_LOC</name>
+			<value>${PROJECT_LOC}/../jkind-common/src</value>
+		</variable>
+	</variableList>
 </projectDescription>
