@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat;
 
-def jkind_version_base = '4.4.5-SNAPSHOT'
+def jkind_version_base = '4.5.0-SNAPSHOT'
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMddHHmm");
@@ -110,7 +110,15 @@ project(':jkind') {
 }
 
 project(':jkind-api') {
-    sourceSets {
+    repositories {
+        mavenCentral()
+    }
+
+     dependencies {
+        implementation 'org.eclipse.platform:org.eclipse.core.runtime:3.20.100'
+    }
+
+     sourceSets {
         main {
             java {
                 srcDirs += ['src']

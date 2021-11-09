@@ -1,4 +1,4 @@
-package jkind.api.simple;
+package jkind.api;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,22 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import jkind.JKindException;
 import jkind.SolverOption;
+import jkind.api.ApiUtil.ICancellationMonitor;
 import jkind.api.results.JKindResult;
 
 /**
  * The primary interface to JKind.
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
  */
-@Deprecated
 public class JKindApi extends KindApi {
 	protected Integer n = null;
 
@@ -173,11 +167,30 @@ public class JKindApi extends KindApi {
 	 * @param monitor
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.JKindApi.execute()} instead.
 	 */
 	@Override
-	public void execute(File lustreFile, JKindResult result) {
+	@Deprecated
+	public void execute(File lustreFile, JKindResult result, IProgressMonitor monitor) {
+		execute(lustreFile, result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor));
+	}
+
+	/**
+	 * Run JKind on a Lustre program
+	 *
+	 * @param lustreFile
+	 *            File containing Lustre program
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 */
+	@Override
+	public void execute(File lustreFile, JKindResult result, ICancellationMonitor monitor) {
 		debug.println("Lustre file", lustreFile);
-		ApiUtil.execute(this::getJKindProcessBuilder, lustreFile, result, debug);
+		ApiUtil.execute(this::getJKindProcessBuilder, lustreFile, result, monitor, debug);
 	}
 
 	private ProcessBuilder getJKindProcessBuilder(File lustreFile) {

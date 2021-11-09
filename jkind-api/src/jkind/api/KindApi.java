@@ -1,29 +1,21 @@
-package jkind.api.simple;
+package jkind.api;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import jkind.JKindException;
+import jkind.api.ApiUtil.ICancellationMonitor;
 import jkind.api.results.JKindResult;
 import jkind.lustre.Program;
 
-/**
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
- */
-@Deprecated
 public abstract class KindApi {
 	protected Integer timeout = null;
 	protected DebugLogger debug = new DebugLogger();
 
 	/**
 	 * Set a maximum run time for entire execution
-	 * 
+	 *
 	 * @param timeout
 	 *            A positive timeout in seconds
 	 */
@@ -43,7 +35,7 @@ public abstract class KindApi {
 
 	/**
 	 * Print string to debug log (assuming setApiDebug() has been called)
-	 * 
+	 *
 	 * @param text
 	 *            text to print to debug log
 	 */
@@ -55,7 +47,7 @@ public abstract class KindApi {
 
 	/**
 	 * Run Kind on a Lustre program
-	 * 
+	 *
 	 * @param program
 	 *            Lustre program
 	 * @param result
@@ -63,17 +55,50 @@ public abstract class KindApi {
 	 * @param monitor
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
-	 * @deprecated 
-	 * 			 To be removed in 3.0.  Use jkind.api.eclipse.ApiUtil.execute()
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.KindApi.execute()} instead.
 	 */
 	@Deprecated
-	public void execute(Program program, JKindResult result) {
-		execute(program.toString(), result);
+	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
+		execute(program.toString(), result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor));
 	}
 
 	/**
 	 * Run Kind on a Lustre program
-	 * 
+	 *
+	 * @param program
+	 *            Lustre program
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 */
+	public void execute(Program program, JKindResult result, ICancellationMonitor monitor) {
+		execute(program.toString(), result, monitor);
+	}
+
+	/**
+	 * Run Kind on a Lustre program
+	 *
+	 * @param program
+	 *            Lustre program as text
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.KindApi.execute()} instead.
+	 */
+	@Deprecated
+	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
+		execute(program, result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor));
+	}
+
+	/**
+	 * Run Kind on a Lustre program
+	 *
 	 * @param program
 	 *            Lustre program as text
 	 * @param result
@@ -82,11 +107,11 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(String program, JKindResult result) {
+	public void execute(String program, JKindResult result, ICancellationMonitor monitor) {
 		File lustreFile = null;
 		try {
 			lustreFile = ApiUtil.writeLustreFile(program);
-			execute(lustreFile, result);
+			execute(lustreFile, result, monitor);
 		} finally {
 			debug.deleteIfUnneeded(lustreFile);
 		}
@@ -94,7 +119,23 @@ public abstract class KindApi {
 
 	/**
 	 * Run Kind on a Lustre program
-	 * 
+	 *
+	 * @param lustreFile
+	 *            File containing Lustre program
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.KindApi.execute()} instead.
+	 */
+	@Deprecated
+	public abstract void execute(File lustreFile, JKindResult result, IProgressMonitor monitor);
+
+	/**
+	 * Run Kind on a Lustre program
+	 *
 	 * @param lustreFile
 	 *            File containing Lustre program
 	 * @param result
@@ -103,11 +144,11 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public abstract void execute(File lustreFile, JKindResult result);
+	public abstract void execute(File lustreFile, JKindResult result, ICancellationMonitor monitor);
 
 	/**
 	 * Check if the KindApi is available for running and throw exception if not
-	 * 
+	 *
 	 * @return Availability information when Kind is available
 	 * @throws java.lang.Exception
 	 *             When Kind is not available

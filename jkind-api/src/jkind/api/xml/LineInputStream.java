@@ -1,21 +1,10 @@
-package jkind.api.simple.xml;
+package jkind.api.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import jkind.JKindException;
 
-/**
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
- */
-@Deprecated
 public class LineInputStream implements AutoCloseable {
 	private final InputStream source;
 

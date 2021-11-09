@@ -1,4 +1,4 @@
-package jkind.api.simple;
+package jkind.api;
 
 import static java.util.stream.Collectors.joining;
 
@@ -11,31 +11,44 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import jkind.JKindException;
-import jkind.api.Backend;
 import jkind.api.results.JKindResult;
-import jkind.api.simple.xml.JKindXmlFileInputStream;
-import jkind.api.simple.xml.XmlParseThread;
+import jkind.api.xml.JKindXmlFileInputStream;
+import jkind.api.xml.XmlParseThread;
 import jkind.util.Util;
 
-/**
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
- */
-@Deprecated
 public class ApiUtil {
-	@Deprecated
+
+	public static interface ICancellationMonitor {
+		/**
+		 * Check of the task being monitored has been cancelled.
+		 * @return true if the task has been marked as canceled, otherwise false
+		 */
+		public boolean isCanceled();
+
+		/**
+		 * Mark the task being monitored as completed
+		 */
+		public void done();
+	}
+
+	public static class NullCancellationMonitor implements ICancellationMonitor {
+		@Override
+		public boolean isCanceled() {
+			return false;
+		}
+
+		@Override
+		public void done() {
+		}
+	}
+
 	public static File writeLustreFile(String program) {
 		return writeTempFile("jkind-api-", ".lus", program);
 	}
 
-	@Deprecated
 	public static File writeTempFile(String fileName, String fileExt, String contents) {
 		File file = null;
 		try {
@@ -49,15 +62,24 @@ public class ApiUtil {
 		}
 	}
 
+	/**
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.ApiUtil.execute()} instead.
+	 */
 	@Deprecated
 	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile, JKindResult result,
-			DebugLogger debug) {
+			IProgressMonitor monitor, DebugLogger debug) {
+		execute(runCommand, lustreFile, result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor), debug);
+	}
+
+	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile, JKindResult result,
+			ICancellationMonitor monitor, DebugLogger debug) {
 		File xmlFile = null;
 		try {
 			xmlFile = getXmlFile(lustreFile);
 			debug.println("XML results file", xmlFile);
 			ensureDeleted(xmlFile);
-			callJKind(runCommand, lustreFile, xmlFile, result, debug);
+			callJKind(runCommand, lustreFile, xmlFile, result, monitor, debug);
 		} catch (JKindException e) {
 			throw e;
 		} catch (Throwable t) {
@@ -68,7 +90,6 @@ public class ApiUtil {
 		}
 	}
 
-	@Deprecated
 	private static void ensureDeleted(File file) {
 		if (file != null && file.exists()) {
 			file.delete();
@@ -78,14 +99,13 @@ public class ApiUtil {
 		}
 	}
 
-	@Deprecated
 	private static File getXmlFile(File lustreFile) {
 		return new File(lustreFile.toString() + ".xml");
 	}
 
-	@Deprecated
 	private static void callJKind(Function<File, ProcessBuilder> runCommand, File lustreFile, File xmlFile,
-			JKindResult result, DebugLogger debug) throws IOException, InterruptedException {
+			JKindResult result, ICancellationMonitor monitor, DebugLogger debug)
+			throws IOException, InterruptedException {
 		ProcessBuilder builder = runCommand.apply(lustreFile);
 		debug.println("JKind command: " + ApiUtil.getQuotedCommand(builder.command()));
 		Process process = null;
@@ -98,11 +118,11 @@ public class ApiUtil {
 				result.start();
 				process = builder.start();
 				parseThread.start();
-				ApiUtil.readOutputToBuilder(process, outputText, errorText);
+				ApiUtil.readOutputToBuilder(process, monitor, outputText, errorText);
 			} finally {
 				int code = 0;
 				if (process != null) {
-					if (process.isAlive()) {
+					if (monitor.isCanceled() && process.isAlive()) {
 						// Only destroy the process if we have to since it can
 						// change the exit code on Windows
 						process.destroy();
@@ -118,9 +138,14 @@ public class ApiUtil {
 				result.setText(errors + output);
 				debug.println("JKind output", debug.saveFile("jkind-output-", ".txt", errors + output));
 
-				result.done();
+				if (monitor.isCanceled()) {
+					result.cancel();
+				} else {
+					result.done();
+				}
+				monitor.done();
 
-				if (code != 0) {
+				if (code != 0 && !monitor.isCanceled()) {
 					throw new JKindException(
 							"Abnormal termination, exit code " + code + System.lineSeparator() + result.getText());
 				}
@@ -132,28 +157,47 @@ public class ApiUtil {
 		}
 	}
 
+	/**
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.ApiUtil.readOutput()} instead.
+	 */
 	@Deprecated
-	public static String readOutput(Process process) throws IOException {
+	public static String readOutput(Process process, IProgressMonitor monitor) throws IOException {
+		return jkind.api.eclipse.ApiUtil.readOutput(process, monitor);
+	}
+
+	public static String readOutput(Process process, ICancellationMonitor monitor) throws IOException {
 		StringBuilder outputText = new StringBuilder();
 		StringBuilder errorText = new StringBuilder();
-		readOutputToBuilder(process, outputText, errorText);
+		readOutputToBuilder(process, monitor, outputText, errorText);
 		return errorText.toString() + outputText.toString();
 	}
 
+	/**
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.ApiUtil.readOutputToBuilder()} instead.
+	 */
 	@Deprecated
-	public static void readOutputToBuilder(Process process, StringBuilder outputText,
+	public static void readOutputToBuilder(Process process, IProgressMonitor monitor, StringBuilder outputText,
 			StringBuilder errorText)
 			throws IOException {
+		jkind.api.eclipse.ApiUtil.readOutputToBuilder(process, monitor, outputText, errorText);
+	}
+
+	public static void readOutputToBuilder(Process process, ICancellationMonitor monitor, StringBuilder outputText,
+			StringBuilder errorText) throws IOException {
 		InputStream stream = new BufferedInputStream(process.getInputStream());
 		InputStream errorStream = new BufferedInputStream(process.getErrorStream());
 
 		while (true) {
+			checkMonitor(monitor, process);
 			while (stream.available() > 0) {
 				int c = stream.read();
 				if (c == -1) {
 					return;
 				}
 				outputText.append((char) c);
+				checkMonitor(monitor, process);
 			}
 			while (errorStream.available() > 0) {
 				int c = errorStream.read();
@@ -161,6 +205,7 @@ public class ApiUtil {
 					return;
 				}
 				errorText.append((char) c);
+				checkMonitor(monitor, process);
 			}
 
 			if (!process.isAlive()) {
@@ -174,7 +219,13 @@ public class ApiUtil {
 		}
 	}
 
-	@Deprecated
+	private static void checkMonitor(ICancellationMonitor monitor, Process process) throws IOException {
+		if (monitor.isCanceled()) {
+			process.getOutputStream().write(Util.END_OF_TEXT);
+			process.getOutputStream().flush();
+		}
+	}
+
 	public static File findJKindJar() {
 		/*
 		 * On Windows, invoking Process.destroy does not kill the subprocesses
@@ -201,7 +252,6 @@ public class ApiUtil {
 		throw new JKindException("Unable to find jkind.jar in JKIND_HOME or on system PATH");
 	}
 
-	@Deprecated
 	public static File findJKindJar(String path) {
 		if (path == null) {
 			return null;
@@ -217,13 +267,11 @@ public class ApiUtil {
 		return null;
 	}
 
-	@Deprecated
 	public static String getJavaPath() {
 		String slash = File.separator;
 		return System.getProperty("java.home") + slash + "bin" + slash + "java";
 	}
 
-	@Deprecated
 	public static String readAll(InputStream inputStream) throws IOException {
 		StringBuilder result = new StringBuilder();
 		BufferedInputStream buffered = new BufferedInputStream(inputStream);
@@ -234,12 +282,10 @@ public class ApiUtil {
 		return result.toString();
 	}
 
-	@Deprecated
 	public static String getQuotedCommand(List<String> pieces) {
 		return pieces.stream().map(p -> p.contains(" ") ? "\"" + p + "\"" : p).collect(joining(" "));
 	}
 
-	@Deprecated
 	public static void addEnvironment(ProcessBuilder builder, Map<String, String> environment) {
 		for (Entry<String, String> entry : environment.entrySet()) {
 			builder.environment().put(entry.getKey(), entry.getValue());

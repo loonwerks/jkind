@@ -1,4 +1,4 @@
-package jkind.api.simple;
+package jkind.api;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,16 +11,7 @@ import jkind.lustre.Program;
 
 /**
  * The primary interface to JLustre2Excel.
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
  */
-@Deprecated
 public class JLustre2ExcelApi {
 	private DebugLogger debug = new DebugLogger();
 
@@ -35,7 +26,7 @@ public class JLustre2ExcelApi {
 
 	/**
 	 * Print string to debug log (assuming setApiDebug() has been called)
-	 * 
+	 *
 	 * @param text
 	 *            text to print to debug log
 	 */
@@ -57,7 +48,7 @@ public class JLustre2ExcelApi {
 
 	/**
 	 * Run JLustre2Excel on a Lustre program
-	 * 
+	 *
 	 * @param program
 	 *            Lustre program
 	 * @return Excel file
@@ -69,7 +60,7 @@ public class JLustre2ExcelApi {
 
 	/**
 	 * Run JLustre2Excel on a Lustre program
-	 * 
+	 *
 	 * @param program
 	 *            Lustre program as text
 	 * @return
@@ -88,7 +79,7 @@ public class JLustre2ExcelApi {
 
 	/**
 	 * Run JLustre2Excel on a Lustre program
-	 * 
+	 *
 	 * @param lustreFile
 	 *            File containing Lustre program
 	 * @return Excel file
@@ -99,7 +90,10 @@ public class JLustre2ExcelApi {
 		Process process = null;
 		try {
 			process = pb.start();
-			String output = ApiUtil.readOutput(process);
+			String output = ApiUtil.readOutput(process, new ApiUtil.ICancellationMonitor() {
+				@Override public boolean isCanceled() { return false; }
+				@Override public void done() {}
+			});
 			debug.println("JLustre2Excel output", debug.saveFile("jlustre2excel-output-", ".txt", output));
 			return new File(lustreFile.getPath() + ".xls");
 		} catch (IOException e) {

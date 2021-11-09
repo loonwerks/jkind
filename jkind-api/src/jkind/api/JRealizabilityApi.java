@@ -1,4 +1,4 @@
-package jkind.api.simple;
+package jkind.api;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,22 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import jkind.JKindException;
+import jkind.api.ApiUtil.ICancellationMonitor;
 import jkind.api.results.JRealizabilityResult;
 import jkind.lustre.Program;
 
 /**
  * The primary interface to JRealizability.
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
  */
-@Deprecated
 public class JRealizabilityApi {
 	private Integer timeout = null;
 	private Integer n = null;
@@ -38,7 +32,7 @@ public class JRealizabilityApi {
 
 	/**
 	 * Set a maximum run time for entire execution
-	 * 
+	 *
 	 * @param timeout
 	 *            A positive timeout in seconds
 	 */
@@ -51,7 +45,7 @@ public class JRealizabilityApi {
 
 	/**
 	 * Set a maximum path length in realizability checking algorithm
-	 * 
+	 *
 	 * @param n
 	 *            A non-negative integer
 	 */
@@ -85,7 +79,7 @@ public class JRealizabilityApi {
 
 	/**
 	 * Print string to debug log (assuming setApiDebug() has been called)
-	 * 
+	 *
 	 * @param text
 	 *            text to print to debug log
 	 */
@@ -121,7 +115,25 @@ public class JRealizabilityApi {
 
 	/**
 	 * Run JRealizability on a Lustre program
-	 * 
+	 *
+	 * @param program
+	 *            Lustre program
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.JRealizabilityApi.execute()} instead.
+	 */
+	@Deprecated
+	public void execute(Program program, JRealizabilityResult result, IProgressMonitor monitor) {
+		execute(program.toString(), result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor));
+	}
+
+	/**
+	 * Run JRealizability on a Lustre program
+	 *
 	 * @param program
 	 *            Lustre program
 	 * @param result
@@ -130,13 +142,31 @@ public class JRealizabilityApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(Program program, JRealizabilityResult result) {
-		execute(program.toString(), result);
+	public void execute(Program program, JRealizabilityResult result, ICancellationMonitor monitor) {
+		execute(program.toString(), result, monitor);
 	}
 
 	/**
 	 * Run JRealizability on a Lustre program
-	 * 
+	 *
+	 * @param program
+	 *            Lustre program as text
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.JRealizabilityApi.execute()} instead.
+	 */
+	@Deprecated
+	public void execute(String program, JRealizabilityResult result, IProgressMonitor monitor) {
+		execute(program, result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor));
+	}
+
+	/**
+	 * Run JRealizability on a Lustre program
+	 *
 	 * @param program
 	 *            Lustre program as text
 	 * @param result
@@ -145,11 +175,11 @@ public class JRealizabilityApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(String program, JRealizabilityResult result) {
+	public void execute(String program, JRealizabilityResult result, ICancellationMonitor monitor) {
 		File lustreFile = null;
 		try {
 			lustreFile = ApiUtil.writeLustreFile(program);
-			execute(lustreFile, result);
+			execute(lustreFile, result, monitor);
 		} finally {
 			debug.deleteIfUnneeded(lustreFile);
 		}
@@ -157,7 +187,25 @@ public class JRealizabilityApi {
 
 	/**
 	 * Run JRealizability on a Lustre program
-	 * 
+	 *
+	 * @param lustreFile
+	 *            File containing Lustre program
+	 * @param result
+	 *            Place to store results as they come in
+	 * @param monitor
+	 *            Used to check for cancellation
+	 * @throws jkind.JKindException
+	 * @deprecated To be removed in 5.0.
+	 *   Use {@link jkind.api.eclipse.JRealizabilityApi.execute()} instead.
+	 */
+	@Deprecated
+	public void execute(File lustreFile, JRealizabilityResult result, IProgressMonitor monitor) {
+		execute(lustreFile, result, new jkind.api.eclipse.ApiUtil.CancellationMonitor(monitor));
+	}
+
+	/**
+	 * Run JRealizability on a Lustre program
+	 *
 	 * @param lustreFile
 	 *            File containing Lustre program
 	 * @param result
@@ -166,11 +214,11 @@ public class JRealizabilityApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 */
-	public void execute(File lustreFile, JRealizabilityResult result) {
-		ApiUtil.execute(this::getJRealizabilityProcessBuilder, lustreFile, result, debug);
+	public void execute(File lustreFile, JRealizabilityResult result, ICancellationMonitor monitor) {
+		ApiUtil.execute(this::getJRealizabilityProcessBuilder, lustreFile, result, monitor, debug);
 	}
 
-	private ProcessBuilder getJRealizabilityProcessBuilder(File lustreFile) {
+	protected ProcessBuilder getJRealizabilityProcessBuilder(File lustreFile) {
 		List<String> args = new ArrayList<>();
 		args.addAll(Arrays.asList(getJRealizabilityCommand()));
 		args.add("-xml");
@@ -197,7 +245,7 @@ public class JRealizabilityApi {
 		return builder;
 	}
 
-	protected String[] getJRealizabilityCommand() {
+	private String[] getJRealizabilityCommand() {
 		List<String> args = new ArrayList<>();
 		args.add(ApiUtil.getJavaPath());
 		args.addAll(vmArgs);

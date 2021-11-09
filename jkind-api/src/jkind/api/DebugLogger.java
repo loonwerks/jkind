@@ -1,4 +1,4 @@
-package jkind.api.simple;
+package jkind.api;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,27 +8,13 @@ import java.io.PrintWriter;
 import jkind.JKindException;
 import jkind.util.Util;
 
-/**
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
- */
-@Deprecated
 public class DebugLogger {
-	@Deprecated
 	private final PrintWriter debug;
 
-	@Deprecated
 	public DebugLogger() {
 		debug = null;
 	}
 
-	@Deprecated
 	public DebugLogger(String prefix) {
 		try {
 			File debugFile = File.createTempFile(prefix, ".txt");
@@ -38,21 +24,18 @@ public class DebugLogger {
 		}
 	}
 
-	@Deprecated
 	public void println() {
 		if (debug != null) {
 			debug.println();
 		}
 	}
 
-	@Deprecated
 	public void println(String text) {
 		if (debug != null) {
 			debug.println(text);
 		}
 	}
 
-	@Deprecated
 	public void println(String text, File file) {
 		if (debug != null) {
 			try {
@@ -63,7 +46,6 @@ public class DebugLogger {
 		}
 	}
 
-	@Deprecated
 	public File saveFile(String prefix, String suffix, String contents) {
 		if (debug != null) {
 			try {
@@ -78,7 +60,6 @@ public class DebugLogger {
 		}
 	}
 
-	@Deprecated
 	public void deleteIfUnneeded(File file) {
 		if (debug == null && file != null && file.exists()) {
 			file.delete();

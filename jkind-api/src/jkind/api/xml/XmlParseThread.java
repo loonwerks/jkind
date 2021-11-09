@@ -1,4 +1,4 @@
-package jkind.api.simple.xml;
+package jkind.api.xml;
 
 import java.io.InputStream;
 import java.io.StringReader;
@@ -37,17 +37,6 @@ import jkind.results.UnknownProperty;
 import jkind.results.ValidProperty;
 import jkind.util.Util;
 
-/**
- * 
- * @deprecated
- *    To be reomved in 6.0.
- * 	  This class represents a transitional API to provide a basic, command-
- *    line oriented means of using JKind.  This functionality duplicates that
- *    of the jkind.api package but removes the dependencies on Eclipse.  Once
- *    the Eclipse-specific dependencies have been removed, this functionality
- *    will migrate to package jkind.api.
- */
-@Deprecated
 public class XmlParseThread extends Thread {
 	private final InputStream xmlStream;
 	private final JKindResult result;
