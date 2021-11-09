@@ -115,7 +115,8 @@ project(':jkind-api') {
     }
 
      dependencies {
-        implementation 'org.eclipse.platform:org.eclipse.core.runtime:3.20.100'
+        implementation 'org.eclipse.platform:org.eclipse.equinox.common:3.14.0'
+        implementation 'org.eclipse.platform:org.eclipse.core.runtime:3.20.0'
     }
 
      sourceSets {
