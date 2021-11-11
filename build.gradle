@@ -140,6 +140,10 @@ project(':jkind-api') {
                 'Implementation-Version': jkind_version
         }
         from sourceSets.main.allSource
+
+        dependsOn configurations.runtimeClasspath
+        from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+        duplicatesStrategy = 'warn'
     }
 
     publishing {
