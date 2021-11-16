@@ -95,7 +95,17 @@ project(':jkind') {
         from sourceSets.main.allSource
 
         dependsOn configurations.runtimeClasspath
-        from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+        from (configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }) {
+            exclude '.api_description'
+            exclude '.options'
+            exclude 'about.html'
+            exclude 'plugin.properties'
+            exclude 'plugin.xml'
+            exclude 'META-INF/MANIFEST.MF'
+            exclude 'META-INF/*.SF'
+            exclude 'META-INF/*.DSA'
+            exclude 'META-INF/*.RSA'
+        }
     }
 
     publishing {
@@ -142,7 +152,18 @@ project(':jkind-api') {
         from sourceSets.main.allSource
 
         dependsOn configurations.runtimeClasspath
-        from { configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) } }
+        from (configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }) {
+            exclude '.api_description'
+            exclude '.options'
+            exclude 'about.html'
+            exclude 'plugin.properties'
+            exclude 'plugin.xml'
+            exclude 'META-INF/MANIFEST.MF'
+            exclude 'META-INF/*.SF'
+            exclude 'META-INF/*.DSA'
+            exclude 'META-INF/*.RSA'
+        }
+
         duplicatesStrategy = 'warn'
     }
 
