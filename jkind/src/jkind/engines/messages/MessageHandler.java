@@ -10,13 +10,25 @@ import jkind.engines.StopException;
 public abstract class MessageHandler {
 	private BlockingQueue<Message> incoming = new LinkedBlockingQueue<>();
 
-	public void receiveMessage(Message message) {
+	// MWW, 8/27/2022
+	// receiveMessage and stopReceivingMessages run on different threads, 
+	// leading to occasional NPE exceptions due to race conditions when solver 
+	// is completing analyses.  
+	//
+	// NPEs happen when incoming is checked for null, but then receiveMessage 
+	// thread is interrupted and incoming is set to null by stopReceivingMessages
+	// prior to incoming.add(message).
+	//
+	// Note that other protected functions do not need to be 
+	// synchronized because they are called on the same thread 
+	// as stopReceivingMessages. 
+	public synchronized void receiveMessage(Message message) {
 		if (incoming != null) {
 			incoming.add(message);
 		}
 	}
 
-	protected void stopReceivingMessages() {
+	protected synchronized void stopReceivingMessages() {
 		incoming = null;
 	}
 
