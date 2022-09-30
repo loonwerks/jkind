@@ -1,0 +1,34 @@
+-- Expected output:
+-- VALID PROPERTIES: [ok1, ok2, ok3, ok4]
+-- INVALID PROPERTIES: [cex!1]
+
+node main(x! : int; s : subrange [0, 1] of int) returns ();
+var
+    y, z1, z2, w : int;
+    ok1, ok2, ok3, ok4, cex!1 : bool;
+    pre_s : int;
+    r : subrange [0, 1] of int;
+let
+    y = 1 -> pre(2 -> pre x!);
+
+    z1 = 1 -> pre z2;
+    z2 = 2 -> pre x!;
+
+    ok1 = (y = z1);
+    --%PROPERTY ok1;
+
+    w = 1 -> pre(2 -> pre(3 -> pre(4 -> pre(5 -> 6))));
+    cex!1 = w < 6;
+    --%PROPERTY cex!1;
+
+    ok2 = 0 <= pre(s) and pre(s) <= 1;
+    --%PROPERTY ok2;
+
+    pre_s = pre(s);
+    ok3 = 0 <= pre_s and pre_s <= 1;
+    --%PROPERTY ok3;
+
+    r = pre(r);
+    ok4 = 0 <= r and r <= 1;
+    --%PROPERTY ok4;
+tel;
