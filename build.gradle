@@ -198,7 +198,7 @@ task dist(type: Zip) {
          include 'jkind-api.jar'
          into 'jkind'
     }
-    baseName = 'jkind'
+    archiveBaseName = 'jkind'
     version = jkind_version
 }
  

@@ -7,3 +7,4 @@ bin
 *.xls
 *.log
 *.csv
+.settings
