@@ -57,7 +57,7 @@ In addition, use the -timeout argument to limit the time for the enumeration, e.
 ## Usage Examples
 
 CVC5 support is added: 
-To use this jkind build with cvc5 on a test suite, navigate to the `jkindRegression` directory:
+To use this jkind build with cvc5 on a test suite, navigate to the `jkindRegression` directory (assuming you have cloned the latest commit first https://github.com/loonwerks/jkindRegression/tree/master) and run JKind from the command line as shown below:
 
 ### Example:
 
