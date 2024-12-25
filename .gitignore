@@ -10,4 +10,6 @@ bin
 .settings
 tests_solvers/*
 testing/pid.lus
-
+jkind-cvc5-jar-files/*
+jkind-cvc5-jar-files.tar.xz
+Makefile
