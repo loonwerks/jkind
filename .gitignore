@@ -8,3 +8,6 @@ bin
 *.log
 *.csv
 .settings
+tests_solvers/*
+testing/pid.lus
+
