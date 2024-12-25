@@ -40,6 +40,7 @@ public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
 		setOption("produce-models", true);
 		setOption("produce-unsat-cores", true);
 		setOption("minimize-unsat-cores", true);
+		setOption("incremental", true); // Enable incremental solving
 
 		// The following option can be added
 		// when the reported bugs in Z3 resurfaces:
@@ -62,7 +63,7 @@ public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
 		if (linear) {
 			Symbol literal = createActivationLiteral("act", actCount++);
 			send(new Cons("assert", new Cons("=>", literal, new Cons("not", sexp))));
-			send(new Cons("check-sat", literal));
+			send(new Cons("check-sat"));
 		} else {
 			push();
 			send(new Cons("assert", new Cons("not", sexp)));
@@ -97,6 +98,54 @@ public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
 
 		return result;
 	}
+	
+	/*@Override
+	public Result query(Sexp sexp) {
+		Result result;
+
+	 	if (linear) {
+        	// Activation literal for incremental solving
+        		Symbol literal = createActivationLiteral("act", actCount++);
+        		send(new Cons("declare-fun", literal, new Symbol("Bool"))); // Declare the activation literal
+        		send(new Cons("assert", new Cons("=>", literal, new Cons("not", sexp)))); // Use the literal in assertion
+        		send(new Cons("check-sat", literal)); // Use the literal in check-sat
+    		} else {
+        		// Standard solving process for non-linear mode
+        		push();
+        		send(new Cons("assert", new Cons("not", sexp)));
+        		send(new Cons("check-sat"));
+    		}
+
+    		try {
+        		String status = readFromSolver();
+
+        		if (isSat(status)) {
+				send("(get-model)");
+				result = new SatResult(parseModel(readFromSolver()));
+			} else if (isUnsat(status)) {
+				result = new UnsatResult();
+			} else {
+				// Handle "unknown" results
+				send("(get-model)");
+			
+				String content = readFromSolver();
+				if (content == null) {
+				return new UnknownResult();
+				} else {
+					result = new UnknownResult(parseModel(content));
+				}
+			}
+		} catch (SolverOutOfMemoryException e) {
+			        // Handle specific solver memory exceptions
+			return new UnknownResult();
+		}
+
+		if (!linear) {
+			pop(); // Pop the context for non-linear solving
+		}
+
+		return result;
+	}*/
 
 	@Override
 	public Result quickCheckSat(List<Symbol> activationLiterals) {
