@@ -15,7 +15,7 @@ import jkind.solvers.UnsatResult;
 import jkind.solvers.smtlib2.SmtLib2Solver;
 import jkind.solvers.smtlib2.SolverOutOfMemoryException;
 
-public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
+public class Cvc5Solver_1 extends SmtLib2Solver implements MaxSatSolver {
 	private final boolean linear;
 	private int actCount = 1;
 
@@ -31,24 +31,20 @@ public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
 
 	@Override
 	protected String[] getSolverOptions() {
-		return new String[] { "--lang", "smt2" };
+		return new String[] { "-smt2", "-in" };
 	}
-	
+
 	@Override
 	public void initialize() {
-		setLogic("ALL"); // Set the logic to ALL or QF_NIRA it can be set with other options too.
 		setOption("produce-models", true);
 		setOption("produce-unsat-cores", true);
-		setOption("minimize-unsat-cores", true);
+		setOption("smt.core.minimize", true);
+		setOption("sat.core.minimize", true);
 
 		// The following option can be added
 		// when the reported bugs in Z3 resurfaces:
 		// https://github.com/Z3Prover/z3/issues/158
 		// setOption("smt.core.validate", true);
-	}
-	
-	public void setLogic(String logic) {
-		send("(set-logic " + logic + ")");
 	}
 
 	public void setOption(String option, boolean value) {
@@ -247,12 +243,12 @@ public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
 	public Result realizabilityQuery(Sexp outputs, Sexp transition, Sexp properties) {
 		return realizabilityQuery(outputs, transition, properties, 0);
 	}
-	
+
 	@Override
 	public void assertSoft(Sexp sexp) {
-		throw new UnsupportedOperationException("Soft assertions are not supported in CVC5.");
+		send(new Cons("assert-soft", sexp));
 	}
-	
+
 	@Override
 	public Result maxsatQuery(Sexp query) {
 		return query(query);

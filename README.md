@@ -51,3 +51,18 @@ In addition, use the -timeout argument to limit the time for the enumeration, e.
 
 [1] E. Ghassabani, M. W. Whalen, and A. Gacek. Efficient generation of all minimal inductive validity cores. 2017 Formal Methods in Computer Aided Design (FMCAD), pages 31–38, 2017.
 [2] J. Bendik, E. Ghassabani, M. Whalen, and I. Cerna. Online enumeration of all minimal inductive validity cores. In International Conference on Software Engineering and Formal Methods, pages 189–204. Springer, 2018.
+
+
+## Usage Examples
+*1.Example*:
+
+```bash
+python3 ./jkindtest.py -dir /home/jkind/testing --recur -argfile ./test_arguments.xml -jkind /home/jkind/jkind/build/libs/jkind.jar
+JKind 4.5.2
+Detected solvers: smtinterpol, z3, yices, yices2, cvc4, cvc5
+
+test_result (jktest.testcase./home/jkind/testing/bridge_and_torch.lus)
+...
+
+``` 
+

@@ -46,7 +46,7 @@ var
   _SYS_GUARANTEE_1 : bool;
 let
   --%MAIN
-  max_accel = 10.0;
+  max_accel = 100.0;
   CNTRL__e = (CNTRL__Target__val - CNTRL__Actual__val);
   CNTRL__e_int = ((0.0 -> pre CNTRL__e) + CNTRL__e);
   CNTRL__e_dot = ((0.0 -> pre CNTRL__e) - CNTRL__e);
