@@ -33,7 +33,8 @@ as its underlying SMT solver. Advanced users may wish to install alternative sol
 [Z3](https://github.com/Z3Prover/z3),
 [Yices (version 1)](http://yices.csl.sri.com/download-yices1.shtml), 
 [Yices 2](http://yices.csl.sri.com/index.shtml),
-[CVC4](http://cvc4.cs.nyu.edu/web/), or
+[CVC4](http://cvc4.cs.nyu.edu/web/),
+[CVC5](https://github.com/cvc5/cvc5/releases/), or
 [MathSAT](http://mathsat.fbk.eu/).
 
 Minimal IVCs enumeration (optional)
@@ -51,3 +52,26 @@ In addition, use the -timeout argument to limit the time for the enumeration, e.
 
 [1] E. Ghassabani, M. W. Whalen, and A. Gacek. Efficient generation of all minimal inductive validity cores. 2017 Formal Methods in Computer Aided Design (FMCAD), pages 31–38, 2017.
 [2] J. Bendik, E. Ghassabani, M. Whalen, and I. Cerna. Online enumeration of all minimal inductive validity cores. In International Conference on Software Engineering and Formal Methods, pages 189–204. Springer, 2018.
+
+
+## Usage Examples
+
+CVC5 support is added: 
+To use this jkind build with cvc5 on a test suite, navigate to the `jkindRegression` directory (assuming you have cloned the latest commit first https://github.com/loonwerks/jkindRegression/tree/master) and run JKind from the command line as shown below:
+
+### Example:
+
+```bash
+python3 ./jkindtest.py -dir /home/jkind/testing --recur -argfile ./test_arguments.xml -jkind /home/jkind/jkind/build/libs/jkind.jar
+```
+
+Output:
+
+```text
+JKind 4.5.2
+Detected solvers: smtinterpol, z3, yices, yices2, cvc4, cvc5
+
+test_result (jktest.testcase./home/jkind/testing/bridge_and_torch.lus)
+...
+```
+

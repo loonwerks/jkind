@@ -7,3 +7,12 @@ bin
 *.xls
 *.log
 *.csv
+.settings
+tests_solvers/*
+testing/pid.lus
+jkind-cvc5-jar-files.tar.xz
+jkind-cvc5-jar-files/*
+Makefile
+jkind/.project
+jkind-api/.project
+

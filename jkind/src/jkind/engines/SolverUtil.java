@@ -13,6 +13,7 @@ import jkind.lustre.Node;
 import jkind.lustre.builders.NodeBuilder;
 import jkind.solvers.Solver;
 import jkind.solvers.cvc4.Cvc4Solver;
+import jkind.solvers.cvc5.Cvc5Solver;
 import jkind.solvers.mathsat.MathSatSolver;
 import jkind.solvers.smtinterpol.SmtInterpolSolver;
 import jkind.solvers.yices.YicesSolver;
@@ -26,6 +27,8 @@ public class SolverUtil {
 			return new YicesSolver(scratchBase, YicesArithOnlyCheck.check(node));
 		case CVC4:
 			return new Cvc4Solver(scratchBase);
+		case CVC5:
+			return new Cvc5Solver(scratchBase, LinearChecker.isLinear(node));
 		case Z3:
 			return new Z3Solver(scratchBase, LinearChecker.isLinear(node));
 		case YICES2:
