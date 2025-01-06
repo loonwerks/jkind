@@ -33,9 +33,9 @@ as its underlying SMT solver. Advanced users may wish to install alternative sol
 [Z3](https://github.com/Z3Prover/z3),
 [Yices (version 1)](http://yices.csl.sri.com/download-yices1.shtml), 
 [Yices 2](http://yices.csl.sri.com/index.shtml),
-[CVC4](http://cvc4.cs.nyu.edu/web/), or
+[CVC4](http://cvc4.cs.nyu.edu/web/),
+[CVC5](https://github.com/cvc5/cvc5/releases/), or
 [MathSAT](http://mathsat.fbk.eu/).
-[CVC5](https://github.com/cvc5/cvc5/releases/).
 
 Minimal IVCs enumeration (optional)
 -----------------------------------
