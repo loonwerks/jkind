@@ -3,6 +3,7 @@ package jkind.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 import jkind.JKindException;
 
@@ -122,7 +123,7 @@ public class BigFraction implements Comparable<BigFraction> {
 	public BigDecimal toBigDecimal(int scale) {
 		BigDecimal decNum = new BigDecimal(num).setScale(scale);
 		BigDecimal decDenom = new BigDecimal(denom);
-		return decNum.divide(decDenom, BigDecimal.ROUND_DOWN);
+		return decNum.divide(decDenom, RoundingMode.DOWN);
 	}
 
 	public String toTruncatedDecimal(int scale, String suffix) {
