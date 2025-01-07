@@ -199,7 +199,7 @@ task dist(type: Zip) {
          into 'jkind'
     }
     archiveBaseName = 'jkind'
-    version = jkind_version
+    archiveVersion = jkind_version
 }
  
 artifacts {
