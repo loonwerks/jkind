@@ -18,7 +18,7 @@ assert jkind_version ==~ /[0-9.\-]+/
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.amazonaws:aws-java-sdk-core:1.11.5'
