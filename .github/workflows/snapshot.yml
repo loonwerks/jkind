@@ -1,7 +1,10 @@
 name: Publish package to GitHub Packages
 on:
-  release:
-    types: [created]
+  workflow_run:
+    workflows: [Build Project]
+    types: [completed]
+    branches: [master]
+
 jobs:
   publish:
     runs-on: ubuntu-latest
