@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat;
 
-def jkind_version_base = '4.6.0'
+def jkind_version_base = '4.6.0-SNAPSHOT'
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMddHHmm");
@@ -46,15 +46,17 @@ allprojects {
     publishing {
         repositories {
             maven {
+                name = "GithubPackages"
                 if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)")) {
-                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/releases/"
+                    url "https://maven.pkg.github.com/loonwerks/jkind/releases/"
                 } else if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
-                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/snapshots/"
+                    url "https://maven.pkg.github.com/loonwerks/jkind/snapshots/"
                 } else {
-                    url "s3://ca-trustedsystems-dev-us-east-1/mvn/staging/"
+                    url "https://maven.pkg.github.com/loonwerks/jkind/staging/"
                 }
-                authentication {
-                    awsIm(AwsImAuthentication)
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
                 }
             }
         }
