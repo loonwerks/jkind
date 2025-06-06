@@ -256,7 +256,7 @@ public class Util {
 	 * particular, for -5 div 3 java says '-1' and SMT solvers say '-2'
 	 */
 	public static BigInteger smtDivide(BigInteger a, BigInteger b) {
-		return a.subtract(a.mod(b)).divide(b);
+		return a.subtract(a.mod(b.abs())).divide(b);
 	}
 
 	public static <T> List<T> safeList(Collection<? extends T> original) {
