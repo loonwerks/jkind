@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat;
 
-def jkind_version_base = '4.6.1-SNAPSHOT'
+def jkind_version_base = '4.6.1'
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMddHHmm");
