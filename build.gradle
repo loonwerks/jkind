@@ -1,6 +1,22 @@
 import java.text.SimpleDateFormat;
 
-def jkind_version_base = '4.6.1'
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.amazonaws:aws-java-sdk-core:1.11.5'
+    }
+}
+
+plugins {
+    id("com.gradleup.shadow") version "8.3.7"
+    id("com.gradleup.nmcp.aggregation").version("0.2.1")
+    id("eclipse")
+}
+
+def jkind_version_base = '4.6.2-SNAPSHOT'
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMddHHmm");
@@ -16,13 +32,18 @@ if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
 }
 assert jkind_version ==~ /[0-9.\-]+/
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.amazonaws:aws-java-sdk-core:1.11.5'
-    }
+nmcpAggregation {
+  centralPortal {
+    username = System.getenv("MAVEN_CENTRAL_USER")
+    password = System.getenv("MAVEN_CENTRAL_TOKEN")
+    // publish manually from the portal
+    publishingType = "USER_MANAGED"
+    // or if you want to publish automatically
+    publishingType = "AUTOMATIC"
+  }
+
+  // Publish all projects that apply the 'maven-publish' plugin
+  publishAllProjectsProbablyBreakingProjectIsolation()
 }
 
 allprojects {
@@ -31,16 +52,21 @@ allprojects {
 
     group = 'com.collins.trustedsystems.jkind'
 
-    dependencies {
-        implementation files('../jkind-common/dependencies/antlr-runtime-4.4.jar', '../jkind-common/dependencies/jxl.jar')
-    }
+    //dependencies {
+    //    implementation files('../jkind-common/dependencies/antlr-runtime-4.4.jar', '../jkind-common/dependencies/jxl.jar')
+    //}
 
-    sourceSets {
-        main {
-            java {
-                srcDirs = ['../jkind-common/src']
-            }
-        }
+    //sourceSets {
+    //    main {
+    //        java {
+    //            srcDirs = ['../jkind-common/src']
+    //        }
+    //    }
+    //}
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
     publishing {
@@ -48,11 +74,11 @@ allprojects {
             maven {
                 name = "GithubPackages"
                 if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)")) {
-                    url "https://maven.pkg.github.com/loonwerks/jkind/releases/"
+                    url = "https://maven.pkg.github.com/loonwerks/jkind/releases/"
                 } else if (jkind_version_base.matches("([0-9]+\\.[0-9]+\\.[0-9]+)-SNAPSHOT")) {
-                    url "https://maven.pkg.github.com/loonwerks/jkind/snapshots/"
+                    url = "https://maven.pkg.github.com/loonwerks/jkind/snapshots/"
                 } else {
-                    url "https://maven.pkg.github.com/loonwerks/jkind/staging/"
+                    url = "https://maven.pkg.github.com/loonwerks/jkind/staging/"
                 }
                 credentials {
                     username = System.getenv("GITHUB_ACTOR")
@@ -63,6 +89,10 @@ allprojects {
     }
 }
 
+subprojects {
+    apply plugin: 'java'
+}
+
 project(':jkind') {
     repositories {
        flatDir {
@@ -71,13 +101,13 @@ project(':jkind') {
     }
 
     dependencies {
-        implementation files('dependencies/commons-cli-1.2.jar', 'dependencies/smtinterpol.jar')
+        implementation files('dependencies/commons-cli-1.2.jar', 'dependencies/smtinterpol.jar', '../jkind-common/dependencies/antlr-runtime-4.4.jar', '../jkind-common/dependencies/jxl.jar')
     }
 
     sourceSets {
         main {
             java {
-                srcDirs += ['src']
+                srcDirs += ['src', '../jkind-common/src']
             }
             resources {
                 srcDirs += ['resources']
@@ -85,7 +115,11 @@ project(':jkind') {
         }
     }
 
-    jar {
+    apply plugin: 'com.gradleup.shadow'
+
+    shadowJar {
+        archiveClassifier = null // do not append "-all", so the generated shadow jar generates jkind.jar (instead of generating jkind-all.jar)
+        // enableRelocation = true
         manifest {
             attributes 'Main-Class': 'jkind.Main',
                 'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
@@ -94,27 +128,21 @@ project(':jkind') {
                 'Bundle-Version': jkind_version,
                 'Implementation-Version': jkind_version
         }
-        from sourceSets.main.allSource
-
-        dependsOn configurations.runtimeClasspath
-        from (configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }) {
-            exclude '.api_description'
-            exclude '.options'
-            exclude 'about.html'
-            exclude 'plugin.properties'
-            exclude 'plugin.xml'
-            exclude 'META-INF/MANIFEST.MF'
-            exclude 'META-INF/*.SF'
-            exclude 'META-INF/*.DSA'
-            exclude 'META-INF/*.RSA'
+        from("dependencies/smtinterpol-sources.jar") {
+            // Copy SMTinterpol sources into
+            into("sources")
         }
+    }
+
+    sourcesJar {
+        from zipTree('dependencies/smtinterpol-sources.jar')
     }
 
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifactId 'com.collins.trustedsystems.jkind'
-                version jkind_version
+                artifactId = 'com.collins.trustedsystems.jkind'
+                version = jkind_version
                 from components.java
             }
         }
@@ -129,12 +157,13 @@ project(':jkind-api') {
      dependencies {
         implementation 'org.eclipse.platform:org.eclipse.equinox.common:3.14.0!!'
         implementation 'org.eclipse.platform:org.eclipse.core.runtime:3.20.0!!'
+        implementation files('../jkind-common/dependencies/antlr-runtime-4.4.jar', '../jkind-common/dependencies/jxl.jar')
     }
 
      sourceSets {
         main {
             java {
-                srcDirs += ['src']
+                srcDirs += ['src', '../jkind-common/src']
             }
             resources {
                 srcDirs = ['resources']
@@ -142,7 +171,11 @@ project(':jkind-api') {
         }
     }
 
-    jar {
+    apply plugin: 'com.gradleup.shadow'
+
+    shadowJar {
+        archiveClassifier = null // do not append "-all", so the generated shadow jar generates jkind-api.jar (instead of generating jkind-api-all.jar)
+        // enableRelocation = true
         manifest {
             attributes 'Main-Class': 'jkind.Main',
                 'Bundle-Description': 'An infinite-state model checker for safety properties in Lustre',
@@ -151,29 +184,17 @@ project(':jkind-api') {
                 'Bundle-Version': jkind_version,
                 'Implementation-Version': jkind_version
         }
-        from sourceSets.main.allSource
-
-        dependsOn configurations.runtimeClasspath
-        from (configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }) {
-            exclude '.api_description'
-            exclude '.options'
-            exclude 'about.html'
-            exclude 'plugin.properties'
-            exclude 'plugin.xml'
-            exclude 'META-INF/MANIFEST.MF'
-            exclude 'META-INF/*.SF'
-            exclude 'META-INF/*.DSA'
-            exclude 'META-INF/*.RSA'
+        from("dependencies/smtinterpol-sources.jar") {
+            // Copy SMTinterpol sources into
+            into("sources")
         }
-
-        duplicatesStrategy = 'warn'
     }
 
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                artifactId 'com.collins.trustedsystems.jkind-api'
-                version jkind_version
+                artifactId = 'com.collins.trustedsystems.jkind-api'
+                version = jkind_version
                 from components.java
             }
         }
@@ -181,11 +202,11 @@ project(':jkind-api') {
 }
 
 task dist(type: Zip) {
-    dependsOn 'jkind-api:jar', 'jkind:jar'
+    dependsOn 'jkind:shadowJar', 'jkind:sourcesJar', 'jkind-api:jar', 'jkind-api:sourcesJar'
     from ('scripts') {
         include '*'
         exclude '*.bat'
-        fileMode 0755
+        filePermissions { unix("rwxr-xr-x") }
         into 'jkind'
     }
     from ('scripts') {
@@ -193,11 +214,11 @@ task dist(type: Zip) {
         into 'jkind'
     }
     from ('jkind/build/libs') {
-         include 'jkind.jar'
+         include 'jkind.jar', 'jkind-sources.jar'
          into 'jkind'
     }
     from ('jkind-api/build/libs') {
-         include 'jkind-api.jar'
+         include 'jkind-api.jar',  'jkind-api-sources.jar'
          into 'jkind'
     }
     archiveBaseName = 'jkind'
