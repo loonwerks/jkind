@@ -18,7 +18,7 @@ import jkind.lustre.visitors.TypeAwareAstMapVisitor;
  * 	type record_type = struct { a : int; b : int; c : bool }; 
  * 	expr1 {a := expr2}
  * 
- * 		===> 
+ * 		{@literal ===>} 
  * 
  * 	record_type {a = expr2; b = expr1.b; c = expr1.c};
  * </code>

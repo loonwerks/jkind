@@ -64,7 +64,7 @@ public class ApiUtil {
 
 	/**
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.ApiUtil.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.ApiUtil#execute} instead.
 	 */
 	@Deprecated
 	public static void execute(Function<File, ProcessBuilder> runCommand, File lustreFile, JKindResult result,
@@ -159,7 +159,7 @@ public class ApiUtil {
 
 	/**
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.ApiUtil.readOutput()} instead.
+	 *   Use {@link jkind.api.eclipse.ApiUtil#readOutput} instead.
 	 */
 	@Deprecated
 	public static String readOutput(Process process, IProgressMonitor monitor) throws IOException {
@@ -175,7 +175,7 @@ public class ApiUtil {
 
 	/**
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.ApiUtil.readOutputToBuilder()} instead.
+	 *   Use {@link jkind.api.eclipse.ApiUtil#readOutputToBuilder} instead.
 	 */
 	@Deprecated
 	public static void readOutputToBuilder(Process process, IProgressMonitor monitor, StringBuilder outputText,

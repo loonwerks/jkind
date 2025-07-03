@@ -124,7 +124,7 @@ public class JRealizabilityApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.JRealizabilityApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.JRealizabilityApi#execute} instead.
 	 */
 	@Deprecated
 	public void execute(Program program, JRealizabilityResult result, IProgressMonitor monitor) {
@@ -157,7 +157,7 @@ public class JRealizabilityApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.JRealizabilityApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.JRealizabilityApi#execute} instead.
 	 */
 	@Deprecated
 	public void execute(String program, JRealizabilityResult result, IProgressMonitor monitor) {
@@ -196,7 +196,7 @@ public class JRealizabilityApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.JRealizabilityApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.JRealizabilityApi#execute} instead.
 	 */
 	@Deprecated
 	public void execute(File lustreFile, JRealizabilityResult result, IProgressMonitor monitor) {

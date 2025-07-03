@@ -168,7 +168,7 @@ public class JKindApi extends KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.JKindApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.JKindApi#execute} instead.
 	 */
 	@Override
 	@Deprecated

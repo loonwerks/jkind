@@ -56,7 +56,7 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.KindApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.KindApi#execute} instead.
 	 */
 	@Deprecated
 	public void execute(Program program, JKindResult result, IProgressMonitor monitor) {
@@ -89,7 +89,7 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.KindApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.KindApi#execute} instead.
 	 */
 	@Deprecated
 	public void execute(String program, JKindResult result, IProgressMonitor monitor) {
@@ -128,7 +128,7 @@ public abstract class KindApi {
 	 *            Used to check for cancellation
 	 * @throws jkind.JKindException
 	 * @deprecated To be removed in 5.0.
-	 *   Use {@link jkind.api.eclipse.KindApi.execute()} instead.
+	 *   Use {@link jkind.api.eclipse.KindApi#execute} instead.
 	 */
 	@Deprecated
 	public abstract void execute(File lustreFile, JKindResult result, IProgressMonitor monitor);

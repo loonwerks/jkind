@@ -15,8 +15,9 @@ import jkind.lustre.builders.NodeBuilder;
 import jkind.lustre.visitors.TypeAwareAstMapVisitor;
 
 /**
- * Remove all occurrences of temporal operators ('pre' and '->') underneath
- * 'pre' operators. This is done by introducing new local variables.
+ * Remove all occurrences of temporal operators ('pre' and {@literal '->'})
+ * underneath 'pre' operators. This is done by introducing new local
+ * variables.
  */
 public class FlattenPres extends TypeAwareAstMapVisitor {
 	public static Program program(Program program) {
