@@ -41,5 +41,5 @@ Versions this was last verified against, and what each needs.
 | MathSAT | — | `MATHSAT_HOME`, else `PATH` | Research and evaluation license; must be installed by the user. |
 | Yices 1 | — | `YICES_HOME`, else `PATH` | Long unmaintained upstream. |
 
-`BACKLOG.md` covers automatic solver discovery and portfolio solving, including
+`../BACKLOG.md` covers automatic solver discovery and portfolio solving, including
 the licensing constraints on shipping any of these binaries.
