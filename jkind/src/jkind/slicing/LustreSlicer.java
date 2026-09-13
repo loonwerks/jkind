@@ -12,13 +12,30 @@ import jkind.lustre.visitors.AstMapVisitor;
 
 public class LustreSlicer extends AstMapVisitor {
 	public static Node slice(Node node, DependencyMap depMap) {
-		return new LustreSlicer(getPropertyDependencies(node, depMap)).visit(node);
+		return new LustreSlicer(getDependenciesToKeep(node, depMap)).visit(node);
 	}
 
-	private static DependencySet getPropertyDependencies(Node node, DependencyMap depMap) {
+	/*
+	 * What the sliced node must retain: everything the properties depend on,
+	 * and everything the assertions depend on. Assertions are constraints on
+	 * the behaviours of the model as a whole, so removing one admits behaviours
+	 * the original model does not have.
+	 */
+	private static DependencySet getDependenciesToKeep(Node node, DependencyMap depMap) {
 		DependencySet keep = new DependencySet();
 		for (String prop : node.properties) {
-			keep.addAll(depMap.get(prop));
+			DependencySet deps = depMap.get(prop);
+			if (deps != null) {
+				keep.addAll(deps);
+			}
+		}
+		for (Expr assertion : node.assertions) {
+			for (Dependency dep : DependencyVisitor.get(assertion)) {
+				DependencySet deps = depMap.get(dep);
+				if (deps != null) {
+					keep.addAll(deps);
+				}
+			}
 		}
 		return keep;
 	}
@@ -54,14 +71,9 @@ public class LustreSlicer extends AstMapVisitor {
 
 	@Override
 	protected List<Expr> visitAssertions(List<Expr> assertions) {
-		List<Expr> sliced = new ArrayList<>();
-		for (Expr assertion : assertions) {
-			DependencySet deps = DependencyVisitor.get(assertion);
-			if (deps.isEmpty() || keep.contains(deps.first())) {
-				sliced.add(assertion);
-			}
-		}
-		return sliced;
+		// Every assertion is kept, and getDependenciesToKeep has retained the
+		// variables each one needs.
+		return new ArrayList<>(assertions);
 	}
 
 	@Override

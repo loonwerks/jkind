@@ -13,7 +13,11 @@ public class SubrangeIntType extends Type {
 		super(location);
 		Assert.isNotNull(low);
 		Assert.isNotNull(high);
-		Assert.isTrue(low.compareTo(high) <= 0);
+		// An empty range (low > high) is representable on purpose. The parser
+		// builds this type before any analysis runs, so asserting the range
+		// here would kill the process with a stack trace and make
+		// jkind.analysis.SubrangesNonempty, which exists to report exactly
+		// this, unreachable for user input.
 		this.low = low;
 		this.high = high;
 	}

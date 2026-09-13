@@ -280,10 +280,10 @@ public final class LustreGen {
 
 		boolean hasBool = false;
 		for (Var v : outputs) {
-			hasBool |= v.ty.kind == Ty.K.BOOL && v.ty.syn.equals("bool");
+			hasBool |= v.ty.kind == Ty.K.BOOL;
 		}
 		for (Var v : locals) {
-			hasBool |= v.ty.kind == Ty.K.BOOL && v.ty.syn.equals("bool");
+			hasBool |= v.ty.kind == Ty.K.BOOL;
 		}
 		if (!hasBool) {
 			locals.add(new Var("v" + (idCounter++), Ty.BOOL));
@@ -334,7 +334,7 @@ public final class LustreGen {
 
 		List<Var> bools = new ArrayList<>();
 		for (Var v : toAssign) {
-			if (v.ty.kind == Ty.K.BOOL && v.ty.syn.equals("bool")) {
+			if (v.ty.kind == Ty.K.BOOL) {
 				bools.add(v);
 			}
 		}

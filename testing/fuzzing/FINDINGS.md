@@ -1,5 +1,14 @@
 # Fuzzing findings
 
+**All seven findings below are fixed.** Each entry keeps the original report
+and records the fix underneath it. Verification after the fixes:
+
+| Campaign | Result |
+|---|---|
+| Tier 1, 500,000 inputs, seed 7 (the seed that originally found 22,226 crashes) | **0 findings** |
+| Tier 1, 500,000 inputs, fresh seed 4242 | **0 findings** |
+| Regression corpus, before vs after the fixes | **0 contradictions** |
+
 Findings from the harness in this directory. Each one makes JKind print a Java
 stack trace and exit `-8` (`UNCAUGHT_EXCEPTION`) instead of either analyzing the
 model or rejecting it with a diagnostic. Reproducers are in `findings/`.
@@ -43,6 +52,14 @@ accepts empty subranges and lets `SubrangesNonempty` report them, or the
 parser's visitor checks bounds and raises `LustreParseException` (which
 `Main.parseLustre` already turns into a clean `exit -5`).
 
+**Fixed.** The `low <= high` assertion is gone from `SubrangeIntType`'s
+constructor, so an empty range is representable and reaches the analysis that
+exists to report it. `SubrangesNonempty` is no longer dead code: the model now
+produces `Error at line 5:14 subrange is empty` and exits `-6`. The type
+checker already tolerated empty ranges — it only ever joins, negates and
+compares them — so nothing downstream needed changing, and the analysis fails
+the program before translation can see one.
+
 ## 2. A nested `pre` inside a condact throws ConcurrentModificationException
 
 `findings/02-condact-nested-pre.lus` — 691 occurrences.
@@ -72,6 +89,16 @@ Fixing it means not holding the map open across the recursion: compute the
 replacement first, then `put` it, keeping the recursion outside the
 `computeIfAbsent` call.
 
+**Fixed.** `RemoveCondacts.clockPres` no longer rewrites the operand from
+inside `computeIfAbsent`. It now looks the key up, and on a miss registers the
+replacement in the map *before* recursing, so a nested `pre` finds the entry
+already present instead of modifying the map from within its own mapping
+function.
+
+Worth noting that `createCondactNode` in the same file carries a comment
+explaining that it was moved off `computeIfAbsent` for exactly this reason.
+The fix had been applied in one place and missed in the other.
+
 ## 3. A condact inside another condact's call arguments throws ClassCastException
 
 `findings/03-nested-condact.lus` — 31 occurrences.
@@ -97,6 +124,17 @@ The inner condact survives because `RemoveCondacts` does not reach condacts
 nested inside the argument list of another condact's call. Both halves are worth
 addressing: the cast is unsound as written, and the nested condact should have
 been removed.
+
+**Fixed**, and the cause was narrower than it looked. `RemoveCondacts`
+rebuilt the rewritten call with `args.addAll(e.call.args)` — the *original*
+arguments — instead of the visited ones, silently discarding the rewrite it had
+just performed. A condact nested in those arguments therefore survived
+untouched into `InlineNodeCalls`, which replaced its call with an `IdExpr` and
+tripped the cast. Using `call.args` fixes it.
+
+The cast in `ExprMapVisitor.visit(CondactExpr)` is left alone: the parser
+guarantees a condact's call is a `NodeCallExpr`, and with the rewrite applied
+correctly no condact reaches a pass that would change that.
 
 ## 4. A record literal with an untypable field crashes the type checker
 
@@ -127,6 +165,13 @@ a *second* error. Users lose the diagnostics they were about to receive.
 The fix is for `visit(RecordExpr)` to return `null` when any field type is null,
 which is how the rest of the type checker signals "already reported".
 
+**Fixed.** `TypeChecker.visit(RecordExpr)` now returns `null` when any field
+expression has no type, which is the convention the rest of the type checker
+already uses for "an error has been reported here". Previously it returned a
+`RecordType` with a null field type embedded, and the next diagnostic to format
+that type walked into the null. The model now reports `unknown variable
+no_such_var` and exits `-6`, with the user's diagnostics intact.
+
 ## 5. Deep expression nesting overflows the stack (minor)
 
 `findings/05-deep-nesting.lus.sh` generates the input.
@@ -139,6 +184,18 @@ first.
 
 This is lower severity — the inputs are not realistic — but the current
 behaviour is a stack trace rather than a diagnostic naming a limit.
+
+**Fixed**, in both directions, and it is less minor than first assessed:
+JKind's own launcher used the default JVM stack, while its main use case is
+machine-generated Lustre with very deep expressions.
+
+The entry points (`JKind`, `JRealizability`, `JLustre2Kind`) now catch
+`StackOverflowError` ahead of the catch-all and report it as a diagnostic
+naming the remedy, exiting `-7` instead of printing a stack trace. Separately
+the launcher scripts now default to `-Xss32m`, overridable through
+`JKIND_JAVA_OPTS`, so realistic models do not reach that path at all. A model
+with 4,000 levels of nesting fails cleanly on the default stack and analyzes
+successfully under the new launcher default.
 
 ## 6. A property cannot be declared on a bool type alias (minor, not a crash)
 
@@ -185,6 +242,12 @@ arrow operator is deliberately wrong, and the same campaign immediately reports
 counterexample mismatches. A clean run means something only because the
 sabotaged run fails.
 
+**Fixed.** `StaticAnalyzer.getBooleans` resolves each variable's declared
+type through the program's type table before comparing against
+`NamedType.BOOL`, rather than comparing the unresolved type by reference. The
+check runs before `InlineUserTypes`, so the alias is still present at that
+point and had to be resolved explicitly.
+
 ## 7. Slicing drops inconsistent assertions, producing impossible counterexamples
 
 `findings/07-sliced-assertion.lus` — all 11 tier-2 findings are this.
@@ -227,3 +290,20 @@ is the clearest evidence that one of them is wrong.
 JKind ships a consistency checker (`testing/consistency-checker/`), which
 suggests inconsistent assertions are a known hazard; the gap is that ordinary
 analysis does not notice when slicing has removed the inconsistency.
+
+**Fixed.** Assertions are no longer sliced away. `DependencyMap` now treats
+everything an assertion mentions as a root, `LustreSlicer` keeps the closure of
+those roots alongside the properties' closure, and `visitAssertions` retains
+every assertion.
+
+The reasoning: cone-of-influence slicing removes variables nothing depends on,
+which is sound. Removing an assertion is different in kind — assertions
+constrain which behaviours exist at all, so dropping one *adds* behaviours, and
+added behaviours can only turn a valid property into a spurious counterexample.
+That is exactly the direction of the bug. The extreme case is an unsatisfiable
+assertion, where the original model has no behaviours and the sliced one has
+many.
+
+The model now reports `VALID`, agreeing with `-no_slicing`. Across the
+regression corpus the change produces no contradictions, and slicing still
+removes everything outside the combined property and assertion cones.

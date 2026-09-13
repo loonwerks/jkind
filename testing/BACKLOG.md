@@ -124,6 +124,33 @@ Four things to get right:
 K-induction aside, the place a portfolio pays off most is the inductive step at
 larger k, which is where the time concentrates and where backends differ most.
 
+#### Proposed interface: two modes
+
+    -portfolio 1    race:      first backend to decide wins
+    -portfolio 2    agreement: wait for all backends, require they agree
+
+**Mode 1 (race)** is the performance mode described above: take the first
+conclusive answer and stop the others. Fastest, and non-deterministic in which
+backend answers.
+
+**Mode 2 (agreement)** runs every backend to a conclusion and reports a
+property only when they all decide the same way. A property where one backend
+says valid and another says falsifiable is reported as a disagreement rather
+than as an answer. This is slower than any single solver by construction — it
+waits for the slowest — so it is not a mode to verify with.
+
+It is, however, a bug-finding mode, and that is its purpose. It turns the
+cross-solver oracle that `testing/fuzzing/CexFuzzer` implements externally
+into something JKind can do on any model, which makes it useful for
+qualification evidence and for triaging a suspicious result. It is also the
+answer to mode 1 discarding that signal: whoever needs the signal asks for
+mode 2.
+
+Worth deciding when implementing: whether mode 2 should report the
+disagreement and exit non-zero, or report each backend's answer and let the
+caller judge. Exiting non-zero makes it usable directly in a regression
+script.
+
 ---
 
 ## Engines and algorithms

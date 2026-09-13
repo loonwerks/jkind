@@ -526,6 +526,15 @@ public class TypeChecker implements ExprVisitor<Type> {
 			}
 		}
 
+		// A field whose expression has no type at all has already been
+		// reported. Returning a record type containing that null would hand a
+		// malformed type to whatever formats the next diagnostic.
+		for (Type fieldType : fields.values()) {
+			if (fieldType == null) {
+				return null;
+			}
+		}
+
 		return new RecordType(e.location, e.id, fields);
 	}
 
