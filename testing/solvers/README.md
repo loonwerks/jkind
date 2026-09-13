@@ -1,5 +1,29 @@
 # Solver testing
 
+## `fetch.sh`
+
+Downloads the solver versions JKind 4.7.0 is verified against, pinned by URL
+and SHA-256, and writes an `env.sh` that points `Z3_HOME`, `CVC5_HOME` and
+`YICES2_HOME` at them.
+
+```bash
+./fetch.sh --list        # show versions, licenses and sources; download nothing
+./fetch.sh               # fetch into ./toolchain
+source toolchain/env.sh  # put them where JKind looks
+```
+
+Each solver is fetched from its own upstream release and is not redistributed
+with JKind, because their licenses differ and two of them could not be shipped
+the way the others could — see `../BACKLOG.md`. The script prints each
+solver's license as it fetches, verifies checksums, and runs every binary once
+so a bad download fails here rather than mid-run.
+
+SMTInterpol is not fetched: it is bundled in `jkind.jar`. MathSAT is not
+fetched either, as its license covers research and evaluation only.
+
+Linux x86_64 only. On other platforms the script prints the release pages and
+the variables to set.
+
 ## `compare.py`
 
 Diffs JKind's answers across two builds or two solvers. A solver upgrade should

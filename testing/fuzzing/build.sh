@@ -28,7 +28,11 @@ mkdir -p "$out/classes"
 find "$repo/jkind-common/src" "$repo/jkind/src" -name '*.java' > "$out/srcs.txt"
 "$javac_bin" -nowarn -encoding UTF-8 -cp "$cp" -d "$out/classes" "@$out/srcs.txt"
 
-echo "Assembling jkind.jar..."
+# Stamp the same version the Gradle build uses, so this jar reports it the way
+# a released one does instead of printing "JKind null".
+version="$(sed -n "s/^def jkind_version_base = '\(.*\)'.*/\1/p" "$repo/build.gradle")"
+
+echo "Assembling jkind.jar ($version)..."
 rm -rf "$out/exploded"
 mkdir -p "$out/exploded"
 (
@@ -37,7 +41,11 @@ mkdir -p "$out/exploded"
   rm -rf META-INF/MANIFEST.MF META-INF/*.SF META-INF/*.DSA META-INF/*.RSA
   cp -r "$out/classes/." .
   [ -d "$repo/jkind/resources" ] && cp -r "$repo/jkind/resources/." . || true
-  "${java_bin%java}jar" cfe "$out/jkind.jar" jkind.Main .
+  cat > "$out/manifest.txt" <<MANIFEST
+Main-Class: jkind.Main
+Implementation-Version: $version
+MANIFEST
+  "${java_bin%java}jar" cfm "$out/jkind.jar" "$out/manifest.txt" .
 )
 
 echo "Compiling fuzzing harness..."
