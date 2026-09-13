@@ -186,6 +186,10 @@ public class JKindArgumentParser extends ArgumentParser {
 		List<SolverOption> options = Arrays.asList(SolverOption.values());
 		for (SolverOption option : options) {
 			if (solver.equals(option.toString())) {
+				if (option == SolverOption.CVC4) {
+					StdErr.warning("CVC4 is no longer developed upstream and has been superseded by CVC5. "
+							+ "Use -solver cvc5 instead.");
+				}
 				return option;
 			}
 		}

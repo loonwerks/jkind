@@ -26,15 +26,22 @@ import xml.etree.ElementTree as ET
 DECIDED = {"valid", "falsifiable"}
 
 
-def run(jar, solver, model, timeout, java, extra):
+def run(jar, solver, model, timeout, java, extra, env_overrides=None):
     """Runs one model, returning {property: answer} plus a status string."""
     command = [java, "-jar", jar, "-jkind", "-xml_to_stdout", "-timeout", str(timeout)]
     if solver:
         command += ["-solver", solver]
     command += extra + [model]
+    # JKind locates each solver through <SOLVER>_HOME, so pinning a specific
+    # build is a matter of the environment rather than the command line.
+    env = dict(os.environ)
+    for assignment in env_overrides or []:
+        name, _, value = assignment.partition("=")
+        env[name] = value
+
     try:
         done = subprocess.run(
-            command, capture_output=True, timeout=timeout + 20, text=True
+            command, capture_output=True, timeout=timeout + 20, text=True, env=env
         )
     except subprocess.TimeoutExpired:
         return {}, "killed"
@@ -57,9 +64,10 @@ def run(jar, solver, model, timeout, java, extra):
 
 
 def compare_one(model, args):
-    a, status_a = run(args.jar_a, args.solver_a, model, args.timeout, args.java, args.extra)
+    a, status_a = run(args.jar_a, args.solver_a, model, args.timeout, args.java,
+                      args.extra, args.env_a)
     b, status_b = run(args.jar_b or args.jar_a, args.solver_b, model, args.timeout,
-                      args.java, args.extra)
+                      args.java, args.extra, args.env_b)
 
     differences = []
     for name in sorted(set(a) | set(b)):
@@ -87,6 +95,10 @@ def main():
     parser.add_argument("--java", default="java")
     parser.add_argument("--extra", nargs="*", default=[],
                         help="extra arguments passed to both invocations")
+    parser.add_argument("--env-a", nargs="*", default=[], metavar="NAME=VALUE",
+                        help="environment for side A, e.g. Z3_HOME=/opt/z3-4.16")
+    parser.add_argument("--env-b", nargs="*", default=[], metavar="NAME=VALUE",
+                        help="environment for side B")
     args = parser.parse_args()
 
     models = []
@@ -96,8 +108,10 @@ def main():
     if not models:
         sys.exit("no models matched")
 
-    label_a = "%s/%s" % (os.path.basename(args.jar_a), args.solver_a or "default")
-    label_b = "%s/%s" % (os.path.basename(args.jar_b or args.jar_a), args.solver_b or "default")
+    label_a = "%s/%s %s" % (os.path.basename(args.jar_a), args.solver_a or "default",
+                            " ".join(args.env_a))
+    label_b = "%s/%s %s" % (os.path.basename(args.jar_b or args.jar_a),
+                            args.solver_b or "default", " ".join(args.env_b))
     print("A = %s" % label_a)
     print("B = %s" % label_b)
     print("%d models, timeout %ds, %d jobs\n" % (len(models), args.timeout, args.jobs))
