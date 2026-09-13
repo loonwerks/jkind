@@ -1,0 +1,9 @@
+-- Finding 1: an empty subrange crashes during AST construction.
+--
+-- Expected: "subrange is empty" from the SubrangesNonempty check, exit -6.
+-- Actual:   jkind.JKindException: Assertion failed, stack trace, exit -8.
+node main(x : subrange [5, 2] of int) returns (ok : bool);
+let
+  ok = x >= 5;
+  --%PROPERTY ok;
+tel;

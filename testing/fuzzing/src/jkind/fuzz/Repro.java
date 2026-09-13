@@ -49,6 +49,11 @@ public final class Repro {
 			case "--seed":
 				seed = Long.parseLong(args[++i]);
 				break;
+			case "--replay":
+				// Replays the exact input the fuzzer built for this seed,
+				// including which generator the seed selected.
+				System.out.println(FrontEndFuzzer.generate(Long.parseLong(args[++i])).source);
+				return;
 			case "--tally":
 				tally = Integer.parseInt(args[++i]);
 				break;
@@ -72,6 +77,9 @@ public final class Repro {
 			return LustreGen.generate(seed, LustreGen.Config.interpretable());
 		case "chaos":
 			return LustreGen.generate(seed, LustreGen.Config.chaos(0.15));
+		case "replay":
+			// Exactly the input the fuzzer built for this seed.
+			return FrontEndFuzzer.generate(seed).source;
 		default:
 			throw new IllegalArgumentException("unknown generator: " + kind);
 		}
