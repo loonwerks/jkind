@@ -1,0 +1,22 @@
+-- Finding 8: CVC5 answers "unsupported" to an option JKind sets, and that
+-- unsolicited reply desynchronizes the solver protocol.
+--
+--   jkind -jkind -solver cvc5 this-file
+--
+-- Expected: normal analysis.
+-- Actual (before the fix): the property is still decided by another engine,
+-- but "bmc process failed" and "k-induction process failed" with
+-- jkind.JKindException: Cvc5 error (see scratch file for details).
+node n0(i1 : bool; i2 : bool) returns (o3 : bool);
+var
+  v4 : bool; v5 : int; v6 : int; v7 : bool;
+let
+  --%MAIN;
+  o3 = (((i1 -> pre v4) = true) -> (not (2 < -7)));
+  v4 = ((o3 -> pre (o3 => true)) and ((0 -> 0) = (4 -> 7)));
+  v5 = ((0 -> pre (v5)) -> 3);
+  v6 = (0 * (if (v4 -> pre true) then (v5 - v5) else (if o3 then -3 else v5)));
+  v7 = (not v4);
+  assert (not ((5 > v6)));
+  --%PROPERTY v7;
+tel;

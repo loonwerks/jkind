@@ -13,6 +13,7 @@ import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -77,6 +78,54 @@ public final class CexFuzzer {
 	 * interpreter.
 	 */
 	private static String compareSolver = null;
+	/** Run the full mode and solver matrix rather than a single configuration. */
+	private static boolean matrix = false;
+
+	/**
+	 * One way of invoking JKind: a solver, and the options that select a mode.
+	 *
+	 * None of these options may change an answer. Disabling an engine can leave
+	 * a property undecided, and IVC or smoothing options add information to a
+	 * result, but no option turns a valid property into a falsifiable one. That
+	 * invariant is the oracle for the matrix.
+	 */
+	static final class RunConfig {
+		final String label;
+		final String solver;
+		final List<String> args;
+
+		RunConfig(String label, String solver, String... args) {
+			this.label = label;
+			this.solver = solver;
+			this.args = java.util.Arrays.asList(args);
+		}
+	}
+
+	private static List<RunConfig> configurations() {
+		List<RunConfig> configs = new ArrayList<>();
+		configs.add(new RunConfig("default", solver));
+		if (!matrix) {
+			if (compareSolver != null) {
+				configs.add(new RunConfig("solver:" + compareSolver, compareSolver));
+			}
+			return configs;
+		}
+
+		// Modes, all on the default solver.
+		configs.add(new RunConfig("no-slicing", solver, "-no_slicing"));
+		configs.add(new RunConfig("ivc", "z3", "-ivc"));
+		configs.add(new RunConfig("all-ivcs", "z3", "-all_ivcs"));
+		configs.add(new RunConfig("induct-cex", solver, "-induct_cex"));
+		configs.add(new RunConfig("smooth", "z3", "-smooth"));
+		configs.add(new RunConfig("bmc-only", solver, "-no_k_induction", "-no_inv_gen"));
+		configs.add(new RunConfig("kind-only", solver, "-no_bmc", "-no_inv_gen"));
+
+		// The updated solvers, on the default mode.
+        for (String s : new String[] { "z3", "cvc5", "yices2", "smtinterpol" }) {
+			configs.add(new RunConfig("solver:" + s, s));
+		}
+		return configs;
+	}
 
 	private static final Map<String, AtomicLong> outcomes = new ConcurrentHashMap<>();
 	private static final List<String> findings = Collections.synchronizedList(new ArrayList<>());
@@ -125,6 +174,9 @@ public final class CexFuzzer {
 				break;
 			case "--compare-solver":
 				compareSolver = args[++i];
+				break;
+			case "--matrix":
+				matrix = true;
 				break;
 			default:
 				throw new IllegalArgumentException("unknown option: " + args[i]);
@@ -214,68 +266,140 @@ public final class CexFuzzer {
 		Path model = outDir.resolve("models").resolve("m" + seed + ".lus");
 		Files.write(model, source.getBytes(StandardCharsets.UTF_8));
 		try {
-			String xml = runJKind(model);
-			if (xml == null) {
-				bump("run/killed-at-deadline");
-				return;
+			Map<String, Map<String, String>> answersByConfig = new LinkedHashMap<>();
+
+			for (RunConfig config : configurations()) {
+				RunResult run = runJKind(model, config);
+
+				if (run.killed) {
+					// A mode that cannot finish a model this small inside the
+					// deadline is worth knowing about, but the solver timeout
+					// makes it expected often enough not to be a finding.
+					bump("run/killed-at-deadline/" + config.label);
+					continue;
+				}
+				if (run.exitCode == EXIT_INVALID_OPTIONS) {
+					// The mode does not apply to this solver, for example
+					// smoothing on a backend that does not support it.
+					bump("run/not-applicable/" + config.label);
+					continue;
+				}
+				if (run.crashed()) {
+					report(seed, source, "JKind crashed in mode '" + config.label + "' (exit " + run.exitCode
+							+ ")\n" + run.firstStackTrace());
+					continue;
+				}
+
+				List<JKindXml.Property> results = JKindXml.parse(run.stdout);
+				if (results.isEmpty()) {
+					bump("run/no-results/" + config.label);
+					continue;
+				}
+
+				Map<String, String> answers = new LinkedHashMap<>();
+				for (JKindXml.Property property : results) {
+					answers.put(property.name, property.answer);
+					check(seed, source, program, interp, property, config.label);
+					checkIvc(seed, source, interp, property, config.label);
+				}
+				answersByConfig.put(config.label, answers);
 			}
-			List<JKindXml.Property> results = JKindXml.parse(xml);
-			if (results.isEmpty()) {
-				bump("run/no-results");
-				return;
-			}
-			for (JKindXml.Property property : results) {
-				check(seed, source, program, interp, property);
-			}
-			if (compareSolver != null) {
-				compareSolvers(seed, source, model, results);
-			}
+
+			crossCheck(seed, source, answersByConfig);
 		} finally {
 			Files.deleteIfExists(model);
 		}
 	}
 
+	private static final int EXIT_INVALID_OPTIONS = -2;
+	private static final int EXIT_UNCAUGHT_EXCEPTION = -8;
+
 	/**
-	 * Re-runs the model under a second solver and reports any property the two
-	 * solvers answer differently. Only outright contradictions are reported;
-	 * one solver returning "unknown" where the other decides the property is
-	 * expected.
+	 * No option may change a decided answer. Two configurations that decide the
+	 * same property differently mean one of them is wrong, whichever it is.
 	 */
-	private static void compareSolvers(long seed, String source, Path model, List<JKindXml.Property> first)
-			throws Exception {
-		String xml = runJKind(model, compareSolver);
-		if (xml == null) {
-			bump("compare/killed-at-deadline");
+	private static void crossCheck(long seed, String source, Map<String, Map<String, String>> answersByConfig) {
+		List<String> labels = new ArrayList<>(answersByConfig.keySet());
+		for (int i = 0; i < labels.size(); i++) {
+			for (int j = i + 1; j < labels.size(); j++) {
+				Map<String, String> a = answersByConfig.get(labels.get(i));
+				Map<String, String> b = answersByConfig.get(labels.get(j));
+				for (Map.Entry<String, String> entry : a.entrySet()) {
+					String other = b.get(entry.getKey());
+					if (other == null) {
+						continue;
+					}
+					boolean contradiction = ("valid".equals(entry.getValue()) && "falsifiable".equals(other))
+							|| ("falsifiable".equals(entry.getValue()) && "valid".equals(other));
+					if (contradiction) {
+						report(seed, source, String.format("modes disagree on property %s: %s says %s, %s says %s",
+								entry.getKey(), labels.get(i), entry.getValue(), labels.get(j), other));
+						return;
+					}
+					bump("cross-check/agree");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Every element of a reported inductive validity core must name a real
+	 * model element. A core naming something that is not in the model is
+	 * meaningless to the user reading it.
+	 */
+	private static void checkIvc(long seed, String source, Interp interp, JKindXml.Property property, String label) {
+		if (property.ivc.isEmpty()) {
 			return;
 		}
-		List<JKindXml.Property> second = JKindXml.parse(xml);
-		Map<String, String> answers = new HashMap<>();
-		for (JKindXml.Property property : second) {
-			answers.put(property.name, property.answer);
-		}
-		for (JKindXml.Property property : first) {
-			String other = answers.get(property.name);
-			if (other == null) {
-				continue;
-			}
-			boolean contradiction = ("valid".equals(property.answer) && "falsifiable".equals(other))
-					|| ("falsifiable".equals(property.answer) && "valid".equals(other));
-			if (contradiction) {
+		bump("ivc/reported");
+		for (String element : property.ivc) {
+			if (!interp.computedNames().contains(element) && !interp.inputNames().contains(element)) {
 				report(seed, source, String.format(
-						"solvers disagree on property %s: %s says %s, %s says %s", property.name,
-						solver == null ? "the default solver" : solver, property.answer, compareSolver, other));
-			} else {
-				bump("compare/agree");
+						"mode '%s' reported IVC element '%s' for property %s, which is not a variable of the model",
+						label, element, property.name));
+				return;
 			}
+		}
+		bump("ivc/validated");
+	}
+
+	/** Everything one JKind invocation produced. */
+	static final class RunResult {
+		final String stdout;
+		final String stderr;
+		final int exitCode;
+		final boolean killed;
+
+		RunResult(String stdout, String stderr, int exitCode, boolean killed) {
+			this.stdout = stdout;
+			this.stderr = stderr;
+			this.exitCode = exitCode;
+			this.killed = killed;
+		}
+
+		/**
+		 * JKind reports bad input with a diagnostic and a documented exit code.
+		 * A Java stack trace on stderr, or the uncaught-exception exit code,
+		 * means something escaped instead.
+		 */
+		boolean crashed() {
+			return exitCode == EXIT_UNCAUGHT_EXCEPTION || stderr.contains("\tat jkind.")
+					|| stderr.contains("\tat java.");
+		}
+
+		String firstStackTrace() {
+			int at = stderr.indexOf("\tat ");
+			if (at < 0) {
+				return stderr.length() > 600 ? stderr.substring(0, 600) : stderr;
+			}
+			int from = Math.max(0, stderr.lastIndexOf('\n', stderr.lastIndexOf('\n', at) - 1));
+			int to = Math.min(stderr.length(), at + 600);
+			return stderr.substring(from, to);
 		}
 	}
 
-	/** Runs JKind on one model, returning its XML output or null if killed. */
-	private static String runJKind(Path model) throws Exception {
-		return runJKind(model, solver);
-	}
-
-	private static String runJKind(Path model, String withSolver) throws Exception {
+	/** Runs JKind on one model under one configuration. */
+	private static RunResult runJKind(Path model, RunConfig config) throws Exception {
 		List<String> command = new ArrayList<>();
 		command.add(javaBin);
 		command.add("-jar");
@@ -286,12 +410,15 @@ public final class CexFuzzer {
 		command.add(Integer.toString(maxK));
 		command.add("-timeout");
 		command.add(Integer.toString(solverTimeout));
-		command.add("-pdr_max");
-		command.add("0");
-		if (withSolver != null) {
-			command.add("-solver");
-			command.add(withSolver);
+		if (!config.args.contains("-no_bmc") && !config.args.contains("-no_k_induction")) {
+			command.add("-pdr_max");
+			command.add("0");
 		}
+		if (config.solver != null) {
+			command.add("-solver");
+			command.add(config.solver);
+		}
+		command.addAll(config.args);
 		command.add(model.toAbsolutePath().toString());
 
 		ProcessBuilder builder = new ProcessBuilder(command);
@@ -300,20 +427,29 @@ public final class CexFuzzer {
 		process.getOutputStream().close();
 
 		ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-		Thread pump = new Thread(() -> copy(process.getInputStream(), stdout));
-		pump.setDaemon(true);
-		pump.start();
-		Thread drainErr = new Thread(() -> copy(process.getErrorStream(), new ByteArrayOutputStream()));
-		drainErr.setDaemon(true);
-		drainErr.start();
+		ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+		Thread outPump = new Thread(() -> copy(process.getInputStream(), stdout));
+		Thread errPump = new Thread(() -> copy(process.getErrorStream(), stderr));
+		outPump.setDaemon(true);
+		errPump.setDaemon(true);
+		outPump.start();
+		errPump.start();
 
 		if (!process.waitFor(killMillis, TimeUnit.MILLISECONDS)) {
 			process.destroyForcibly();
 			process.waitFor(2, TimeUnit.SECONDS);
-			return null;
+			return new RunResult("", "", 0, true);
 		}
-		pump.join(2000);
-		return stdout.toString(StandardCharsets.UTF_8.name());
+		outPump.join(2000);
+		errPump.join(2000);
+
+		// The JVM reports System.exit(-8) as 248; normalize back.
+		int exitCode = process.exitValue();
+		if (exitCode > 128) {
+			exitCode -= 256;
+		}
+		return new RunResult(stdout.toString(StandardCharsets.UTF_8.name()),
+				stderr.toString(StandardCharsets.UTF_8.name()), exitCode, false);
 	}
 
 	private static void copy(InputStream in, OutputStream out) {
@@ -333,13 +469,13 @@ public final class CexFuzzer {
 	// ------------------------------------------------------------------
 
 	private static void check(long seed, String source, Program program, Interp interp,
-			JKindXml.Property property) {
+			JKindXml.Property property, String label) {
 		switch (property.answer) {
 		case "falsifiable":
-			checkCounterexample(seed, source, program, interp, property);
+			checkCounterexample(seed, source, program, interp, property, label);
 			break;
 		case "valid":
-			checkValid(seed, source, program, interp, property);
+			checkValid(seed, source, program, interp, property, label);
 			break;
 		default:
 			bump("result/" + property.answer);
@@ -353,11 +489,12 @@ public final class CexFuzzer {
 	 * assertion, and leave the property false at the final step.
 	 */
 	private static void checkCounterexample(long seed, String source, Program program, Interp interp,
-			JKindXml.Property property) {
+			JKindXml.Property property, String label) {
 		bump("result/falsifiable");
 		int steps = property.steps();
 		if (steps == 0) {
-			report(seed, source, "falsifiable with an empty counterexample for " + property.name);
+			report(seed, source, "mode '" + label + "': falsifiable with an empty counterexample for "
+					+ property.name);
 			return;
 		}
 
@@ -385,7 +522,7 @@ public final class CexFuzzer {
 			bump("skipped/uninterpretable-replay");
 			return;
 		} catch (RuntimeException e) {
-			report(seed, source, "interpreter failed replaying " + property.name + ": " + e);
+			report(seed, source, "mode '" + label + "': interpreter failed replaying " + property.name + ": " + e);
 			return;
 		}
 
@@ -404,24 +541,25 @@ public final class CexFuzzer {
 				Val actual = trace.values.get(k).get(name);
 				if (actual != null && !actual.equals(expected)) {
 					report(seed, source, String.format(
-							"counterexample for %s disagrees with the model: %s at step %d is %s in JKind's "
-									+ "counterexample but %s when the equations are evaluated on the same inputs",
-							property.name, name, k, expected, actual));
+							"mode '%s': counterexample for %s disagrees with the model: %s at step %d is %s in "
+									+ "JKind's counterexample but %s when the equations are evaluated on the "
+									+ "same inputs",
+							label, property.name, name, k, expected, actual));
 					return;
 				}
 			}
 		}
 
 		if (!sliced && !trace.assertionsHoldThrough(steps - 1)) {
-			report(seed, source,
-					"counterexample for " + property.name + " violates the model's own assertions");
+			report(seed, source, "mode '" + label + "': counterexample for " + property.name
+					+ " violates the model's own assertions");
 			return;
 		}
 
 		Val last = trace.values.get(steps - 1).get(property.name);
 		if (last instanceof Val.Bool && ((Val.Bool) last).value) {
-			report(seed, source, "counterexample for " + property.name + " does not falsify it: the property is "
-					+ "true at every step of the reported trace");
+			report(seed, source, "mode '" + label + "': counterexample for " + property.name
+					+ " does not falsify it: the property is true at every step of the reported trace");
 			return;
 		}
 		bump("counterexample/validated");
@@ -433,7 +571,7 @@ public final class CexFuzzer {
 	 * falsifies the property disproves the "valid" answer outright.
 	 */
 	private static void checkValid(long seed, String source, Program program, Interp interp,
-			JKindXml.Property property) {
+			JKindXml.Property property, String label) {
 		bump("result/valid");
 		Random rnd = new Random(seed ^ 0x5DEECE66DL);
 		for (int attempt = 0; attempt < randomTraces; attempt++) {
@@ -463,8 +601,8 @@ public final class CexFuzzer {
 				Val value = trace.values.get(k).get(property.name);
 				if (value instanceof Val.Bool && !((Val.Bool) value).value) {
 					report(seed, source, String.format(
-							"property %s was reported VALID but a concrete trace falsifies it at step %d "
-									+ "while satisfying every assertion", property.name, k));
+							"mode '%s': property %s was reported VALID but a concrete trace falsifies it at "
+									+ "step %d while satisfying every assertion", label, property.name, k));
 					return;
 				}
 			}

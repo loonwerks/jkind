@@ -25,12 +25,16 @@ public final class JKindXml {
 		public final int k;
 		/** Signal name to step to value; empty unless the answer is falsifiable. */
 		public final Map<String, Map<Integer, Val>> signals;
+		/** Inductive validity core elements, when JKind was asked for them. */
+		public final java.util.List<String> ivc;
 
-		Property(String name, String answer, int k, Map<String, Map<Integer, Val>> signals) {
+		Property(String name, String answer, int k, Map<String, Map<Integer, Val>> signals,
+				java.util.List<String> ivc) {
 			this.name = name;
 			this.answer = answer;
 			this.k = k;
 			this.signals = signals;
+			this.ivc = ivc;
 		}
 
 		/** Number of steps the counterexample covers. */
@@ -83,7 +87,12 @@ public final class JKindXml {
 				}
 				signals.put(signalName, byTime);
 			}
-			properties.add(new Property(name, answer == null ? "" : answer.trim(), k, signals));
+			List<String> ivc = new ArrayList<>();
+			NodeList ivcNodes = property.getElementsByTagName("Ivc");
+			for (int v = 0; v < ivcNodes.getLength(); v++) {
+				ivc.add(ivcNodes.item(v).getTextContent().trim());
+			}
+			properties.add(new Property(name, answer == null ? "" : answer.trim(), k, signals, ivc));
 		}
 		return properties;
 	}

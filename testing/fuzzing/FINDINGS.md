@@ -307,3 +307,75 @@ many.
 The model now reports `VALID`, agreeing with `-no_slicing`. Across the
 regression corpus the change produces no contradictions, and slicing still
 removes everything outside the combined property and assertion cones.
+
+---
+
+# Tier 2, mode matrix
+
+Everything above ran JKind in one configuration: default options, and for the
+differential a second solver. That left JKind's option surface untested. The
+matrix (`CexFuzzer --matrix`) runs every generated model under twelve
+configurations — `default`, `no-slicing`, `ivc`, `all-ivcs`, `induct-cex`,
+`smooth`, `bmc-only`, `kind-only`, and each of the four solvers — and adds
+three oracles:
+
+- **No crash in any mode.** The harness now captures stderr and the exit code,
+  which it previously discarded. A Java stack trace or exit `-8` from any
+  configuration is a finding. This is what made the two below visible.
+- **No option changes an answer.** Disabling an engine may leave a property
+  undecided and IVC or smoothing options add information, but nothing may turn
+  a valid property into a falsifiable one. Every pair of configurations is
+  compared and a contradiction is a finding.
+- **IVC elements name real variables.** Each element of a reported inductive
+  validity core must be a variable of the model.
+
+Thirty models were enough to surface both findings below.
+
+## 8. CVC5 rejects an option JKind sets, desynchronizing the protocol
+
+`findings/08-cvc5-unsupported-option.lus`
+
+`Cvc5Solver.initialize` sets `:minimize-unsat-cores`, which is a CVC4 option.
+CVC5 1.3.4 answers `unsupported`. Since a successful `set-option` is silent,
+that reply is unsolicited, and `readFromSolver` folded it into the response of
+the *next* command. The check-sat result then read `"unsupported\nunsat"`,
+which matches neither `isSat` (prefix `sat`) nor `isUnsat` (equals `unsat`), so
+JKind took the unknown branch and sent `(get-model)` after an unsat. CVC5
+replied `cannot get model unless after a SAT or UNKNOWN response`, and the BMC
+and k-induction engines died.
+
+The property was still decided by whichever engine survived, so this degraded
+CVC5 to a subset of its engines rather than producing wrong answers — which is
+why the earlier solver comparison reported no contradictions and did not catch
+it.
+
+**Fixed** on both levels: `Cvc5Solver` no longer sends the option, and
+`SmtLib2Solver.readFromSolver` now skips a bare `unsupported` line so that a
+solver rejecting any future option cannot put the exchange out of step.
+
+## 9. Counterexample reconstruction crashes when PDR finds the counterexample
+
+`findings/09-pdr-counterexample-reconstruction.lus`
+
+```
+java.lang.IllegalArgumentException: Model queried unknown variable: $o1$0
+	at jkind.solvers.smtlib2.SmtLib2Model.getValue(SmtLib2Model.java:34)
+	at jkind.util.ModelReconstructionEvaluator.reconstructValues(...)
+	at jkind.engines.Director.extractCounterexample(Director.java:534)
+```
+
+`ModelReconstructionEvaluator` cross-checks each reconstructed value against
+the solver's own value "when possible", and tests the result for null. That is
+`SimpleModel`'s behaviour for a variable it does not have. `SmtLib2Model` and
+`YicesModel` instead throw, so against a real solver model the check crashes
+rather than being skipped. The three implementations of one abstract method
+disagreed about what an unknown variable means, and the caller was written for
+one of them.
+
+**Fixed** by giving `Model` a `hasVariable` query, which each implementation
+answers consistently with its own `getValue`, and having the cross-check ask
+before looking up.
+
+This predates any change in this session — it reproduces on 4.6.1 — and is
+normally masked, because with BMC enabled BMC finds counterexamples before PDR
+does. `-no_bmc` exposes it.

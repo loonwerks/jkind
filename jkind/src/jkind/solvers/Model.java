@@ -30,6 +30,20 @@ public abstract class Model {
 
 	public abstract Set<String> getVariableNames();
 
+	/**
+	 * Whether this model can supply a value for the given variable.
+	 * Implementations differ on what they do when asked for one they do not
+	 * have -- some return null, some throw -- so callers that only want a value
+	 * when one exists should ask this first.
+	 */
+	public boolean hasVariable(String name) {
+		return varTypes.containsKey(name);
+	}
+
+	public boolean hasVariable(StreamIndex si) {
+		return hasVariable(si.getEncoded().str);
+	}
+
 	public Value getValue(StreamIndex si) {
 		return getValue(si.getEncoded().str);
 	}

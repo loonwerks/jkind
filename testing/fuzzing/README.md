@@ -52,8 +52,47 @@ is how the generator is kept aimed at the deeper passes.
 
 ## Tier 2 — end-to-end and counterexample validation
 
-See `CexFuzzer`. Runs complete JKind invocations and independently replays
-reported counterexamples through a Lustre interpreter.
+`CexFuzzer` runs complete, tightly bounded JKind invocations and checks the
+answers rather than just the absence of crashes. A Lustre interpreter
+(`Interp`, specified in `SEMANTICS.md`) replays every counterexample JKind
+reports: the values must match what the equations compute from the same
+inputs, the assertions must hold, and the property must actually be false.
+Properties reported valid are attacked with random concrete traces.
+
+```bash
+java -Djava.security.manager=allow -cp build/fuzz:build/jkind.jar \
+  jkind.fuzz.CexFuzzer --iterations 3000 --threads 12 \
+  --jar build/jkind.jar --compare-solver z3 --out cex-out
+```
+
+**The oracles are only meaningful if they can fire.** With
+`-Djkind.fuzz.sabotage=true` the interpreter's arrow operator is deliberately
+wrong, and the same campaign immediately reports counterexample mismatches. A
+clean run proves something only alongside a failing sabotage run.
+
+### Mode matrix (`--matrix`)
+
+Everything above runs JKind in one configuration, which leaves its option
+surface untested. `--matrix` runs each model under twelve configurations —
+`default`, `no-slicing`, `ivc`, `all-ivcs`, `induct-cex`, `smooth`,
+`bmc-only`, `kind-only`, and each of the four solvers — and adds three
+oracles:
+
+- **No crash in any mode.** stderr and the exit code are inspected; a Java
+  stack trace or exit `-8` is a finding.
+- **No option changes an answer.** Disabling an engine may leave a property
+  undecided, but no option may turn a valid property into a falsifiable one.
+  Every pair of configurations is compared.
+- **IVC elements name real variables.**
+
+```bash
+source ../solvers/toolchain/env.sh      # so cvc5 and yices2 are found
+java -Djava.security.manager=allow -cp build/fuzz:build/jkind.jar \
+  jkind.fuzz.CexFuzzer --iterations 400 --matrix --jar build/jkind.jar \
+  --out matrix-out
+```
+
+Findings 8 and 9 in `FINDINGS.md` came from this, within thirty models.
 
 ## Running
 
