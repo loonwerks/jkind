@@ -1,0 +1,21 @@
+-- Finding 7: with slicing on (the default), an inconsistent assertion is
+-- sliced away and JKind reports a counterexample that the model's own
+-- assertion forbids. With -no_slicing the same model is reported VALID.
+--
+-- The assertion is unsatisfiable: o is -3 and v is 2, so "v = o" can never
+-- hold and the model has no behaviours at all. Every property is therefore
+-- vacuously valid.
+--
+--   jkind -jkind             this file  =>  INVALID PROPERTIES: [ok]
+--   jkind -jkind -no_slicing this file  =>  VALID PROPERTIES: [ok]
+node main() returns (o : int);
+var
+  v : int;
+  ok : bool;
+let
+  o = -3;
+  v = 2;
+  ok = false;
+  assert (v = o);
+  --%PROPERTY ok;
+tel;

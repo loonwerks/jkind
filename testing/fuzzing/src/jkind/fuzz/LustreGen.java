@@ -53,6 +53,12 @@ public final class LustreGen {
 		public int intLiteralBound = 20;
 		/** Never emit integer literals outside 64-bit range. */
 		public boolean hugeLiterals = true;
+		/**
+		 * Define each variable only in terms of inputs, variables defined
+		 * earlier, and (under a pre) anything. This rules out algebraic loops,
+		 * which have no step-by-step meaning and cannot be interpreted.
+		 */
+		public boolean acyclic = false;
 
 		public static Config wellTyped() {
 			return new Config();
@@ -83,6 +89,12 @@ public final class LustreGen {
 			c.hugeLiterals = false;
 			c.intLiteralBound = 8;
 			c.maxAsserts = 1;
+			c.acyclic = true;
+			c.maxNodes = 1;
+			c.nodeCalls = false;
+			c.maxFunctions = 0;
+			c.maxTypedefs = 0;
+			c.maxConstants = 0;
 			return c;
 		}
 	}
@@ -98,6 +110,10 @@ public final class LustreGen {
 
 	/** Variables visible in the node currently being generated. */
 	private List<Var> scope = new ArrayList<>();
+	/** Inputs, plus variables whose equations have already been emitted. */
+	private final java.util.Set<String> defined = new java.util.HashSet<>();
+	/** Nesting depth inside pre, where referring to any variable is safe. */
+	private int preDepth = 0;
 	private int idCounter = 0;
 
 	public static final class Var {
@@ -290,6 +306,9 @@ public final class LustreGen {
 		List<Var> toAssign = new ArrayList<>();
 		toAssign.addAll(outputs);
 		toAssign.addAll(locals);
+		for (Var v : inputs) {
+			defined.add(v.id);
+		}
 		for (Var v : toAssign) {
 			if (chaosHit()) {
 				// Omit an assignment, or assign a variable twice, or assign an
@@ -305,6 +324,7 @@ public final class LustreGen {
 				}
 			}
 			out.append("  ").append(v.id).append(" = ").append(expr(v.ty, cfg.maxExprDepth)).append(";\n");
+			defined.add(v.id);
 		}
 
 		int asserts = rnd.nextInt(cfg.maxAsserts + 1);
@@ -471,9 +491,16 @@ public final class LustreGen {
 			return "(if " + expr(Ty.BOOL, d) + " then " + expr(t, d) + " else " + expr(t, d) + ")";
 		case "arrow":
 			return "(" + expr(t, d) + " -> " + expr(t, d) + ")";
-		case "pre":
-			// Guard the pre so the program stays meaningful at step 0.
-			return "(" + leaf(t) + " -> pre " + expr(t, d) + ")";
+		case "pre": {
+			// Guard the pre so the program stays meaningful at step 0. The
+			// guard is evaluated at step 0, so it is bound by the ordering
+			// constraint; the body refers to the previous step and is not.
+			String guard = leaf(t);
+			preDepth++;
+			String body = expr(t, d);
+			preDepth--;
+			return "(" + guard + " -> pre " + body + ")";
+		}
 		case "paren":
 			return "(" + expr(t, d) + ")";
 		case "not":
@@ -651,7 +678,7 @@ public final class LustreGen {
 	private String leaf(Ty t) {
 		List<String> options = new ArrayList<>();
 		for (Var v : scope) {
-			if (v.ty.fitsIn(t)) {
+			if (v.ty.fitsIn(t) && referable(v)) {
 				options.add(v.id);
 			}
 		}
@@ -662,6 +689,9 @@ public final class LustreGen {
 		}
 		// Record and array fields of in-scope variables are also usable.
 		for (Var v : scope) {
+			if (!referable(v)) {
+				continue;
+			}
 			if (v.ty.kind == Ty.K.RECORD) {
 				for (java.util.Map.Entry<String, Ty> e : v.ty.fieldMap().entrySet()) {
 					if (e.getValue().fitsIn(t)) {
@@ -676,6 +706,14 @@ public final class LustreGen {
 			return options.get(rnd.nextInt(options.size()));
 		}
 		return literal(t);
+	}
+
+	/**
+	 * Whether referring to this variable here keeps the program acyclic. Inside
+	 * a pre the reference is to the previous step, so anything is safe.
+	 */
+	private boolean referable(Var v) {
+		return !cfg.acyclic || preDepth > 0 || defined.contains(v.id);
 	}
 
 	private String literal(Ty t) {

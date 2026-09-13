@@ -158,3 +158,72 @@ tel;
 reference, so a user-defined alias for `bool` fails even though it resolves to
 `bool`. The check runs before `InlineUserTypes`, so the alias has not yet been
 resolved. Resolving the type through the type table first would accept it.
+
+---
+
+# Tier 2: end-to-end answer checking
+
+Campaign: 3,000 generated models, 215s wall, each run under both SMTInterpol
+and Z3 with `-n 8 -timeout 2 -pdr_max 0` and hard-killed at 10s.
+
+| Outcome | Count |
+|---|---|
+| counterexamples replayed and validated | 2,787 |
+| valid properties that survived random-trace refutation | 1,507 |
+| cross-solver agreements (SMTInterpol vs Z3) | 4,309 |
+| **cross-solver contradictions** | **0** |
+| **unsound VALID results found** | **0** |
+| findings | 11 (all one class, below) |
+
+Two negative results are worth stating plainly. Across 1,507 properties proved
+valid, no concrete trace ever refuted one, and SMTInterpol and Z3 never
+contradicted each other on 4,309 comparisons. On this fragment the proof
+engines look sound.
+
+The oracles are not inert: with `-Djkind.fuzz.sabotage=true` the interpreter's
+arrow operator is deliberately wrong, and the same campaign immediately reports
+counterexample mismatches. A clean run means something only because the
+sabotaged run fails.
+
+## 7. Slicing drops inconsistent assertions, producing impossible counterexamples
+
+`findings/07-sliced-assertion.lus` — all 11 tier-2 findings are this.
+
+```lustre
+node main() returns (o : int);
+var
+  v : int;
+  ok : bool;
+let
+  o = -3;
+  v = 2;
+  ok = false;
+  assert (v = o);
+  --%PROPERTY ok;
+tel;
+```
+
+```
+jkind -jkind             =>  INVALID PROPERTIES: [ok]
+jkind -jkind -no_slicing =>  VALID PROPERTIES: [ok]
+```
+
+The assertion is unsatisfiable, so the model has no behaviours and every
+property holds vacuously. `-no_slicing` gets this right. The default does not:
+slicing removes `v`, `o` and the assertion because they lie outside the
+property's cone of influence, and BMC then reports a counterexample in which
+`ok` is false — a trace the assertion forbids.
+
+Cone-of-influence slicing is only semantics-preserving while the assertions are
+satisfiable. When they are not, the sliced model has behaviours the original
+does not, and any counterexample found in it is spurious.
+
+This was found by replaying JKind's own counterexamples through the interpreter
+and checking the assertions, which is why it shows up as "counterexample
+violates the model's own assertions" rather than as a crash. Two answers that
+contradict each other under a flag that is documented only as an optimization
+is the clearest evidence that one of them is wrong.
+
+JKind ships a consistency checker (`testing/consistency-checker/`), which
+suggests inconsistent assertions are a known hazard; the gap is that ordinary
+analysis does not notice when slicing has removed the inconsistency.
