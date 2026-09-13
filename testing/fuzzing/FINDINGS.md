@@ -379,3 +379,55 @@ before looking up.
 This predates any change in this session — it reproduces on 4.6.1 — and is
 normally masked, because with BMC enabled BMC finds counterexamples before PDR
 does. `-no_bmc` exposes it.
+
+## 10. PDR substitution throws on a bound variable
+
+Reproducer: `testing/triplex_voter.lus`, run as
+
+```bash
+jkind -jkind -ivc -solver z3 triplex_voter.lus
+```
+
+**Intermittent** — roughly 1 run in 10.
+
+```
+java.lang.IllegalArgumentException: Unhandled: TermVariable
+	at jkind.solvers.smtinterpol.Subst.apply(Subst.java:21)
+	at jkind.engines.pdr.PdrSmt...
+```
+
+Note that `-solver z3` is selected and the failure is in SMTInterpol code:
+JKind's PDR engine uses SMTInterpol through its Java API regardless of which
+solver `-solver` names, so PDR is always on this path.
+
+`Subst.apply` walks a term substituting subterms matched by identity. It
+handled `ApplicationTerm` and `ConstantTerm` and threw on anything else. A
+`TermVariable` is a variable bound inside the term by a `let` or a quantifier;
+since the substitution targets are matched by identity higher up, reaching one
+means it is not a target, and substitution should leave it alone rather than
+fail.
+
+**Fixed** by returning a `TermVariable` unchanged, and by handling
+`AnnotatedTerm` by recursing through it and preserving its annotations. The
+throw is kept for genuinely unexpected term kinds rather than replaced with a
+silent pass-through.
+
+### On whether the SMTInterpol upgrade caused this
+
+Worth stating precisely, because the obvious suspicion is the bundled solver
+upgrade. Under the same conditions:
+
+| Build | Crashed |
+|---|---|
+| 4.6.1, SMTInterpol 2.5-663 | 0 / 24 runs |
+| current, SMTInterpol 2.5-1388 | 2 / 24 runs |
+
+That is *consistent with* the upgrade making the term shapes reaching `Subst`
+more varied, but 2 out of 24 against 0 out of 24 does not establish it — the
+difference is not significant at that sample size, and the failure is timing
+dependent, so absence in a sample is weak evidence. What can be said without
+qualification is that `Subst` was incomplete for the terms SMTInterpol can
+produce, that the gap is reachable, and that it is now closed.
+
+This is the only defect found that plausibly traces to the solver updates, and
+it is a latent weakness in JKind's own code rather than a fault in any solver.
