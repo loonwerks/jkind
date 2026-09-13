@@ -1,0 +1,25 @@
+-- Finding 9: counterexample reconstruction crashes when PDR is the engine
+-- that finds the counterexample.
+--
+--   jkind -jkind -no_bmc -no_inv_gen this-file
+--
+-- Expected: INVALID PROPERTIES: [o1, v4, v5]
+-- Actual (before the fix): the first counterexample prints, then
+-- java.lang.IllegalArgumentException: Model queried unknown variable: $o1$0
+--
+-- Normally masked: with BMC enabled it finds the counterexample first, so
+-- PDR's reconstruction path is not used.
+node n0() returns (o1 : bool; o2 : bool; o3 : int);
+var
+  v4 : bool; v5 : bool;
+let
+  --%MAIN;
+  o1 = false;
+  o2 = (o1 -> pre (o3 < (1 -> o3)));
+  o3 = (4);
+  v4 = (o1 -> pre ((v5 -> v5)));
+  v5 = (((o2 -> v4)) -> (if (not o1) then false else v4));
+  --%PROPERTY o1;
+  --%PROPERTY v4;
+  --%PROPERTY v5;
+tel;

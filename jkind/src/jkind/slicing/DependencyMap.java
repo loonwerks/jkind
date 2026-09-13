@@ -23,7 +23,22 @@ public class DependencyMap {
 	public DependencyMap(Node node, List<String> roots, List<Function> functions) {
 		computeOneStepDependencies(node, functions);
 		analyzeAssertions(node.assertions);
-		closeDependencies(roots);
+		closeDependencies(roots, assertionRoots(node.assertions));
+	}
+
+	/*
+	 * Everything an assertion mentions is a root. Assertions constrain which
+	 * behaviours the model has at all, so dropping one because no property
+	 * depends on it does not preserve the property's meaning: it adds
+	 * behaviours. An unsatisfiable assertion is the extreme case, where the
+	 * original model has no behaviours and the sliced one has many.
+	 */
+	private Set<Dependency> assertionRoots(List<Expr> assertions) {
+		Set<Dependency> roots = new HashSet<>();
+		for (Expr assertion : assertions) {
+			roots.addAll(DependencyVisitor.get(assertion).getSet());
+		}
+		return roots;
 	}
 
 	private void computeOneStepDependencies(Node node, List<Function> functions) {
@@ -77,11 +92,16 @@ public class DependencyMap {
 		}
 	}
 
-	private void closeDependencies(List<String> roots) {
+	private void closeDependencies(List<String> roots, Set<Dependency> extraRoots) {
 		Map<Dependency, DependencySet> transMap = new HashMap<>();
 		for (String variableRoot : roots) {
 			Dependency dep = Dependency.variable(variableRoot);
 			transMap.put(dep, computeClosure(dep));
+		}
+		for (Dependency dep : extraRoots) {
+			if (!transMap.containsKey(dep)) {
+				transMap.put(dep, computeClosure(dep));
+			}
 		}
 		map = transMap;
 	}

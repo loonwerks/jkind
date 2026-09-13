@@ -300,8 +300,9 @@ public class StaticAnalyzer {
 	private static boolean propertiesBoolean(Program program) {
 		boolean allBoolean = true;
 
+		Map<String, Type> typeTable = Util.createResolvedTypeTable(program.types);
 		for (Node node : program.nodes) {
-			Set<String> booleans = getBooleans(node);
+			Set<String> booleans = getBooleans(node, typeTable);
 			for (String prop : node.properties) {
 				if (!booleans.contains(prop)) {
 					StdErr.error("in node '" + node.id + "' property '" + prop + "' does not have type bool");
@@ -313,10 +314,13 @@ public class StaticAnalyzer {
 		return allBoolean;
 	}
 
-	private static Set<String> getBooleans(Node node) {
+	private static Set<String> getBooleans(Node node, Map<String, Type> typeTable) {
 		Set<String> booleans = new HashSet<>();
 		for (VarDecl varDecl : Util.getVarDecls(node)) {
-			if (varDecl.type == NamedType.BOOL) {
+			// This runs before InlineUserTypes, so a variable declared with a
+			// user-defined alias for bool still carries the alias and has to be
+			// resolved before comparing.
+			if (Util.resolveType(varDecl.type, typeTable) == NamedType.BOOL) {
 				booleans.add(varDecl.id);
 			}
 		}

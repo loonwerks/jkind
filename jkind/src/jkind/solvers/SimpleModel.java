@@ -38,4 +38,11 @@ public class SimpleModel extends Model {
 	public Set<String> getVariableNames() {
 		return values.keySet();
 	}
+
+	@Override
+	public boolean hasVariable(String name) {
+		// This model carries values rather than declared types, so its own map
+		// is what decides whether a variable is available.
+		return values.containsKey(name);
+	}
 }

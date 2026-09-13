@@ -34,6 +34,13 @@ public class JKind {
 
 			int exitCode = new Director(settings, userSpec, analysisSpec).run();
 			System.exit(exitCode); // Kills all threads
+		} catch (StackOverflowError e) {
+			// Parsing and the AST visitors recurse on expression structure, so
+			// a deeply enough nested model exhausts the stack. Report it as
+			// something the user can act on instead of a stack trace.
+			StdErr.fatal(ExitCodes.UNSUPPORTED_FEATURE,
+					"model is too deeply nested to analyze with the current stack size; "
+							+ "rerun with a larger Java stack, for example JKIND_JAVA_OPTS=-Xss64m");
 		} catch (Throwable t) {
 			t.printStackTrace();
 			System.exit(ExitCodes.UNCAUGHT_EXCEPTION);

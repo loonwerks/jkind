@@ -168,6 +168,12 @@ public abstract class SmtLib2Solver extends ProcessBasedSolver {
 				} else if (line.contains("model is not available")) {
 					flushSolver();
 					return null;
+				} else if (line.trim().equals("unsupported")) {
+					// A solver may answer "unsupported" to any command, and
+					// set-option is otherwise silent. Folding that reply into
+					// the response would leave the next result unrecognized
+					// and put the whole exchange out of step.
+					comment(getSolverName() + " reported an unsupported command");
 				} else if (line.contains(" |-> ")) {
 					// Ignore Z3 optimization information
 				} else if (line.contains("out of memory")) {

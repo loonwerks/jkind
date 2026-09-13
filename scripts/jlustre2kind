@@ -8,5 +8,10 @@ rawpath() { [ ! -h "$1" ] && echo "$1" || (local link="$(expr "$(command ls -ld 
 
 linkdir() { cd $(dirname $(rawpath $1)); pwd -P; }
 
+# Parsing and the AST visitors recurse on expression structure, and generated
+# Lustre can nest very deeply, so the default stack is not always enough.
+# Override by setting JKIND_JAVA_OPTS.
+: ${JKIND_JAVA_OPTS:=-Xss32m}
+
 JKIND_DIR=$(linkdir $0)
-java -jar $JKIND_DIR/jkind.jar -jlustre2kind "$@"
+java $JKIND_JAVA_OPTS -jar $JKIND_DIR/jkind.jar -jlustre2kind "$@"

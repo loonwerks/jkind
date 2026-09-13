@@ -98,7 +98,11 @@ public class RemoveCondacts {
 
 				List<Expr> args = new ArrayList<>();
 				args.add(e.clock.accept(this));
-				args.addAll(e.call.args);
+				// Use the visited call's arguments. Taking them from e.call
+				// instead would discard the rewriting done above, leaving any
+				// condact nested inside them in place for InlineNodeCalls to
+				// trip over.
+				args.addAll(call.args);
 				args.addAll(visitExprs(e.args));
 
 				Node condact = createCondactNode(call.node);
@@ -171,18 +175,29 @@ public class RemoveCondacts {
 
 			@Override
 			public Expr visit(UnaryExpr e) {
-				if (e.op == UnaryOp.PRE) {
-					return cache.computeIfAbsent(e.expr.toString(), ignore -> {
-						String state = "~state" + counter++;
-						Type type = e.expr.accept(typeReconstructor);
-						stateLocals.add(new VarDecl(state, type));
-						// state = if clock then expr else pre state
-						stateEquations.add(eq(id(state), ite(CLOCK, e.expr.accept(this), pre(id(state)))));
-						return pre(id(state));
-					});
-				} else {
+				if (e.op != UnaryOp.PRE) {
 					return super.visit(e);
 				}
+
+				// This cannot use computeIfAbsent: rewriting the operand
+				// recurses back into this method, and a nested pre would then
+				// modify the map from inside its own mapping function, which
+				// HashMap rejects with a ConcurrentModificationException.
+				String key = e.expr.toString();
+				Expr cached = cache.get(key);
+				if (cached != null) {
+					return cached;
+				}
+
+				String state = "~state" + counter++;
+				Type type = e.expr.accept(typeReconstructor);
+				stateLocals.add(new VarDecl(state, type));
+				Expr replacement = pre(id(state));
+				cache.put(key, replacement);
+
+				// state = if clock then expr else pre state
+				stateEquations.add(eq(id(state), ite(CLOCK, e.expr.accept(this), pre(id(state)))));
+				return replacement;
 			}
 		});
 

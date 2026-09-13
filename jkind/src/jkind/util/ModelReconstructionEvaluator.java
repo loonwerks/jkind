@@ -70,8 +70,9 @@ public class ModelReconstructionEvaluator extends Evaluator {
 						Value v1 = eval(new IdExpr(dependency.name));
 
 						// Compare computed value (v1) with solver value (v2) when possible
-						if (!inlinedVariables.contains(dependency.name)) {
-							Value v2 = originalModel.getValue(new StreamIndex(dependency.name, step));
+						StreamIndex index = new StreamIndex(dependency.name, step);
+						if (!inlinedVariables.contains(dependency.name) && originalModel.hasVariable(index)) {
+							Value v2 = originalModel.getValue(index);
 							if (v2 != null && !v1.equals(v2)) {
 								throw new JKindException(
 										"Unable to reconstruct counterexample: variable value changed: "

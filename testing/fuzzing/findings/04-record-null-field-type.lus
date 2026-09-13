@@ -1,0 +1,16 @@
+-- Finding 4: a record literal with an untypable field crashes the type
+-- checker while it formats a later diagnostic.
+--
+-- Expected: "unknown variable no_such_var" then "cannot join types", exit -6.
+-- Actual:   the first error, then java.lang.NullPointerException, exit -8.
+type pt = struct { x : int; y : bool };
+
+node main(b : bool) returns ();
+var
+  ok : bool;
+  p : pt;
+let
+  p = if b then pt { x = no_such_var; y = b } else 0;
+  ok = b;
+  --%PROPERTY ok;
+tel;

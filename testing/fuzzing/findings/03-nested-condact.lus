@@ -1,0 +1,18 @@
+-- Finding 3: a condact inside another condact's call arguments crashes
+-- translation.
+--
+-- Expected: normal analysis.
+-- Actual:   java.lang.ClassCastException: IdExpr cannot be cast to
+--           NodeCallExpr, exit -8.
+node inner(x : int) returns (y : int);
+let
+  y = x + 1;
+tel;
+
+node main(c : bool; x : int) returns ();
+var
+  ok : bool;
+let
+  ok = condact(c, inner(condact(c, inner(x), 0)), 0) >= 0;
+  --%PROPERTY ok;
+tel;

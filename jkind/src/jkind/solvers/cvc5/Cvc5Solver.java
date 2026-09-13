@@ -39,7 +39,8 @@ public class Cvc5Solver extends SmtLib2Solver implements MaxSatSolver {
 		setLogic("ALL"); // Set the logic to ALL or QF_NIRA it can be set with other options too.
 		setOption("produce-models", true);
 		setOption("produce-unsat-cores", true);
-		setOption("minimize-unsat-cores", true);
+		// No minimize-unsat-cores here: it is a CVC4 option that CVC5 answers
+		// "unsupported" to, and that reply desynchronizes the solver protocol.
 		setOption("incremental", true); // Enable incremental solving
 
 

@@ -75,6 +75,17 @@ public class Yices2Solver extends SmtLib2Solver {
 
 	@Override
 	protected Model parseModel(String string) {
+		// Yices 2.7 and later report models in the standard SMT-LIB 2 format,
+		// which the shared SmtLib2 parser already handles. Earlier releases
+		// used a Yices-specific syntax, so both are still accepted.
+		if (string.contains("define-fun")) {
+			return super.parseModel(string);
+		}
+		return parseLegacyModel(string);
+	}
+
+	/** Parses the model format used by Yices 2.6 and earlier. */
+	private Model parseLegacyModel(String string) {
 		CharStream stream = new ANTLRInputStream(string);
 		Yices2Lexer lexer = new Yices2Lexer(stream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
